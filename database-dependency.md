@@ -106,7 +106,7 @@ This branching model allows database migrations and application/database integra
 | Application database | `neon-for-cylinder-db` |
 | Purpose | Authoritative CylinderManagement production/integration database line |
 | Flyway migration target | Yes |
-| Current database state | Fresh and empty; Flyway migration pending |
+| Current database state | Fresh, reachable and empty; Flyway migration pending |
 
 **Rule:** Approved CylinderManagement migrations are executed through Flyway from the `vvekselva/CylinderManagement` source repository against this branch/database. Manual SQL replay is not an acceptable substitute for Flyway execution.
 
@@ -143,6 +143,7 @@ Temporary/test branches should be removed after their purpose is complete unless
 Fresh Neon project               PASS
 production branch                PASS
 Fresh CMAS database              PASS
+Neon database connectivity       PASS
 Database empty before migration  PASS
 V1–V176 migration source present PASS
 Flyway execution                 PENDING
@@ -154,7 +155,8 @@ Manual SQL substitution          NOT ALLOWED
 - **Fresh Neon project — PASS:** Dedicated Neon project `neon-for-cylinder-db` exists.
 - **production branch — PASS:** Controlled `production` branch exists under the new project.
 - **Fresh CMAS database — PASS:** PostgreSQL database `neon-for-cylinder-db` exists on `production`.
-- **Database empty before migration — PASS:** The CMAS database was verified to contain no application tables before Flyway execution.
+- **Neon database connectivity — PASS:** A read-only connection test reached the intended `production` database using the database owner role; PostgreSQL reported version 18.4.
+- **Database empty before migration — PASS:** The connectivity validation confirmed zero public base tables and no `flyway_schema_history` table before Flyway execution.
 - **V1–V176 migration source present — PASS:** The authoritative CylinderManagement workspace/source set contains the Flyway migration source through V176.
 - **Flyway execution — PENDING:** The fresh production database has not yet been migrated through Flyway.
 - **Manual SQL substitution — NOT ALLOWED:** Migration SQL must be executed under Flyway control from the CylinderManagement source repository.
@@ -170,6 +172,7 @@ Every database-related change must add or update an entry here. Do not paste SQL
 | 2026-08-16 | Created dedicated Neon project for CylinderManagement | N/A | N/A | `main` | `neondb` | PASS | Project `neon-for-cylinder-db` created as a fresh Neon project. |
 | 2026-08-16 | Created controlled production branch | N/A | N/A | `production` | inherited databases | PASS | `production` created from clean `main`. |
 | 2026-08-16 | Created fresh CylinderManagement application database | N/A | N/A | `production` | `neon-for-cylinder-db` | PASS | Database verified empty before migration. |
+| 2026-08-16 | Validate connectivity to the authoritative Neon target | N/A | N/A | `production` | `neon-for-cylinder-db` | PASS | Connected as `neondb_owner`; PostgreSQL 18.4; zero public base tables; `flyway_schema_history` absent. No schema/data change was made. |
 | 2026-08-16 | Establish required Flyway baseline through ownership/status workflow | V1–V176 | `vvekselva/CylinderManagement` | `production` | `neon-for-cylinder-db` | PENDING | Flyway execution has not yet been run on the fresh database. |
 
 ### Required fields for future entries
@@ -209,6 +212,8 @@ Project ID            : holy-glitter-02245694
 Branch                : production
 Branch ID             : br-steep-snow-aw6u5odt
 Database              : neon-for-cylinder-db
+Connectivity          : PASS
+PostgreSQL            : 18.4
 Migration tool        : Flyway
 Required version      : V176
 Migration status      : PENDING
