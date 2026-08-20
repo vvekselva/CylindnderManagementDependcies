@@ -1,0 +1,87 @@
+name: Repository Catalogue Gate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  catalogue-consistency:
+    name: Catalogue Consistency
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate repository catalogue
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          catalogue_file = Path("repository-catalogue.md")
+          start_marker = "<!-- CATALOGUE-FILES:START -->"
+          end_marker = "<!-- CATALOGUE-FILES:END -->"
+
+          if not catalogue_file.exists():
+              print("CATALOGUE GATE: FAILED")
+              print("repository-catalogue.md does not exist")
+              sys.exit(1)
+
+          text = catalogue_file.read_text(encoding="utf-8")
+          if start_marker not in text or end_marker not in text:
+              print("CATALOGUE GATE: FAILED")
+              print("Catalogue machine-readable markers are missing")
+              sys.exit(1)
+
+          section = text.split(start_marker, 1)[1].split(end_marker, 1)[0]
+          catalogue_files = {
+              line.strip()
+              for line in section.splitlines()
+              if line.strip()
+          }
+
+          result = subprocess.run(
+              ["git", "ls-files"],
+              check=True,
+              capture_output=True,
+              text=True,
+          )
+          repository_files = {
+              line.strip()
+              for line in result.stdout.splitlines()
+              if line.strip()
+          }
+
+          missing_from_catalogue = repository_files - catalogue_files
+          missing_from_repository = catalogue_files - repository_files
+
+          print(f"Repository files: {len(repository_files)}")
+          print(f"Catalogue files : {len(catalogue_files)}")
+
+          failed = False
+          if missing_from_catalogue:
+              failed = True
+              print("\nFiles present in repository but missing from catalogue:")
+              for path in sorted(missing_from_catalogue):
+                  print(f"  + {path}")
+
+          if missing_from_repository:
+              failed = True
+              print("\nFiles present in catalogue but missing from repository:")
+              for path in sorted(missing_from_repository):
+                  print(f"  - {path}")
+
+          if failed:
+              print("\nCATALOGUE GATE: FAILED")
+              sys.exit(1)
+
+          print("\nCATALOGUE GATE: PASS")
+          PY
