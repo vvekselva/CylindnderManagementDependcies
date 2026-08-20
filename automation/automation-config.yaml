@@ -1,0 +1,85 @@
+version: 1
+
+control_repository: vvekselva/CylindnderManagementDependcies
+target_repository: vvekselva/CylinderManagement
+
+coordinator:
+  enabled: true
+  consumes_worker_slot: false
+  responsibilities:
+    - load_control_files
+    - build_runnable_task_queue
+    - enforce_dependencies
+    - assign_tasks_to_workers
+    - enforce_resource_locks
+    - evaluate_quality_gates
+    - update_status_and_evidence
+
+worker_pool:
+  worker_count: 10
+  lane_count: 10
+  max_parallel_tasks: 10
+  one_active_task_per_worker: true
+  lanes:
+    - LANE-01
+    - LANE-02
+    - LANE-03
+    - LANE-04
+    - LANE-05
+    - LANE-06
+    - LANE-07
+    - LANE-08
+    - LANE-09
+    - LANE-10
+
+scheduling:
+  dependency_policy: strict
+  only_ready_tasks_are_assignable: true
+  priorities:
+    - P0_RECOVERY
+    - P1_BLOCKER_CLEARING
+    - P2_CRITICAL_PATH
+    - P3_NORMAL
+  fairness:
+    max_workers_per_workflow: 4
+    allow_unused_capacity_to_exceed_workflow_limit: true
+  retry:
+    max_automatic_attempts: 2
+    third_failure_state: BLOCKED
+
+status_lifecycle:
+  - YET_TO_DO
+  - READY
+  - IN_PROGRESS
+  - BLOCKED
+  - FAILED
+  - VERIFIED
+  - CLOSED
+
+resource_locks:
+  - name: PRODUCTION_DATABASE_WRITE
+    capacity: 1
+  - name: MAIN_BRANCH_WRITE
+    capacity: 1
+  - name: RELEASE_OPERATION
+    capacity: 1
+  - name: SAME_FILE_SET
+    capacity: 1
+
+execution:
+  source_branch_pattern: automation/{run_id}/{task_id}
+  direct_write_to_main: false
+  require_evidence_before_verified: true
+  dependent_tasks_wait_for_closed_or_verified: true
+
+staleness:
+  worker_heartbeat_minutes: 5
+  stale_after_minutes: 20
+  stale_action: RETURN_TASK_TO_COORDINATOR
+
+status_files:
+  global_status: TaskStatus.md
+  catalogue: repository-catalogue.md
+  automation_policy: governance/automation-policy.md
+  execution_model: automation/execution-model.md
+  task_contract: automation/task-contract.md
