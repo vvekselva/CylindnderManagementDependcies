@@ -1,5 +1,6 @@
 workflow:
   id: WF-001-controller-traceability
+  version: 2
   name: Controller Traceability
   purpose: >-
     Find every exposed controller and endpoint in CylinderManagement and trace each
@@ -8,6 +9,8 @@ workflow:
 
   target_repository: vvekselva/CylinderManagement
   control_repository: vvekselva/CylindnderManagementDependcies
+  design: traceability/controller-traceability-design.md
+  controller_artifact_template: traceability/controller-trace-template.md
 
   source_baseline:
     rule: ONE_COMMIT_FOR_THE_COMPLETE_WORKFLOW
@@ -15,10 +18,37 @@ workflow:
       All workers must examine the same CylinderManagement source commit so that the
       final traceability artifact describes one consistent version of the application.
 
+  discovery_scope:
+    production_sources_only: true
+    include_src_main_java: true
+    exclude_src_test_java: true
+    do_not_rely_on_controller_filename_only: true
+    spring_annotations:
+      - Controller
+      - RestController
+      - RequestMapping
+      - GetMapping
+      - PostMapping
+      - PutMapping
+      - DeleteMapping
+      - PatchMapping
+
   worker_model:
     coordinator_is_separate: true
     worker_lanes: 10
     max_parallel_jobs: 10
+    controller_work_item: ONE_CONTROLLER
+
+  worker_service_lifecycle:
+    contract: automation/worker-service-contract.md
+    mandatory_for_every_job_attempt: true
+    phases:
+      - INIT
+      - SERVICE
+      - CLOSE
+    init_opens_human_log: true
+    close_always_required: true
+    close_closes_human_log: true
 
   logging:
     policy: governance/automation-log-policy.md
@@ -29,80 +59,135 @@ workflow:
     policy: governance/source-artifact-sync-policy.md
     register: sync/source-artifact-sync-register.yaml
 
+  quality_gates:
+    - id: GATE-TRC-001
+      name: Source Baseline Frozen
+    - id: GATE-TRC-002
+      name: Production Web Source Scope Enumerated
+    - id: GATE-TRC-003
+      name: Exposed Controller Inventory Complete
+    - id: GATE-TRC-004
+      name: Exposed Endpoint Inventory Complete
+    - id: GATE-TRC-005
+      name: Every Endpoint Has Trace Result
+    - id: GATE-TRC-006
+      name: Complete Traces Have Hop Evidence
+    - id: GATE-TRC-007
+      name: Unresolved Traces Have Clear Stopping Point
+    - id: GATE-TRC-008
+      name: Coverage Is 100 Percent
+    - id: GATE-TRC-009
+      name: Source Artifact Sync Registered
+    - id: GATE-TRC-010
+      name: Human Log And Story Closed And Current
+
   jobs:
     - id: JOB-001
       name: Freeze Source Baseline
       needs: []
       parallel: false
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Read the current approved CylinderManagement source commit.
+          instruction: Read the current approved CylinderManagement main source commit.
           expected_result: One source commit is recorded as the workflow baseline.
         - id: ACT-002
           instruction: Record that same source commit for all later controller-tracing jobs.
           expected_result: Every worker receives the same baseline.
       completion_check: A single source commit is available to every later job.
+      gate: GATE-TRC-001
 
     - id: JOB-002
       name: Discover Exposed Controllers
       needs:
         - JOB-001
       parallel: false
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Find Spring controllers that expose application requests.
-          expected_result: A controller inventory is created.
+          instruction: Enumerate production Java source in the web module and identify Spring web exposure candidates.
+          expected_result: Production web-source scope is recorded without using src/test/java.
         - id: ACT-002
-          instruction: Identify exposed mapping annotations on each controller.
-          expected_result: Controller inventory includes all exposed controllers.
-      completion_check: Every discovered exposed controller has a controller ID.
+          instruction: Inspect candidates for actual Spring controller or request-mapping annotations.
+          expected_result: Only components that actually expose requests are accepted into the controller inventory.
+        - id: ACT-003
+          instruction: Give every exposed component a stable CTL identifier and record its source path and class-level mapping.
+          expected_result: Controller inventory includes every exposed production component.
+      completion_check: Every discovered exposed component has a Controller ID and source evidence.
       output: traceability/controller-inventory.md
+      gates:
+        - GATE-TRC-002
+        - GATE-TRC-003
 
     - id: JOB-003
       name: Build Endpoint Inventory
       needs:
         - JOB-002
       parallel: false
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: List every exposed endpoint under each discovered controller.
-          expected_result: Every endpoint has an endpoint ID, HTTP method and path.
+          instruction: List every exposed handler method under each discovered controller or REST component.
+          expected_result: Every caller-visible method/path combination has an Endpoint ID.
         - id: ACT-002
-          instruction: Record the controller method that handles each endpoint.
-          expected_result: Every endpoint points to the source method that receives it.
-      completion_check: Every exposed controller method is represented in the endpoint inventory.
+          instruction: Combine class-level and method-level mappings to produce the full endpoint path.
+          expected_result: Endpoint inventory records the full caller-visible URL, not only the method mapping.
+        - id: ACT-003
+          instruction: Record HTTP method, controller method, input/output types where provable, and source evidence.
+          expected_result: Every endpoint points to the exact source method that receives it.
+      completion_check: Every exposed handler method/path combination is represented in the endpoint inventory.
       output: traceability/endpoint-inventory.md
+      gate: GATE-TRC-004
 
     - id: JOB-004
       name: Trace Controllers In Parallel
       needs:
         - JOB-003
       parallel: true
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       strategy:
         type: QUEUE_FAN_OUT
         item_source: traceability/controller-inventory.md
         max_parallel: 10
         worker_ownership: ONE_CONTROLLER_PER_WORK_ITEM
+      init_requirements:
+        - log assigned lane
+        - log Controller ID and class
+        - log source baseline
+        - log endpoint count
+        - log planned trace actions
+        - log expected controller artifact path
       actions:
         - id: ACT-001
-          instruction: Read the assigned controller and its exposed endpoints.
-          expected_result: The worker understands the controller scope it owns.
+          instruction: Read the assigned controller and its exposed endpoints from the frozen source baseline.
+          expected_result: The worker understands the exact controller scope it owns.
         - id: ACT-002
-          instruction: Follow each controller method to the next application component actually called by the source.
-          expected_result: The first downstream component is proved from source evidence.
+          instruction: Follow each exposed controller method to the next application component actually called by that method.
+          expected_result: The first downstream hop is proved from source evidence.
         - id: ACT-003
           instruction: Continue following the real call path through mediators, handlers, services, repositories or adapters when they exist.
           expected_result: The complete reachable dependency path is recorded without forcing a fixed architecture.
         - id: ACT-004
+          instruction: For database-backed paths, continue through entity, query or database access evidence until the physical table, view or function can be proved.
+          expected_result: Database traces name only database objects supported by source evidence.
+        - id: ACT-005
           instruction: Continue until the final database object, external service, file, module or other dependency can be proved.
           expected_result: The final dependency is identified where possible.
-        - id: ACT-005
-          instruction: If the final dependency cannot be proved, stop at the last proven component and explain in simple English what information is missing.
-          expected_result: Unresolved paths are explicit and are not guessed.
         - id: ACT-006
-          instruction: Produce one controller traceability artifact with source evidence and status.
-          expected_result: One per-controller artifact is produced.
-      completion_check: Every assigned endpoint is COMPLETE or explicitly UNRESOLVED with a clear reason.
+          instruction: If a final dependency cannot be proved, stop at the last proven component and explain in simple English what information is missing and what should be checked next.
+          expected_result: Unresolved paths are explicit and are not guessed.
+        - id: ACT-007
+          instruction: Produce one controller traceability artifact using traceability/controller-trace-template.md.
+          expected_result: One per-controller artifact is produced with init, service and close sections.
+      close_requirements:
+        - record endpoints assigned
+        - record endpoints complete
+        - record endpoints unresolved or blocked
+        - record evidence and outputs
+        - explain any blocker or failure in simple English
+        - record next action
+        - close log state
+      completion_check: Every assigned endpoint is COMPLETE or explicitly UNRESOLVED/BLOCKED with a clear reason and next action.
       output_pattern: traceability/controllers/CTL-*.md
 
     - id: JOB-005
@@ -110,41 +195,49 @@ workflow:
       needs:
         - JOB-004
       parallel: false
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
           instruction: Collect all worker controller artifacts.
           expected_result: All controller results are available to the coordinator.
         - id: ACT-002
-          instruction: Build one consolidated controller-to-dependency matrix.
+          instruction: Build one consolidated endpoint-to-final-dependency matrix.
           expected_result: The complete architecture trace is readable in one place.
         - id: ACT-003
-          instruction: Build an unresolved list from every controller artifact that is not complete.
+          instruction: Build an unresolved list from every endpoint artifact that is not complete.
           expected_result: No unresolved item is hidden.
       outputs:
         - traceability/controller-traceability.md
         - traceability/unresolved-traceability.md
       completion_check: Every endpoint from the endpoint inventory appears in the consolidated result.
+      gates:
+        - GATE-TRC-005
+        - GATE-TRC-006
+        - GATE-TRC-007
 
     - id: JOB-006
       name: Run Source Artifact Sync Check
       needs:
         - JOB-005
       parallel: false
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Register every controller artifact against its source component and source commit.
+          instruction: Register every controller artifact against its source component and frozen source commit.
           expected_result: The sync register can later detect when source changes affect an artifact.
         - id: ACT-002
           instruction: Mark all verified controller artifacts IN_SYNC with the workflow source baseline.
           expected_result: The initial traceability baseline is established.
       output: sync/source-artifact-sync-register.yaml
       completion_check: Every controller artifact has a registered source component and verified source commit.
+      gate: GATE-TRC-009
 
     - id: JOB-007
       name: Validate Traceability Coverage
       needs:
         - JOB-006
       parallel: false
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
           instruction: Compare the endpoint inventory with the consolidated traceability report.
@@ -153,26 +246,33 @@ workflow:
           instruction: Calculate coverage and resolution separately.
           expected_result: Coverage shows what was examined and resolution shows what was fully understood.
       completion_check: Coverage must be 100 percent. Unresolved paths may remain only when they are explicitly registered.
+      gate: GATE-TRC-008
 
     - id: JOB-008
       name: Generate Human Story
       needs:
         - JOB-007
       parallel: false
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
           instruction: Generate the human-readable automation story from the shared automation log.
           expected_result: A simple-English summary explains what happened, what remains blocked and what happens next.
       output: logs/automation-story.md
-      completion_check: The story matches the recorded log and does not hide unresolved work.
+      completion_check: The story matches the recorded log, all worker events are closed, and unresolved work is visible.
+      gate: GATE-TRC-010
 
   workflow_completion:
     required:
       - one source baseline used by all workers
+      - production web-source scope enumerated
       - controller inventory complete
       - endpoint inventory complete
+      - every endpoint has a trace result
+      - every COMPLETE hop has source evidence
       - traceability coverage equals 100 percent
       - unresolved items explicitly recorded
       - source-artifact sync register updated
+      - all worker lifecycle logs CLOSED
       - human-readable log updated
       - human-readable story generated
