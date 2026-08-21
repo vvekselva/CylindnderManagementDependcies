@@ -1,0 +1,65 @@
+version: 1
+
+source_repository: vvekselva/CylinderManagement
+control_repository: vvekselva/CylindnderManagementDependcies
+
+sync_policy: governance/source-artifact-sync-policy.md
+
+last_global_check:
+  source_commit: null
+  run_id: null
+  state: NOT_INITIALIZED
+
+notification_rules:
+  INTERNAL_ONLY: LOG_ONLY
+  TRACE_CHANGED: REFRESH_ARTIFACT
+  EXPOSED_API_CHANGED: NOTIFY_USER_AND_REFRESH_ARTIFACT
+  COMPONENT_ADDED_OR_REMOVED: NOTIFY_USER_AND_REFRESH_ARTIFACT
+  IMPACT_NOT_CONFIRMED: NOTIFY_USER_AND_REQUIRE_REVIEW
+
+artifact_groups:
+  - id: ART-GRP-001
+    name: Controller Traceability
+    state: NOT_INITIALIZED
+    workflow: WF-001-controller-traceability
+    source_scope:
+      component_types:
+        - Controller
+        - RestController
+      exposed_annotations:
+        - RequestMapping
+        - GetMapping
+        - PostMapping
+        - PutMapping
+        - PatchMapping
+        - DeleteMapping
+    artifacts:
+      controller_inventory: traceability/controller-inventory.md
+      endpoint_inventory: traceability/endpoint-inventory.md
+      consolidated_traceability: traceability/controller-traceability.md
+      unresolved_items: traceability/unresolved-traceability.md
+      per_controller_directory: traceability/controllers/
+    components: []
+
+component_entry_template:
+  id: CTL-XXX
+  source_path: path/to/Controller.java
+  component_type: Controller
+  artifact_path: traceability/controllers/CTL-XXX-ControllerName.md
+  exposed_endpoints: []
+  last_verified_source_commit: null
+  sync_state: NOT_INITIALIZED
+  last_impact_classification: null
+  last_checked_run_id: null
+
+classification_notes:
+  INTERNAL_ONLY: >-
+    Internal implementation changed, but the exposed API and the recorded trace are still the same.
+  TRACE_CHANGED: >-
+    The exposed API is unchanged, but the service, repository, database or other dependency path recorded by the artifact changed.
+  EXPOSED_API_CHANGED: >-
+    A caller-visible API contract changed and the user must be notified.
+  COMPONENT_ADDED_OR_REMOVED: >-
+    An exposed controller or endpoint was added or removed and the inventories must change.
+  IMPACT_NOT_CONFIRMED: >-
+    The automation cannot safely decide whether the artifact is still correct, so user review is required.
