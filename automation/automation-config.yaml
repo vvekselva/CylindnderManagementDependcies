@@ -1,4 +1,4 @@
-version: 2
+version: 3
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -13,6 +13,7 @@ control_files:
   execution_model: automation/execution-model.md
   workflow_contract: automation/workflow-contract.md
   task_contract: automation/task-contract.md
+  worker_service_contract: automation/worker-service-contract.md
   shared_log: logs/automation-log.md
   human_story: logs/automation-story.md
   sync_register: sync/source-artifact-sync-register.yaml
@@ -27,9 +28,13 @@ coordinator:
     - enforce_job_dependencies
     - assign_jobs_to_workers
     - enforce_resource_locks
-    - collect_worker_results
+    - collect_worker_init_records
+    - collect_worker_service_results
+    - collect_worker_close_records
     - serialize_shared_file_updates
-    - write_human_readable_log
+    - open_human_readable_log_event_on_init
+    - close_human_readable_log_event_on_close
+    - recover_unclosed_worker_logs
     - evaluate_quality_gates
     - run_source_artifact_sync_decisions
     - update_status_and_evidence
@@ -51,6 +56,53 @@ worker_pool:
     - LANE-08
     - LANE-09
     - LANE-10
+
+worker_service_lifecycle:
+  contract: automation/worker-service-contract.md
+  mandatory: true
+  phases:
+    - INIT
+    - SERVICE
+    - CLOSE
+  init:
+    purpose: PREPARE_JOB_AND_OPEN_LOG
+    must_record:
+      - worker_lane
+      - workflow_id
+      - job_id
+      - run_id
+      - attempt
+      - source_baseline
+      - purpose
+      - planned_actions
+      - expected_output
+    success_state: INITIALIZED
+    blocker_state: BLOCKED_BEFORE_SERVICE
+  service:
+    purpose: EXECUTE_ASSIGNED_JOB_ACTIONS
+    allowed_results:
+      - COMPLETED
+      - PARTIAL
+      - BLOCKED
+      - FAILED
+  close:
+    purpose: FINALIZE_RESULT_AND_CLOSE_LOG
+    mandatory_after_init: true
+    exactly_once: true
+    must_record:
+      - actions_completed
+      - actions_not_completed
+      - outputs
+      - evidence
+      - blocker_or_failure
+      - alternatives
+      - final_result
+      - next_action
+      - end_time
+    final_log_state: CLOSED
+  stale_worker_recovery:
+    coordinator_closes_unfinished_log: true
+    result_state: RESULT_NOT_CONFIRMED
 
 scheduling:
   dependency_policy: strict
@@ -136,11 +188,13 @@ execution:
   require_evidence_before_verified: true
   dependent_jobs_wait_for_completed_or_verified: true
   one_source_baseline_per_workflow: true
+  every_job_attempt_uses_worker_service_lifecycle: true
+  log_must_be_closed_before_worker_release: true
 
 staleness:
   worker_heartbeat_minutes: 5
   stale_after_minutes: 20
-  stale_action: RETURN_JOB_TO_COORDINATOR
+  stale_action: RETURN_JOB_TO_COORDINATOR_AND_RECOVERY_CLOSE_LOG
 
 registered_workflows:
   - workflows/WF-001-controller-traceability/workflow.yaml
