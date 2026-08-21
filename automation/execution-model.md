@@ -2,83 +2,135 @@
 
 ## Purpose
 
-This document defines how automation workers execute activities against `vvekselva/CylinderManagement` under the control of `vvekselva/CylindnderManagementDependcies`.
+This document explains, in simple English, how automation work is executed against `vvekselva/CylinderManagement` under the control of `vvekselva/CylindnderManagementDependcies`.
+
+The execution hierarchy is:
+
+```text
+WORKFLOW
+   |
+   +-- JOB
+   |    |
+   |    +-- ACTION
+   |    +-- ACTION
+   |
+   +-- JOB
+        |
+        +-- ACTION
+        +-- ACTION
+```
+
+The detailed structure is defined in `automation/workflow-contract.md`.
 
 ## Control Plane and Worker Pool
 
-The automation uses one logical coordinator and ten worker lanes.
+The automation uses one coordinator and ten worker lanes.
 
-- The coordinator is the scheduler/control plane.
+- The coordinator is the scheduler and control plane.
 - The coordinator does not consume one of the ten worker slots.
 - Ten worker lanes are available: `LANE-01` through `LANE-10`.
-- Each worker may own at most one active task at a time.
-- Therefore the maximum normal task parallelism is ten independent tasks.
+- Each worker may own at most one active job at a time.
+- Therefore the maximum normal parallelism is ten independent jobs.
 
-## Scheduling Cycle
+The workers follow `governance/worker-operating-guide.md`.
 
-For every scheduling cycle, the coordinator performs the following sequence:
+## What the coordinator does
 
-1. Read `repository-catalogue.md`.
-2. Read `governance/automation-policy.md`.
-3. Read `automation/automation-config.yaml`.
-4. Read `TaskStatus.md` and workflow/task status files.
-5. Build the runnable task queue.
-6. Exclude tasks whose dependencies are not satisfied.
-7. Exclude tasks whose required resource lock is unavailable.
-8. Sort the remaining tasks by priority.
-9. Assign ready tasks to free worker lanes.
-10. Mark each claimed task `IN_PROGRESS` and record worker lane, run ID, start time and attempt number.
-11. Execute the task against the target repository using an automation task branch.
-12. Collect evidence.
-13. Run the task quality gate.
-14. Mark the task `VERIFIED` or `FAILED`/`BLOCKED`.
-15. Mark a task `CLOSED` only after its completion evidence and required gate are accepted.
-16. Recalculate downstream task readiness.
+The coordinator does not perform ordinary worker jobs. It controls the work.
+
+For every scheduling cycle the coordinator:
+
+1. reads `repository-catalogue.md`;
+2. reads the governance files;
+3. reads `automation/automation-config.yaml`;
+4. reads `TaskStatus.md`;
+5. loads the registered workflow YAML files;
+6. checks which jobs have satisfied their `needs` dependencies;
+7. checks which jobs are safe to run in parallel;
+8. builds the READY job queue;
+9. assigns READY jobs to free worker lanes;
+10. collects worker results;
+11. writes shared status and human-readable logs in a controlled order;
+12. runs quality gates;
+13. updates the source-artifact synchronization register when required;
+14. recalculates which later jobs are now READY.
+
+## What a worker does
+
+A worker receives one job.
+
+The worker:
+
+1. reads the workflow and assigned job;
+2. confirms the exact source baseline;
+3. performs the job actions in the defined order;
+4. captures evidence;
+5. returns its result to the coordinator;
+6. reports blockers in simple English;
+7. does not guess missing facts;
+8. does not start a second job until the first is released.
 
 ## Parallelism Rules
 
-Parallel execution is allowed only when tasks are independent.
+Parallel execution is allowed only when jobs are independent.
 
-A task may run in parallel when all of the following are true:
+A job may run when:
 
-- all prerequisite tasks are `VERIFIED` or `CLOSED`;
-- no required resource lock is held by another worker;
-- the task does not modify the same controlled file set as another active task;
-- the task does not require an unfinished output from another active task;
-- the workflow-specific concurrency limit is not exceeded, unless unused global worker capacity is available and no safety rule is violated.
+- every required job listed under `needs` is complete enough for the workflow;
+- no required resource lock is already held;
+- it does not depend on unfinished output from another active job;
+- it does not make unsafe overlapping changes to the same controlled file set;
+- the workflow allows it to run in parallel.
 
-Dependent tasks must never be started early merely because a worker lane is free.
+A free worker is not a reason to start a dependent job early.
 
 ## Ten Worker Lanes
 
-| Lane | Capacity | State values | Purpose |
+| Lane | Capacity | Typical state | Purpose |
 |---|---:|---|---|
-| LANE-01 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-02 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-03 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-04 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-05 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-06 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-07 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-08 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-09 | 1 | IDLE / BUSY / STALE | General task execution |
-| LANE-10 | 1 | IDLE / BUSY / STALE | General task execution |
+| LANE-01 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-02 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-03 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-04 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-05 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-06 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-07 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-08 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-09 | 1 | IDLE / BUSY / STALE | General job execution |
+| LANE-10 | 1 | IDLE / BUSY / STALE | General job execution |
 
-## Task Claiming
+## Queue-Based Fan-Out
 
-A task claim must record:
+When many independent components must be examined, the coordinator uses a queue.
 
-- workflow ID;
-- task ID;
-- worker lane;
-- run ID;
-- attempt number;
-- source branch;
-- start timestamp;
-- expected evidence;
-- required resource locks.
+Example for controller tracing:
 
-A worker must not claim a second task until the current task is released back to the coordinator.
+```text
+Controller queue
+     |
+     +--> LANE-01 -> Controller A
+     +--> LANE-02 -> Controller B
+     +--> LANE-03 -> Controller C
+     ...
+     +--> LANE-10 -> Controller J
+```
+
+When Lane 3 finishes, it may immediately receive the next READY controller. It does not have to wait for the other nine workers.
+
+## Shared Files
+
+Some files must not be changed by ten workers at the same time.
+
+The coordinator owns shared files such as:
+
+- `TaskStatus.md`;
+- `logs/automation-log.md`;
+- `logs/automation-story.md`;
+- `sync/source-artifact-sync-register.yaml`;
+- `repository-catalogue.md`;
+- consolidated reports.
+
+Workers return findings to the coordinator. The coordinator serializes those writes.
 
 ## Resource Locks
 
@@ -88,66 +140,103 @@ Some operations remain serial even with ten workers.
 
 Capacity: 1.
 
-Only one worker may perform a write operation against the controlled production database at a time.
+Only one job may perform a controlled production-database write at a time.
 
 ### MAIN_BRANCH_WRITE
 
 Capacity: 1.
 
-Automation workers work on task branches. Integration into `main` must be serialized and protected by the configured source-repository quality gates.
+Source integration into `main` must be serialized and protected by quality gates.
 
 ### RELEASE_OPERATION
 
 Capacity: 1.
 
-Only one release/promotion operation may be active at a time.
+Only one release or promotion operation may be active at a time.
 
 ### SAME_FILE_SET
 
 Capacity: 1 for overlapping controlled files.
 
-Two workers must not concurrently change the same file set unless the workflow explicitly defines a safe merge strategy.
+Two workers must not concurrently change the same file set unless a workflow explicitly defines a safe merge strategy.
+
+### SHARED_CONTROL_FILES
+
+Capacity: 1 and coordinator-owned.
+
+Shared status, log and synchronization files are written by the coordinator.
 
 ## Priority Order
 
-Tasks are scheduled in this order:
+Jobs are scheduled in this order:
 
-1. `P0_RECOVERY` — restore a failed or inconsistent automation state.
-2. `P1_BLOCKER_CLEARING` — remove a blocker preventing multiple downstream tasks.
-3. `P2_CRITICAL_PATH` — advance the shortest path to the current workflow milestone.
-4. `P3_NORMAL` — ordinary ready work.
+1. `P0_RECOVERY` - restore a failed or inconsistent automation state.
+2. `P1_BLOCKER_CLEARING` - remove a problem stopping multiple later jobs.
+3. `P2_CRITICAL_PATH` - move the current workflow milestone forward.
+4. `P3_NORMAL` - ordinary READY work.
 
-Within the same priority, older ready tasks should be scheduled first unless a workflow declares a different ordering rule.
+## Blocker Handling
+
+A blocker means the worker cannot safely continue because something important is missing, unavailable, inconsistent or needs a decision.
+
+The worker must not write only technical jargon.
+
+It must explain:
+
+- what it was trying to do;
+- where it stopped;
+- what prevented it from continuing;
+- why guessing would be unsafe;
+- what information or decision would remove the blocker;
+- what alternatives can be considered.
+
+The logging format is controlled by `governance/automation-log-policy.md`.
 
 ## Failure and Retry
 
-- First failure: record evidence and return the task for one controlled retry.
-- Second failure: record evidence and return the task for the second and final automatic retry when the failure is considered recoverable.
-- After the configured automatic-attempt limit is exhausted, move the task to `BLOCKED`.
-- A blocked task must include a blocker ID, failure evidence and recovery requirement.
-- Downstream dependent tasks remain non-runnable while the blocker exists.
+A failure means the requested action was actually attempted but the expected result was not achieved.
+
+The default policy allows up to two controlled automatic attempts when retry is safe.
+
+After the configured retry limit, the job moves to `WAITING_FOR_DECISION` rather than repeating the same action indefinitely.
+
+The worker may suggest alternatives but may not silently redesign the workflow.
 
 ## Stale Worker Recovery
 
-Workers must refresh their execution heartbeat while a task is active.
+Workers are expected to refresh their execution heartbeat while a job is active.
 
 - Expected heartbeat: every 5 minutes.
 - A worker is stale after 20 minutes without a heartbeat.
-- The coordinator must not assume the task completed.
-- The task is returned to coordinator review and may be marked `BLOCKED`, `FAILED`, or safely reassigned after checking side effects.
+- The coordinator must not assume the job completed.
+- The coordinator checks possible side effects before deciding whether the job is safely reassigned, failed or blocked.
 
 ## Completion Rule
 
-Task completion requires all of the following:
+A job is not verified simply because a worker says it is finished.
 
-1. execution finished;
-2. expected output exists;
+Verification requires:
+
+1. all required actions were attempted;
+2. the expected output exists;
 3. evidence is recorded;
-4. required quality gate passes;
-5. no unresolved side effect remains;
-6. status is updated in the control repository.
+4. the completion check or quality gate passes;
+5. unresolved items are clearly visible;
+6. shared status/log files are updated by the coordinator.
 
-Only then may the coordinator move the task to `VERIFIED` and eventually `CLOSED`.
+## Source-to-Artifact Synchronization
+
+After controlled artifacts exist, `WF-002-source-artifact-sync` compares the source version represented by the artifacts with later CylinderManagement source changes.
+
+The synchronization process decides whether a change is:
+
+- `INTERNAL_ONLY`;
+- `TRACE_CHANGED`;
+- `EXPOSED_API_CHANGED`;
+- `COMPONENT_ADDED_OR_REMOVED`;
+- `IMPACT_NOT_CONFIRMED`.
+
+The rules are defined in `governance/source-artifact-sync-policy.md`.
 
 ## Overall Execution Shape
 
@@ -155,24 +244,31 @@ Only then may the coordinator move the task to `VERIFIED` and eventually `CLOSED
 Control Repository
        |
        v
-Coordinator / Scheduler
-       |
-       +--> LANE-01 --> Task
-       +--> LANE-02 --> Task
-       +--> LANE-03 --> Task
-       +--> LANE-04 --> Task
-       +--> LANE-05 --> Task
-       +--> LANE-06 --> Task
-       +--> LANE-07 --> Task
-       +--> LANE-08 --> Task
-       +--> LANE-09 --> Task
-       +--> LANE-10 --> Task
+Coordinator
        |
        v
-Quality Gates + Evidence
+Workflow
+       |
+       +--> Job --> Actions --> LANE-01
+       +--> Job --> Actions --> LANE-02
+       +--> Job --> Actions --> LANE-03
+       ...
+       +--> Job --> Actions --> LANE-10
        |
        v
-TaskStatus.md / workflow status
+Worker Results
+       |
+       v
+Coordinator
+       |
+       +--> Human Log
+       +--> TaskStatus
+       +--> Sync Register
+       +--> Consolidated Artifact
+       +--> Quality Gate
+       |
+       v
+Human Story / Next READY Jobs
 ```
 
-The ten lanes provide capacity. Dependency rules, resource locks and quality gates determine how much of that capacity may safely be used at any given moment.
+The ten lanes provide capacity. Workflow dependencies, resource locks, blocker rules and quality gates determine how much of that capacity may safely be used at any moment.
