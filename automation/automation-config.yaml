@@ -1,25 +1,45 @@
-version: 1
+version: 2
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
+
+control_files:
+  catalogue: repository-catalogue.md
+  global_status: TaskStatus.md
+  automation_policy: governance/automation-policy.md
+  worker_operating_guide: governance/worker-operating-guide.md
+  automation_log_policy: governance/automation-log-policy.md
+  source_artifact_sync_policy: governance/source-artifact-sync-policy.md
+  execution_model: automation/execution-model.md
+  workflow_contract: automation/workflow-contract.md
+  task_contract: automation/task-contract.md
+  shared_log: logs/automation-log.md
+  human_story: logs/automation-story.md
+  sync_register: sync/source-artifact-sync-register.yaml
 
 coordinator:
   enabled: true
   consumes_worker_slot: false
   responsibilities:
     - load_control_files
-    - build_runnable_task_queue
-    - enforce_dependencies
-    - assign_tasks_to_workers
+    - load_registered_workflows
+    - build_runnable_job_queue
+    - enforce_job_dependencies
+    - assign_jobs_to_workers
     - enforce_resource_locks
+    - collect_worker_results
+    - serialize_shared_file_updates
+    - write_human_readable_log
     - evaluate_quality_gates
+    - run_source_artifact_sync_decisions
     - update_status_and_evidence
+    - generate_human_story
 
 worker_pool:
   worker_count: 10
   lane_count: 10
-  max_parallel_tasks: 10
-  one_active_task_per_worker: true
+  max_parallel_jobs: 10
+  one_active_job_per_worker: true
   lanes:
     - LANE-01
     - LANE-02
@@ -34,27 +54,69 @@ worker_pool:
 
 scheduling:
   dependency_policy: strict
-  only_ready_tasks_are_assignable: true
+  only_ready_jobs_are_assignable: true
   priorities:
     - P0_RECOVERY
     - P1_BLOCKER_CLEARING
     - P2_CRITICAL_PATH
     - P3_NORMAL
   fairness:
-    max_workers_per_workflow: 4
+    max_workers_per_workflow: 10
     allow_unused_capacity_to_exceed_workflow_limit: true
   retry:
     max_automatic_attempts: 2
-    third_failure_state: BLOCKED
+    after_retry_limit: WAITING_FOR_DECISION
 
 status_lifecycle:
   - YET_TO_DO
   - READY
   - IN_PROGRESS
+  - PARTIAL
   - BLOCKED
+  - WAITING_FOR_DECISION
   - FAILED
+  - COMPLETED
   - VERIFIED
   - CLOSED
+
+blocker_handling:
+  plain_english_required: true
+  technical_symptom_only_is_not_sufficient: true
+  worker_may_guess: false
+  worker_may_suggest_alternatives: true
+  worker_may_change_workflow_without_approval: false
+  approved_workflow_fallback_may_be_used: true
+
+shared_file_ownership:
+  owner: coordinator
+  files:
+    - TaskStatus.md
+    - logs/automation-log.md
+    - logs/automation-story.md
+    - sync/source-artifact-sync-register.yaml
+    - repository-catalogue.md
+
+source_artifact_sync:
+  enabled: true
+  policy: governance/source-artifact-sync-policy.md
+  register: sync/source-artifact-sync-register.yaml
+  classifications:
+    INTERNAL_ONLY:
+      notify_user: false
+      refresh_artifact: false
+    TRACE_CHANGED:
+      notify_user: false
+      refresh_artifact: true
+    EXPOSED_API_CHANGED:
+      notify_user: true
+      refresh_artifact: true
+    COMPONENT_ADDED_OR_REMOVED:
+      notify_user: true
+      refresh_artifact: true
+    IMPACT_NOT_CONFIRMED:
+      notify_user: true
+      refresh_artifact: false
+      review_required: true
 
 resource_locks:
   - name: PRODUCTION_DATABASE_WRITE
@@ -65,21 +127,21 @@ resource_locks:
     capacity: 1
   - name: SAME_FILE_SET
     capacity: 1
+  - name: SHARED_CONTROL_FILES
+    capacity: 1
 
 execution:
-  source_branch_pattern: automation/{run_id}/{task_id}
+  source_branch_pattern: automation/{run_id}/{job_id}
   direct_write_to_main: false
   require_evidence_before_verified: true
-  dependent_tasks_wait_for_closed_or_verified: true
+  dependent_jobs_wait_for_completed_or_verified: true
+  one_source_baseline_per_workflow: true
 
 staleness:
   worker_heartbeat_minutes: 5
   stale_after_minutes: 20
-  stale_action: RETURN_TASK_TO_COORDINATOR
+  stale_action: RETURN_JOB_TO_COORDINATOR
 
-status_files:
-  global_status: TaskStatus.md
-  catalogue: repository-catalogue.md
-  automation_policy: governance/automation-policy.md
-  execution_model: automation/execution-model.md
-  task_contract: automation/task-contract.md
+registered_workflows:
+  - workflows/WF-001-controller-traceability/workflow.yaml
+  - workflows/WF-002-source-artifact-sync/workflow.yaml
