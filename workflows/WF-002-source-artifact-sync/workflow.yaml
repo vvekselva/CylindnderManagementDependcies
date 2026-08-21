@@ -1,0 +1,191 @@
+workflow:
+  id: WF-002-source-artifact-sync
+  name: Source to Artifact Synchronization
+  purpose: >-
+    Detect changes in CylinderManagement after the last verified source commit,
+    decide whether each change affects a controlled artifact, refresh stale artifacts,
+    and notify the user when an exposed API changes or the impact cannot be safely confirmed.
+
+  target_repository: vvekselva/CylinderManagement
+  control_repository: vvekselva/CylindnderManagementDependcies
+
+  trigger:
+    modes:
+      - SOURCE_CHANGE_CHECK
+      - MANUAL_RUN
+      - BEFORE_TRACEABILITY_USE
+    description: >-
+      This workflow is intended to run whenever the automation checks for newer
+      CylinderManagement changes or before a controlled artifact is relied upon.
+
+  worker_model:
+    coordinator_is_separate: true
+    worker_lanes: 10
+    max_parallel_jobs: 10
+
+  logging:
+    policy: governance/automation-log-policy.md
+    shared_log: logs/automation-log.md
+    story_output: logs/automation-story.md
+
+  synchronization:
+    policy: governance/source-artifact-sync-policy.md
+    register: sync/source-artifact-sync-register.yaml
+
+  jobs:
+    - id: JOB-001
+      name: Read Last Verified Source Commit
+      needs: []
+      parallel: false
+      actions:
+        - id: ACT-001
+          instruction: Read the last verified CylinderManagement source commit from the sync register.
+          expected_result: The automation knows the source version represented by the current artifacts.
+        - id: ACT-002
+          instruction: Read the newest source commit that must be checked.
+          expected_result: The automation knows the comparison end point.
+      completion_check: Both comparison commits are known.
+
+    - id: JOB-002
+      name: Find Source Changes
+      needs:
+        - JOB-001
+      parallel: false
+      actions:
+        - id: ACT-001
+          instruction: Compare the last verified source commit with the newest source commit.
+          expected_result: Added, changed, renamed and deleted source files are identified.
+        - id: ACT-002
+          instruction: Map changed files to registered components where possible.
+          expected_result: The automation knows which controlled artifacts may be affected.
+      completion_check: Every source change has been placed into the impact-check queue.
+
+    - id: JOB-003
+      name: Classify Change Impact In Parallel
+      needs:
+        - JOB-002
+      parallel: true
+      strategy:
+        type: QUEUE_FAN_OUT
+        item_source: changed_source_components
+        max_parallel: 10
+        worker_ownership: ONE_CHANGED_COMPONENT_PER_WORK_ITEM
+      actions:
+        - id: ACT-001
+          instruction: Read the changed source component and its previous version.
+          expected_result: The worker understands what actually changed.
+        - id: ACT-002
+          instruction: Check whether an exposed controller endpoint, HTTP method, URL, request contract, response contract or access rule changed.
+          expected_result: Caller-visible API impact is identified.
+        - id: ACT-003
+          instruction: If the exposed API is unchanged, check whether the dependency path recorded in the artifact changed.
+          expected_result: Internal traceability impact is identified.
+        - id: ACT-004
+          instruction: Classify the change using the synchronization policy.
+          expected_result: One of INTERNAL_ONLY, TRACE_CHANGED, EXPOSED_API_CHANGED, COMPONENT_ADDED_OR_REMOVED or IMPACT_NOT_CONFIRMED is recorded.
+        - id: ACT-005
+          instruction: Explain the classification in simple English and identify the affected artifact.
+          expected_result: The coordinator can understand why action is or is not required.
+      completion_check: Every changed component has a classification supported by evidence.
+
+    - id: JOB-004
+      name: Decide Required Response
+      needs:
+        - JOB-003
+      parallel: false
+      actions:
+        - id: ACT-001
+          instruction: Leave INTERNAL_ONLY components unchanged when their controlled artifact is still correct.
+          expected_result: Harmless implementation changes do not create unnecessary artifact churn.
+        - id: ACT-002
+          instruction: Queue TRACE_CHANGED components for artifact refresh without a normal user alert.
+          expected_result: Internal architecture changes are reflected in traceability artifacts.
+        - id: ACT-003
+          instruction: Queue EXPOSED_API_CHANGED and COMPONENT_ADDED_OR_REMOVED items for artifact refresh and user notification.
+          expected_result: Caller-visible changes are brought to the user's attention.
+        - id: ACT-004
+          instruction: Mark IMPACT_NOT_CONFIRMED items REVIEW_REQUIRED and notify the user with a plain-English explanation.
+          expected_result: Uncertain changes are never silently accepted.
+      completion_check: Every changed component has a clear response decision.
+
+    - id: JOB-005
+      name: Refresh Affected Artifacts
+      needs:
+        - JOB-004
+      parallel: true
+      strategy:
+        type: QUEUE_FAN_OUT
+        item_source: artifact_refresh_queue
+        max_parallel: 10
+      actions:
+        - id: ACT-001
+          instruction: Re-read the affected source component using the new source baseline.
+          expected_result: The worker works from the current source version.
+        - id: ACT-002
+          instruction: Update only the artifact sections made stale by the source change.
+          expected_result: The artifact describes the new source accurately.
+        - id: ACT-003
+          instruction: Verify the updated artifact against the source.
+          expected_result: The artifact can be marked IN_SYNC.
+      completion_check: Every refreshable affected artifact is verified against the new source commit.
+
+    - id: JOB-006
+      name: Notify User When Required
+      needs:
+        - JOB-004
+      parallel: false
+      actions:
+        - id: ACT-001
+          instruction: Create a simple-English notification for every caller-visible API change, added or removed exposed component, or impact that cannot be confirmed.
+          expected_result: The user can understand what changed and why attention is needed without reading a Git diff.
+        - id: ACT-002
+          instruction: State which artifacts are affected and whether the automation already refreshed them or needs a decision.
+          expected_result: The notification includes the current synchronization state and next action.
+      completion_check: Every notification-required change has a user-facing explanation.
+
+    - id: JOB-007
+      name: Update Sync Register
+      needs:
+        - JOB-005
+        - JOB-006
+      parallel: false
+      actions:
+        - id: ACT-001
+          instruction: Record the new source commit, classification and synchronization state for each controlled component.
+          expected_result: The register represents the current source-to-artifact relationship.
+        - id: ACT-002
+          instruction: Keep REVIEW_REQUIRED items visibly unresolved until a decision or later run resolves them.
+          expected_result: Uncertainty is not hidden by the synchronization update.
+      completion_check: The sync register reflects all checked changes.
+
+    - id: JOB-008
+      name: Update Human Log And Story
+      needs:
+        - JOB-007
+      parallel: false
+      actions:
+        - id: ACT-001
+          instruction: Record a plain-English synchronization event in the shared automation log.
+          expected_result: The change check is understandable to a human reader.
+        - id: ACT-002
+          instruction: Rebuild the automation story from the log.
+          expected_result: The overall story includes the latest source synchronization result.
+      completion_check: The log and story include all important synchronization outcomes.
+
+  classification_response:
+    INTERNAL_ONLY:
+      notify_user: false
+      refresh_artifact: false
+    TRACE_CHANGED:
+      notify_user: false
+      refresh_artifact: true
+    EXPOSED_API_CHANGED:
+      notify_user: true
+      refresh_artifact: true
+    COMPONENT_ADDED_OR_REMOVED:
+      notify_user: true
+      refresh_artifact: true
+    IMPACT_NOT_CONFIRMED:
+      notify_user: true
+      refresh_artifact: false
+      review_required: true
