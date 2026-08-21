@@ -9,6 +9,7 @@
 | Coordinator | CONFIGURED |
 | Worker lanes | 10 |
 | Maximum independent parallel jobs | 10 |
+| Worker service lifecycle | CONFIGURED - `init() -> service() -> close()` |
 | Worker operating guide | CONFIGURED |
 | Human-readable automation log | CONFIGURED |
 | Source-to-artifact synchronization | CONFIGURED |
@@ -19,18 +20,55 @@
 
 The coordinator is a control-plane role and does not consume a worker slot.
 
-| Lane | State | Workflow | Job | Run ID | Attempt | Resource Lock | Last Evidence |
-|---|---|---|---|---|---:|---|---|
-| LANE-01 | IDLE | - | - | - | 0 | - | - |
-| LANE-02 | IDLE | - | - | - | 0 | - | - |
-| LANE-03 | IDLE | - | - | - | 0 | - | - |
-| LANE-04 | IDLE | - | - | - | 0 | - | - |
-| LANE-05 | IDLE | - | - | - | 0 | - | - |
-| LANE-06 | IDLE | - | - | - | 0 | - | - |
-| LANE-07 | IDLE | - | - | - | 0 | - | - |
-| LANE-08 | IDLE | - | - | - | 0 | - | - |
-| LANE-09 | IDLE | - | - | - | 0 | - | - |
-| LANE-10 | IDLE | - | - | - | 0 | - | - |
+Every active worker Job attempt must pass through INIT, SERVICE and CLOSE. A worker is not released to another Job until CLOSE has completed and its human-readable log event is closed.
+
+| Lane | State | Lifecycle Phase | Workflow | Job | Run ID | Attempt | Log State |
+|---|---|---|---|---|---|---:|---|
+| LANE-01 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-02 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-03 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-04 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-05 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-06 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-07 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-08 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-09 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+| LANE-10 | IDLE | - | - | - | - | 0 | NOT_OPENED |
+
+## Worker Lifecycle
+
+```text
+READY JOB
+    |
+    v
+init()
+    |
+    +-- confirm Job and source baseline
+    +-- explain what is about to happen
+    +-- open human-readable log
+    |
+    v
+service()
+    |
+    +-- execute the assigned Actions
+    +-- collect evidence
+    +-- report meaningful progress
+    |
+    v
+close()
+    |
+    +-- say completed / partial / blocked / failed
+    +-- explain blocker and alternatives when needed
+    +-- state the next action
+    +-- close human-readable log
+    |
+    v
+COORDINATOR VERIFICATION
+```
+
+If `init()` cannot find required information, the worker records `BLOCKED_BEFORE_SERVICE`, skips `service()`, executes `close()`, and closes the log.
+
+If a worker becomes stale after opening a log, the coordinator creates a recovery close record with result `RESULT_NOT_CONFIRMED`.
 
 ## Automation Framework Status
 
@@ -39,16 +77,17 @@ The coordinator is a control-plane role and does not consume a worker slot.
 | Repository catalogue | CONFIGURED | Authoritative file list defined in `repository-catalogue.md`. |
 | Catalogue gate | CONFIGURED | GitHub Actions gate compares catalogue with tracked files. |
 | Automation governance | CONFIGURED | Overall rules defined in `governance/automation-policy.md`. |
-| Worker operating guide | CONFIGURED | Workflow -> Job -> Action execution rules defined in `governance/worker-operating-guide.md`. |
-| Human-readable logging policy | CONFIGURED | Plain-English activity and blocker format defined in `governance/automation-log-policy.md`. |
-| Source-artifact sync policy | CONFIGURED | Change impact and notification rules defined in `governance/source-artifact-sync-policy.md`. |
-| Worker configuration | CONFIGURED | Ten lanes defined in `automation/automation-config.yaml`. |
-| Execution model | CONFIGURED | Scheduling, parallelism, locks and recovery documented. |
-| Workflow contract | CONFIGURED | Standard Workflow -> Job -> Action structure defined. |
-| Task contract | CONFIGURED | Standard task fields and lifecycle defined. |
-| Automation log | CONFIGURED | Coordinator-owned shared log created at `logs/automation-log.md`. |
+| Worker service contract | CONFIGURED | Mandatory lifecycle defined in `automation/worker-service-contract.md`. |
+| Worker operating guide | CONFIGURED | Workflow -> Job -> init/service/close -> Action execution rules defined. |
+| Human-readable logging policy | CONFIGURED | INIT opens the event; CLOSE records result and closes it. |
+| Source-artifact sync policy | CONFIGURED | Change impact and notification rules defined. |
+| Worker configuration | CONFIGURED | Ten lanes and lifecycle enforcement defined in `automation/automation-config.yaml`. |
+| Execution model | CONFIGURED | Coordinator, lanes, lifecycle, recovery and verification documented. |
+| Workflow contract | CONFIGURED | Every Job inherits `init() -> service() -> close()`. |
+| Task contract | CONFIGURED | Job claims and retries include lifecycle/log states. |
+| Automation log | CONFIGURED | Coordinator-owned shared log at `logs/automation-log.md`. |
 | Story generator | CONFIGURED | `automation/generate-automation-story.py` produces `logs/automation-story.md`. |
-| Source-artifact sync register | CONFIGURED | Machine-readable mapping created at `sync/source-artifact-sync-register.yaml`. |
+| Source-artifact sync register | CONFIGURED | Machine-readable mapping at `sync/source-artifact-sync-register.yaml`. |
 
 ## Registered Workflows
 
@@ -57,21 +96,24 @@ The coordinator is a control-plane role and does not consume a worker slot.
 | `WF-001-controller-traceability` | Discover all exposed controllers/endpoints and trace them to their final dependencies. | DEFINED_NOT_STARTED | JOB-001 Freeze Source Baseline |
 | `WF-002-source-artifact-sync` | Detect later source changes, classify impact, refresh artifacts and notify when required. | DEFINED_NOT_STARTED | Wait for initial traceability baseline |
 
+All Jobs in both Workflows automatically inherit the Worker Service Lifecycle from the global contract.
+
 ## Scheduling State
 
 ```text
 Coordinator: READY_FOR_WF_001_BASELINE
 Ready queue: 0
 Active workers: 0 / 10
+Open worker logs: 0
 Blocked jobs: 0
 Failed jobs: 0
 Verified jobs: 0
 Closed jobs: 0
 ```
 
-No worker has started the controller traceability workflow yet. The framework is prepared, but the first source baseline has not been frozen.
+No worker has started the Controller Traceability workflow yet.
 
-## Lifecycle
+## Job Result Lifecycle
 
 ```text
 YET_TO_DO -> READY -> IN_PROGRESS -> COMPLETED -> VERIFIED -> CLOSED
@@ -83,14 +125,14 @@ YET_TO_DO -> READY -> IN_PROGRESS -> COMPLETED -> VERIFIED -> CLOSED
                          +-> FAILED -> RETRY / REPLAN / STOP
 ```
 
-## Change Impact States
+## Source Change Impact States
 
 ```text
 INTERNAL_ONLY
-    -> log only; no controller artifact update when the recorded trace is unchanged
+    -> log only; no artifact update when the recorded trace remains correct
 
 TRACE_CHANGED
-    -> refresh the affected artifact; normal user notification not required
+    -> refresh the affected artifact
 
 EXPOSED_API_CHANGED
     -> notify user and refresh affected artifacts
@@ -114,4 +156,4 @@ IMPACT_NOT_CONFIRMED
 
 ## Next Control Step
 
-Start `WF-001-controller-traceability` with `JOB-001 Freeze Source Baseline`. After the baseline is recorded, controller discovery and endpoint discovery run serially. The controller trace queue can then fan out across up to 10 worker lanes.
+Start `WF-001-controller-traceability` with `JOB-001 Freeze Source Baseline`. Its assigned worker will first execute `init()`, then `service()`, then `close()`. After the baseline is established, controller discovery and endpoint discovery can proceed, followed by the ten-lane traceability fan-out.
