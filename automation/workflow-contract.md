@@ -20,20 +20,37 @@ WORKFLOW
         +-- ACTION
 ```
 
+Every Job is executed through the mandatory Worker Service Lifecycle:
+
+```text
+JOB
+ |
+ +-- init()
+ |
+ +-- service()
+ |      +-- ACTION
+ |      +-- ACTION
+ |      +-- ACTION
+ |
+ +-- close()
+```
+
+The lifecycle is defined in `automation/worker-service-contract.md`.
+
 ## Workflow
 
-A workflow describes one complete objective.
+A Workflow describes one complete objective.
 
-Every workflow must define:
+Every Workflow must define:
 
-- workflow ID;
-- workflow name;
+- Workflow ID;
+- Workflow name;
 - purpose;
 - target repository;
 - source baseline rule;
 - trigger;
-- jobs;
-- dependencies between jobs;
+- Jobs;
+- dependencies between Jobs;
 - maximum parallel workers;
 - completion gates;
 - expected artifacts;
@@ -42,38 +59,55 @@ Every workflow must define:
 
 ## Job
 
-A job is one independently assignable unit inside the workflow.
+A Job is one independently assignable unit inside the Workflow.
 
-One worker owns one job at a time.
+One worker owns one Job attempt at a time.
 
-Every job must define:
+Every Job must define:
 
-- job ID;
-- job name;
+- Job ID;
+- Job name;
 - purpose;
-- `needs` - jobs that must finish first;
+- `needs` - Jobs that must finish first;
 - whether it may run in parallel;
 - inputs;
-- actions;
+- Actions;
 - expected output;
 - completion check;
 - evidence required;
 - blocker rule;
 - status.
 
-A job must not start until every job listed under `needs` has satisfied its required completion state.
+A Job must not start until every Job listed under `needs` has satisfied its required completion state.
+
+### Worker lifecycle inheritance
+
+A Job does not need to repeat the full `init()`, `service()` and `close()` definitions.
+
+Unless a Workflow explicitly defines a stricter rule, every Job automatically inherits:
+
+```text
+worker_service_lifecycle:
+  contract: automation/worker-service-contract.md
+  phases:
+    - INIT
+    - SERVICE
+    - CLOSE
+```
+
+`service()` is the phase that executes the Job Actions.
 
 ## Action
 
-An action is one clear step inside a job.
+An Action is one clear step inside a Job.
 
-Every action must define:
+Every Action must define:
 
-- action ID;
+- Action ID;
 - instruction;
 - expected result;
 - what evidence should be captured;
-- what condition means the action cannot continue safely.
+- what condition means the Action cannot continue safely.
 
 Actions should be written in simple English.
 
@@ -84,6 +118,42 @@ Bad:
 Good:
 
 > Follow the method call to the next application component. Continue until the final database, external service, file or other dependency can be proved from the source.
+
+## Standard Job attempt sequence
+
+```text
+Coordinator assigns READY Job
+          |
+          v
+        init()
+          |
+          +-- confirm Job and baseline
+          +-- explain planned work
+          +-- open human-readable log
+          |
+          v
+       service()
+          |
+          +-- execute Actions
+          +-- collect evidence
+          +-- stop safely if blocked
+          |
+          v
+        close()
+          |
+          +-- state completed/not completed
+          +-- explain blocker/failure if present
+          +-- record outputs/evidence
+          +-- state next action
+          +-- close log
+          |
+          v
+Coordinator evaluates result/gate
+```
+
+If `init()` cannot safely initialize the Job, it returns `BLOCKED_BEFORE_SERVICE`. `service()` is skipped and `close()` records the blocker and closes the log.
+
+Once `init()` opens a run, `close()` must execute exactly once.
 
 ## Standard workflow states
 
@@ -112,15 +182,15 @@ VERIFIED
 CLOSED
 ```
 
+Worker lifecycle states such as `INITIALIZED`, `BLOCKED_BEFORE_SERVICE`, log `OPEN`, and log `CLOSED` belong to one Job attempt and do not replace the Workflow states above.
+
 ## Parallel work
 
-A workflow may use up to 10 worker lanes.
+A Workflow may use up to 10 worker lanes.
 
-Parallel work is allowed only when the jobs are independent.
+Parallel work is allowed only when Jobs are independent.
 
-Example:
-
-After controller discovery is complete, 10 different controller-tracing jobs may run at the same time because each worker owns a different controller.
+After controller discovery is complete, up to 10 different controller-tracing Job items may run at the same time because each worker owns a different controller.
 
 The following work should normally be serialized:
 
@@ -131,11 +201,9 @@ The following work should normally be serialized:
 - production database writes;
 - final integration into a shared branch.
 
-## Fan-out job
+## Fan-out Job
 
-A workflow may define a queue-based fan-out job.
-
-Example:
+A Workflow may define a queue-based fan-out Job.
 
 ```text
 Discovered Controllers
@@ -143,34 +211,35 @@ Discovered Controllers
        v
 Controller Work Queue
        |
-       +--> LANE-01
-       +--> LANE-02
-       +--> LANE-03
+       +--> LANE-01 -> init -> service -> close
+       +--> LANE-02 -> init -> service -> close
+       +--> LANE-03 -> init -> service -> close
        ...
-       +--> LANE-10
+       +--> LANE-10 -> init -> service -> close
 ```
 
-When a lane finishes, the coordinator gives it the next READY item from the queue. The system does not need to wait for all ten lanes before assigning the next item.
+When a lane finishes and its close() record has been accepted by the coordinator, the lane may receive the next READY item.
 
 ## Blocker handling
 
-When a worker becomes blocked:
+When a worker becomes blocked during `service()`:
 
 1. stop at the last point that can be proved;
 2. do not guess;
 3. explain the blocker in simple English;
 4. identify the information or decision needed;
 5. list reasonable alternatives;
-6. return the blocker to the coordinator;
-7. let the coordinator or designated decision owner decide what happens next.
+6. call `close()`;
+7. return the blocker to the coordinator;
+8. let the coordinator or designated decision owner decide what happens next.
 
-If a workflow already defines an approved fallback, the worker may use it and must record that choice in the automation log.
+If a Workflow already defines an approved fallback, the worker may use it and must record that choice.
 
 ## Evidence rule
 
-A job result is not considered verified only because a worker says it is complete.
+A Job result is not considered verified only because a worker says it is complete.
 
-The job must provide the evidence required by the workflow.
+The Job must provide the evidence required by the Workflow.
 
 For source traceability this can include:
 
@@ -185,15 +254,13 @@ For source traceability this can include:
 
 Worker-owned outputs may be generated in parallel.
 
-Coordinator-owned outputs are written only after worker results have been collected.
-
-This is the standard pattern:
+Coordinator-owned outputs are written only after worker results and CLOSE records have been collected.
 
 ```text
-Workers produce independent findings
+Workers run init/service/close independently
              |
              v
-Coordinator collects findings
+Coordinator collects closed worker results
              |
              +--> updates shared log
              +--> updates TaskStatus
@@ -202,8 +269,8 @@ Coordinator collects findings
              +--> runs final gate
 ```
 
-## Machine-readable workflow files
+## Machine-readable Workflow files
 
-Concrete workflows should be defined under `workflows/<workflow-id>/workflow.yaml`.
+Concrete Workflows are defined under `workflows/<workflow-id>/workflow.yaml`.
 
 The Markdown files explain the rules to humans. The YAML files provide the structured instructions used by automation.
