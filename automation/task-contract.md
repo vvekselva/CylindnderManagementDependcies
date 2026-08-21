@@ -1,108 +1,160 @@
 # Automation Task Contract
 
-Every executable automation task must follow this contract so the coordinator can schedule it without guessing.
+## Purpose
 
-## Required Task Fields
+A **Task** is a planning or requested outcome. It is not the unit that a worker directly executes.
+
+The execution hierarchy is:
+
+```text
+TASK / REQUEST
+      |
+      v
+WORKFLOW
+      |
+      +-- JOB
+      |    |
+      |    +-- ACTION
+      |    +-- ACTION
+      |
+      +-- JOB
+           |
+           +-- ACTION
+```
+
+Workers are assigned **Jobs**, not raw Tasks.
+
+This distinction prevents workers from interpreting a large request differently.
+
+## Task Fields
+
+A planning task should define:
 
 ```text
 Task ID:
 Task Name:
-Workflow ID:
+Purpose:
 Priority:
 Status:
 Target Repository:
-Target Branch Strategy:
+Expected Outcome:
+Related Workflow IDs:
 Dependencies:
-Required Resource Locks:
-Inputs:
-Execution Instructions:
-Expected Outputs:
-Quality Gate:
-Evidence Required:
-Retry Policy:
-Failure Action:
-Last Run ID:
-Assigned Lane:
-Attempt:
-Started At:
-Completed At:
-Result:
+Decision Owner:
+Completion Meaning:
+Created At:
+Closed At:
 ```
 
-## Allowed Status Values
-
-- `YET_TO_DO` — defined but not yet eligible to run.
-- `READY` — all dependencies are satisfied and the task may be scheduled.
-- `IN_PROGRESS` — currently owned by one worker lane.
-- `FAILED` — latest execution failed; retry decision pending or permitted.
-- `BLOCKED` — cannot proceed without an external or recovery action.
-- `VERIFIED` — execution and quality gate passed.
-- `CLOSED` — verified result accepted and no further work remains.
-
-## Dependency Rules
-
-Dependencies must reference explicit IDs. Examples:
+## Example
 
 ```text
-DEP-DB-001
-T-DB-003
-GATE-BUILD-001
+Task ID: T-001
+Task Name: Build Controller Traceability
+Purpose: Understand every exposed controller and its final dependencies.
+Related Workflow: WF-001-controller-traceability
+Completion Meaning: Every exposed endpoint has a traceability result and coverage is 100%.
 ```
 
-A task with unresolved dependencies may not be marked `READY`.
+The task itself is not assigned to Lane 1 or Lane 2.
 
-## Worker Claim Fields
+The workflow breaks the task into Jobs, and the coordinator assigns those Jobs to workers.
 
-When a worker claims a task, the coordinator must fill:
+## Task Status Values
+
+Use:
+
+- `YET_TO_DO` - defined but not scheduled;
+- `PLANNED` - workflow exists but execution has not started;
+- `IN_PROGRESS` - at least one related workflow is running;
+- `BLOCKED` - the task cannot progress because a workflow-level blocker requires a decision;
+- `PARTIAL` - useful outcome exists but the completion meaning has not been fully met;
+- `VERIFIED` - all required workflows and gates produced the expected outcome;
+- `CLOSED` - the verified outcome has been accepted and no planned work remains.
+
+## Job Contract
+
+The detailed executable structure is defined in `automation/workflow-contract.md`.
+
+Every Job must define:
+
+- Job ID;
+- `needs` dependencies;
+- whether it can run in parallel;
+- input;
+- Actions;
+- expected output;
+- completion check;
+- evidence required;
+- blocker behaviour.
+
+## Worker Assignment
+
+The coordinator assigns a worker lane to a Job.
+
+The Job claim records:
 
 ```text
+Workflow ID:
+Job ID:
 Assigned Lane: LANE-01 .. LANE-10
-Last Run ID: RUN-<timestamp-or-sequence>
-Attempt: <number>
-Started At: <ISO-8601 timestamp>
-Status: IN_PROGRESS
+Run ID:
+Attempt:
+Source Baseline:
+Started At:
+Required Locks:
+Expected Evidence:
 ```
 
-## Completion Evidence
+A worker must not claim another Job until the current Job is released back to the coordinator.
 
-A task may not become `VERIFIED` unless evidence is supplied. Evidence may include:
+## Dependencies
 
-- commit SHA;
-- source branch;
-- build log/reference;
+Dependencies must use explicit IDs.
+
+Examples:
+
+```text
+TASK: T-001
+WORKFLOW: WF-001-controller-traceability
+JOB: JOB-003
+GATE: GATE-TRC-001
+DEPENDENCY: DEP-DB-001
+```
+
+The coordinator must not mark a Job READY while its required dependencies are unresolved.
+
+## Evidence
+
+A Job can become VERIFIED only when the workflow's required evidence exists.
+
+Evidence can include:
+
+- source commit SHA;
+- source file and method;
+- generated artifact path;
+- build result;
 - unit-test result;
 - integration-test result;
 - Flyway result;
 - database validation result;
-- generated artifact path;
 - deployment verification result;
 - quality-gate result.
 
-## Task Branch Rule
+## Source Branch Rule
 
-Source changes should use:
+When a Job changes source code, its normal source branch pattern is:
 
 ```text
-automation/{run_id}/{task_id}
+automation/{run_id}/{job_id}
 ```
 
 Workers must not write directly to `main` unless a specifically approved governance exception exists.
 
-## Parallel Safety Declaration
-
-Each task must identify required resource locks. Use `NONE` only when the task is demonstrably independent.
-
-Common locks:
-
-```text
-PRODUCTION_DATABASE_WRITE
-MAIN_BRANCH_WRITE
-RELEASE_OPERATION
-SAME_FILE_SET:<logical-file-set>
-```
-
-The coordinator must reject a task assignment when its required lock is already held.
-
 ## Retry Rule
 
-The default automatic retry limit is two attempts. A workflow may define a lower limit for unsafe or non-idempotent operations. A third execution must not be started automatically after the configured limit; the task becomes `BLOCKED` and requires an explicit recovery decision.
+Automatic retry is controlled by `automation/automation-config.yaml` and the workflow.
+
+Repeating the same failed action indefinitely is not allowed.
+
+When the safe retry limit is exhausted, the Job must move to `WAITING_FOR_DECISION` and explain the real problem and available alternatives in simple English.
