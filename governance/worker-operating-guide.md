@@ -4,9 +4,9 @@
 
 This file tells every automation worker how it must work.
 
-The goal is simple: every worker must follow the same order, use the same meanings for status, explain problems in simple English, and never guess when it cannot prove something.
+Every worker follows the same hierarchy, the same lifecycle, the same status meanings, and the same plain-English blocker rules. Workers must never guess when they cannot prove something.
 
-This repository is the control repository. The workers perform work against `vvekselva/CylinderManagement` only when a registered workflow and job tell them to do so.
+The workers perform work against `vvekselva/CylinderManagement` only when a registered Workflow and Job tell them to do so.
 
 ## Automation hierarchy
 
@@ -24,102 +24,121 @@ AUTOMATION PROGRAM
                 +-- ACTION
 ```
 
-### Workflow
+A Workflow is the complete objective. A Job is one independently assignable unit of work. An Action is one clear step inside the Job.
 
-A workflow is a complete business or engineering objective.
+A worker receives one Job at a time. It must not invent another Job for itself.
+
+## Worker Service Lifecycle
+
+Every assigned Job attempt must use the lifecycle defined in `automation/worker-service-contract.md`:
+
+```text
+Receive READY Job
+      |
+      v
+init()
+      |
+      +--> identify the Job
+      +--> confirm source baseline and prerequisites
+      +--> explain what work is about to start
+      +--> open the human-readable activity log
+      |
+      v
+service()
+      |
+      +--> perform ACTION-01
+      +--> perform ACTION-02
+      +--> perform ACTION-03 ...
+      +--> collect meaningful evidence
+      |
+      v
+close()
+      |
+      +--> state whether work completed or not
+      +--> explain blockers/failures in simple English
+      +--> record outputs and evidence
+      +--> state what happens next
+      +--> close the activity log
+      |
+      v
+Return result to Coordinator
+```
+
+Once `init()` opens a run, `close()` is mandatory exactly once. A worker must call `close()` even when it is blocked, fails, completes only part of the work, or is stopped.
+
+## init() - before actual work starts
+
+`init()` is preparation. It does not perform the actual Job.
+
+Before starting `service()`, the worker must confirm:
+
+- Workflow ID and Job ID;
+- Worker Lane;
+- Run ID and attempt number;
+- exact source repository;
+- exact source commit or baseline;
+- dependencies required by the Job;
+- required resource locks;
+- Actions that will be performed;
+- expected output;
+- completion check;
+- logging rules.
+
+The worker must then explain in simple English what it is about to do.
 
 Example:
 
-`WF-001 Controller Traceability`
+> LANE-04 is starting `Trace VehicleTripController`. It will examine the approved CylinderManagement source baseline, identify every exposed endpoint in this Controller, follow each endpoint through the application, and record the final dependency that can be proved. The expected output is one controller traceability artifact.
 
-Its purpose is to understand every exposed controller and follow each exposed endpoint through the application to its final dependency.
+If any required information is missing, `init()` must return `BLOCKED_BEFORE_SERVICE`. The worker must not guess. It skips `service()` and goes directly to `close()`.
 
-### Job
+## service() - perform the assigned work
 
-A job is one independent unit of work inside a workflow.
+`service()` is where the worker performs the actual Job Actions.
 
-A job may depend on another job.
+The worker performs the Actions in the order defined by the Job unless the Workflow explicitly permits another order.
 
-Example:
+A worker must not use `service()` to:
 
-- Discover all exposed controllers.
-- Trace one controller.
-- Consolidate all controller traces.
+- invent new work;
+- change the architecture without approval;
+- change a public API without approval;
+- choose a new database strategy without approval;
+- perform unrelated refactoring or cleanup;
+- hide unresolved findings.
 
-A worker receives one job at a time.
+During `service()`, meaningful progress may be reported in plain English. Low-level technical noise is evidence, not the main human-readable explanation.
 
-### Action
+If the worker cannot continue safely, it stops at the last proven point and returns `BLOCKED` or `PARTIAL`. If an attempted Action produces the wrong result, it returns `FAILED`.
 
-An action is one clear step inside a job.
+## close() - finish the attempt and close the log
 
-Example actions for a controller-tracing job:
+`close()` always runs after `init()`.
 
-1. Read the controller.
-2. List its exposed endpoints.
-3. Follow each endpoint to the next application component.
-4. Continue until the final dependency is found.
-5. Record evidence.
-6. Report the result.
+It must record:
 
-A worker must perform the actions in the order defined by the job unless the workflow explicitly says that actions may run in parallel.
+- whether `init()` succeeded;
+- whether `service()` ran;
+- Actions completed;
+- Actions not completed;
+- outputs produced;
+- evidence produced;
+- blocker/failure explanation, if any;
+- alternatives requiring a decision, if any;
+- final worker result;
+- next expected action;
+- end time;
+- log state `CLOSED`.
+
+A worker is not released to another Job until its current Job attempt has been closed.
 
 ## Worker pool
 
-There are 10 worker lanes:
+There are 10 worker lanes: `LANE-01` through `LANE-10`.
 
-`LANE-01` through `LANE-10`.
+The coordinator is separate from the 10 workers. The coordinator chooses which READY Job is given to which free worker.
 
-The coordinator is separate from the 10 workers.
-
-The coordinator chooses which READY job is given to which free worker.
-
-A worker must not invent a new job for itself.
-
-## What a worker must do before starting
-
-Before starting a job, the worker must confirm:
-
-- the workflow ID;
-- the job ID;
-- the exact source repository;
-- the exact source commit or baseline being examined;
-- the dependencies required by the job;
-- whether another job must finish first;
-- the expected output;
-- the completion check;
-- the logging rules.
-
-If any required item is missing, the worker must not guess. It must report the missing information as a blocker.
-
-## Normal worker sequence
-
-```text
-Receive READY job
-      |
-      v
-Read workflow
-      |
-      v
-Read job and actions
-      |
-      v
-Check dependencies and source baseline
-      |
-      v
-Execute actions in order
-      |
-      v
-Record findings and evidence
-      |
-      v
-Run completion checks
-      |
-      +---- PASS ----> COMPLETED / VERIFIED
-      |
-      +---- CANNOT CONTINUE ----> BLOCKED
-      |
-      +---- WORK EXECUTED BUT RESULT WRONG ----> FAILED
-```
+Each lane may own only one active Job attempt at a time.
 
 ## Difference between BLOCKED and FAILED
 
@@ -129,7 +148,7 @@ Example:
 
 > The worker reached `TripQueryBuilder`, but the final query is created from configuration that is not present in the repository. The database object cannot be confirmed from the available source. A decision is needed on where that configuration should come from.
 
-`FAILED` means the worker was able to perform the requested action, but the action produced an incorrect result.
+`FAILED` means the worker was able to perform the requested Action, but the Action produced an incorrect result.
 
 Example:
 
@@ -141,15 +160,15 @@ These states must not be mixed together.
 
 Workers must explain blockers in simple English.
 
-Do not write only technical messages such as:
+Do not write only:
 
 `NullPointerException in X.java:214`
 
 Instead write:
 
-> I was trying to trace the endpoint from the controller to the database. The service calls another component, but the source code for that component is not available in the current repository. Because of that, I cannot confirm where the request finally goes. Continuing would require guessing, so I stopped here.
+> I was trying to trace the endpoint from the Controller to the database. The Service calls another component, but the source code for that component is not available in the current repository. Because of that, I cannot confirm where the request finally goes. Continuing would require guessing, so I stopped here.
 
-The worker may include the technical error or file name as evidence, but the main explanation must be understandable without reading a stack trace.
+The technical error or file name may be added as evidence.
 
 Every blocker report must answer:
 
@@ -160,15 +179,11 @@ Every blocker report must answer:
 5. What information or decision would remove the blocker?
 6. What alternatives can be considered?
 
-The worker may suggest alternatives, but it must not change the workflow, architecture, database strategy or public API on its own unless that alternative was already approved in the workflow.
+The worker may suggest alternatives, but it must not change the Workflow, architecture, database strategy or public API on its own unless that alternative was already approved in the Workflow.
 
 ## No guessing rule
 
 When the worker cannot prove a fact, it must say `NOT YET CONFIRMED` or `UNRESOLVED`.
-
-It must never convert a likely answer into a confirmed answer.
-
-Example:
 
 Bad:
 
@@ -176,11 +191,11 @@ Bad:
 
 Good:
 
-> The repository name suggests vehicle-trip data, but the final query is created elsewhere. The table is therefore not yet confirmed. The trace is recorded up to the last component that could be proved.
+> The repository name suggests vehicle-trip data, but the final query is created elsewhere. The table is not yet confirmed. The trace is recorded up to the last component that could be proved.
 
 ## Shared-file rule
 
-Workers should avoid editing shared control files directly while other workers are active.
+Workers do not directly edit shared control files while parallel workers are active.
 
 The coordinator owns shared files such as:
 
@@ -190,16 +205,12 @@ The coordinator owns shared files such as:
 - `sync/source-artifact-sync-register.yaml`;
 - consolidated traceability reports.
 
-Workers return their findings to the coordinator. The coordinator serializes shared-file updates so that 10 workers do not overwrite each other.
+Workers return their INIT record, SERVICE result and CLOSE record to the coordinator. The coordinator serializes shared-file updates.
 
 ## Completion rule
 
-A worker may mark a job complete only when:
+A worker may return `COMPLETED` only when every required Action was attempted, the expected result was produced, evidence exists, and the completion check passed.
 
-- every required action was attempted;
-- the required result was produced;
-- the result can be supported by evidence;
-- unresolved items are clearly recorded;
-- the completion check defined by the job has passed.
+If these conditions are not met, the result remains `PARTIAL`, `BLOCKED` or `FAILED` as appropriate.
 
-If these conditions are not met, the job remains PARTIAL, BLOCKED or FAILED as appropriate.
+The coordinator, not the worker, decides whether a completed result becomes `VERIFIED` and `CLOSED` at the Workflow level.
