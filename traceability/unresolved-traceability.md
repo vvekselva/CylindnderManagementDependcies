@@ -10,34 +10,23 @@ This artifact records endpoint paths whose final dependency has not yet been sou
 ## Current checkpoint
 
 - Total source-proved endpoint inventory: 134
-- Explicitly examined for final dependency: 12
+- Explicitly examined for final dependency: 13
 - COMPLETE: 12
-- UNRESOLVED: 0
-- Not yet examined: 122
+- UNRESOLVED: 1
+- Not yet examined: 121
 
-## Completed examined paths
+## Newly unresolved path
 
-| Endpoint | Concrete path | Final dependency evidence |
-|---|---|---|
-| GET `/search/cylinder/{searchText}` | `CylinderSearchServiceWithOwnershipModel` -> `CylinderGlobalSearchViewJpaDao.searchBySerial(...)` | `public.vw_cylinder_global_search` |
-| POST `/search/cylinder/ownership/by-state` | `CylinderCurrentOwnershipByStateSearchService` -> `CylinderGlobalSearchViewJpaDao.searchByStateNames(...)` | `public.vw_cylinder_global_search` |
-| POST `/search/cylinder/by-serial-and-state` | `CylinderCurrentOwnershipBySerialAndStateSearchService` -> `CylinderGlobalSearchViewJpaDao.searchBySerialAndStateNames(...)`; state validation -> `CylinderStateJpaDao.findByCylinderStateIn(...)` | `public.vw_cylinder_global_search`; `public.tbl_cylinder_states` |
-| GET `/search/customer/{searchText}` | `CustomerSearchService` -> `CustomerJpaDao.findByCustomerNameContainingIgnoreCase(...)` | `public.tbl_customer` |
-| GET `/search/product/{searchText}` | `ProductSearchService` -> `ProductJpaDao.findByProductNameContainingIgnoreCase(...)` | `public.tbl_product` |
-| GET `/search/addresstype/{searchText}` | `AddressTypeSearchService` -> `AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase(...)` | `public.tbl_address_type` |
-| POST `/search/cylinder/by-state` | `AvailableYardCylinderByStateSearchService` -> `YardInventoryLineJpaDao` query branches; identifier lookup via `CylinderIdentifierJpaDao` | `public.tbl_yard_inventory_line`, `public.tbl_cylinder`, `public.tbl_product`, `public.tbl_cylinder_states`, `public.tbl_cylinder_identifier` |
-| POST `/search/cylinder/on-vehicle` | `CylindersOnVehicleSearchServiceWithOwnershipModel` -> `CylinderLogisticsExecutionLineJpaDao.findActiveVehicleContents(...)`; identifier lookup via `CylinderIdentifierJpaDao` | `public.tbl_cylinder_logistics_execution_line`, `public.tbl_cylinder_logistics_execution`, `public.tbl_vehicle_load`, `public.tbl_cylinder`, `public.tbl_product`, `public.tbl_cylinder_states`, `public.tbl_cylinder_identifier` |
-| POST `/search/cylinder/by-customer` | `CylindersByCustomerSearchServiceWithOwnershipModel` -> `CustomerHeldCylinderSearchJpaDao.findActiveCustomerHeldCylinders(...)` | `public.vw_cylinder_party_custody_with_identifiers`, `public.tbl_cylinder`, `public.tbl_product` |
-| POST `/search/cylinder/by-supplier` | `CylindersBySupplierSearchServiceWithOwnershipModel` -> `SupplierHeldCylinderSearchJpaDao.findActiveSupplierHeldCylinders(...)` | `public.vw_cylinder_party_custody_with_identifiers`, `public.tbl_cylinder`, `public.tbl_product` |
-| GET `/search/driver/{searchText}` | `DriverSearchService` -> `DriverJpaDao.findByDriverNameContainingIgnoreCase(...)` -> `DriverDo` | `public.tbl_driver` |
-| GET `/find/Driver-by-Id/{driverId}` | `DriverFetchByIdService` -> `DriverJpaDao.findById(...)` -> `DriverDo` | `public.tbl_driver` |
+| Endpoint | Last proven component | Missing evidence | Next investigation |
+|---|---|---|---|
+| GET `/search/address/customer-address/{customerId}` | `RestfulAddressServices` -> injected `customerAddressFetchByIDService` -> `searchWithText(...)` | Concrete Spring implementation; DAO/repository/query path; final persistence or external dependency | Resolve the bean implementation for `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CustomerAddressSearchResponseDto>` and trace it to its final dependency |
 
-## Unresolved paths
+The older `/search/address/customer/{customerId}` method in the same controller is commented out and is not treated as an active endpoint.
 
-None among the 12 endpoints examined so far.
+## Resolution accounting
 
-The remaining 122 endpoints are **NOT YET EXAMINED**, not UNRESOLVED. They must each be traced before Source Check completion and matrix construction can be unlocked.
+Twelve previously examined endpoints remain COMPLETE. The new address endpoint is deliberately UNRESOLVED because the source currently proves only the controller-to-service handoff. The remaining 121 endpoints are **NOT YET EXAMINED**, not UNRESOLVED.
 
 ## Next action
 
-Continue `WU-BL001-001` across the remaining 122 endpoints. For each endpoint, prove the concrete implementation, repository/query path and final dependency, or explicitly record UNRESOLVED/BLOCKED/FAILED with evidence. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
+Resolve `customerAddressFetchByIDService` to its concrete implementation, repository/query path and final dependency, then continue `WU-BL001-001` across the remaining 121 endpoints. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
