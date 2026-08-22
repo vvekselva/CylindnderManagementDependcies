@@ -24,7 +24,6 @@ Checkpoint: 6 exposed components, 11 endpoints, 56 candidates remaining.
 ---
 
 ## EVENT EVT-0009 - WI-0004 Second Source-Check Attempt Advanced Classification
-Time: `2026-08-22T10:00:00+05:30`
 Run: `RUN-WI0004-20260822-002`
 Status: `PARTIAL / CLOSED`
 Checkpoint: 11 exposed components, 17 endpoints, 51 candidates remaining.
@@ -86,29 +85,62 @@ Checkpoint: 40 exposed components, 106 proved caller-visible HTTP method/path co
 ## EVENT EVT-0017 - WI-0004 Tenth Source-Check Attempt Completed misc.web.controller Classification
 Run: `RUN-WI0004-20260822-010`
 Status: `PARTIAL / CLOSED`
+
+Five additional candidates were source-classified, including `RestfulAddressServices`. The checkpoint reached 45 exposed components, 114 method/path combinations, 4 NOT_EXPOSED candidates, and 13 candidates remaining.
+
+---
+
+## EVENT EVT-0018 - WI-0004 Eleventh Attempt Advanced web.rest Classification
+Run: `RUN-WI0004-20260822-011`
+Status: `PARTIAL / CLOSED`
+
+### What was found
+The attempt listed five `web.rest` classes. During the next Orchestrator verification, `RestfulCustomerServices` was found to have already been classified in an earlier checkpoint. The duplicate was therefore removed from cumulative accounting rather than silently counted twice.
+
+### Corrected checkpoint
+- 49 unique exposed components.
+- 118 unique caller-visible HTTP method/path combinations.
+- 4 NOT_EXPOSED candidates.
+- 9 unique candidates remaining.
+
+---
+
+## EVENT EVT-0019 - WI-0004 Twelfth Attempt Completed Source Candidate Classification
+Run: `RUN-WI0004-20260822-012`
+Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ### What was attempted
-The Orchestrator re-read the Backlog run-selection file, enforced `QG-DEP-001`, loaded the approved BL-001 Traceability Quality Gate, and continued only `WU-BL001-001 / WI-0004`.
+The Orchestrator re-read the Backlog run-selection file, selected only BL-001, confirmed the common dependency gate and approved BL-001 Quality Gate, and continued the already-approved `WU-BL001-001 / WI-0004` Source Repository Check.
 
 ### What was proved
-Five additional candidates were source-classified, all as exposed:
+All remaining unique candidates were classified from the frozen source:
 
-- `VehicleTripIngestionController` — `GET /addVechileTrip`, `POST /addVechileTrip`.
-- `WalkinSaleIngestionController` — `GET /walkin-sale`, `POST /walkin-sale`.
-- `YardAuditDashboardController` — `GET /yard-audit-dashboard`.
-- `YardStockCheckIngestionController` — `GET /ingestYardStockCheck`, `POST /ingestYardStockCheck`.
-- `RestfulAddressServices` — `GET /search/address/customer-address/{customerId}`; a legacy customer-address mapping is commented out and was not counted.
+- `RestfulCylinderServices` — EXPOSED, 7 active endpoints.
+- `RestfulDriverServices` — EXPOSED, 2 endpoints.
+- `RestfulProductCategoryServices` — EXPOSED, 1 endpoint.
+- `RestfulProductServices` — EXPOSED, 1 endpoint.
+- `RestfulProductUomServices` — EXPOSED, 1 endpoint.
+- `RestfulStateServices` — EXPOSED, 1 endpoint.
+- `RestfulSupplierSearchService` — EXPOSED, 1 endpoint.
+- `RestfulVehicleServices` — EXPOSED, 2 endpoints.
+- `LookupDataCache` — NOT_EXPOSED; it is a Spring `@Component` cache and has no HTTP mapping annotations.
 
-The cumulative checkpoint advanced to **45 exposed components, 114 proved caller-visible HTTP method/path combinations, 4 proved NOT_EXPOSED candidates, and 13 candidates remaining to classify**. The entire `misc.web.controller` package is now classified.
+### Current verified checkpoint
+- Classification scope: 62 candidates.
+- Classification complete: 62 / 62.
+- EXPOSED: 57.
+- NOT_EXPOSED: 5.
+- Unique caller-visible HTTP method/path combinations proved: 134.
+- Candidates remaining to classify: 0.
 
 ### Quality Gate effect
-- `QG-DEP-001`: PASS
-- `QG-TRC-001`: PASS
-- `QG-TRC-002`: IN PROGRESS
-- `QG-TRC-003`: IN PROGRESS
-- `QG-TRC-004`: IN PROGRESS
-- `QG-TRC-005` through user acceptance: WAITING
+- `QG-DEP-001`: PASS.
+- `QG-TRC-001`: PASS.
+- `QG-TRC-003 Controller Inventory Completeness`: PASS.
+- `QG-TRC-002 Complete Source Check`: IN PROGRESS because endpoint-to-final-dependency traces remain incomplete.
+- `QG-TRC-004 Endpoint Inventory Completeness`: IN PROGRESS until the canonical inventory is generated and validated from the completed Source Check Output.
+- `QG-TRC-005` onward: WAITING.
 
 ### Result
-Attempt 10 closed as `PARTIAL`. The canonical completed `worker/results/WI-0004.yaml` was not created or accepted, so Matrix construction remains locked. The next run must continue the same approved Source Check through the remaining 13 candidates in `web.rest` and `misc.cache`, followed by complete call-path/final-dependency evidence without guessing.
+The source candidate classification phase is complete, but the overall Source Check is still PARTIAL. `worker/results/WI-0004.yaml` was not created or accepted. Matrix construction remains locked. The next work is to trace the full 134-endpoint inventory through services/repositories/queries to final dependencies, recording unresolved paths explicitly instead of guessing.
