@@ -148,12 +148,55 @@ Controller discovery, endpoint discovery, call-path tracing, database-object ins
 
 The Worker should be reusable. A task-specific Worker would couple the execution engine to one Workflow. The input-driven model lets the same Worker execute different tasks without changing the Worker implementation.
 
-### Current next input
-
-`worker/inputs/WI-0003.yaml` - verify the remaining candidate production web components at the frozen WF-001 source baseline.
-
 ### Result
 
 Framework correction completed on `chore/rename-dependency-files`.
+
+Log state: `CLOSED`
+
+---
+
+## EVENT EVT-0005 - Initial Traceability Changed To Complete Repository Check First
+
+Time: `2026-08-22T05:55:00+05:30`
+Workflow: `WF-001-controller-traceability`
+Job: `Initial Baseline Sequencing`
+Status: `CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+### What changed
+
+The first Traceability baseline will no longer build the matrix from partial source-check batches.
+
+The required sequence is now:
+
+```text
+JOB-002 Complete Source Repository Check
+        -> WI-0004 must be COMPLETED and CLOSED
+        -> traceability/source-repository-check.md is accepted
+        -> JOB-003 Complete Traceability Matrix becomes READY
+```
+
+### Earlier inputs
+
+- `WI-0001` and `WI-0002` remain historical evidence only.
+- `WI-0003` is superseded and must not run for the initial baseline.
+- `WI-0004` is the sole executable source-check input for the initial matrix baseline.
+
+### Why this was changed
+
+The first Traceability Matrix should be created only after the source repository has been checked as one complete baseline. This prevents a matrix from looking complete while source discovery is still partial.
+
+### Current execution state
+
+`WI-0004` is READY but has not been marked started or completed.
+
+`JOB-003 Complete Traceability Matrix` is WAITING/LOCKED until `WI-0004` closes as `COMPLETED` and JOB-002 is VERIFIED.
+
+No background execution is being claimed.
+
+### Result
+
+Initial baseline orchestration has been updated and runtime gates are active.
 
 Log state: `CLOSED`
