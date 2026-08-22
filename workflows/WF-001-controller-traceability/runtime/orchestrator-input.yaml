@@ -1,0 +1,36 @@
+orchestrator_input:
+  id: OI-WF001-JOB003-001
+  consumer_job: JOB-003
+  name: SOURCE_CHECK_OUTPUT
+  producer_job: JOB-002
+  producer_component: WORKER
+  worker_input: WI-0004
+  path: worker/results/WI-0004.yaml
+  contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+  state: WAITING
+
+  acceptance_requirements:
+    worker_result: COMPLETED
+    worker_run_state: CLOSED
+    contract_state: VALID
+    source_repository: vvekselva/CylinderManagement
+    source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+    complete_scope_checked: true
+    coverage_percent: 100
+
+  on_accept:
+    - set JOB-002 VERIFIED
+    - set JOB-003 READY
+    - remove JOB-003 from waiting queue
+    - add JOB-003 to ready queue
+
+  on_reject:
+    - keep JOB-003 WAITING
+    - record rejection reason
+    - do not construct Traceability Matrix
+
+  consumer_rules:
+    source_repository_read_allowed: false
+    additional_source_inspection_worker_input_allowed: false
+    preserve_source_conclusions: true
+    derive_matrix_only_from_this_input: true
