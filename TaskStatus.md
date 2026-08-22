@@ -7,19 +7,18 @@
 | Control repository | `vvekselva/CylindnderManagementDependcies` |
 | Target source repository | `vvekselva/CylinderManagement` |
 | Coordinator | CONFIGURED |
-| Orchestration worker lanes | 10 |
-| Maximum independent orchestration jobs | 10 |
-| Independent Source Analysis Worker | CONFIGURED AND ACTIVE FOR WF-001 |
-| Source Analysis Worker consumes orchestration lane | NO |
-| Source Analysis Worker source access | READ ONLY |
-| Orchestration worker service lifecycle | CONFIGURED - `init() -> service() -> close()` |
-| Source Analysis lifecycle | CONFIGURED - independent `init() -> service() -> close()` |
+| Orchestration lanes | 10 |
+| Maximum parallel orchestration Jobs | 10 |
+| Independent Worker | CONFIGURED |
+| Independent Worker consumes orchestration lane | NO |
+| Independent Worker task definition | INPUT FILE ONLY |
+| Independent Worker lifecycle | `init() -> service() -> close()` |
+| Worker Input template | `worker/worker-input-template.yaml` |
 | Human-readable automation log | ACTIVE |
 | Source-to-artifact synchronization | CONFIGURED |
 | Direct automation write to source `main` | Disabled by policy |
-| Catalogue consistency gate | CONFIGURED WITH CONTROLLED DYNAMIC ARTIFACT PATHS |
 
-## Execution Planes
+## Execution Architecture
 
 ```text
                     COORDINATOR
@@ -27,19 +26,24 @@
             +------------+------------+
             |                         |
             v                         v
-   ORCHESTRATION PLANE        SOURCE ANALYSIS PLANE
-   LANE-01 ... LANE-10        Independent read-only worker
-            |                         |
-            |<------ source facts ----+
+   ORCHESTRATION PLANE           WORKER INPUT
+   LANE-01 ... LANE-10               |
+            |                        v
+            |                  GENERIC WORKER
+            |               init -> service -> close
+            |                        |
+            |<------ result ----------+
             v
       Workflow artifacts
 ```
 
-The Source Analysis Worker is not `LANE-11`. It is a separate reusable component that analyses source files and returns `PROVED`, `UNRESOLVED` or `NOT_APPLICABLE` facts.
+The independent component is called `WORKER`.
 
-## Orchestration Worker Pool
+It is not a special source-analysis worker and is not `LANE-11`.
 
-The coordinator is a control-plane role and does not consume a worker slot.
+The Worker does not know its task until it reads a `worker/inputs/WI-*.yaml` file.
+
+## Orchestration Lane Pool
 
 | Lane | State | Lifecycle Phase | Workflow | Job | Run ID | Attempt | Log State |
 |---|---|---|---|---|---|---:|---|
@@ -54,117 +58,129 @@ The coordinator is a control-plane role and does not consume a worker slot.
 | LANE-09 | IDLE | - | - | - | - | 0 | NOT_OPENED |
 | LANE-10 | IDLE | - | - | - | - | 0 | NOT_OPENED |
 
-The ten lanes will fan out during `JOB-004 Trace Controllers In Parallel` after Controller and Endpoint inventories are complete.
-
-## Independent Source Analysis Worker
+## Generic Worker
 
 | Item | Current State |
 |---|---|
-| Component | `INDEPENDENT_SOURCE_ANALYZER` |
-| Contract | `automation/source-analysis-worker-contract.md` |
-| Workspace | `source-analysis/` |
-| Counted in 10 orchestration lanes | NO |
-| Source writes allowed | NO |
-| Workflow scheduling allowed | NO |
-| Shared TaskStatus/log updates allowed | NO - coordinator only |
-| Current source baseline | `3ae6e61442132d94a307275b08dd65fcef228d89` |
-| Closed Source Analysis runs | `SAR-0001`, `SAR-0002` |
-| Open Source Analysis runs | 0 |
-| Next analysis | Continue HTTP exposure verification for remaining component-scanned candidate classes |
+| Component | `WORKER` |
+| Contract | `automation/worker-component-contract.md` |
+| Workspace | `worker/` |
+| Input pattern | `worker/inputs/WI-*.yaml` |
+| Run pattern | `worker/runs/WI-*.md` |
+| Result pattern | `worker/results/WI-*.md` |
+| Counted in ten orchestration lanes | NO |
+| Hard-coded Controller/source-analysis logic | NO |
+| Actual task source | INPUT FILE |
+| Open Worker runs | 0 |
+| Next Worker Input | `WI-0003` |
+
+## Generic Worker Lifecycle
+
+```text
+INPUT FILE
+   |
+   v
+init()
+   +-- read task/purpose/target/scope/permissions/actions
+   +-- open run
+   |
+   v
+service()
+   +-- execute only input Actions
+   +-- collect evidence
+   |
+   v
+close()
+   +-- completed / partial / blocked / failed
+   +-- explain blocker in simple English
+   +-- close run and return result
+```
 
 ## Automation Framework Status
 
 | Component | State | Notes |
 |---|---|---|
-| Repository catalogue | CONFIGURED | Static files plus controlled dynamic artifact paths. |
-| Catalogue gate | CONFIGURED | Allows declared runtime trace/source-analysis outputs without weakening static control-file checking. |
-| Automation governance | CONFIGURED | Overall rules defined in `governance/automation-policy.md`. |
-| Orchestration worker service contract | CONFIGURED | Mandatory lane lifecycle in `automation/worker-service-contract.md`. |
-| Independent Source Analysis Worker contract | CONFIGURED | Read-only source-analysis service in `automation/source-analysis-worker-contract.md`. |
-| Worker operating guide | CONFIGURED | Orchestration workers consume source facts rather than independently guessing source structure. |
-| Execution model | CONFIGURED | Two planes: orchestration and independent source analysis. |
-| Human-readable logging policy | CONFIGURED | Orchestration INIT opens events; CLOSE closes them. Source Analysis has separate run records. |
-| Source-artifact sync policy | CONFIGURED | Change impact and notification rules defined. |
-| Controller Traceability design | CONFIGURED | Uses Source Analysis facts for discovery, endpoints, call paths and DB-object proof. |
-| Controller trace template | CONFIGURED | Per-controller artifacts reference Source Analysis Request/Fact IDs. |
-| Story generator | CONFIGURED | `automation/generate-automation-story.py`. |
-| Source-artifact sync register | CONFIGURED | `sync/source-artifact-sync-register.yaml`. |
+| Repository catalogue | BEING ALIGNED | Generic Worker paths are replacing obsolete source-analysis paths. |
+| Catalogue gate | CONFIGURED | Static files plus controlled dynamic runtime paths. |
+| Automation governance | CONFIGURED | Overall automation rules defined. |
+| Orchestration lane service contract | CONFIGURED | `automation/worker-service-contract.md`. |
+| Generic Worker component contract | CONFIGURED | `automation/worker-component-contract.md`. |
+| Worker input template | CONFIGURED | `worker/worker-input-template.yaml`. |
+| Worker operating guide | CONFIGURED | Input-driven Worker model documented. |
+| Execution model | CONFIGURED | Ten orchestration lanes plus independent input-driven Worker. |
+| Controller Traceability design | CONFIGURED | All Worker tasks are supplied through inputs. |
+| Controller trace template | CONFIGURED | Artifacts reference `WI-####` evidence. |
+| Source-artifact sync workflow | CONFIGURED | Also uses generic Worker inputs. |
 
-## WF-001 Controller Traceability Execution
+## WF-001 Controller Traceability
 
 ### Frozen source baseline
 
 `3ae6e61442132d94a307275b08dd65fcef228d89` - `Base Projects`
 
-All remaining WF-001 work must stay on this exact source commit.
-
 ### Job status
 
 | Job | State | Current Result / Next Action |
 |---|---|---|
-| `JOB-001 Freeze Source Baseline` | `VERIFIED` | Baseline frozen; `GATE-TRC-001` passed. |
-| `JOB-002 Build Exposed Controller Inventory` | `IN_PROGRESS` | Runtime source boundary proved; first 5 exposed MVC components proved; continue remaining candidate verification. |
-| `JOB-003 Build Endpoint Inventory` | `YET_TO_DO` | Wait for complete Controller Inventory. |
-| `JOB-004 Trace Controllers In Parallel` | `YET_TO_DO` | Wait for Endpoint Inventory, then fan out across up to 10 lanes. |
-| `JOB-005 Consolidate Controller Traceability` | `YET_TO_DO` | Depends on controller traces. |
+| `JOB-001 Freeze Source Baseline` | `VERIFIED` | `GATE-TRC-001` passed. |
+| `JOB-002 Build Exposed Controller Inventory` | `IN_PROGRESS` | `WI-0001` and `WI-0002` closed; `WI-0003` is next. |
+| `JOB-003 Build Endpoint Inventory` | `YET_TO_DO` | Will generate endpoint-discovery Worker Inputs after Controller inventory closes. |
+| `JOB-004 Trace Controllers In Parallel` | `YET_TO_DO` | Ten lanes will use follow-up Worker Inputs for endpoint call-path evidence. |
+| `JOB-005 Consolidate Controller Traceability` | `YET_TO_DO` | Depends on Controller artifacts. |
 | `JOB-006 Run Source Artifact Sync Check` | `YET_TO_DO` | Depends on consolidated artifacts. |
-| `JOB-007 Validate Traceability Coverage` | `YET_TO_DO` | Coverage target is 100%. |
-| `JOB-008 Generate Human Story` | `YET_TO_DO` | Runs after gates and run closure checks. |
+| `JOB-007 Validate Traceability Coverage` | `YET_TO_DO` | Coverage target 100%. |
+| `JOB-008 Generate Human Story` | `YET_TO_DO` | Runs after evidence/run closure gates. |
 
-### Source Analysis progress
+## Worker Input Progress
 
-| Request | Result | What it proved |
+| Worker Input | State | Purpose |
 |---|---|---|
-| `SAR-0001` | `COMPLETED / CLOSED` | Component-scanned production source boundary. |
-| `SAR-0002` | `PARTIAL / CLOSED` | First five candidate classes are proved exposed MVC components. |
+| `WI-0001` | `COMPLETED / CLOSED` | Determine production web-source boundary. |
+| `WI-0002` | `PARTIAL / CLOSED` | Verify first five exposed-component candidates. |
+| `WI-0003` | `READY` | Verify remaining candidate production web components. |
 
-### First five proved exposed components
+## First Proved Exposed Components
 
-- `CustomerFetchByPageController` - proved mapping includes `GET /fetchCustomerByPage`.
-- `CustomerFetchController` - proved mapping includes `GET /displayCustomer`.
-- `CustomerUpdateController` - proved mapping includes `POST /updateCustomer`.
-- `DomainLookupController` - proved exposed MVC controller; mappings include `GET /domainLookup`.
-- `LookupManagementController` - proved exposed MVC controller; mappings include `GET /lookup` and `GET /lookupManagement`.
+- `CustomerFetchByPageController` - `GET /fetchCustomerByPage`
+- `CustomerFetchController` - `GET /displayCustomer`
+- `CustomerUpdateController` - `POST /updateCustomer`
+- `DomainLookupController` - includes `GET /domainLookup`
+- `LookupManagementController` - includes `GET /lookup` and `GET /lookupManagement`
 
-These are not yet assigned final `CTL-###` IDs because `JOB-002` assigns the stable Controller IDs only after the complete exposed-component set has been proved.
+Stable `CTL-###` IDs will be assigned only after the complete Controller set is proved.
 
 ## Quality Gate State
 
 | Gate | State | Notes |
 |---|---|---|
 | `GATE-TRC-001 Source Baseline Frozen` | PASS | One baseline commit recorded. |
-| `GATE-TRC-002 Component Scanned Production Source Scope Proved` | PASS | Proved by `SAR-0001`. |
-| `GATE-TRC-003 Exposed Controller Inventory Complete` | IN PROGRESS | Annotation verification incomplete. |
-| `GATE-TRC-004 Exposed Endpoint Inventory Complete` | YET TO DO | Depends on GATE-TRC-003. |
+| `GATE-TRC-002 Production Web Source Scope Proved` | PASS | Evidence from `WI-0001`. |
+| `GATE-TRC-003 Exposed Controller Inventory Complete` | IN PROGRESS | `WI-0003` still to execute. |
+| `GATE-TRC-004 Exposed Endpoint Inventory Complete` | YET TO DO | Depends on Controller inventory. |
 | `GATE-TRC-005 Every Endpoint Has Trace Result` | YET TO DO | - |
-| `GATE-TRC-006 Complete Traces Reference Source Analysis Evidence` | YET TO DO | - |
+| `GATE-TRC-006 Complete Traces Reference Closed Worker Evidence` | YET TO DO | - |
 | `GATE-TRC-007 Unresolved Traces Have Clear Stopping Point` | YET TO DO | - |
 | `GATE-TRC-008 Coverage Is 100 Percent` | YET TO DO | - |
 | `GATE-TRC-009 Source Artifact Sync Registered` | YET TO DO | - |
-| `GATE-TRC-010 Runs Closed And Story Current` | YET TO DO | - |
+| `GATE-TRC-010 Worker/Orchestration Runs Closed And Story Current` | YET TO DO | - |
 
 ## Scheduling State
 
 ```text
 Coordinator: WF-001 ACTIVE
-Orchestration active workers: 0 / 10
-Source Analysis Worker: READY FOR NEXT CLOSED REQUEST
-Open orchestration worker logs: 0
-Open Source Analysis runs: 0
-Blocked jobs: 0
-Failed jobs: 0
-Verified jobs: 1
+Orchestration active lanes: 0 / 10
+Generic Worker: READY FOR WI-0003
+Open Worker runs: 0
+Blocked Jobs: 0
+Failed Jobs: 0
+Verified Jobs: 1
 Current Job: JOB-002 IN_PROGRESS
 ```
 
-No work is running in the background. The next execution action is another closed Source Analysis request continuing HTTP-exposure verification at the frozen baseline.
-
 ## Branch State
 
-The framework and current WF-001 execution artifacts are on:
+All current framework and WF-001 execution changes are on:
 
 `chore/rename-dependency-files`
 
-They have **not** been merged into `main`.
-
-The feature branch is ahead of `main`; promotion to `main` is a separate controlled Git action.
+They are not yet merged into `main`.
