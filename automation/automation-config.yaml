@@ -1,4 +1,4 @@
-version: 5
+version: 6
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -123,6 +123,28 @@ orchestration_worker_service_lifecycle:
   stale_worker_recovery:
     coordinator_closes_unfinished_log: true
     result_state: RESULT_NOT_CONFIRMED
+
+initial_traceability_baseline:
+  workflow: workflows/WF-001-controller-traceability/workflow.yaml
+  mode: COMPLETE_REPOSITORY_CHECK_THEN_MATRIX
+  enabled: true
+  source_check_job: JOB-002
+  source_check_worker_input: worker/inputs/WI-0004.yaml
+  source_check_result: worker/results/WI-0004.md
+  accepted_source_check_artifact: traceability/source-repository-check.md
+  matrix_job: JOB-003
+  matrix_output: traceability/controller-traceability.md
+  partial_worker_results_unlock_matrix: false
+  matrix_start_requirements:
+    - JOB-002_VERIFIED
+    - WI-0004_RESULT_COMPLETED
+    - WI-0004_RUN_CLOSED
+    - SOURCE_REPOSITORY_CHECK_ARTIFACT_ACCEPTED
+  initial_matrix_may_request_additional_source_worker_inputs: false
+  explanation: >-
+    For the first trusted traceability baseline, one complete repository-check Worker
+    task must finish before the orchestration constructs the matrix. Earlier partial
+    Worker results remain historical evidence and cannot unlock the matrix.
 
 scheduling:
   dependency_policy: strict
