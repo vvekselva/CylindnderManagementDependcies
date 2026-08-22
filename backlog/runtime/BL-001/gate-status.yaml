@@ -12,10 +12,26 @@ quality_gate_status:
       state: PASS
       evidence:
         - frozen source commit 3ae6e61442132d94a307275b08dd65fcef228d89
-        - current CylinderManagement main is identical to the frozen baseline at this analysis point
-    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS}
-    QG-TRC-003: {name: Controller Inventory Completeness, state: WAITING}
-    QG-TRC-004: {name: Endpoint Inventory Completeness, state: WAITING}
+        - source analysis is pinned to that exact commit
+    QG-TRC-002:
+      name: Complete Source Check
+      state: IN_PROGRESS
+      evidence:
+        - exact component-scan boundary proved from CylinderManagementWebApplication
+        - 62 Java component candidates identified inside the explicitly scanned package trees
+    QG-TRC-003:
+      name: Controller Inventory Completeness
+      state: IN_PROGRESS
+      evidence:
+        - classification scope is 62 Java component candidates
+        - 3 exposed components are source-proved so far
+        - 59 candidates remain to classify
+    QG-TRC-004:
+      name: Endpoint Inventory Completeness
+      state: IN_PROGRESS
+      evidence:
+        - 5 caller-visible endpoints are source-proved so far
+        - final endpoint total remains unknown until all candidates are classified
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
     QG-TRC-007: {name: Call Path Evidence, state: WAITING}
@@ -34,5 +50,6 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    Source analysis is in progress. Automated traceability gates have not all passed and
-    the required user-acceptance gate has not yet been reached.
+    Source analysis has advanced but remains incomplete. The controller and endpoint inventory
+    gates are now actively being evaluated; the Source Check result has not yet reached the
+    complete, closed and contract-valid state required to unlock matrix construction.
