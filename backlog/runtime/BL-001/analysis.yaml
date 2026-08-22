@@ -8,88 +8,52 @@ analysis:
 
   candidate_scope:
     total_java_component_candidates: 62
-    misc_web_controller_candidates: 12
-    web_rest_candidates: 14
-    misc_cache_candidates: 1
-
-  correction_applied:
-    reason: >-
-      Attempt 11 listed RestfulCustomerServices as newly classified even though it had already
-      been source-proved earlier. The cumulative checkpoint has been corrected to count each
-      component and endpoint only once.
-    corrected_attempt_11_checkpoint:
-      proved_exposed_components: 49
-      proved_endpoints: 118
-      proved_not_exposed_components: 4
-      candidates_remaining_to_classify: 9
-
-  current_checkpoint:
-    proved_exposed_components: 57
-    proved_endpoints: 134
-    proved_not_exposed_components: 5
-    candidates_remaining_to_classify: 0
     total_candidates_classified: 62
-    misc_web_controller_classified: 12
-    web_rest_classified: 14
-    misc_cache_classified: 1
+    proved_exposed_components: 57
+    proved_not_exposed_components: 5
+    proved_unique_http_method_path_combinations: 134
     source_candidate_classification_complete: true
 
+  endpoint_dependency_trace_checkpoint:
+    total_endpoints: 134
+    examined_for_final_dependency: 3
+    complete: 0
+    unresolved: 3
+    blocked: 0
+    failed: 0
+    not_yet_examined: 131
+
   latest_attempt:
-    number: 12
-    run_id: RUN-WI0004-20260822-012
+    number: 13
+    run_id: RUN-WI0004-20260822-013
     state: CLOSED
     result: PARTIAL
-    candidates_inspected: 9
-    exposed: 8
-    not_exposed: 1
-    added_http_method_path_combinations: 16
     evidence: worker/runs/WI-0004.md
-    classifications:
-      - component: RestfulCylinderServices
-        state: EXPOSED
-        endpoints:
-          - GET /search/cylinder/{searchText}
-          - POST /search/cylinder/ownership/by-state
-          - POST /search/cylinder/by-state
-          - POST /search/cylinder/by-serial-and-state
-          - POST /search/cylinder/on-vehicle
-          - POST /search/cylinder/by-customer
-          - POST /search/cylinder/by-supplier
-      - component: RestfulDriverServices
-        state: EXPOSED
-        endpoints:
-          - GET /search/driver/{searchText}
-          - GET /find/Driver-by-Id/{driverId}
-      - component: RestfulProductCategoryServices
-        state: EXPOSED
-        endpoints:
-          - GET /search/product-category/{searchText}
-      - component: RestfulProductServices
-        state: EXPOSED
-        endpoints:
-          - GET /search/product/{searchText}
-      - component: RestfulProductUomServices
-        state: EXPOSED
-        endpoints:
-          - GET /search/product-uom/{searchText}
-      - component: RestfulStateServices
-        state: EXPOSED
-        endpoints:
-          - GET /search/state/{searchText}
-      - component: RestfulSupplierSearchService
-        state: EXPOSED
-        endpoints:
-          - GET /search/supplier/{searchText}
-      - component: RestfulVehicleServices
-        state: EXPOSED
-        endpoints:
-          - GET /search/vehicle/{searchText}
-          - GET /find/Vehicle-by-Id/{vehicleId}
-      - component: LookupDataCache
-        state: NOT_EXPOSED
-        reason: >-
-          It is a Spring @Component cache with no Controller/RestController annotation and no
-          request-mapping annotations.
+    endpoint_traces:
+      - endpoint: GET /search/customer/{searchText}
+        controller: RestfulCustomerServices
+        handler: getCustomers
+        last_proven_component: ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CustomerSearchResponseDto>
+        proven_call: customerSearchService.searchWithText(requestDto, null)
+        trace_state: UNRESOLVED
+        reason: concrete Spring implementation, DAO/repository and final dependency not yet proved
+        next_step: resolve the injected search-service implementation from source/configuration and continue downstream
+      - endpoint: GET /search/product/{searchText}
+        controller: RestfulProductServices
+        handler: getProducts
+        last_proven_component: ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, ProductSearchResponseDto>
+        proven_call: productSearchService.searchWithText(requestDto, null)
+        trace_state: UNRESOLVED
+        reason: concrete Spring implementation, DAO/repository and final dependency not yet proved
+        next_step: resolve the injected search-service implementation from source/configuration and continue downstream
+      - endpoint: GET /search/addresstype/{searchText}
+        controller: RestfulAddressTypeServices
+        handler: getAddressTypes
+        last_proven_component: ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, AddressTypeSearchResponseDto>
+        proven_call: addressTypeSearchService.searchWithText(requestDto, null)
+        trace_state: UNRESOLVED
+        reason: concrete Spring implementation, DAO/repository and final dependency not yet proved
+        next_step: resolve the injected search-service implementation from source/configuration and continue downstream
 
   quality_gate_effect:
     QG-DEP-001: PASS
@@ -98,23 +62,24 @@ analysis:
     QG-TRC-003: PASS
     QG-TRC-004: IN_PROGRESS
     QG-TRC-005: WAITING
+    QG-TRC-009: IN_PROGRESS
 
   canonical_result_accepted: false
   matrix_construction_unlocked: false
 
   proved_now:
-    - All 62 production component candidates have been classified exactly once as EXPOSED or NOT_EXPOSED.
-    - The corrected unique classification is 57 EXPOSED and 5 NOT_EXPOSED.
-    - 134 unique caller-visible HTTP method/path combinations are source-proved at the classification checkpoint.
+    - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
+    - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
+    - Three endpoints have now entered final-dependency tracing with source-proved Controller-to-search-service-interface handoffs.
+    - Those three final dependencies remain explicitly UNRESOLVED; no repository or database table was guessed.
 
   not_yet_proved:
-    - Complete endpoint call paths from every exposed handler to final dependencies.
-    - Complete physical database-object evidence for database-backed paths.
-    - Complete unresolved-path records for paths whose final dependency cannot be proved.
+    - Concrete implementations and downstream dependencies for the three newly examined search-service endpoints.
+    - Final dependencies for the remaining 131 endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Continue WU-BL001-001 against the same frozen commit, now focusing on endpoint-to-final-dependency
-    tracing for the complete 134-endpoint inventory. Do not unlock matrix construction until
-    worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates,
-    and endpoint trace-result coverage equals 100 percent.
+    Resolve concrete implementations for the three generic search-service injections and continue
+    endpoint-to-final-dependency tracing across the remaining endpoint inventory. Do not unlock Matrix
+    construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result
+    contract validates, and endpoint trace-result coverage equals 100 percent.
