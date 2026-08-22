@@ -11,22 +11,30 @@ This artifact records endpoint paths whose final dependency has not yet been sou
 
 - Total source-proved endpoint inventory: 134
 - Explicitly examined for final dependency: 13
-- COMPLETE: 12
-- UNRESOLVED: 1
+- COMPLETE: 13
+- UNRESOLVED: 0
+- BLOCKED: 0
+- FAILED: 0
 - Not yet examined: 121
 
-## Newly unresolved path
+## Resolved in Attempt 20
 
-| Endpoint | Last proven component | Missing evidence | Next investigation |
-|---|---|---|---|
-| GET `/search/address/customer-address/{customerId}` | `RestfulAddressServices` -> injected `customerAddressFetchByIDService` -> `searchWithText(...)` | Concrete Spring implementation; DAO/repository/query path; final persistence or external dependency | Resolve the bean implementation for `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CustomerAddressSearchResponseDto>` and trace it to its final dependency |
+`GET /search/address/customer-address/{customerId}` is now COMPLETE.
 
-The older `/search/address/customer/{customerId}` method in the same controller is commented out and is not treated as an active endpoint.
+Source-proved path:
 
-## Resolution accounting
+`RestfulAddressServices` -> `CustomerAddressFetchByIDService.searchWithText(...)` -> `CustomerAddressJpaDao.findByCustomer_CustomerId(...)` -> `CustomerAddressDo` -> `public.tbl_customer_address`.
 
-Twelve previously examined endpoints remain COMPLETE. The new address endpoint is deliberately UNRESOLVED because the source currently proves only the controller-to-service handoff. The remaining 121 endpoints are **NOT YET EXAMINED**, not UNRESOLVED.
+The concrete service is an active Spring `@Component`; its query uses `CustomerAddressJpaDao`, which is a `JpaRepository<CustomerAddressDo, Long>`. `CustomerAddressDo` explicitly maps to `@Table(name = "tbl_customer_address", schema = "public")`.
+
+The older `/search/address/customer/{customerId}` method in the same controller remains commented out and is not treated as an active endpoint.
+
+## Current unresolved paths
+
+None among the 13 endpoints examined so far.
+
+The remaining 121 endpoints are **NOT YET EXAMINED**, not UNRESOLVED.
 
 ## Next action
 
-Resolve `customerAddressFetchByIDService` to its concrete implementation, repository/query path and final dependency, then continue `WU-BL001-001` across the remaining 121 endpoints. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
+Continue `WU-BL001-001` across the remaining 121 endpoints. Any path whose concrete implementation or final dependency cannot be proved must be recorded here at the last source-proved component. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
