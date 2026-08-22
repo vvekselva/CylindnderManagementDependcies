@@ -1,4 +1,4 @@
-version: 3
+version: 4
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -14,6 +14,8 @@ control_files:
   workflow_contract: automation/workflow-contract.md
   task_contract: automation/task-contract.md
   worker_service_contract: automation/worker-service-contract.md
+  source_analysis_worker_contract: automation/source-analysis-worker-contract.md
+  source_analysis_workspace: source-analysis/README.md
   shared_log: logs/automation-log.md
   human_story: logs/automation-story.md
   sync_register: sync/source-artifact-sync-register.yaml
@@ -27,6 +29,7 @@ coordinator:
     - build_runnable_job_queue
     - enforce_job_dependencies
     - assign_jobs_to_workers
+    - request_source_facts_from_source_analysis_worker
     - enforce_resource_locks
     - collect_worker_init_records
     - collect_worker_service_results
@@ -40,10 +43,58 @@ coordinator:
     - update_status_and_evidence
     - generate_human_story
 
+source_analysis_worker:
+  enabled: true
+  independent_of_orchestration_pool: true
+  consumes_orchestration_worker_slot: false
+  read_only_source_access: true
+  contract: automation/source-analysis-worker-contract.md
+  request_result_template: source-analysis/source-analysis-request-result-template.md
+  target_repository: vvekselva/CylinderManagement
+  lifecycle:
+    - INIT
+    - SERVICE
+    - CLOSE
+  responsibilities:
+    - enumerate_source_files
+    - inspect_source_annotations
+    - identify_exposed_spring_components
+    - identify_endpoint_mappings
+    - inspect_method_calls
+    - inspect_dependency_references
+    - inspect_repository_and_dao_calls
+    - inspect_entity_table_mappings
+    - inspect_query_and_database_object_evidence
+    - identify_external_or_terminal_dependencies
+    - return_proved_source_facts
+    - return_unresolved_source_facts_without_guessing
+  forbidden_actions:
+    - schedule_workflows
+    - assign_orchestration_jobs
+    - choose_job_priority
+    - update_global_task_status
+    - update_shared_automation_log
+    - update_sync_register
+    - notify_user_directly
+    - edit_target_source
+    - create_target_source_branch
+    - commit_target_source_changes
+    - database_write
+  fact_confidence:
+    - PROVED
+    - UNRESOLVED
+    - NOT_APPLICABLE
+  runtime_paths:
+    runs: source-analysis/runs/SAR-*.md
+    results: source-analysis/results/SAR-*.md
+  mutable_shared_output_owner: NONE
+  same_baseline_parallel_reads_allowed: true
+
 worker_pool:
   worker_count: 10
   lane_count: 10
   max_parallel_jobs: 10
+  source_analysis_worker_is_not_counted: true
   one_active_job_per_worker: true
   lanes:
     - LANE-01
@@ -60,6 +111,7 @@ worker_pool:
 worker_service_lifecycle:
   contract: automation/worker-service-contract.md
   mandatory: true
+  applies_to: ORCHESTRATION_JOB_WORKERS
   phases:
     - INIT
     - SERVICE
@@ -189,6 +241,8 @@ execution:
   dependent_jobs_wait_for_completed_or_verified: true
   one_source_baseline_per_workflow: true
   every_job_attempt_uses_worker_service_lifecycle: true
+  source_analysis_requests_use_independent_lifecycle: true
+  orchestration_workers_consume_source_facts_instead_of_guessing_source_structure: true
   log_must_be_closed_before_worker_release: true
 
 staleness:
