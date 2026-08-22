@@ -1,26 +1,31 @@
 workflow:
   id: WF-001-controller-traceability
-  version: 5
+  version: 6
   name: Controller Traceability
   purpose: >-
-    Build the initial Controller Traceability Matrix from one complete, closed
-    Source Repository Check result at a frozen CylinderManagement source commit.
+    Build the initial Controller Traceability Matrix by first completing one Source
+    Repository Check and then feeding its canonical output directly into the
+    Orchestrator Traceability Job.
 
   target_repository: vvekselva/CylinderManagement
   control_repository: vvekselva/CylindnderManagementDependcies
   design: traceability/controller-traceability-design.md
   controller_artifact_template: traceability/controller-trace-template.md
+  source_check_output_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
 
   initial_baseline_mode:
-    name: COMPLETE_REPOSITORY_CHECK_THEN_MATRIX
+    name: SOURCE_CHECK_OUTPUT_TO_ORCHESTRATOR_MATRIX
     enabled: true
     rule: >-
       During the first baseline run, the Source Repository Check must finish completely
-      and close before the Traceability Matrix Job may start. Partial Worker batches do
-      not unlock the matrix Job.
+      and close before the Traceability Matrix Job may start. The canonical Source Check
+      Output is the formal input to the Orchestrator. Partial Worker batches do not
+      unlock the matrix Job.
     source_check_input: worker/inputs/WI-0004.yaml
-    source_check_result: worker/results/WI-0004.md
-    source_check_artifact: traceability/source-repository-check.md
+    source_check_output: worker/results/WI-0004.yaml
+    source_check_run: worker/runs/WI-0004.md
+    source_check_output_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+    traceability_job: JOB-003
     matrix_output: traceability/controller-traceability.md
 
   independent_worker:
@@ -37,8 +42,8 @@ workflow:
     rule: ONE_COMMIT_FOR_THE_COMPLETE_WORKFLOW
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
     description: >-
-      The complete Source Repository Check and the Traceability Matrix must describe
-      exactly the same CylinderManagement source commit.
+      The complete Source Repository Check and every matrix artifact produced from its
+      output must describe exactly the same CylinderManagement source commit.
 
   orchestration_worker_model:
     coordinator_is_separate: true
@@ -51,7 +56,9 @@ workflow:
     shared_log: logs/automation-log.md
     story_output: logs/automation-story.md
     independent_worker_runs: worker/runs/WI-*.md
-    independent_worker_results: worker/results/WI-*.md
+    independent_worker_results:
+      - worker/results/WI-*.md
+      - worker/results/WI-*.yaml
 
   synchronization:
     policy: governance/source-artifact-sync-policy.md
@@ -61,7 +68,7 @@ workflow:
     - id: GATE-TRC-001
       name: Source Baseline Frozen
     - id: GATE-TRC-002
-      name: Complete Source Repository Check Closed
+      name: Complete Source Check Output Accepted
     - id: GATE-TRC-003
       name: Complete Exposed Controller Set Produced
     - id: GATE-TRC-004
@@ -98,70 +105,94 @@ workflow:
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       worker_input: worker/inputs/WI-0004.yaml
+      output_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
       actions:
         - id: ACT-001
           instruction: Execute WI-0004 from init() through service() and close().
-          expected_result: One complete closed Worker result describes the repository, exposed components, endpoints, call paths, final dependencies and unresolved items.
+          expected_result: One complete closed Worker run performs the full source repository check.
         - id: ACT-002
-          instruction: Copy the accepted closed Worker result into the orchestration artifact traceability/source-repository-check.md without changing its source conclusions.
-          expected_result: The complete repository-check output is available as a stable orchestration artifact.
+          instruction: Validate worker/results/WI-0004.yaml against the Source Check Output contract.
+          expected_result: The canonical machine-readable Source Check Output is complete and safe for the Orchestrator to consume.
       completion_check: >-
-        WI-0004 result is COMPLETED, its run is CLOSED, it is not PARTIAL, and
-        traceability/source-repository-check.md contains the accepted complete output.
+        WI-0004 result is COMPLETED, its run is CLOSED, the canonical YAML output conforms
+        to the output contract, coverage is 100 percent, and the result is not PARTIAL.
       outputs:
-        - worker/results/WI-0004.md
+        - worker/results/WI-0004.yaml
         - worker/runs/WI-0004.md
-        - traceability/source-repository-check.md
       gates:
         - GATE-TRC-002
-        - GATE-TRC-003
-        - GATE-TRC-004
-        - GATE-TRC-005
-        - GATE-TRC-006
-        - GATE-TRC-007
 
     - id: JOB-003
       name: Complete Traceability Matrix
       needs: [JOB-002]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
-      start_condition: JOB-002_VERIFIED_AND_SOURCE_REPOSITORY_CHECK_CLOSED
+      start_condition: JOB-002_VERIFIED_AND_SOURCE_CHECK_OUTPUT_ACCEPTED
+      source_repository_read_during_initial_matrix: false
+      additional_source_worker_inputs_during_initial_matrix: false
+      inputs:
+        - name: SOURCE_CHECK_OUTPUT
+          path: worker/results/WI-0004.yaml
+          producer_job: JOB-002
+          contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+          required_worker_result: COMPLETED
+          required_worker_run_state: CLOSED
+          required_source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+          required_coverage_percent: 100
       actions:
         - id: ACT-001
-          instruction: Read only the accepted complete initial Source Repository Check output for source facts used to build the baseline matrix.
-          input: traceability/source-repository-check.md
-          expected_result: Matrix construction starts from one complete source-analysis baseline, not partial Worker batches.
+          instruction: Validate and load SOURCE_CHECK_OUTPUT as the only source-fact input for the initial Traceability Matrix Job.
+          expected_result: The Orchestrator has one accepted, complete source-check dataset.
         - id: ACT-002
-          instruction: Create traceability/controller-inventory.md from the complete exposed-component set in the source repository check and assign stable CTL IDs.
-          expected_result: Every exposed production component has one stable Controller ID.
+          instruction: Generate traceability/source-repository-check.md as a human-readable representation of SOURCE_CHECK_OUTPUT without changing its source conclusions.
+          expected_result: A readable source-check report is available while the YAML remains the canonical machine handoff.
         - id: ACT-003
-          instruction: Create traceability/endpoint-inventory.md from the complete endpoint set and assign stable Endpoint IDs under their Controller IDs.
-          expected_result: Every caller-visible endpoint is inventoried.
+          instruction: Create traceability/controller-inventory.md from SOURCE_CHECK_OUTPUT.exposed_components and assign stable CTL IDs.
+          expected_result: Every exposed production component has one stable Controller ID.
         - id: ACT-004
-          instruction: Build traceability/controller-traceability.md with one row for every endpoint and its proved call path/final dependency.
-          expected_result: The Traceability Matrix has 100 percent endpoint coverage.
+          instruction: Create traceability/endpoint-inventory.md from SOURCE_CHECK_OUTPUT.endpoints and assign stable Endpoint IDs under their Controller IDs.
+          expected_result: Every caller-visible endpoint is inventoried.
         - id: ACT-005
-          instruction: Create traceability/unresolved-traceability.md from every endpoint whose final dependency is not fully proved.
-          expected_result: No unresolved endpoint is hidden or guessed.
+          instruction: Build traceability/controller-traceability.md from SOURCE_CHECK_OUTPUT endpoints, call paths and final dependencies.
+          expected_result: The Traceability Matrix contains exactly one row for every exposed endpoint.
+        - id: ACT-006
+          instruction: Create traceability/unresolved-traceability.md from SOURCE_CHECK_OUTPUT.unresolved_items.
+          expected_result: Every unresolved endpoint has its last proven point and reason recorded without guessing.
+        - id: ACT-007
+          instruction: Verify matrix counts against SOURCE_CHECK_OUTPUT.coverage before closing the Job.
+          expected_result: Matrix endpoint count equals the complete Source Check endpoint count and matrix coverage is 100 percent.
       completion_check: >-
-        Controller inventory, Endpoint inventory, Traceability Matrix and unresolved list
-        are generated from the same closed Source Repository Check; every exposed endpoint
-        appears exactly once in the matrix; coverage equals 100 percent.
+        The human-readable Source Repository Check, Controller inventory, Endpoint
+        inventory, Traceability Matrix and unresolved list are all derived from the same
+        accepted SOURCE_CHECK_OUTPUT; every exposed endpoint appears exactly once in the
+        matrix; no direct source re-read occurred during JOB-003; coverage equals 100 percent.
       outputs:
+        - traceability/source-repository-check.md
         - traceability/controller-inventory.md
         - traceability/endpoint-inventory.md
         - traceability/controller-traceability.md
         - traceability/unresolved-traceability.md
-      gate: GATE-TRC-008
+      gates:
+        - GATE-TRC-003
+        - GATE-TRC-004
+        - GATE-TRC-005
+        - GATE-TRC-006
+        - GATE-TRC-007
+        - GATE-TRC-008
 
     - id: JOB-004
       name: Register Initial Source Artifact Baseline
       needs: [JOB-003]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
+      inputs:
+        - name: SOURCE_CHECK_OUTPUT
+          path: worker/results/WI-0004.yaml
+        - name: TRACEABILITY_MATRIX
+          path: traceability/controller-traceability.md
       actions:
         - id: ACT-001
-          instruction: Register the Traceability Matrix and related artifacts against the frozen source commit.
+          instruction: Register the matrix and related artifacts against the source baseline recorded in SOURCE_CHECK_OUTPUT.
           expected_result: The initial source-to-artifact synchronization baseline is established.
       output: sync/source-artifact-sync-register.yaml
       gate: GATE-TRC-009
@@ -186,14 +217,15 @@ workflow:
     description: >-
       After JOB-005 closes the initial baseline, WF-002 may use targeted Worker Inputs
       for later source changes. The initial baseline itself always uses the complete
-      repository-check-first sequence.
+      Source Check Output -> Orchestrator Traceability Job handoff.
 
   workflow_completion:
     required:
       - source baseline frozen
       - WI-0004 COMPLETED and CLOSED
-      - complete source repository check artifact produced
-      - Traceability Matrix built only after JOB-002 verification
+      - canonical worker/results/WI-0004.yaml accepted
+      - JOB-003 consumes WI-0004 YAML as formal input
+      - JOB-003 does not re-read source for the initial matrix
       - controller inventory complete
       - endpoint inventory complete
       - every endpoint has one trace result
