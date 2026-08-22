@@ -18,20 +18,21 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - 62 Java component candidates define the approved classification scope
-        - WI-0004 attempts 1 through 9 are CLOSED/PARTIAL
+        - WI-0004 attempts 1 through 10 are CLOSED/PARTIAL
         - canonical completed result is not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
       state: IN_PROGRESS
       evidence:
-        - 40 exposed components are source-proved so far
+        - 45 exposed components are source-proved so far
         - 4 candidates are proved NOT_EXPOSED
-        - 18 candidates remain to classify
+        - 13 candidates remain to classify
+        - misc.web.controller is fully classified at 12 of 12 candidates
     QG-TRC-004:
       name: Endpoint Inventory Completeness
       state: IN_PROGRESS
       evidence:
-        - 106 caller-visible HTTP method/path combinations are source-proved so far
+        - 114 caller-visible HTTP method/path combinations are source-proved so far
         - final endpoint total remains unknown until all candidates are classified
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
@@ -51,6 +52,6 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    Source analysis advanced to 40 proved exposed components and 106 proved HTTP method/path combinations,
-    but 18 candidates still require classification and the canonical completed WI-0004 result does not yet
+    Source analysis advanced to 45 proved exposed components and 114 proved HTTP method/path combinations,
+    but 13 candidates still require classification and the canonical completed WI-0004 result does not yet
     exist. Matrix construction remains locked.
