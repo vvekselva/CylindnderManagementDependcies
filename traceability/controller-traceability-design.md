@@ -2,25 +2,51 @@
 
 ## Purpose
 
-`WF-001-controller-traceability` must prove, for every exposed HTTP endpoint in `vvekselva/CylinderManagement`:
+`WF-001-controller-traceability` proves, for every exposed HTTP endpoint in `vvekselva/CylinderManagement`:
 
 > Which component receives the request, which application calls follow, and what final database, external service, file, cache, module or other dependency is reached?
 
 No trace may be completed by guessing.
 
+## First baseline rule
+
+The **first** Controller Traceability baseline uses a strict two-stage source-analysis sequence:
+
+```text
+COMPLETE SOURCE REPOSITORY CHECK
+             |
+             | must finish COMPLETED + CLOSED
+             v
+   COMPLETE TRACEABILITY MATRIX
+```
+
+The Traceability Matrix must not be assembled from partial source-check batches during the initial baseline.
+
+The first baseline therefore uses one complete Worker Input:
+
+```text
+worker/inputs/WI-0004.yaml
+```
+
+The accepted Worker result becomes:
+
+```text
+traceability/source-repository-check.md
+```
+
+Only after that artifact is accepted and `JOB-002` is VERIFIED may `JOB-003 Complete Traceability Matrix` start.
+
 ## Generic Worker principle
 
 Controller Traceability does not use a special-purpose source-analysis worker.
 
-It uses the same independent **Generic Worker** used by other automation tasks.
-
-The Generic Worker is defined by:
+The independent component is a reusable **Generic Worker** defined by:
 
 ```text
 automation/worker-component-contract.md
 ```
 
-The Controller Traceability task is supplied through input files:
+The actual task is always supplied through:
 
 ```text
 worker/inputs/WI-####.yaml
@@ -31,93 +57,124 @@ Therefore:
 ```text
 WORKER = reusable execution engine
 INPUT FILE = actual task
-RESULT FILE = evidence returned from that task
+RUN FILE = what the Worker did
+RESULT FILE = evidence/result returned by the Worker
 ```
 
-## Separation from orchestration
+## First baseline data flow
 
 ```text
-COORDINATOR
-    |
-    +--------------------------+
-    |                          |
-    v                          v
-10 ORCHESTRATION LANES     WORKER INPUT
-                               |
-                               v
-                         GENERIC WORKER
-                     init -> service -> close
-                               |
-                               v
-                         WORKER RESULT
-    |                          |
-    +------------<-------------+
-    |
-    v
-TRACEABILITY ARTIFACTS
+JOB-001 Freeze Source Baseline
+          |
+          v
+worker/inputs/WI-0004.yaml
+          |
+          v
+       WORKER
+ init -> service -> close
+          |
+          +--> worker/runs/WI-0004.md
+          +--> worker/results/WI-0004.md
+          |
+          v
+traceability/source-repository-check.md
+          |
+          | JOB-002 must be VERIFIED
+          v
+JOB-003 Complete Traceability Matrix
+          |
+          +--> traceability/controller-inventory.md
+          +--> traceability/endpoint-inventory.md
+          +--> traceability/controller-traceability.md
+          +--> traceability/unresolved-traceability.md
+          |
+          v
+JOB-004 Register Initial Source Artifact Baseline
+          |
+          v
+JOB-005 Close Initial Traceability Run
 ```
-
-The Generic Worker is not one of `LANE-01` through `LANE-10`.
-
-The orchestration layer decides what task is needed and supplies an input file. The Worker only executes that input.
 
 ## Source baseline
 
-Before source-dependent inputs run, one CylinderManagement commit is frozen.
-
-Every Worker Input for this workflow that reads source must specify that same exact commit.
-
-Current frozen baseline:
+The current frozen source baseline is:
 
 ```text
 3ae6e61442132d94a307275b08dd65fcef228d89
 ```
 
-A later source change is handled separately by `WF-002-source-artifact-sync`.
+The complete repository check and every initial Traceability Matrix row must describe this exact commit.
 
-## Input-driven discovery
+If the source changes while the initial baseline is being created, the baseline run remains on this commit. Later changes are handled by `WF-002-source-artifact-sync`.
 
-The initial Controller Traceability inputs are:
+## What WI-0004 must inspect
+
+The complete repository check must inspect the complete frozen repository tree for the source areas needed to establish Controller Traceability, including:
+
+- production modules and relevant configuration;
+- Spring Boot bootstrap/component-scan configuration;
+- every candidate production MVC/REST web component;
+- every actual exposed HTTP mapping;
+- every exposed handler method;
+- actual downstream calls reachable from those handlers;
+- mediators, handlers, services, repositories, DAOs and adapters reached by those calls;
+- entity mappings and query evidence for database-backed paths;
+- physical tables, views or functions when they can be proved;
+- external services, file-system, cache and module terminal dependencies when present;
+- unresolved final dependencies with the exact last proven source point.
+
+The repository check is read-only.
+
+## Complete repository-check output
+
+`WI-0004` may close as `COMPLETED` only when its result contains:
+
+1. repository/source scope inventory;
+2. complete exposed-component inventory;
+3. complete exposed-endpoint inventory;
+4. one trace result for every exposed endpoint;
+5. evidence for every proved source hop;
+6. final dependency evidence for every COMPLETE trace;
+7. an explicit unresolved record for every trace whose final dependency cannot be proved;
+8. the frozen source commit;
+9. a CLOSED Worker run.
+
+An unresolved endpoint does **not** make repository coverage incomplete when the Worker has fully inspected the available source path and clearly records the last proven point. It remains `UNRESOLVED` rather than guessed.
+
+A result is not acceptable for the first baseline when it is merely `PARTIAL` because some candidate files or endpoints were not inspected.
+
+## Earlier partial inputs
+
+The earlier files:
 
 ```text
-WI-0001 - determine production web source boundary
-WI-0002 - verify first exposed-component batch
-WI-0003 - verify remaining exposed components
+WI-0001
+WI-0002
+WI-0003
 ```
 
-Later Jobs create additional Worker Inputs for:
+are not allowed to unlock the initial Traceability Matrix.
 
-- endpoint mapping extraction;
-- endpoint call-path tracing;
-- deeper component-call tracing;
-- repository/entity/query inspection;
-- physical database-object proof;
-- source-change comparison.
+- `WI-0001` and `WI-0002` are retained as historical evidence.
+- `WI-0003` is superseded by `WI-0004`.
+- `WI-0004` must revalidate the complete source scope needed for the initial baseline.
 
-These responsibilities belong to input files, not to the Worker component.
+## Traceability Matrix Job
 
-## Controller discovery rule
+`JOB-003 Complete Traceability Matrix` starts only when:
 
-The Controller inventory is built only from closed Worker results that prove actual Spring HTTP exposure.
+```text
+JOB-002 = VERIFIED
+WI-0004 result = COMPLETED
+WI-0004 run = CLOSED
+traceability/source-repository-check.md = ACCEPTED
+```
 
-Discovery must consider production classes under the Spring component-scanned runtime boundary and may use evidence such as:
-
-- `@Controller`;
-- `@RestController`;
-- `@RequestMapping`;
-- `@GetMapping`;
-- `@PostMapping`;
-- `@PutMapping`;
-- `@DeleteMapping`;
-- `@PatchMapping`.
-
-A filename ending in `Controller.java` is only a candidate, not proof.
-
-A production package containing the word `test` remains in scope when it lives under `src/main/java` and Spring component-scans it. Real test code under `src/test/java` is excluded.
+The matrix Job does not perform another source-inspection Worker task during the initial baseline. It transforms the accepted complete source-repository-check output into controlled traceability artifacts.
 
 ## Controller identity
 
-Every proved exposed component receives a stable ID:
+Every exposed component receives a stable Controller ID:
 
 ```text
 CTL-001
@@ -126,21 +183,20 @@ CTL-003
 ...
 ```
 
-The Controller inventory records:
+The Controller inventory records at least:
 
 - Controller ID;
 - class name;
-- source module/path;
-- exposure type (`MVC`, `REST`, `MIXED`);
-- class-level mapping if any;
+- source module/file;
+- exposure type (`MVC`, `REST`, or `MIXED`);
+- class-level mapping when present;
 - endpoint count;
-- source baseline;
-- Worker Input/Result evidence IDs;
-- trace state.
+- frozen source baseline;
+- Worker evidence reference.
 
 ## Endpoint identity
 
-Every caller-visible HTTP method/path combination receives an Endpoint ID:
+Every exposed caller-visible HTTP method/path combination receives a stable Endpoint ID under its Controller ID:
 
 ```text
 CTL-007
@@ -149,90 +205,47 @@ CTL-007
   EP-007-03
 ```
 
-The Endpoint inventory records:
+The Endpoint inventory records at least:
 
 - Endpoint ID;
 - Controller ID;
 - HTTP method;
 - full URL path;
-- handler class/method;
-- input/output type when proved;
-- Worker Input/Result evidence;
-- trace state.
+- handler method;
+- request/input type where provable;
+- response/output type where provable;
+- Worker evidence reference.
 
-For unrestricted `@RequestMapping`, record HTTP method `ANY` unless a narrower method is proved.
+## Traceability Matrix
 
-## Full URL rule
-
-Combine class-level and method-level mappings.
-
-Example:
+The initial matrix is written to:
 
 ```text
-Class:  /cylindermanagement
-Method: /vehicle-loads/list
-Result: /cylindermanagement/vehicle-loads/list
+traceability/controller-traceability.md
 ```
 
-## Vertical trace rule
+Each endpoint appears exactly once and records:
 
-One orchestration lane owns one Controller artifact at a time.
+| Endpoint | Controller | Intermediate Components | Repository/DAO | Final Dependency | DB Objects | State | Evidence |
+|---|---|---|---|---|---|---|---|
 
-For each endpoint, the lane requests evidence through one or more Worker Inputs.
+Valid endpoint states are:
 
-Example:
+- `COMPLETE`;
+- `UNRESOLVED`;
+- `BLOCKED`;
+- `FAILED`.
 
-```text
-LANE-04 owns CTL-007
-       |
-       v
-WI-0042: inspect EP-007-01 handler call
-       |
-       v
-Worker Result: handler calls TripService.process(...)
-       |
-       v
-WI-0043: inspect TripService.process(...)
-       |
-       v
-Worker Result: service calls TripRepository.find...
-       |
-       v
-WI-0044: inspect repository/entity/query mapping
-       |
-       v
-Worker Result: PostgreSQL object proved
-       |
-       v
-CTL-007 artifact updated
-```
+For an initial baseline to pass the coverage gate, every exposed endpoint must have a matrix row. `UNRESOLVED` rows are allowed only when the source check fully inspected the available path and explains the stopping point.
 
-Each deeper task is explicit in a new input file.
+## Database rule
 
-## Hop evidence rule
+A database-backed trace does not stop at a repository name when the physical object can be proved from source.
 
-Every COMPLETE hop must reference a CLOSED Worker result.
-
-For each hop record:
-
-- current component;
-- current method;
-- next component/operation;
-- source file/location;
-- Worker Input ID;
-- Worker Result Fact ID;
-- confidence (`PROVED`, `UNRESOLVED`, `NOT_APPLICABLE`).
-
-An injected field alone does not prove a handler uses that dependency. The Worker Input must ask the Worker to inspect the actual reachable call path.
-
-## Database trace rule
-
-Database-backed traces do not stop at a Repository name.
-
-Additional Worker Inputs continue until source evidence proves the physical object through, for example:
+Valid proof may include:
 
 ```text
-Repository -> Entity -> @Table -> schema.table
+Repository -> Entity/@Table -> schema.table
 ```
 
 or:
@@ -241,127 +254,40 @@ or:
 Repository -> @Query/native SQL/JdbcTemplate/query builder -> table/view/function
 ```
 
-If the exact object cannot be proved, the result remains `UNRESOLVED` and records the last proved source location.
-
-## Final dependency types
-
-Use:
-
-- `DATABASE`;
-- `EXTERNAL_API`;
-- `MESSAGE_QUEUE`;
-- `FILE_SYSTEM`;
-- `EMAIL`;
-- `OBJECT_STORAGE`;
-- `CACHE`;
-- `ANOTHER_MODULE`;
-- `TERMINAL_APPLICATION_ACTION`;
-- `UNKNOWN`.
-
-## Trace states
-
-- `COMPLETE` - final dependency proved;
-- `UNRESOLVED` - trace stopped at a known point and the next fact is not yet proved;
-- `BLOCKED` - missing information/permission/decision prevents progress;
-- `FAILED` - the requested execution itself failed.
-
-For `UNRESOLVED`, record:
-
-- last proved component;
-- what is still unknown;
-- why continuing would require guessing;
-- next Worker Input/task needed.
-
-## Generic Worker lifecycle inside this workflow
-
-Every Worker Input uses:
-
-```text
-init()
-  -> read input and state task/scope/permissions
-service()
-  -> execute only input Actions
-close()
-  -> record result/blocker/evidence and close run
-```
-
-The run and result are stored as:
-
-```text
-worker/runs/WI-####.md
-worker/results/WI-####.md
-```
-
-A result from an unclosed run cannot be used as traceability evidence.
-
-## Orchestration lane lifecycle
-
-The ten orchestration lanes continue to use `automation/worker-service-contract.md` for their assigned Workflow Jobs:
-
-```text
-init -> service -> close
-```
-
-The lane owns the workflow artifact. The Generic Worker owns only execution of the individual input file.
-
-## Worker output references
-
-Each Controller artifact must record the Worker Input/Result IDs used to prove its endpoints and hops.
-
-Per-controller artifact path:
-
-```text
-traceability/controllers/CTL-###-<ControllerClass>.md
-```
-
-## Shared output ownership
-
-Neither an orchestration lane nor the Generic Worker directly edits shared coordinator files during parallel work.
-
-Coordinator-owned files include:
-
-- `TaskStatus.md`;
-- `logs/automation-log.md`;
-- `logs/automation-story.md`;
-- `traceability/controller-inventory.md`;
-- `traceability/endpoint-inventory.md`;
-- `traceability/controller-traceability.md`;
-- `traceability/unresolved-traceability.md`;
-- `sync/source-artifact-sync-register.yaml`.
+A table/view/function must never be inferred from a repository or class name alone.
 
 ## Coverage and resolution
 
-Coverage:
+Two separate values are required.
+
+### Coverage
 
 ```text
-endpoints with any trace result / total exposed endpoints * 100
+Endpoints with a matrix trace result / total exposed endpoints * 100
 ```
 
-Coverage must reach 100%.
+Initial baseline requirement: **100%**.
 
-Resolution:
+### Resolution
 
 ```text
-COMPLETE endpoints / total exposed endpoints * 100
+Endpoints with COMPLETE final dependency / total exposed endpoints * 100
 ```
 
-Resolution may be below 100% when unresolved items are clearly documented.
+Resolution may be below 100% when the unresolved endpoints are explicitly and correctly recorded.
 
-## Quality gates
+## Runtime state
 
-1. `GATE-TRC-001` - one source baseline frozen;
-2. `GATE-TRC-002` - production web-source scope proved;
-3. `GATE-TRC-003` - exposed Controller inventory complete;
-4. `GATE-TRC-004` - exposed Endpoint inventory complete;
-5. `GATE-TRC-005` - every Endpoint has a trace result;
-6. `GATE-TRC-006` - every COMPLETE hop references CLOSED Worker evidence;
-7. `GATE-TRC-007` - unresolved items have a stopping point and next task;
-8. `GATE-TRC-008` - coverage is 100%;
-9. `GATE-TRC-009` - source-to-artifact sync register updated;
-10. `GATE-TRC-010` - all Worker/orchestration runs used by the workflow are CLOSED and story is current.
+The first run is controlled under:
 
-## Synchronization
+```text
+workflows/WF-001-controller-traceability/runtime/
+```
 
-`WF-002-source-artifact-sync` may also use the same Generic Worker with change-comparison input files.
+The runtime files record the current run, Job states, queue, Worker Input register, gate states and lane assignments. They prevent `JOB-003` from becoming READY before the complete repository-check gate passes.
 
-The synchronization Workflow, not the Worker, decides whether a change is `INTERNAL_ONLY`, `TRACE_CHANGED`, `EXPOSED_API_CHANGED`, `COMPONENT_ADDED_OR_REMOVED` or `IMPACT_NOT_CONFIRMED`.
+## After the first baseline
+
+After the initial matrix and source-artifact baseline are closed, later source changes may use targeted Worker Inputs under `WF-002-source-artifact-sync`.
+
+The strict whole-repository check is required for establishing the first trusted baseline; later checks may be incremental when the previous baseline is already verified.
