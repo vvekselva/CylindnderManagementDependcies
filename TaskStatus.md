@@ -4,22 +4,6 @@
 
 The framework is **Backlog-driven** and both analysis and execution are controlled by the Orchestrator.
 
-```text
-BACKLOG
- -> RUN SELECTION
- -> DEPENDENCY GATE
- -> ITEM QUALITY GATE
- -> COMPLETION PATH
- -> ORCHESTRATOR ANALYSIS
- -> EXECUTION PLAN
- -> WORK UNITS
- -> WORKER INPUTS / ORCHESTRATION ACTIONS
- -> EXECUTION
- -> ORCHESTRATOR VALIDATION
- -> USER ACCEPTANCE WHEN REQUIRED
- -> VERIFIED / CLOSED
-```
-
 ## Backlog Run Selection
 
 The authoritative execution switchboard is `backlog/orchestrator-run-config.yaml`.
@@ -68,19 +52,19 @@ Frozen source baseline:
 Current proved findings:
 
 - classification scope: **62 Java component candidates**;
-- **19 exposed components** are source-proved;
-- those components account for **55 proved caller-visible HTTP method/path combinations**;
-- **2 candidates are proved NOT_EXPOSED** because their `@Controller` annotations are commented out;
-- **41 Java candidates remain to be classified**;
+- **24 exposed components** are source-proved;
+- those components account for **67 proved caller-visible HTTP method/path combinations**;
+- **2 candidates are proved NOT_EXPOSED**;
+- **36 Java candidates remain to be classified**;
 - downstream call paths and final physical dependencies remain incomplete.
 
-Newly classified in attempt 4:
+Newly classified in attempt 5:
 
-- `CylinderDashboardController`: NOT_EXPOSED;
-- `CylinderFleetSummaryDashboardController`: NOT_EXPOSED;
-- `DeliveryPlanningApiController`: EXPOSED, 7 GET endpoints;
-- `DeliveryPlanningController`: EXPOSED, 4 GET method/path combinations;
-- `DeliveryPlanningStopManagementController`: EXPOSED, 5 method/path combinations.
+- `LoginController`: EXPOSED, 1 GET endpoint;
+- `OfflineMapController`: EXPOSED, 4 GET endpoints;
+- `OwnershipDashboardController`: EXPOSED, 5 GET endpoints;
+- `OwnershipObligationDashboardController`: EXPOSED, 1 GET endpoint;
+- `PartyCustodyTraceabilityController`: EXPOSED, 1 GET endpoint.
 
 Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml` and `worker/runs/WI-0004.md`.
 
@@ -97,15 +81,15 @@ Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml` and `wor
 
 ```text
 Worker Input: WI-0004
-Latest Attempt: 4
-Latest Run: RUN-WI0004-20260822-004
+Latest Attempt: 5
+Latest Run: RUN-WI0004-20260822-005
 Run State: CLOSED
 Attempt Result: PARTIAL
 Canonical Result: NOT CREATED / NOT ACCEPTED
-Proved Exposed Components: 19
-Proved HTTP Method/Path Combinations: 55
+Proved Exposed Components: 24
+Proved HTTP Method/Path Combinations: 67
 Proved NOT_EXPOSED Candidates: 2
-Candidates Remaining: 41
+Candidates Remaining: 36
 Next Action: continue the same approved Source Check
 ```
 
@@ -125,10 +109,10 @@ QG-TRC-002: IN PROGRESS
 QG-TRC-003: IN PROGRESS
 QG-TRC-004: IN PROGRESS
 Classification scope: 62 Java candidates
-Proved exposed components: 19
-Proved HTTP method/path combinations: 55
+Proved exposed components: 24
+Proved HTTP method/path combinations: 67
 Proved not-exposed candidates: 2
-Candidates remaining to classify: 41
+Candidates remaining to classify: 36
 Current Work Unit: WU-BL001-001
 Worker Input: WI-0004
 Open Worker runs: 0
