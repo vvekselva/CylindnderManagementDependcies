@@ -1,0 +1,65 @@
+worker_input:
+  id: WI-####
+  version: 1
+
+  requested_by:
+    workflow_id: <WF-ID-or-NONE>
+    job_id: <JOB-ID-or-NONE>
+    action_id: <ACT-ID-or-NONE>
+
+  task:
+    name: <plain-English task name>
+    purpose: >-
+      <why this task is required>
+    task_type: <DISCOVERY|INSPECTION|TRACE|COMPARE|VALIDATION|OTHER>
+
+  target:
+    repository: <owner/repository-or-NOT_APPLICABLE>
+    ref: <exact-commit-branch-tag-or-NOT_APPLICABLE>
+    scope:
+      - <path/component/resource>
+
+  permissions:
+    source_read: true
+    source_write: false
+    database_read: false
+    database_write: false
+    network_read: false
+    external_write: false
+
+  inputs:
+    - name: <input name>
+      value: <value/path/reference>
+
+  actions:
+    - id: STEP-001
+      instruction: <exact work to perform>
+      expected_result: <expected result from this step>
+    - id: STEP-002
+      instruction: <next exact work>
+      expected_result: <expected result>
+
+  evidence:
+    required: true
+    requirements:
+      - <what proves the result>
+
+  expected_output:
+    result_path: worker/results/WI-####.md
+    run_path: worker/runs/WI-####.md
+    format: MARKDOWN
+
+  completion_check:
+    - <condition that must be true before COMPLETED>
+
+  blocker_policy:
+    plain_english_required: true
+    guessing_allowed: false
+    return_last_proven_point: true
+    suggest_alternatives: true
+
+  result_states:
+    - COMPLETED
+    - PARTIAL
+    - BLOCKED
+    - FAILED
