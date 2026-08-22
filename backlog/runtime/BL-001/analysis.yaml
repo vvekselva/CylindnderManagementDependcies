@@ -1,15 +1,99 @@
 analysis:
   backlog_item: BL-001
   completion_path: backlog/paths/BL-001-traceability.yaml
-  state: COMPLETED_FOR_CURRENT_PLAN
+  quality_gate_config: backlog/gates/BL-001-traceability.yaml
+  state: SOURCE_ANALYSIS_IN_PROGRESS
   target_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
+  proven_source_analysis:
+    source_baseline:
+      state: PROVED
+      finding: >-
+        The frozen traceability baseline is 3ae6e61442132d94a307275b08dd65fcef228d89.
+        At this analysis point CylinderManagement/main compares identical to that baseline,
+        so no source drift exists between the approved baseline and current main.
+
+    spring_bootstrap:
+      state: PROVED
+      path: cyl.../web/bootstrap/CylinderManagementWebApplication.java
+      component_scan_boundary:
+        - com.sreyas.datamatics.cylindermanagement.web.controller
+        - com.sreyas.datamatics.cylindermanagement.web.rest
+        - com.sreyas.datamatics.cylindermanagement.misc.web.controller
+        - com.sreyas.datamatics.cylindermanagement.misc.cache
+        - com.sreyas.datamatics.cylindermanagement.web.controller.test
+      finding: >-
+        Production Controller discovery must inspect the explicitly component-scanned
+        packages, including web.controller.test under src/main/java. It must not assume
+        exposure merely from a Controller-like filename.
+
+    web_controller_scope:
+      state: PROVED_AS_CANDIDATE_SCOPE
+      path: cyl.../web/controller/
+      observed_candidates:
+        - CustomerSpotCylinderCheckController.java
+        - UC01RegisterCustomerController.java
+        - Uc02Phase01VehicleLoadController.java
+        - Uc02Phase02CylinderDeliveryController.java
+        - VehicleTripLoadWizardController.java
+        - test/
+      finding: >-
+        The top-level production web.controller package and its production test subpackage
+        exist in the frozen baseline and must be classified by annotations/mappings.
+
+    web_controller_test_scope:
+      state: PROVED_AS_CANDIDATE_SCOPE
+      path: cyl.../web/controller/test/
+      observed_examples:
+        - AddStopController.java
+        - ChallanBookWebController.java
+        - ChallanEntryAgingDashboardController.java
+        - ChallanHeatmapController.java
+        - ChallanPagePhotoController.java
+        - CompleteTripController.java
+        - CustomerAddressLocationController.java
+        - CustomerConsumptionDashboardController.java
+      finding: >-
+        This is production source under src/main/java and is included by the Spring
+        component-scan boundary even though the package name contains test.
+
+    web_rest_scope:
+      state: PROVED_AS_CANDIDATE_SCOPE
+      path: cyl.../web/rest/
+      observed_examples:
+        - RestfulAddressServices.java
+        - RestfulAddressTypeServices.java
+        - RestfulChallanTypeServices.java
+        - RestfulCityServices.java
+        - RestfulCountryServices.java
+        - RestfulCustomerServices.java
+        - RestfulCylinderServices.java
+        - RestfulDriverServices.java
+      finding: >-
+        The web.rest production package contains source candidates that must be inspected
+        for actual HTTP exposure and endpoint mappings.
+
+  not_yet_proved:
+    - Complete classification of every candidate component as EXPOSED or NOT_EXPOSED.
+    - Complete caller-visible endpoint inventory.
+    - Complete endpoint call paths to final dependencies.
+    - Complete physical database-object evidence for database-backed paths.
+    - 100 percent Source Check Output coverage required by QG-TRC-002 through QG-TRC-005.
+
+  quality_gate_effect:
+    QG-DEP-001: PASS
+    QG-TRC-001: PASS
+    QG-TRC-002: IN_PROGRESS
+    QG-TRC-003: WAITING
+    QG-TRC-004: WAITING
+    QG-TRC-005: WAITING
+
   orchestrator_findings:
     - The first trusted traceability baseline requires one complete source repository check before matrix construction.
-    - The Generic Worker must remain task-agnostic; the complete source-check task is supplied by WI-0004.
+    - The Generic Worker remains task-agnostic; the complete source-check task is supplied by WI-0004.
     - The canonical Source Check Output is worker/results/WI-0004.yaml.
-    - JOB-003 / matrix construction must consume that canonical output and must not re-read source for the initial baseline.
+    - Matrix construction must consume that canonical output and must not recreate source facts independently.
     - Earlier WI-0001 and WI-0002 are historical evidence only; WI-0003 is superseded.
 
   required_work_units:
@@ -18,4 +102,7 @@ analysis:
     - WU-BL001-003
     - WU-BL001-004
 
-  next_step: Execute WU-BL001-001 using WI-0004.
+  next_step: >-
+    Execute WU-BL001-001 / WI-0004 through its complete Worker lifecycle. Do not unlock
+    matrix construction until the structured Source Check Output is COMPLETED, CLOSED,
+    contract-valid and has 100 percent endpoint trace-result coverage.
