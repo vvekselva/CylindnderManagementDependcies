@@ -17,15 +17,15 @@ analysis:
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
     examined_for_final_dependency: 10
-    complete: 6
-    unresolved: 4
+    complete: 10
+    unresolved: 0
     blocked: 0
     failed: 0
     not_yet_examined: 124
 
   latest_attempt:
-    number: 16
-    run_id: RUN-WI0004-20260822-016
+    number: 17
+    run_id: RUN-WI0004-20260822-017
     state: CLOSED
     result: PARTIAL
     evidence: worker/runs/WI-0004.md
@@ -51,6 +51,34 @@ analysis:
         repository_methods: [searchBySerialAndStateNames, findByCylinderStateIn]
         final_dependencies: [public.vw_cylinder_global_search, public.tbl_cylinder_states]
         trace_state: COMPLETE
+      - endpoint: POST /search/cylinder/by-state
+        controller: RestfulCylinderServices
+        service: AvailableYardCylinderByStateSearchService
+        repositories: [YardInventoryLineJpaDao, CylinderIdentifierJpaDao]
+        repository_methods: [findYardProductWiseEmptyFullCounts, findActiveYardCylindersByStateNames, findActiveYardCylindersByStateNamesAndSerial, findActiveYardCylindersByStateNamesAndProduct, findActiveYardCylindersByStateNamesAndProductAndSerial, findByCylinderAndActiveAndPrimary]
+        final_dependencies: [public.tbl_yard_inventory_line, public.tbl_cylinder, public.tbl_product, public.tbl_cylinder_states, public.tbl_cylinder_identifier]
+        trace_state: COMPLETE
+      - endpoint: POST /search/cylinder/on-vehicle
+        controller: RestfulCylinderServices
+        service: CylindersOnVehicleSearchServiceWithOwnershipModel
+        repositories: [CylinderLogisticsExecutionLineJpaDao, CylinderIdentifierJpaDao]
+        repository_methods: [findActiveVehicleContents, findByCylinderAndActiveAndPrimary]
+        final_dependencies: [public.tbl_cylinder_logistics_execution_line, public.tbl_cylinder_logistics_execution, public.tbl_vehicle_load, public.tbl_cylinder, public.tbl_product, public.tbl_cylinder_states, public.tbl_cylinder_identifier]
+        trace_state: COMPLETE
+      - endpoint: POST /search/cylinder/by-customer
+        controller: RestfulCylinderServices
+        service: CylindersByCustomerSearchServiceWithOwnershipModel
+        repository: CustomerHeldCylinderSearchJpaDao
+        repository_method: findActiveCustomerHeldCylinders
+        final_dependencies: [public.vw_cylinder_party_custody_with_identifiers, public.tbl_cylinder, public.tbl_product]
+        trace_state: COMPLETE
+      - endpoint: POST /search/cylinder/by-supplier
+        controller: RestfulCylinderServices
+        service: CylindersBySupplierSearchServiceWithOwnershipModel
+        repository: SupplierHeldCylinderSearchJpaDao
+        repository_method: findActiveSupplierHeldCylinders
+        final_dependencies: [public.vw_cylinder_party_custody_with_identifiers, public.tbl_cylinder, public.tbl_product]
+        trace_state: COMPLETE
       - endpoint: GET /search/customer/{searchText}
         service: CustomerSearchService
         repository: CustomerJpaDao
@@ -69,19 +97,7 @@ analysis:
         repository_method: findByAddressTypeContainingIgnoreCase
         final_dependencies: [public.tbl_address_type]
         trace_state: COMPLETE
-    unresolved_endpoint_traces:
-      - endpoint: POST /search/cylinder/by-state
-        last_proven_component: availableYardCylinderByStateSearchService
-        trace_state: UNRESOLVED
-      - endpoint: POST /search/cylinder/on-vehicle
-        last_proven_component: cylindersOnVehicleSearchServiceWithOwnershipModel
-        trace_state: UNRESOLVED
-      - endpoint: POST /search/cylinder/by-customer
-        last_proven_component: cylindersByCustomerSearchServiceWithOwnershipModel
-        trace_state: UNRESOLVED
-      - endpoint: POST /search/cylinder/by-supplier
-        last_proven_component: cylindersBySupplierSearchServiceWithOwnershipModel
-        trace_state: UNRESOLVED
+    unresolved_endpoint_traces: []
 
   quality_gate_effect:
     QG-DEP-001: PASS
@@ -98,19 +114,18 @@ analysis:
   proved_now:
     - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
     - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
-    - Six of the ten examined endpoint traces are COMPLETE from controller/service through JPA repository evidence to physical database object evidence.
-    - GET /search/customer/{searchText} terminates at public.tbl_customer.
-    - GET /search/product/{searchText} terminates at public.tbl_product.
-    - GET /search/addresstype/{searchText} terminates at public.tbl_address_type.
-    - Four examined traces remain explicitly UNRESOLVED; 124 endpoints remain not yet examined.
+    - All ten endpoints examined so far now have COMPLETE controller-to-final-dependency evidence.
+    - The yard state search is proved through AvailableYardCylinderByStateSearchService and YardInventoryLineJpaDao to mapped physical tables including public.tbl_yard_inventory_line.
+    - The on-vehicle search is proved through CylindersOnVehicleSearchServiceWithOwnershipModel and CylinderLogisticsExecutionLineJpaDao to public.tbl_cylinder_logistics_execution_line and its joined persistence objects.
+    - Customer-held and supplier-held cylinder searches are proved by native queries against public.vw_cylinder_party_custody_with_identifiers with direct joins to public.tbl_cylinder and public.tbl_product.
+    - No examined endpoint remains UNRESOLVED after Attempt 17.
 
   not_yet_proved:
-    - Final dependencies for the four remaining examined UNRESOLVED Cylinder endpoints.
     - Final dependencies for the remaining 124 endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Continue WU-BL001-001 by proving the DAO/query-to-physical-object evidence for the four remaining
-    examined Cylinder endpoints and then examine the remaining 124 endpoints. Do not unlock Matrix
+    Continue WU-BL001-001 by examining the remaining 124 endpoints and proving each endpoint path to its
+    final dependency or recording a justified unresolved/blocked/failed result. Do not unlock Matrix
     construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result
     contract validates, and endpoint trace-result coverage equals 100 percent.
