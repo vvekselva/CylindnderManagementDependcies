@@ -3,19 +3,29 @@ jobs:
     name: Freeze Source Baseline
     state: VERIFIED
     result: COMPLETED
+
   JOB-002:
     name: Complete Source Repository Check
     state: READY
-    worker_input: WI-0004
+    worker_input: worker/inputs/WI-0004.yaml
+    expected_output: worker/results/WI-0004.yaml
+    output_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
     result: NOT_STARTED
+
   JOB-003:
     name: Complete Traceability Matrix
     state: WAITING
-    wait_reason: JOB-002_NOT_VERIFIED
+    input_name: SOURCE_CHECK_OUTPUT
+    input_path: worker/results/WI-0004.yaml
+    input_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+    source_repo_read_allowed_for_initial_matrix: false
+    wait_reason: SOURCE_CHECK_OUTPUT_NOT_ACCEPTED
+
   JOB-004:
     name: Register Initial Source Artifact Baseline
     state: WAITING
     wait_reason: JOB-003_NOT_VERIFIED
+
   JOB-005:
     name: Close Initial Traceability Run
     state: WAITING
