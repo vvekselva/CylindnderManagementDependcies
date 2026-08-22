@@ -11,56 +11,28 @@ This artifact records endpoint paths whose final dependency has not yet been sou
 
 - Total source-proved endpoint inventory: 134
 - Explicitly examined for final dependency: 16
-- COMPLETE: 13
-- UNRESOLVED: 3
+- COMPLETE: 16
+- UNRESOLVED: 0
 - BLOCKED: 0
 - FAILED: 0
 - Not yet examined: 118
 
-## Unresolved in Attempt 21
+## Resolved in Attempt 22
 
-### `GET /search/product-category/{searchText}`
+The three paths that were UNRESOLVED in Attempt 21 are now source-proved COMPLETE:
 
-Source-proved path so far:
+- `GET /search/product-category/{searchText}` -> `ProductCategorySearchService` -> `ProductCategoryJpaDao.findByProductCategoryContainingIgnoreCase(...)` -> `ProductCategoryDo` -> `public.tbl_product_category`.
+- `GET /search/product-uom/{searchText}` -> `ProductUomSearchService` -> `ProductUomJpaDao.findByProductUomContainingIgnoreCase(...)` -> `ProductUomDo` -> `public.tbl_product_uom`.
+- `GET /search/state/{searchText}` -> `StateSearchService` -> `StateJpaDao.findByStateNameContainingIgnoreCase(...)` -> `StateDo` -> `public.tbl_state`.
 
-`RestfulProductCategoryServices` -> injected `productCategorySearchService.searchWithText(...)`.
-
-Last proven component: `productCategorySearchService`, typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, ProductCategorySearchResponseDto>`.
-
-Missing evidence: the concrete Spring implementation selected for this injection, its repository/query path, and its final persistence or external dependency.
-
-Next investigation: resolve the injected bean from the frozen source configuration/components, then follow the actual DAO/repository/query to the final dependency.
-
-### `GET /search/product-uom/{searchText}`
-
-Source-proved path so far:
-
-`RestfulProductUomServices` -> injected `productUomSearchService.searchWithText(...)`.
-
-Last proven component: `productUomSearchService`, typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, ProductUomSearchResponseDto>`.
-
-Missing evidence: the concrete Spring implementation selected for this injection, its repository/query path, and its final persistence or external dependency.
-
-Next investigation: resolve the injected bean from the frozen source configuration/components, then follow the actual DAO/repository/query to the final dependency.
-
-### `GET /search/state/{searchText}`
-
-Source-proved path so far:
-
-`RestfulStateServices` -> injected `stateSearchService.searchWithText(...)`.
-
-Last proven component: `stateSearchService`, typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, StateSearchResponseDto>`.
-
-Missing evidence: the concrete Spring implementation selected for this injection, its repository/query path, and its final persistence or external dependency.
-
-Next investigation: resolve the injected bean from the frozen source configuration/components, then follow the actual DAO/repository/query to the final dependency.
+Each promotion to COMPLETE is backed by the concrete Spring service, the invoked Spring Data repository method, and the entity's explicit `@Table` mapping in the frozen source.
 
 ## Current unresolved paths
 
-Three endpoints are UNRESOLVED, all at a source-proved generic search-service handoff. They are not BLOCKED or FAILED because the next investigation step is available.
+There are currently no UNRESOLVED, BLOCKED or FAILED paths among the 16 examined endpoints.
 
 The remaining 118 endpoints are **NOT YET EXAMINED**, not UNRESOLVED.
 
 ## Next action
 
-Resolve the three concrete generic search-service implementations while continuing `WU-BL001-001` across independent remaining endpoints. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
+Continue `WU-BL001-001` across the remaining 118 endpoints. Any path whose final dependency cannot be proved must stop at its last proven component and be recorded here. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
