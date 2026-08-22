@@ -1,0 +1,52 @@
+execution_plan:
+  backlog_item: BL-001
+  version: 1
+  state: PLANNED
+  generated_by: ORCHESTRATOR
+  completion_path: backlog/paths/BL-001-traceability.yaml
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+
+  work_units:
+    - id: WU-BL001-001
+      name: Complete Source Repository Check
+      phase: EXECUTE_SOURCE_CHECK
+      state: READY
+      parallel: false
+      worker_input: worker/inputs/WI-0004.yaml
+      expected_result: worker/results/WI-0004.yaml
+      result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+      completion_rule: Worker result COMPLETED, run CLOSED, contract valid, coverage 100 percent.
+
+    - id: WU-BL001-002
+      name: Build Traceability Matrix Artifacts
+      phase: BUILD_MATRIX
+      state: WAITING_FOR_DEPENDENCY
+      needs: [WU-BL001-001]
+      executor: ORCHESTRATION_LANE
+      input: worker/results/WI-0004.yaml
+      source_read_allowed: false
+      outputs:
+        - traceability/source-repository-check.md
+        - traceability/controller-inventory.md
+        - traceability/endpoint-inventory.md
+        - traceability/controller-traceability.md
+        - traceability/unresolved-traceability.md
+
+    - id: WU-BL001-003
+      name: Validate Traceability Gates
+      phase: VALIDATE
+      state: WAITING_FOR_DEPENDENCY
+      needs: [WU-BL001-002]
+      executor: ORCHESTRATOR
+      completion_rule: Every exposed endpoint appears exactly once; coverage 100 percent; evidence/unresolved rules pass.
+
+    - id: WU-BL001-004
+      name: Register Baseline and Close Backlog Item
+      phase: CLOSE
+      state: WAITING_FOR_DEPENDENCY
+      needs: [WU-BL001-003]
+      executor: ORCHESTRATOR
+      outputs:
+        - sync/source-artifact-sync-register.yaml
+        - logs/automation-story.md
+      completion_rule: Source-artifact baseline registered and all required runs closed.
