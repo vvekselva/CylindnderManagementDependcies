@@ -19,18 +19,20 @@ quality_gate_status:
       evidence:
         - exact component-scan boundary proved from CylinderManagementWebApplication
         - 62 Java component candidates identified inside the explicitly scanned package trees
+        - WI-0004 attempt 1 closed PARTIAL; canonical completed result not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
       state: IN_PROGRESS
       evidence:
         - classification scope is 62 Java component candidates
-        - 3 exposed components are source-proved so far
-        - 59 candidates remain to classify
+        - 6 exposed components are source-proved so far
+        - all 5 root web.controller Java candidates are classified as exposed
+        - 56 candidates remain to classify
     QG-TRC-004:
       name: Endpoint Inventory Completeness
       state: IN_PROGRESS
       evidence:
-        - 5 caller-visible endpoints are source-proved so far
+        - 11 caller-visible endpoints are source-proved so far
         - final endpoint total remains unknown until all candidates are classified
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
@@ -50,6 +52,6 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    Source analysis has advanced but remains incomplete. The controller and endpoint inventory
-    gates are now actively being evaluated; the Source Check result has not yet reached the
-    complete, closed and contract-valid state required to unlock matrix construction.
+    Source analysis has advanced but remains incomplete. Six exposed components and eleven endpoints
+    are proved at the current checkpoint, but 56 candidates still require classification and the canonical
+    completed WI-0004 result does not yet exist. Matrix construction remains locked.
