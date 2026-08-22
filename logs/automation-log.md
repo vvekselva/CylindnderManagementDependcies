@@ -103,8 +103,60 @@ Nothing is blocked. Controller inventory is simply not complete yet because actu
 
 ### close() - What happens next
 
-Start `SAR-0002`: inspect every candidate class inside the proved component-scanned production boundary and return only the classes that actually expose HTTP requests.
+Start exposure-verification Source Analysis against candidate production classes.
 
 This event is closed. The Workflow Job remains in progress because additional Source Analysis is required.
+
+Log state: `CLOSED`
+
+---
+
+## EVENT EVT-0003 - First HTTP Exposure Verification Batch Completed
+
+Time: `2026-08-22T05:26:00+05:30`
+Workflow: `WF-001-controller-traceability`
+Job: `JOB-002 Build Exposed Controller Inventory`
+Source Analysis Request: `SAR-0002`
+Source Analysis Worker: `INDEPENDENT_SOURCE_ANALYZER`
+Status: `PARTIAL WORKFLOW PROGRESS`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+### init() - What was about to happen
+
+The Source Analysis Worker was asked to inspect actual Spring annotations and request mappings in the first batch of candidate production classes.
+
+### service() - What was done
+
+Five candidate classes were read directly from the frozen source baseline.
+
+### What was found
+
+All five are proved to expose HTTP requests:
+
+- `CustomerFetchByPageController` - `GET /fetchCustomerByPage`
+- `CustomerFetchController` - `GET /displayCustomer`
+- `CustomerUpdateController` - `POST /updateCustomer`
+- `DomainLookupController` - exposed MVC controller; mappings include `GET /domainLookup`
+- `LookupManagementController` - exposed MVC controller; mappings include `GET /lookup` and `GET /lookupManagement`
+
+These results are source facts, not filename assumptions.
+
+### Source Analysis evidence
+
+- Run: `source-analysis/runs/SAR-0002.md`
+- Result: `source-analysis/results/SAR-0002.md`
+- Source Analysis run state: `CLOSED`
+
+### What is blocking progress
+
+Nothing is blocked. The final Controller Inventory is not complete because remaining candidate classes have not yet been annotation-verified.
+
+### Result
+
+`JOB-002 IN_PROGRESS`.
+
+### close() - What happens next
+
+Continue exposure verification for the remaining candidate production classes at the same frozen source commit. The Controller Inventory will only be generated from the complete set of proved exposure facts.
 
 Log state: `CLOSED`
