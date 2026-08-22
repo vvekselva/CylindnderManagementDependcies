@@ -1,4 +1,4 @@
-version: 1
+version: 2
 purpose: >-
   Tell the Orchestrator which Backlog Items are currently allowed to run. This is the
   execution switchboard for scheduled Orchestrator runs. A true flag does not bypass
@@ -20,46 +20,25 @@ backlog_items:
     quality_gate: backlog/gates/BL-001-traceability.yaml
     quality_gate_configured: true
     quality_gate_approved: true
-
-  BL-002:
-    name: Unit Test Completion
-    run_enabled: false
-    completion_path: backlog/paths/BL-002-unit-test.yaml
-    quality_gate: null
-    quality_gate_configured: false
-    quality_gate_approved: false
-
-  BL-003:
-    name: Integration Test Completion
-    run_enabled: false
-    completion_path: backlog/paths/BL-003-integration-test.yaml
-    quality_gate: null
-    quality_gate_configured: false
-    quality_gate_approved: false
-
-  BL-004:
-    name: Code Coverage Report
-    run_enabled: false
-    completion_path: backlog/paths/BL-004-code-coverage.yaml
-    quality_gate: null
-    quality_gate_configured: false
-    quality_gate_approved: false
-
-  BL-005:
-    name: ArchUnit Architecture Test
-    run_enabled: false
-    completion_path: backlog/paths/BL-005-archunit.yaml
-    quality_gate: null
-    quality_gate_configured: false
-    quality_gate_approved: false
-
-  BL-006:
-    name: Requirements Traceability and Gap Analysis
-    run_enabled: false
-    completion_path: backlog/paths/BL-006-requirements.yaml
-    quality_gate: null
-    quality_gate_configured: false
-    quality_gate_approved: false
+  BL-002: {name: Unit Test Completion, run_enabled: false, completion_path: backlog/paths/BL-002-unit-test.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-003: {name: Integration Test Completion, run_enabled: false, completion_path: backlog/paths/BL-003-integration-test.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-004: {name: Code Coverage Report, run_enabled: false, completion_path: backlog/paths/BL-004-code-coverage.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-005: {name: ArchUnit Architecture Test, run_enabled: false, completion_path: backlog/paths/BL-005-archunit.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-006: {name: Requirements Traceability and Gap Analysis, run_enabled: false, completion_path: backlog/paths/BL-006-requirements.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-007: {name: Migration of the Database to the Ownership Model, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-008: {name: Supplier Owned, Customer Owned and Company Owned Cylinder Model, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-009: {name: Physical Challan Book Location, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-010: {name: Ownership Dashboard Changes, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-011: {name: CRUD Services for All Tables, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-012: {name: On Spot Cylinder Checks, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-013: {name: Correction Management, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-014: {name: Invoice Generation and Check in Tally, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-015: {name: Attendance Management, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-016: {name: Trip Planning for the Customers, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-017: {name: CEO Dashboard, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-018: {name: Restoring the Logical Backup, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-019: {name: Task Management, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-020: {name: Customer Data Dashboard, run_enabled: false, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
 
 scheduled_run_rules:
   - read this file first
