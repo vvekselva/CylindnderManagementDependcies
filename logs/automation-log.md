@@ -144,3 +144,11 @@ Three previously unresolved endpoint paths are now source-proved COMPLETE:
 
 ### Gate effect
 `QG-TRC-002` remains IN_PROGRESS because Source Check coverage is not complete. `QG-TRC-004` remains IN_PROGRESS because the canonical Endpoint Inventory has not yet been generated and validated from a completed Source Check result. `QG-TRC-009` remains IN_PROGRESS with positive no-guessing evidence. `worker/results/WI-0004.yaml` remains uncreated/unaccepted and dependent work units remain locked.
+
+---
+
+## EVENT EVT-0023 - Primary Coordinator Ownership Consolidated
+Time: `2026-08-22T22:02:59+05:30`
+Status: `CLOSED`
+
+The Orchestrator detected overlapping enabled Cylinder coordinator schedules that could independently inspect or mutate the same control-state artifacts. Two redundant coordinator schedules were disabled, leaving one primary Cylinder Orchestrator coordinator responsible for future execution. No BL-001 quality gate was advanced by this governance action, no dependent Work Unit was started, and the authoritative trace checkpoint remains 10 examined / 3 COMPLETE / 7 UNRESOLVED / 124 not yet examined.
