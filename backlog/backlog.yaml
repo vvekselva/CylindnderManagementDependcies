@@ -1,11 +1,15 @@
 backlog:
-  version: 2
+  version: 3
   target_repository: vvekselva/CylinderManagement
+  run_config: backlog/orchestrator-run-config.yaml
+  quality_gate_governance: governance/quality-gates.yaml
   selection_policy: HIGHEST_PRIORITY_ELIGIBLE_ITEM
   max_parallel_backlog_items: 1
   note: >-
-    The Orchestrator may use parallel Work Units inside one Backlog Item, but only one
-    Backlog Item is active at a time until multi-item parallelism is deliberately enabled.
+    Run eligibility is controlled by backlog/orchestrator-run-config.yaml. A Backlog Item
+    must also pass QG-DEP-001 and have an approved item-specific Quality Gate before it
+    may execute. Only one Backlog Item is active at a time; safe Work Units inside it may
+    use parallel execution.
 
   states:
     - YET_TO_DO
@@ -19,6 +23,7 @@ backlog:
     - WAITING_FOR_DECISION
     - FAILED
     - VALIDATING
+    - WAITING_FOR_USER_VERIFICATION
     - VERIFIED
     - CLOSED
 
@@ -29,6 +34,7 @@ backlog:
       priority: P1_BLOCKER_CLEARING
       state: PLANNED
       completion_path: backlog/paths/BL-001-traceability.yaml
+      quality_gate: backlog/gates/BL-001-traceability.yaml
       implementation_workflow: workflows/WF-001-controller-traceability/workflow.yaml
       runtime: backlog/runtime/BL-001/
       dependencies: []
@@ -46,6 +52,7 @@ backlog:
       priority: P2_CRITICAL_PATH
       state: YET_TO_DO
       completion_path: backlog/paths/BL-002-unit-test.yaml
+      quality_gate: null
       dependencies: []
       expected_outputs:
         - quality/unit-test/unit-test-inventory.md
@@ -58,6 +65,7 @@ backlog:
       priority: P2_CRITICAL_PATH
       state: YET_TO_DO
       completion_path: backlog/paths/BL-003-integration-test.yaml
+      quality_gate: null
       dependencies: []
       expected_outputs:
         - quality/integration-test/integration-test-inventory.md
@@ -70,9 +78,8 @@ backlog:
       priority: P2_CRITICAL_PATH
       state: WAITING_FOR_DEPENDENCY
       completion_path: backlog/paths/BL-004-code-coverage.yaml
-      dependencies:
-        - BL-002
-        - BL-003
+      quality_gate: null
+      dependencies: [BL-002, BL-003]
       dependency_rule: ALL_VERIFIED_OR_CLOSED
       expected_outputs:
         - quality/code-coverage/coverage-report.md
@@ -84,6 +91,7 @@ backlog:
       priority: P3_NORMAL
       state: YET_TO_DO
       completion_path: backlog/paths/BL-005-archunit.yaml
+      quality_gate: null
       dependencies: []
       expected_outputs:
         - quality/archunit/architecture-rules.md
@@ -96,6 +104,7 @@ backlog:
       priority: P2_CRITICAL_PATH
       state: YET_TO_DO
       completion_path: backlog/paths/BL-006-requirements.yaml
+      quality_gate: null
       dependencies: []
       expected_outputs:
         - requirements/requirements-inventory.md
@@ -105,6 +114,9 @@ backlog:
   current_selection:
     backlog_item: BL-001
     phase: EXECUTION_READY
+    run_enabled: true
+    quality_gate_configured: true
+    quality_gate_approved: true
     analysis: backlog/runtime/BL-001/analysis.yaml
     execution_plan: backlog/runtime/BL-001/execution-plan.yaml
     next_work_unit: WU-BL001-001
