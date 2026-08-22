@@ -168,12 +168,11 @@ Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
 The first Traceability baseline will no longer build the matrix from partial source-check batches.
 
-The required sequence is now:
+The required sequence became:
 
 ```text
 JOB-002 Complete Source Repository Check
         -> WI-0004 must be COMPLETED and CLOSED
-        -> traceability/source-repository-check.md is accepted
         -> JOB-003 Complete Traceability Matrix becomes READY
 ```
 
@@ -183,20 +182,75 @@ JOB-002 Complete Source Repository Check
 - `WI-0003` is superseded and must not run for the initial baseline.
 - `WI-0004` is the sole executable source-check input for the initial matrix baseline.
 
-### Why this was changed
+### Result
 
-The first Traceability Matrix should be created only after the source repository has been checked as one complete baseline. This prevents a matrix from looking complete while source discovery is still partial.
+Initial baseline orchestration was updated and runtime gates were activated.
 
-### Current execution state
+Log state: `CLOSED`
 
-`WI-0004` is READY but has not been marked started or completed.
+---
 
-`JOB-003 Complete Traceability Matrix` is WAITING/LOCKED until `WI-0004` closes as `COMPLETED` and JOB-002 is VERIFIED.
+## EVENT EVT-0006 - Source Check Output Defined As Orchestrator Input
 
-No background execution is being claimed.
+Time: `2026-08-22T06:03:00+05:30`
+Workflow: `WF-001-controller-traceability`
+Job: `Source Check To Traceability Handoff`
+Status: `CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+### What changed
+
+The Source Repository Check no longer hands the Traceability Job an informal Markdown artifact.
+
+The Worker now produces one canonical machine-readable output:
+
+```text
+worker/results/WI-0004.yaml
+```
+
+Its structure is governed by:
+
+```text
+workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+```
+
+### Data flow
+
+```text
+WI-0004
+  -> Generic Worker
+  -> worker/results/WI-0004.yaml
+  -> Orchestrator input SOURCE_CHECK_OUTPUT
+  -> JOB-003 Complete Traceability Matrix
+```
+
+The Worker lifecycle remains recorded separately in `worker/runs/WI-0004.md`.
+
+### Orchestrator boundary
+
+During the first baseline, `JOB-003` must consume the accepted `SOURCE_CHECK_OUTPUT` directly.
+
+It must not re-read the CylinderManagement source repository to recreate source facts and must not create another source-inspection Worker Input.
+
+The Orchestrator may organize the accepted facts into stable Controller IDs, Endpoint IDs, inventories, matrix rows and human-readable reports, but it must preserve the source conclusions and unresolved states returned by the Worker.
+
+### Runtime enforcement
+
+The handoff is tracked in:
+
+- `runtime/orchestrator-input.yaml`;
+- `runtime/job-status.yaml`;
+- `runtime/queue.yaml`;
+- `runtime/worker-input-register.yaml`;
+- `runtime/gate-status.yaml`;
+- `evidence/evidence-register.yaml`.
+
+`JOB-003` remains WAITING until the canonical YAML result is `COMPLETED`, the Worker run is `CLOSED`, the result contract validates, the source baseline matches, and coverage is 100 percent.
 
 ### Result
 
-Initial baseline orchestration has been updated and runtime gates are active.
+The producer/consumer boundary is now explicit and machine-readable.
+
+Current execution remains at `JOB-002 READY / WI-0004 READY`; no Source Check completion is being claimed yet.
 
 Log state: `CLOSED`
