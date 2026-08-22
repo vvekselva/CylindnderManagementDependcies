@@ -1,0 +1,16 @@
+ready:
+  - type: WORKER_INPUT
+    id: WI-0004
+    job: JOB-002
+    purpose: Complete Source Repository Check for Initial Traceability Baseline
+
+waiting:
+  - job: JOB-003
+    reason: COMPLETE_SOURCE_REPOSITORY_CHECK_NOT_CLOSED
+  - job: JOB-004
+    reason: TRACEABILITY_MATRIX_NOT_VERIFIED
+  - job: JOB-005
+    reason: SOURCE_ARTIFACT_BASELINE_NOT_REGISTERED
+
+superseded_inputs:
+  - WI-0003
