@@ -55,21 +55,42 @@ Run: `RUN-WI0004-20260822-005`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
+### What was proved
+
+Five production candidates were classified as exposed: `LoginController`, `OfflineMapController`, `OwnershipDashboardController`, `OwnershipObligationDashboardController`, and `PartyCustodyTraceabilityController`.
+
+Checkpoint: **24 exposed components, 67 proved caller-visible HTTP method/path combinations, 2 NOT_EXPOSED candidates, 36 candidates remaining**.
+
+### Result
+
+Attempt 5 closed as `PARTIAL`; matrix construction remained locked.
+
+---
+
+## EVENT EVT-0013 - WI-0004 Sixth Source-Check Attempt Advanced Classification
+
+Backlog Item: `BL-001 Controller Traceability`
+Work Unit: `WU-BL001-001 Complete Source Repository Check`
+Worker Input: `WI-0004`
+Run: `RUN-WI0004-20260822-006`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
 ### What was attempted
 
-The Orchestrator read the run-selection switchboard, selected only enabled BL-001, confirmed the common dependency gate PASS, loaded the approved Traceability Quality Gate and Completion Path, and continued the same approved Source Repository Check.
+The Orchestrator re-read the backlog run-selection file, confirmed BL-001 is the only enabled item, enforced `QG-DEP-001`, loaded the approved Traceability Quality Gate, and continued the same approved Source Repository Check without unlocking downstream matrix work.
 
 ### What was proved
 
-Five more production candidates were classified as exposed:
+Five more `web.controller.test` candidates were classified:
 
-- `LoginController` — `GET /login`.
-- `OfflineMapController` — 4 GET endpoints under `/offline-map/*`.
-- `OwnershipDashboardController` — 5 GET dashboard/location endpoints.
-- `OwnershipObligationDashboardController` — `GET /ownership-obligation-dashboard`.
-- `PartyCustodyTraceabilityController` — `GET /party-custody-traceability`.
+- `PartyCylinderDashboardController` — **NOT_EXPOSED** because its `@Controller` annotation is commented out.
+- `PredefinedDeliveryTripController` — **EXPOSED**, 5 HTTP method/path combinations.
+- `ReconciliationCommandCenterController` — **EXPOSED**, 2 GET endpoints.
+- `ReconciliationDashboardController` — **EXPOSED**, 2 HTTP method/path combinations.
+- `SupplierFetchByPageController` — **EXPOSED**, 1 GET endpoint.
 
-The cumulative checkpoint advanced to **24 exposed components, 67 proved caller-visible HTTP method/path combinations, 2 proved NOT_EXPOSED candidates, and 36 candidates remaining to classify**.
+The cumulative checkpoint advanced to **28 exposed components, 77 proved caller-visible HTTP method/path combinations, 3 proved NOT_EXPOSED candidates, and 31 candidates remaining to classify**.
 
 ### Quality Gate effect
 
@@ -82,4 +103,4 @@ The cumulative checkpoint advanced to **24 exposed components, 67 proved caller-
 
 ### Result
 
-Attempt 5 closed as `PARTIAL`. The canonical completed `worker/results/WI-0004.yaml` was not created or accepted, so matrix construction remains locked. The next run must continue the same approved Source Check against the remaining 36 candidates and continue call-path/final-dependency evidence without guessing.
+Attempt 6 closed as `PARTIAL`. The canonical completed `worker/results/WI-0004.yaml` was not created or accepted, so matrix construction remains locked. The next run must continue the same approved Source Check against the remaining 31 candidates and continue call-path/final-dependency evidence without guessing.
