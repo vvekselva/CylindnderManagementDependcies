@@ -32,7 +32,7 @@ backlog:
       name: Controller Traceability
       type: TRACEABILITY
       priority: P1_BLOCKER_CLEARING
-      state: PLANNED
+      state: PARTIAL
       completion_path: backlog/paths/BL-001-traceability.yaml
       quality_gate: backlog/gates/BL-001-traceability.yaml
       implementation_workflow: workflows/WF-001-controller-traceability/workflow.yaml
@@ -113,11 +113,13 @@ backlog:
 
   current_selection:
     backlog_item: BL-001
-    phase: EXECUTION_READY
+    phase: EXECUTE_SOURCE_CHECK
     run_enabled: true
     quality_gate_configured: true
     quality_gate_approved: true
     analysis: backlog/runtime/BL-001/analysis.yaml
     execution_plan: backlog/runtime/BL-001/execution-plan.yaml
-    next_work_unit: WU-BL001-001
-    next_worker_input: worker/inputs/WI-0004.yaml
+    current_work_unit: WU-BL001-001
+    worker_input: worker/inputs/WI-0004.yaml
+    last_attempt_result: PARTIAL
+    next_action: RETRY_OR_CONTINUE_SOURCE_CHECK
