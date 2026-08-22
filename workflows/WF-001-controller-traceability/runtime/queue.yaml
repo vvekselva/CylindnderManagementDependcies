@@ -3,10 +3,12 @@ ready:
     id: WI-0004
     job: JOB-002
     purpose: Complete Source Repository Check for Initial Traceability Baseline
+    expected_output: worker/results/WI-0004.yaml
 
 waiting:
   - job: JOB-003
-    reason: COMPLETE_SOURCE_REPOSITORY_CHECK_NOT_CLOSED
+    required_input: worker/results/WI-0004.yaml
+    reason: SOURCE_CHECK_OUTPUT_NOT_ACCEPTED
   - job: JOB-004
     reason: TRACEABILITY_MATRIX_NOT_VERIFIED
   - job: JOB-005
@@ -14,3 +16,7 @@ waiting:
 
 superseded_inputs:
   - WI-0003
+
+handoff_rule: >-
+  JOB-003 moves from WAITING to READY only after JOB-002 is VERIFIED and
+  worker/results/WI-0004.yaml is accepted against the Source Check Output contract.
