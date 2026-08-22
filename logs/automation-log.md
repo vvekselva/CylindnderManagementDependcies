@@ -144,3 +144,36 @@ All remaining unique candidates were classified from the frozen source:
 
 ### Result
 The source candidate classification phase is complete, but the overall Source Check is still PARTIAL. `worker/results/WI-0004.yaml` was not created or accepted. Matrix construction remains locked. The next work is to trace the full 134-endpoint inventory through services/repositories/queries to final dependencies, recording unresolved paths explicitly instead of guessing.
+
+---
+
+## EVENT EVT-0020 - WI-0004 Thirteenth Attempt Began Endpoint Dependency Tracing
+Time: `2026-08-22T09:04:05-05:30`
+Run: `RUN-WI0004-20260822-013`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+### What was attempted
+The Orchestrator selected only BL-001, confirmed the common dependency gate and approved Traceability Quality Gates, and started the next permitted phase of `WU-BL001-001`: tracing exposed endpoints toward their final dependencies.
+
+### What was found
+Three REST endpoints were examined:
+
+- `GET /search/customer/{searchText}` reaches the injected generic customer search-service interface.
+- `GET /search/product/{searchText}` reaches the injected generic product search-service interface.
+- `GET /search/addresstype/{searchText}` reaches the injected generic address-type search-service interface.
+
+The concrete Spring implementation, DAO/repository, and final database object behind these three injected interfaces were not yet proved from the inspected evidence. The worker therefore stopped at the last proven component instead of naming a likely repository or table.
+
+### Current endpoint-trace checkpoint
+- Endpoint inventory: 134.
+- Explicitly examined for final dependency: 3.
+- COMPLETE: 0.
+- UNRESOLVED: 3.
+- Not yet examined for final dependency: 131.
+
+### Quality Gate effect
+`QG-TRC-002` remains IN PROGRESS. `QG-TRC-009 No Guessing And Unresolved Quality` is now IN PROGRESS with positive evidence that unresolved paths are being recorded at the last proved component. No completion gate was falsely advanced.
+
+### Result
+Attempt 13 closed PARTIAL. The canonical `worker/results/WI-0004.yaml` remains uncreated/unaccepted and Matrix construction remains locked. The next action is to resolve the concrete search-service implementations and continue the remaining endpoint traces.
