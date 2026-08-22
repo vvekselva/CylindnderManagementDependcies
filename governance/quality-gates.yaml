@@ -1,0 +1,65 @@
+version: 1
+purpose: >-
+  Define the common Backlog dependency gate and register the approved quality-gate
+  configuration for each Backlog Item. A Backlog Item may execute only when its
+  dependency gate passes and an approved item-specific quality-gate configuration exists.
+
+common_gate:
+  id: QG-DEP-001
+  name: Backlog Dependency Gate
+  applies_to: ALL_BACKLOG_ITEMS
+  owner: ORCHESTRATOR
+  pass_condition: >-
+    Every dependency declared by the selected Backlog Item is VERIFIED or CLOSED,
+    or the selected Backlog Item declares no dependencies.
+  on_pass: ITEM_MAY_CONTINUE_TO_ITEM_SPECIFIC_QUALITY_GATES
+  on_fail: WAITING_FOR_DEPENDENCY
+
+user_verification:
+  required_before_backlog_close: true
+  rule: >-
+    Automated quality gates may prove that execution is technically complete, but a
+    Backlog Item must not move to CLOSED until its item-specific User Acceptance gate
+    has been approved by the user.
+
+backlog_quality_gates:
+  BL-001:
+    name: Controller Traceability
+    configured: true
+    config: backlog/gates/BL-001-traceability.yaml
+    approved_by_user: true
+  BL-002:
+    name: Unit Test Completion
+    configured: false
+    config: null
+    approved_by_user: false
+    execution_allowed: false
+  BL-003:
+    name: Integration Test Completion
+    configured: false
+    config: null
+    approved_by_user: false
+    execution_allowed: false
+  BL-004:
+    name: Code Coverage Report
+    configured: false
+    config: null
+    approved_by_user: false
+    execution_allowed: false
+  BL-005:
+    name: ArchUnit Architecture Test
+    configured: false
+    config: null
+    approved_by_user: false
+    execution_allowed: false
+  BL-006:
+    name: Requirements Traceability and Gap Analysis
+    configured: false
+    config: null
+    approved_by_user: false
+    execution_allowed: false
+
+orchestrator_rule: >-
+  The Orchestrator must not execute a Backlog Item whose item-specific quality-gate
+  configuration is missing or not approved. Missing quality gates are a governance
+  blocker, not permission to invent gates automatically.
