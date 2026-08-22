@@ -1,33 +1,31 @@
 workflow:
   id: WF-001-controller-traceability
-  version: 3
+  version: 4
   name: Controller Traceability
   purpose: >-
     Find every exposed controller and endpoint in CylinderManagement and trace each
-    endpoint through the real application call path to its final database, external
-    service, file, module or other dependency.
+    endpoint through the real application call path to its final dependency.
 
   target_repository: vvekselva/CylinderManagement
   control_repository: vvekselva/CylindnderManagementDependcies
   design: traceability/controller-traceability-design.md
   controller_artifact_template: traceability/controller-trace-template.md
-  source_analysis_worker_contract: automation/source-analysis-worker-contract.md
+
+  independent_worker:
+    component: WORKER
+    contract: automation/worker-component-contract.md
+    input_template: worker/worker-input-template.yaml
+    input_directory: worker/inputs/
+    run_directory: worker/runs/
+    result_directory: worker/results/
+    consumes_orchestration_lane: false
+    task_definition_source: INPUT_FILE_ONLY
 
   source_baseline:
     rule: ONE_COMMIT_FOR_THE_COMPLETE_WORKFLOW
     description: >-
-      All orchestration workers and all independent Source Analysis requests must use
-      the same CylinderManagement source commit.
-
-  source_analysis:
-    independent_from_orchestration_pool: true
-    consumes_orchestration_lane: false
-    read_only: true
-    request_template: source-analysis/source-analysis-request-result-template.md
-    fact_confidence:
-      - PROVED
-      - UNRESOLVED
-      - NOT_APPLICABLE
+      Every orchestration Job and every Worker Input used by this workflow must use
+      the same CylinderManagement source commit when source inspection is required.
 
   discovery_scope:
     production_sources_only: true
@@ -35,37 +33,19 @@ workflow:
     exclude_src_test_java: true
     derive_runtime_packages_from_spring_component_scan: true
     do_not_rely_on_controller_filename_only: true
-    spring_annotations:
-      - Controller
-      - RestController
-      - RequestMapping
-      - GetMapping
-      - PostMapping
-      - PutMapping
-      - DeleteMapping
-      - PatchMapping
 
-  worker_model:
+  orchestration_worker_model:
     coordinator_is_separate: true
-    orchestration_worker_lanes: 10
-    max_parallel_orchestration_jobs: 10
-    source_analysis_worker_is_additional: true
+    lanes: 10
+    max_parallel_jobs: 10
     controller_work_item: ONE_CONTROLLER
-
-  worker_service_lifecycle:
-    contract: automation/worker-service-contract.md
-    mandatory_for_every_orchestration_job_attempt: true
-    phases:
-      - INIT
-      - SERVICE
-      - CLOSE
 
   logging:
     policy: governance/automation-log-policy.md
     shared_log: logs/automation-log.md
     story_output: logs/automation-story.md
-    source_analysis_runs: source-analysis/runs/SAR-*.md
-    source_analysis_results: source-analysis/results/SAR-*.md
+    independent_worker_runs: worker/runs/WI-*.md
+    independent_worker_results: worker/results/WI-*.md
 
   synchronization:
     policy: governance/source-artifact-sync-policy.md
@@ -75,7 +55,7 @@ workflow:
     - id: GATE-TRC-001
       name: Source Baseline Frozen
     - id: GATE-TRC-002
-      name: Component Scanned Production Source Scope Proved
+      name: Production Web Source Scope Proved
     - id: GATE-TRC-003
       name: Exposed Controller Inventory Complete
     - id: GATE-TRC-004
@@ -83,7 +63,7 @@ workflow:
     - id: GATE-TRC-005
       name: Every Endpoint Has Trace Result
     - id: GATE-TRC-006
-      name: Complete Traces Reference Source Analysis Evidence
+      name: Complete Traces Reference Worker Evidence
     - id: GATE-TRC-007
       name: Unresolved Traces Have Clear Stopping Point
     - id: GATE-TRC-008
@@ -91,7 +71,7 @@ workflow:
     - id: GATE-TRC-009
       name: Source Artifact Sync Registered
     - id: GATE-TRC-010
-      name: Source Analysis And Orchestration Runs Closed And Story Current
+      name: Worker And Orchestration Runs Closed And Story Current
 
   jobs:
     - id: JOB-001
@@ -101,82 +81,61 @@ workflow:
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Read the current approved CylinderManagement main source commit.
-          expected_result: One source commit is recorded as the workflow baseline.
-        - id: ACT-002
-          instruction: Record that same source commit for all later orchestration and Source Analysis work.
-          expected_result: Every caller uses the same baseline.
-      completion_check: A single source commit is available to every later job and analysis request.
+          instruction: Read and record the approved CylinderManagement source commit.
+          expected_result: One source baseline is fixed for the complete workflow.
       gate: GATE-TRC-001
 
     - id: JOB-002
       name: Build Exposed Controller Inventory
-      needs:
-        - JOB-001
+      needs: [JOB-001]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
-      source_analysis_requests:
-        - id: SAR-DISCOVERY
-          depth: DISCOVERY
-          question: >-
-            Which production Java packages are component-scanned by the Spring Boot web
-            application, and which classes in those packages actually expose HTTP requests?
-          expected_facts:
-            - component_scanned_packages
-            - exposed_component_class
-            - source_path
-            - controller_or_rest_annotation
-            - class_level_mapping
+      worker_inputs:
+        completed:
+          - worker/inputs/WI-0001.yaml
+          - worker/inputs/WI-0002.yaml
+        ready:
+          - worker/inputs/WI-0003.yaml
       actions:
         - id: ACT-001
-          instruction: Ask the independent Source Analysis Worker to prove the production/component-scanned web source scope.
-          expected_result: Source Analysis returns the runtime source boundary with evidence.
+          instruction: Execute the Worker Input that determines the production web-source boundary.
+          input: worker/inputs/WI-0001.yaml
+          expected_result: Closed Worker result proves the runtime web-source scope.
         - id: ACT-002
-          instruction: Ask the Source Analysis Worker to prove which components in that scope expose HTTP requests.
-          expected_result: Source Analysis returns exposed-component facts rather than filename guesses.
+          instruction: Execute Worker Inputs that classify candidate classes using actual Spring exposure evidence.
+          inputs:
+            - worker/inputs/WI-0002.yaml
+            - worker/inputs/WI-0003.yaml
+          expected_result: Every candidate in the proved runtime boundary is classified.
         - id: ACT-003
-          instruction: Build the controller inventory from only PROVED Source Analysis facts and assign stable CTL IDs.
-          expected_result: Controller inventory includes every proved exposed production component.
-      completion_check: Every inventory row references Source Analysis evidence and the analysis request is CLOSED.
+          instruction: Build the Controller inventory only from closed Worker results and assign stable CTL IDs.
+          expected_result: Every exposed production component is represented with evidence.
+      completion_check: Every candidate in the proved source boundary is classified and all Worker runs used by the inventory are CLOSED.
       output: traceability/controller-inventory.md
-      gates:
-        - GATE-TRC-002
-        - GATE-TRC-003
+      gates: [GATE-TRC-002, GATE-TRC-003]
 
     - id: JOB-003
       name: Build Endpoint Inventory
-      needs:
-        - JOB-002
+      needs: [JOB-002]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
-      source_analysis_requests:
-        - id: SAR-ENDPOINTS
-          depth: ENDPOINT
-          question: >-
-            For every inventoried exposed component, which handler methods and caller-visible
-            HTTP method/path combinations are exposed at the frozen source baseline?
-          expected_facts:
-            - class_mapping
-            - method_mapping
-            - full_path
-            - http_method
-            - handler_method
-            - input_output_types_where_provable
       actions:
         - id: ACT-001
-          instruction: Request endpoint/mapping facts for every inventoried controller from the independent Source Analysis Worker.
-          expected_result: Every caller-visible method/path combination is returned with evidence.
+          instruction: Create Worker Input files that ask for handler methods and caller-visible HTTP method/path combinations for the inventoried controllers.
+          expected_result: Input files explicitly define controller scope, source baseline, read-only permissions, Actions and expected mapping evidence.
         - id: ACT-002
-          instruction: Build the endpoint inventory from PROVED Source Analysis facts and assign stable Endpoint IDs.
-          expected_result: Every exposed endpoint points to the exact source handler.
-      completion_check: Every exposed handler method/path combination is represented and references Source Analysis evidence.
+          instruction: Execute the endpoint-discovery Worker Inputs and accept only CLOSED results.
+          expected_result: Every exposed handler mapping is returned with evidence.
+        - id: ACT-003
+          instruction: Build the Endpoint inventory from proved Worker results and assign stable Endpoint IDs.
+          expected_result: Every caller-visible endpoint points to an exact source handler.
+      completion_check: Every exposed endpoint is represented and references Worker Input/Result evidence.
       output: traceability/endpoint-inventory.md
       gate: GATE-TRC-004
 
     - id: JOB-004
       name: Trace Controllers In Parallel
-      needs:
-        - JOB-003
+      needs: [JOB-003]
       parallel: true
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       strategy:
@@ -184,133 +143,94 @@ workflow:
         item_source: traceability/controller-inventory.md
         max_parallel: 10
         worker_ownership: ONE_CONTROLLER_PER_WORK_ITEM
-      init_requirements:
-        - log assigned lane
-        - log Controller ID and class
-        - log source baseline
-        - log endpoint count
-        - log planned Source Analysis requests
-        - log expected controller artifact path
       actions:
         - id: ACT-001
           instruction: Read the assigned Controller and Endpoint IDs from the workflow inventories.
-          expected_result: The orchestration worker understands the exact traceability scope it owns.
+          expected_result: The lane knows its exact traceability scope.
         - id: ACT-002
-          instruction: Request CALL_PATH Source Analysis facts for each assigned endpoint.
-          expected_result: Actual downstream calls are returned as PROVED or UNRESOLVED facts.
+          instruction: For each endpoint, create/select Worker Input files that ask the Generic Worker to trace the next actual source call.
+          expected_result: Source-call tasks are explicitly represented as input files rather than hard-coded Worker behaviour.
         - id: ACT-003
-          instruction: Request deeper Source Analysis when a proved hop points to another mediator, handler, service, repository, DAO or adapter.
-          expected_result: The real call path is extended without forcing a fixed architecture.
+          instruction: Continue with additional Worker Inputs whenever a closed result proves another component that must be followed.
+          expected_result: The call path is extended only through evidence returned by closed Worker runs.
         - id: ACT-004
-          instruction: For database-backed paths, request DATABASE_OBJECT Source Analysis until entity/query evidence proves the physical table, view or function.
-          expected_result: Database objects are named only when source evidence proves them.
+          instruction: For database-backed paths, create Worker Inputs that request entity/query/database-object evidence until the physical table, view or function is proved or explicitly unresolved.
+          expected_result: Database objects are never guessed.
         - id: ACT-005
-          instruction: If the Source Analysis Worker returns UNRESOLVED, record its last proven source location and simple-English explanation rather than guessing.
-          expected_result: Unresolved paths remain explicit and actionable.
-        - id: ACT-006
-          instruction: Produce one controller traceability artifact using traceability/controller-trace-template.md and reference all Source Analysis Request/Fact IDs used.
+          instruction: Produce one controller traceability artifact referencing every Worker Input/Result ID used.
           expected_result: One per-controller artifact is produced.
-      close_requirements:
-        - record endpoints assigned
-        - record endpoints complete
-        - record endpoints unresolved or blocked
-        - record Source Analysis Request IDs used
-        - record evidence and outputs
-        - explain any blocker or failure in simple English
-        - record next action
-        - close log state
-      completion_check: Every assigned endpoint is COMPLETE or explicitly UNRESOLVED/BLOCKED with a clear reason and next action.
+      completion_check: Every assigned endpoint is COMPLETE or explicitly UNRESOLVED/BLOCKED with a clear reason and next required input/action.
       output_pattern: traceability/controllers/CTL-*.md
 
     - id: JOB-005
       name: Consolidate Controller Traceability
-      needs:
-        - JOB-004
+      needs: [JOB-004]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Collect all orchestration worker controller artifacts.
+          instruction: Collect all controller artifacts.
           expected_result: All controller results are available to the coordinator.
         - id: ACT-002
-          instruction: Verify that COMPLETE hops reference PROVED Source Analysis facts.
-          expected_result: Complete traces are source-evidence-backed.
+          instruction: Verify that every COMPLETE hop references evidence from a CLOSED Worker result.
+          expected_result: Complete traces are evidence-backed.
         - id: ACT-003
-          instruction: Build one consolidated endpoint-to-final-dependency matrix.
-          expected_result: The complete architecture trace is readable in one place.
-        - id: ACT-004
-          instruction: Build an unresolved list from every endpoint artifact that is not complete.
-          expected_result: No unresolved item is hidden.
+          instruction: Build the consolidated traceability matrix and unresolved list.
+          expected_result: Every endpoint is represented and no unresolved item is hidden.
       outputs:
         - traceability/controller-traceability.md
         - traceability/unresolved-traceability.md
-      completion_check: Every endpoint from the endpoint inventory appears in the consolidated result.
-      gates:
-        - GATE-TRC-005
-        - GATE-TRC-006
-        - GATE-TRC-007
+      gates: [GATE-TRC-005, GATE-TRC-006, GATE-TRC-007]
 
     - id: JOB-006
       name: Run Source Artifact Sync Check
-      needs:
-        - JOB-005
+      needs: [JOB-005]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
           instruction: Register every controller artifact against its source component and frozen source commit.
-          expected_result: The sync register can later detect when source changes affect an artifact.
-        - id: ACT-002
-          instruction: Mark all verified controller artifacts IN_SYNC with the workflow source baseline.
-          expected_result: The initial traceability baseline is established.
+          expected_result: Initial traceability baseline is registered.
       output: sync/source-artifact-sync-register.yaml
-      completion_check: Every controller artifact has a registered source component and verified source commit.
       gate: GATE-TRC-009
 
     - id: JOB-007
       name: Validate Traceability Coverage
-      needs:
-        - JOB-006
+      needs: [JOB-006]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Compare the endpoint inventory with the consolidated traceability report.
-          expected_result: Every exposed endpoint has a traceability result.
-        - id: ACT-002
-          instruction: Calculate coverage and resolution separately.
-          expected_result: Coverage shows what was examined and resolution shows what was fully understood.
-      completion_check: Coverage must be 100 percent. Unresolved paths may remain only when they are explicitly registered.
+          instruction: Compare the endpoint inventory with the consolidated traceability report and calculate coverage/resolution.
+          expected_result: Coverage and resolution are independently auditable.
+      completion_check: Coverage must be 100 percent. Unresolved paths are allowed only when explicitly registered.
       gate: GATE-TRC-008
 
     - id: JOB-008
       name: Generate Human Story
-      needs:
-        - JOB-007
+      needs: [JOB-007]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Confirm every Source Analysis run used by this workflow is CLOSED.
-          expected_result: No analysis result is accepted from an unclosed Source Analysis run.
+          instruction: Confirm every Worker run used as evidence is CLOSED.
+          expected_result: No unfinished Worker result is treated as final evidence.
         - id: ACT-002
-          instruction: Generate the human-readable automation story from the shared orchestration log.
-          expected_result: A simple-English summary explains what happened, what remains unresolved and what happens next.
+          instruction: Generate the human-readable automation story.
+          expected_result: The story explains completed, unresolved and blocked work in simple English.
       output: logs/automation-story.md
-      completion_check: The story matches the recorded workflow result and no unfinished analysis run is treated as final evidence.
       gate: GATE-TRC-010
 
   workflow_completion:
     required:
-      - one source baseline used by all orchestration and Source Analysis work
-      - component-scanned production source scope proved
+      - one source baseline used by all source-dependent Worker Inputs
+      - production web source scope proved
       - controller inventory complete
       - endpoint inventory complete
       - every endpoint has a trace result
-      - every COMPLETE hop references PROVED Source Analysis evidence
-      - traceability coverage equals 100 percent
+      - every COMPLETE hop references CLOSED Worker evidence
+      - coverage equals 100 percent
       - unresolved items explicitly recorded
-      - source-artifact sync register updated
-      - all Source Analysis runs used by workflow CLOSED
-      - all orchestration worker lifecycle logs CLOSED
+      - sync register updated
+      - all Worker and orchestration runs CLOSED
       - human-readable story generated
