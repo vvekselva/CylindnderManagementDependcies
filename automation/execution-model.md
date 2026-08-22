@@ -2,14 +2,12 @@
 
 ## Purpose
 
-This repository uses two different execution mechanisms:
+This repository uses two execution mechanisms:
 
-1. an **orchestration plane** that controls Workflows, Jobs, Actions, dependencies, priorities, gates and the ten parallel lanes;
-2. an independent **Worker component** that performs a task only when that task is supplied through a Worker Input file.
+1. an **orchestration plane** that controls Workflows, Jobs, Actions, dependencies, gates and the ten orchestration lanes;
+2. an independent **Generic Worker** that performs exactly the task supplied through a Worker Input file.
 
-The independent Worker is generic. It is not a Controller worker, source-analysis worker, database worker, or deployment worker.
-
-The task comes from the input file.
+The Generic Worker is task-agnostic. Its canonical result may be consumed by an Orchestrator Job as formal input.
 
 ## Overall model
 
@@ -22,22 +20,22 @@ WORKFLOW
       v
 COORDINATOR
       |
-      +------------------------------+
-      |                              |
-      v                              v
-ORCHESTRATION LANES             WORKER INPUT FILE
-LANE-01 ... LANE-10                  |
-      |                              v
-      |                         GENERIC WORKER
-      |                        init -> service -> close
-      |                              |
-      |                              v
-      |                         WORKER RESULT
-      |                              |
-      +--------------<---------------+
+      +-------------------------------+
+      |                               |
+      v                               v
+ORCHESTRATION LANES              WORKER INPUT
+LANE-01 ... LANE-10                   |
+      |                               v
+      |                          GENERIC WORKER
+      |                     init -> service -> close
+      |                               |
+      |                               v
+      |                        CANONICAL RESULT
+      |                               |
+      +----------------<--------------+
       |
       v
-WORKFLOW ARTIFACTS / GATES / STATUS
+ORCHESTRATOR JOB / ARTIFACTS / GATES
 ```
 
 The Generic Worker is not `LANE-11` and does not consume orchestration capacity.
@@ -51,12 +49,11 @@ WORKFLOW
    |    |
    |    +-- ACTION
    |    +-- ACTION
-   |    +-- ACTION
    |
    +-- JOB
 ```
 
-The coordinator decides which Jobs are READY and assigns orchestration Jobs to `LANE-01` through `LANE-10`.
+The coordinator determines which Jobs are READY and assigns orchestration Jobs to `LANE-01` through `LANE-10` when lane execution is needed.
 
 ## Generic Worker
 
@@ -75,21 +72,11 @@ worker/
   results/
 ```
 
-The Worker contains execution behaviour only.
+The Worker contains execution behaviour only. Project-specific tasks belong in Worker Input files.
 
-It does not permanently contain instructions such as:
+## Worker Input
 
-- find Controllers;
-- inspect repositories;
-- find database tables;
-- compare commits;
-- validate APIs.
-
-Those are tasks, and tasks belong in Worker Input files.
-
-## Worker Input file
-
-A Worker execution begins with:
+A Worker execution starts from:
 
 ```text
 worker/inputs/WI-####.yaml
@@ -97,182 +84,183 @@ worker/inputs/WI-####.yaml
 
 The input defines:
 
-- who requested the work;
+- requester Workflow/Job/Action;
 - task name and purpose;
-- exact target repository/resource;
-- exact source ref/baseline when required;
+- target and immutable source ref when required;
 - allowed scope;
-- requested permissions;
+- permissions;
 - ordered Actions;
 - evidence requirements;
-- output path;
+- result path, format and result contract;
+- downstream consumer, when applicable;
 - completion check;
 - blocker policy.
 
-The Worker must not execute without a valid input file.
+The Worker must not execute without a valid input.
 
-## Generic Worker lifecycle
+## Worker lifecycle
 
-Every input execution uses:
+Every execution uses:
 
 ```text
-init()
-   |
-   v
-service()
-   |
-   v
-close()
+init() -> service() -> close()
 ```
 
 ### init()
 
-The Worker reads the input file and logs in simple English:
+The Worker reads the input, validates scope/permissions/result contract, explains the task in simple English and opens the human-readable run record.
 
-- which Worker Input it received;
-- what it is going to do;
-- why the task exists;
-- target and baseline;
-- scope;
-- permissions;
-- Actions;
-- expected result;
-- completion check.
-
-Once `init()` succeeds, the input is treated as immutable.
-
-If the task changes, a new Worker Input ID is required.
+Once `init()` succeeds, the input is immutable. A changed task requires a new Worker Input ID.
 
 ### service()
 
-The Worker performs only the Actions in the input file.
-
-It must not:
-
-- invent another task;
-- broaden the scope;
-- increase permissions;
-- change the Workflow;
-- choose a new architecture;
-- hide unresolved results;
-- guess facts that cannot be proved.
+The Worker performs only the Actions in the input. It must not invent work, broaden scope, increase permissions, change orchestration policy, hide unresolved results or guess unproved facts.
 
 ### close()
 
-The Worker closes every run and records:
+The Worker records completed/not-completed Actions, result/evidence, blockers or failures, final result and run state `CLOSED`.
 
-- Actions completed;
-- Actions not completed;
-- outputs;
-- evidence;
-- blockers/failures in simple English;
-- alternatives when useful;
-- final result;
-- next input/task needed, if any;
-- run state `CLOSED`.
+The coordinator accepts a Worker result only when the run is closed and any declared machine-result contract validates.
 
-The coordinator accepts a Worker result only from a closed run.
+## Worker runtime files
 
-## Runtime files
-
-Each request has three records:
+A Worker request has:
 
 ```text
 worker/inputs/WI-0007.yaml
 worker/runs/WI-0007.md
-worker/results/WI-0007.md
+worker/results/WI-0007.md     # human-oriented result when requested
+```
+
+or:
+
+```text
+worker/inputs/WI-0007.yaml
+worker/runs/WI-0007.md
+worker/results/WI-0007.yaml   # machine-oriented result when another component consumes it
 ```
 
 Meaning:
 
 ```text
-INPUT  = What should be done?
+INPUT  = What should the Worker do?
 RUN    = What happened during init/service/close?
-RESULT = What was proved/produced?
+RESULT = What canonical data/evidence did the Worker return?
 ```
+
+The run log is not a replacement for a structured machine result.
+
+## Producer / consumer handoff
+
+When a Worker result is the input to a later Orchestrator Job, the handoff must declare:
+
+- producing Worker Input ID;
+- producing Job;
+- canonical result path;
+- result contract;
+- required Worker result state;
+- required run state;
+- consumer Job;
+- consumer input name;
+- acceptance/rejection rules.
+
+Example:
+
+```text
+JOB-002
+  produces worker/results/WI-0004.yaml
+                   |
+                   v
+       validate result contract
+                   |
+                   v
+ORCHESTRATOR INPUT: SOURCE_CHECK_OUTPUT
+                   |
+                   v
+JOB-003 Complete Traceability Matrix
+```
+
+The runtime handoff state is recorded separately so a consumer Job cannot start merely because a file exists.
+
+## Initial Controller Traceability example
+
+The first Controller Traceability baseline uses one complete Source Check before matrix construction:
+
+```text
+JOB-001 Freeze Source Baseline
+            |
+            v
+JOB-002 Complete Source Repository Check
+            |
+            v
+worker/inputs/WI-0004.yaml
+            |
+            v
+       GENERIC WORKER
+   init -> service -> close
+            |
+            +--> worker/runs/WI-0004.md
+            |
+            v
+worker/results/WI-0004.yaml
+            |
+            | contract validation
+            v
+SOURCE_CHECK_OUTPUT accepted
+            |
+            v
+JOB-003 Complete Traceability Matrix
+            |
+            +--> traceability/source-repository-check.md
+            +--> traceability/controller-inventory.md
+            +--> traceability/endpoint-inventory.md
+            +--> traceability/controller-traceability.md
+            +--> traceability/unresolved-traceability.md
+```
+
+For this initial run:
+
+- the Source Check Worker owns source inspection;
+- `worker/results/WI-0004.yaml` owns the canonical source facts;
+- the Orchestrator owns stable IDs, matrix organization, gates and artifact production;
+- JOB-003 must not re-read the source repository to recreate source facts;
+- JOB-003 must not create another source-inspection Worker Input;
+- unresolved source conclusions remain unresolved rather than being silently repaired by orchestration.
 
 ## Permissions
 
-Permissions are stated by the input but remain constrained by governance.
-
-Example:
-
-```yaml
-permissions:
-  source_read: true
-  source_write: false
-  database_read: false
-  database_write: false
-```
-
-An input can reduce permissions. It cannot grant a permission forbidden by governance.
+Permissions are requested by the Worker Input but constrained by governance. An input can reduce permissions but cannot grant forbidden capabilities.
 
 ## Relationship with the ten orchestration lanes
 
-The ten lanes own orchestration Jobs and their Job lifecycle.
+The ten lanes own orchestration Jobs. The Generic Worker is an independent service invoked through input files.
 
-The Generic Worker is an independent service that may be called by the coordinator or by a Job through an approved Worker Input.
+A source-check task does not consume a lane. Once its result is accepted, the consuming Orchestrator Job may be assigned to one free lane.
 
 Example:
 
 ```text
-LANE-04
-  owns Controller Traceability Job item CTL-007
-        |
-        | needs source evidence
-        v
-Coordinator selects/creates WI-0042.yaml
-        |
-        v
-Generic Worker
-  init -> service -> close
-        |
-        v
-worker/results/WI-0042.md
-        |
-        v
-LANE-04 consumes result
-        |
-        v
-CTL-007 artifact
+Independent Worker
+  produces Source Check Output
+          |
+          v
+Coordinator accepts handoff
+          |
+          v
+LANE-01 receives JOB-003
+          |
+          v
+LANE-01 consumes SOURCE_CHECK_OUTPUT
+          |
+          v
+Traceability Matrix artifacts
 ```
-
-The lane does not rewrite the Worker behaviour. It changes the input.
-
-## Controller Traceability example
-
-Controller Traceability now uses Worker Inputs rather than a special source-analysis worker.
-
-```text
-WI-0001
-Task: determine production web source boundary
-
-WI-0002
-Task: verify first exposed-component batch
-
-WI-0003
-Task: verify remaining exposed components
-
-Later inputs
-Task: extract endpoint mappings
-Task: trace a specific endpoint call path
-Task: prove database objects
-```
-
-The same Generic Worker executes every one of these inputs.
 
 ## Blockers
 
-If the Worker is blocked, its `close()` must explain:
+A Worker blocker must explain what was requested, where it stopped, what prevented continuation, why guessing is unsafe and what would allow continuation.
 
-1. what the input asked it to do;
-2. where it stopped;
-3. what prevented it from continuing;
-4. why continuing would require guessing or unsafe behaviour;
-5. what information/permission/input is needed;
-6. alternatives that can be considered.
-
-The Worker does not make the policy decision itself.
+An Orchestrator input rejection must likewise record why the producer output is not acceptable; the consumer Job remains WAITING rather than attempting to compensate by bypassing the contract.
 
 ## Shared-file ownership
 
@@ -285,22 +273,24 @@ The Generic Worker does not directly update shared orchestration files such as:
 - `sync/source-artifact-sync-register.yaml`;
 - consolidated traceability reports.
 
-The coordinator consumes closed Worker results and serializes shared-file updates.
+The coordinator serializes shared-file updates.
 
 ## Verification
 
 A Worker result is evidence, not automatically a verified Workflow result.
 
-The coordinator still checks:
+The coordinator verifies:
 
-- correct input was executed;
+- correct Worker Input was executed;
 - run is CLOSED;
-- required evidence exists;
+- required result exists;
+- declared result contract validates;
 - completion check passed;
-- Workflow gate passed;
-- shared artifacts/status are synchronized.
+- source baseline matches where required;
+- downstream handoff acceptance rules pass;
+- Workflow quality gate passes.
 
-Only then may the Workflow Job advance to `VERIFIED`.
+Only then may the producing Job become `VERIFIED` and the consumer Job become `READY`.
 
 ## Final architecture
 
@@ -319,11 +309,19 @@ Only then may the Workflow Job advance to `VERIFIED`.
  LANE-01 ... LANE-10                GENERIC WORKER
           |                         init/service/close
           |                                 |
-          |<----------- closed result -------+
-          |
-          v
-     Workflow artifacts
-          |
-          v
- Quality Gates / Sync / Human Log / TaskStatus
+          |                    canonical Worker result
+          |                                 |
+          +---------------<-----------------+
+                          |
+                          v
+                Orchestrator input handoff
+                          |
+                          v
+                  Consumer Workflow Job
+                          |
+                          v
+                    Workflow artifacts
+                          |
+                          v
+           Quality Gates / Sync / Human Log / TaskStatus
 ```
