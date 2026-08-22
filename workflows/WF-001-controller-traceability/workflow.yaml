@@ -1,15 +1,27 @@
 workflow:
   id: WF-001-controller-traceability
-  version: 4
+  version: 5
   name: Controller Traceability
   purpose: >-
-    Find every exposed controller and endpoint in CylinderManagement and trace each
-    endpoint through the real application call path to its final dependency.
+    Build the initial Controller Traceability Matrix from one complete, closed
+    Source Repository Check result at a frozen CylinderManagement source commit.
 
   target_repository: vvekselva/CylinderManagement
   control_repository: vvekselva/CylindnderManagementDependcies
   design: traceability/controller-traceability-design.md
   controller_artifact_template: traceability/controller-trace-template.md
+
+  initial_baseline_mode:
+    name: COMPLETE_REPOSITORY_CHECK_THEN_MATRIX
+    enabled: true
+    rule: >-
+      During the first baseline run, the Source Repository Check must finish completely
+      and close before the Traceability Matrix Job may start. Partial Worker batches do
+      not unlock the matrix Job.
+    source_check_input: worker/inputs/WI-0004.yaml
+    source_check_result: worker/results/WI-0004.md
+    source_check_artifact: traceability/source-repository-check.md
+    matrix_output: traceability/controller-traceability.md
 
   independent_worker:
     component: WORKER
@@ -23,22 +35,16 @@ workflow:
 
   source_baseline:
     rule: ONE_COMMIT_FOR_THE_COMPLETE_WORKFLOW
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
     description: >-
-      Every orchestration Job and every Worker Input used by this workflow must use
-      the same CylinderManagement source commit when source inspection is required.
-
-  discovery_scope:
-    production_sources_only: true
-    include_src_main_java: true
-    exclude_src_test_java: true
-    derive_runtime_packages_from_spring_component_scan: true
-    do_not_rely_on_controller_filename_only: true
+      The complete Source Repository Check and the Traceability Matrix must describe
+      exactly the same CylinderManagement source commit.
 
   orchestration_worker_model:
     coordinator_is_separate: true
     lanes: 10
     max_parallel_jobs: 10
-    controller_work_item: ONE_CONTROLLER
+    initial_baseline_is_sequential: true
 
   logging:
     policy: governance/automation-log-policy.md
@@ -55,19 +61,19 @@ workflow:
     - id: GATE-TRC-001
       name: Source Baseline Frozen
     - id: GATE-TRC-002
-      name: Production Web Source Scope Proved
+      name: Complete Source Repository Check Closed
     - id: GATE-TRC-003
-      name: Exposed Controller Inventory Complete
+      name: Complete Exposed Controller Set Produced
     - id: GATE-TRC-004
-      name: Exposed Endpoint Inventory Complete
+      name: Complete Endpoint Set Produced
     - id: GATE-TRC-005
       name: Every Endpoint Has Trace Result
     - id: GATE-TRC-006
-      name: Complete Traces Reference Worker Evidence
+      name: Complete Traces Have Source Evidence
     - id: GATE-TRC-007
       name: Unresolved Traces Have Clear Stopping Point
     - id: GATE-TRC-008
-      name: Coverage Is 100 Percent
+      name: Traceability Matrix Coverage Is 100 Percent
     - id: GATE-TRC-009
       name: Source Artifact Sync Registered
     - id: GATE-TRC-010
@@ -81,155 +87,117 @@ workflow:
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Read and record the approved CylinderManagement source commit.
-          expected_result: One source baseline is fixed for the complete workflow.
+          instruction: Record the approved CylinderManagement source commit for this initial baseline run.
+          expected_result: One immutable source baseline is fixed for all later work.
+      completion_check: The frozen source baseline is recorded and available to JOB-002 and JOB-003.
       gate: GATE-TRC-001
 
     - id: JOB-002
-      name: Build Exposed Controller Inventory
+      name: Complete Source Repository Check
       needs: [JOB-001]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
-      worker_inputs:
-        completed:
-          - worker/inputs/WI-0001.yaml
-          - worker/inputs/WI-0002.yaml
-        ready:
-          - worker/inputs/WI-0003.yaml
+      worker_input: worker/inputs/WI-0004.yaml
       actions:
         - id: ACT-001
-          instruction: Execute the Worker Input that determines the production web-source boundary.
-          input: worker/inputs/WI-0001.yaml
-          expected_result: Closed Worker result proves the runtime web-source scope.
+          instruction: Execute WI-0004 from init() through service() and close().
+          expected_result: One complete closed Worker result describes the repository, exposed components, endpoints, call paths, final dependencies and unresolved items.
         - id: ACT-002
-          instruction: Execute Worker Inputs that classify candidate classes using actual Spring exposure evidence.
-          inputs:
-            - worker/inputs/WI-0002.yaml
-            - worker/inputs/WI-0003.yaml
-          expected_result: Every candidate in the proved runtime boundary is classified.
-        - id: ACT-003
-          instruction: Build the Controller inventory only from closed Worker results and assign stable CTL IDs.
-          expected_result: Every exposed production component is represented with evidence.
-      completion_check: Every candidate in the proved source boundary is classified and all Worker runs used by the inventory are CLOSED.
-      output: traceability/controller-inventory.md
-      gates: [GATE-TRC-002, GATE-TRC-003]
+          instruction: Copy the accepted closed Worker result into the orchestration artifact traceability/source-repository-check.md without changing its source conclusions.
+          expected_result: The complete repository-check output is available as a stable orchestration artifact.
+      completion_check: >-
+        WI-0004 result is COMPLETED, its run is CLOSED, it is not PARTIAL, and
+        traceability/source-repository-check.md contains the accepted complete output.
+      outputs:
+        - worker/results/WI-0004.md
+        - worker/runs/WI-0004.md
+        - traceability/source-repository-check.md
+      gates:
+        - GATE-TRC-002
+        - GATE-TRC-003
+        - GATE-TRC-004
+        - GATE-TRC-005
+        - GATE-TRC-006
+        - GATE-TRC-007
 
     - id: JOB-003
-      name: Build Endpoint Inventory
+      name: Complete Traceability Matrix
       needs: [JOB-002]
+      parallel: false
+      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
+      start_condition: JOB-002_VERIFIED_AND_SOURCE_REPOSITORY_CHECK_CLOSED
+      actions:
+        - id: ACT-001
+          instruction: Read only the accepted complete initial Source Repository Check output for source facts used to build the baseline matrix.
+          input: traceability/source-repository-check.md
+          expected_result: Matrix construction starts from one complete source-analysis baseline, not partial Worker batches.
+        - id: ACT-002
+          instruction: Create traceability/controller-inventory.md from the complete exposed-component set in the source repository check and assign stable CTL IDs.
+          expected_result: Every exposed production component has one stable Controller ID.
+        - id: ACT-003
+          instruction: Create traceability/endpoint-inventory.md from the complete endpoint set and assign stable Endpoint IDs under their Controller IDs.
+          expected_result: Every caller-visible endpoint is inventoried.
+        - id: ACT-004
+          instruction: Build traceability/controller-traceability.md with one row for every endpoint and its proved call path/final dependency.
+          expected_result: The Traceability Matrix has 100 percent endpoint coverage.
+        - id: ACT-005
+          instruction: Create traceability/unresolved-traceability.md from every endpoint whose final dependency is not fully proved.
+          expected_result: No unresolved endpoint is hidden or guessed.
+      completion_check: >-
+        Controller inventory, Endpoint inventory, Traceability Matrix and unresolved list
+        are generated from the same closed Source Repository Check; every exposed endpoint
+        appears exactly once in the matrix; coverage equals 100 percent.
+      outputs:
+        - traceability/controller-inventory.md
+        - traceability/endpoint-inventory.md
+        - traceability/controller-traceability.md
+        - traceability/unresolved-traceability.md
+      gate: GATE-TRC-008
+
+    - id: JOB-004
+      name: Register Initial Source Artifact Baseline
+      needs: [JOB-003]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Create Worker Input files that ask for handler methods and caller-visible HTTP method/path combinations for the inventoried controllers.
-          expected_result: Input files explicitly define controller scope, source baseline, read-only permissions, Actions and expected mapping evidence.
-        - id: ACT-002
-          instruction: Execute the endpoint-discovery Worker Inputs and accept only CLOSED results.
-          expected_result: Every exposed handler mapping is returned with evidence.
-        - id: ACT-003
-          instruction: Build the Endpoint inventory from proved Worker results and assign stable Endpoint IDs.
-          expected_result: Every caller-visible endpoint points to an exact source handler.
-      completion_check: Every exposed endpoint is represented and references Worker Input/Result evidence.
-      output: traceability/endpoint-inventory.md
-      gate: GATE-TRC-004
-
-    - id: JOB-004
-      name: Trace Controllers In Parallel
-      needs: [JOB-003]
-      parallel: true
-      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
-      strategy:
-        type: QUEUE_FAN_OUT
-        item_source: traceability/controller-inventory.md
-        max_parallel: 10
-        worker_ownership: ONE_CONTROLLER_PER_WORK_ITEM
-      actions:
-        - id: ACT-001
-          instruction: Read the assigned Controller and Endpoint IDs from the workflow inventories.
-          expected_result: The lane knows its exact traceability scope.
-        - id: ACT-002
-          instruction: For each endpoint, create/select Worker Input files that ask the Generic Worker to trace the next actual source call.
-          expected_result: Source-call tasks are explicitly represented as input files rather than hard-coded Worker behaviour.
-        - id: ACT-003
-          instruction: Continue with additional Worker Inputs whenever a closed result proves another component that must be followed.
-          expected_result: The call path is extended only through evidence returned by closed Worker runs.
-        - id: ACT-004
-          instruction: For database-backed paths, create Worker Inputs that request entity/query/database-object evidence until the physical table, view or function is proved or explicitly unresolved.
-          expected_result: Database objects are never guessed.
-        - id: ACT-005
-          instruction: Produce one controller traceability artifact referencing every Worker Input/Result ID used.
-          expected_result: One per-controller artifact is produced.
-      completion_check: Every assigned endpoint is COMPLETE or explicitly UNRESOLVED/BLOCKED with a clear reason and next required input/action.
-      output_pattern: traceability/controllers/CTL-*.md
+          instruction: Register the Traceability Matrix and related artifacts against the frozen source commit.
+          expected_result: The initial source-to-artifact synchronization baseline is established.
+      output: sync/source-artifact-sync-register.yaml
+      gate: GATE-TRC-009
 
     - id: JOB-005
-      name: Consolidate Controller Traceability
+      name: Close Initial Traceability Run
       needs: [JOB-004]
       parallel: false
       lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
       actions:
         - id: ACT-001
-          instruction: Collect all controller artifacts.
-          expected_result: All controller results are available to the coordinator.
+          instruction: Confirm WI-0004 and every orchestration Job used by the initial run are CLOSED.
+          expected_result: No open run is treated as final evidence.
         - id: ACT-002
-          instruction: Verify that every COMPLETE hop references evidence from a CLOSED Worker result.
-          expected_result: Complete traces are evidence-backed.
-        - id: ACT-003
-          instruction: Build the consolidated traceability matrix and unresolved list.
-          expected_result: Every endpoint is represented and no unresolved item is hidden.
-      outputs:
-        - traceability/controller-traceability.md
-        - traceability/unresolved-traceability.md
-      gates: [GATE-TRC-005, GATE-TRC-006, GATE-TRC-007]
-
-    - id: JOB-006
-      name: Run Source Artifact Sync Check
-      needs: [JOB-005]
-      parallel: false
-      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
-      actions:
-        - id: ACT-001
-          instruction: Register every controller artifact against its source component and frozen source commit.
-          expected_result: Initial traceability baseline is registered.
-      output: sync/source-artifact-sync-register.yaml
-      gate: GATE-TRC-009
-
-    - id: JOB-007
-      name: Validate Traceability Coverage
-      needs: [JOB-006]
-      parallel: false
-      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
-      actions:
-        - id: ACT-001
-          instruction: Compare the endpoint inventory with the consolidated traceability report and calculate coverage/resolution.
-          expected_result: Coverage and resolution are independently auditable.
-      completion_check: Coverage must be 100 percent. Unresolved paths are allowed only when explicitly registered.
-      gate: GATE-TRC-008
-
-    - id: JOB-008
-      name: Generate Human Story
-      needs: [JOB-007]
-      parallel: false
-      lifecycle: INHERIT_WORKER_SERVICE_CONTRACT
-      actions:
-        - id: ACT-001
-          instruction: Confirm every Worker run used as evidence is CLOSED.
-          expected_result: No unfinished Worker result is treated as final evidence.
-        - id: ACT-002
-          instruction: Generate the human-readable automation story.
-          expected_result: The story explains completed, unresolved and blocked work in simple English.
+          instruction: Generate/update the human-readable automation story and final status.
+          expected_result: The first Traceability baseline is auditable and understandable.
       output: logs/automation-story.md
       gate: GATE-TRC-010
 
+  future_incremental_mode:
+    enabled_after_initial_baseline: true
+    description: >-
+      After JOB-005 closes the initial baseline, WF-002 may use targeted Worker Inputs
+      for later source changes. The initial baseline itself always uses the complete
+      repository-check-first sequence.
+
   workflow_completion:
     required:
-      - one source baseline used by all source-dependent Worker Inputs
-      - production web source scope proved
+      - source baseline frozen
+      - WI-0004 COMPLETED and CLOSED
+      - complete source repository check artifact produced
+      - Traceability Matrix built only after JOB-002 verification
       - controller inventory complete
       - endpoint inventory complete
-      - every endpoint has a trace result
-      - every COMPLETE hop references CLOSED Worker evidence
-      - coverage equals 100 percent
+      - every endpoint has one trace result
+      - matrix coverage equals 100 percent
       - unresolved items explicitly recorded
       - sync register updated
       - all Worker and orchestration runs CLOSED
