@@ -17,25 +17,9 @@ Worker: `COORDINATOR`
 Status: `CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### init()
-
-The workflow was starting. One exact CylinderManagement source version had to be fixed before any source-dependent work began.
-
-### service()
-
-The current approved `CylinderManagement/main` commit was recorded.
-
 ### Result
 
-Baseline: `3ae6e61442132d94a307275b08dd65fcef228d89` (`Base Projects`).
-
-`GATE-TRC-001` passed.
-
-### close()
-
-All later source-dependent Worker Inputs for WF-001 must use this baseline.
-
-Log state: `CLOSED`
+Baseline frozen at `3ae6e61442132d94a307275b08dd65fcef228d89` (`Base Projects`). All later source-dependent work must use this baseline.
 
 ---
 
@@ -43,40 +27,12 @@ Log state: `CLOSED`
 
 Time: `2026-08-22T05:26:00+05:30`
 Workflow: `WF-001-controller-traceability`
-Job: `JOB-002 Build Exposed Controller Inventory`
 Worker Input: `WI-0001`
 Status: `CLOSED`
-Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### init()
+The Worker proved the production component-scan areas: `web.controller`, `web.rest`, `misc.web.controller`, `misc.cache`, and `web.controller.test`. The `web.controller.test` package is under `src/main/java` and remains production candidate source.
 
-The Generic Worker received an input file asking it to determine which production Java areas Spring Boot scans for web components.
-
-### service()
-
-The Worker read the bootstrap configuration and proved these production areas:
-
-- `web.controller`
-- `web.rest`
-- `misc.web.controller`
-- `misc.cache`
-- `web.controller.test`
-
-`web.controller.test` is production code under `src/main/java` and remains in scope. The actual `src/test/java` tree is outside the production Controller inventory.
-
-### Evidence
-
-- Input: `worker/inputs/WI-0001.yaml`
-- Run: `worker/runs/WI-0001.md`
-- Result: `worker/results/WI-0001.md`
-
-### Result
-
-`COMPLETED` for the requested Worker task. `JOB-002` remained in progress because individual classes still required exposure verification.
-
-### close()
-
-Run state: `CLOSED`
+Evidence: `worker/inputs/WI-0001.yaml`, `worker/runs/WI-0001.md`, `worker/results/WI-0001.md`.
 
 ---
 
@@ -84,40 +40,12 @@ Run state: `CLOSED`
 
 Time: `2026-08-22T05:26:00+05:30`
 Workflow: `WF-001-controller-traceability`
-Job: `JOB-002 Build Exposed Controller Inventory`
 Worker Input: `WI-0002`
 Status: `CLOSED`
-Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### init()
+A first partial batch of exposed components was verified. The work remained partial relative to the complete Controller inventory because more candidate classes remained.
 
-The Generic Worker received an input file listing five candidate classes and asking it to verify actual Spring HTTP exposure.
-
-### service()
-
-The Worker proved these exposed components:
-
-- `CustomerFetchByPageController` - `GET /fetchCustomerByPage`
-- `CustomerFetchController` - `GET /displayCustomer`
-- `CustomerUpdateController` - `POST /updateCustomer`
-- `DomainLookupController` - includes `GET /domainLookup`
-- `LookupManagementController` - includes `GET /lookup` and `GET /lookupManagement`
-
-### Evidence
-
-- Input: `worker/inputs/WI-0002.yaml`
-- Run: `worker/runs/WI-0002.md`
-- Result: `worker/results/WI-0002.md`
-
-### Result
-
-`PARTIAL` relative to the complete Controller inventory because more candidate classes remain. The Worker completed exactly the scope given in `WI-0002`.
-
-### close()
-
-Run state: `CLOSED`.
-
-The follow-up task is separately defined in `worker/inputs/WI-0003.yaml`.
+Evidence: `worker/inputs/WI-0002.yaml`, `worker/runs/WI-0002.md`, `worker/results/WI-0002.md`.
 
 ---
 
@@ -125,34 +53,9 @@ The follow-up task is separately defined in `worker/inputs/WI-0003.yaml`.
 
 Time: `2026-08-22T05:41:00+05:30`
 Workflow: `FRAMEWORK`
-Job: `Worker Component Refactor`
 Status: `CLOSED`
 
-### What changed
-
-The independent component is now called simply **Worker**.
-
-The Worker no longer contains hard-coded source-analysis responsibilities.
-
-Its permanent behaviour is limited to:
-
-```text
-read input -> init -> service -> close -> return result
-```
-
-The actual task is supplied through `worker/inputs/WI-*.yaml`.
-
-Controller discovery, endpoint discovery, call-path tracing, database-object inspection and future unrelated tasks are therefore input definitions, not Worker identities.
-
-### Why this was changed
-
-The Worker should be reusable. A task-specific Worker would couple the execution engine to one Workflow. The input-driven model lets the same Worker execute different tasks without changing the Worker implementation.
-
-### Result
-
-Framework correction completed on `chore/rename-dependency-files`.
-
-Log state: `CLOSED`
+The independent Worker was made task-agnostic. Its permanent behaviour is `read input -> init -> service -> close -> return result`. Project-specific work is defined only by `worker/inputs/WI-*.yaml`.
 
 ---
 
@@ -160,33 +63,9 @@ Log state: `CLOSED`
 
 Time: `2026-08-22T05:55:00+05:30`
 Workflow: `WF-001-controller-traceability`
-Job: `Initial Baseline Sequencing`
 Status: `CLOSED`
-Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### What changed
-
-The first Traceability baseline will no longer build the matrix from partial source-check batches.
-
-The required sequence became:
-
-```text
-JOB-002 Complete Source Repository Check
-        -> WI-0004 must be COMPLETED and CLOSED
-        -> JOB-003 Complete Traceability Matrix becomes READY
-```
-
-### Earlier inputs
-
-- `WI-0001` and `WI-0002` remain historical evidence only.
-- `WI-0003` is superseded and must not run for the initial baseline.
-- `WI-0004` is the sole executable source-check input for the initial matrix baseline.
-
-### Result
-
-Initial baseline orchestration was updated and runtime gates were activated.
-
-Log state: `CLOSED`
+The first Traceability baseline was changed so `WI-0004` must complete one full Source Repository Check before matrix construction may start. Earlier partial Worker Inputs remain historical evidence only.
 
 ---
 
@@ -194,51 +73,9 @@ Log state: `CLOSED`
 
 Time: `2026-08-22T06:03:00+05:30`
 Workflow: `WF-001-controller-traceability`
-Job: `Source Check To Traceability Handoff`
 Status: `CLOSED`
-Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### What changed
-
-The Source Repository Check no longer hands the Traceability Job an informal Markdown artifact.
-
-The Worker now produces one canonical machine-readable output:
-
-```text
-worker/results/WI-0004.yaml
-```
-
-Its structure is governed by:
-
-```text
-workflows/WF-001-controller-traceability/source-check-output-contract.yaml
-```
-
-### Data flow
-
-```text
-WI-0004
-  -> Generic Worker
-  -> worker/results/WI-0004.yaml
-  -> Orchestrator input SOURCE_CHECK_OUTPUT
-  -> JOB-003 Complete Traceability Matrix
-```
-
-The Worker lifecycle remains recorded separately in `worker/runs/WI-0004.md`.
-
-### Orchestrator boundary
-
-During the first baseline, `JOB-003` must consume the accepted `SOURCE_CHECK_OUTPUT` directly.
-
-It must not re-read the CylinderManagement source repository to recreate source facts and must not create another source-inspection Worker Input.
-
-The Orchestrator may organize the accepted facts into stable Controller IDs, Endpoint IDs, inventories, matrix rows and human-readable reports, but it must preserve the source conclusions and unresolved states returned by the Worker.
-
-### Result
-
-The producer/consumer boundary is explicit and machine-readable. No Source Check completion is claimed yet.
-
-Log state: `CLOSED`
+The canonical Source Check Output was defined as `worker/results/WI-0004.yaml`, validated by `workflows/WF-001-controller-traceability/source-check-output-contract.yaml`. The downstream matrix job must consume that accepted result and must not recreate source facts independently.
 
 ---
 
@@ -251,50 +88,49 @@ Actor: `ORCHESTRATOR`
 Status: `IN PROGRESS`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### What was checked
+The approved source boundary was measured as 62 Java component candidates. Three exposed components and five endpoints were source-proved at that checkpoint. Fifty-nine candidates remained to classify. No canonical WI-0004 result was accepted and matrix construction remained locked.
 
-The Orchestrator re-read the Backlog run switchboard, the common dependency gate, the approved BL-001 Quality Gate and the Traceability Completion Path before continuing source analysis.
+---
 
-Only BL-001 is enabled. It has no Backlog dependencies, so `QG-DEP-001` remains PASS.
+## EVENT EVT-0008 - WI-0004 First Source-Check Attempt Closed Partial
 
-The frozen Spring Boot source tree was then inspected using the exact approved source commit.
+Time: `2026-08-22T09:00:00+05:30`
+Backlog Item: `BL-001 Controller Traceability`
+Work Unit: `WU-BL001-001 Complete Source Repository Check`
+Worker Input: `WI-0004`
+Run: `RUN-WI0004-20260822-001`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+### What was attempted
+
+The approved WI-0004 Source Repository Check was continued against the exact frozen source commit. Only BL-001 was eligible to run; the common Backlog dependency gate remained PASS and the approved BL-001 Traceability Quality Gate remained enforced.
 
 ### What was proved
 
-The application's explicit component-scan boundary contains five package trees. Across those package trees, the frozen `cylindermanagement.web` module contains **62 Java component candidates** requiring exposure classification:
+All five Java files in the root `web.controller` package are now classified as exposed Spring MVC controllers. The latest attempt source-proved:
 
-- 5 files in the top-level `web.controller` package;
-- 30 files in the explicitly scanned `web.controller.test` production package;
-- 12 files in `misc.web.controller`;
-- 14 files in `web.rest`;
-- 1 file in `misc.cache`.
+- `Uc02Phase01VehicleLoadController` — GET `/vehicleLoad`, POST `/vehicleLoad`;
+- `Uc02Phase02CylinderDeliveryController` — GET `/cylinderDelivery`, POST `/cylinderDelivery`;
+- `VehicleTripLoadWizardController` — GET `/wizard/vehicle-trip-load`, POST `/wizard/vehicle-trip-load/save`.
 
-This is the classification scope, not an assumption that all 62 are HTTP controllers.
-
-Three components and five endpoints are now independently source-proved as an interim checkpoint:
-
-- `CustomerSpotCylinderCheckController`: GET `/customer-spot-cylinder-check/fetch`, POST `/customer-spot-cylinder-check/submit`;
-- `UC01RegisterCustomerController`: GET `/registerCustomer`, POST `/registerCustomer`;
-- `RestfulCustomerServices`: GET `/search/customer/{searchText}`.
-
-The immediate mediator/service/cache handoffs for these handlers are recorded in `backlog/runtime/BL-001/analysis.yaml` where proved.
+Together with the previously proved components, the current checkpoint is **6 exposed components and 11 caller-visible endpoints**. Immediate mediator/service/DAO/cache handoffs are recorded in `backlog/runtime/BL-001/analysis.yaml` where source-proved.
 
 ### What remains incomplete
 
-Fifty-nine candidate classes still require exposure classification. The final endpoint total is therefore not yet known, and complete call paths to physical database/external dependencies have not yet been proved.
-
-`worker/results/WI-0004.yaml` has not been accepted and matrix construction remains locked.
+Fifty-six of the 62 Java component candidates still require classification. Complete endpoint call paths and final database/external dependencies are not yet established. The canonical `worker/results/WI-0004.yaml` has therefore not been created or accepted as a completed Source Check Output.
 
 ### Quality Gate effect
 
+- `QG-DEP-001`: PASS
 - `QG-TRC-001`: PASS
 - `QG-TRC-002`: IN PROGRESS
 - `QG-TRC-003`: IN PROGRESS
 - `QG-TRC-004`: IN PROGRESS
-- `QG-TRC-005` and all matrix/closure gates: WAITING
+- `QG-TRC-005` through matrix/closure gates: WAITING
 
 ### Result
 
-Useful source-analysis progress was recorded without guessing and without claiming completion.
+The Worker attempt was closed as `PARTIAL`; no completion was fabricated. Matrix construction remains locked.
 
-Next: continue classifying the remaining source candidates and tracing exposed endpoints until the canonical Source Check Output can satisfy its 100-percent coverage contract.
+Next: continue/retry WI-0004 until every candidate is classified and every exposed endpoint has a COMPLETE or explicit unresolved trace result, allowing the canonical result to reach 100% coverage.
