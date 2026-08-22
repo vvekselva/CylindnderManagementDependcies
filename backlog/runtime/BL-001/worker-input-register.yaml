@@ -1,0 +1,9 @@
+worker_inputs:
+  WI-0004:
+    work_unit: WU-BL001-001
+    state: READY
+    input: worker/inputs/WI-0004.yaml
+    run: worker/runs/WI-0004.md
+    result: worker/results/WI-0004.yaml
+    result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+    accepted: false
