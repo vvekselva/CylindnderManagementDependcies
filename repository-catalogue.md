@@ -8,42 +8,40 @@ The repository controls automation work executed against `vvekselva/CylinderMana
 
 | File | Category | Purpose |
 |---|---|---|
-| `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and permits only declared dynamic artifact paths. |
-| `TaskStatus.md` | Status | Consolidated automation, workflow and worker status dashboard. |
-| `automation/automation-config.yaml` | Automation | Machine-readable coordinator, ten-lane orchestration worker, independent Source Analysis Worker, lifecycle, scheduling, retry and lock configuration. |
-| `automation/execution-model.md` | Automation | Defines the orchestration plane, independent source-analysis plane and mandatory lifecycles. |
-| `automation/generate-automation-story.py` | Automation | Converts the human-readable automation log into an overall plain-English story. |
-| `automation/source-analysis-worker-contract.md` | Source Analysis | Defines the independent read-only Source Analysis Worker and its request/fact contract. |
+| `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and permits only declared dynamic runtime/artifact paths. |
+| `TaskStatus.md` | Status | Consolidated automation, Workflow, lane and Worker status dashboard. |
+| `automation/automation-config.yaml` | Automation | Machine-readable coordinator, ten orchestration lanes, generic Worker, lifecycle, scheduling and lock configuration. |
+| `automation/execution-model.md` | Automation | Defines orchestration plus the independent input-driven Generic Worker. |
+| `automation/generate-automation-story.py` | Automation | Converts the human-readable automation log into the overall story. |
 | `automation/task-contract.md` | Automation | Defines Task/Job execution fields and lifecycle rules. |
-| `automation/worker-service-contract.md` | Automation | Defines the mandatory orchestration worker `init() -> service() -> close()` lifecycle. |
-| `automation/workflow-contract.md` | Automation | Defines the standard Workflow -> Job -> Action hierarchy used by orchestration. |
+| `automation/worker-component-contract.md` | Worker | Defines the independent Generic Worker whose actual task comes from an input file. |
+| `automation/worker-service-contract.md` | Automation | Defines the mandatory orchestration lane `init() -> service() -> close()` lifecycle. |
+| `automation/workflow-contract.md` | Automation | Defines the Workflow -> Job -> Action hierarchy. |
 | `database-dependency-neon.md` | Dependency | Neon/PostgreSQL/Flyway dependency and database change-control ledger. |
-| `governance/automation-log-policy.md` | Governance | Defines plain-English INIT, SERVICE, CLOSE, blocker, evidence and decision logging rules. |
-| `governance/automation-policy.md` | Governance | Governing rules for automated work against CylinderManagement. |
-| `governance/source-artifact-sync-policy.md` | Governance | Defines how source changes are classified and when artifacts or user notifications are required. |
-| `governance/worker-operating-guide.md` | Governance | Tells orchestration workers how to accept, initialize, execute, close, report and complete work. |
-| `logs/automation-log.md` | Audit Log | Coordinator-owned human-readable orchestration event history. |
+| `governance/automation-log-policy.md` | Governance | Defines plain-English lifecycle, blocker, evidence and decision logging. |
+| `governance/automation-policy.md` | Governance | Governing rules for automated work. |
+| `governance/source-artifact-sync-policy.md` | Governance | Defines change classification, artifact refresh and notification rules. |
+| `governance/worker-operating-guide.md` | Governance | Defines orchestration lane behaviour and the input-driven Generic Worker model. |
+| `logs/automation-log.md` | Audit Log | Coordinator-owned human-readable orchestration history. |
 | `logs/automation-story.md` | Story | Human-readable overall story generated from the automation log. |
-| `repository-catalogue.md` | Governance | Authoritative catalogue of static control files and allowed dynamic artifact paths. |
-| `source-analysis/README.md` | Source Analysis | Workspace and purpose of the independent source-analysis plane. |
-| `source-analysis/source-analysis-request-result-template.md` | Source Analysis | Standard Analysis Request, Source Fact and close-result format. |
+| `repository-catalogue.md` | Governance | Authoritative catalogue of static control files and allowed dynamic paths. |
 | `sync/source-artifact-sync-register.yaml` | Synchronization | Machine-readable source-component to artifact synchronization list. |
-| `traceability/README.md` | Traceability | Explains the controller traceability artifacts produced by WF-001. |
-| `traceability/controller-traceability-design.md` | Traceability Design | Defines discovery scope, source-analysis usage, endpoint identity, hop evidence, final-dependency rules and gates. |
-| `traceability/controller-trace-template.md` | Traceability Template | Standard `init -> service -> close` format for every per-controller artifact. |
+| `traceability/README.md` | Traceability | Explains the Controller Traceability output area. |
+| `traceability/controller-traceability-design.md` | Traceability Design | Defines Controller Traceability using input-driven Worker tasks. |
+| `traceability/controller-trace-template.md` | Traceability Template | Standard per-controller trace artifact referencing Worker evidence. |
 | `usecases/Readme.md` | Use Cases | Use-case documentation entry point. |
-| `workflows/WF-001-controller-traceability/workflow.yaml` | Workflow | Defines the lifecycle-aware controller traceability workflow using the independent Source Analysis Worker. |
-| `workflows/WF-002-source-artifact-sync/workflow.yaml` | Workflow | Defines ongoing source change detection, impact classification, artifact refresh and notification. |
+| `worker/README.md` | Worker | Explains Worker input/run/result workspace. |
+| `worker/worker-input-template.yaml` | Worker | Standard task input format for the Generic Worker. |
+| `workflows/WF-001-controller-traceability/workflow.yaml` | Workflow | Controller/endpoint traceability workflow using Worker Input files. |
+| `workflows/WF-002-source-artifact-sync/workflow.yaml` | Workflow | Ongoing source-to-artifact synchronization workflow using Worker Input files. |
 
 ## Catalogue Quality Gate
 
-The catalogue has two machine-readable sections.
+Static control files must exist exactly as listed.
 
-Static control files must exist exactly as listed. A static file addition, deletion or rename must update the static catalogue in the same controlled change.
+Runtime files are permitted only when they match declared dynamic patterns.
 
-Some automation outputs are created as runtime work progresses. Those files are allowed only when their paths match a declared dynamic pattern. Dynamic paths remain governed by their contracts and templates.
-
-The gate fails when a static tracked file is not listed, a static catalogue entry does not exist, a tracked file matches neither a static entry nor an allowed dynamic path, or the catalogue markers are removed.
+The gate fails when a static tracked file is not listed, a listed static file does not exist, a tracked file matches neither a static entry nor an allowed dynamic path, or catalogue markers are removed.
 
 <!-- CATALOGUE-FILES:START -->
 .github/workflows/catalogue-gate.yml
@@ -51,8 +49,8 @@ TaskStatus.md
 automation/automation-config.yaml
 automation/execution-model.md
 automation/generate-automation-story.py
-automation/source-analysis-worker-contract.md
 automation/task-contract.md
+automation/worker-component-contract.md
 automation/worker-service-contract.md
 automation/workflow-contract.md
 database-dependency-neon.md
@@ -63,20 +61,21 @@ governance/worker-operating-guide.md
 logs/automation-log.md
 logs/automation-story.md
 repository-catalogue.md
-source-analysis/README.md
-source-analysis/source-analysis-request-result-template.md
 sync/source-artifact-sync-register.yaml
 traceability/README.md
 traceability/controller-traceability-design.md
 traceability/controller-trace-template.md
 usecases/Readme.md
+worker/README.md
+worker/worker-input-template.yaml
 workflows/WF-001-controller-traceability/workflow.yaml
 workflows/WF-002-source-artifact-sync/workflow.yaml
 <!-- CATALOGUE-FILES:END -->
 
 <!-- CATALOGUE-DYNAMIC-PATHS:START -->
-source-analysis/runs/SAR-*.md
-source-analysis/results/SAR-*.md
+worker/inputs/WI-*.yaml
+worker/runs/WI-*.md
+worker/results/WI-*.md
 traceability/controllers/*.md
 traceability/controller-inventory.md
 traceability/endpoint-inventory.md
