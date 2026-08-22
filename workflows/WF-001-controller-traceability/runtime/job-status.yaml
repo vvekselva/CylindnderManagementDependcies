@@ -1,0 +1,22 @@
+jobs:
+  JOB-001:
+    name: Freeze Source Baseline
+    state: VERIFIED
+    result: COMPLETED
+  JOB-002:
+    name: Complete Source Repository Check
+    state: READY
+    worker_input: WI-0004
+    result: NOT_STARTED
+  JOB-003:
+    name: Complete Traceability Matrix
+    state: WAITING
+    wait_reason: JOB-002_NOT_VERIFIED
+  JOB-004:
+    name: Register Initial Source Artifact Baseline
+    state: WAITING
+    wait_reason: JOB-003_NOT_VERIFIED
+  JOB-005:
+    name: Close Initial Traceability Run
+    state: WAITING
+    wait_reason: JOB-004_NOT_VERIFIED
