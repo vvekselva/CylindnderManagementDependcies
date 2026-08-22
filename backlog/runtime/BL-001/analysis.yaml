@@ -11,12 +11,11 @@ analysis:
       state: PROVED
       finding: >-
         The frozen traceability baseline is 3ae6e61442132d94a307275b08dd65fcef228d89.
-        At this analysis point CylinderManagement/main compares identical to that baseline,
-        so no source drift exists between the approved baseline and current main.
+        This exact commit is the source version being inspected for the initial Traceability baseline.
 
     spring_bootstrap:
       state: PROVED
-      path: cyl.../web/bootstrap/CylinderManagementWebApplication.java
+      path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/bootstrap/CylinderManagementWebApplication.java
       component_scan_boundary:
         - com.sreyas.datamatics.cylindermanagement.web.controller
         - com.sreyas.datamatics.cylindermanagement.web.rest
@@ -24,27 +23,27 @@ analysis:
         - com.sreyas.datamatics.cylindermanagement.misc.cache
         - com.sreyas.datamatics.cylindermanagement.web.controller.test
       finding: >-
-        Production Controller discovery must inspect the explicitly component-scanned
-        packages, including web.controller.test under src/main/java. It must not assume
-        exposure merely from a Controller-like filename.
+        Production HTTP exposure must be discovered inside these explicitly scanned package trees.
+        The package named web.controller.test is under src/main/java and is explicitly component-scanned,
+        so it must be treated as production candidate source rather than being excluded because of its name.
 
-    web_controller_scope:
+    component_candidate_scope:
       state: PROVED_AS_CANDIDATE_SCOPE
-      path: cyl.../web/controller/
-      observed_candidates:
-        - CustomerSpotCylinderCheckController.java
-        - UC01RegisterCustomerController.java
-        - Uc02Phase01VehicleLoadController.java
-        - Uc02Phase02CylinderDeliveryController.java
-        - VehicleTripLoadWizardController.java
-        - test/
+      counts:
+        web_controller_root_java_files: 5
+        web_controller_test_java_files: 30
+        misc_web_controller_java_files: 12
+        web_rest_java_files: 14
+        misc_cache_java_files: 1
+        total_java_component_candidates: 62
       finding: >-
-        The top-level production web.controller package and its production test subpackage
-        exist in the frozen baseline and must be classified by annotations/mappings.
+        The five explicitly scanned package trees contain 62 Java component candidates in the frozen
+        cylindermanagement.web source tree. This is the measurable classification scope; it is not an
+        exposed-controller count. Each candidate still requires annotation/mapping classification.
 
     exposed_controller_customer_spot_check:
       state: PROVED
-      source: cyl.../web/controller/CustomerSpotCylinderCheckController.java
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/CustomerSpotCylinderCheckController.java
       class_annotation: '@Controller'
       class_mapping: /customer-spot-cylinder-check
       endpoints:
@@ -59,46 +58,58 @@ analysis:
         calls:
           - submitSpotCheck(requestDto)
           - findActiveSpotCheckBooksForLoad(vehicleLoadId)
-      finding: >-
-        This class is a proved production HTTP Controller, not merely a filename candidate.
-        Its class-level and method-level mappings prove two caller-visible endpoints and
-        source inspection proves the immediate service handoff.
 
-    web_controller_test_scope:
-      state: PROVED_AS_CANDIDATE_SCOPE
-      path: cyl.../web/controller/test/
-      observed_examples:
-        - AddStopController.java
-        - ChallanBookWebController.java
-        - ChallanEntryAgingDashboardController.java
-        - ChallanHeatmapController.java
-        - ChallanPagePhotoController.java
-        - CompleteTripController.java
-        - CustomerAddressLocationController.java
-        - CustomerConsumptionDashboardController.java
+    exposed_controller_register_customer:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/UC01RegisterCustomerController.java
+      class_annotation: '@Controller'
+      endpoints:
+        - http_method: GET
+          path: /registerCustomer
+          handler: doGet
+        - http_method: POST
+          path: /registerCustomer
+          handler: doPost
+      proven_immediate_handoffs:
+        - component: ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
+          call: uC01RegisterCustomerMediator.invokeServices(requestDto)
+          used_by: POST /registerCustomer
+        - component: LookupDataCache
+          call: lookupDataCache.getAddressTypes()
+          used_by: GET /registerCustomer and validation-error rendering
       finding: >-
-        This is production source under src/main/java and is included by the Spring
-        component-scan boundary even though the package name contains test.
+        UC01RegisterCustomerController is source-proved as an exposed MVC Controller with two
+        caller-visible endpoints. Its immediate mediator/cache handoffs are proved, but the POST
+        endpoint has not yet been traced through the mediator to its final dependency.
 
-    web_rest_scope:
-      state: PROVED_AS_CANDIDATE_SCOPE
-      path: cyl.../web/rest/
-      observed_examples:
-        - RestfulAddressServices.java
-        - RestfulAddressTypeServices.java
-        - RestfulChallanTypeServices.java
-        - RestfulCityServices.java
-        - RestfulCountryServices.java
-        - RestfulCustomerServices.java
-        - RestfulCylinderServices.java
-        - RestfulDriverServices.java
+    exposed_rest_customer_search:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulCustomerServices.java
+      class_annotation: '@RestController'
+      class_mapping: /search/customer
+      endpoints:
+        - http_method: GET
+          path: /search/customer/{searchText}
+          handler: getCustomers
+      proven_immediate_handoff:
+        component: ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CustomerSearchResponseDto>
+        call: customerSearchService.searchWithText(requestDto, null)
       finding: >-
-        The web.rest production package contains source candidates that must be inspected
-        for actual HTTP exposure and endpoint mappings.
+        RestfulCustomerServices proves that the web.rest candidate package contains actual REST exposure.
+        Its one customer-search endpoint and immediate search-service handoff are proved, while its final
+        persistence dependency remains to be traced.
+
+    current_proved_exposure_checkpoint:
+      proved_exposed_components: 3
+      proved_endpoints: 5
+      candidate_components_remaining_to_classify: 59
+      note: >-
+        These are progress counters only. They are not the final exposed-component or endpoint totals and
+        cannot be used to claim Traceability coverage until all 62 candidates have been classified.
 
   not_yet_proved:
-    - Complete classification of every candidate component as EXPOSED or NOT_EXPOSED.
-    - Complete caller-visible endpoint inventory.
+    - Complete classification of all 62 Java component candidates as EXPOSED or NOT_EXPOSED.
+    - Complete caller-visible endpoint inventory for every exposed component.
     - Complete endpoint call paths to final dependencies.
     - Complete physical database-object evidence for database-backed paths.
     - 100 percent Source Check Output coverage required by QG-TRC-002 through QG-TRC-005.
@@ -107,16 +118,18 @@ analysis:
     QG-DEP-001: PASS
     QG-TRC-001: PASS
     QG-TRC-002: IN_PROGRESS
-    QG-TRC-003: WAITING
-    QG-TRC-004: WAITING
+    QG-TRC-003: IN_PROGRESS
+    QG-TRC-004: IN_PROGRESS
     QG-TRC-005: WAITING
 
   orchestrator_findings:
-    - The first trusted traceability baseline requires one complete source repository check before matrix construction.
-    - The Generic Worker remains task-agnostic; the complete source-check task is supplied by WI-0004.
-    - The canonical Source Check Output is worker/results/WI-0004.yaml.
+    - BL-001 is the only run-enabled Backlog Item and has no Backlog dependencies.
+    - Its approved Traceability Quality Gate is present, so source analysis is eligible to continue.
+    - The first trusted Traceability baseline requires one complete source repository check before matrix construction.
+    - The canonical Source Check Output remains worker/results/WI-0004.yaml.
     - Matrix construction must consume that canonical output and must not recreate source facts independently.
-    - Earlier WI-0001 and WI-0002 are historical evidence only; WI-0003 is superseded.
+    - Candidate-scope proof has advanced from examples to an exact 62-class Java classification scope in the explicitly scanned packages.
+    - Three exposed components and five endpoints are now source-proved as an interim checkpoint.
 
   required_work_units:
     - WU-BL001-001
@@ -125,6 +138,7 @@ analysis:
     - WU-BL001-004
 
   next_step: >-
-    Execute WU-BL001-001 / WI-0004 through its complete Worker lifecycle. Do not unlock
-    matrix construction until the structured Source Check Output is COMPLETED, CLOSED,
-    contract-valid and has 100 percent endpoint trace-result coverage.
+    Continue WU-BL001-001 source classification against the exact frozen commit until every one of the
+    62 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix
+    construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result
+    contract validates, and endpoint trace-result coverage equals 100 percent.
