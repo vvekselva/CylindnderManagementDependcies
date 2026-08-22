@@ -1,0 +1,108 @@
+backlog:
+  version: 1
+  target_repository: vvekselva/CylinderManagement
+  selection_policy: HIGHEST_PRIORITY_ELIGIBLE_ITEM
+  max_parallel_backlog_items: 1
+  note: >-
+    The Orchestrator may use parallel work units inside one Backlog Item, but only one
+    Backlog Item is active at a time until the framework is deliberately configured for
+    multi-item parallelism.
+
+  states:
+    - YET_TO_DO
+    - WAITING_FOR_DEPENDENCY
+    - READY
+    - ANALYZING
+    - PLANNED
+    - EXECUTING
+    - PARTIAL
+    - BLOCKED
+    - WAITING_FOR_DECISION
+    - FAILED
+    - VALIDATING
+    - VERIFIED
+    - CLOSED
+
+  items:
+    - id: BL-001
+      name: Controller Traceability
+      type: TRACEABILITY
+      priority: P1_BLOCKER_CLEARING
+      state: READY
+      completion_path: backlog/paths/BL-001-traceability.yaml
+      existing_workflow: workflows/WF-001-controller-traceability/workflow.yaml
+      dependencies: []
+      expected_outputs:
+        - traceability/source-repository-check.md
+        - traceability/controller-inventory.md
+        - traceability/endpoint-inventory.md
+        - traceability/controller-traceability.md
+        - traceability/unresolved-traceability.md
+
+    - id: BL-002
+      name: Unit Test Completion
+      type: UNIT_TEST
+      priority: P2_CRITICAL_PATH
+      state: YET_TO_DO
+      completion_path: backlog/paths/BL-002-unit-test.yaml
+      dependencies: []
+      expected_outputs:
+        - quality/unit-test/unit-test-inventory.md
+        - quality/unit-test/unit-test-results.md
+        - quality/unit-test/unresolved-unit-tests.md
+
+    - id: BL-003
+      name: Integration Test Completion
+      type: INTEGRATION_TEST
+      priority: P2_CRITICAL_PATH
+      state: YET_TO_DO
+      completion_path: backlog/paths/BL-003-integration-test.yaml
+      dependencies: []
+      expected_outputs:
+        - quality/integration-test/integration-test-inventory.md
+        - quality/integration-test/integration-test-results.md
+        - quality/integration-test/unresolved-integration-tests.md
+
+    - id: BL-004
+      name: Code Coverage Report
+      type: CODE_COVERAGE
+      priority: P2_CRITICAL_PATH
+      state: WAITING_FOR_DEPENDENCY
+      completion_path: backlog/paths/BL-004-code-coverage.yaml
+      dependencies:
+        - BL-002
+        - BL-003
+      dependency_rule: ALL_VERIFIED_OR_CLOSED
+      expected_outputs:
+        - quality/code-coverage/coverage-report.md
+        - quality/code-coverage/coverage-summary.yaml
+
+    - id: BL-005
+      name: ArchUnit Architecture Test
+      type: ARCHUNIT
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      completion_path: backlog/paths/BL-005-archunit.yaml
+      dependencies: []
+      expected_outputs:
+        - quality/archunit/architecture-rules.md
+        - quality/archunit/archunit-results.md
+        - quality/archunit/unresolved-architecture-rules.md
+
+    - id: BL-006
+      name: Requirements Traceability and Gap Analysis
+      type: REQUIREMENTS
+      priority: P2_CRITICAL_PATH
+      state: YET_TO_DO
+      completion_path: backlog/paths/BL-006-requirements.yaml
+      dependencies: []
+      expected_outputs:
+        - requirements/requirements-inventory.md
+        - requirements/requirements-traceability.md
+        - requirements/requirements-gaps.md
+
+  current_selection:
+    backlog_item: BL-001
+    reason: >-
+      Controller Traceability is the currently active framework exercise and its
+      existing WF-001 execution state will be migrated into the Backlog runtime model.
