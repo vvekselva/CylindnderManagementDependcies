@@ -10,11 +10,11 @@ The repository controls automation work executed against `vvekselva/CylinderMana
 |---|---|---|
 | `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and permits only declared dynamic runtime/artifact paths. |
 | `TaskStatus.md` | Status | Consolidated automation, Workflow, lane and Worker status dashboard. |
-| `automation/automation-config.yaml` | Automation | Machine-readable coordinator, ten orchestration lanes, generic Worker, lifecycle, scheduling and lock configuration. |
+| `automation/automation-config.yaml` | Automation | Machine-readable coordinator, ten orchestration lanes, Generic Worker, lifecycle, handoff, scheduling and lock configuration. |
 | `automation/execution-model.md` | Automation | Defines orchestration plus the independent input-driven Generic Worker. |
 | `automation/generate-automation-story.py` | Automation | Converts the human-readable automation log into the overall story. |
 | `automation/task-contract.md` | Automation | Defines Task/Job execution fields and lifecycle rules. |
-| `automation/worker-component-contract.md` | Worker | Defines the independent Generic Worker whose actual task comes from an input file. |
+| `automation/worker-component-contract.md` | Worker | Defines the independent Generic Worker and machine-readable result handoff rules. |
 | `automation/worker-service-contract.md` | Automation | Defines the mandatory orchestration lane `init() -> service() -> close()` lifecycle. |
 | `automation/workflow-contract.md` | Automation | Defines the Workflow -> Job -> Action hierarchy. |
 | `database-dependency-neon.md` | Dependency | Neon/PostgreSQL/Flyway dependency and database change-control ledger. |
@@ -27,12 +27,13 @@ The repository controls automation work executed against `vvekselva/CylinderMana
 | `repository-catalogue.md` | Governance | Authoritative catalogue of static control files and allowed dynamic paths. |
 | `sync/source-artifact-sync-register.yaml` | Synchronization | Machine-readable source-component to artifact synchronization list. |
 | `traceability/README.md` | Traceability | Explains the Controller Traceability output area. |
-| `traceability/controller-traceability-design.md` | Traceability Design | Defines Controller Traceability using input-driven Worker tasks. |
+| `traceability/controller-traceability-design.md` | Traceability Design | Defines Source Check Output -> Orchestrator -> Traceability Matrix flow. |
 | `traceability/controller-trace-template.md` | Traceability Template | Standard per-controller trace artifact referencing Worker evidence. |
 | `usecases/Readme.md` | Use Cases | Use-case documentation entry point. |
-| `worker/README.md` | Worker | Explains Worker input/run/result workspace. |
-| `worker/worker-input-template.yaml` | Worker | Standard task input format for the Generic Worker. |
-| `workflows/WF-001-controller-traceability/workflow.yaml` | Workflow | Initial baseline sequence: complete repository check first, Traceability Matrix second. |
+| `worker/README.md` | Worker | Explains Worker input/run/result workspace and machine-readable handoff. |
+| `worker/worker-input-template.yaml` | Worker | Standard task input and result-contract format for the Generic Worker. |
+| `workflows/WF-001-controller-traceability/source-check-output-contract.yaml` | Workflow Contract | Defines the canonical Source Check Output consumed by JOB-003. |
+| `workflows/WF-001-controller-traceability/workflow.yaml` | Workflow | Initial baseline sequence: Source Check output first, Orchestrator Traceability Matrix second. |
 | `workflows/WF-002-source-artifact-sync/workflow.yaml` | Workflow | Ongoing source-to-artifact synchronization workflow using Worker Input files. |
 
 ## Catalogue Quality Gate
@@ -68,6 +69,7 @@ traceability/controller-trace-template.md
 usecases/Readme.md
 worker/README.md
 worker/worker-input-template.yaml
+workflows/WF-001-controller-traceability/source-check-output-contract.yaml
 workflows/WF-001-controller-traceability/workflow.yaml
 workflows/WF-002-source-artifact-sync/workflow.yaml
 <!-- CATALOGUE-FILES:END -->
@@ -76,7 +78,9 @@ workflows/WF-002-source-artifact-sync/workflow.yaml
 worker/inputs/WI-*.yaml
 worker/runs/WI-*.md
 worker/results/WI-*.md
+worker/results/WI-*.yaml
 workflows/WF-001-controller-traceability/runtime/*.yaml
+workflows/WF-001-controller-traceability/evidence/*.yaml
 traceability/source-repository-check.md
 traceability/controllers/*.md
 traceability/controller-inventory.md
