@@ -77,6 +77,18 @@ Run: `RUN-WI0004-20260823-019`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-The Orchestrator continued only BL-001 / WU-BL001-001 and examined the active `RestfulAddressServices` handler `GET /search/address/customer-address/{customerId}`. The source proves the handler invokes the injected `customerAddressFetchByIDService.searchWithText(...)`. The older `/customer/{customerId}` handler is commented out and was not treated as active. The concrete Spring implementation, DAO/query path and final dependency behind `customerAddressFetchByIDService` were not proved from inspected evidence, so the endpoint was recorded UNRESOLVED at the last proven component rather than guessing.
+The Orchestrator continued only BL-001 / WU-BL001-001 and examined the active `RestfulAddressServices` handler `GET /search/address/customer-address/{customerId}`. The source proved the handler invoked the injected `customerAddressFetchByIDService.searchWithText(...)`. The concrete Spring implementation, DAO/query path and final dependency were not yet proved, so the endpoint was recorded UNRESOLVED at the last proven component rather than guessing.
 
-Checkpoint: **13 / 134 endpoints examined; 12 COMPLETE; 1 UNRESOLVED; 121 NOT YET EXAMINED**. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS; QG-TRC-009 remains IN_PROGRESS. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, matrix construction and dependent work units remain locked, and BL-001 remains PARTIAL and open.
+Checkpoint: **13 / 134 endpoints examined; 12 COMPLETE; 1 UNRESOLVED; 121 NOT YET EXAMINED**.
+
+---
+
+## EVENT EVT-0028 - WI-0004 Twentieth Attempt Resolved Customer Address Dependency
+Time: `2026-08-23T02:54:13+05:30`
+Run: `RUN-WI0004-20260823-020`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The previously unresolved `GET /search/address/customer-address/{customerId}` path was proved through the concrete Spring `CustomerAddressFetchByIDService`, which calls `CustomerAddressJpaDao.findByCustomer_CustomerId(...)`. `CustomerAddressJpaDao` is a `JpaRepository<CustomerAddressDo, Long>`, and `CustomerAddressDo` explicitly maps to `public.tbl_customer_address`.
+
+Checkpoint advanced to **13 / 134 endpoints examined; 13 COMPLETE; 0 UNRESOLVED; 121 NOT YET EXAMINED**. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS because the Source Check and canonical Endpoint Inventory are not complete. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, matrix construction and dependent work units remain locked, and BL-001 remains PARTIAL and open.
