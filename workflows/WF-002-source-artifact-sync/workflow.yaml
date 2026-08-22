@@ -1,32 +1,38 @@
 workflow:
   id: WF-002-source-artifact-sync
+  version: 2
   name: Source to Artifact Synchronization
   purpose: >-
     Detect changes in CylinderManagement after the last verified source commit,
-    decide whether each change affects a controlled artifact, refresh stale artifacts,
-    and notify the user when an exposed API changes or the impact cannot be safely confirmed.
+    classify their impact on controlled artifacts, refresh stale artifacts, and
+    notify the user when an exposed API changes or impact cannot be confirmed.
 
   target_repository: vvekselva/CylinderManagement
   control_repository: vvekselva/CylindnderManagementDependcies
+
+  independent_worker:
+    component: WORKER
+    contract: automation/worker-component-contract.md
+    input_template: worker/worker-input-template.yaml
+    task_definition_source: INPUT_FILE_ONLY
 
   trigger:
     modes:
       - SOURCE_CHANGE_CHECK
       - MANUAL_RUN
       - BEFORE_TRACEABILITY_USE
-    description: >-
-      This workflow is intended to run whenever the automation checks for newer
-      CylinderManagement changes or before a controlled artifact is relied upon.
 
-  worker_model:
+  orchestration_worker_model:
     coordinator_is_separate: true
-    worker_lanes: 10
+    lanes: 10
     max_parallel_jobs: 10
 
   logging:
     policy: governance/automation-log-policy.md
     shared_log: logs/automation-log.md
     story_output: logs/automation-story.md
+    worker_runs: worker/runs/WI-*.md
+    worker_results: worker/results/WI-*.md
 
   synchronization:
     policy: governance/source-artifact-sync-policy.md
@@ -34,36 +40,35 @@ workflow:
 
   jobs:
     - id: JOB-001
-      name: Read Last Verified Source Commit
+      name: Read Comparison Commits
       needs: []
       parallel: false
       actions:
         - id: ACT-001
-          instruction: Read the last verified CylinderManagement source commit from the sync register.
-          expected_result: The automation knows the source version represented by the current artifacts.
+          instruction: Read the last verified CylinderManagement commit represented by the sync register.
+          expected_result: Base comparison commit is known.
         - id: ACT-002
-          instruction: Read the newest source commit that must be checked.
-          expected_result: The automation knows the comparison end point.
-      completion_check: Both comparison commits are known.
+          instruction: Read the newest CylinderManagement commit that must be checked.
+          expected_result: Head comparison commit is known.
 
     - id: JOB-002
       name: Find Source Changes
-      needs:
-        - JOB-001
+      needs: [JOB-001]
       parallel: false
       actions:
         - id: ACT-001
-          instruction: Compare the last verified source commit with the newest source commit.
-          expected_result: Added, changed, renamed and deleted source files are identified.
+          instruction: Create a Worker Input that compares the two commits and returns added, changed, renamed and deleted source files.
+          expected_result: The comparison task is explicit in an input file.
         - id: ACT-002
-          instruction: Map changed files to registered components where possible.
-          expected_result: The automation knows which controlled artifacts may be affected.
-      completion_check: Every source change has been placed into the impact-check queue.
+          instruction: Execute the Worker Input and accept only a CLOSED result.
+          expected_result: Changed source files/components are returned with evidence.
+        - id: ACT-003
+          instruction: Map changed files to registered artifacts where possible.
+          expected_result: Potentially affected artifacts enter the impact-check queue.
 
     - id: JOB-003
       name: Classify Change Impact In Parallel
-      needs:
-        - JOB-002
+      needs: [JOB-002]
       parallel: true
       strategy:
         type: QUEUE_FAN_OUT
@@ -72,46 +77,39 @@ workflow:
         worker_ownership: ONE_CHANGED_COMPONENT_PER_WORK_ITEM
       actions:
         - id: ACT-001
-          instruction: Read the changed source component and its previous version.
-          expected_result: The worker understands what actually changed.
+          instruction: For the assigned changed component, create/select a Worker Input that compares old and new behaviour relevant to the registered artifact.
+          expected_result: The exact comparison question, scope and permissions are explicit.
         - id: ACT-002
-          instruction: Check whether an exposed controller endpoint, HTTP method, URL, request contract, response contract or access rule changed.
-          expected_result: Caller-visible API impact is identified.
+          instruction: Use CLOSED Worker results to determine whether exposed API behaviour changed.
+          expected_result: Caller-visible impact is evidence-backed.
         - id: ACT-003
-          instruction: If the exposed API is unchanged, check whether the dependency path recorded in the artifact changed.
-          expected_result: Internal traceability impact is identified.
+          instruction: If API behaviour is unchanged, use Worker results to determine whether the recorded internal trace changed.
+          expected_result: Internal traceability impact is evidence-backed.
         - id: ACT-004
           instruction: Classify the change using the synchronization policy.
-          expected_result: One of INTERNAL_ONLY, TRACE_CHANGED, EXPOSED_API_CHANGED, COMPONENT_ADDED_OR_REMOVED or IMPACT_NOT_CONFIRMED is recorded.
-        - id: ACT-005
-          instruction: Explain the classification in simple English and identify the affected artifact.
-          expected_result: The coordinator can understand why action is or is not required.
-      completion_check: Every changed component has a classification supported by evidence.
+          expected_result: One classification is recorded with a simple-English explanation.
 
     - id: JOB-004
       name: Decide Required Response
-      needs:
-        - JOB-003
+      needs: [JOB-003]
       parallel: false
       actions:
         - id: ACT-001
-          instruction: Leave INTERNAL_ONLY components unchanged when their controlled artifact is still correct.
-          expected_result: Harmless implementation changes do not create unnecessary artifact churn.
+          instruction: Leave INTERNAL_ONLY artifacts unchanged when still correct.
+          expected_result: No unnecessary artifact churn.
         - id: ACT-002
-          instruction: Queue TRACE_CHANGED components for artifact refresh without a normal user alert.
-          expected_result: Internal architecture changes are reflected in traceability artifacts.
+          instruction: Queue TRACE_CHANGED artifacts for refresh without normal user notification.
+          expected_result: Internal path changes are reflected.
         - id: ACT-003
-          instruction: Queue EXPOSED_API_CHANGED and COMPONENT_ADDED_OR_REMOVED items for artifact refresh and user notification.
-          expected_result: Caller-visible changes are brought to the user's attention.
+          instruction: Queue EXPOSED_API_CHANGED and COMPONENT_ADDED_OR_REMOVED items for refresh and user notification.
+          expected_result: Caller-visible changes are surfaced.
         - id: ACT-004
-          instruction: Mark IMPACT_NOT_CONFIRMED items REVIEW_REQUIRED and notify the user with a plain-English explanation.
-          expected_result: Uncertain changes are never silently accepted.
-      completion_check: Every changed component has a clear response decision.
+          instruction: Mark IMPACT_NOT_CONFIRMED items REVIEW_REQUIRED and prepare a user notification.
+          expected_result: Uncertainty is not silently accepted.
 
     - id: JOB-005
       name: Refresh Affected Artifacts
-      needs:
-        - JOB-004
+      needs: [JOB-004]
       parallel: true
       strategy:
         type: QUEUE_FAN_OUT
@@ -119,58 +117,44 @@ workflow:
         max_parallel: 10
       actions:
         - id: ACT-001
-          instruction: Re-read the affected source component using the new source baseline.
-          expected_result: The worker works from the current source version.
+          instruction: Create/select Worker Inputs that collect the new evidence required to refresh each stale artifact.
+          expected_result: Refresh evidence comes from explicit input-driven Worker tasks.
         - id: ACT-002
-          instruction: Update only the artifact sections made stale by the source change.
-          expected_result: The artifact describes the new source accurately.
+          instruction: Update only artifact sections made stale by the source change.
+          expected_result: Artifact matches the new source.
         - id: ACT-003
-          instruction: Verify the updated artifact against the source.
-          expected_result: The artifact can be marked IN_SYNC.
-      completion_check: Every refreshable affected artifact is verified against the new source commit.
+          instruction: Verify the update against CLOSED Worker evidence.
+          expected_result: Artifact can be marked IN_SYNC.
 
     - id: JOB-006
       name: Notify User When Required
-      needs:
-        - JOB-004
+      needs: [JOB-004]
       parallel: false
       actions:
         - id: ACT-001
-          instruction: Create a simple-English notification for every caller-visible API change, added or removed exposed component, or impact that cannot be confirmed.
-          expected_result: The user can understand what changed and why attention is needed without reading a Git diff.
-        - id: ACT-002
-          instruction: State which artifacts are affected and whether the automation already refreshed them or needs a decision.
-          expected_result: The notification includes the current synchronization state and next action.
-      completion_check: Every notification-required change has a user-facing explanation.
+          instruction: Create a simple-English notification for caller-visible API changes, added/removed exposed components, or unconfirmed impact.
+          expected_result: User understands what changed and what action is needed.
 
     - id: JOB-007
       name: Update Sync Register
-      needs:
-        - JOB-005
-        - JOB-006
+      needs: [JOB-005, JOB-006]
       parallel: false
       actions:
         - id: ACT-001
-          instruction: Record the new source commit, classification and synchronization state for each controlled component.
-          expected_result: The register represents the current source-to-artifact relationship.
-        - id: ACT-002
-          instruction: Keep REVIEW_REQUIRED items visibly unresolved until a decision or later run resolves them.
-          expected_result: Uncertainty is not hidden by the synchronization update.
-      completion_check: The sync register reflects all checked changes.
+          instruction: Record new source commit, classification, evidence IDs and synchronization state.
+          expected_result: Register represents the current source-to-artifact relationship.
 
     - id: JOB-008
       name: Update Human Log And Story
-      needs:
-        - JOB-007
+      needs: [JOB-007]
       parallel: false
       actions:
         - id: ACT-001
-          instruction: Record a plain-English synchronization event in the shared automation log.
-          expected_result: The change check is understandable to a human reader.
+          instruction: Confirm all Worker runs used by this synchronization check are CLOSED.
+          expected_result: No unfinished result is accepted as evidence.
         - id: ACT-002
-          instruction: Rebuild the automation story from the log.
-          expected_result: The overall story includes the latest source synchronization result.
-      completion_check: The log and story include all important synchronization outcomes.
+          instruction: Record the synchronization event and rebuild the human story.
+          expected_result: Human-readable history is current.
 
   classification_response:
     INTERNAL_ONLY:
