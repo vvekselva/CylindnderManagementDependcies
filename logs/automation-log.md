@@ -94,14 +94,7 @@ Five additional candidates were source-classified, including `RestfulAddressServ
 Run: `RUN-WI0004-20260822-011`
 Status: `PARTIAL / CLOSED`
 
-### What was found
-The attempt listed five `web.rest` classes. During the next Orchestrator verification, `RestfulCustomerServices` was found to have already been classified in an earlier checkpoint. The duplicate was therefore removed from cumulative accounting rather than silently counted twice.
-
-### Corrected checkpoint
-- 49 unique exposed components.
-- 118 unique caller-visible HTTP method/path combinations.
-- 4 NOT_EXPOSED candidates.
-- 9 unique candidates remaining.
+The duplicate `RestfulCustomerServices` accounting was corrected. Checkpoint: 49 unique exposed components, 118 unique method/path combinations, 4 NOT_EXPOSED candidates, 9 remaining.
 
 ---
 
@@ -110,70 +103,44 @@ Run: `RUN-WI0004-20260822-012`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### What was attempted
-The Orchestrator re-read the Backlog run-selection file, selected only BL-001, confirmed the common dependency gate and approved BL-001 Quality Gate, and continued the already-approved `WU-BL001-001 / WI-0004` Source Repository Check.
-
-### What was proved
-All remaining unique candidates were classified from the frozen source:
-
-- `RestfulCylinderServices` — EXPOSED, 7 active endpoints.
-- `RestfulDriverServices` — EXPOSED, 2 endpoints.
-- `RestfulProductCategoryServices` — EXPOSED, 1 endpoint.
-- `RestfulProductServices` — EXPOSED, 1 endpoint.
-- `RestfulProductUomServices` — EXPOSED, 1 endpoint.
-- `RestfulStateServices` — EXPOSED, 1 endpoint.
-- `RestfulSupplierSearchService` — EXPOSED, 1 endpoint.
-- `RestfulVehicleServices` — EXPOSED, 2 endpoints.
-- `LookupDataCache` — NOT_EXPOSED; it is a Spring `@Component` cache and has no HTTP mapping annotations.
-
-### Current verified checkpoint
-- Classification scope: 62 candidates.
-- Classification complete: 62 / 62.
-- EXPOSED: 57.
-- NOT_EXPOSED: 5.
-- Unique caller-visible HTTP method/path combinations proved: 134.
-- Candidates remaining to classify: 0.
-
-### Quality Gate effect
-- `QG-DEP-001`: PASS.
-- `QG-TRC-001`: PASS.
-- `QG-TRC-003 Controller Inventory Completeness`: PASS.
-- `QG-TRC-002 Complete Source Check`: IN PROGRESS because endpoint-to-final-dependency traces remain incomplete.
-- `QG-TRC-004 Endpoint Inventory Completeness`: IN PROGRESS until the canonical inventory is generated and validated from the completed Source Check Output.
-- `QG-TRC-005` onward: WAITING.
-
-### Result
-The source candidate classification phase is complete, but the overall Source Check is still PARTIAL. `worker/results/WI-0004.yaml` was not created or accepted. Matrix construction remains locked. The next work is to trace the full 134-endpoint inventory through services/repositories/queries to final dependencies, recording unresolved paths explicitly instead of guessing.
+Classification completed at 62/62 candidates: 57 EXPOSED, 5 NOT_EXPOSED, 134 unique caller-visible HTTP method/path combinations. QG-TRC-003 moved to PASS. QG-TRC-002 and QG-TRC-004 remained IN_PROGRESS; matrix construction stayed locked.
 
 ---
 
 ## EVENT EVT-0020 - WI-0004 Thirteenth Attempt Began Endpoint Dependency Tracing
-Time: `2026-08-22T09:04:05-05:30`
 Run: `RUN-WI0004-20260822-013`
+Status: `PARTIAL / CLOSED`
+
+Three endpoints entered dependency tracing: `GET /search/customer/{searchText}`, `GET /search/product/{searchText}`, and `GET /search/addresstype/{searchText}`. Each stopped at a source-proved generic search-service handoff and was recorded UNRESOLVED rather than guessing a final dependency. Checkpoint: 3 examined, 0 COMPLETE, 3 UNRESOLVED, 131 not yet examined.
+
+---
+
+## EVENT EVT-0021 - WI-0004 Fourteenth Attempt Advanced Cylinder Endpoint Handoffs
+Run: `RUN-WI0004-20260822-014`
+Status: `PARTIAL / CLOSED`
+
+The seven active `RestfulCylinderServices` endpoints were traced to exact injected application-search-service qualifiers. Controller comments naming `tbl_cylinder_logistics_execution_line` and `tbl_cylinder_party_custody` were retained only as supporting evidence. Checkpoint: 10 examined, 0 COMPLETE, 10 UNRESOLVED, 124 not yet examined.
+
+---
+
+## EVENT EVT-0022 - WI-0004 Fifteenth Attempt Proved First Final Dependencies
+Run: `RUN-WI0004-20260822-015`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### What was attempted
-The Orchestrator selected only BL-001, confirmed the common dependency gate and approved Traceability Quality Gates, and started the next permitted phase of `WU-BL001-001`: tracing exposed endpoints toward their final dependencies.
+### Meaningful progress
+Three previously unresolved endpoint paths are now source-proved COMPLETE:
 
-### What was found
-Three REST endpoints were examined:
+- `GET /search/cylinder/{searchText}` -> `CylinderSearchServiceWithOwnershipModel` -> `CylinderGlobalSearchViewJpaDao.searchBySerial(...)` -> `public.vw_cylinder_global_search`.
+- `POST /search/cylinder/ownership/by-state` -> `CylinderCurrentOwnershipByStateSearchService` -> `CylinderGlobalSearchViewJpaDao.searchByStateNames(...)` -> `public.vw_cylinder_global_search`.
+- `POST /search/cylinder/by-serial-and-state` -> `CylinderCurrentOwnershipBySerialAndStateSearchService` -> `CylinderGlobalSearchViewJpaDao.searchBySerialAndStateNames(...)` -> `public.vw_cylinder_global_search`; its state validation also reaches `CylinderStateJpaDao.findByCylinderStateIn(...)` -> `public.tbl_cylinder_states`.
 
-- `GET /search/customer/{searchText}` reaches the injected generic customer search-service interface.
-- `GET /search/product/{searchText}` reaches the injected generic product search-service interface.
-- `GET /search/addresstype/{searchText}` reaches the injected generic address-type search-service interface.
-
-The concrete Spring implementation, DAO/repository, and final database object behind these three injected interfaces were not yet proved from the inspected evidence. The worker therefore stopped at the last proven component instead of naming a likely repository or table.
-
-### Current endpoint-trace checkpoint
+### Current checkpoint
 - Endpoint inventory: 134.
-- Explicitly examined for final dependency: 3.
-- COMPLETE: 0.
-- UNRESOLVED: 3.
-- Not yet examined for final dependency: 131.
+- Explicitly examined: 10.
+- COMPLETE: 3.
+- UNRESOLVED: 7.
+- Not yet examined: 124.
 
-### Quality Gate effect
-`QG-TRC-002` remains IN PROGRESS. `QG-TRC-009 No Guessing And Unresolved Quality` is now IN PROGRESS with positive evidence that unresolved paths are being recorded at the last proved component. No completion gate was falsely advanced.
-
-### Result
-Attempt 13 closed PARTIAL. The canonical `worker/results/WI-0004.yaml` remains uncreated/unaccepted and Matrix construction remains locked. The next action is to resolve the concrete search-service implementations and continue the remaining endpoint traces.
+### Gate effect
+`QG-TRC-002` remains IN_PROGRESS because Source Check coverage is not complete. `QG-TRC-004` remains IN_PROGRESS because the canonical Endpoint Inventory has not yet been generated and validated from a completed Source Check result. `QG-TRC-009` remains IN_PROGRESS with positive no-guessing evidence. `worker/results/WI-0004.yaml` remains uncreated/unaccepted and dependent work units remain locked.
