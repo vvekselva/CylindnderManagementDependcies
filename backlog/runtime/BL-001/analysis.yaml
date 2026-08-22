@@ -17,15 +17,15 @@ analysis:
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
     examined_for_final_dependency: 10
-    complete: 3
-    unresolved: 7
+    complete: 6
+    unresolved: 4
     blocked: 0
     failed: 0
     not_yet_examined: 124
 
   latest_attempt:
-    number: 15
-    run_id: RUN-WI0004-20260822-015
+    number: 16
+    run_id: RUN-WI0004-20260822-016
     state: CLOSED
     result: PARTIAL
     evidence: worker/runs/WI-0004.md
@@ -35,37 +35,41 @@ analysis:
         service: CylinderSearchServiceWithOwnershipModel
         repository: CylinderGlobalSearchViewJpaDao
         repository_method: searchBySerial
-        final_dependencies:
-          - public.vw_cylinder_global_search
+        final_dependencies: [public.vw_cylinder_global_search]
         trace_state: COMPLETE
       - endpoint: POST /search/cylinder/ownership/by-state
         controller: RestfulCylinderServices
         service: CylinderCurrentOwnershipByStateSearchService
         repository: CylinderGlobalSearchViewJpaDao
         repository_method: searchByStateNames
-        final_dependencies:
-          - public.vw_cylinder_global_search
+        final_dependencies: [public.vw_cylinder_global_search]
         trace_state: COMPLETE
       - endpoint: POST /search/cylinder/by-serial-and-state
         controller: RestfulCylinderServices
         service: CylinderCurrentOwnershipBySerialAndStateSearchService
-        repositories:
-          - CylinderGlobalSearchViewJpaDao
-          - CylinderStateJpaDao
-        repository_methods:
-          - searchBySerialAndStateNames
-          - findByCylinderStateIn
-        final_dependencies:
-          - public.vw_cylinder_global_search
-          - public.tbl_cylinder_states
+        repositories: [CylinderGlobalSearchViewJpaDao, CylinderStateJpaDao]
+        repository_methods: [searchBySerialAndStateNames, findByCylinderStateIn]
+        final_dependencies: [public.vw_cylinder_global_search, public.tbl_cylinder_states]
+        trace_state: COMPLETE
+      - endpoint: GET /search/customer/{searchText}
+        service: CustomerSearchService
+        repository: CustomerJpaDao
+        repository_method: findByCustomerNameContainingIgnoreCase
+        final_dependencies: [public.tbl_customer]
+        trace_state: COMPLETE
+      - endpoint: GET /search/product/{searchText}
+        service: ProductSearchService
+        repository: ProductJpaDao
+        repository_method: findByProductNameContainingIgnoreCase
+        final_dependencies: [public.tbl_product]
+        trace_state: COMPLETE
+      - endpoint: GET /search/addresstype/{searchText}
+        service: AddressTypeSearchService
+        repository: AddressTypeJpaDao
+        repository_method: findByAddressTypeContainingIgnoreCase
+        final_dependencies: [public.tbl_address_type]
         trace_state: COMPLETE
     unresolved_endpoint_traces:
-      - endpoint: GET /search/customer/{searchText}
-        trace_state: UNRESOLVED
-      - endpoint: GET /search/product/{searchText}
-        trace_state: UNRESOLVED
-      - endpoint: GET /search/addresstype/{searchText}
-        trace_state: UNRESOLVED
       - endpoint: POST /search/cylinder/by-state
         last_proven_component: availableYardCylinderByStateSearchService
         trace_state: UNRESOLVED
@@ -94,18 +98,19 @@ analysis:
   proved_now:
     - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
     - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
-    - Three of the ten examined endpoint traces are now COMPLETE from controller through concrete service and JPA repository to physical database object evidence.
-    - GET /search/cylinder/{searchText} and POST /search/cylinder/ownership/by-state terminate at public.vw_cylinder_global_search.
-    - POST /search/cylinder/by-serial-and-state uses public.vw_cylinder_global_search and validates state names through public.tbl_cylinder_states.
-    - Seven examined traces remain explicitly UNRESOLVED; 124 endpoints remain not yet examined.
+    - Six of the ten examined endpoint traces are COMPLETE from controller/service through JPA repository evidence to physical database object evidence.
+    - GET /search/customer/{searchText} terminates at public.tbl_customer.
+    - GET /search/product/{searchText} terminates at public.tbl_product.
+    - GET /search/addresstype/{searchText} terminates at public.tbl_address_type.
+    - Four examined traces remain explicitly UNRESOLVED; 124 endpoints remain not yet examined.
 
   not_yet_proved:
-    - Final dependencies for the seven remaining examined UNRESOLVED endpoints.
+    - Final dependencies for the four remaining examined UNRESOLVED Cylinder endpoints.
     - Final dependencies for the remaining 124 endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Continue WU-BL001-001 by resolving the remaining recorded search-service implementations and then
-    examine the remaining 124 endpoints. Do not unlock Matrix construction until worker/results/WI-0004.yaml
-    is COMPLETED, the Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage
-    equals 100 percent.
+    Continue WU-BL001-001 by proving the DAO/query-to-physical-object evidence for the four remaining
+    examined Cylinder endpoints and then examine the remaining 124 endpoints. Do not unlock Matrix
+    construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result
+    contract validates, and endpoint trace-result coverage equals 100 percent.
