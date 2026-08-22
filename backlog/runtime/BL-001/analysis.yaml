@@ -13,16 +13,6 @@ analysis:
         The frozen traceability baseline is 3ae6e61442132d94a307275b08dd65fcef228d89.
         This exact commit is the source version being inspected for the initial Traceability baseline.
 
-    spring_bootstrap:
-      state: PROVED
-      path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/bootstrap/CylinderManagementWebApplication.java
-      component_scan_boundary:
-        - com.sreyas.datamatics.cylindermanagement.web.controller
-        - com.sreyas.datamatics.cylindermanagement.web.rest
-        - com.sreyas.datamatics.cylindermanagement.misc.web.controller
-        - com.sreyas.datamatics.cylindermanagement.misc.cache
-        - com.sreyas.datamatics.cylindermanagement.web.controller.test
-
     component_candidate_scope:
       state: PROVED_AS_CANDIDATE_SCOPE
       counts:
@@ -34,89 +24,82 @@ analysis:
         total_java_component_candidates: 62
 
     prior_checkpoint:
-      proved_exposed_components: 16
-      proved_endpoints: 39
-      candidates_remaining_to_classify: 46
-      source: WI-0004 attempts 1 through 3
-
-    attempt_4_classification:
-      candidates_inspected: 5
-      exposed: 3
-      not_exposed: 2
-
-      cylinder_dashboard_controller:
-        state: NOT_EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CylinderDashboardController.java
-        evidence: '@Controller is commented out as //@Controller; mappings therefore do not create a Spring MVC handler component.'
-
-      cylinder_fleet_summary_dashboard_controller:
-        state: NOT_EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CylinderFleetSummaryDashboardController.java
-        evidence: '@Controller is commented out as //@Controller; the class is not an active Spring MVC controller.'
-
-      delivery_planning_api_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/DeliveryPlanningApiController.java
-        class_annotation: '@RestController'
-        endpoints:
-          - {http_method: GET, path: /delivery-planning/demand-points.geojson, handler: demandPointsGeoJson}
-          - {http_method: GET, path: /delivery-planning/demand-bubbles.geojson, handler: demandBubblesGeoJson}
-          - {http_method: GET, path: /delivery-planning/customer-density-bubbles.geojson, handler: customerDensityBubblesGeoJson}
-          - {http_method: GET, path: /delivery-planning/stops, handler: listStops}
-          - {http_method: GET, path: /delivery-planning/stops/{stopId}/nearby-customers, handler: nearbyCustomers}
-          - {http_method: GET, path: /delivery-planning/customer-coverage.geojson, handler: customerCoverageGeoJson}
-          - {http_method: GET, path: /delivery-planning/stops.geojson, handler: planningStopsGeoJson}
-        immediate_handoffs:
-          - DeliveryPlanningMapService
-          - DeliveryPlanningStopService
-
-      delivery_planning_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/DeliveryPlanningController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /delivery-planning, handler: showDeliveryPlanningDashboard}
-          - {http_method: GET, path: /delivery-planning/dashboard, handler: showDeliveryPlanningDashboard}
-          - {http_method: GET, path: /delivery-planning/customer-density-bubble-map, handler: showCustomerDensityBubbleMap}
-          - {http_method: GET, path: /delivery-planning/weekly-forecast, handler: showWeeklyForecastReview}
-        immediate_handoff:
-          - DeliveryPlanningDemandJpaDao
-
-      delivery_planning_stop_management_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/DeliveryPlanningStopManagementController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /delivery-planning/stops/manage, handler: showStopManagementPage}
-          - {http_method: GET, path: /delivery-planning/stops/manage/, handler: showStopManagementPage}
-          - {http_method: POST, path: /delivery-planning/stops/manage/save, handler: saveStop}
-          - {http_method: POST, path: /delivery-planning/stops/manage/save-selected, handler: saveSelectedPoints}
-          - {http_method: POST, path: /delivery-planning/stops/manage/remove, handler: removeStop}
-        immediate_handoffs:
-          - DeliveryPlanningStopService
-          - DeliveryPlanningStopMediator
-          - MessageSource
-
-    current_proved_exposure_checkpoint:
       proved_exposed_components: 19
       proved_endpoints: 55
-      candidate_components_remaining_to_classify: 41
-      root_web_controller_package:
-        candidates: 5
-        classified: 5
-        exposed: 5
-        remaining: 0
+      proved_not_exposed_components: 2
+      candidates_remaining_to_classify: 41
+      source: WI-0004 attempts 1 through 4
+
+    attempt_5_classification:
+      candidates_inspected: 5
+      exposed: 5
+      not_exposed: 0
+
+      login_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/LoginController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /login, handler: showLoginPage}
+        immediate_handoff: LOGIN_FORM_VIEW
+
+      offline_map_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/OfflineMapController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /offline-map/status, handler: showStatus}
+          - {http_method: GET, path: /offline-map/status-json, handler: statusJson}
+          - {http_method: GET, path: /offline-map/style.json, handler: styleJson}
+          - {http_method: GET, path: /offline-map/vector-tiles/{z}/{x}/{y}.pbf, handler: vectorTile}
+        immediate_handoffs:
+          - OfflineVectorTileService
+          - OfflineMapStyleService
+
+      ownership_dashboard_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/OwnershipDashboardController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /ownership-dashboard, handler: showOwnershipDashboard}
+          - {http_method: GET, path: /ownership-dashboard/yard, handler: showYardOwnership}
+          - {http_method: GET, path: /ownership-dashboard/customer, handler: showCustomerOwnership}
+          - {http_method: GET, path: /ownership-dashboard/supplier, handler: showSupplierOwnership}
+          - {http_method: GET, path: /ownership-dashboard/logistics, handler: showLogisticsOwnership}
+        immediate_handoff: OwnershipDashboardFetchService
+
+      ownership_obligation_dashboard_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/OwnershipObligationDashboardController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /ownership-obligation-dashboard, handler: showOwnershipObligationDashboard}
+        immediate_handoff: OwnershipObligationDashboardService
+
+      party_custody_traceability_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/PartyCustodyTraceabilityController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /party-custody-traceability, handler: showTraceability}
+        immediate_handoff: OwnershipObligationDashboardService
+
+    current_proved_exposure_checkpoint:
+      proved_exposed_components: 24
+      proved_endpoints: 67
+      proved_not_exposed_components: 2
+      candidate_components_remaining_to_classify: 36
       web_controller_test_package:
         candidates: 30
-        classified_to_date: 15
-        exposed_to_date: 13
+        classified_to_date: 20
+        exposed_to_date: 18
         not_exposed_to_date: 2
-        remaining_to_classify: 15
+        remaining_to_classify: 10
       note: >-
-        These are progress counters only. They are not the final exposed-component or endpoint totals and cannot be used to claim Traceability coverage until all 62 candidates have been classified.
+        These are interim progress counters only. They are not final coverage totals and cannot be used to claim Traceability completion until all 62 candidates are classified and every exposed endpoint has a complete trace result.
 
   not_yet_proved:
-    - Complete classification of the remaining 41 Java component candidates as EXPOSED or NOT_EXPOSED.
+    - Complete classification of the remaining 36 Java component candidates as EXPOSED or NOT_EXPOSED.
     - Complete caller-visible endpoint inventory for every exposed component.
     - Complete endpoint call paths to final dependencies.
     - Complete physical database-object evidence for database-backed paths.
@@ -132,18 +115,18 @@ analysis:
 
   worker_attempt:
     input: worker/inputs/WI-0004.yaml
-    latest_run: RUN-WI0004-20260822-004
+    latest_run: RUN-WI0004-20260822-005
     latest_attempt_result: PARTIAL
     run_state: CLOSED
     canonical_result_accepted: false
 
   orchestrator_findings:
     - BL-001 remains the only run-enabled Backlog Item and has no Backlog dependencies.
-    - Its approved Traceability Quality Gate is present, so source analysis remains eligible to continue.
-    - The canonical Source Check Output remains worker/results/WI-0004.yaml and has not yet been accepted.
-    - Matrix construction remains locked until the complete Source Check contract and 100 percent endpoint trace-result coverage pass.
-    - Nineteen exposed components and fifty-five HTTP method/path combinations are source-proved at the current interim checkpoint.
-    - Two inspected classes were correctly classified NOT_EXPOSED because their @Controller annotations are commented out.
+    - Its approved Traceability Quality Gate remains present and enforceable.
+    - Five additional candidates were classified in attempt 5, all as exposed controllers.
+    - Twenty-four exposed components and sixty-seven HTTP method/path combinations are source-proved at the current interim checkpoint.
+    - The canonical Source Check Output worker/results/WI-0004.yaml has not yet been accepted.
+    - Matrix construction remains locked until the Source Check result is COMPLETED, CLOSED, contract-valid, and reaches 100 percent endpoint trace-result coverage.
 
   required_work_units:
     - WU-BL001-001
@@ -152,4 +135,4 @@ analysis:
     - WU-BL001-004
 
   next_step: >-
-    Continue WU-BL001-001 against the exact frozen commit until every one of the remaining 41 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage equals 100 percent.
+    Continue WU-BL001-001 against the exact frozen commit until every one of the remaining 36 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage equals 100 percent.
