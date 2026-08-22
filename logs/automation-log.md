@@ -67,27 +67,40 @@ Checkpoint: 33 exposed components, 86 proved caller-visible HTTP method/path com
 ---
 
 ## EVENT EVT-0015 - WI-0004 Eighth Source-Check Attempt Advanced misc.web.controller Classification
-Time: `2026-08-22T06:02:23-05:30`
-Backlog Item: `BL-001 Controller Traceability`
-Work Unit: `WU-BL001-001 Complete Source Repository Check`
-Worker Input: `WI-0004`
 Run: `RUN-WI0004-20260822-008`
+Status: `PARTIAL / CLOSED`
+Checkpoint: 38 exposed components, 102 proved caller-visible HTTP method/path combinations, 3 NOT_EXPOSED candidates, 21 candidates remaining.
+
+---
+
+## EVENT EVT-0016 - WI-0004 Ninth Source-Check Attempt Advanced misc.web.controller Classification
+Run: `RUN-WI0004-20260822-009`
+Status: `PARTIAL / CLOSED`
+Checkpoint: 40 exposed components, 106 proved caller-visible HTTP method/path combinations, 4 NOT_EXPOSED candidates, 18 candidates remaining.
+
+### What was proved
+`SupplierIngestionController` and `ToggleCustomerActiveStatusController` were proved exposed. `SupplierTripIngestionController` was proved NOT_EXPOSED because its class-level `@Controller` is commented out.
+
+---
+
+## EVENT EVT-0017 - WI-0004 Tenth Source-Check Attempt Completed misc.web.controller Classification
+Run: `RUN-WI0004-20260822-010`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ### What was attempted
-The Orchestrator re-read the run-selection file, enforced the common dependency gate, loaded the approved BL-001 Quality Gate and continued only the enabled Traceability Source Check.
+The Orchestrator re-read the Backlog run-selection file, enforced `QG-DEP-001`, loaded the approved BL-001 Traceability Quality Gate, and continued only `WU-BL001-001 / WI-0004`.
 
 ### What was proved
-Five `misc.web.controller` candidates were classified, all as exposed controllers:
+Five additional candidates were source-classified, all as exposed:
 
-- `CustomerFetchByPageController` — 1 endpoint.
-- `CustomerFetchController` — 1 endpoint.
-- `CustomerUpdateController` — 1 endpoint.
-- `DomainLookupController` — 7 endpoints.
-- `LookupManagementController` — 6 endpoints.
+- `VehicleTripIngestionController` — `GET /addVechileTrip`, `POST /addVechileTrip`.
+- `WalkinSaleIngestionController` — `GET /walkin-sale`, `POST /walkin-sale`.
+- `YardAuditDashboardController` — `GET /yard-audit-dashboard`.
+- `YardStockCheckIngestionController` — `GET /ingestYardStockCheck`, `POST /ingestYardStockCheck`.
+- `RestfulAddressServices` — `GET /search/address/customer-address/{customerId}`; a legacy customer-address mapping is commented out and was not counted.
 
-The cumulative checkpoint advanced to **38 exposed components, 102 proved caller-visible HTTP method/path combinations, 3 proved NOT_EXPOSED candidates, and 21 candidates remaining to classify**.
+The cumulative checkpoint advanced to **45 exposed components, 114 proved caller-visible HTTP method/path combinations, 4 proved NOT_EXPOSED candidates, and 13 candidates remaining to classify**. The entire `misc.web.controller` package is now classified.
 
 ### Quality Gate effect
 - `QG-DEP-001`: PASS
@@ -98,4 +111,4 @@ The cumulative checkpoint advanced to **38 exposed components, 102 proved caller
 - `QG-TRC-005` through user acceptance: WAITING
 
 ### Result
-Attempt 8 closed as `PARTIAL`. The canonical completed `worker/results/WI-0004.yaml` was not created or accepted, so Matrix construction remains locked. The next run must continue the same approved Source Check through the remaining 21 candidates and continue call-path/final-dependency evidence without guessing.
+Attempt 10 closed as `PARTIAL`. The canonical completed `worker/results/WI-0004.yaml` was not created or accepted, so Matrix construction remains locked. The next run must continue the same approved Source Check through the remaining 13 candidates in `web.rest` and `misc.cache`, followed by complete call-path/final-dependency evidence without guessing.
