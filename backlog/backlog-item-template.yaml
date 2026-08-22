@@ -1,0 +1,38 @@
+backlog_item:
+  id: BL-###
+  version: 1
+  name: <plain-English backlog item name>
+  type: <TRACEABILITY|UNIT_TEST|INTEGRATION_TEST|CODE_COVERAGE|ARCHUNIT|REQUIREMENTS|OTHER>
+  state: YET_TO_DO
+  priority: P3_NORMAL
+
+  purpose: >-
+    <outcome this backlog item must achieve>
+
+  target:
+    repository: <owner/repository>
+    baseline_rule: <FROZEN_COMMIT|CURRENT_APPROVED_REF|OTHER>
+
+  dependencies:
+    backlog_items: []
+    dependency_rule: ALL_VERIFIED
+
+  completion_path:
+    path_file: backlog/paths/<file>.yaml
+
+  orchestration:
+    analysis_required: true
+    execution_plan_required: true
+    worker_inputs_generated_by: ORCHESTRATOR
+    worker_execution_scheduled_by: ORCHESTRATOR
+    worker_results_validated_by: ORCHESTRATOR
+    final_gate_evaluated_by: ORCHESTRATOR
+
+  expected_outputs:
+    - <artifact>
+
+  closure_rule:
+    - all mandatory path steps complete
+    - all mandatory gates pass
+    - required outputs exist
+    - no required run remains open
