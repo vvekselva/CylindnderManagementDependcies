@@ -18,10 +18,10 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - WI-0004 attempts 1 through 16 are CLOSED/PARTIAL
+        - WI-0004 attempts 1 through 17 are CLOSED/PARTIAL
         - 10 of 134 endpoints have been explicitly examined for final dependencies
-        - 6 of the 10 examined endpoints now have complete controller-to-final-dependency evidence
-        - 4 examined endpoints remain UNRESOLVED and 124 remain not yet examined
+        - all 10 examined endpoints now have complete controller-to-final-dependency evidence
+        - 124 endpoints remain not yet examined
         - canonical completed result is not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
@@ -46,9 +46,9 @@ quality_gate_status:
       name: No Guessing And Unresolved Quality
       state: IN_PROGRESS
       evidence:
-        - attempts 13 through 16 preserve unresolved paths at the last source-proved component rather than guessing
-        - attempt 16 promoted the three generic search endpoints only after proving concrete services, repository methods, and JPA entity table mappings
-        - four Cylinder endpoint paths remain unresolved pending full DAO/query-to-physical-object proof
+        - attempts 13 through 17 preserve unresolved paths at the last source-proved component rather than guessing
+        - attempt 17 promoted the four remaining examined Cylinder endpoints only after concrete service, DAO/query and physical-object evidence was proved
+        - no examined endpoint remains unresolved; 124 endpoints remain not yet examined
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
@@ -63,13 +63,13 @@ quality_gate_status:
   endpoint_trace_checkpoint:
     total_endpoints: 134
     explicitly_examined_for_final_dependency: 10
-    complete: 6
-    unresolved: 4
+    complete: 10
+    unresolved: 0
     not_yet_examined_for_final_dependency: 124
 
   close_allowed: false
   reason: >-
-    Attempt 16 resolved the three previously unresolved generic search paths to source-proved physical
-    database tables, but QG-TRC-002 remains IN_PROGRESS because four examined endpoints remain unresolved,
-    124 endpoints remain unexamined, and worker/results/WI-0004.yaml is not yet a completed contract-valid
-    result. Matrix construction and dependent work units remain locked.
+    Attempt 17 resolved all four previously unresolved examined Cylinder paths to source-proved
+    persistence objects, so all 10 examined endpoint traces are COMPLETE. QG-TRC-002 remains IN_PROGRESS
+    because 124 endpoints remain unexamined and worker/results/WI-0004.yaml is not yet a completed,
+    contract-valid canonical result. Matrix construction and dependent work units remain locked.
