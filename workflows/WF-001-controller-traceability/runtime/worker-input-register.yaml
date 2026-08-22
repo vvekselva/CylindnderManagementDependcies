@@ -1,0 +1,25 @@
+worker_inputs:
+  WI-0001:
+    state: CLOSED_HISTORICAL
+    result: worker/results/WI-0001.md
+    use_in_initial_matrix: false
+  WI-0002:
+    state: CLOSED_HISTORICAL
+    result: worker/results/WI-0002.md
+    use_in_initial_matrix: false
+  WI-0003:
+    state: SUPERSEDED
+    superseded_by: WI-0004
+    use_in_initial_matrix: false
+  WI-0004:
+    state: READY
+    requested_by_job: JOB-002
+    input: worker/inputs/WI-0004.yaml
+    run: worker/runs/WI-0004.md
+    result: worker/results/WI-0004.md
+    accepted_artifact: traceability/source-repository-check.md
+    use_in_initial_matrix: true
+    matrix_unlocks_only_when:
+      result: COMPLETED
+      run_state: CLOSED
+      job_state: VERIFIED
