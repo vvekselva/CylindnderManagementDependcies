@@ -10,10 +10,10 @@ This artifact records endpoint paths whose final dependency has not yet been sou
 ## Current checkpoint
 
 - Total source-proved endpoint inventory: 134
-- Explicitly examined for final dependency: 10
-- COMPLETE: 10
+- Explicitly examined for final dependency: 12
+- COMPLETE: 12
 - UNRESOLVED: 0
-- Not yet examined: 124
+- Not yet examined: 122
 
 ## Completed examined paths
 
@@ -29,13 +29,15 @@ This artifact records endpoint paths whose final dependency has not yet been sou
 | POST `/search/cylinder/on-vehicle` | `CylindersOnVehicleSearchServiceWithOwnershipModel` -> `CylinderLogisticsExecutionLineJpaDao.findActiveVehicleContents(...)`; identifier lookup via `CylinderIdentifierJpaDao` | `public.tbl_cylinder_logistics_execution_line`, `public.tbl_cylinder_logistics_execution`, `public.tbl_vehicle_load`, `public.tbl_cylinder`, `public.tbl_product`, `public.tbl_cylinder_states`, `public.tbl_cylinder_identifier` |
 | POST `/search/cylinder/by-customer` | `CylindersByCustomerSearchServiceWithOwnershipModel` -> `CustomerHeldCylinderSearchJpaDao.findActiveCustomerHeldCylinders(...)` | `public.vw_cylinder_party_custody_with_identifiers`, `public.tbl_cylinder`, `public.tbl_product` |
 | POST `/search/cylinder/by-supplier` | `CylindersBySupplierSearchServiceWithOwnershipModel` -> `SupplierHeldCylinderSearchJpaDao.findActiveSupplierHeldCylinders(...)` | `public.vw_cylinder_party_custody_with_identifiers`, `public.tbl_cylinder`, `public.tbl_product` |
+| GET `/search/driver/{searchText}` | `DriverSearchService` -> `DriverJpaDao.findByDriverNameContainingIgnoreCase(...)` -> `DriverDo` | `public.tbl_driver` |
+| GET `/find/Driver-by-Id/{driverId}` | `DriverFetchByIdService` -> `DriverJpaDao.findById(...)` -> `DriverDo` | `public.tbl_driver` |
 
 ## Unresolved paths
 
-None among the 10 endpoints examined so far.
+None among the 12 endpoints examined so far.
 
-The remaining 124 endpoints are **NOT YET EXAMINED**, not UNRESOLVED. They must each be traced before Source Check completion and matrix construction can be unlocked.
+The remaining 122 endpoints are **NOT YET EXAMINED**, not UNRESOLVED. They must each be traced before Source Check completion and matrix construction can be unlocked.
 
 ## Next action
 
-Continue `WU-BL001-001` across the remaining 124 endpoints. For each endpoint, prove the concrete implementation, repository/query path and final dependency, or explicitly record UNRESOLVED/BLOCKED/FAILED with evidence. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
+Continue `WU-BL001-001` across the remaining 122 endpoints. For each endpoint, prove the concrete implementation, repository/query path and final dependency, or explicitly record UNRESOLVED/BLOCKED/FAILED with evidence. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
