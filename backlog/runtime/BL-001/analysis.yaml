@@ -17,54 +17,67 @@ analysis:
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
     examined_for_final_dependency: 10
-    complete: 0
-    unresolved: 10
+    complete: 3
+    unresolved: 7
     blocked: 0
     failed: 0
     not_yet_examined: 124
 
   latest_attempt:
-    number: 14
-    run_id: RUN-WI0004-20260822-014
+    number: 15
+    run_id: RUN-WI0004-20260822-015
     state: CLOSED
     result: PARTIAL
     evidence: worker/runs/WI-0004.md
-    endpoint_traces:
+    completed_endpoint_traces:
       - endpoint: GET /search/cylinder/{searchText}
         controller: RestfulCylinderServices
-        last_proven_component: cylinderSerachServiceWithOwnershipModel
-        trace_state: UNRESOLVED
+        service: CylinderSearchServiceWithOwnershipModel
+        repository: CylinderGlobalSearchViewJpaDao
+        repository_method: searchBySerial
+        final_dependencies:
+          - public.vw_cylinder_global_search
+        trace_state: COMPLETE
       - endpoint: POST /search/cylinder/ownership/by-state
         controller: RestfulCylinderServices
-        last_proven_component: cylinderCurrentOwnershipByStateSearchService
-        trace_state: UNRESOLVED
-      - endpoint: POST /search/cylinder/by-state
-        controller: RestfulCylinderServices
-        last_proven_component: availableYardCylinderByStateSearchService
-        trace_state: UNRESOLVED
+        service: CylinderCurrentOwnershipByStateSearchService
+        repository: CylinderGlobalSearchViewJpaDao
+        repository_method: searchByStateNames
+        final_dependencies:
+          - public.vw_cylinder_global_search
+        trace_state: COMPLETE
       - endpoint: POST /search/cylinder/by-serial-and-state
         controller: RestfulCylinderServices
-        last_proven_component: cylinderCurrentOwnershipBySerialAndStateSearchService
+        service: CylinderCurrentOwnershipBySerialAndStateSearchService
+        repositories:
+          - CylinderGlobalSearchViewJpaDao
+          - CylinderStateJpaDao
+        repository_methods:
+          - searchBySerialAndStateNames
+          - findByCylinderStateIn
+        final_dependencies:
+          - public.vw_cylinder_global_search
+          - public.tbl_cylinder_states
+        trace_state: COMPLETE
+    unresolved_endpoint_traces:
+      - endpoint: GET /search/customer/{searchText}
+        trace_state: UNRESOLVED
+      - endpoint: GET /search/product/{searchText}
+        trace_state: UNRESOLVED
+      - endpoint: GET /search/addresstype/{searchText}
+        trace_state: UNRESOLVED
+      - endpoint: POST /search/cylinder/by-state
+        last_proven_component: availableYardCylinderByStateSearchService
         trace_state: UNRESOLVED
       - endpoint: POST /search/cylinder/on-vehicle
-        controller: RestfulCylinderServices
         last_proven_component: cylindersOnVehicleSearchServiceWithOwnershipModel
-        controller_supporting_store_evidence: tbl_cylinder_logistics_execution_line
         trace_state: UNRESOLVED
       - endpoint: POST /search/cylinder/by-customer
-        controller: RestfulCylinderServices
         last_proven_component: cylindersByCustomerSearchServiceWithOwnershipModel
-        controller_supporting_store_evidence: tbl_cylinder_party_custody
         trace_state: UNRESOLVED
       - endpoint: POST /search/cylinder/by-supplier
-        controller: RestfulCylinderServices
         last_proven_component: cylindersBySupplierSearchServiceWithOwnershipModel
-        controller_supporting_store_evidence: tbl_cylinder_party_custody
         trace_state: UNRESOLVED
-    reason: >-
-      Exact injected service qualifiers are proved. Concrete Spring implementations, repository/query
-      layers and final dependencies are not yet proved; controller comments naming physical tables are
-      supporting evidence only and are insufficient to mark a final dependency COMPLETE.
 
   quality_gate_effect:
     QG-DEP-001: PASS
@@ -81,16 +94,18 @@ analysis:
   proved_now:
     - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
     - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
-    - Ten endpoints have now entered final-dependency tracing; seven new RestfulCylinderServices routes have exact injected service qualifiers proved.
-    - All ten remain explicitly UNRESOLVED rather than guessing concrete implementations or final database objects.
+    - Three of the ten examined endpoint traces are now COMPLETE from controller through concrete service and JPA repository to physical database object evidence.
+    - GET /search/cylinder/{searchText} and POST /search/cylinder/ownership/by-state terminate at public.vw_cylinder_global_search.
+    - POST /search/cylinder/by-serial-and-state uses public.vw_cylinder_global_search and validates state names through public.tbl_cylinder_states.
+    - Seven examined traces remain explicitly UNRESOLVED; 124 endpoints remain not yet examined.
 
   not_yet_proved:
-    - Concrete implementations and downstream dependencies for the ten examined endpoints.
+    - Final dependencies for the seven remaining examined UNRESOLVED endpoints.
     - Final dependencies for the remaining 124 endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Resolve concrete implementations for the recorded search-service qualifiers and continue
-    endpoint-to-final-dependency tracing across the remaining endpoint inventory. Do not unlock Matrix
-    construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result
-    contract validates, and endpoint trace-result coverage equals 100 percent.
+    Continue WU-BL001-001 by resolving the remaining recorded search-service implementations and then
+    examine the remaining 124 endpoints. Do not unlock Matrix construction until worker/results/WI-0004.yaml
+    is COMPLETED, the Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage
+    equals 100 percent.
