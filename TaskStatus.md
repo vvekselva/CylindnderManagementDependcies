@@ -24,7 +24,7 @@ The authoritative execution switchboard is `backlog/orchestrator-run-config.yaml
 | QG-DEP-001 Backlog Dependency Gate | **PASS** |
 | QG-TRC-001 Source Baseline Integrity | **PASS** |
 | QG-TRC-002 Complete Source Check | **IN PROGRESS** |
-| QG-TRC-003 Controller Inventory Completeness | **IN PROGRESS** |
+| QG-TRC-003 Controller Inventory Completeness | **PASS** |
 | QG-TRC-004 Endpoint Inventory Completeness | **IN PROGRESS** |
 | QG-TRC-005 Source Check Output Validity | WAITING |
 | QG-TRC-006 through QG-TRC-014 | WAITING |
@@ -39,23 +39,16 @@ Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 Current proved findings:
 
 - classification scope: **62 Java component candidates**;
-- **50 exposed components** are source-proved;
-- those components account for **119 proved caller-visible HTTP method/path combinations**;
-- **4 candidates are proved NOT_EXPOSED**;
-- **8 Java candidates remain to be classified**;
+- candidate classification is now **complete: 62 / 62**;
+- **57 exposed components** are source-proved;
+- **5 candidates are proved NOT_EXPOSED**;
+- **134 unique caller-visible HTTP method/path combinations** are source-proved at the classification checkpoint;
+- `web.rest` is fully classified at **14 / 14** candidates;
 - `misc.web.controller` is fully classified at **12 / 12** candidates;
-- `web.rest` is classified at **7 / 14** candidates;
-- downstream call paths and final physical dependencies remain incomplete.
+- `misc.cache` is fully classified at **1 / 1** candidate;
+- endpoint-to-final-dependency call-path evidence remains incomplete.
 
-Newly classified in attempt 11:
-
-- `RestfulAddressTypeServices`: EXPOSED, `GET /search/addresstype/{searchText}`;
-- `RestfulChallanTypeServices`: EXPOSED, `GET /search/challantype/{searchText}`;
-- `RestfulCityServices`: EXPOSED, `GET /search/city/{searchText}`;
-- `RestfulCountryServices`: EXPOSED, `GET /search/country/{searchText}`;
-- `RestfulCustomerServices`: EXPOSED, `GET /search/customer/{searchText}`.
-
-Detailed evidence for Attempt 11 is recorded in `worker/runs/WI-0004.md`.
+A bookkeeping correction was applied because Attempt 11 listed `RestfulCustomerServices` as newly classified even though it had already been source-proved earlier. Counts now use unique components/endpoints only.
 
 ## Current Work Units
 
@@ -70,19 +63,19 @@ Detailed evidence for Attempt 11 is recorded in `worker/runs/WI-0004.md`.
 
 ```text
 Worker Input: WI-0004
-Latest Attempt: 11
-Latest Run: RUN-WI0004-20260822-011
+Latest Attempt: 12
+Latest Run: RUN-WI0004-20260822-012
 Run State: CLOSED
 Attempt Result: PARTIAL
 Canonical Result: NOT CREATED / NOT ACCEPTED
-Proved Exposed Components: 50
-Proved HTTP Method/Path Combinations: 119
-Proved NOT_EXPOSED Candidates: 4
-Candidates Remaining: 8
-Next Action: continue the same approved Source Check
+Proved Exposed Components: 57
+Proved HTTP Method/Path Combinations: 134
+Proved NOT_EXPOSED Candidates: 5
+Candidates Remaining To Classify: 0
+Next Action: trace all exposed endpoints to final dependencies
 ```
 
-Matrix construction remains locked because the canonical `worker/results/WI-0004.yaml` has not reached `COMPLETED`, contract-valid, 100%-coverage status.
+Matrix construction remains locked because the canonical `worker/results/WI-0004.yaml` has not reached `COMPLETED`, contract-valid, 100%-trace-result-coverage status.
 
 ## Current Execution State
 
@@ -93,13 +86,15 @@ Run enabled: TRUE
 Quality Gate configured: YES
 Quality Gate approved: YES
 Classification scope: 62 Java candidates
-Proved exposed components: 50
-Proved HTTP method/path combinations: 119
-Proved not-exposed candidates: 4
-Candidates remaining to classify: 8
+Classification complete: 62 / 62
+Proved exposed components: 57
+Proved HTTP method/path combinations: 134
+Proved not-exposed candidates: 5
+Candidates remaining to classify: 0
 Current Work Unit: WU-BL001-001
 Worker Input: WI-0004
 Open Worker runs: 0
+Traceability Matrix: LOCKED
 User Acceptance: NOT YET REACHED
 ```
 
