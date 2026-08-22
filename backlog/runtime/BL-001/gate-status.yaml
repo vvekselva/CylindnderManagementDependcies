@@ -17,9 +17,10 @@ quality_gate_status:
       name: Complete Source Check
       state: IN_PROGRESS
       evidence:
-        - all 62 Java component candidates are now classified
-        - WI-0004 attempts 1 through 12 are CLOSED/PARTIAL
-        - endpoint-to-final-dependency tracing remains incomplete
+        - all 62 Java component candidates are classified
+        - WI-0004 attempts 1 through 13 are CLOSED/PARTIAL
+        - endpoint-to-final-dependency tracing has started but remains incomplete
+        - attempt 13 examined 3 of 134 endpoints; all 3 stopped at a proved generic search-service interface because the concrete implementation/final dependency was not yet proved
         - canonical completed result is not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
@@ -40,7 +41,11 @@ quality_gate_status:
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
     QG-TRC-007: {name: Call Path Evidence, state: WAITING}
     QG-TRC-008: {name: Final Dependency Evidence, state: WAITING}
-    QG-TRC-009: {name: No Guessing And Unresolved Quality, state: WAITING}
+    QG-TRC-009:
+      name: No Guessing And Unresolved Quality
+      state: IN_PROGRESS
+      evidence:
+        - attempt 13 records three unresolved endpoint paths at the last proven generic search-service interface instead of inventing repositories or database tables
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
@@ -52,9 +57,17 @@ quality_gate_status:
       owner: USER
       automatic: false
 
+  endpoint_trace_checkpoint:
+    total_endpoints: 134
+    explicitly_examined_for_final_dependency: 3
+    complete: 0
+    unresolved: 3
+    not_yet_examined_for_final_dependency: 131
+
   close_allowed: false
   reason: >-
-    Controller candidate classification is complete and QG-TRC-003 now passes, but the Source Check
-    is still incomplete because endpoint call paths/final dependencies have not reached 100 percent
-    trace-result coverage and worker/results/WI-0004.yaml is not yet a completed contract-valid result.
-    Matrix construction remains locked.
+    Controller classification is complete, but the Source Check remains incomplete. Attempt 13 began
+    endpoint-to-final-dependency tracing and examined three endpoints; each reached a source-proved
+    generic search-service interface but the concrete implementation/final dependency was not yet proved.
+    131 endpoints still require final-dependency examination, and worker/results/WI-0004.yaml is not yet
+    a completed contract-valid result. Matrix construction remains locked.
