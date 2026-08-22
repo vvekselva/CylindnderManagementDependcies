@@ -17,24 +17,25 @@ quality_gate_status:
       name: Complete Source Check
       state: IN_PROGRESS
       evidence:
-        - 62 Java component candidates define the approved classification scope
-        - WI-0004 attempts 1 through 11 are CLOSED/PARTIAL
+        - all 62 Java component candidates are now classified
+        - WI-0004 attempts 1 through 12 are CLOSED/PARTIAL
+        - endpoint-to-final-dependency tracing remains incomplete
         - canonical completed result is not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
-      state: IN_PROGRESS
+      state: PASS
       evidence:
-        - 50 exposed components are source-proved so far
-        - 4 candidates are proved NOT_EXPOSED
-        - 8 candidates remain to classify
-        - misc.web.controller is fully classified at 12 of 12 candidates
-        - web.rest is classified at 7 of 14 candidates
+        - all 62 production candidates are classified exactly once
+        - 57 are proved EXPOSED
+        - 5 are proved NOT_EXPOSED
+        - no candidates remain unclassified
     QG-TRC-004:
       name: Endpoint Inventory Completeness
       state: IN_PROGRESS
       evidence:
-        - 119 caller-visible HTTP method/path combinations are source-proved so far
-        - final endpoint total remains unknown until all candidates are classified
+        - 134 unique caller-visible HTTP method/path combinations are source-proved
+        - candidate classification is complete
+        - canonical Endpoint Inventory artifact is not yet generated/validated from the completed Source Check Output
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
     QG-TRC-007: {name: Call Path Evidence, state: WAITING}
@@ -53,6 +54,7 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    Source analysis advanced to 50 proved exposed components and 119 proved HTTP method/path combinations,
-    but 8 candidates still require classification and the canonical completed WI-0004 result does not yet
-    exist. Matrix construction remains locked.
+    Controller candidate classification is complete and QG-TRC-003 now passes, but the Source Check
+    is still incomplete because endpoint call paths/final dependencies have not reached 100 percent
+    trace-result coverage and worker/results/WI-0004.yaml is not yet a completed contract-valid result.
+    Matrix construction remains locked.
