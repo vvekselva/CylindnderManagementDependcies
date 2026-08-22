@@ -44,4 +44,10 @@ worker_inputs:
         result_state: PARTIAL
         canonical_result_created: false
         checkpoint: {proved_exposed_components: 28, proved_endpoints: 77, proved_not_exposed_components: 3, candidates_remaining_to_classify: 31}
+      - attempt: 7
+        run_id: RUN-WI0004-20260822-007
+        run_state: CLOSED
+        result_state: PARTIAL
+        canonical_result_created: false
+        checkpoint: {proved_exposed_components: 33, proved_endpoints: 86, proved_not_exposed_components: 3, candidates_remaining_to_classify: 26}
     next_action: RETRY_OR_CONTINUE_SAME_APPROVED_SOURCE_CHECK
