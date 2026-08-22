@@ -92,3 +92,15 @@ Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 The previously unresolved `GET /search/address/customer-address/{customerId}` path was proved through the concrete Spring `CustomerAddressFetchByIDService`, which calls `CustomerAddressJpaDao.findByCustomer_CustomerId(...)`. `CustomerAddressJpaDao` is a `JpaRepository<CustomerAddressDo, Long>`, and `CustomerAddressDo` explicitly maps to `public.tbl_customer_address`.
 
 Checkpoint advanced to **13 / 134 endpoints examined; 13 COMPLETE; 0 UNRESOLVED; 121 NOT YET EXAMINED**. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS because the Source Check and canonical Endpoint Inventory are not complete. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, matrix construction and dependent work units remain locked, and BL-001 remains PARTIAL and open.
+
+---
+
+## EVENT EVT-0029 - WI-0004 Twenty-First Attempt Examined Three Generic REST Search Paths
+Time: `2026-08-23T04:00:00+05:30`
+Run: `RUN-WI0004-20260823-021`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The Orchestrator continued only BL-001 / WU-BL001-001 and examined three independent active REST endpoints from the frozen source: `GET /search/product-category/{searchText}`, `GET /search/product-uom/{searchText}`, and `GET /search/state/{searchText}`. Their controller-to-generic-search-service handoffs are source-proved, but the concrete Spring implementation, repository/query layer and final dependency for each injection are not yet proved. All three were therefore recorded UNRESOLVED at the last proven component rather than guessing from DTO or field names.
+
+Checkpoint advanced to **16 / 134 endpoints examined; 13 COMPLETE; 3 UNRESOLVED; 118 NOT YET EXAMINED**. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS; QG-TRC-009 remains IN_PROGRESS with positive no-guessing evidence. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, matrix construction and dependent work units remain locked, and BL-001 remains PARTIAL and open.
