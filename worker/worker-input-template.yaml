@@ -1,6 +1,6 @@
 worker_input:
   id: WI-####
-  version: 1
+  version: 2
 
   requested_by:
     workflow_id: <WF-ID-or-NONE>
@@ -45,9 +45,12 @@ worker_input:
       - <what proves the result>
 
   expected_output:
-    result_path: worker/results/WI-####.md
+    result_path: worker/results/WI-####.<yaml-or-md>
+    result_format: <YAML|MARKDOWN>
+    result_contract: <contract-path-or-NOT_APPLICABLE>
     run_path: worker/runs/WI-####.md
-    format: MARKDOWN
+    run_format: MARKDOWN
+    consumer: <workflow/job/component>
 
   completion_check:
     - <condition that must be true before COMPLETED>
