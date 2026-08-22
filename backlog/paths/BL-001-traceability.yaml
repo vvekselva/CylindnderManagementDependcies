@@ -1,12 +1,19 @@
 completion_path:
-  id: CP-BL-001-v1
+  id: CP-BL-001-v2
   backlog_item: BL-001
   type: TRACEABILITY
   name: Controller Traceability Completion Path
+  common_dependency_gate: QG-DEP-001
+  quality_gate_config: backlog/gates/BL-001-traceability.yaml
 
   purpose: >-
     Establish a trusted endpoint-to-final-dependency traceability baseline for the
     frozen CylinderManagement source version.
+
+  prerequisites:
+    - QG-DEP-001 must PASS
+    - BL-001 run_enabled must be true in backlog/orchestrator-run-config.yaml
+    - backlog/gates/BL-001-traceability.yaml must be configured and user-approved
 
   phases:
     - id: ANALYZE
@@ -21,7 +28,8 @@ completion_path:
         - backlog/runtime/BL-001/analysis.yaml
         - backlog/runtime/BL-001/execution-plan.yaml
         - worker/inputs/WI-0004.yaml
-      gate: source-check work unit completely defined
+      gates:
+        - QG-TRC-001
 
     - id: EXECUTE_SOURCE_CHECK
       owner: ORCHESTRATOR
@@ -32,7 +40,11 @@ completion_path:
         - accept only a CLOSED, COMPLETED structured result
         - validate the result against the Source Check Output contract
       worker_output: worker/results/WI-0004.yaml
-      gate: canonical Source Check Output accepted with 100 percent endpoint trace-result coverage
+      gates:
+        - QG-TRC-002
+        - QG-TRC-003
+        - QG-TRC-004
+        - QG-TRC-005
 
     - id: BUILD_MATRIX
       owner: ORCHESTRATOR
@@ -49,28 +61,42 @@ completion_path:
         - traceability/endpoint-inventory.md
         - traceability/controller-traceability.md
         - traceability/unresolved-traceability.md
-      gate: every exposed endpoint appears exactly once in the matrix
+      gates:
+        - QG-TRC-006
+        - QG-TRC-007
+        - QG-TRC-008
+        - QG-TRC-009
+        - QG-TRC-010
+        - QG-TRC-011
+        - QG-TRC-012
 
-    - id: VALIDATE
-      owner: ORCHESTRATOR
-      required: true
-      checks:
-        - source baseline matches the accepted Source Check Output
-        - Controller inventory is complete
-        - Endpoint inventory is complete
-        - matrix coverage equals 100 percent
-        - COMPLETE traces preserve evidence
-        - UNRESOLVED traces preserve last proven point and reason
-      gate: all traceability gates pass
-
-    - id: CLOSE
+    - id: VALIDATE_AND_REGISTER
       owner: ORCHESTRATOR
       required: true
       actions:
         - register source-artifact baseline
-        - close Worker and orchestration runs
+        - confirm every required Worker/Work Unit run is CLOSED
         - update human story/status
-        - mark BL-001 VERIFIED then CLOSED
+      gates:
+        - QG-TRC-013
+        - QG-TRC-014
+
+    - id: USER_ACCEPTANCE
+      owner: USER
+      required: true
+      actions:
+        - present Traceability summary, Coverage, Resolution, unresolved/blocked/failed items and artifact locations
+        - wait for explicit user APPROVE or REJECT
+      gate: QG-TRC-015
+      on_reject: RETURN_TO_ORCHESTRATOR_ANALYSIS
+
+    - id: CLOSE
+      owner: ORCHESTRATOR
+      required: true
+      start_condition: QG-TRC-015_PASS
+      actions:
+        - mark BL-001 VERIFIED
+        - mark BL-001 CLOSED
 
   parallelism:
     analysis: false
@@ -78,8 +104,9 @@ completion_path:
     matrix_build: false
 
   completion_conditions:
-    - complete Source Check Output accepted
-    - matrix coverage equals 100 percent
+    - QG-DEP-001 PASS
+    - QG-TRC-001 through QG-TRC-014 PASS
+    - QG-TRC-015 explicitly APPROVED by user
     - required artifacts exist
     - source-artifact registration complete
     - all required runs closed
