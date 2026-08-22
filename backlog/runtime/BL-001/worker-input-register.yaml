@@ -13,26 +13,27 @@ worker_inputs:
         run_state: CLOSED
         result_state: PARTIAL
         canonical_result_created: false
-        checkpoint:
-          proved_exposed_components: 6
-          proved_endpoints: 11
-          candidates_remaining_to_classify: 56
+        checkpoint: {proved_exposed_components: 6, proved_endpoints: 11, candidates_remaining_to_classify: 56}
       - attempt: 2
         run_id: RUN-WI0004-20260822-002
         run_state: CLOSED
         result_state: PARTIAL
         canonical_result_created: false
-        checkpoint:
-          proved_exposed_components: 11
-          proved_endpoints: 17
-          candidates_remaining_to_classify: 51
+        checkpoint: {proved_exposed_components: 11, proved_endpoints: 17, candidates_remaining_to_classify: 51}
       - attempt: 3
         run_id: RUN-WI0004-20260822-003
         run_state: CLOSED
         result_state: PARTIAL
         canonical_result_created: false
+        checkpoint: {proved_exposed_components: 16, proved_endpoints: 39, candidates_remaining_to_classify: 46}
+      - attempt: 4
+        run_id: RUN-WI0004-20260822-004
+        run_state: CLOSED
+        result_state: PARTIAL
+        canonical_result_created: false
         checkpoint:
-          proved_exposed_components: 16
-          proved_endpoints: 39
-          candidates_remaining_to_classify: 46
+          proved_exposed_components: 19
+          proved_endpoints: 55
+          proved_not_exposed_components: 2
+          candidates_remaining_to_classify: 41
     next_action: RETRY_OR_CONTINUE_SAME_APPROVED_SOURCE_CHECK
