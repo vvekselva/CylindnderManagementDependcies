@@ -33,7 +33,6 @@ BACKLOG
 | Backlog Runtime | ACTIVE | `backlog/runtime/<BL-ID>/` |
 | Generic Worker | CONFIGURED | `automation/worker-component-contract.md` |
 | Orchestration Lanes | 10 IDLE | `LANE-01` ... `LANE-10` |
-| Hourly Scheduled Orchestrator | ACTIVE | ChatGPT scheduled automation; starts 2026-08-22 09:00 IST and repeats hourly |
 | Catalogue Gate | CONFIGURED | `repository-catalogue.md`, `.github/workflows/catalogue-gate.yml` |
 
 ## Backlog Run Selection
@@ -49,13 +48,9 @@ The authoritative execution switchboard is `backlog/orchestrator-run-config.yaml
 | `BL-005` | ArchUnit Architecture Test | FALSE | NOT CONFIGURED | NOT RUNNABLE |
 | `BL-006` | Requirements Traceability and Gap Analysis | FALSE | NOT CONFIGURED | NOT RUNNABLE |
 
-A FALSE item is ignored by the hourly Orchestrator. A TRUE item is still required to pass the common dependency gate and its own approved Quality Gates.
-
 ## Common Backlog Gate
 
-`QG-DEP-001 Backlog Dependency Gate`
-
-For BL-001 the gate is **PASS** because it declares no Backlog dependencies.
+`QG-DEP-001 Backlog Dependency Gate` is **PASS** for BL-001 because it declares no Backlog dependencies.
 
 ## BL-001 Quality Gate Status
 
@@ -63,8 +58,8 @@ For BL-001 the gate is **PASS** because it declares no Backlog dependencies.
 |---|---|
 | QG-TRC-001 Source Baseline Integrity | **PASS** |
 | QG-TRC-002 Complete Source Check | **IN PROGRESS** |
-| QG-TRC-003 Controller Inventory Completeness | WAITING |
-| QG-TRC-004 Endpoint Inventory Completeness | WAITING |
+| QG-TRC-003 Controller Inventory Completeness | **IN PROGRESS** |
+| QG-TRC-004 Endpoint Inventory Completeness | **IN PROGRESS** |
 | QG-TRC-005 Source Check Output Validity | WAITING |
 | QG-TRC-006 Endpoint To Trace Completeness | WAITING |
 | QG-TRC-007 Call Path Evidence | WAITING |
@@ -85,16 +80,25 @@ Frozen source baseline:
 
 `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-Current findings proved by the Orchestrator:
+Current proved findings:
 
-- current `CylinderManagement/main` is identical to the frozen baseline at this analysis point;
-- Spring Boot explicitly scans `web.controller`, `web.rest`, `misc.web.controller`, `misc.cache`, and `web.controller.test`;
-- `web.controller.test` is under production `src/main/java` and therefore cannot be dismissed as ordinary test source;
-- production candidate source is present in `web.controller`, `web.controller.test`, and `web.rest` and still requires complete annotation/mapping classification;
-- `CustomerSpotCylinderCheckController` is proved exposed at `/customer-spot-cylinder-check`, with `GET /fetch` and `POST /submit`, and delegates to `CustomerSpotCylinderCheckService`;
-- the full exposed Controller set, Endpoint inventory, endpoint call paths and physical DB-object evidence are **not yet completely proved**.
+- the Spring Boot bootstrap explicitly scans five production package trees: `web.controller`, `web.rest`, `misc.web.controller`, `misc.cache`, and `web.controller.test`;
+- those scanned package trees contain **62 Java component candidates** in the frozen `cylindermanagement.web` source tree;
+- `web.controller.test` is under `src/main/java` and is explicitly scanned, so it remains production candidate source despite its name;
+- **3 exposed components** are currently source-proved: `CustomerSpotCylinderCheckController`, `UC01RegisterCustomerController`, and `RestfulCustomerServices`;
+- those three components account for **5 proved caller-visible endpoints** at this checkpoint;
+- **59 Java candidates remain to be classified** as exposed or not exposed;
+- the complete endpoint inventory, downstream call paths and final physical dependencies remain incomplete.
 
-Therefore the Source Check is correctly **IN PROGRESS**, not complete.
+The proved endpoints currently include:
+
+- `GET /customer-spot-cylinder-check/fetch`;
+- `POST /customer-spot-cylinder-check/submit`;
+- `GET /registerCustomer`;
+- `POST /registerCustomer`;
+- `GET /search/customer/{searchText}`.
+
+These are progress counters only. They are not the final Traceability coverage totals.
 
 Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml`.
 
@@ -102,24 +106,12 @@ Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml`.
 
 | Work Unit | Purpose | Executor | State |
 |---|---|---|---|
-| `WU-BL001-001` | Complete Source Repository Check | Generic Worker / `WI-0004` | READY |
+| `WU-BL001-001` | Complete Source Repository Check | Generic Worker / `WI-0004` | READY - source-analysis preparation advancing |
 | `WU-BL001-002` | Build Traceability Matrix from accepted Source Check Output | Orchestration | WAITING_FOR_DEPENDENCY |
 | `WU-BL001-003` | Validate approved Traceability Quality Gates | Orchestrator | WAITING_FOR_DEPENDENCY |
 | `WU-BL001-004` | Register source-artifact baseline and prepare user acceptance/closure | Orchestrator | WAITING_FOR_DEPENDENCY |
 
-## Hourly Orchestrator Rule
-
-Every scheduled invocation must:
-
-1. read `backlog/orchestrator-run-config.yaml` first;
-2. consider only `run_enabled: true` items;
-3. apply QG-DEP-001;
-4. require an approved item-specific Quality Gate;
-5. read the selected Completion Path;
-6. analyse before changing the Execution Plan;
-7. generate/consume Worker Inputs through the Orchestrator;
-8. update evidence and gate status;
-9. never close a Backlog Item before required user acceptance.
+`WI-0004` has not yet produced an accepted canonical result, so matrix construction remains locked.
 
 ## Current Execution State
 
@@ -131,11 +123,16 @@ Quality Gate approved: YES
 QG-DEP-001: PASS
 QG-TRC-001: PASS
 QG-TRC-002: IN PROGRESS
+QG-TRC-003: IN PROGRESS
+QG-TRC-004: IN PROGRESS
+Proved candidate classification scope: 62 Java classes
+Proved exposed components: 3
+Proved endpoints: 5
+Candidates remaining to classify: 59
 Next Work Unit: WU-BL001-001
 Next Worker Input: WI-0004
 Open Worker runs: 0
 Active orchestration lanes: 0 / 10
-Hourly schedule: 09:00, 10:00, 11:00, ... IST starting 2026-08-22
 User Acceptance: NOT YET REACHED
 ```
 
