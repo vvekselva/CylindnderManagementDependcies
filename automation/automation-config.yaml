@@ -1,4 +1,4 @@
-version: 6
+version: 7
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -32,6 +32,8 @@ coordinator:
     - assign_jobs_to_orchestration_lanes
     - create_or_select_worker_input_files
     - submit_worker_input_to_independent_worker
+    - validate_worker_result_contracts
+    - register_worker_output_as_orchestrator_input
     - consume_closed_worker_results
     - enforce_resource_locks
     - serialize_shared_file_updates
@@ -79,6 +81,7 @@ independent_worker:
     - governance_overrides_input_permissions
     - input_becomes_immutable_after_successful_init
     - changed_task_requires_new_worker_input_id
+    - structured_result_must_follow_declared_contract
     - explain_blockers_in_plain_english
     - do_not_guess
   forbidden_orchestration_actions:
@@ -91,8 +94,9 @@ independent_worker:
     - decide_user_notification
   runtime_paths:
     inputs: worker/inputs/WI-*.yaml
-    runs: worker/runs/WI-*.md
-    results: worker/results/WI-*.md
+    human_runs: worker/runs/WI-*.md
+    markdown_results: worker/results/WI-*.md
+    yaml_results: worker/results/WI-*.yaml
 
 orchestration_worker_pool:
   worker_count: 10
@@ -126,25 +130,48 @@ orchestration_worker_service_lifecycle:
 
 initial_traceability_baseline:
   workflow: workflows/WF-001-controller-traceability/workflow.yaml
-  mode: COMPLETE_REPOSITORY_CHECK_THEN_MATRIX
+  mode: SOURCE_CHECK_OUTPUT_TO_ORCHESTRATOR_MATRIX
   enabled: true
-  source_check_job: JOB-002
-  source_check_worker_input: worker/inputs/WI-0004.yaml
-  source_check_result: worker/results/WI-0004.md
-  accepted_source_check_artifact: traceability/source-repository-check.md
-  matrix_job: JOB-003
-  matrix_output: traceability/controller-traceability.md
+
+  source_check:
+    job: JOB-002
+    worker_input: worker/inputs/WI-0004.yaml
+    canonical_output: worker/results/WI-0004.yaml
+    human_run: worker/runs/WI-0004.md
+    output_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+
+  orchestrator_handoff:
+    runtime_file: workflows/WF-001-controller-traceability/runtime/orchestrator-input.yaml
+    consumer_job: JOB-003
+    input_name: SOURCE_CHECK_OUTPUT
+    canonical_input: worker/results/WI-0004.yaml
+    evidence_register: workflows/WF-001-controller-traceability/evidence/evidence-register.yaml
+
+  traceability_job:
+    job: JOB-003
+    source_repo_read_allowed: false
+    additional_source_worker_inputs_allowed: false
+    human_source_check_output: traceability/source-repository-check.md
+    controller_inventory: traceability/controller-inventory.md
+    endpoint_inventory: traceability/endpoint-inventory.md
+    matrix_output: traceability/controller-traceability.md
+    unresolved_output: traceability/unresolved-traceability.md
+
   partial_worker_results_unlock_matrix: false
   matrix_start_requirements:
     - JOB-002_VERIFIED
     - WI-0004_RESULT_COMPLETED
     - WI-0004_RUN_CLOSED
-    - SOURCE_REPOSITORY_CHECK_ARTIFACT_ACCEPTED
-  initial_matrix_may_request_additional_source_worker_inputs: false
+    - WI-0004_YAML_CONTRACT_VALID
+    - WI-0004_SOURCE_BASELINE_MATCHES_WORKFLOW
+    - WI-0004_COVERAGE_100_PERCENT
+    - ORCHESTRATOR_INPUT_ACCEPTED
+
   explanation: >-
-    For the first trusted traceability baseline, one complete repository-check Worker
-    task must finish before the orchestration constructs the matrix. Earlier partial
-    Worker results remain historical evidence and cannot unlock the matrix.
+    For the first trusted traceability baseline, the Worker performs one complete Source
+    Repository Check and produces a canonical YAML result. The Orchestrator accepts that
+    output as JOB-003 input and constructs the matrix from it. JOB-003 does not re-read
+    source or create another source-inspection Worker Input during the initial baseline.
 
 scheduling:
   dependency_policy: strict
@@ -233,6 +260,7 @@ execution:
   independent_worker_requires_input_file: true
   independent_worker_task_is_defined_by_input_file: true
   independent_worker_run_must_close_before_result_is_accepted: true
+  machine_result_contract_must_validate_before_orchestrator_consumes: true
   orchestration_log_must_close_before_lane_release: true
 
 staleness:
