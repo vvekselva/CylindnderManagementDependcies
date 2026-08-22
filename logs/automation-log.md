@@ -102,7 +102,7 @@ All five Java files in the root `web.controller` package were classified as expo
 
 ## EVENT EVT-0009 - WI-0004 Second Source-Check Attempt Advanced Classification
 
-Time: `2026-08-22T09:00:00+05:30`
+Time: `2026-08-22T10:00:00+05:30`
 Backlog Item: `BL-001 Controller Traceability`
 Work Unit: `WU-BL001-001 Complete Source Repository Check`
 Worker Input: `WI-0004`
@@ -110,25 +110,35 @@ Run: `RUN-WI0004-20260822-002`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
+Five additional production candidates in `web.controller.test` were proved to be exposed controllers. The checkpoint advanced to **11 exposed components and 17 caller-visible endpoints** with **51 candidates remaining**. Matrix construction remained locked.
+
+---
+
+## EVENT EVT-0010 - WI-0004 Third Source-Check Attempt Advanced Classification
+
+Time: `2026-08-22T11:59:00+05:30`
+Backlog Item: `BL-001 Controller Traceability`
+Work Unit: `WU-BL001-001 Complete Source Repository Check`
+Worker Input: `WI-0004`
+Run: `RUN-WI0004-20260822-003`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
 ### What was attempted
 
-The same approved Source Repository Check continued against the unchanged frozen source commit. BL-001 remained the only enabled Backlog Item. QG-DEP-001 remained PASS and the approved Traceability gates remained enforced.
+The Orchestrator read the run-selection file, selected only enabled BL-001, confirmed `QG-DEP-001` PASS, loaded the approved Traceability gates, and continued the same approved Source Check against the unchanged frozen source commit.
 
 ### What was proved
 
-Five additional production candidates in the explicitly scanned `web.controller.test` package were proved to be exposed Spring MVC controllers:
+Five additional candidates were proved to be exposed Spring MVC controllers:
 
-- `ChallanBookWebController` — GET `/logistics/challan-books/add-form`, POST `/logistics/challan-books/save`;
-- `ChallanEntryAgingDashboardController` — GET `/challan-entry-aging-dashboard`;
-- `ChallanHeatmapController` — GET `/challan-heatmap`;
-- `ChallanPagePhotoController` — GET `/challan-page-photo/{challanPagePhotoId}`;
-- `CompleteTripController` — POST `/complete-trip`.
+- `AddStopController` — 4 HTTP operations;
+- `CustomerAddressLocationController` — 10 HTTP operations;
+- `CustomerConsumptionDashboardController` — 4 caller-visible GET method/path combinations;
+- `CustomerDemandController` — 3 HTTP operations;
+- `CustomerStopSelectionController` — 1 HTTP operation.
 
-The current checkpoint is now **11 exposed components and 17 caller-visible endpoints**. Immediate service/DAO handoffs are recorded where source-proved. The physical database dependency behind `ChallanPagePhotoJpaDao` is intentionally not guessed.
-
-### What remains incomplete
-
-**51 of 62 Java component candidates remain to classify.** Complete call paths and final database/external dependencies remain unfinished. The canonical `worker/results/WI-0004.yaml` has not been created or accepted as a completed Source Check Output.
+The cumulative checkpoint is now **16 exposed components and 39 proved caller-visible HTTP method/path combinations**. **46 of 62 Java component candidates remain to classify**.
 
 ### Quality Gate effect
 
@@ -137,8 +147,8 @@ The current checkpoint is now **11 exposed components and 17 caller-visible endp
 - `QG-TRC-002`: IN PROGRESS
 - `QG-TRC-003`: IN PROGRESS
 - `QG-TRC-004`: IN PROGRESS
-- `QG-TRC-005` through matrix/closure gates: WAITING
+- `QG-TRC-005` through closure/user-acceptance gates: WAITING
 
 ### Result
 
-Attempt 2 closed as `PARTIAL`. Matrix construction remains locked. The next run must continue the same approved WI-0004 Source Check against the remaining 51 candidates.
+Attempt 3 closed as `PARTIAL`. No canonical completed `worker/results/WI-0004.yaml` was created or accepted. Matrix construction remains locked. The next run must continue the same Source Check against the remaining 46 candidates and then continue call-path/final-dependency evidence without guessing.
