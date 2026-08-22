@@ -10,6 +10,9 @@ lanes:
   LANE-09: {state: IDLE}
   LANE-10: {state: IDLE}
 
-note: >-
-  Initial baseline source checking is executed by the independent Generic Worker from WI-0004.
-  No orchestration lane is used until an orchestration Job itself needs lane execution.
+current_rule: >-
+  JOB-002 source checking is executed by the independent Generic Worker from WI-0004,
+  so no orchestration lane is consumed. After worker/results/WI-0004.yaml is accepted,
+  JOB-003 Complete Traceability Matrix becomes READY and may be assigned to one free
+  orchestration lane. That lane consumes the accepted Source Check Output; it does not
+  re-read the source repository during the initial matrix build.
