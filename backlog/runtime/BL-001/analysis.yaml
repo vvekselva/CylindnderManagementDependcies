@@ -1,119 +1,52 @@
 analysis:
   backlog_item: BL-001
-  completion_path: backlog/paths/BL-001-traceability.yaml
-  quality_gate_config: backlog/gates/BL-001-traceability.yaml
   state: SOURCE_ANALYSIS_IN_PROGRESS
   target_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  completion_path: backlog/paths/BL-001-traceability.yaml
+  quality_gate_config: backlog/gates/BL-001-traceability.yaml
 
-  proven_source_analysis:
-    source_baseline:
-      state: PROVED
-      finding: >-
-        The frozen traceability baseline is 3ae6e61442132d94a307275b08dd65fcef228d89.
-        This exact commit remains the source version for the initial Traceability baseline.
+  candidate_scope:
+    total_java_component_candidates: 62
+    misc_web_controller_candidates: 12
+    web_rest_candidates: 14
+    misc_cache_candidates: 1
 
-    component_candidate_scope:
-      state: PROVED_AS_CANDIDATE_SCOPE
-      counts:
-        web_controller_root_java_files: 5
-        web_controller_test_java_files: 30
-        misc_web_controller_java_files: 12
-        web_rest_java_files: 14
-        misc_cache_java_files: 1
-        total_java_component_candidates: 62
+  current_checkpoint:
+    proved_exposed_components: 50
+    proved_endpoints: 119
+    proved_not_exposed_components: 4
+    candidates_remaining_to_classify: 8
+    misc_web_controller_classified: 12
+    web_rest_classified: 7
+    misc_cache_classified: 0
 
-    prior_checkpoint:
-      proved_exposed_components: 40
-      proved_endpoints: 106
-      proved_not_exposed_components: 4
-      candidates_remaining_to_classify: 18
-      source: WI-0004 attempts 1 through 9
-
-    attempt_10_classification:
-      candidates_inspected: 5
-      exposed: 5
-      not_exposed: 0
-      added_http_method_path_combinations: 8
-
-      vehicle_trip_ingestion_controller:
+  latest_attempt:
+    number: 11
+    run_id: RUN-WI0004-20260822-011
+    state: CLOSED
+    result: PARTIAL
+    candidates_inspected: 5
+    exposed: 5
+    not_exposed: 0
+    added_http_method_path_combinations: 5
+    evidence: worker/runs/WI-0004.md
+    classifications:
+      - component: RestfulAddressTypeServices
         state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/VehicleTripIngestionController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /addVechileTrip, handler: doGet}
-          - {http_method: POST, path: /addVechileTrip, handler: doPost}
-        immediate_handoff: ICylinderManagementApplicationService<VehicleTripIngestionRequestDto, VehicleTripIngestionResponseDto>.processRequest
-
-      walkin_sale_ingestion_controller:
+        endpoint: GET /search/addresstype/{searchText}
+      - component: RestfulChallanTypeServices
         state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/WalkinSaleIngestionController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /walkin-sale, handler: doGet}
-          - {http_method: POST, path: /walkin-sale, handler: doPost}
-        immediate_handoff: ICylinderManagementApplicationService<WalkinSaleRequestDto, WalkinSaleResponseDto>.processRequest
-
-      yard_audit_dashboard_controller:
+        endpoint: GET /search/challantype/{searchText}
+      - component: RestfulCityServices
         state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/YardAuditDashboardController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /yard-audit-dashboard, handler: doGet}
-        immediate_handoff: ICylinderManagementApplicationService<YardAuditDashboardFetchRequestDto, YardAuditDashboardFetchResponseDto>.processRequest
-
-      yard_stock_check_ingestion_controller:
+        endpoint: GET /search/city/{searchText}
+      - component: RestfulCountryServices
         state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/YardStockCheckIngestionController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /ingestYardStockCheck, handler: doGet}
-          - {http_method: POST, path: /ingestYardStockCheck, handler: doPost}
-        immediate_handoffs:
-          - LookupDataCache.getCylinderStates
-          - ICylinderManagementApplicationService<YardStockCheckIngestionRequestDto, YardStockCheckIngestionResponseDto>.processRequest
-
-      restful_address_services:
+        endpoint: GET /search/country/{searchText}
+      - component: RestfulCustomerServices
         state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulAddressServices.java
-        class_annotation: '@RestController'
-        class_mapping: /search/address
-        endpoints:
-          - {http_method: GET, path: /search/address/customer-address/{customerId}, handler: getCustomerAddressByCustomerId}
-        immediate_handoff: ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CustomerAddressSearchResponseDto>.searchWithText
-        note: The older /customer/{customerId} mapping is commented out and is not counted.
-
-    current_proved_exposure_checkpoint:
-      proved_exposed_components: 45
-      proved_endpoints: 114
-      proved_not_exposed_components: 4
-      candidate_components_remaining_to_classify: 13
-      misc_web_controller_package:
-        candidates: 12
-        classified_to_date: 12
-        exposed_to_date: 11
-        not_exposed_to_date: 1
-        remaining_to_classify: 0
-      web_rest_package:
-        candidates: 14
-        classified_to_date: 2
-        exposed_to_date: 2
-        remaining_to_classify: 12
-      misc_cache_package:
-        candidates: 1
-        classified_to_date: 0
-        remaining_to_classify: 1
-      note: >-
-        Attempt 10 completed classification of the misc.web.controller package and began the remaining
-        web.rest scope. Thirteen candidates remain across web.rest and misc.cache. These counters are
-        interim and cannot be used to claim Traceability completion.
-
-  not_yet_proved:
-    - Complete classification of the remaining 13 Java component candidates as EXPOSED or NOT_EXPOSED.
-    - Complete caller-visible endpoint inventory for every exposed component.
-    - Complete endpoint call paths to final dependencies.
-    - Complete physical database-object evidence for database-backed paths.
-    - 100 percent Source Check Output coverage required by QG-TRC-002 through QG-TRC-005.
+        endpoint: GET /search/customer/{searchText}
 
   quality_gate_effect:
     QG-DEP-001: PASS
@@ -123,32 +56,17 @@ analysis:
     QG-TRC-004: IN_PROGRESS
     QG-TRC-005: WAITING
 
-  worker_attempt:
-    input: worker/inputs/WI-0004.yaml
-    latest_run: RUN-WI0004-20260822-010
-    latest_attempt_result: PARTIAL
-    run_state: CLOSED
-    canonical_result_accepted: false
+  canonical_result_accepted: false
+  matrix_construction_unlocked: false
 
-  orchestrator_findings:
-    - BL-001 remains the only run-enabled Backlog Item and has no Backlog dependencies.
-    - Its approved Traceability Quality Gate remains present and enforceable.
-    - Attempt 10 classified five additional candidates, all EXPOSED.
-    - The misc.web.controller package is now fully classified at 12 of 12 candidates.
-    - Forty-five exposed components and one hundred fourteen HTTP method/path combinations are source-proved at the current interim checkpoint.
-    - Four candidates are source-proved NOT_EXPOSED.
-    - Thirteen candidates remain to classify across web.rest and misc.cache.
-    - The canonical Source Check Output worker/results/WI-0004.yaml has not yet been accepted.
-    - Matrix construction remains locked until the Source Check result is COMPLETED, CLOSED, contract-valid, and reaches 100 percent endpoint trace-result coverage.
-
-  required_work_units:
-    - WU-BL001-001
-    - WU-BL001-002
-    - WU-BL001-003
-    - WU-BL001-004
+  not_yet_proved:
+    - Complete classification of the remaining 8 Java component candidates.
+    - Complete caller-visible endpoint inventory for every exposed component.
+    - Complete endpoint call paths to final dependencies.
+    - Complete physical database-object evidence for database-backed paths.
+    - Reach contract-valid 100 percent Source Check Output coverage.
 
   next_step: >-
-    Continue WU-BL001-001 against the exact frozen commit through the remaining 13 candidates in
-    web.rest and misc.cache, then continue endpoint-to-final-dependency evidence. Do not unlock matrix
-    construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result
-    contract validates, and endpoint trace-result coverage equals 100 percent.
+    Continue WU-BL001-001 against the exact frozen commit through the remaining 8 candidates in web.rest
+    and misc.cache. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED,
+    CLOSED, contract-valid, and reaches 100 percent endpoint trace-result coverage.
