@@ -33,7 +33,7 @@ BACKLOG
 | Backlog Runtime | ACTIVE | `backlog/runtime/<BL-ID>/` |
 | Generic Worker | CONFIGURED | `automation/worker-component-contract.md` |
 | Orchestration Lanes | 10 IDLE | `LANE-01` ... `LANE-10` |
-| Hourly Scheduled Orchestrator | ACTIVE | ChatGPT scheduled automation; starts 2026-08-22 07:33 IST and repeats hourly |
+| Hourly Scheduled Orchestrator | ACTIVE | ChatGPT scheduled automation; starts 2026-08-22 09:00 IST and repeats hourly |
 | Catalogue Gate | CONFIGURED | `repository-catalogue.md`, `.github/workflows/catalogue-gate.yml` |
 
 ## Backlog Run Selection
@@ -91,6 +91,7 @@ Current findings proved by the Orchestrator:
 - Spring Boot explicitly scans `web.controller`, `web.rest`, `misc.web.controller`, `misc.cache`, and `web.controller.test`;
 - `web.controller.test` is under production `src/main/java` and therefore cannot be dismissed as ordinary test source;
 - production candidate source is present in `web.controller`, `web.controller.test`, and `web.rest` and still requires complete annotation/mapping classification;
+- `CustomerSpotCylinderCheckController` is proved exposed at `/customer-spot-cylinder-check`, with `GET /fetch` and `POST /submit`, and delegates to `CustomerSpotCylinderCheckService`;
 - the full exposed Controller set, Endpoint inventory, endpoint call paths and physical DB-object evidence are **not yet completely proved**.
 
 Therefore the Source Check is correctly **IN PROGRESS**, not complete.
@@ -134,6 +135,7 @@ Next Work Unit: WU-BL001-001
 Next Worker Input: WI-0004
 Open Worker runs: 0
 Active orchestration lanes: 0 / 10
+Hourly schedule: 09:00, 10:00, 11:00, ... IST starting 2026-08-22
 User Acceptance: NOT YET REACHED
 ```
 
