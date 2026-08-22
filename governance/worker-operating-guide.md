@@ -2,15 +2,17 @@
 
 ## Purpose
 
-This file tells every automation worker how it must work.
+This file tells the **orchestration workers** how they must work.
 
-Every worker follows the same hierarchy, the same lifecycle, the same status meanings, and the same plain-English blocker rules. Workers must never guess when they cannot prove something.
+There are 10 orchestration worker lanes: `LANE-01` through `LANE-10`.
 
-The workers perform work against `vvekselva/CylinderManagement` only when a registered Workflow and Job tell them to do so.
+A separate independent Source Analysis Worker exists outside this pool. Its contract is `automation/source-analysis-worker-contract.md`.
+
+The orchestration workers execute Workflow Jobs. The Source Analysis Worker only reads source files and returns proved source facts.
 
 ## Automation hierarchy
 
-The automation hierarchy is similar to GitHub Actions:
+The orchestration hierarchy is similar to GitHub Actions:
 
 ```text
 AUTOMATION PROGRAM
@@ -28,9 +30,35 @@ A Workflow is the complete objective. A Job is one independently assignable unit
 
 A worker receives one Job at a time. It must not invent another Job for itself.
 
+## Source-analysis boundary
+
+When an orchestration Job needs to understand Java source, it should request facts from the independent Source Analysis Worker rather than independently guessing or creating a separate interpretation of the source.
+
+```text
+Orchestration Job
+      |
+      | needs source facts
+      v
+Source Analysis Worker
+      |
+      | returns PROVED / UNRESOLVED facts
+      v
+Orchestration Job continues
+```
+
+The Source Analysis Worker:
+
+- does not consume a lane;
+- does not claim Workflow Jobs;
+- does not choose priorities;
+- does not update TaskStatus or the shared orchestration log;
+- does not change source code;
+- does not choose remediation or architecture;
+- returns source evidence only.
+
 ## Worker Service Lifecycle
 
-Every assigned Job attempt must use the lifecycle defined in `automation/worker-service-contract.md`:
+Every assigned orchestration Job attempt must use the lifecycle defined in `automation/worker-service-contract.md`:
 
 ```text
 Receive READY Job
@@ -48,7 +76,7 @@ service()
       |
       +--> perform ACTION-01
       +--> perform ACTION-02
-      +--> perform ACTION-03 ...
+      +--> request Source Analysis facts when needed
       +--> collect meaningful evidence
       |
       v
@@ -80,17 +108,14 @@ Before starting `service()`, the worker must confirm:
 - dependencies required by the Job;
 - required resource locks;
 - Actions that will be performed;
+- Source Analysis facts/requests required by the Job;
 - expected output;
 - completion check;
 - logging rules.
 
-The worker must then explain in simple English what it is about to do.
+The worker then explains in simple English what it is about to do.
 
-Example:
-
-> LANE-04 is starting `Trace VehicleTripController`. It will examine the approved CylinderManagement source baseline, identify every exposed endpoint in this Controller, follow each endpoint through the application, and record the final dependency that can be proved. The expected output is one controller traceability artifact.
-
-If any required information is missing, `init()` must return `BLOCKED_BEFORE_SERVICE`. The worker must not guess. It skips `service()` and goes directly to `close()`.
+If required information is missing, `init()` returns `BLOCKED_BEFORE_SERVICE`. The worker must not guess. It skips `service()` and goes directly to `close()`.
 
 ## service() - perform the assigned work
 
@@ -98,9 +123,12 @@ If any required information is missing, `init()` must return `BLOCKED_BEFORE_SER
 
 The worker performs the Actions in the order defined by the Job unless the Workflow explicitly permits another order.
 
-A worker must not use `service()` to:
+When source understanding is required, the worker consumes Source Analysis facts. If deeper facts are needed, it requests deeper analysis through the defined request contract.
+
+An orchestration worker must not use `service()` to:
 
 - invent new work;
+- independently reinterpret source when a Source Analysis fact is unresolved;
 - change the architecture without approval;
 - change a public API without approval;
 - choose a new database strategy without approval;
@@ -121,6 +149,7 @@ It must record:
 - whether `service()` ran;
 - Actions completed;
 - Actions not completed;
+- Source Analysis Request/Fact IDs used when applicable;
 - outputs produced;
 - evidence produced;
 - blocker/failure explanation, if any;
@@ -134,11 +163,13 @@ A worker is not released to another Job until its current Job attempt has been c
 
 ## Worker pool
 
-There are 10 worker lanes: `LANE-01` through `LANE-10`.
+There are exactly 10 orchestration worker lanes: `LANE-01` through `LANE-10`.
 
-The coordinator is separate from the 10 workers. The coordinator chooses which READY Job is given to which free worker.
+The coordinator is separate from the 10 workers.
 
-Each lane may own only one active Job attempt at a time.
+The Source Analysis Worker is also separate and is not counted as lane 11.
+
+Each orchestration lane may own only one active Job attempt at a time.
 
 ## Difference between BLOCKED and FAILED
 
@@ -146,13 +177,9 @@ Each lane may own only one active Job attempt at a time.
 
 Example:
 
-> The worker reached `TripQueryBuilder`, but the final query is created from configuration that is not present in the repository. The database object cannot be confirmed from the available source. A decision is needed on where that configuration should come from.
+> Source Analysis proved that the endpoint reaches `TripQueryBuilder`, but the next query input comes from configuration that is not available in the frozen source. The database object cannot be confirmed. I am stopping at the last proved component instead of guessing.
 
 `FAILED` means the worker was able to perform the requested Action, but the Action produced an incorrect result.
-
-Example:
-
-> The build was started with the required source and configuration, but compilation failed because `VehicleTripService` refers to a method that does not exist.
 
 These states must not be mixed together.
 
@@ -162,13 +189,13 @@ Workers must explain blockers in simple English.
 
 Do not write only:
 
-`NullPointerException in X.java:214`
+`Symbol resolution failed.`
 
 Instead write:
 
-> I was trying to trace the endpoint from the Controller to the database. The Service calls another component, but the source code for that component is not available in the current repository. Because of that, I cannot confirm where the request finally goes. Continuing would require guessing, so I stopped here.
+> I was trying to complete the endpoint trace. The Source Analysis result proves the call reaches another component, but the source needed to prove the next dependency is not available. Because of that, I cannot confirm where the request finally goes. Continuing would require guessing, so I stopped here.
 
-The technical error or file name may be added as evidence.
+Technical detail may be added as evidence.
 
 Every blocker report must answer:
 
@@ -185,17 +212,11 @@ The worker may suggest alternatives, but it must not change the Workflow, archit
 
 When the worker cannot prove a fact, it must say `NOT YET CONFIRMED` or `UNRESOLVED`.
 
-Bad:
-
-> The repository probably uses `tbl_vehicle_trip`, so I recorded that table.
-
-Good:
-
-> The repository name suggests vehicle-trip data, but the final query is created elsewhere. The table is not yet confirmed. The trace is recorded up to the last component that could be proved.
+A `PROVED` Source Analysis fact may be used directly as evidence. An `UNRESOLVED` Source Analysis fact must remain unresolved until deeper analysis proves it.
 
 ## Shared-file rule
 
-Workers do not directly edit shared control files while parallel workers are active.
+Orchestration workers do not directly edit shared control files while parallel workers are active.
 
 The coordinator owns shared files such as:
 
@@ -205,12 +226,12 @@ The coordinator owns shared files such as:
 - `sync/source-artifact-sync-register.yaml`;
 - consolidated traceability reports.
 
-Workers return their INIT record, SERVICE result and CLOSE record to the coordinator. The coordinator serializes shared-file updates.
+The Source Analysis Worker is also prohibited from editing those shared files.
 
 ## Completion rule
 
-A worker may return `COMPLETED` only when every required Action was attempted, the expected result was produced, evidence exists, and the completion check passed.
+An orchestration worker may return `COMPLETED` only when every required Action was attempted, the expected result was produced, required Source Analysis facts are available, evidence exists, and the completion check passed.
 
 If these conditions are not met, the result remains `PARTIAL`, `BLOCKED` or `FAILED` as appropriate.
 
-The coordinator, not the worker, decides whether a completed result becomes `VERIFIED` and `CLOSED` at the Workflow level.
+The coordinator, not the worker and not the Source Analysis Worker, decides whether a completed result becomes `VERIFIED` and `CLOSED` at Workflow level.
