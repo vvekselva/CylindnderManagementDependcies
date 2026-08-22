@@ -26,4 +26,13 @@ worker_inputs:
           proved_exposed_components: 11
           proved_endpoints: 17
           candidates_remaining_to_classify: 51
+      - attempt: 3
+        run_id: RUN-WI0004-20260822-003
+        run_state: CLOSED
+        result_state: PARTIAL
+        canonical_result_created: false
+        checkpoint:
+          proved_exposed_components: 16
+          proved_endpoints: 39
+          candidates_remaining_to_classify: 46
     next_action: RETRY_OR_CONTINUE_SAME_APPROVED_SOURCE_CHECK
