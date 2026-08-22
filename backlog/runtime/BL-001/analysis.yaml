@@ -24,90 +24,99 @@ analysis:
         total_java_component_candidates: 62
 
     prior_checkpoint:
-      proved_exposed_components: 28
-      proved_endpoints: 77
-      proved_not_exposed_components: 3
-      candidates_remaining_to_classify: 31
-      source: WI-0004 attempts 1 through 6
-
-    attempt_7_classification:
-      candidates_inspected: 5
-      exposed: 5
-      not_exposed: 0
-      added_http_method_path_combinations: 9
-
-      trip_return_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/TripReturnController.java
-        class_annotation: '@Controller'
-        class_mapping: /trip-return
-        endpoints:
-          - {http_method: GET, path: /trip-return, handler: showReturnPage}
-          - {http_method: POST, path: /trip-return, handler: returnTripAndBooks}
-        immediate_handoff: TripReturnWorkflowService
-
-      trip_review_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/TripReviewController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /trip-review, handler: showReviewQueue}
-          - {http_method: GET, path: /trip-review/{vehicleTripId}, handler: showTripReview}
-          - {http_method: POST, path: /trip-review/{vehicleTripId}/close-review, handler: closeReview}
-        immediate_handoffs:
-          - TripReviewFetchService
-          - TripReviewUpdateService
-
-      vehicle_load_by_page_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/VehicleLoadByPageController.java
-        class_annotation: '@Controller'
-        class_mapping: /vehicle-loads
-        endpoints:
-          - {http_method: GET, path: /vehicle-loads/list, handler: listVehicleLoads}
-          - {http_method: GET, path: /vehicle-loads/all-list, handler: listAllVehicleLoads}
-        immediate_handoffs:
-          - VehicleLoadFetchByPageService
-          - ICylinderManagementApplicationService<VehicleActiveTripFetchByPageRequestDto, VehicleActiveTripFetchByPageResponsetDto>
-          - TripReturnWorkflowService
-
-      vehicle_load_fetch_by_id_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/VehicleLoadFetchByIdController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /vehicle-load/fetch, handler: doGet}
-        immediate_handoffs:
-          - ICylinderManagementApplicationService<VehicleLoadFetchByIdRequestDto, VehicleLoadFetchByIdResponseDto>
-          - TripReturnWorkflowService
-
-      vehicle_trip_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/VehicleTripController.java
-        class_annotation: '@Controller'
-        class_mapping: /vehicle-trips
-        endpoints:
-          - {http_method: GET, path: /vehicle-trips/list, handler: listVehicleTrips}
-        immediate_handoff: VehicleTripFetchByPageService
-
-    current_proved_exposure_checkpoint:
       proved_exposed_components: 33
       proved_endpoints: 86
       proved_not_exposed_components: 3
-      candidate_components_remaining_to_classify: 26
-      web_controller_test_package:
-        candidates: 30
-        classified_to_date: 30
-        exposed_to_date: 27
-        not_exposed_to_date: 3
-        remaining_to_classify: 0
+      candidates_remaining_to_classify: 26
+      source: WI-0004 attempts 1 through 7
+
+    attempt_8_classification:
+      candidates_inspected: 5
+      exposed: 5
+      not_exposed: 0
+      added_http_method_path_combinations: 16
+
+      customer_fetch_by_page_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchByPageController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /fetchCustomerByPage, handler: doGet}
+        immediate_handoff: ICylinderManagementApplicationService<CustomerFetchByPageRequestDto, CustomerFetchByPageResponseDto>
+
+      customer_fetch_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /displayCustomer, handler: doGet}
+        immediate_handoff: ICylinderManagementApplicationService<CustomerFetchByIdRequestDto, CustomerFetchByIdResponseDto>
+
+      customer_update_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerUpdateController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: POST, path: /updateCustomer, handler: doPost}
+        immediate_handoff: ICylinderManagementApplicationService<CustomerUpdateRequestDto, CustomerUpdateResponseDto>
+
+      domain_lookup_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/DomainLookupController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /domainLookup, handler: showDomainLookupPage}
+          - {http_method: POST, path: /domainLookup/productCategory/save, handler: saveProductCategory}
+          - {http_method: POST, path: /domainLookup/productUom/save, handler: saveProductUom}
+          - {http_method: POST, path: /domainLookup/product/save, handler: saveProduct}
+          - {http_method: POST, path: /domainLookup/cylinder/save, handler: saveCylinder}
+          - {http_method: POST, path: /domainLookup/vehicle/save, handler: saveVehicle}
+          - {http_method: POST, path: /domainLookup/driver/save, handler: saveDriver}
+        immediate_handoffs:
+          - LookupDataCache
+          - productCategoryIngestionService
+          - productUomIngestionService
+          - productIngestionService
+          - cylinderIngestionService
+          - vehicleIngestionService
+          - driverIngestionService
+
+      lookup_management_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/LookupManagementController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /lookup, handler: legacyRedirect}
+          - {http_method: GET, path: /lookupManagement, handler: showLookupPage}
+          - {http_method: POST, path: /lookupManagement/addressType/save, handler: saveAddressType}
+          - {http_method: POST, path: /lookupManagement/country/save, handler: saveCountry}
+          - {http_method: POST, path: /lookupManagement/state/save, handler: saveState}
+          - {http_method: POST, path: /lookupManagement/city/save, handler: saveCity}
+        immediate_handoffs:
+          - LookupDataCache
+          - addressTypeIngestionService
+          - countryIngestionService
+          - stateIngestionService
+          - cityIngestionService
+
+    current_proved_exposure_checkpoint:
+      proved_exposed_components: 38
+      proved_endpoints: 102
+      proved_not_exposed_components: 3
+      candidate_components_remaining_to_classify: 21
+      misc_web_controller_package:
+        candidates: 12
+        classified_to_date: 5
+        exposed_to_date: 5
+        not_exposed_to_date: 0
+        remaining_to_classify: 7
       note: >-
-        The web.controller.test package is now fully classified. The overall 62-candidate scope is not
-        complete because 26 candidates remain in the other scanned package trees. These counters are
-        interim and cannot be used to claim Traceability completion.
+        Attempt 8 classified the first five misc.web.controller candidates. The overall 62-candidate
+        scope is not complete because 21 candidates remain across misc.web.controller, web.rest and
+        misc.cache. These counters are interim and cannot be used to claim Traceability completion.
 
   not_yet_proved:
-    - Complete classification of the remaining 26 Java component candidates as EXPOSED or NOT_EXPOSED.
+    - Complete classification of the remaining 21 Java component candidates as EXPOSED or NOT_EXPOSED.
     - Complete caller-visible endpoint inventory for every exposed component.
     - Complete endpoint call paths to final dependencies.
     - Complete physical database-object evidence for database-backed paths.
@@ -123,7 +132,7 @@ analysis:
 
   worker_attempt:
     input: worker/inputs/WI-0004.yaml
-    latest_run: RUN-WI0004-20260822-007
+    latest_run: RUN-WI0004-20260822-008
     latest_attempt_result: PARTIAL
     run_state: CLOSED
     canonical_result_accepted: false
@@ -131,10 +140,10 @@ analysis:
   orchestrator_findings:
     - BL-001 remains the only run-enabled Backlog Item and has no Backlog dependencies.
     - Its approved Traceability Quality Gate remains present and enforceable.
-    - Attempt 7 completed classification of the remaining five web.controller.test candidates; all five are EXPOSED.
-    - The web.controller.test package is now fully classified at 30 of 30 candidates.
-    - Thirty-three exposed components and eighty-six HTTP method/path combinations are source-proved at the current interim checkpoint.
-    - Three candidates are source-proved NOT_EXPOSED.
+    - Attempt 8 classified five misc.web.controller candidates; all five are EXPOSED.
+    - Thirty-eight exposed components and one hundred two HTTP method/path combinations are source-proved at the current interim checkpoint.
+    - Three candidates remain source-proved NOT_EXPOSED.
+    - Twenty-one candidates remain to classify.
     - The canonical Source Check Output worker/results/WI-0004.yaml has not yet been accepted.
     - Matrix construction remains locked until the Source Check result is COMPLETED, CLOSED, contract-valid, and reaches 100 percent endpoint trace-result coverage.
 
@@ -145,7 +154,7 @@ analysis:
     - WU-BL001-004
 
   next_step: >-
-    Continue WU-BL001-001 against the exact frozen commit through the remaining 26 candidates in the
-    other scanned package trees and continue endpoint-to-final-dependency evidence. Do not unlock matrix
-    construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result
-    contract validates, and endpoint trace-result coverage equals 100 percent.
+    Continue WU-BL001-001 against the exact frozen commit through the remaining 21 candidates and
+    continue endpoint-to-final-dependency evidence. Do not unlock matrix construction until
+    worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates,
+    and endpoint trace-result coverage equals 100 percent.
