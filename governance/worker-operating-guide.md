@@ -16,11 +16,10 @@ The Generic Worker is not a source-analysis worker and is not `LANE-11`.
 ```text
 WORKER = fixed execution behaviour
 INPUT FILE = actual task
+RESULT FILE = canonical output returned to caller
 ```
 
 The Generic Worker must not contain permanent project-specific instructions.
-
-If the task changes, the input file changes.
 
 ## Orchestration hierarchy
 
@@ -31,12 +30,11 @@ WORKFLOW
          |
          +-- ACTION
          +-- ACTION
-         +-- ACTION
 ```
 
 The coordinator decides which Jobs are READY and assigns them to the ten orchestration lanes.
 
-## Generic Worker input flow
+## Generic Worker input/output flow
 
 ```text
 Workflow/Job needs work performed
@@ -49,10 +47,16 @@ GENERIC WORKER
  init -> service -> close
         |
         +--> worker/runs/WI-####.md
+        |
         +--> worker/results/WI-####.md
+        |        or
+        +--> worker/results/WI-####.yaml
         |
         v
-Coordinator / orchestration Job consumes result
+Coordinator validates result
+        |
+        v
+Orchestrator/consumer Job uses accepted result
 ```
 
 The Generic Worker performs no task without a valid input file.
@@ -63,15 +67,16 @@ Every Worker Input must define:
 
 - Worker Input ID;
 - requesting Workflow/Job/Action when applicable;
-- task name;
-- task purpose;
+- task name and purpose;
 - target repository/resource;
 - exact baseline/ref when required;
 - allowed scope;
 - requested permissions;
 - ordered Actions;
 - evidence requirements;
-- expected output;
+- expected result path and format;
+- result contract when the result is machine-consumed;
+- downstream consumer when applicable;
 - completion check;
 - blocker policy.
 
@@ -81,96 +86,54 @@ Use `worker/worker-input-template.yaml`.
 
 ### init()
 
-The Worker reads the input file and logs:
+The Worker reads the input file and logs the task, purpose, target/baseline, scope, permissions, Actions, expected result format/contract and completion rule.
 
-- input ID;
-- task to perform;
-- purpose;
-- target and baseline;
-- scope;
-- permissions;
-- Actions;
-- expected output;
-- completion rule.
-
-If the input is missing, ambiguous or asks for a forbidden permission, `service()` does not start. `close()` still runs with `BLOCKED_BEFORE_SERVICE`.
+If the input is missing, ambiguous or requests a forbidden permission, `service()` does not start. `close()` still runs with `BLOCKED_BEFORE_SERVICE`.
 
 ### service()
 
 The Worker performs only the Actions listed in the input.
 
-The Worker must not:
+It must not invent another task, broaden scope, increase permissions, silently alter a Workflow, choose a different architecture, perform unrelated cleanup or guess facts that cannot be proved.
 
-- invent another task;
-- broaden scope;
-- increase permissions;
-- silently alter a Workflow;
-- choose a different architecture;
-- perform unrelated cleanup;
-- guess facts that cannot be proved.
+When a YAML result contract is declared, the Worker must populate only proved values and preserve unresolved values explicitly.
 
 ### close()
 
-The Worker records:
+The Worker records Actions completed/not completed, outputs, evidence, blockers/failures, final result and run state `CLOSED`.
 
-- Actions completed;
-- Actions not completed;
-- outputs;
-- evidence;
-- blockers/failures in simple English;
-- alternatives when useful;
-- final result;
-- next task/input required if more work is needed;
-- run state `CLOSED`.
-
-A Worker result is not accepted as final evidence until its run is CLOSED.
+A Worker result is not accepted as final input until its run is CLOSED and any declared result contract validates.
 
 ## Input immutability
 
-Once `init()` succeeds, the input file is frozen for that execution.
-
-Do not edit the same input to change the task while it is running or after it has produced evidence.
-
-A changed task requires a new ID:
-
-```text
-WI-0017 -> original task
-WI-0018 -> follow-up or changed task
-```
+Once `init()` succeeds, the input file is frozen for that execution. A changed task requires a new Worker Input ID.
 
 ## Orchestration lane lifecycle
 
-The ten orchestration lanes continue to use:
-
-```text
-automation/worker-service-contract.md
-```
-
-Each Job attempt follows:
+The ten orchestration lanes use `automation/worker-service-contract.md` and each Job attempt follows:
 
 ```text
 init -> service -> close
 ```
 
-When a Job requires separate evidence-gathering work, the coordinator creates/selects a Worker Input and the Generic Worker executes it.
+A lane consumes only an **accepted** Worker result when its Job declares that result as formal input.
 
-The lane then consumes the CLOSED Worker result.
+## Machine-readable handoff rule
+
+For producer/consumer automation, prefer:
+
+```text
+worker/runs/WI-####.md        # human lifecycle record
+worker/results/WI-####.yaml   # canonical machine result
+```
+
+The coordinator validates the YAML against its Workflow-specific output contract and records the handoff state before the consumer Job becomes READY.
+
+The consumer Job must not bypass a rejected/missing result by reconstructing data from the Worker run log.
 
 ## Permissions
 
-Worker permissions are explicit in the input file.
-
-Example:
-
-```yaml
-permissions:
-  source_read: true
-  source_write: false
-  database_read: false
-  database_write: false
-```
-
-Governance always wins over the input. An input cannot grant a permission forbidden by policy.
+Worker permissions are explicit in the input file and remain constrained by governance. An input cannot grant a permission forbidden by policy.
 
 ## Blocked versus failed
 
@@ -178,18 +141,11 @@ Governance always wins over the input. An input cannot grant a permission forbid
 
 `FAILED` means the requested Action was attempted but did not produce a valid result.
 
-A blocker must be explained in simple English:
-
-1. What did the input ask the Worker to do?
-2. Where did it stop?
-3. What exactly prevents progress?
-4. Why would continuing require guessing or unsafe behaviour?
-5. What information, permission or new input is needed?
-6. What alternatives can be considered?
+Blockers must be explained in simple English and must not be replaced by guesses.
 
 ## No guessing
 
-When a task asks the Worker to inspect or prove a fact, use:
+Inspection/proof tasks use:
 
 - `PROVED`;
 - `UNRESOLVED`;
@@ -199,29 +155,41 @@ Do not replace `UNRESOLVED` with an assumption.
 
 ## Shared-file rule
 
-The Generic Worker does not directly edit shared control files such as:
+The Generic Worker does not directly edit shared control files such as `TaskStatus.md`, the shared log/story, repository catalogue, synchronization register or consolidated workflow reports.
 
-- `TaskStatus.md`;
-- `logs/automation-log.md`;
-- `logs/automation-story.md`;
-- `repository-catalogue.md`;
-- `sync/source-artifact-sync-register.yaml`;
-- consolidated workflow reports.
+The coordinator serializes shared-file updates after consuming accepted Worker results.
 
-The coordinator serializes shared-file updates after consuming CLOSED Worker results.
+## Initial Controller Traceability example
 
-## Controller Traceability example
-
-The Worker remains generic while input files carry the Controller Traceability tasks:
+The first baseline uses one authoritative source-check input:
 
 ```text
-WI-0001 -> determine production web-source boundary
-WI-0002 -> verify first exposed-component batch
-WI-0003 -> verify remaining exposed components
-later WI files -> endpoint mappings, call paths, repository/query/table evidence
+WI-0004
+  -> Complete Source Repository Check
+  -> worker/results/WI-0004.yaml
 ```
 
-If a later Workflow needs a completely different task, the same Worker is used with different inputs.
+That YAML result is validated against:
+
+```text
+workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+```
+
+and becomes:
+
+```text
+SOURCE_CHECK_OUTPUT
+```
+
+for:
+
+```text
+JOB-003 Complete Traceability Matrix
+```
+
+During the initial matrix build, the Orchestrator consumes this accepted output rather than re-reading the source repository.
+
+Earlier `WI-0001` and `WI-0002` remain historical evidence; `WI-0003` is superseded.
 
 ## Completion rule
 
@@ -229,4 +197,4 @@ The Worker may return `COMPLETED` only when all required input Actions and compl
 
 Otherwise use `PARTIAL`, `BLOCKED` or `FAILED`.
 
-The coordinator decides whether the Worker result satisfies the calling Workflow gate.
+The coordinator decides whether the Worker result satisfies the calling Workflow gate and whether it can be accepted as input to a dependent Job.
