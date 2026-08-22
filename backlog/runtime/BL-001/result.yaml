@@ -1,0 +1,8 @@
+result:
+  backlog_item: BL-001
+  state: NOT_YET_COMPLETE
+  verified: false
+  closed: false
+  final_outputs: []
+  unresolved_items: []
+  note: Final result is written only after all BL-001 Completion Path gates pass.
