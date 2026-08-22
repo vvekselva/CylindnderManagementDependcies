@@ -2,183 +2,141 @@
 
 ## Framework Mode
 
-The framework is **Backlog-driven**.
+The framework is **Backlog-driven** and both analysis and execution are controlled by the Orchestrator.
 
 ```text
 BACKLOG
-  -> BACKLOG ITEM
-  -> COMPLETION PATH
-  -> ORCHESTRATOR ANALYSIS
-  -> EXECUTION PLAN
-  -> WORK UNITS
-  -> WORKER INPUTS / ORCHESTRATION ACTIONS
-  -> EXECUTION
-  -> ORCHESTRATOR VALIDATION
-  -> VERIFIED
-  -> CLOSED
+ -> RUN SELECTION
+ -> DEPENDENCY GATE
+ -> ITEM QUALITY GATE
+ -> COMPLETION PATH
+ -> ORCHESTRATOR ANALYSIS
+ -> EXECUTION PLAN
+ -> WORK UNITS
+ -> WORKER INPUTS / ORCHESTRATION ACTIONS
+ -> EXECUTION
+ -> ORCHESTRATOR VALIDATION
+ -> USER ACCEPTANCE WHEN REQUIRED
+ -> VERIFIED / CLOSED
 ```
-
-Both **analysis and execution are controlled by the Orchestrator**. The Generic Worker only executes a generated Worker Input.
 
 ## Core Components
 
 | Component | State | Main File/Path |
 |---|---|---|
-| Backlog Register | CONFIGURED | `backlog/backlog.yaml` |
-| Backlog Contract | CONFIGURED | `automation/backlog-contract.md` |
-| Main Architecture Document | UPDATED | `automation/execution-model.md` |
+| Backlog Register | CONFIGURED | `backlog/backlog.yaml` v3 |
+| Orchestrator Run Switchboard | CONFIGURED | `backlog/orchestrator-run-config.yaml` |
+| Common Quality Gate Governance | CONFIGURED | `governance/quality-gates.yaml` |
+| BL-001 Traceability Quality Gate | APPROVED | `backlog/gates/BL-001-traceability.yaml` |
 | Completion Paths | CONFIGURED | `backlog/paths/*.yaml` |
-| Orchestrator | CONFIGURED | `automation/automation-config.yaml` version 8 |
+| Orchestrator | CONFIGURED | `automation/automation-config.yaml` v9 |
 | Backlog Runtime | ACTIVE | `backlog/runtime/<BL-ID>/` |
 | Generic Worker | CONFIGURED | `automation/worker-component-contract.md` |
-| Worker Input Template | CONFIGURED | `worker/worker-input-template.yaml` |
 | Orchestration Lanes | 10 IDLE | `LANE-01` ... `LANE-10` |
-| Human Log / Story | ACTIVE | `logs/automation-log.md`, `logs/automation-story.md` |
+| Hourly Scheduled Orchestrator | ACTIVE | ChatGPT scheduled automation; starts 2026-08-22 07:33 IST and repeats hourly |
 | Catalogue Gate | CONFIGURED | `repository-catalogue.md`, `.github/workflows/catalogue-gate.yml` |
 
-## Backlog Status
+## Backlog Run Selection
 
-| ID | Backlog Item | State | Completion Path | Dependency |
-|---|---|---|---|---|
-| `BL-001` | Controller Traceability | `PLANNED` | `backlog/paths/BL-001-traceability.yaml` | None |
-| `BL-002` | Unit Test Completion | `YET_TO_DO` | `backlog/paths/BL-002-unit-test.yaml` | None |
-| `BL-003` | Integration Test Completion | `YET_TO_DO` | `backlog/paths/BL-003-integration-test.yaml` | None |
-| `BL-004` | Code Coverage Report | `WAITING_FOR_DEPENDENCY` | `backlog/paths/BL-004-code-coverage.yaml` | BL-002 + BL-003 |
-| `BL-005` | ArchUnit Architecture Test | `YET_TO_DO` | `backlog/paths/BL-005-archunit.yaml` | None |
-| `BL-006` | Requirements Traceability and Gap Analysis | `YET_TO_DO` | `backlog/paths/BL-006-requirements.yaml` | None |
+The authoritative execution switchboard is `backlog/orchestrator-run-config.yaml`.
 
-## Current Backlog Item — BL-001
+| ID | Backlog Item | Run Enabled | Item Quality Gate | Execution Eligibility |
+|---|---|---:|---|---|
+| `BL-001` | Controller Traceability | **TRUE** | CONFIGURED + USER APPROVED | ELIGIBLE SUBJECT TO GATES |
+| `BL-002` | Unit Test Completion | FALSE | NOT CONFIGURED | NOT RUNNABLE |
+| `BL-003` | Integration Test Completion | FALSE | NOT CONFIGURED | NOT RUNNABLE |
+| `BL-004` | Code Coverage Report | FALSE | NOT CONFIGURED | NOT RUNNABLE |
+| `BL-005` | ArchUnit Architecture Test | FALSE | NOT CONFIGURED | NOT RUNNABLE |
+| `BL-006` | Requirements Traceability and Gap Analysis | FALSE | NOT CONFIGURED | NOT RUNNABLE |
 
-```text
-Backlog Item: BL-001 Controller Traceability
-State: PLANNED
-Current phase: EXECUTION_READY
-Next Work Unit: WU-BL001-001
-Next Worker Input: worker/inputs/WI-0004.yaml
-```
+A FALSE item is ignored by the hourly Orchestrator. A TRUE item is still required to pass the common dependency gate and its own approved Quality Gates.
 
-### Orchestrator analysis and plan
+## Common Backlog Gate
 
-- `backlog/runtime/BL-001/analysis.yaml` — completed analysis for the current plan.
-- `backlog/runtime/BL-001/execution-plan.yaml` — four Work Units generated.
+`QG-DEP-001 Backlog Dependency Gate`
 
-### Work Units
+For BL-001 the gate is **PASS** because it declares no Backlog dependencies.
+
+## BL-001 Quality Gate Status
+
+| Gate | State |
+|---|---|
+| QG-TRC-001 Source Baseline Integrity | **PASS** |
+| QG-TRC-002 Complete Source Check | **IN PROGRESS** |
+| QG-TRC-003 Controller Inventory Completeness | WAITING |
+| QG-TRC-004 Endpoint Inventory Completeness | WAITING |
+| QG-TRC-005 Source Check Output Validity | WAITING |
+| QG-TRC-006 Endpoint To Trace Completeness | WAITING |
+| QG-TRC-007 Call Path Evidence | WAITING |
+| QG-TRC-008 Final Dependency Evidence | WAITING |
+| QG-TRC-009 No Guessing / Unresolved Quality | WAITING |
+| QG-TRC-010 Matrix Coverage = 100% | WAITING |
+| QG-TRC-011 Resolution Accounting | WAITING |
+| QG-TRC-012 Artifact Consistency | WAITING |
+| QG-TRC-013 Source Artifact Registration | WAITING |
+| QG-TRC-014 Execution Closure | WAITING |
+| QG-TRC-015 User Acceptance | WAITING - USER OWNED |
+
+BL-001 cannot be CLOSED until QG-TRC-015 is explicitly approved by the user.
+
+## Current Source Analysis
+
+Frozen source baseline:
+
+`3ae6e61442132d94a307275b08dd65fcef228d89`
+
+Current findings proved by the Orchestrator:
+
+- current `CylinderManagement/main` is identical to the frozen baseline at this analysis point;
+- Spring Boot explicitly scans `web.controller`, `web.rest`, `misc.web.controller`, `misc.cache`, and `web.controller.test`;
+- `web.controller.test` is under production `src/main/java` and therefore cannot be dismissed as ordinary test source;
+- production candidate source is present in `web.controller`, `web.controller.test`, and `web.rest` and still requires complete annotation/mapping classification;
+- the full exposed Controller set, Endpoint inventory, endpoint call paths and physical DB-object evidence are **not yet completely proved**.
+
+Therefore the Source Check is correctly **IN PROGRESS**, not complete.
+
+Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml`.
+
+## Current Work Units
 
 | Work Unit | Purpose | Executor | State |
 |---|---|---|---|
 | `WU-BL001-001` | Complete Source Repository Check | Generic Worker / `WI-0004` | READY |
 | `WU-BL001-002` | Build Traceability Matrix from accepted Source Check Output | Orchestration | WAITING_FOR_DEPENDENCY |
-| `WU-BL001-003` | Validate Traceability Completion Path gates | Orchestrator | WAITING_FOR_DEPENDENCY |
-| `WU-BL001-004` | Register source-artifact baseline and close BL-001 | Orchestrator | WAITING_FOR_DEPENDENCY |
+| `WU-BL001-003` | Validate approved Traceability Quality Gates | Orchestrator | WAITING_FOR_DEPENDENCY |
+| `WU-BL001-004` | Register source-artifact baseline and prepare user acceptance/closure | Orchestrator | WAITING_FOR_DEPENDENCY |
 
-### BL-001 runtime files
+## Hourly Orchestrator Rule
 
-All required initial runtime files now exist:
+Every scheduled invocation must:
 
-```text
-backlog/runtime/BL-001/
-  analysis.yaml
-  execution-plan.yaml
-  work-unit-status.yaml
-  worker-input-register.yaml
-  gate-status.yaml
-  decisions.yaml
-  result.yaml
-```
-
-## BL-001 Execution Flow
-
-```text
-Orchestrator Analysis
-       |
-       v
-Execution Plan
-       |
-       v
-WU-BL001-001
-       |
-       v
-worker/inputs/WI-0004.yaml
-       |
-       v
-GENERIC WORKER
-init -> service -> close
-       |
-       v
-worker/results/WI-0004.yaml
-       |
-       v
-ORCHESTRATOR VALIDATION
-       |
-       v
-WU-BL001-002
-Build Traceability Matrix
-       |
-       v
-WU-BL001-003
-Validate Gates
-       |
-       v
-WU-BL001-004
-Register Baseline + Close BL-001
-```
-
-The Source Check Output is validated by:
-
-`workflows/WF-001-controller-traceability/source-check-output-contract.yaml`
-
-## File Groups
-
-### Backlog definition
-
-- `backlog/backlog.yaml`
-- `backlog/backlog-item-template.yaml`
-- `backlog/paths/*.yaml`
-
-### Orchestrator runtime
-
-- `backlog/runtime/<BL-ID>/analysis.yaml`
-- `backlog/runtime/<BL-ID>/execution-plan.yaml`
-- `backlog/runtime/<BL-ID>/work-unit-status.yaml`
-- `backlog/runtime/<BL-ID>/worker-input-register.yaml`
-- `backlog/runtime/<BL-ID>/gate-status.yaml`
-- `backlog/runtime/<BL-ID>/decisions.yaml`
-- `backlog/runtime/<BL-ID>/result.yaml`
-
-### Worker execution
-
-- `worker/inputs/WI-*.yaml`
-- `worker/runs/WI-*.md`
-- `worker/results/WI-*.yaml`
-- `worker/results/WI-*.md`
-
-### Backlog output areas
-
-- Traceability: `traceability/`
-- Unit Test: `quality/unit-test/`
-- Integration Test: `quality/integration-test/`
-- Code Coverage: `quality/code-coverage/`
-- ArchUnit: `quality/archunit/`
-- Requirements: `requirements/`
+1. read `backlog/orchestrator-run-config.yaml` first;
+2. consider only `run_enabled: true` items;
+3. apply QG-DEP-001;
+4. require an approved item-specific Quality Gate;
+5. read the selected Completion Path;
+6. analyse before changing the Execution Plan;
+7. generate/consume Worker Inputs through the Orchestrator;
+8. update evidence and gate status;
+9. never close a Backlog Item before required user acceptance.
 
 ## Current Execution State
 
 ```text
 Active Backlog Item: BL-001
-Backlog phase: PLANNED / EXECUTION_READY
-Ready Work Unit: WU-BL001-001
-Ready Worker Input: WI-0004
-Generic Worker: READY
+Run enabled: TRUE
+Quality Gate configured: YES
+Quality Gate approved: YES
+QG-DEP-001: PASS
+QG-TRC-001: PASS
+QG-TRC-002: IN PROGRESS
+Next Work Unit: WU-BL001-001
+Next Worker Input: WI-0004
 Open Worker runs: 0
 Active orchestration lanes: 0 / 10
-Failed Work Units: 0
-Blocked items requiring user decision: 0
+User Acceptance: NOT YET REACHED
 ```
 
 ## Branch State
 
-All current backlog-framework changes are on:
-
-`chore/rename-dependency-files`
-
-They have not been merged into `main`.
+All changes remain on `chore/rename-dependency-files`. They have not been merged into `main`.
