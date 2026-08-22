@@ -1,12 +1,11 @@
 backlog:
-  version: 1
+  version: 2
   target_repository: vvekselva/CylinderManagement
   selection_policy: HIGHEST_PRIORITY_ELIGIBLE_ITEM
   max_parallel_backlog_items: 1
   note: >-
-    The Orchestrator may use parallel work units inside one Backlog Item, but only one
-    Backlog Item is active at a time until the framework is deliberately configured for
-    multi-item parallelism.
+    The Orchestrator may use parallel Work Units inside one Backlog Item, but only one
+    Backlog Item is active at a time until multi-item parallelism is deliberately enabled.
 
   states:
     - YET_TO_DO
@@ -28,10 +27,12 @@ backlog:
       name: Controller Traceability
       type: TRACEABILITY
       priority: P1_BLOCKER_CLEARING
-      state: READY
+      state: PLANNED
       completion_path: backlog/paths/BL-001-traceability.yaml
-      existing_workflow: workflows/WF-001-controller-traceability/workflow.yaml
+      implementation_workflow: workflows/WF-001-controller-traceability/workflow.yaml
+      runtime: backlog/runtime/BL-001/
       dependencies: []
+      current_work_unit: WU-BL001-001
       expected_outputs:
         - traceability/source-repository-check.md
         - traceability/controller-inventory.md
@@ -103,6 +104,8 @@ backlog:
 
   current_selection:
     backlog_item: BL-001
-    reason: >-
-      Controller Traceability is the currently active framework exercise and its
-      existing WF-001 execution state will be migrated into the Backlog runtime model.
+    phase: EXECUTION_READY
+    analysis: backlog/runtime/BL-001/analysis.yaml
+    execution_plan: backlog/runtime/BL-001/execution-plan.yaml
+    next_work_unit: WU-BL001-001
+    next_worker_input: worker/inputs/WI-0004.yaml
