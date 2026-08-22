@@ -18,9 +18,9 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - WI-0004 attempts 1 through 19 are CLOSED/PARTIAL
+        - WI-0004 attempts 1 through 20 are CLOSED/PARTIAL
         - 13 of 134 endpoints have been explicitly examined for final dependencies
-        - 12 examined endpoints are COMPLETE and 1 is UNRESOLVED at the last source-proved service handoff
+        - all 13 examined endpoints are COMPLETE
         - 121 endpoints remain not yet examined
         - canonical completed result is not yet accepted
     QG-TRC-003:
@@ -46,9 +46,9 @@ quality_gate_status:
       name: No Guessing And Unresolved Quality
       state: IN_PROGRESS
       evidence:
-        - attempt 19 records GET /search/address/customer-address/{customerId} as UNRESOLVED at customerAddressFetchByIDService
-        - the active handler was distinguished from a commented-out legacy address handler
-        - no repository, query or database object was inferred from the bean name alone
+        - attempt 19 correctly held GET /search/address/customer-address/{customerId} UNRESOLVED at the last proven service handoff
+        - attempt 20 resolved that endpoint only after concrete service, DAO operation and entity-to-table mapping were proved
+        - no examined endpoint is currently unresolved, blocked or failed
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
@@ -63,15 +63,15 @@ quality_gate_status:
   endpoint_trace_checkpoint:
     total_endpoints: 134
     explicitly_examined_for_final_dependency: 13
-    complete: 12
-    unresolved: 1
+    complete: 13
+    unresolved: 0
     not_yet_examined_for_final_dependency: 121
 
   close_allowed: false
   reason: >-
-    Attempt 19 examined the active RestfulAddressServices customer-address endpoint and proved the
-    controller-to-injected-service handoff, but the concrete Spring implementation, DAO/query path and
-    final dependency remain unproved. QG-TRC-002 therefore remains IN_PROGRESS with 121 endpoints still
-    unexamined and worker/results/WI-0004.yaml not yet a completed contract-valid canonical result.
+    Attempt 20 resolved the previously unresolved customer-address endpoint through the concrete
+    CustomerAddressFetchByIDService, CustomerAddressJpaDao and CustomerAddressDo mapping to
+    public.tbl_customer_address. QG-TRC-002 remains IN_PROGRESS because 121 endpoints are still
+    unexamined and worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result.
     QG-TRC-004 remains IN_PROGRESS because the canonical Endpoint Inventory artifact is not yet validated.
     Matrix construction and dependent work units remain locked.
