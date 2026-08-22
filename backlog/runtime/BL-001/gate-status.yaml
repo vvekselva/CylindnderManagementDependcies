@@ -1,6 +1,38 @@
-gates:
-  SOURCE_CHECK_OUTPUT_ACCEPTED: WAITING
-  TRACEABILITY_MATRIX_COMPLETE: WAITING
-  TRACEABILITY_COVERAGE_100: WAITING
-  SOURCE_ARTIFACT_BASELINE_REGISTERED: WAITING
-  REQUIRED_RUNS_CLOSED: WAITING
+quality_gate_status:
+  backlog_item: BL-001
+  quality_gate_config: backlog/gates/BL-001-traceability.yaml
+  common_dependency_gate:
+    id: QG-DEP-001
+    state: PASS
+    evidence: BL-001 declares no Backlog dependencies
+
+  gates:
+    QG-TRC-001:
+      name: Source Baseline Integrity
+      state: PASS
+      evidence:
+        - frozen source commit 3ae6e61442132d94a307275b08dd65fcef228d89
+        - current CylinderManagement main is identical to the frozen baseline at this analysis point
+    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS}
+    QG-TRC-003: {name: Controller Inventory Completeness, state: WAITING}
+    QG-TRC-004: {name: Endpoint Inventory Completeness, state: WAITING}
+    QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
+    QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
+    QG-TRC-007: {name: Call Path Evidence, state: WAITING}
+    QG-TRC-008: {name: Final Dependency Evidence, state: WAITING}
+    QG-TRC-009: {name: No Guessing And Unresolved Quality, state: WAITING}
+    QG-TRC-010: {name: Matrix Coverage, state: WAITING}
+    QG-TRC-011: {name: Resolution Accounting, state: WAITING}
+    QG-TRC-012: {name: Artifact Consistency, state: WAITING}
+    QG-TRC-013: {name: Source Artifact Registration, state: WAITING}
+    QG-TRC-014: {name: Execution Closure, state: WAITING}
+    QG-TRC-015:
+      name: User Acceptance
+      state: WAITING
+      owner: USER
+      automatic: false
+
+  close_allowed: false
+  reason: >-
+    Source analysis is in progress. Automated traceability gates have not all passed and
+    the required user-acceptance gate has not yet been reached.
