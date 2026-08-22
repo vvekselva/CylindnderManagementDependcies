@@ -1,0 +1,42 @@
+evidence_register:
+  workflow: WF-001-controller-traceability
+  run: RUN-WF001-20260822-001
+
+  items:
+    - id: EVD-WF001-001
+      type: SOURCE_BASELINE
+      value: 3ae6e61442132d94a307275b08dd65fcef228d89
+      state: VERIFIED
+
+    - id: EVD-WF001-002
+      type: WORKER_INPUT
+      path: worker/inputs/WI-0004.yaml
+      state: READY
+      purpose: Complete Source Repository Check
+
+    - id: EVD-WF001-003
+      type: WORKER_RUN
+      path: worker/runs/WI-0004.md
+      state: NOT_CREATED
+
+    - id: EVD-WF001-004
+      type: SOURCE_CHECK_OUTPUT
+      path: worker/results/WI-0004.yaml
+      contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+      state: WAITING
+      consumer: JOB-003
+
+    - id: EVD-WF001-005
+      type: ORCHESTRATOR_INPUT_HANDOFF
+      path: workflows/WF-001-controller-traceability/runtime/orchestrator-input.yaml
+      state: WAITING
+
+    - id: EVD-WF001-006
+      type: TRACEABILITY_MATRIX
+      path: traceability/controller-traceability.md
+      state: NOT_CREATED
+      source_input: EVD-WF001-004
+
+  rule: >-
+    Initial Traceability Matrix evidence must trace back to the accepted canonical
+    Source Check Output. JOB-003 must not substitute direct source reads for this handoff.
