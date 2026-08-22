@@ -47,12 +47,8 @@ analysis:
       class_annotation: '@Controller'
       class_mapping: /customer-spot-cylinder-check
       endpoints:
-        - http_method: GET
-          path: /customer-spot-cylinder-check/fetch
-          handler: fetch
-        - http_method: POST
-          path: /customer-spot-cylinder-check/submit
-          handler: submit
+        - {http_method: GET, path: /customer-spot-cylinder-check/fetch, handler: fetch}
+        - {http_method: POST, path: /customer-spot-cylinder-check/submit, handler: submit}
       proven_service_handoff:
         service: CustomerSpotCylinderCheckService
         calls:
@@ -64,12 +60,8 @@ analysis:
       source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/UC01RegisterCustomerController.java
       class_annotation: '@Controller'
       endpoints:
-        - http_method: GET
-          path: /registerCustomer
-          handler: doGet
-        - http_method: POST
-          path: /registerCustomer
-          handler: doPost
+        - {http_method: GET, path: /registerCustomer, handler: doGet}
+        - {http_method: POST, path: /registerCustomer, handler: doPost}
       proven_immediate_handoffs:
         - component: ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
           call: uC01RegisterCustomerMediator.invokeServices(requestDto)
@@ -77,10 +69,55 @@ analysis:
         - component: LookupDataCache
           call: lookupDataCache.getAddressTypes()
           used_by: GET /registerCustomer and validation-error rendering
-      finding: >-
-        UC01RegisterCustomerController is source-proved as an exposed MVC Controller with two
-        caller-visible endpoints. Its immediate mediator/cache handoffs are proved, but the POST
-        endpoint has not yet been traced through the mediator to its final dependency.
+
+    exposed_controller_vehicle_load:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase01VehicleLoadController.java
+      class_annotation: '@Controller'
+      endpoints:
+        - {http_method: GET, path: /vehicleLoad, handler: doGet}
+        - {http_method: POST, path: /vehicleLoad, handler: doPost}
+      proven_immediate_handoffs:
+        - component: ICylinderManagementApplicationMediator<UC02Phase01VehicleLoadRequestDto, UC02Phase01VehicleLoadResponseDto>
+          call: uc02Phase01VehicleLoadMediator.invokeServices(requestDto)
+          used_by: POST /vehicleLoad
+        - component: LookupDataCache
+          call: lookupDataCache.getVehicleLoadPurposes()
+          used_by: GET /vehicleLoad
+
+    exposed_controller_cylinder_delivery:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase02CylinderDeliveryController.java
+      class_annotation: '@Controller'
+      endpoints:
+        - {http_method: GET, path: /cylinderDelivery, handler: doGet}
+        - {http_method: POST, path: /cylinderDelivery, handler: doPost}
+      proven_immediate_handoff:
+        component: ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>
+        call: uc02Phase02CylinderDeliveryMediator.invokeServices(requestDto)
+        used_by: POST /cylinderDelivery
+
+    exposed_controller_vehicle_trip_load_wizard:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/VehicleTripLoadWizardController.java
+      class_annotation: '@Controller'
+      class_mapping: /wizard/vehicle-trip-load
+      endpoints:
+        - {http_method: GET, path: /wizard/vehicle-trip-load, handler: showWizard}
+        - {http_method: POST, path: /wizard/vehicle-trip-load/save, handler: save}
+      proven_immediate_handoffs:
+        - component: ICylinderManagementApplicationService<UC02Phase01VehicleLoadRequestDto, UC02Phase01VehicleLoadResponseDto>
+          call: vehicleLoadAndTripIngestionService.processRequest(requestDto)
+          used_by: POST /wizard/vehicle-trip-load/save
+        - component: ActiveChallanBookForTripLoadViewJpaDao
+          call: findByBookType(...)
+          used_by: GET /wizard/vehicle-trip-load
+        - component: LookupDataCache
+          calls:
+            - getVehicleLoadPurposes()
+            - getTotalProducts()
+            - getProduct()
+          used_by: GET /wizard/vehicle-trip-load and error rendering
 
     exposed_rest_customer_search:
       state: PROVED
@@ -88,27 +125,26 @@ analysis:
       class_annotation: '@RestController'
       class_mapping: /search/customer
       endpoints:
-        - http_method: GET
-          path: /search/customer/{searchText}
-          handler: getCustomers
+        - {http_method: GET, path: /search/customer/{searchText}, handler: getCustomers}
       proven_immediate_handoff:
         component: ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CustomerSearchResponseDto>
         call: customerSearchService.searchWithText(requestDto, null)
-      finding: >-
-        RestfulCustomerServices proves that the web.rest candidate package contains actual REST exposure.
-        Its one customer-search endpoint and immediate search-service handoff are proved, while its final
-        persistence dependency remains to be traced.
 
     current_proved_exposure_checkpoint:
-      proved_exposed_components: 3
-      proved_endpoints: 5
-      candidate_components_remaining_to_classify: 59
+      proved_exposed_components: 6
+      proved_endpoints: 11
+      candidate_components_remaining_to_classify: 56
+      root_web_controller_package:
+        candidates: 5
+        classified: 5
+        exposed: 5
+        remaining: 0
       note: >-
         These are progress counters only. They are not the final exposed-component or endpoint totals and
         cannot be used to claim Traceability coverage until all 62 candidates have been classified.
 
   not_yet_proved:
-    - Complete classification of all 62 Java component candidates as EXPOSED or NOT_EXPOSED.
+    - Complete classification of the remaining 56 Java component candidates as EXPOSED or NOT_EXPOSED.
     - Complete caller-visible endpoint inventory for every exposed component.
     - Complete endpoint call paths to final dependencies.
     - Complete physical database-object evidence for database-backed paths.
@@ -122,14 +158,21 @@ analysis:
     QG-TRC-004: IN_PROGRESS
     QG-TRC-005: WAITING
 
+  worker_attempt:
+    input: worker/inputs/WI-0004.yaml
+    run: worker/runs/WI-0004.md
+    attempt_result: PARTIAL
+    run_state: CLOSED
+    canonical_result_accepted: false
+
   orchestrator_findings:
     - BL-001 is the only run-enabled Backlog Item and has no Backlog dependencies.
     - Its approved Traceability Quality Gate is present, so source analysis is eligible to continue.
     - The first trusted Traceability baseline requires one complete source repository check before matrix construction.
-    - The canonical Source Check Output remains worker/results/WI-0004.yaml.
+    - The canonical Source Check Output remains worker/results/WI-0004.yaml and has not yet been accepted.
     - Matrix construction must consume that canonical output and must not recreate source facts independently.
-    - Candidate-scope proof has advanced from examples to an exact 62-class Java classification scope in the explicitly scanned packages.
-    - Three exposed components and five endpoints are now source-proved as an interim checkpoint.
+    - All five root web.controller Java candidates are now classified as exposed MVC controllers.
+    - Six exposed components and eleven endpoints are source-proved as the current interim checkpoint.
 
   required_work_units:
     - WU-BL001-001
@@ -138,7 +181,7 @@ analysis:
     - WU-BL001-004
 
   next_step: >-
-    Continue WU-BL001-001 source classification against the exact frozen commit until every one of the
-    62 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix
+    Retry/continue WU-BL001-001 against the exact frozen commit until every one of the remaining 56
+    candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix
     construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result
     contract validates, and endpoint trace-result coverage equals 100 percent.
