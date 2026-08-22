@@ -1,0 +1,129 @@
+source_check_output_contract:
+  id: SCO-WF001-v1
+  purpose: >-
+    Define the canonical machine-readable output of the complete Source Repository
+    Check. This file is the formal input contract consumed by the Orchestrator when
+    JOB-003 Complete Traceability Matrix starts.
+
+  producer:
+    component: WORKER
+    worker_input: worker/inputs/WI-0004.yaml
+    run_record: worker/runs/WI-0004.md
+
+  canonical_output:
+    path: worker/results/WI-0004.yaml
+    format: YAML
+    immutable_after_close: true
+
+  acceptance_requirements:
+    worker_input_id: WI-0004
+    worker_result: COMPLETED
+    worker_run_state: CLOSED
+    source_repository: vvekselva/CylinderManagement
+    source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+    complete_scope_checked: true
+    partial_result_allowed: false
+
+  required_sections:
+    - execution
+    - repository_scope
+    - exposed_components
+    - endpoints
+    - unresolved_items
+    - coverage
+    - evidence_index
+
+  schema:
+    execution:
+      worker_input_id: string
+      result: COMPLETED
+      run_state: CLOSED
+      source_repository: string
+      source_baseline: string
+      complete_scope_checked: boolean
+
+    repository_scope:
+      modules:
+        - module_name: string
+          path: string
+          relevance: string
+      runtime_scan_boundary:
+        - package_or_scope: string
+          evidence_id: string
+
+    exposed_components:
+      - source_component_key: string
+        class_name: string
+        source_path: string
+        exposure_type: MVC|REST|MIXED
+        class_mapping: string_or_none
+        evidence_ids:
+          - string
+
+    endpoints:
+      - source_endpoint_key: string
+        source_component_key: string
+        http_method: string
+        full_path: string
+        handler_method: string
+        request_type: string_or_NOT_YET_CONFIRMED
+        response_type: string_or_NOT_YET_CONFIRMED
+        call_path:
+          - hop: integer
+            from_component: string
+            from_method: string
+            to_component: string
+            to_operation: string
+            evidence_id: string
+        final_dependency:
+          type: DATABASE|EXTERNAL_API|MESSAGE_QUEUE|FILE_SYSTEM|EMAIL|OBJECT_STORAGE|CACHE|ANOTHER_MODULE|TERMINAL_APPLICATION_ACTION|UNKNOWN
+          component: string
+          database_objects:
+            - string
+          state: COMPLETE|UNRESOLVED|BLOCKED|FAILED
+          evidence_ids:
+            - string
+        unresolved_id: string_or_none
+
+    unresolved_items:
+      - unresolved_id: string
+        source_endpoint_key: string
+        last_proven_component: string
+        what_is_missing: string
+        why_not_guessed: string
+        next_investigation: string
+        evidence_ids:
+          - string
+
+    coverage:
+      exposed_component_count: integer
+      exposed_endpoint_count: integer
+      endpoint_trace_result_count: integer
+      complete_endpoint_count: integer
+      unresolved_endpoint_count: integer
+      blocked_endpoint_count: integer
+      failed_endpoint_count: integer
+      coverage_percent: number
+      resolution_percent: number
+
+    evidence_index:
+      - evidence_id: string
+        source_path: string
+        source_symbol_or_location: string
+        statement: string
+
+  orchestrator_consumer:
+    workflow: WF-001-controller-traceability
+    job: JOB-003
+    input_name: SOURCE_CHECK_OUTPUT
+    rule: >-
+      JOB-003 must consume this canonical output as its source-fact input. During the
+      initial baseline, JOB-003 must not re-read CylinderManagement source and must not
+      create another source-inspection Worker Input.
+
+  orchestration_outputs:
+    - traceability/source-repository-check.md
+    - traceability/controller-inventory.md
+    - traceability/endpoint-inventory.md
+    - traceability/controller-traceability.md
+    - traceability/unresolved-traceability.md
