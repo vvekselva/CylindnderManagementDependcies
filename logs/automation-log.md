@@ -2,7 +2,7 @@
 
 This file is the shared human-readable history of orchestration activities.
 
-The independent Source Analysis Worker keeps its own read-only run/result records under `source-analysis/`. The coordinator refers to those results here when they affect a Workflow.
+Independent Worker executions are defined by `worker/inputs/WI-*.yaml` and keep their own run/result records under `worker/runs/` and `worker/results/`.
 
 Technical execution noise is intentionally excluded from this log.
 
@@ -17,59 +17,44 @@ Worker: `COORDINATOR`
 Status: `CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### init() - What was about to happen
+### init()
 
-The Controller Traceability workflow was starting. Before any controller was analysed, one exact version of the `CylinderManagement` source had to be fixed so that every later result would describe the same code.
+The workflow was starting. One exact CylinderManagement source version had to be fixed before any source-dependent work began.
 
-### service() - What was done
+### service()
 
-The current `CylinderManagement/main` source commit was read and recorded as the workflow baseline.
-
-### What was found
-
-The baseline is:
-
-`3ae6e61442132d94a307275b08dd65fcef228d89` - `Base Projects`.
-
-All Controller Traceability orchestration Jobs and all Source Analysis requests for this workflow must use this same commit.
-
-### What is blocking progress
-
-Nothing.
+The current approved `CylinderManagement/main` commit was recorded.
 
 ### Result
 
-`COMPLETED` and `VERIFIED` for the source-baseline gate.
+Baseline: `3ae6e61442132d94a307275b08dd65fcef228d89` (`Base Projects`).
 
-### close() - What happens next
+`GATE-TRC-001` passed.
 
-The next Job can begin source discovery against this frozen commit.
+### close()
+
+All later source-dependent Worker Inputs for WF-001 must use this baseline.
 
 Log state: `CLOSED`
 
 ---
 
-## EVENT EVT-0002 - Independent Source Analysis Boundary Completed
+## EVENT EVT-0002 - Production Web Source Boundary Proved
 
 Time: `2026-08-22T05:26:00+05:30`
 Workflow: `WF-001-controller-traceability`
 Job: `JOB-002 Build Exposed Controller Inventory`
-Source Analysis Request: `SAR-0001`
-Source Analysis Worker: `INDEPENDENT_SOURCE_ANALYZER`
-Status: `PARTIAL WORKFLOW PROGRESS`
+Worker Input: `WI-0001`
+Status: `CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### init() - What was about to happen
+### init()
 
-Before deciding which Java classes are exposed Controllers or REST APIs, the independent Source Analysis Worker was asked to identify exactly which production packages Spring Boot scans for web components.
+The Generic Worker received an input file asking it to determine which production Java areas Spring Boot scans for web components.
 
-### service() - What was done
+### service()
 
-The Spring Boot application bootstrap class and the relevant production source trees were examined.
-
-### What was found
-
-The application explicitly component-scans these production areas:
+The Worker read the bootstrap configuration and proved these production areas:
 
 - `web.controller`
 - `web.rest`
@@ -77,37 +62,21 @@ The application explicitly component-scans these production areas:
 - `misc.cache`
 - `web.controller.test`
 
-The package named `web.controller.test` is production code under `src/main/java` and is explicitly scanned by Spring. It therefore remains inside the Controller Traceability scope.
+`web.controller.test` is production code under `src/main/java` and remains in scope. The actual `src/test/java` tree is outside the production Controller inventory.
 
-The real test source under `src/test/java` is outside the production Controller inventory.
+### Evidence
 
-### Important accuracy rule
-
-The analysis did **not** assume that every file ending in `Controller.java`, or every file named `Restful...`, is automatically an exposed API.
-
-Those files are candidates. The next Source Analysis request must inspect their actual Spring annotations and mappings before the Controller inventory can be declared complete.
-
-### Source Analysis evidence
-
-- Run: `source-analysis/runs/SAR-0001.md`
-- Result: `source-analysis/results/SAR-0001.md`
-- Source Analysis run state: `CLOSED`
-
-### What is blocking progress
-
-Nothing is blocked. Controller inventory is simply not complete yet because actual HTTP-exposure annotations still have to be verified.
+- Input: `worker/inputs/WI-0001.yaml`
+- Run: `worker/runs/WI-0001.md`
+- Result: `worker/results/WI-0001.md`
 
 ### Result
 
-`JOB-002 IN_PROGRESS`.
+`COMPLETED` for the requested Worker task. `JOB-002` remained in progress because individual classes still required exposure verification.
 
-### close() - What happens next
+### close()
 
-Start exposure-verification Source Analysis against candidate production classes.
-
-This event is closed. The Workflow Job remains in progress because additional Source Analysis is required.
-
-Log state: `CLOSED`
+Run state: `CLOSED`
 
 ---
 
@@ -116,47 +85,75 @@ Log state: `CLOSED`
 Time: `2026-08-22T05:26:00+05:30`
 Workflow: `WF-001-controller-traceability`
 Job: `JOB-002 Build Exposed Controller Inventory`
-Source Analysis Request: `SAR-0002`
-Source Analysis Worker: `INDEPENDENT_SOURCE_ANALYZER`
-Status: `PARTIAL WORKFLOW PROGRESS`
+Worker Input: `WI-0002`
+Status: `CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### init() - What was about to happen
+### init()
 
-The Source Analysis Worker was asked to inspect actual Spring annotations and request mappings in the first batch of candidate production classes.
+The Generic Worker received an input file listing five candidate classes and asking it to verify actual Spring HTTP exposure.
 
-### service() - What was done
+### service()
 
-Five candidate classes were read directly from the frozen source baseline.
-
-### What was found
-
-All five are proved to expose HTTP requests:
+The Worker proved these exposed components:
 
 - `CustomerFetchByPageController` - `GET /fetchCustomerByPage`
 - `CustomerFetchController` - `GET /displayCustomer`
 - `CustomerUpdateController` - `POST /updateCustomer`
-- `DomainLookupController` - exposed MVC controller; mappings include `GET /domainLookup`
-- `LookupManagementController` - exposed MVC controller; mappings include `GET /lookup` and `GET /lookupManagement`
+- `DomainLookupController` - includes `GET /domainLookup`
+- `LookupManagementController` - includes `GET /lookup` and `GET /lookupManagement`
 
-These results are source facts, not filename assumptions.
+### Evidence
 
-### Source Analysis evidence
-
-- Run: `source-analysis/runs/SAR-0002.md`
-- Result: `source-analysis/results/SAR-0002.md`
-- Source Analysis run state: `CLOSED`
-
-### What is blocking progress
-
-Nothing is blocked. The final Controller Inventory is not complete because remaining candidate classes have not yet been annotation-verified.
+- Input: `worker/inputs/WI-0002.yaml`
+- Run: `worker/runs/WI-0002.md`
+- Result: `worker/results/WI-0002.md`
 
 ### Result
 
-`JOB-002 IN_PROGRESS`.
+`PARTIAL` relative to the complete Controller inventory because more candidate classes remain. The Worker completed exactly the scope given in `WI-0002`.
 
-### close() - What happens next
+### close()
 
-Continue exposure verification for the remaining candidate production classes at the same frozen source commit. The Controller Inventory will only be generated from the complete set of proved exposure facts.
+Run state: `CLOSED`.
+
+The follow-up task is separately defined in `worker/inputs/WI-0003.yaml`.
+
+---
+
+## EVENT EVT-0004 - Worker Framework Corrected To Input-Driven Model
+
+Time: `2026-08-22T05:41:00+05:30`
+Workflow: `FRAMEWORK`
+Job: `Worker Component Refactor`
+Status: `CLOSED`
+
+### What changed
+
+The independent component is now called simply **Worker**.
+
+The Worker no longer contains hard-coded source-analysis responsibilities.
+
+Its permanent behaviour is limited to:
+
+```text
+read input -> init -> service -> close -> return result
+```
+
+The actual task is supplied through `worker/inputs/WI-*.yaml`.
+
+Controller discovery, endpoint discovery, call-path tracing, database-object inspection and future unrelated tasks are therefore input definitions, not Worker identities.
+
+### Why this was changed
+
+The Worker should be reusable. A task-specific Worker would couple the execution engine to one Workflow. The input-driven model lets the same Worker execute different tasks without changing the Worker implementation.
+
+### Current next input
+
+`worker/inputs/WI-0003.yaml` - verify the remaining candidate production web components at the frozen WF-001 source baseline.
+
+### Result
+
+Framework correction completed on `chore/rename-dependency-files`.
 
 Log state: `CLOSED`
