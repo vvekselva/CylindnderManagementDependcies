@@ -31,9 +31,11 @@ worker_inputs:
         run_state: CLOSED
         result_state: PARTIAL
         canonical_result_created: false
-        checkpoint:
-          proved_exposed_components: 19
-          proved_endpoints: 55
-          proved_not_exposed_components: 2
-          candidates_remaining_to_classify: 41
+        checkpoint: {proved_exposed_components: 19, proved_endpoints: 55, proved_not_exposed_components: 2, candidates_remaining_to_classify: 41}
+      - attempt: 5
+        run_id: RUN-WI0004-20260822-005
+        run_state: CLOSED
+        result_state: PARTIAL
+        canonical_result_created: false
+        checkpoint: {proved_exposed_components: 24, proved_endpoints: 67, proved_not_exposed_components: 2, candidates_remaining_to_classify: 36}
     next_action: RETRY_OR_CONTINUE_SAME_APPROVED_SOURCE_CHECK
