@@ -9,8 +9,8 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | File | Category | Purpose |
 |---|---|---|
 | `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and declared dynamic runtime/artifact paths. |
-| `TaskStatus.md` | Status | Consolidated Backlog, Orchestrator, lane and Worker status dashboard. |
-| `automation/automation-config.yaml` | Automation | Machine-readable Backlog-driven Orchestrator, lane, Worker, scheduling and lock configuration. |
+| `TaskStatus.md` | Status | Consolidated Backlog, Orchestrator, lane, Worker and Quality Gate dashboard. |
+| `automation/automation-config.yaml` | Automation | Machine-readable Backlog-driven Orchestrator, run-selection, Quality Gate, lane, Worker, scheduling and lock configuration. |
 | `automation/backlog-contract.md` | Backlog Contract | Defines Backlog Item lifecycle, Completion Paths, Orchestrator analysis/planning/execution and closure. |
 | `automation/execution-model.md` | Architecture Document | Main framework document showing components, files and end-to-end Backlog data flow. |
 | `automation/generate-automation-story.py` | Automation | Converts the human-readable automation log into the overall story. |
@@ -19,15 +19,18 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `automation/worker-service-contract.md` | Automation | Defines mandatory orchestration-lane `init() -> service() -> close()` lifecycle. |
 | `automation/workflow-contract.md` | Automation | Defines Workflow -> Job -> Action execution representation and producer/consumer Job handoff. |
 | `backlog/README.md` | Backlog | Explains Backlog workspace and runtime files. |
-| `backlog/backlog.yaml` | Backlog | Authoritative Backlog register, priorities, dependencies, state and Completion Paths. |
+| `backlog/backlog.yaml` | Backlog | Authoritative Backlog register, priorities, dependencies, Completion Paths and Quality Gate links. |
 | `backlog/backlog-item-template.yaml` | Backlog | Template for future Backlog Items. |
-| `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability completion route. |
-| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route. |
-| `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test completion route. |
-| `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage Report completion route. |
-| `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit architecture-test completion route. |
-| `backlog/paths/BL-006-requirements.yaml` | Completion Path | Requirements traceability/gap-analysis completion route. |
+| `backlog/orchestrator-run-config.yaml` | Orchestrator Run Control | Execution switchboard read on every scheduled run; currently only BL-001 is enabled. |
+| `backlog/gates/BL-001-traceability.yaml` | Backlog Quality Gate | User-approved Controller Traceability Quality Gate set QG-TRC-001 through QG-TRC-015. |
+| `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability completion route bound to its approved Quality Gates. |
+| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route; execution remains disabled until its Quality Gate is approved. |
+| `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test completion route; execution remains disabled until its Quality Gate is approved. |
+| `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage completion route; execution remains disabled until its Quality Gate is approved. |
+| `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit completion route; execution remains disabled until its Quality Gate is approved. |
+| `backlog/paths/BL-006-requirements.yaml` | Completion Path | Requirements completion route; execution remains disabled until its Quality Gate is approved. |
 | `database-dependency-neon.md` | Dependency | Neon/PostgreSQL/Flyway dependency and database change-control ledger. |
+| `governance/quality-gates.yaml` | Quality Gate Governance | Defines common QG-DEP-001 and the registry of approved/missing item-specific Quality Gates. |
 | `governance/automation-log-policy.md` | Governance | Defines plain-English lifecycle, blocker, evidence and decision logging. |
 | `governance/automation-policy.md` | Governance | Governing rules for automated work. |
 | `governance/source-artifact-sync-policy.md` | Governance | Defines change classification, artifact refresh and notification rules. |
@@ -48,9 +51,9 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 
 ## Catalogue Quality Gate
 
-Static framework and Completion-Path files must exist exactly as listed.
+Static framework, run-control, approved Quality Gate and Completion-Path files must exist exactly as listed.
 
-Runtime files and generated artifacts are permitted only when they match declared dynamic patterns.
+Runtime files, future approved Backlog gate files and generated artifacts are permitted only when they match declared dynamic patterns.
 
 <!-- CATALOGUE-FILES:START -->
 .github/workflows/catalogue-gate.yml
@@ -66,6 +69,8 @@ automation/workflow-contract.md
 backlog/README.md
 backlog/backlog.yaml
 backlog/backlog-item-template.yaml
+backlog/orchestrator-run-config.yaml
+backlog/gates/BL-001-traceability.yaml
 backlog/paths/BL-001-traceability.yaml
 backlog/paths/BL-002-unit-test.yaml
 backlog/paths/BL-003-integration-test.yaml
@@ -73,6 +78,7 @@ backlog/paths/BL-004-code-coverage.yaml
 backlog/paths/BL-005-archunit.yaml
 backlog/paths/BL-006-requirements.yaml
 database-dependency-neon.md
+governance/quality-gates.yaml
 governance/automation-log-policy.md
 governance/automation-policy.md
 governance/source-artifact-sync-policy.md
@@ -93,6 +99,7 @@ workflows/WF-002-source-artifact-sync/workflow.yaml
 <!-- CATALOGUE-FILES:END -->
 
 <!-- CATALOGUE-DYNAMIC-PATHS:START -->
+backlog/gates/BL-*.yaml
 backlog/runtime/*/*.yaml
 worker/inputs/WI-*.yaml
 worker/runs/WI-*.md
