@@ -8,46 +8,12 @@ worker_inputs:
     result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
     accepted: false
     attempts:
-      - attempt: 1
-        run_id: RUN-WI0004-20260822-001
-        run_state: CLOSED
-        result_state: PARTIAL
-        canonical_result_created: false
-        checkpoint: {proved_exposed_components: 6, proved_endpoints: 11, candidates_remaining_to_classify: 56}
-      - attempt: 2
-        run_id: RUN-WI0004-20260822-002
-        run_state: CLOSED
-        result_state: PARTIAL
-        canonical_result_created: false
-        checkpoint: {proved_exposed_components: 11, proved_endpoints: 17, candidates_remaining_to_classify: 51}
-      - attempt: 3
-        run_id: RUN-WI0004-20260822-003
-        run_state: CLOSED
-        result_state: PARTIAL
-        canonical_result_created: false
-        checkpoint: {proved_exposed_components: 16, proved_endpoints: 39, candidates_remaining_to_classify: 46}
-      - attempt: 4
-        run_id: RUN-WI0004-20260822-004
-        run_state: CLOSED
-        result_state: PARTIAL
-        canonical_result_created: false
-        checkpoint: {proved_exposed_components: 19, proved_endpoints: 55, proved_not_exposed_components: 2, candidates_remaining_to_classify: 41}
-      - attempt: 5
-        run_id: RUN-WI0004-20260822-005
-        run_state: CLOSED
-        result_state: PARTIAL
-        canonical_result_created: false
-        checkpoint: {proved_exposed_components: 24, proved_endpoints: 67, proved_not_exposed_components: 2, candidates_remaining_to_classify: 36}
-      - attempt: 6
-        run_id: RUN-WI0004-20260822-006
-        run_state: CLOSED
-        result_state: PARTIAL
-        canonical_result_created: false
-        checkpoint: {proved_exposed_components: 28, proved_endpoints: 77, proved_not_exposed_components: 3, candidates_remaining_to_classify: 31}
-      - attempt: 7
-        run_id: RUN-WI0004-20260822-007
-        run_state: CLOSED
-        result_state: PARTIAL
-        canonical_result_created: false
-        checkpoint: {proved_exposed_components: 33, proved_endpoints: 86, proved_not_exposed_components: 3, candidates_remaining_to_classify: 26}
+      - {attempt: 1, run_id: RUN-WI0004-20260822-001, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 6, proved_endpoints: 11, candidates_remaining_to_classify: 56}}
+      - {attempt: 2, run_id: RUN-WI0004-20260822-002, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 11, proved_endpoints: 17, candidates_remaining_to_classify: 51}}
+      - {attempt: 3, run_id: RUN-WI0004-20260822-003, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 16, proved_endpoints: 39, candidates_remaining_to_classify: 46}}
+      - {attempt: 4, run_id: RUN-WI0004-20260822-004, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 19, proved_endpoints: 55, proved_not_exposed_components: 2, candidates_remaining_to_classify: 41}}
+      - {attempt: 5, run_id: RUN-WI0004-20260822-005, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 24, proved_endpoints: 67, proved_not_exposed_components: 2, candidates_remaining_to_classify: 36}}
+      - {attempt: 6, run_id: RUN-WI0004-20260822-006, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 28, proved_endpoints: 77, proved_not_exposed_components: 3, candidates_remaining_to_classify: 31}}
+      - {attempt: 7, run_id: RUN-WI0004-20260822-007, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 33, proved_endpoints: 86, proved_not_exposed_components: 3, candidates_remaining_to_classify: 26}}
+      - {attempt: 8, run_id: RUN-WI0004-20260822-008, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 38, proved_endpoints: 102, proved_not_exposed_components: 3, candidates_remaining_to_classify: 21}}
     next_action: RETRY_OR_CONTINUE_SAME_APPROVED_SOURCE_CHECK
