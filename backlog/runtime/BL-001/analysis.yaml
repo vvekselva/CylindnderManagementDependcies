@@ -16,102 +16,32 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 12
+    examined_for_final_dependency: 13
     complete: 12
-    unresolved: 0
+    unresolved: 1
     blocked: 0
     failed: 0
-    not_yet_examined: 122
+    not_yet_examined: 121
 
   latest_attempt:
-    number: 18
-    run_id: RUN-WI0004-20260822-018
+    number: 19
+    run_id: RUN-WI0004-20260823-019
     state: CLOSED
     result: PARTIAL
     evidence: worker/runs/WI-0004.md
-    completed_endpoint_traces:
-      - endpoint: GET /search/cylinder/{searchText}
-        controller: RestfulCylinderServices
-        service: CylinderSearchServiceWithOwnershipModel
-        repository: CylinderGlobalSearchViewJpaDao
-        repository_method: searchBySerial
-        final_dependencies: [public.vw_cylinder_global_search]
-        trace_state: COMPLETE
-      - endpoint: POST /search/cylinder/ownership/by-state
-        controller: RestfulCylinderServices
-        service: CylinderCurrentOwnershipByStateSearchService
-        repository: CylinderGlobalSearchViewJpaDao
-        repository_method: searchByStateNames
-        final_dependencies: [public.vw_cylinder_global_search]
-        trace_state: COMPLETE
-      - endpoint: POST /search/cylinder/by-serial-and-state
-        controller: RestfulCylinderServices
-        service: CylinderCurrentOwnershipBySerialAndStateSearchService
-        repositories: [CylinderGlobalSearchViewJpaDao, CylinderStateJpaDao]
-        repository_methods: [searchBySerialAndStateNames, findByCylinderStateIn]
-        final_dependencies: [public.vw_cylinder_global_search, public.tbl_cylinder_states]
-        trace_state: COMPLETE
-      - endpoint: POST /search/cylinder/by-state
-        controller: RestfulCylinderServices
-        service: AvailableYardCylinderByStateSearchService
-        repositories: [YardInventoryLineJpaDao, CylinderIdentifierJpaDao]
-        repository_methods: [findYardProductWiseEmptyFullCounts, findActiveYardCylindersByStateNames, findActiveYardCylindersByStateNamesAndSerial, findActiveYardCylindersByStateNamesAndProduct, findActiveYardCylindersByStateNamesAndProductAndSerial, findByCylinderAndActiveAndPrimary]
-        final_dependencies: [public.tbl_yard_inventory_line, public.tbl_cylinder, public.tbl_product, public.tbl_cylinder_states, public.tbl_cylinder_identifier]
-        trace_state: COMPLETE
-      - endpoint: POST /search/cylinder/on-vehicle
-        controller: RestfulCylinderServices
-        service: CylindersOnVehicleSearchServiceWithOwnershipModel
-        repositories: [CylinderLogisticsExecutionLineJpaDao, CylinderIdentifierJpaDao]
-        repository_methods: [findActiveVehicleContents, findByCylinderAndActiveAndPrimary]
-        final_dependencies: [public.tbl_cylinder_logistics_execution_line, public.tbl_cylinder_logistics_execution, public.tbl_vehicle_load, public.tbl_cylinder, public.tbl_product, public.tbl_cylinder_states, public.tbl_cylinder_identifier]
-        trace_state: COMPLETE
-      - endpoint: POST /search/cylinder/by-customer
-        controller: RestfulCylinderServices
-        service: CylindersByCustomerSearchServiceWithOwnershipModel
-        repository: CustomerHeldCylinderSearchJpaDao
-        repository_method: findActiveCustomerHeldCylinders
-        final_dependencies: [public.vw_cylinder_party_custody_with_identifiers, public.tbl_cylinder, public.tbl_product]
-        trace_state: COMPLETE
-      - endpoint: POST /search/cylinder/by-supplier
-        controller: RestfulCylinderServices
-        service: CylindersBySupplierSearchServiceWithOwnershipModel
-        repository: SupplierHeldCylinderSearchJpaDao
-        repository_method: findActiveSupplierHeldCylinders
-        final_dependencies: [public.vw_cylinder_party_custody_with_identifiers, public.tbl_cylinder, public.tbl_product]
-        trace_state: COMPLETE
-      - endpoint: GET /search/customer/{searchText}
-        service: CustomerSearchService
-        repository: CustomerJpaDao
-        repository_method: findByCustomerNameContainingIgnoreCase
-        final_dependencies: [public.tbl_customer]
-        trace_state: COMPLETE
-      - endpoint: GET /search/product/{searchText}
-        service: ProductSearchService
-        repository: ProductJpaDao
-        repository_method: findByProductNameContainingIgnoreCase
-        final_dependencies: [public.tbl_product]
-        trace_state: COMPLETE
-      - endpoint: GET /search/addresstype/{searchText}
-        service: AddressTypeSearchService
-        repository: AddressTypeJpaDao
-        repository_method: findByAddressTypeContainingIgnoreCase
-        final_dependencies: [public.tbl_address_type]
-        trace_state: COMPLETE
-      - endpoint: GET /search/driver/{searchText}
-        controller: RestfulDriverServices
-        service: DriverSearchService
-        repository: DriverJpaDao
-        repository_method: findByDriverNameContainingIgnoreCase
-        final_dependencies: [public.tbl_driver]
-        trace_state: COMPLETE
-      - endpoint: GET /find/Driver-by-Id/{driverId}
-        controller: RestfulDriverServices
-        service: DriverFetchByIdService
-        repository: DriverJpaDao
-        repository_method: findById
-        final_dependencies: [public.tbl_driver]
-        trace_state: COMPLETE
-    unresolved_endpoint_traces: []
+    endpoint: GET /search/address/customer-address/{customerId}
+    controller: RestfulAddressServices
+    last_proven_component: customerAddressFetchByIDService
+    trace_state: UNRESOLVED
+    missing_evidence:
+      - concrete Spring implementation for the injected ICylinderManagementApplicationSearchService bean
+      - DAO/repository or query path used by that implementation
+      - final persistence or external dependency
+    source_evidence:
+      - RestfulAddressServices is an active @RestController under /search/address
+      - active handler is @GetMapping("/customer-address/{customerId}")
+      - handler invokes customerAddressFetchByIDService.searchWithText(...)
+      - no final dependency was inferred from bean naming
 
   quality_gate_effect:
     QG-DEP-001: PASS
@@ -128,17 +58,18 @@ analysis:
   proved_now:
     - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
     - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
-    - Twelve endpoints examined so far now have COMPLETE controller-to-final-dependency evidence.
-    - Both RestfulDriverServices endpoints are proved through DriverSearchService or DriverFetchByIdService to DriverJpaDao, whose DriverDo entity explicitly maps to public.tbl_driver.
-    - DriverSearchService calls DriverJpaDao.findByDriverNameContainingIgnoreCase; DriverFetchByIdService calls JpaRepository.findById on the same mapped entity.
-    - No examined endpoint remains UNRESOLVED after Attempt 18.
+    - Thirteen endpoints have now been explicitly examined for final dependencies.
+    - Twelve remain COMPLETE and one newly examined RestfulAddressServices endpoint is explicitly UNRESOLVED at the injected customerAddressFetchByIDService handoff.
+    - The active address handler was distinguished from the older commented-out /customer/{customerId} handler.
 
   not_yet_proved:
-    - Final dependencies for the remaining 122 endpoints.
+    - Concrete implementation, repository/query path and final dependency for GET /search/address/customer-address/{customerId}.
+    - Final dependencies for the remaining 121 endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Continue WU-BL001-001 by examining the remaining 122 endpoints and proving each endpoint path to its
-    final dependency or recording a justified unresolved/blocked/failed result. Do not unlock Matrix
-    construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result
-    contract validates, and endpoint trace-result coverage equals 100 percent.
+    Resolve the concrete Spring implementation behind customerAddressFetchByIDService and continue
+    WU-BL001-001 across the remaining 121 endpoints. Record unresolved paths at the last source-proved
+    component rather than guessing. Do not unlock Matrix construction until worker/results/WI-0004.yaml
+    is COMPLETED, the Worker run is CLOSED, the result contract validates, and endpoint trace-result
+    coverage equals 100 percent.
