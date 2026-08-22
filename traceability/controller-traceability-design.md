@@ -2,94 +2,122 @@
 
 ## Purpose
 
-This document defines exactly how `WF-001-controller-traceability` discovers and traces exposed HTTP endpoints in `vvekselva/CylinderManagement`.
+`WF-001-controller-traceability` must prove, for every exposed HTTP endpoint in `vvekselva/CylinderManagement`:
 
-The goal is to answer, for every exposed endpoint:
+> Which component receives the request, which application calls follow, and what final database, external service, file, cache, module or other dependency is reached?
 
-> When this URL is called, which controller or REST component receives it, which application components are called next, and what final database, external service, file, module or other dependency is reached?
+No trace may be completed by guessing.
 
-The trace must be based on source evidence. No worker may guess missing layers or database objects.
+## Generic Worker principle
 
-## Separation between orchestration and source analysis
+Controller Traceability does not use a special-purpose source-analysis worker.
 
-Controller Traceability uses two different kinds of workers.
+It uses the same independent **Generic Worker** used by other automation tasks.
+
+The Generic Worker is defined by:
 
 ```text
-ORCHESTRATION
-Coordinator + LANE-01 ... LANE-10
-        |
-        | requests source facts
-        v
-INDEPENDENT SOURCE ANALYSIS WORKER
-Read-only analysis of one exact source commit
-        |
-        v
-Source Facts Package
-        |
-        v
-ORCHESTRATION builds/updates traceability artifacts
+automation/worker-component-contract.md
 ```
 
-The independent Source Analysis Worker is defined by `automation/source-analysis-worker-contract.md`.
+The Controller Traceability task is supplied through input files:
 
-It does not consume one of the ten orchestration lanes.
+```text
+worker/inputs/WI-####.yaml
+```
 
-The Source Analysis Worker reads source code and returns proved facts. The orchestration workers use those facts to perform Workflow Jobs, create artifacts, explain blockers and satisfy gates.
+Therefore:
 
-This separation means controller-tracing workers do not independently invent their own interpretation of source structure.
+```text
+WORKER = reusable execution engine
+INPUT FILE = actual task
+RESULT FILE = evidence returned from that task
+```
+
+## Separation from orchestration
+
+```text
+COORDINATOR
+    |
+    +--------------------------+
+    |                          |
+    v                          v
+10 ORCHESTRATION LANES     WORKER INPUT
+                               |
+                               v
+                         GENERIC WORKER
+                     init -> service -> close
+                               |
+                               v
+                         WORKER RESULT
+    |                          |
+    +------------<-------------+
+    |
+    v
+TRACEABILITY ARTIFACTS
+```
+
+The Generic Worker is not one of `LANE-01` through `LANE-10`.
+
+The orchestration layer decides what task is needed and supplies an input file. The Worker only executes that input.
 
 ## Source baseline
 
-One CylinderManagement commit is frozen before discovery begins.
+Before source-dependent inputs run, one CylinderManagement commit is frozen.
 
-Every orchestration worker and every Source Analysis request uses that same commit for the complete workflow.
+Every Worker Input for this workflow that reads source must specify that same exact commit.
 
-If the source repository changes while the workflow is running, the current workflow continues against the frozen commit. The later change is handled by `WF-002-source-artifact-sync`.
+Current frozen baseline:
 
-## Source Analysis requests used by this workflow
+```text
+3ae6e61442132d94a307275b08dd65fcef228d89
+```
 
-The workflow uses the independent Source Analysis Worker at several depths.
+A later source change is handled separately by `WF-002-source-artifact-sync`.
 
-### Discovery request
+## Input-driven discovery
 
-Purpose: identify production source areas and Spring components that actually expose HTTP requests.
+The initial Controller Traceability inputs are:
 
-### Endpoint request
+```text
+WI-0001 - determine production web source boundary
+WI-0002 - verify first exposed-component batch
+WI-0003 - verify remaining exposed components
+```
 
-Purpose: identify handler methods, HTTP methods, class/method mappings and full caller-visible paths.
+Later Jobs create additional Worker Inputs for:
 
-### Call-path request
+- endpoint mapping extraction;
+- endpoint call-path tracing;
+- deeper component-call tracing;
+- repository/entity/query inspection;
+- physical database-object proof;
+- source-change comparison.
 
-Purpose: follow one endpoint from its handler method to the next component and onward through the actual calls.
+These responsibilities belong to input files, not to the Worker component.
 
-### Database-object request
+## Controller discovery rule
 
-Purpose: continue database-backed paths through repository/DAO/query/entity evidence until the physical table, view or function can be proved.
+The Controller inventory is built only from closed Worker results that prove actual Spring HTTP exposure.
 
-A deeper request is created when the earlier result returns `UNRESOLVED` but identifies a safe next source location to inspect.
-
-## Discovery scope
-
-The Source Analysis Worker inspects production Java source under `src/main/java` in application packages that are actually component-scanned by the Spring Boot application.
-
-It must include classes that actually expose Spring web requests, including classes using:
+Discovery must consider production classes under the Spring component-scanned runtime boundary and may use evidence such as:
 
 - `@Controller`;
 - `@RestController`;
-- `@RequestMapping` at class or method level;
+- `@RequestMapping`;
 - `@GetMapping`;
 - `@PostMapping`;
 - `@PutMapping`;
 - `@DeleteMapping`;
 - `@PatchMapping`.
 
-Discovery must not rely only on filenames ending with `Controller.java`.
+A filename ending in `Controller.java` is only a candidate, not proof.
 
-A production package whose name contains `test` is still inspected when it is under `src/main/java` and is component-scanned. Files under `src/test/java` are test code and are not included in the exposed-controller inventory.
+A production package containing the word `test` remains in scope when it lives under `src/main/java` and Spring component-scans it. Real test code under `src/test/java` is excluded.
 
 ## Controller identity
 
-Every exposed component receives a stable Controller ID:
+Every proved exposed component receives a stable ID:
 
 ```text
 CTL-001
@@ -98,24 +126,21 @@ CTL-003
 ...
 ```
 
-The orchestration layer creates the Controller Inventory from Source Analysis facts.
-
-The inventory records:
+The Controller inventory records:
 
 - Controller ID;
 - class name;
-- source module;
-- source file;
-- class-level mapping, when present;
-- exposure type (`MVC`, `REST`, or `MIXED`);
+- source module/path;
+- exposure type (`MVC`, `REST`, `MIXED`);
+- class-level mapping if any;
 - endpoint count;
 - source baseline;
-- Source Analysis evidence;
+- Worker Input/Result evidence IDs;
 - trace state.
 
 ## Endpoint identity
 
-Every exposed handler method receives an Endpoint ID derived from its Controller ID:
+Every caller-visible HTTP method/path combination receives an Endpoint ID:
 
 ```text
 CTL-007
@@ -124,110 +149,103 @@ CTL-007
   EP-007-03
 ```
 
-If one annotation exposes multiple paths or multiple HTTP methods, each caller-visible method/path combination is represented explicitly so coverage can be measured correctly.
-
-The endpoint inventory records:
+The Endpoint inventory records:
 
 - Endpoint ID;
 - Controller ID;
 - HTTP method;
 - full URL path;
-- controller class;
-- controller method;
-- request/input type where provable;
-- response/output type where provable;
-- Source Analysis evidence;
+- handler class/method;
+- input/output type when proved;
+- Worker Input/Result evidence;
 - trace state.
 
-For `@RequestMapping` without an HTTP method restriction, record the HTTP method as `ANY` unless a narrower method can be proved elsewhere.
+For unrestricted `@RequestMapping`, record HTTP method `ANY` unless a narrower method is proved.
 
 ## Full URL rule
 
-The final endpoint path is the combination of class-level and method-level mappings.
+Combine class-level and method-level mappings.
 
 Example:
 
 ```text
-Class:  @RequestMapping("/cylindermanagement")
-Method: @GetMapping("/vehicle-loads/list")
-
-Final path:
-/cylindermanagement/vehicle-loads/list
+Class:  /cylindermanagement
+Method: /vehicle-loads/list
+Result: /cylindermanagement/vehicle-loads/list
 ```
-
-Do not record only the method-level path when a class-level prefix exists.
 
 ## Vertical trace rule
 
-One orchestration lane owns one controller work item at a time.
+One orchestration lane owns one Controller artifact at a time.
 
-That lane is responsible for the traceability artifact and Workflow result, but it asks the independent Source Analysis Worker for the actual source facts needed to trace each endpoint.
+For each endpoint, the lane requests evidence through one or more Worker Inputs.
 
-The source path is followed as it actually exists. A fixed architecture is not forced.
-
-Valid examples include:
+Example:
 
 ```text
-Controller -> Service -> Repository -> Entity -> PostgreSQL table
+LANE-04 owns CTL-007
+       |
+       v
+WI-0042: inspect EP-007-01 handler call
+       |
+       v
+Worker Result: handler calls TripService.process(...)
+       |
+       v
+WI-0043: inspect TripService.process(...)
+       |
+       v
+Worker Result: service calls TripRepository.find...
+       |
+       v
+WI-0044: inspect repository/entity/query mapping
+       |
+       v
+Worker Result: PostgreSQL object proved
+       |
+       v
+CTL-007 artifact updated
 ```
 
-```text
-Controller -> Mediator -> Handler -> Service -> Repository -> View
-```
-
-```text
-Controller -> Service -> External REST API
-```
-
-```text
-Controller -> Service -> File system
-```
+Each deeper task is explicit in a new input file.
 
 ## Hop evidence rule
 
-Every hop must be supported by a `PROVED` Source Analysis fact.
+Every COMPLETE hop must reference a CLOSED Worker result.
 
 For each hop record:
 
-- source component;
-- source method;
-- next component called;
-- method or operation called;
-- source file;
-- Source Analysis Request/Fact ID;
-- evidence statement.
+- current component;
+- current method;
+- next component/operation;
+- source file/location;
+- Worker Input ID;
+- Worker Result Fact ID;
+- confidence (`PROVED`, `UNRESOLVED`, `NOT_APPLICABLE`).
 
-A class field alone does not prove that a specific endpoint uses that dependency. Endpoint-specific analysis must follow the actual handler method and calls reachable from that method.
+An injected field alone does not prove a handler uses that dependency. The Worker Input must ask the Worker to inspect the actual reachable call path.
 
 ## Database trace rule
 
-If the final dependency is database-backed, the trace does not stop at a repository name.
+Database-backed traces do not stop at a Repository name.
 
-The orchestration lane requests deeper Source Analysis until evidence identifies the physical database object, for example:
+Additional Worker Inputs continue until source evidence proves the physical object through, for example:
 
 ```text
-Repository
-  -> Entity / @Table
-  -> PostgreSQL
-  -> schema.table
+Repository -> Entity -> @Table -> schema.table
 ```
 
 or:
 
 ```text
-Repository
-  -> @Query / native SQL / JdbcTemplate / query builder
-  -> PostgreSQL
-  -> table / view / function
+Repository -> @Query/native SQL/JdbcTemplate/query builder -> table/view/function
 ```
 
-Record every database object proved to be used by that endpoint.
-
-If a repository delegates query construction to another component, the Source Analysis Worker continues into that component before a table or view can be named.
+If the exact object cannot be proved, the result remains `UNRESOLVED` and records the last proved source location.
 
 ## Final dependency types
 
-Use one of these values:
+Use:
 
 - `DATABASE`;
 - `EXTERNAL_API`;
@@ -240,146 +258,110 @@ Use one of these values:
 - `TERMINAL_APPLICATION_ACTION`;
 - `UNKNOWN`.
 
-## Endpoint trace states
+## Trace states
 
-Use:
+- `COMPLETE` - final dependency proved;
+- `UNRESOLVED` - trace stopped at a known point and the next fact is not yet proved;
+- `BLOCKED` - missing information/permission/decision prevents progress;
+- `FAILED` - the requested execution itself failed.
 
-- `COMPLETE` - endpoint traced to final dependency with evidence;
-- `UNRESOLVED` - analysis stopped at a known component because the next dependency could not yet be proved;
-- `BLOCKED` - work cannot continue until missing information or a decision is supplied;
-- `FAILED` - the requested analysis/execution could not produce a valid result.
+For `UNRESOLVED`, record:
 
-`UNRESOLVED` must include the last proven component, missing information, why guessing would be unsafe, and the next investigation step.
+- last proved component;
+- what is still unknown;
+- why continuing would require guessing;
+- next Worker Input/task needed.
 
-## Orchestration worker lifecycle
+## Generic Worker lifecycle inside this workflow
 
-Every controller work item uses the mandatory Worker Service Contract:
-
-```text
-init()
-  -> service()
-  -> close()
-```
-
-### init()
-
-The orchestration worker records:
-
-- lane;
-- Workflow and Job;
-- assigned Controller ID and class;
-- source baseline;
-- endpoint count being traced;
-- Source Analysis requests it expects to need;
-- expected artifact path.
-
-The coordinator opens the human-readable automation log event.
-
-### service()
-
-The orchestration worker requests/consumes source facts, assembles the endpoint traces, identifies COMPLETE/UNRESOLVED results, and produces its controller artifact.
-
-The orchestration worker does not substitute guesses when the Source Analysis Worker returns `UNRESOLVED`.
-
-### close()
-
-The orchestration worker always closes the run and records:
-
-- endpoints completed;
-- endpoints unresolved;
-- Source Analysis Request IDs used;
-- outputs produced;
-- evidence produced;
-- blocker/failure explanation when applicable;
-- final worker result;
-- next action;
-- log state `CLOSED`.
-
-## Source Analysis Worker lifecycle
-
-Each source-analysis request independently uses:
+Every Worker Input uses:
 
 ```text
 init()
-  -> validate request, baseline and source scope
+  -> read input and state task/scope/permissions
 service()
-  -> read source and return evidence-backed facts
+  -> execute only input Actions
 close()
-  -> summarize PROVED and UNRESOLVED facts and close its run
+  -> record result/blocker/evidence and close run
 ```
 
-Source Analysis run/result records live under `source-analysis/` and are separate from the orchestration log.
+The run and result are stored as:
 
-## Worker output
+```text
+worker/runs/WI-####.md
+worker/results/WI-####.md
+```
 
-Each controller work item creates one orchestration artifact:
+A result from an unclosed run cannot be used as traceability evidence.
+
+## Orchestration lane lifecycle
+
+The ten orchestration lanes continue to use `automation/worker-service-contract.md` for their assigned Workflow Jobs:
+
+```text
+init -> service -> close
+```
+
+The lane owns the workflow artifact. The Generic Worker owns only execution of the individual input file.
+
+## Worker output references
+
+Each Controller artifact must record the Worker Input/Result IDs used to prove its endpoints and hops.
+
+Per-controller artifact path:
 
 ```text
 traceability/controllers/CTL-###-<ControllerClass>.md
 ```
 
-The format is defined in `traceability/controller-trace-template.md`.
+## Shared output ownership
 
-Orchestration workers do not directly update the consolidated report, global TaskStatus, shared log, story or synchronization register. The coordinator owns those shared files.
+Neither an orchestration lane nor the Generic Worker directly edits shared coordinator files during parallel work.
 
-The Source Analysis Worker also does not update those shared files.
+Coordinator-owned files include:
 
-## Coordinator outputs
-
-The coordinator creates and maintains:
-
+- `TaskStatus.md`;
+- `logs/automation-log.md`;
+- `logs/automation-story.md`;
 - `traceability/controller-inventory.md`;
 - `traceability/endpoint-inventory.md`;
 - `traceability/controller-traceability.md`;
 - `traceability/unresolved-traceability.md`;
-- `sync/source-artifact-sync-register.yaml`;
-- `logs/automation-log.md`;
-- `logs/automation-story.md`;
-- `TaskStatus.md`.
+- `sync/source-artifact-sync-register.yaml`.
 
 ## Coverage and resolution
 
-Two percentages are required.
-
-### Coverage
+Coverage:
 
 ```text
-Endpoints with a trace result / total exposed endpoints discovered * 100
+endpoints with any trace result / total exposed endpoints * 100
 ```
 
-The workflow cannot complete unless coverage is 100%.
+Coverage must reach 100%.
 
-### Resolution
+Resolution:
 
 ```text
-Endpoints with COMPLETE trace / total exposed endpoints discovered * 100
+COMPLETE endpoints / total exposed endpoints * 100
 ```
 
-Resolution may be less than 100% when unresolved endpoints are clearly recorded.
+Resolution may be below 100% when unresolved items are clearly documented.
 
 ## Quality gates
 
-The workflow must pass these gates in order:
-
-1. `GATE-TRC-001` - one source baseline is frozen;
-2. `GATE-TRC-002` - production/component-scanned source scope is proved by Source Analysis;
-3. `GATE-TRC-003` - every exposed controller is inventoried from proved facts;
-4. `GATE-TRC-004` - every exposed endpoint is inventoried from proved facts;
-5. `GATE-TRC-005` - every endpoint has a controller trace result;
-6. `GATE-TRC-006` - every COMPLETE hop references Source Analysis evidence;
-7. `GATE-TRC-007` - unresolved endpoints contain a clear stopping point and next action;
+1. `GATE-TRC-001` - one source baseline frozen;
+2. `GATE-TRC-002` - production web-source scope proved;
+3. `GATE-TRC-003` - exposed Controller inventory complete;
+4. `GATE-TRC-004` - exposed Endpoint inventory complete;
+5. `GATE-TRC-005` - every Endpoint has a trace result;
+6. `GATE-TRC-006` - every COMPLETE hop references CLOSED Worker evidence;
+7. `GATE-TRC-007` - unresolved items have a stopping point and next task;
 8. `GATE-TRC-008` - coverage is 100%;
-9. `GATE-TRC-009` - source-to-artifact sync register is updated;
-10. `GATE-TRC-010` - all source-analysis and orchestration runs used by the workflow are closed, and the human story is current.
+9. `GATE-TRC-009` - source-to-artifact sync register updated;
+10. `GATE-TRC-010` - all Worker/orchestration runs used by the workflow are CLOSED and story is current.
 
-## Synchronization after the baseline
+## Synchronization
 
-After the initial workflow is verified, `WF-002-source-artifact-sync` compares newer CylinderManagement commits to the baseline represented by the artifacts.
+`WF-002-source-artifact-sync` may also use the same Generic Worker with change-comparison input files.
 
-The independent Source Analysis Worker can be asked to classify what changed at source level. The orchestration/synchronization workflow decides the impact:
-
-- internal implementation change with same API and same trace: no artifact refresh;
-- dependency-path change: refresh affected artifact;
-- exposed API change: notify user and refresh artifact;
-- exposed component added/removed: notify user and update inventories/artifacts;
-- impact cannot be proved: notify user and require review.
+The synchronization Workflow, not the Worker, decides whether a change is `INTERNAL_ONLY`, `TRACE_CHANGED`, `EXPOSED_API_CHANGED`, `COMPONENT_ADDED_OR_REMOVED` or `IMPACT_NOT_CONFIRMED`.
