@@ -1,0 +1,124 @@
+quality_gate_set:
+  id: QGS-BL-001-v1
+  backlog_item: BL-001
+  name: Controller Traceability Quality Gates
+  type: TRACEABILITY
+  approved_by_user: true
+  requires_common_dependency_gate: QG-DEP-001
+  user_acceptance_required_before_close: true
+
+  gates:
+    - id: QG-TRC-001
+      name: Source Baseline Integrity
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        One exact CylinderManagement commit is frozen and every Source Check result and
+        Traceability artifact refers to that same commit.
+
+    - id: QG-TRC-002
+      name: Complete Source Check
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        The Source Repository Check has inspected the complete defined production scope,
+        the Worker result is COMPLETED, and the Worker run is CLOSED.
+
+    - id: QG-TRC-003
+      name: Controller Inventory Completeness
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Every production component that actually exposes HTTP requests is identified and
+        no component is included merely because its filename looks like a Controller.
+
+    - id: QG-TRC-004
+      name: Endpoint Inventory Completeness
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Every caller-visible HTTP method/path combination exposed by every discovered
+        Controller is present in the Endpoint Inventory.
+
+    - id: QG-TRC-005
+      name: Source Check Output Validity
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        worker/results/WI-0004.yaml satisfies the approved Source Check Output contract
+        and contains all required source facts needed by the Traceability Matrix.
+
+    - id: QG-TRC-006
+      name: Endpoint To Trace Completeness
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Every endpoint in the Endpoint Inventory has exactly one corresponding entry in
+        the Traceability Matrix, with no missing or duplicate endpoint rows.
+
+    - id: QG-TRC-007
+      name: Call Path Evidence
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Every COMPLETE trace contains evidence for the actual application path from the
+        exposed Controller handler through the real intermediate components to the final
+        dependency.
+
+    - id: QG-TRC-008
+      name: Final Dependency Evidence
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        A database table/view/function, external API, file, cache, module or other final
+        dependency is recorded only when it can be proved from evidence.
+
+    - id: QG-TRC-009
+      name: No Guessing And Unresolved Quality
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Every path whose final dependency cannot be proved is explicitly UNRESOLVED,
+        BLOCKED or FAILED and records the last proven component, missing information,
+        reason it cannot safely continue, evidence, and next investigation step.
+
+    - id: QG-TRC-010
+      name: Matrix Coverage
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Endpoint trace-result count equals exposed endpoint count and Traceability
+        Coverage equals 100 percent. NOT_EXAMINED must equal zero.
+
+    - id: QG-TRC-011
+      name: Resolution Accounting
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        COMPLETE, UNRESOLVED, BLOCKED and FAILED endpoint counts reconcile exactly to the
+        total endpoint count, and Resolution is reported separately from Coverage.
+
+    - id: QG-TRC-012
+      name: Artifact Consistency
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Source Repository Check, Controller Inventory, Endpoint Inventory, Traceability
+        Matrix and Unresolved Traceability report represent the same source baseline and
+        reconcile with one another.
+
+    - id: QG-TRC-013
+      name: Source Artifact Registration
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Finished Traceability artifacts are registered against the frozen source commit in
+        the source-artifact synchronization register.
+
+    - id: QG-TRC-014
+      name: Execution Closure
+      owner: ORCHESTRATOR
+      pass_condition: >-
+        Every required Worker run and Traceability Work Unit is closed and no open or stale
+        execution is treated as final evidence.
+
+    - id: QG-TRC-015
+      name: User Acceptance
+      owner: USER
+      automatic: false
+      pass_condition: >-
+        The user is shown the Traceability Matrix summary, Coverage, Resolution,
+        unresolved/blocked/failed items and artifact locations, and explicitly APPROVES
+        the result.
+      on_reject: RETURN_TO_ORCHESTRATOR_ANALYSIS
+
+  close_rule: >-
+    BL-001 may move to VERIFIED only after QG-TRC-001 through QG-TRC-014 pass. It may
+    move to CLOSED only after QG-TRC-015 is explicitly approved by the user.
