@@ -1,0 +1,84 @@
+completion_path:
+  id: CP-BL-002-v1
+  backlog_item: BL-002
+  type: UNIT_TEST
+  name: Unit Test Completion Path
+
+  purpose: >-
+    Analyse the production source and existing unit-test suite, plan the missing unit
+    tests, generate Worker Inputs to implement/run them, and close the backlog item only
+    after the required unit-test scope is verified.
+
+  phases:
+    - id: ANALYZE
+      owner: ORCHESTRATOR
+      actions:
+        - establish the approved source baseline
+        - inventory production classes/components that require unit-level testing
+        - inventory existing unit tests and test framework/tooling
+        - identify missing, obsolete, failing or duplicate unit-test areas
+        - identify dependencies that must be mocked/stubbed for isolated tests
+      outputs:
+        - backlog/runtime/BL-002/analysis.yaml
+        - quality/unit-test/unit-test-inventory.md
+      gate: every in-scope production unit is classified as COVERED, GAP, NOT_APPLICABLE or UNRESOLVED
+
+    - id: PLAN
+      owner: ORCHESTRATOR
+      actions:
+        - create one or more independent unit-test Work Units from the analysis gaps
+        - group Work Units so unrelated test files can run in parallel
+        - define source/test paths, permissions, expected assertions and test command
+        - generate Worker Input files for each approved Work Unit
+      outputs:
+        - backlog/runtime/BL-002/execution-plan.yaml
+        - worker/inputs/WI-*.yaml
+      gate: every mandatory GAP has an execution Work Unit or an explicit blocker
+
+    - id: EXECUTE
+      owner: ORCHESTRATOR
+      worker_permissions:
+        source_read: true
+        source_write: true
+        database_write: false
+      actions:
+        - schedule eligible Worker Inputs
+        - execute test creation/update only on approved automation branches/paths
+        - execute the declared unit-test commands
+        - collect Worker result and test evidence
+        - create follow-up Work Units only when analysis of a result proves they are required
+      outputs:
+        - worker/runs/WI-*.md
+        - worker/results/WI-*.yaml
+        - backlog/runtime/BL-002/work-unit-status.yaml
+
+    - id: VALIDATE
+      owner: ORCHESTRATOR
+      checks:
+        - every mandatory unit-test Work Unit has an accepted result
+        - required unit tests exist
+        - required unit tests execute successfully
+        - failing tests are not hidden
+        - unresolved testability blockers are recorded in plain English
+      outputs:
+        - quality/unit-test/unit-test-results.md
+        - quality/unit-test/unresolved-unit-tests.md
+      gate: no mandatory unit-test Work Unit remains FAILED or unprocessed
+
+    - id: CLOSE
+      owner: ORCHESTRATOR
+      actions:
+        - persist final results and evidence
+        - close all required runs
+        - mark BL-002 VERIFIED then CLOSED
+
+  parallelism:
+    max_parallel_work_units: 10
+    rule: only independent test-file/component Work Units may run concurrently
+
+  completion_conditions:
+    - unit-test inventory complete
+    - all mandatory gaps processed
+    - required unit-test suite passes
+    - required outputs exist
+    - all required runs closed
