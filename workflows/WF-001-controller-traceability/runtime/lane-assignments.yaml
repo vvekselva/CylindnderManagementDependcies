@@ -1,0 +1,15 @@
+lanes:
+  LANE-01: {state: IDLE}
+  LANE-02: {state: IDLE}
+  LANE-03: {state: IDLE}
+  LANE-04: {state: IDLE}
+  LANE-05: {state: IDLE}
+  LANE-06: {state: IDLE}
+  LANE-07: {state: IDLE}
+  LANE-08: {state: IDLE}
+  LANE-09: {state: IDLE}
+  LANE-10: {state: IDLE}
+
+note: >-
+  Initial baseline source checking is executed by the independent Generic Worker from WI-0004.
+  No orchestration lane is used until an orchestration Job itself needs lane execution.
