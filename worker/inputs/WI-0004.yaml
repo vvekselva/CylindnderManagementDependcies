@@ -1,6 +1,6 @@
 worker_input:
   id: WI-0004
-  version: 1
+  version: 2
   state: READY
 
   requested_by:
@@ -12,9 +12,9 @@ worker_input:
     name: Complete Source Repository Check for Initial Traceability Baseline
     purpose: >-
       Perform the first complete read-only analysis of the frozen CylinderManagement
-      source repository and produce one closed result package that contains all source
-      facts required to build the initial Controller Traceability Matrix. The
-      Traceability Matrix Job must not start from partial batches.
+      repository and produce one canonical machine-readable Source Check Output. That
+      output is the formal input to the Orchestrator for JOB-003 Complete Traceability
+      Matrix. JOB-003 must not rebuild source facts by reading the source repository.
     task_type: FULL_REPOSITORY_INSPECTION
 
   target:
@@ -47,7 +47,9 @@ worker_input:
     - name: prior_partial_results
       value: worker/results/WI-0001.md, worker/results/WI-0002.md
     - name: prior_partial_result_rule
-      value: MAY_BE_USED_AS EVIDENCE BUT MUST_BE_REVALIDATED_WITHIN_THIS_COMPLETE_RUN
+      value: MAY_BE_USED_AS_EVIDENCE_BUT_MUST_BE_REVALIDATED_WITHIN_THIS_COMPLETE_RUN
+    - name: output_contract
+      value: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
 
   actions:
     - id: STEP-001
@@ -79,8 +81,12 @@ worker_input:
       expected_result: No unresolved dependency is hidden or guessed.
 
     - id: STEP-008
-      instruction: Produce one complete Worker result package containing the repository inventory, exposed-component inventory, endpoint inventory, endpoint call paths, final dependencies, unresolved list and evidence references.
-      expected_result: One closed result is sufficient for the orchestration Traceability Matrix Job to start without executing another source-inspection Worker Input for the initial baseline.
+      instruction: Populate the canonical YAML Source Check Output exactly according to the output contract.
+      expected_result: worker/results/WI-0004.yaml contains the complete structured source-check result required by the Orchestrator.
+
+    - id: STEP-009
+      instruction: Validate that all required output-contract sections and completion counts are present before close().
+      expected_result: The canonical output is structurally complete and can be consumed without re-reading the source repository.
 
   evidence:
     required: true
@@ -94,10 +100,12 @@ worker_input:
       - plain-English unresolved record for every unproved final dependency
 
   expected_output:
-    result_path: worker/results/WI-0004.md
+    result_path: worker/results/WI-0004.yaml
+    result_format: YAML
+    result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
     run_path: worker/runs/WI-0004.md
-    format: MARKDOWN
-    orchestration_artifact: traceability/source-repository-check.md
+    run_format: MARKDOWN
+    consumer: WF-001-controller-traceability/JOB-003
 
   completion_check:
     - The complete frozen repository tree has been checked for the defined initial traceability scope.
@@ -105,6 +113,9 @@ worker_input:
     - Every exposed endpoint is inventoried.
     - Every exposed endpoint has a trace result: COMPLETE or UNRESOLVED/BLOCKED with a clear stopping point.
     - Every COMPLETE trace is backed by source evidence to its final dependency.
+    - The canonical YAML result conforms to the Source Check Output contract.
+    - coverage.endpoint_trace_result_count equals coverage.exposed_endpoint_count.
+    - coverage.coverage_percent equals 100.
     - The Worker run is CLOSED.
     - The result is not PARTIAL.
 
