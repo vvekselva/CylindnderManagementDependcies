@@ -128,22 +128,7 @@ Run: `RUN-WI0004-20260822-015`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-### Meaningful progress
-Three previously unresolved endpoint paths are now source-proved COMPLETE:
-
-- `GET /search/cylinder/{searchText}` -> `CylinderSearchServiceWithOwnershipModel` -> `CylinderGlobalSearchViewJpaDao.searchBySerial(...)` -> `public.vw_cylinder_global_search`.
-- `POST /search/cylinder/ownership/by-state` -> `CylinderCurrentOwnershipByStateSearchService` -> `CylinderGlobalSearchViewJpaDao.searchByStateNames(...)` -> `public.vw_cylinder_global_search`.
-- `POST /search/cylinder/by-serial-and-state` -> `CylinderCurrentOwnershipBySerialAndStateSearchService` -> `CylinderGlobalSearchViewJpaDao.searchBySerialAndStateNames(...)` -> `public.vw_cylinder_global_search`; its state validation also reaches `CylinderStateJpaDao.findByCylinderStateIn(...)` -> `public.tbl_cylinder_states`.
-
-### Current checkpoint
-- Endpoint inventory: 134.
-- Explicitly examined: 10.
-- COMPLETE: 3.
-- UNRESOLVED: 7.
-- Not yet examined: 124.
-
-### Gate effect
-`QG-TRC-002` remains IN_PROGRESS because Source Check coverage is not complete. `QG-TRC-004` remains IN_PROGRESS because the canonical Endpoint Inventory has not yet been generated and validated from a completed Source Check result. `QG-TRC-009` remains IN_PROGRESS with positive no-guessing evidence. `worker/results/WI-0004.yaml` remains uncreated/unaccepted and dependent work units remain locked.
+Three previously unresolved Cylinder endpoint paths were proved COMPLETE through concrete service/repository/entity evidence. Checkpoint: 10 examined, 3 COMPLETE, 7 UNRESOLVED, 124 not yet examined.
 
 ---
 
@@ -151,7 +136,7 @@ Three previously unresolved endpoint paths are now source-proved COMPLETE:
 Time: `2026-08-22T22:02:59+05:30`
 Status: `CLOSED`
 
-The Orchestrator detected overlapping enabled Cylinder coordinator schedules that could independently inspect or mutate the same control-state artifacts. Two redundant coordinator schedules were disabled, leaving one primary Cylinder Orchestrator coordinator responsible for future execution. No BL-001 quality gate was advanced by this governance action, no dependent Work Unit was started, and the authoritative trace checkpoint remains 10 examined / 3 COMPLETE / 7 UNRESOLVED / 124 not yet examined.
+Two redundant Cylinder coordinator schedules were disabled, leaving one primary Cylinder Orchestrator coordinator. No BL-001 quality gate was advanced by this governance action and no dependent Work Unit was started.
 
 ---
 
@@ -160,14 +145,20 @@ Run: `RUN-WI0004-20260822-016`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-The run-selection switchboard was re-read and only BL-001 was executed. QG-DEP-001 remained PASS and the approved BL-001 Quality Gate remained enforced.
+Three previously unresolved generic search endpoint paths were source-proved COMPLETE: customer -> `public.tbl_customer`, product -> `public.tbl_product`, and address type -> `public.tbl_address_type`. Checkpoint: 10 / 134 examined; 6 COMPLETE; 4 UNRESOLVED; 124 not yet examined. Matrix construction remained locked and BL-001 remained PARTIAL.
 
-Three previously unresolved generic search endpoint paths are now source-proved COMPLETE:
+---
 
-- `GET /search/customer/{searchText}` -> `CustomerSearchService` -> `CustomerJpaDao.findByCustomerNameContainingIgnoreCase(...)` -> `CustomerDo` -> `public.tbl_customer`.
-- `GET /search/product/{searchText}` -> `ProductSearchService` -> `ProductJpaDao.findByProductNameContainingIgnoreCase(...)` -> `ProductDo` -> `public.tbl_product`.
-- `GET /search/addresstype/{searchText}` -> `AddressTypeSearchService` -> `AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase(...)` -> `AddressTypeDo` -> `public.tbl_address_type`.
+## EVENT EVT-0025 - WI-0004 Seventeenth Attempt Resolved All Examined Cylinder Paths
+Run: `RUN-WI0004-20260822-017`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-The four remaining examined Cylinder endpoints were deliberately left UNRESOLVED because their DAO/query-to-physical-object evidence is not yet fully proved. No dependency was inferred from comments alone.
+The Orchestrator continued only BL-001 / WU-BL001-001 and proved the four remaining examined Cylinder endpoint paths through concrete Spring services, DAO/query evidence and physical persistence objects:
 
-Checkpoint: 10 / 134 endpoints examined; 6 COMPLETE; 4 UNRESOLVED; 124 not yet examined. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, Matrix construction remains locked, and BL-001 remains PARTIAL and open.
+- `POST /search/cylinder/by-state` -> `AvailableYardCylinderByStateSearchService` -> `YardInventoryLineJpaDao` query branches, with mapped objects including `public.tbl_yard_inventory_line`, `public.tbl_cylinder`, `public.tbl_product`, `public.tbl_cylinder_states` and `public.tbl_cylinder_identifier`.
+- `POST /search/cylinder/on-vehicle` -> `CylindersOnVehicleSearchServiceWithOwnershipModel` -> `CylinderLogisticsExecutionLineJpaDao.findActiveVehicleContents(...)`, including `public.tbl_cylinder_logistics_execution_line` and joined logistics/load/cylinder/state/identifier persistence objects.
+- `POST /search/cylinder/by-customer` -> `CylindersByCustomerSearchServiceWithOwnershipModel` -> native `CustomerHeldCylinderSearchJpaDao` query against `public.vw_cylinder_party_custody_with_identifiers`, `public.tbl_cylinder`, and `public.tbl_product`.
+- `POST /search/cylinder/by-supplier` -> `CylindersBySupplierSearchServiceWithOwnershipModel` -> native `SupplierHeldCylinderSearchJpaDao` query against `public.vw_cylinder_party_custody_with_identifiers`, `public.tbl_cylinder`, and `public.tbl_product`.
+
+Checkpoint: 10 / 134 endpoints examined; **10 COMPLETE; 0 UNRESOLVED; 124 NOT YET EXAMINED**. The stale unresolved-traceability artifact was reconciled to this checkpoint. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS because the remaining 124 endpoints have not yet been traced and the canonical Source Check output is not complete. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, Matrix construction remains locked, and BL-001 remains PARTIAL and open.
