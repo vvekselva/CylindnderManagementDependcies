@@ -1,0 +1,78 @@
+completion_path:
+  id: CP-BL-006-v1
+  backlog_item: BL-006
+  type: REQUIREMENTS
+  name: Requirements Traceability and Gap Analysis Completion Path
+
+  purpose: >-
+    Build a requirements inventory, map each requirement to implementation/evidence,
+    identify gaps, and preserve unresolved requirements without silently inventing
+    requirement content that is not present in approved sources.
+
+  phases:
+    - id: ANALYZE
+      owner: ORCHESTRATOR
+      actions:
+        - identify approved requirement sources available to the project
+        - establish the source-code baseline used for implementation evidence
+        - extract/normalize requirement statements without changing their meaning
+        - classify each requirement as IMPLEMENTED, PARTIAL, NOT_IMPLEMENTED, NOT_APPLICABLE or UNRESOLVED
+        - identify source files/components/tests/artifacts that can support each classification
+      outputs:
+        - backlog/runtime/BL-006/analysis.yaml
+        - requirements/requirements-inventory.md
+      gate: every approved requirement source is processed or an explicit missing-source blocker is recorded
+
+    - id: PLAN
+      owner: ORCHESTRATOR
+      actions:
+        - create Work Units for requirement-to-implementation verification where evidence is incomplete
+        - create Work Units for implementation-gap investigation when required
+        - define evidence and output requirements for each Work Unit
+        - generate Worker Input files
+      outputs:
+        - backlog/runtime/BL-006/execution-plan.yaml
+        - worker/inputs/WI-*.yaml
+      gate: every unresolved mandatory requirement has a verification Work Unit or explicit blocker
+
+    - id: EXECUTE
+      owner: ORCHESTRATOR
+      actions:
+        - schedule requirement-verification Worker Inputs
+        - consume Worker results/evidence
+        - create follow-up Work Units when accepted evidence proves deeper verification is required
+        - do not implement a missing requirement unless a separate approved implementation Backlog Item/path authorizes it
+      outputs:
+        - backlog/runtime/BL-006/work-unit-status.yaml
+        - worker/results/WI-*.yaml
+
+    - id: VALIDATE
+      owner: ORCHESTRATOR
+      checks:
+        - every approved requirement has a final mapping state
+        - IMPLEMENTED/PARTIAL states reference evidence
+        - NOT_IMPLEMENTED gaps are visible
+        - UNRESOLVED items explain what source/evidence is missing
+        - requirement wording has not been silently rewritten into a different requirement
+      outputs:
+        - requirements/requirements-traceability.md
+        - requirements/requirements-gaps.md
+      gate: 100 percent of approved requirements have a traceability state
+
+    - id: CLOSE
+      owner: ORCHESTRATOR
+      actions:
+        - persist final requirement evidence/gaps
+        - close required runs
+        - mark BL-006 VERIFIED then CLOSED
+
+  parallelism:
+    max_parallel_work_units: 10
+    rule: independent requirements may be verified concurrently when they do not contend for shared files
+
+  completion_conditions:
+    - approved requirement sources processed
+    - every requirement has a mapping state
+    - evidence/gaps are explicit
+    - required outputs exist
+    - all required runs closed
