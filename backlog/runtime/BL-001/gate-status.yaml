@@ -18,10 +18,10 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - WI-0004 attempts 1 through 17 are CLOSED/PARTIAL
-        - 10 of 134 endpoints have been explicitly examined for final dependencies
-        - all 10 examined endpoints now have complete controller-to-final-dependency evidence
-        - 124 endpoints remain not yet examined
+        - WI-0004 attempts 1 through 18 are CLOSED/PARTIAL
+        - 12 of 134 endpoints have been explicitly examined for final dependencies
+        - all 12 examined endpoints have complete controller-to-final-dependency evidence
+        - 122 endpoints remain not yet examined
         - canonical completed result is not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
@@ -46,9 +46,9 @@ quality_gate_status:
       name: No Guessing And Unresolved Quality
       state: IN_PROGRESS
       evidence:
-        - attempts 13 through 17 preserve unresolved paths at the last source-proved component rather than guessing
-        - attempt 17 promoted the four remaining examined Cylinder endpoints only after concrete service, DAO/query and physical-object evidence was proved
-        - no examined endpoint remains unresolved; 124 endpoints remain not yet examined
+        - attempts 13 through 18 preserve unresolved paths at the last source-proved component rather than guessing
+        - attempt 18 promoted both RestfulDriverServices endpoints only after concrete service, DAO and entity-table evidence was proved
+        - no examined endpoint remains unresolved; 122 endpoints remain not yet examined
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
@@ -62,14 +62,16 @@ quality_gate_status:
 
   endpoint_trace_checkpoint:
     total_endpoints: 134
-    explicitly_examined_for_final_dependency: 10
-    complete: 10
+    explicitly_examined_for_final_dependency: 12
+    complete: 12
     unresolved: 0
-    not_yet_examined_for_final_dependency: 124
+    not_yet_examined_for_final_dependency: 122
 
   close_allowed: false
   reason: >-
-    Attempt 17 resolved all four previously unresolved examined Cylinder paths to source-proved
-    persistence objects, so all 10 examined endpoint traces are COMPLETE. QG-TRC-002 remains IN_PROGRESS
-    because 124 endpoints remain unexamined and worker/results/WI-0004.yaml is not yet a completed,
-    contract-valid canonical result. Matrix construction and dependent work units remain locked.
+    Attempt 18 proved both RestfulDriverServices endpoint paths through DriverJpaDao to the explicitly
+    mapped public.tbl_driver entity table, bringing the checkpoint to 12 COMPLETE of 134 endpoints.
+    QG-TRC-002 remains IN_PROGRESS because 122 endpoints remain unexamined and worker/results/WI-0004.yaml
+    is not yet a completed, contract-valid canonical result. QG-TRC-004 remains IN_PROGRESS because the
+    canonical Endpoint Inventory artifact has not yet been generated/validated. Matrix construction and
+    dependent work units remain locked.
