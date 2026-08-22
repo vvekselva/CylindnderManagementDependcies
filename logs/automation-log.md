@@ -152,3 +152,22 @@ Time: `2026-08-22T22:02:59+05:30`
 Status: `CLOSED`
 
 The Orchestrator detected overlapping enabled Cylinder coordinator schedules that could independently inspect or mutate the same control-state artifacts. Two redundant coordinator schedules were disabled, leaving one primary Cylinder Orchestrator coordinator responsible for future execution. No BL-001 quality gate was advanced by this governance action, no dependent Work Unit was started, and the authoritative trace checkpoint remains 10 examined / 3 COMPLETE / 7 UNRESOLVED / 124 not yet examined.
+
+---
+
+## EVENT EVT-0024 - WI-0004 Sixteenth Attempt Resolved Generic Search Dependencies
+Run: `RUN-WI0004-20260822-016`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The run-selection switchboard was re-read and only BL-001 was executed. QG-DEP-001 remained PASS and the approved BL-001 Quality Gate remained enforced.
+
+Three previously unresolved generic search endpoint paths are now source-proved COMPLETE:
+
+- `GET /search/customer/{searchText}` -> `CustomerSearchService` -> `CustomerJpaDao.findByCustomerNameContainingIgnoreCase(...)` -> `CustomerDo` -> `public.tbl_customer`.
+- `GET /search/product/{searchText}` -> `ProductSearchService` -> `ProductJpaDao.findByProductNameContainingIgnoreCase(...)` -> `ProductDo` -> `public.tbl_product`.
+- `GET /search/addresstype/{searchText}` -> `AddressTypeSearchService` -> `AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase(...)` -> `AddressTypeDo` -> `public.tbl_address_type`.
+
+The four remaining examined Cylinder endpoints were deliberately left UNRESOLVED because their DAO/query-to-physical-object evidence is not yet fully proved. No dependency was inferred from comments alone.
+
+Checkpoint: 10 / 134 endpoints examined; 6 COMPLETE; 4 UNRESOLVED; 124 not yet examined. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, Matrix construction remains locked, and BL-001 remains PARTIAL and open.
