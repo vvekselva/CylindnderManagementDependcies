@@ -1,0 +1,32 @@
+gates:
+  GATE-TRC-001:
+    state: PASS
+    evidence:
+      - source baseline 3ae6e61442132d94a307275b08dd65fcef228d89
+  GATE-TRC-002:
+    state: WAITING
+    requirement: WI-0004 COMPLETED and CLOSED
+  GATE-TRC-003:
+    state: WAITING
+    requirement: complete exposed Controller set in WI-0004 result
+  GATE-TRC-004:
+    state: WAITING
+    requirement: complete endpoint set in WI-0004 result
+  GATE-TRC-005:
+    state: WAITING
+    requirement: every endpoint has trace result in WI-0004 result
+  GATE-TRC-006:
+    state: WAITING
+    requirement: every COMPLETE trace has source evidence
+  GATE-TRC-007:
+    state: WAITING
+    requirement: every unresolved trace has a clear stopping point
+  GATE-TRC-008:
+    state: WAITING
+    requirement: Traceability Matrix coverage equals 100 percent
+  GATE-TRC-009:
+    state: WAITING
+    requirement: initial source-artifact baseline registered
+  GATE-TRC-010:
+    state: WAITING
+    requirement: Worker/orchestration runs closed and story current
