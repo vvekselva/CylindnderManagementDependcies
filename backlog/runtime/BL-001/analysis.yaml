@@ -12,61 +12,109 @@ analysis:
     web_rest_candidates: 14
     misc_cache_candidates: 1
 
+  correction_applied:
+    reason: >-
+      Attempt 11 listed RestfulCustomerServices as newly classified even though it had already
+      been source-proved earlier. The cumulative checkpoint has been corrected to count each
+      component and endpoint only once.
+    corrected_attempt_11_checkpoint:
+      proved_exposed_components: 49
+      proved_endpoints: 118
+      proved_not_exposed_components: 4
+      candidates_remaining_to_classify: 9
+
   current_checkpoint:
-    proved_exposed_components: 50
-    proved_endpoints: 119
-    proved_not_exposed_components: 4
-    candidates_remaining_to_classify: 8
+    proved_exposed_components: 57
+    proved_endpoints: 134
+    proved_not_exposed_components: 5
+    candidates_remaining_to_classify: 0
+    total_candidates_classified: 62
     misc_web_controller_classified: 12
-    web_rest_classified: 7
-    misc_cache_classified: 0
+    web_rest_classified: 14
+    misc_cache_classified: 1
+    source_candidate_classification_complete: true
 
   latest_attempt:
-    number: 11
-    run_id: RUN-WI0004-20260822-011
+    number: 12
+    run_id: RUN-WI0004-20260822-012
     state: CLOSED
     result: PARTIAL
-    candidates_inspected: 5
-    exposed: 5
-    not_exposed: 0
-    added_http_method_path_combinations: 5
+    candidates_inspected: 9
+    exposed: 8
+    not_exposed: 1
+    added_http_method_path_combinations: 16
     evidence: worker/runs/WI-0004.md
     classifications:
-      - component: RestfulAddressTypeServices
+      - component: RestfulCylinderServices
         state: EXPOSED
-        endpoint: GET /search/addresstype/{searchText}
-      - component: RestfulChallanTypeServices
+        endpoints:
+          - GET /search/cylinder/{searchText}
+          - POST /search/cylinder/ownership/by-state
+          - POST /search/cylinder/by-state
+          - POST /search/cylinder/by-serial-and-state
+          - POST /search/cylinder/on-vehicle
+          - POST /search/cylinder/by-customer
+          - POST /search/cylinder/by-supplier
+      - component: RestfulDriverServices
         state: EXPOSED
-        endpoint: GET /search/challantype/{searchText}
-      - component: RestfulCityServices
+        endpoints:
+          - GET /search/driver/{searchText}
+          - GET /find/Driver-by-Id/{driverId}
+      - component: RestfulProductCategoryServices
         state: EXPOSED
-        endpoint: GET /search/city/{searchText}
-      - component: RestfulCountryServices
+        endpoints:
+          - GET /search/product-category/{searchText}
+      - component: RestfulProductServices
         state: EXPOSED
-        endpoint: GET /search/country/{searchText}
-      - component: RestfulCustomerServices
+        endpoints:
+          - GET /search/product/{searchText}
+      - component: RestfulProductUomServices
         state: EXPOSED
-        endpoint: GET /search/customer/{searchText}
+        endpoints:
+          - GET /search/product-uom/{searchText}
+      - component: RestfulStateServices
+        state: EXPOSED
+        endpoints:
+          - GET /search/state/{searchText}
+      - component: RestfulSupplierSearchService
+        state: EXPOSED
+        endpoints:
+          - GET /search/supplier/{searchText}
+      - component: RestfulVehicleServices
+        state: EXPOSED
+        endpoints:
+          - GET /search/vehicle/{searchText}
+          - GET /find/Vehicle-by-Id/{vehicleId}
+      - component: LookupDataCache
+        state: NOT_EXPOSED
+        reason: >-
+          It is a Spring @Component cache with no Controller/RestController annotation and no
+          request-mapping annotations.
 
   quality_gate_effect:
     QG-DEP-001: PASS
     QG-TRC-001: PASS
     QG-TRC-002: IN_PROGRESS
-    QG-TRC-003: IN_PROGRESS
+    QG-TRC-003: PASS
     QG-TRC-004: IN_PROGRESS
     QG-TRC-005: WAITING
 
   canonical_result_accepted: false
   matrix_construction_unlocked: false
 
+  proved_now:
+    - All 62 production component candidates have been classified exactly once as EXPOSED or NOT_EXPOSED.
+    - The corrected unique classification is 57 EXPOSED and 5 NOT_EXPOSED.
+    - 134 unique caller-visible HTTP method/path combinations are source-proved at the classification checkpoint.
+
   not_yet_proved:
-    - Complete classification of the remaining 8 Java component candidates.
-    - Complete caller-visible endpoint inventory for every exposed component.
-    - Complete endpoint call paths to final dependencies.
+    - Complete endpoint call paths from every exposed handler to final dependencies.
     - Complete physical database-object evidence for database-backed paths.
-    - Reach contract-valid 100 percent Source Check Output coverage.
+    - Complete unresolved-path records for paths whose final dependency cannot be proved.
+    - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Continue WU-BL001-001 against the exact frozen commit through the remaining 8 candidates in web.rest
-    and misc.cache. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED,
-    CLOSED, contract-valid, and reaches 100 percent endpoint trace-result coverage.
+    Continue WU-BL001-001 against the same frozen commit, now focusing on endpoint-to-final-dependency
+    tracing for the complete 134-endpoint inventory. Do not unlock matrix construction until
+    worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates,
+    and endpoint trace-result coverage equals 100 percent.
