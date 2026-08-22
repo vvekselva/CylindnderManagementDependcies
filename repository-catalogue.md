@@ -32,7 +32,7 @@ The repository controls automation work executed against `vvekselva/CylinderMana
 | `usecases/Readme.md` | Use Cases | Use-case documentation entry point. |
 | `worker/README.md` | Worker | Explains Worker input/run/result workspace. |
 | `worker/worker-input-template.yaml` | Worker | Standard task input format for the Generic Worker. |
-| `workflows/WF-001-controller-traceability/workflow.yaml` | Workflow | Controller/endpoint traceability workflow using Worker Input files. |
+| `workflows/WF-001-controller-traceability/workflow.yaml` | Workflow | Initial baseline sequence: complete repository check first, Traceability Matrix second. |
 | `workflows/WF-002-source-artifact-sync/workflow.yaml` | Workflow | Ongoing source-to-artifact synchronization workflow using Worker Input files. |
 
 ## Catalogue Quality Gate
@@ -76,6 +76,8 @@ workflows/WF-002-source-artifact-sync/workflow.yaml
 worker/inputs/WI-*.yaml
 worker/runs/WI-*.md
 worker/results/WI-*.md
+workflows/WF-001-controller-traceability/runtime/*.yaml
+traceability/source-repository-check.md
 traceability/controllers/*.md
 traceability/controller-inventory.md
 traceability/endpoint-inventory.md
