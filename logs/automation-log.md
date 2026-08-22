@@ -234,23 +234,67 @@ It must not re-read the CylinderManagement source repository to recreate source 
 
 The Orchestrator may organize the accepted facts into stable Controller IDs, Endpoint IDs, inventories, matrix rows and human-readable reports, but it must preserve the source conclusions and unresolved states returned by the Worker.
 
-### Runtime enforcement
+### Result
 
-The handoff is tracked in:
+The producer/consumer boundary is explicit and machine-readable. No Source Check completion is claimed yet.
 
-- `runtime/orchestrator-input.yaml`;
-- `runtime/job-status.yaml`;
-- `runtime/queue.yaml`;
-- `runtime/worker-input-register.yaml`;
-- `runtime/gate-status.yaml`;
-- `evidence/evidence-register.yaml`.
+Log state: `CLOSED`
 
-`JOB-003` remains WAITING until the canonical YAML result is `COMPLETED`, the Worker run is `CLOSED`, the result contract validates, the source baseline matches, and coverage is 100 percent.
+---
+
+## EVENT EVT-0007 - BL-001 Source Analysis Scope Expanded To Exact Candidate Count
+
+Time: `2026-08-22T09:00:00+05:30`
+Backlog Item: `BL-001 Controller Traceability`
+Work Unit: `WU-BL001-001 Complete Source Repository Check`
+Actor: `ORCHESTRATOR`
+Status: `IN PROGRESS`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+### What was checked
+
+The Orchestrator re-read the Backlog run switchboard, the common dependency gate, the approved BL-001 Quality Gate and the Traceability Completion Path before continuing source analysis.
+
+Only BL-001 is enabled. It has no Backlog dependencies, so `QG-DEP-001` remains PASS.
+
+The frozen Spring Boot source tree was then inspected using the exact approved source commit.
+
+### What was proved
+
+The application's explicit component-scan boundary contains five package trees. Across those package trees, the frozen `cylindermanagement.web` module contains **62 Java component candidates** requiring exposure classification:
+
+- 5 files in the top-level `web.controller` package;
+- 30 files in the explicitly scanned `web.controller.test` production package;
+- 12 files in `misc.web.controller`;
+- 14 files in `web.rest`;
+- 1 file in `misc.cache`.
+
+This is the classification scope, not an assumption that all 62 are HTTP controllers.
+
+Three components and five endpoints are now independently source-proved as an interim checkpoint:
+
+- `CustomerSpotCylinderCheckController`: GET `/customer-spot-cylinder-check/fetch`, POST `/customer-spot-cylinder-check/submit`;
+- `UC01RegisterCustomerController`: GET `/registerCustomer`, POST `/registerCustomer`;
+- `RestfulCustomerServices`: GET `/search/customer/{searchText}`.
+
+The immediate mediator/service/cache handoffs for these handlers are recorded in `backlog/runtime/BL-001/analysis.yaml` where proved.
+
+### What remains incomplete
+
+Fifty-nine candidate classes still require exposure classification. The final endpoint total is therefore not yet known, and complete call paths to physical database/external dependencies have not yet been proved.
+
+`worker/results/WI-0004.yaml` has not been accepted and matrix construction remains locked.
+
+### Quality Gate effect
+
+- `QG-TRC-001`: PASS
+- `QG-TRC-002`: IN PROGRESS
+- `QG-TRC-003`: IN PROGRESS
+- `QG-TRC-004`: IN PROGRESS
+- `QG-TRC-005` and all matrix/closure gates: WAITING
 
 ### Result
 
-The producer/consumer boundary is now explicit and machine-readable.
+Useful source-analysis progress was recorded without guessing and without claiming completion.
 
-Current execution remains at `JOB-002 READY / WI-0004 READY`; no Source Check completion is being claimed yet.
-
-Log state: `CLOSED`
+Next: continue classifying the remaining source candidates and tracing exposed endpoints until the canonical Source Check Output can satisfy its 100-percent coverage contract.
