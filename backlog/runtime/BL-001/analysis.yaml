@@ -33,79 +33,74 @@ analysis:
         misc_cache_java_files: 1
         total_java_component_candidates: 62
 
-    exposed_components_previously_proved:
-      count: 11
-      endpoint_count: 17
-      note: >-
-        These are the source-proved results from WI-0004 attempts 1 and 2 and are preserved unchanged.
-
-    exposed_controller_add_stop:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java
-      endpoints:
-        - {http_method: GET, path: /add-stop, handler: showStopPage}
-        - {http_method: POST, path: /add-stop/challan-page-photo/upload, handler: uploadChallanPagePhoto}
-        - {http_method: POST, path: /add-stop/challan-page-photo/upload-ajax, handler: uploadChallanPagePhotoAjax}
-        - {http_method: POST, path: /add-stop/challan-page-photo/delete-ajax, handler: deleteChallanPagePhotoAjax}
-      immediate_handoffs:
-        - TripReturnWorkflowService
-        - ICylinderManagementApplicationService<ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto>
-        - ICylinderManagementApplicationService<ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto>
-        - ChallanPagePhotoUploadService
-
-    exposed_controller_customer_address_location:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java
-      endpoints:
-        - {http_method: GET, path: /customer-address-location/missing, handler: showMissingLocations}
-        - {http_method: GET, path: /customer-address-location/planning-map, handler: showPlanningMap}
-        - {http_method: GET, path: /customer-address-location/points.geojson, handler: customerAddressPointsGeoJson}
-        - {http_method: GET, path: /yard-location/upload, handler: showYardLocationUpload}
-        - {http_method: POST, path: /yard-location/upload, handler: saveYardLocation}
-        - {http_method: GET, path: /yard-location/points.geojson, handler: yardLocationsGeoJson}
-        - {http_method: GET, path: /customer-address-location/upload, handler: showUpload}
-        - {http_method: POST, path: /customer-address-location/upload, handler: saveLocation}
-        - {http_method: GET, path: /customer-address-location/import-whatsapp-export, handler: showWhatsappImport}
-        - {http_method: POST, path: /customer-address-location/import-whatsapp-export, handler: importWhatsappText}
-      immediate_handoff: CustomerAddressLocationOfflineMapService
-
-    exposed_controller_customer_consumption_dashboard:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerConsumptionDashboardController.java
-      class_mapping: /customer-consumption
-      endpoints:
-        - {http_method: GET, path: /customer-consumption, handler: dashboard}
-        - {http_method: GET, path: /customer-consumption/, handler: dashboard}
-        - {http_method: GET, path: /customer-consumption/dashboard, handler: dashboard}
-        - {http_method: GET, path: /customer-consumption/api/dashboard, handler: dashboardData}
-      immediate_handoff: CustomerConsumptionDashboardService
-
-    exposed_controller_customer_demand:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerDemandController.java
-      endpoints:
-        - {http_method: GET, path: /customer-demands, handler: showDashboard}
-        - {http_method: POST, path: /customer-demands, handler: create}
-        - {http_method: POST, path: /customer-demands/{requestId}/mark-delivered, handler: markDelivered}
-      immediate_handoffs:
-        - CustomerDemandService
-        - CustomerJpaDao
-        - CustomerAddressJpaDao
-        - ProductJpaDao
-
-    exposed_controller_customer_stop_selection:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerStopSelectionController.java
-      endpoints:
-        - {http_method: POST, path: /stop, handler: processStopIngestion}
-      immediate_handoffs:
-        - ICylinderManagementApplicationService<VehicleTripStopIngestionRequestDto, VehicleTripStopIngestionResponseDto>
-        - LookupDataCache
-
-    current_proved_exposure_checkpoint:
+    prior_checkpoint:
       proved_exposed_components: 16
       proved_endpoints: 39
-      candidate_components_remaining_to_classify: 46
+      candidates_remaining_to_classify: 46
+      source: WI-0004 attempts 1 through 3
+
+    attempt_4_classification:
+      candidates_inspected: 5
+      exposed: 3
+      not_exposed: 2
+
+      cylinder_dashboard_controller:
+        state: NOT_EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CylinderDashboardController.java
+        evidence: '@Controller is commented out as //@Controller; mappings therefore do not create a Spring MVC handler component.'
+
+      cylinder_fleet_summary_dashboard_controller:
+        state: NOT_EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CylinderFleetSummaryDashboardController.java
+        evidence: '@Controller is commented out as //@Controller; the class is not an active Spring MVC controller.'
+
+      delivery_planning_api_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/DeliveryPlanningApiController.java
+        class_annotation: '@RestController'
+        endpoints:
+          - {http_method: GET, path: /delivery-planning/demand-points.geojson, handler: demandPointsGeoJson}
+          - {http_method: GET, path: /delivery-planning/demand-bubbles.geojson, handler: demandBubblesGeoJson}
+          - {http_method: GET, path: /delivery-planning/customer-density-bubbles.geojson, handler: customerDensityBubblesGeoJson}
+          - {http_method: GET, path: /delivery-planning/stops, handler: listStops}
+          - {http_method: GET, path: /delivery-planning/stops/{stopId}/nearby-customers, handler: nearbyCustomers}
+          - {http_method: GET, path: /delivery-planning/customer-coverage.geojson, handler: customerCoverageGeoJson}
+          - {http_method: GET, path: /delivery-planning/stops.geojson, handler: planningStopsGeoJson}
+        immediate_handoffs:
+          - DeliveryPlanningMapService
+          - DeliveryPlanningStopService
+
+      delivery_planning_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/DeliveryPlanningController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /delivery-planning, handler: showDeliveryPlanningDashboard}
+          - {http_method: GET, path: /delivery-planning/dashboard, handler: showDeliveryPlanningDashboard}
+          - {http_method: GET, path: /delivery-planning/customer-density-bubble-map, handler: showCustomerDensityBubbleMap}
+          - {http_method: GET, path: /delivery-planning/weekly-forecast, handler: showWeeklyForecastReview}
+        immediate_handoff:
+          - DeliveryPlanningDemandJpaDao
+
+      delivery_planning_stop_management_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/DeliveryPlanningStopManagementController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /delivery-planning/stops/manage, handler: showStopManagementPage}
+          - {http_method: GET, path: /delivery-planning/stops/manage/, handler: showStopManagementPage}
+          - {http_method: POST, path: /delivery-planning/stops/manage/save, handler: saveStop}
+          - {http_method: POST, path: /delivery-planning/stops/manage/save-selected, handler: saveSelectedPoints}
+          - {http_method: POST, path: /delivery-planning/stops/manage/remove, handler: removeStop}
+        immediate_handoffs:
+          - DeliveryPlanningStopService
+          - DeliveryPlanningStopMediator
+          - MessageSource
+
+    current_proved_exposure_checkpoint:
+      proved_exposed_components: 19
+      proved_endpoints: 55
+      candidate_components_remaining_to_classify: 41
       root_web_controller_package:
         candidates: 5
         classified: 5
@@ -113,14 +108,15 @@ analysis:
         remaining: 0
       web_controller_test_package:
         candidates: 30
-        classified_to_date: 10
-        exposed_to_date: 10
-        remaining_to_classify: 20
+        classified_to_date: 15
+        exposed_to_date: 13
+        not_exposed_to_date: 2
+        remaining_to_classify: 15
       note: >-
         These are progress counters only. They are not the final exposed-component or endpoint totals and cannot be used to claim Traceability coverage until all 62 candidates have been classified.
 
   not_yet_proved:
-    - Complete classification of the remaining 46 Java component candidates as EXPOSED or NOT_EXPOSED.
+    - Complete classification of the remaining 41 Java component candidates as EXPOSED or NOT_EXPOSED.
     - Complete caller-visible endpoint inventory for every exposed component.
     - Complete endpoint call paths to final dependencies.
     - Complete physical database-object evidence for database-backed paths.
@@ -136,7 +132,7 @@ analysis:
 
   worker_attempt:
     input: worker/inputs/WI-0004.yaml
-    latest_run: RUN-WI0004-20260822-003
+    latest_run: RUN-WI0004-20260822-004
     latest_attempt_result: PARTIAL
     run_state: CLOSED
     canonical_result_accepted: false
@@ -146,7 +142,8 @@ analysis:
     - Its approved Traceability Quality Gate is present, so source analysis remains eligible to continue.
     - The canonical Source Check Output remains worker/results/WI-0004.yaml and has not yet been accepted.
     - Matrix construction remains locked until the complete Source Check contract and 100 percent endpoint trace-result coverage pass.
-    - Sixteen exposed components and thirty-nine HTTP method/path combinations are source-proved at the current interim checkpoint.
+    - Nineteen exposed components and fifty-five HTTP method/path combinations are source-proved at the current interim checkpoint.
+    - Two inspected classes were correctly classified NOT_EXPOSED because their @Controller annotations are commented out.
 
   required_work_units:
     - WU-BL001-001
@@ -155,4 +152,4 @@ analysis:
     - WU-BL001-004
 
   next_step: >-
-    Continue WU-BL001-001 against the exact frozen commit until every one of the remaining 46 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage equals 100 percent.
+    Continue WU-BL001-001 against the exact frozen commit until every one of the remaining 41 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage equals 100 percent.
