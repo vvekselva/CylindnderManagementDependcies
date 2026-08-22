@@ -1,0 +1,85 @@
+completion_path:
+  id: CP-BL-001-v1
+  backlog_item: BL-001
+  type: TRACEABILITY
+  name: Controller Traceability Completion Path
+
+  purpose: >-
+    Establish a trusted endpoint-to-final-dependency traceability baseline for the
+    frozen CylinderManagement source version.
+
+  phases:
+    - id: ANALYZE
+      owner: ORCHESTRATOR
+      required: true
+      actions:
+        - freeze/confirm one source baseline
+        - inspect current traceability runtime state
+        - determine the complete Source Repository Check scope
+        - create/update the full repository-check Worker Input
+      outputs:
+        - backlog/runtime/BL-001/analysis.yaml
+        - backlog/runtime/BL-001/execution-plan.yaml
+        - worker/inputs/WI-0004.yaml
+      gate: source-check work unit completely defined
+
+    - id: EXECUTE_SOURCE_CHECK
+      owner: ORCHESTRATOR
+      required: true
+      actions:
+        - submit WI-0004 to the Generic Worker
+        - track init/service/close
+        - accept only a CLOSED, COMPLETED structured result
+        - validate the result against the Source Check Output contract
+      worker_output: worker/results/WI-0004.yaml
+      gate: canonical Source Check Output accepted with 100 percent endpoint trace-result coverage
+
+    - id: BUILD_MATRIX
+      owner: ORCHESTRATOR
+      required: true
+      inputs:
+        - worker/results/WI-0004.yaml
+      rules:
+        - do not re-read source during the initial matrix build
+        - preserve Worker source conclusions
+        - assign stable Controller and Endpoint IDs
+      outputs:
+        - traceability/source-repository-check.md
+        - traceability/controller-inventory.md
+        - traceability/endpoint-inventory.md
+        - traceability/controller-traceability.md
+        - traceability/unresolved-traceability.md
+      gate: every exposed endpoint appears exactly once in the matrix
+
+    - id: VALIDATE
+      owner: ORCHESTRATOR
+      required: true
+      checks:
+        - source baseline matches the accepted Source Check Output
+        - Controller inventory is complete
+        - Endpoint inventory is complete
+        - matrix coverage equals 100 percent
+        - COMPLETE traces preserve evidence
+        - UNRESOLVED traces preserve last proven point and reason
+      gate: all traceability gates pass
+
+    - id: CLOSE
+      owner: ORCHESTRATOR
+      required: true
+      actions:
+        - register source-artifact baseline
+        - close Worker and orchestration runs
+        - update human story/status
+        - mark BL-001 VERIFIED then CLOSED
+
+  parallelism:
+    analysis: false
+    source_check_worker: false
+    matrix_build: false
+
+  completion_conditions:
+    - complete Source Check Output accepted
+    - matrix coverage equals 100 percent
+    - required artifacts exist
+    - source-artifact registration complete
+    - all required runs closed
