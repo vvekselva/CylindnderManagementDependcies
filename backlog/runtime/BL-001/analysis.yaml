@@ -33,104 +33,79 @@ analysis:
         misc_cache_java_files: 1
         total_java_component_candidates: 62
 
-    exposed_controller_customer_spot_check:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/CustomerSpotCylinderCheckController.java
-      endpoints:
-        - {http_method: GET, path: /customer-spot-cylinder-check/fetch, handler: fetch}
-        - {http_method: POST, path: /customer-spot-cylinder-check/submit, handler: submit}
-      immediate_handoff: CustomerSpotCylinderCheckService
-
-    exposed_controller_register_customer:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/UC01RegisterCustomerController.java
-      endpoints:
-        - {http_method: GET, path: /registerCustomer, handler: doGet}
-        - {http_method: POST, path: /registerCustomer, handler: doPost}
-      immediate_handoffs:
-        - ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
-        - LookupDataCache
-
-    exposed_controller_vehicle_load:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase01VehicleLoadController.java
-      endpoints:
-        - {http_method: GET, path: /vehicleLoad, handler: doGet}
-        - {http_method: POST, path: /vehicleLoad, handler: doPost}
-      immediate_handoffs:
-        - ICylinderManagementApplicationMediator<UC02Phase01VehicleLoadRequestDto, UC02Phase01VehicleLoadResponseDto>
-        - LookupDataCache
-
-    exposed_controller_cylinder_delivery:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase02CylinderDeliveryController.java
-      endpoints:
-        - {http_method: GET, path: /cylinderDelivery, handler: doGet}
-        - {http_method: POST, path: /cylinderDelivery, handler: doPost}
-      immediate_handoff: ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>
-
-    exposed_controller_vehicle_trip_load_wizard:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/VehicleTripLoadWizardController.java
-      endpoints:
-        - {http_method: GET, path: /wizard/vehicle-trip-load, handler: showWizard}
-        - {http_method: POST, path: /wizard/vehicle-trip-load/save, handler: save}
-      immediate_handoffs:
-        - ICylinderManagementApplicationService<UC02Phase01VehicleLoadRequestDto, UC02Phase01VehicleLoadResponseDto>
-        - ActiveChallanBookForTripLoadViewJpaDao
-        - LookupDataCache
-
-    exposed_rest_customer_search:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulCustomerServices.java
-      endpoints:
-        - {http_method: GET, path: /search/customer/{searchText}, handler: getCustomers}
-      immediate_handoff: ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CustomerSearchResponseDto>
-
-    exposed_controller_challan_book:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
-      endpoints:
-        - {http_method: GET, path: /logistics/challan-books/add-form, handler: showAddBookForm}
-        - {http_method: POST, path: /logistics/challan-books/save, handler: processBookIngestion}
-      immediate_handoffs:
-        - ChallanBookIngestionService
-        - SummaryMetricLookupFetchService
-
-    exposed_controller_challan_entry_aging:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanEntryAgingDashboardController.java
-      endpoints:
-        - {http_method: GET, path: /challan-entry-aging-dashboard, handler: showChallanEntryAgingDashboard}
-      immediate_handoff: ChallanEntryAgingDashboardService
-
-    exposed_controller_challan_heatmap:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanHeatmapController.java
-      endpoints:
-        - {http_method: GET, path: /challan-heatmap, handler: showHeatmap}
-      immediate_handoff: ChallanHeatmapFetchService
-
-    exposed_controller_challan_page_photo:
-      state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanPagePhotoController.java
-      endpoints:
-        - {http_method: GET, path: /challan-page-photo/{challanPagePhotoId}, handler: retrieveChallanPagePhoto}
-      immediate_handoff: ChallanPagePhotoJpaDao
+    exposed_components_previously_proved:
+      count: 11
+      endpoint_count: 17
       note: >-
-        The DAO call findById is proved. The physical database object remains to be proved before final dependency evidence can pass.
+        These are the source-proved results from WI-0004 attempts 1 and 2 and are preserved unchanged.
 
-    exposed_controller_complete_trip:
+    exposed_controller_add_stop:
       state: PROVED
-      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CompleteTripController.java
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java
       endpoints:
-        - {http_method: POST, path: /complete-trip, handler: completeTrip}
-      immediate_handoff: ICylinderManagementApplicationService<CompleteTripRequestDto, CompleteTripResponseDto>
+        - {http_method: GET, path: /add-stop, handler: showStopPage}
+        - {http_method: POST, path: /add-stop/challan-page-photo/upload, handler: uploadChallanPagePhoto}
+        - {http_method: POST, path: /add-stop/challan-page-photo/upload-ajax, handler: uploadChallanPagePhotoAjax}
+        - {http_method: POST, path: /add-stop/challan-page-photo/delete-ajax, handler: deleteChallanPagePhotoAjax}
+      immediate_handoffs:
+        - TripReturnWorkflowService
+        - ICylinderManagementApplicationService<ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto>
+        - ICylinderManagementApplicationService<ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto>
+        - ChallanPagePhotoUploadService
+
+    exposed_controller_customer_address_location:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java
+      endpoints:
+        - {http_method: GET, path: /customer-address-location/missing, handler: showMissingLocations}
+        - {http_method: GET, path: /customer-address-location/planning-map, handler: showPlanningMap}
+        - {http_method: GET, path: /customer-address-location/points.geojson, handler: customerAddressPointsGeoJson}
+        - {http_method: GET, path: /yard-location/upload, handler: showYardLocationUpload}
+        - {http_method: POST, path: /yard-location/upload, handler: saveYardLocation}
+        - {http_method: GET, path: /yard-location/points.geojson, handler: yardLocationsGeoJson}
+        - {http_method: GET, path: /customer-address-location/upload, handler: showUpload}
+        - {http_method: POST, path: /customer-address-location/upload, handler: saveLocation}
+        - {http_method: GET, path: /customer-address-location/import-whatsapp-export, handler: showWhatsappImport}
+        - {http_method: POST, path: /customer-address-location/import-whatsapp-export, handler: importWhatsappText}
+      immediate_handoff: CustomerAddressLocationOfflineMapService
+
+    exposed_controller_customer_consumption_dashboard:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerConsumptionDashboardController.java
+      class_mapping: /customer-consumption
+      endpoints:
+        - {http_method: GET, path: /customer-consumption, handler: dashboard}
+        - {http_method: GET, path: /customer-consumption/, handler: dashboard}
+        - {http_method: GET, path: /customer-consumption/dashboard, handler: dashboard}
+        - {http_method: GET, path: /customer-consumption/api/dashboard, handler: dashboardData}
+      immediate_handoff: CustomerConsumptionDashboardService
+
+    exposed_controller_customer_demand:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerDemandController.java
+      endpoints:
+        - {http_method: GET, path: /customer-demands, handler: showDashboard}
+        - {http_method: POST, path: /customer-demands, handler: create}
+        - {http_method: POST, path: /customer-demands/{requestId}/mark-delivered, handler: markDelivered}
+      immediate_handoffs:
+        - CustomerDemandService
+        - CustomerJpaDao
+        - CustomerAddressJpaDao
+        - ProductJpaDao
+
+    exposed_controller_customer_stop_selection:
+      state: PROVED
+      source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerStopSelectionController.java
+      endpoints:
+        - {http_method: POST, path: /stop, handler: processStopIngestion}
+      immediate_handoffs:
+        - ICylinderManagementApplicationService<VehicleTripStopIngestionRequestDto, VehicleTripStopIngestionResponseDto>
+        - LookupDataCache
 
     current_proved_exposure_checkpoint:
-      proved_exposed_components: 11
-      proved_endpoints: 17
-      candidate_components_remaining_to_classify: 51
+      proved_exposed_components: 16
+      proved_endpoints: 39
+      candidate_components_remaining_to_classify: 46
       root_web_controller_package:
         candidates: 5
         classified: 5
@@ -138,13 +113,14 @@ analysis:
         remaining: 0
       web_controller_test_package:
         candidates: 30
-        newly_classified_in_latest_attempt: 5
-        remaining_to_classify: 25
+        classified_to_date: 10
+        exposed_to_date: 10
+        remaining_to_classify: 20
       note: >-
         These are progress counters only. They are not the final exposed-component or endpoint totals and cannot be used to claim Traceability coverage until all 62 candidates have been classified.
 
   not_yet_proved:
-    - Complete classification of the remaining 51 Java component candidates as EXPOSED or NOT_EXPOSED.
+    - Complete classification of the remaining 46 Java component candidates as EXPOSED or NOT_EXPOSED.
     - Complete caller-visible endpoint inventory for every exposed component.
     - Complete endpoint call paths to final dependencies.
     - Complete physical database-object evidence for database-backed paths.
@@ -160,17 +136,17 @@ analysis:
 
   worker_attempt:
     input: worker/inputs/WI-0004.yaml
-    latest_run: RUN-WI0004-20260822-002
+    latest_run: RUN-WI0004-20260822-003
     latest_attempt_result: PARTIAL
     run_state: CLOSED
     canonical_result_accepted: false
 
   orchestrator_findings:
-    - BL-001 is the only run-enabled Backlog Item and has no Backlog dependencies.
-    - Its approved Traceability Quality Gate is present, so source analysis is eligible to continue.
+    - BL-001 remains the only run-enabled Backlog Item and has no Backlog dependencies.
+    - Its approved Traceability Quality Gate is present, so source analysis remains eligible to continue.
     - The canonical Source Check Output remains worker/results/WI-0004.yaml and has not yet been accepted.
     - Matrix construction remains locked until the complete Source Check contract and 100 percent endpoint trace-result coverage pass.
-    - Eleven exposed components and seventeen endpoints are source-proved at the current interim checkpoint.
+    - Sixteen exposed components and thirty-nine HTTP method/path combinations are source-proved at the current interim checkpoint.
 
   required_work_units:
     - WU-BL001-001
@@ -179,4 +155,4 @@ analysis:
     - WU-BL001-004
 
   next_step: >-
-    Continue WU-BL001-001 against the exact frozen commit until every one of the remaining 51 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage equals 100 percent.
+    Continue WU-BL001-001 against the exact frozen commit until every one of the remaining 46 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage equals 100 percent.
