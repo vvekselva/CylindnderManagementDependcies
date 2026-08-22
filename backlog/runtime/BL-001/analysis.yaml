@@ -11,7 +11,7 @@ analysis:
       state: PROVED
       finding: >-
         The frozen traceability baseline is 3ae6e61442132d94a307275b08dd65fcef228d89.
-        This exact commit is the source version being inspected for the initial Traceability baseline.
+        This exact commit remains the source version for the initial Traceability baseline.
 
     component_candidate_scope:
       state: PROVED_AS_CANDIDATE_SCOPE
@@ -24,80 +24,90 @@ analysis:
         total_java_component_candidates: 62
 
     prior_checkpoint:
-      proved_exposed_components: 24
-      proved_endpoints: 67
-      proved_not_exposed_components: 2
-      candidates_remaining_to_classify: 36
-      source: WI-0004 attempts 1 through 5
-
-    attempt_6_classification:
-      candidates_inspected: 5
-      exposed: 4
-      not_exposed: 1
-      added_http_method_path_combinations: 10
-
-      party_cylinder_dashboard_controller:
-        state: NOT_EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/PartyCylinderDashboardController.java
-        evidence: '@Controller is commented out as //@Controller; RequestMapping/GetMapping methods therefore do not make this class a Spring MVC controller at the frozen baseline.'
-
-      predefined_delivery_trip_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/PredefinedDeliveryTripController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /delivery-planning/predefined-trips, handler: page}
-          - {http_method: POST, path: /delivery-planning/predefined-trips/create, handler: create}
-          - {http_method: POST, path: /delivery-planning/predefined-trips/add-stop, handler: addStop}
-          - {http_method: POST, path: /delivery-planning/predefined-trips/remove-stop, handler: removeStop}
-          - {http_method: POST, path: /delivery-planning/predefined-trips/remove, handler: remove}
-        immediate_handoffs:
-          - PredefinedDeliveryTripService
-          - DeliveryPlanningStopService
-
-      reconciliation_command_center_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ReconciliationCommandCenterController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /reconciliation-command-center, handler: showCommandCenter}
-          - {http_method: GET, path: /reconciliation-command-center/details, handler: showTripDetails}
-        immediate_handoff: ReconciliationCommandCenterService
-
-      reconciliation_dashboard_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ReconciliationDashboardController.java
-        class_annotation: '@Controller'
-        class_mapping: /reconciliation-dashboard
-        endpoints:
-          - {http_method: GET, path: /reconciliation-dashboard, handler: viewDashboard}
-          - {http_method: POST, path: /reconciliation-dashboard/search, handler: searchDashboard}
-        immediate_handoff: ReconciliationDashboardService
-
-      supplier_fetch_by_page_controller:
-        state: EXPOSED
-        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/SupplierFetchByPageController.java
-        class_annotation: '@Controller'
-        endpoints:
-          - {http_method: GET, path: /fetchSupplierByPage, handler: doGet}
-        immediate_handoff: ICylinderManagementApplicationService<SupplierFetchByPageRequestDto, SupplierFetchByPageResponseDto>
-
-    current_proved_exposure_checkpoint:
       proved_exposed_components: 28
       proved_endpoints: 77
       proved_not_exposed_components: 3
-      candidate_components_remaining_to_classify: 31
+      candidates_remaining_to_classify: 31
+      source: WI-0004 attempts 1 through 6
+
+    attempt_7_classification:
+      candidates_inspected: 5
+      exposed: 5
+      not_exposed: 0
+      added_http_method_path_combinations: 9
+
+      trip_return_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/TripReturnController.java
+        class_annotation: '@Controller'
+        class_mapping: /trip-return
+        endpoints:
+          - {http_method: GET, path: /trip-return, handler: showReturnPage}
+          - {http_method: POST, path: /trip-return, handler: returnTripAndBooks}
+        immediate_handoff: TripReturnWorkflowService
+
+      trip_review_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/TripReviewController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /trip-review, handler: showReviewQueue}
+          - {http_method: GET, path: /trip-review/{vehicleTripId}, handler: showTripReview}
+          - {http_method: POST, path: /trip-review/{vehicleTripId}/close-review, handler: closeReview}
+        immediate_handoffs:
+          - TripReviewFetchService
+          - TripReviewUpdateService
+
+      vehicle_load_by_page_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/VehicleLoadByPageController.java
+        class_annotation: '@Controller'
+        class_mapping: /vehicle-loads
+        endpoints:
+          - {http_method: GET, path: /vehicle-loads/list, handler: listVehicleLoads}
+          - {http_method: GET, path: /vehicle-loads/all-list, handler: listAllVehicleLoads}
+        immediate_handoffs:
+          - VehicleLoadFetchByPageService
+          - ICylinderManagementApplicationService<VehicleActiveTripFetchByPageRequestDto, VehicleActiveTripFetchByPageResponsetDto>
+          - TripReturnWorkflowService
+
+      vehicle_load_fetch_by_id_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/VehicleLoadFetchByIdController.java
+        class_annotation: '@Controller'
+        endpoints:
+          - {http_method: GET, path: /vehicle-load/fetch, handler: doGet}
+        immediate_handoffs:
+          - ICylinderManagementApplicationService<VehicleLoadFetchByIdRequestDto, VehicleLoadFetchByIdResponseDto>
+          - TripReturnWorkflowService
+
+      vehicle_trip_controller:
+        state: EXPOSED
+        source: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/VehicleTripController.java
+        class_annotation: '@Controller'
+        class_mapping: /vehicle-trips
+        endpoints:
+          - {http_method: GET, path: /vehicle-trips/list, handler: listVehicleTrips}
+        immediate_handoff: VehicleTripFetchByPageService
+
+    current_proved_exposure_checkpoint:
+      proved_exposed_components: 33
+      proved_endpoints: 86
+      proved_not_exposed_components: 3
+      candidate_components_remaining_to_classify: 26
       web_controller_test_package:
         candidates: 30
-        classified_to_date: 25
-        exposed_to_date: 22
+        classified_to_date: 30
+        exposed_to_date: 27
         not_exposed_to_date: 3
-        remaining_to_classify: 5
+        remaining_to_classify: 0
       note: >-
-        These are interim progress counters only. They are not final coverage totals and cannot be used to claim Traceability completion until all 62 candidates are classified and every exposed endpoint has a complete trace result.
+        The web.controller.test package is now fully classified. The overall 62-candidate scope is not
+        complete because 26 candidates remain in the other scanned package trees. These counters are
+        interim and cannot be used to claim Traceability completion.
 
   not_yet_proved:
-    - Complete classification of the remaining 31 Java component candidates as EXPOSED or NOT_EXPOSED.
+    - Complete classification of the remaining 26 Java component candidates as EXPOSED or NOT_EXPOSED.
     - Complete caller-visible endpoint inventory for every exposed component.
     - Complete endpoint call paths to final dependencies.
     - Complete physical database-object evidence for database-backed paths.
@@ -113,7 +123,7 @@ analysis:
 
   worker_attempt:
     input: worker/inputs/WI-0004.yaml
-    latest_run: RUN-WI0004-20260822-006
+    latest_run: RUN-WI0004-20260822-007
     latest_attempt_result: PARTIAL
     run_state: CLOSED
     canonical_result_accepted: false
@@ -121,9 +131,10 @@ analysis:
   orchestrator_findings:
     - BL-001 remains the only run-enabled Backlog Item and has no Backlog dependencies.
     - Its approved Traceability Quality Gate remains present and enforceable.
-    - Five additional candidates were classified in attempt 6: four EXPOSED and one NOT_EXPOSED.
-    - Twenty-eight exposed components and seventy-seven HTTP method/path combinations are source-proved at the current interim checkpoint.
-    - Three candidates are now source-proved NOT_EXPOSED.
+    - Attempt 7 completed classification of the remaining five web.controller.test candidates; all five are EXPOSED.
+    - The web.controller.test package is now fully classified at 30 of 30 candidates.
+    - Thirty-three exposed components and eighty-six HTTP method/path combinations are source-proved at the current interim checkpoint.
+    - Three candidates are source-proved NOT_EXPOSED.
     - The canonical Source Check Output worker/results/WI-0004.yaml has not yet been accepted.
     - Matrix construction remains locked until the Source Check result is COMPLETED, CLOSED, contract-valid, and reaches 100 percent endpoint trace-result coverage.
 
@@ -134,4 +145,7 @@ analysis:
     - WU-BL001-004
 
   next_step: >-
-    Continue WU-BL001-001 against the exact frozen commit until every one of the remaining 31 candidates is classified and every exposed endpoint has a trace result. Do not unlock matrix construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result contract validates, and endpoint trace-result coverage equals 100 percent.
+    Continue WU-BL001-001 against the exact frozen commit through the remaining 26 candidates in the
+    other scanned package trees and continue endpoint-to-final-dependency evidence. Do not unlock matrix
+    construction until worker/results/WI-0004.yaml is COMPLETED, its Worker run is CLOSED, the result
+    contract validates, and endpoint trace-result coverage equals 100 percent.
