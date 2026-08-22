@@ -1,5 +1,5 @@
 backlog:
-  version: 3
+  version: 4
   target_repository: vvekselva/CylinderManagement
   run_config: backlog/orchestrator-run-config.yaml
   quality_gate_governance: governance/quality-gates.yaml
@@ -110,6 +110,118 @@ backlog:
         - requirements/requirements-inventory.md
         - requirements/requirements-traceability.md
         - requirements/requirements-gaps.md
+
+    - id: BL-007
+      name: Migration of the Database to the Ownership Model
+      type: DATABASE_MIGRATION
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-008
+      name: Supplier Owned, Customer Owned and Company Owned Cylinder Model
+      type: OWNERSHIP_MODEL
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-009
+      name: Physical Challan Book Location
+      type: CHALLAN_MANAGEMENT
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-010
+      name: Ownership Dashboard Changes
+      type: DASHBOARD
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-011
+      name: CRUD Services for All Tables
+      type: CRUD_SERVICES
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-012
+      name: On Spot Cylinder Checks
+      type: CYLINDER_CHECK
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-013
+      name: Correction Management
+      type: CORRECTION_MANAGEMENT
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-014
+      name: Invoice Generation and Check in Tally
+      type: INVOICE_INTEGRATION
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-015
+      name: Attendance Management
+      type: ATTENDANCE_MANAGEMENT
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-016
+      name: Trip Planning for the Customers
+      type: TRIP_PLANNING
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-017
+      name: CEO Dashboard
+      type: DASHBOARD
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-018
+      name: Restoring the Logical Backup
+      type: DATABASE_RESTORE
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-019
+      name: Task Management
+      type: TASK_MANAGEMENT
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
+
+    - id: BL-020
+      name: Customer Data Dashboard
+      type: DASHBOARD
+      priority: P3_NORMAL
+      state: YET_TO_DO
+      quality_gate: null
+      dependencies: []
 
   current_selection:
     backlog_item: BL-001
