@@ -1,0 +1,18 @@
+run:
+  id: RUN-WF001-20260822-001
+  workflow_id: WF-001-controller-traceability
+  mode: COMPLETE_REPOSITORY_CHECK_THEN_MATRIX
+  state: IN_PROGRESS
+  source_repository: vvekselva/CylinderManagement
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  current_job: JOB-002
+  completed_jobs:
+    - JOB-001
+  required_sequence:
+    - JOB-001
+    - JOB-002
+    - JOB-003
+    - JOB-004
+    - JOB-005
+  matrix_unlock_condition: >-
+    JOB-002 must be VERIFIED and WI-0004 must be COMPLETED/CLOSED before JOB-003 may start.
