@@ -1,236 +1,185 @@
 # CylinderManagement Automation Task Status
 
+## Framework Mode
+
+The automation framework is now **Backlog-driven**.
+
+```text
+BACKLOG ITEM
+    -> COMPLETION PATH
+    -> ORCHESTRATOR ANALYSIS
+    -> EXECUTION PLAN
+    -> WORK UNITS
+    -> WORKER INPUTS / ORCHESTRATION ACTIONS
+    -> EXECUTION
+    -> ORCHESTRATOR VALIDATION
+    -> BACKLOG VERIFIED / CLOSED
+```
+
+Both analysis and execution are controlled by the Orchestrator. The Generic Worker remains an input-driven executor only.
+
 ## Control Scope
 
 | Item | Value |
 |---|---|
 | Control repository | `vvekselva/CylindnderManagementDependcies` |
 | Target source repository | `vvekselva/CylinderManagement` |
-| Coordinator | CONFIGURED |
+| Backlog register | `backlog/backlog.yaml` |
+| Backlog contract | `automation/backlog-contract.md` |
+| Main execution document | `automation/execution-model.md` |
+| Orchestrator | CONFIGURED - owns analysis + execution |
 | Orchestration lanes | 10 |
-| Maximum parallel orchestration Jobs | 10 |
-| Independent Worker | CONFIGURED |
-| Independent Worker consumes orchestration lane | NO |
-| Independent Worker task definition | INPUT FILE ONLY |
-| Independent Worker lifecycle | `init() -> service() -> close()` |
-| Initial Traceability mode | `SOURCE_CHECK_OUTPUT_TO_ORCHESTRATOR_MATRIX` |
-| Canonical Source Check Output | `worker/results/WI-0004.yaml` |
-| Orchestrator consumer | `JOB-003 Complete Traceability Matrix` |
-| Repository catalogue | CONFIGURED FOR YAML WORKER RESULTS + WF-001 RUNTIME/EVIDENCE |
+| Maximum parallel Work Units inside one Backlog Item | 10 |
+| Maximum active Backlog Items | 1 |
+| Independent Generic Worker | CONFIGURED |
+| Worker consumes orchestration lane | NO |
+| Worker task definition | INPUT FILE ONLY |
+| Worker lifecycle | `init() -> service() -> close()` |
+| Automation config | version 8 |
 
-## Initial Traceability Data Flow
+## Backlog
 
-The first Controller Traceability baseline is strictly sequential and uses an explicit producer/consumer handoff:
-
-```text
-JOB-001 Freeze Source Baseline
-        |
-        v
-JOB-002 Complete Source Repository Check
-        |
-        | Worker Input = WI-0004
-        v
-     GENERIC WORKER
- init -> service -> close
-        |
-        +--> worker/runs/WI-0004.md
-        |
-        v
-worker/results/WI-0004.yaml
-        |
-        | canonical Source Check Output
-        | validate against source-check-output-contract.yaml
-        v
-ORCHESTRATOR INPUT: SOURCE_CHECK_OUTPUT
-        |
-        v
-JOB-003 Complete Traceability Matrix
-        |
-        +--> source-repository-check.md
-        +--> controller-inventory.md
-        +--> endpoint-inventory.md
-        +--> controller-traceability.md
-        +--> unresolved-traceability.md
-        |
-        v
-JOB-004 Register Initial Source Artifact Baseline
-        |
-        v
-JOB-005 Close Initial Traceability Run
-```
-
-The important boundary is:
-
-```text
-SOURCE CHECK OUTPUT = INPUT TO ORCHESTRATOR JOB-003
-```
-
-`JOB-003` must not re-read the CylinderManagement source repository during the initial matrix build and must not create another source-inspection Worker Input.
-
-## Frozen Source Baseline
-
-`3ae6e61442132d94a307275b08dd65fcef228d89` - `Base Projects`
-
-The Source Check Output and every Traceability Matrix artifact must represent this exact commit.
-
-## Orchestration Lane Pool
-
-| Lane | State | Workflow | Job | Log State |
+| ID | Backlog Item | Completion Path | State | Dependency |
 |---|---|---|---|---|
-| LANE-01 | IDLE | - | - | NOT_OPENED |
-| LANE-02 | IDLE | - | - | NOT_OPENED |
-| LANE-03 | IDLE | - | - | NOT_OPENED |
-| LANE-04 | IDLE | - | - | NOT_OPENED |
-| LANE-05 | IDLE | - | - | NOT_OPENED |
-| LANE-06 | IDLE | - | - | NOT_OPENED |
-| LANE-07 | IDLE | - | - | NOT_OPENED |
-| LANE-08 | IDLE | - | - | NOT_OPENED |
-| LANE-09 | IDLE | - | - | NOT_OPENED |
-| LANE-10 | IDLE | - | - | NOT_OPENED |
+| `BL-001` | Controller Traceability | `backlog/paths/BL-001-traceability.yaml` | `PLANNED` | None |
+| `BL-002` | Unit Test Completion | `backlog/paths/BL-002-unit-test.yaml` | `YET_TO_DO` | None |
+| `BL-003` | Integration Test Completion | `backlog/paths/BL-003-integration-test.yaml` | `YET_TO_DO` | None |
+| `BL-004` | Code Coverage Report | `backlog/paths/BL-004-code-coverage.yaml` | `WAITING_FOR_DEPENDENCY` | BL-002 + BL-003 |
+| `BL-005` | ArchUnit Architecture Test | `backlog/paths/BL-005-archunit.yaml` | `YET_TO_DO` | None |
+| `BL-006` | Requirements Traceability and Gap Analysis | `backlog/paths/BL-006-requirements.yaml` | `YET_TO_DO` | None |
 
-`JOB-002` is performed by the independent Generic Worker and consumes no orchestration lane. After the Source Check Output is accepted, `JOB-003` may be assigned to one free orchestration lane.
+## Current Selection
 
-## Generic Worker
+```text
+Backlog Item: BL-001 Controller Traceability
+State: PLANNED
+Current phase: EXECUTION_READY
+Next Work Unit: WU-BL001-001 Complete Source Repository Check
+Next Worker Input: worker/inputs/WI-0004.yaml
+```
 
-| Item | Current State |
-|---|---|
-| Component | `WORKER` |
-| Contract | `automation/worker-component-contract.md` |
-| Input pattern | `worker/inputs/WI-*.yaml` |
-| Human run pattern | `worker/runs/WI-*.md` |
-| Human result pattern | `worker/results/WI-*.md` |
-| Machine result pattern | `worker/results/WI-*.yaml` |
-| Actual task source | INPUT FILE |
-| Open Worker runs | 0 |
-| Current/next executable input | `WI-0004` |
+## BL-001 Orchestrator Runtime
 
-## Worker Input State
+The Orchestrator has already produced:
 
-| Worker Input | State | Purpose | Initial Matrix Use |
+- `backlog/runtime/BL-001/analysis.yaml` - current-state analysis;
+- `backlog/runtime/BL-001/execution-plan.yaml` - concrete Work Units and dependencies.
+
+Planned Work Units:
+
+| Work Unit | Purpose | Executor | State |
 |---|---|---|---|
-| `WI-0001` | CLOSED / HISTORICAL | Earlier source-boundary discovery | NO |
-| `WI-0002` | CLOSED / HISTORICAL | Earlier partial exposure verification | NO |
-| `WI-0003` | SUPERSEDED | Earlier remaining-controller batch | NO |
-| `WI-0004` | READY | Complete Source Repository Check | YES - produces canonical Orchestrator input |
+| `WU-BL001-001` | Complete Source Repository Check | Generic Worker using `WI-0004` | READY |
+| `WU-BL001-002` | Build Traceability Matrix artifacts from accepted Source Check Output | Orchestration | WAITING_FOR_DEPENDENCY |
+| `WU-BL001-003` | Validate traceability gates | Orchestrator | WAITING_FOR_DEPENDENCY |
+| `WU-BL001-004` | Register source-artifact baseline and close BL-001 | Orchestrator | WAITING_FOR_DEPENDENCY |
 
-## Source Check Output Contract
+The auxiliary `backlog/runtime/BL-001/work-unit-status.yaml` write has not yet been committed because the connector blocked that single write attempt. The execution plan remains the current authoritative Work Unit state until that auxiliary status file is successfully added.
 
-The machine-readable result contract is:
+## BL-001 Source Check Handoff
+
+The existing traceability implementation remains valid underneath BL-001:
+
+```text
+WU-BL001-001
+   |
+   v
+worker/inputs/WI-0004.yaml
+   |
+   v
+GENERIC WORKER
+init -> service -> close
+   |
+   v
+worker/results/WI-0004.yaml
+   |
+   v
+ORCHESTRATOR
+   |
+   v
+WU-BL001-002 Traceability Matrix
+```
+
+The canonical Source Check Output is validated against:
 
 `workflows/WF-001-controller-traceability/source-check-output-contract.yaml`
 
-The canonical output must contain:
+Matrix construction must not independently re-read the source repository for the initial baseline.
 
-- execution metadata and frozen source baseline;
-- repository scope;
-- complete exposed-component set;
-- complete exposed-endpoint set;
-- call-path evidence for every endpoint;
-- final dependency information;
-- unresolved items;
-- coverage/resolution counters;
-- evidence index.
+## Components Involved
 
-The Source Check Output is accepted only when `WI-0004` is `COMPLETED`, its run is `CLOSED`, the YAML matches the contract, the source baseline matches, and coverage is 100 percent.
-
-## WF-001 Job Status
-
-| Job | State | Input / Output / Next Action |
+| Component | Responsibility | Main files |
 |---|---|---|
-| `JOB-001 Freeze Source Baseline` | VERIFIED | Source baseline fixed; GATE-TRC-001 PASS. |
-| `JOB-002 Complete Source Repository Check` | READY | Input `WI-0004`; output `worker/results/WI-0004.yaml`. |
-| `JOB-003 Complete Traceability Matrix` | WAITING | Formal input `SOURCE_CHECK_OUTPUT = worker/results/WI-0004.yaml`; waits for acceptance. |
-| `JOB-004 Register Initial Source Artifact Baseline` | WAITING | Depends on verified Traceability Matrix. |
-| `JOB-005 Close Initial Traceability Run` | WAITING | Depends on source-artifact registration. |
+| Backlog Register | Stores all requested project outcomes, priority, dependencies and state | `backlog/backlog.yaml` |
+| Completion Path | Defines how one Backlog Item becomes complete | `backlog/paths/*.yaml` |
+| Orchestrator | Selects item, analyses, plans, generates inputs, schedules, validates and closes | `automation/automation-config.yaml`, `automation/backlog-contract.md`, `automation/execution-model.md` |
+| Backlog Runtime | Persists analysis, execution plan, Work Unit/gate/decision/result state | `backlog/runtime/<BL-ID>/*.yaml` |
+| Generic Worker | Executes exactly one generated Worker Input | `automation/worker-component-contract.md`, `worker/` |
+| Worker Input | Exact generated task given to Generic Worker | `worker/inputs/WI-*.yaml` |
+| Worker Run | Human-readable init/service/close record | `worker/runs/WI-*.md` |
+| Worker Result | Structured/human result returned to Orchestrator | `worker/results/WI-*.yaml`, `worker/results/WI-*.md` |
+| Orchestration Lanes | Execute independent orchestration Work Units/Jobs | `LANE-01` ... `LANE-10` runtime state |
+| Quality Gates | Decide whether Work Unit/Backlog completion is acceptable | Backlog `gate-status.yaml`, Completion Path gates |
+| Evidence / Artifacts | Final project outputs such as traceability/test/coverage reports | `traceability/`, `quality/`, `requirements/` |
+| Sync Register | Records source-to-artifact verification baseline | `sync/source-artifact-sync-register.yaml` |
+| Human Log / Story | Explains what happened and why | `logs/automation-log.md`, `logs/automation-story.md` |
+| Catalogue Gate | Ensures tracked framework/runtime paths are declared | `repository-catalogue.md`, `.github/workflows/catalogue-gate.yml` |
 
-## JOB-002 Required Output
+## Required Backlog Runtime Files
 
-`WI-0004` must produce the canonical machine-readable file:
-
-`worker/results/WI-0004.yaml`
-
-This file is the source-fact package passed to the Orchestrator. The Worker run itself is recorded separately in:
-
-`worker/runs/WI-0004.md`
-
-The Worker result must provide complete source coverage for the defined first-baseline traceability scope. It may contain explicitly `UNRESOLVED` endpoints, but it may not be `PARTIAL` because files/endpoints were left unchecked.
-
-## JOB-003 Orchestrator Input Rule
-
-The runtime handoff is recorded in:
-
-`workflows/WF-001-controller-traceability/runtime/orchestrator-input.yaml`
-
-Its state is currently:
-
-`WAITING`
-
-After acceptance it becomes the formal input to `JOB-003`.
-
-`JOB-003` then creates:
-
-- `traceability/source-repository-check.md` - human-readable view of the accepted Source Check Output;
-- `traceability/controller-inventory.md`;
-- `traceability/endpoint-inventory.md`;
-- `traceability/controller-traceability.md`;
-- `traceability/unresolved-traceability.md`.
-
-Every matrix row must derive from `SOURCE_CHECK_OUTPUT`. Source conclusions are preserved; the Orchestrator adds stable IDs, organization, matrix structure and validation.
-
-## Quality Gate State
-
-| Gate | State |
-|---|---|
-| GATE-TRC-001 Source Baseline Frozen | PASS |
-| GATE-TRC-002 Complete Source Check Output Accepted | WAITING ON WI-0004 |
-| GATE-TRC-003 Complete Exposed Controller Set Produced | WAITING ON JOB-003 |
-| GATE-TRC-004 Complete Endpoint Set Produced | WAITING ON JOB-003 |
-| GATE-TRC-005 Every Endpoint Has Matrix Trace Result | WAITING ON JOB-003 |
-| GATE-TRC-006 Complete Matrix Traces Preserve Source Evidence | WAITING ON JOB-003 |
-| GATE-TRC-007 Unresolved Matrix Traces Preserve Stopping Point | WAITING ON JOB-003 |
-| GATE-TRC-008 Traceability Matrix Coverage Is 100 Percent | WAITING ON JOB-003 |
-| GATE-TRC-009 Source Artifact Sync Registered | WAITING ON JOB-004 |
-| GATE-TRC-010 Runs Closed And Story Current | WAITING ON JOB-005 |
-
-## Runtime And Evidence Files
-
-The current first-run orchestration state is under:
-
-`workflows/WF-001-controller-traceability/`
-
-Important files include:
-
-- `workflow.yaml`;
-- `source-check-output-contract.yaml`;
-- `runtime/run.yaml`;
-- `runtime/job-status.yaml`;
-- `runtime/queue.yaml`;
-- `runtime/worker-input-register.yaml`;
-- `runtime/orchestrator-input.yaml`;
-- `runtime/gate-status.yaml`;
-- `runtime/lane-assignments.yaml`;
-- `evidence/evidence-register.yaml`.
-
-## Scheduling State
+For every active Backlog Item, the Orchestrator is expected to maintain:
 
 ```text
-Run: RUN-WF001-20260822-001
-Coordinator: WF-001 ACTIVE
-Current Job: JOB-002 READY
-Ready Worker Input: WI-0004
-Expected canonical output: worker/results/WI-0004.yaml
-Orchestrator input handoff: WAITING
-Generic Worker: READY
-Orchestration active lanes: 0 / 10
-Open Worker runs: 0
-JOB-003 Traceability Matrix: WAITING / LOCKED
-Blocked Jobs requiring user decision: 0
-Failed Jobs: 0
-Verified Jobs: 1
+backlog/runtime/<BL-ID>/
+  analysis.yaml
+  execution-plan.yaml
+  work-unit-status.yaml
+  worker-input-register.yaml
+  gate-status.yaml
+  decisions.yaml
+  result.yaml
 ```
+
+Meaning:
+
+- `analysis.yaml` - what is currently present/missing;
+- `execution-plan.yaml` - Work Units generated from analysis;
+- `work-unit-status.yaml` - live state of every Work Unit;
+- `worker-input-register.yaml` - Work Unit -> Worker Input -> Worker Result mapping;
+- `gate-status.yaml` - Completion Path gate states;
+- `decisions.yaml` - Orchestrator follow-up/alternative decisions;
+- `result.yaml` - final machine-readable Backlog Item result.
+
+## Orchestration Lane Pool
+
+| Lane | State |
+|---|---|
+| LANE-01 | IDLE |
+| LANE-02 | IDLE |
+| LANE-03 | IDLE |
+| LANE-04 | IDLE |
+| LANE-05 | IDLE |
+| LANE-06 | IDLE |
+| LANE-07 | IDLE |
+| LANE-08 | IDLE |
+| LANE-09 | IDLE |
+| LANE-10 | IDLE |
+
+No lane is currently executing a Work Unit.
+
+## Current Worker State
+
+| Item | State |
+|---|---|
+| Generic Worker | READY |
+| Open Worker runs | 0 |
+| Next Worker Input | `WI-0004` |
+| Expected result | `worker/results/WI-0004.yaml` |
 
 ## Branch State
 
-All current framework and WF-001 initial-run changes are on `chore/rename-dependency-files`.
+All backlog-framework redesign and current BL-001 runtime changes are on:
+
+`chore/rename-dependency-files`
 
 They have not been merged into `main`.
