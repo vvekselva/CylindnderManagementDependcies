@@ -1,0 +1,60 @@
+worker_input:
+  id: WI-0003
+  version: 1
+  requested_by:
+    workflow_id: WF-001-controller-traceability
+    job_id: JOB-002
+    action_id: ACT-002
+  task:
+    name: Verify remaining exposed Spring web components
+    purpose: >-
+      Continue Controller inventory discovery by inspecting the remaining candidate
+      production classes inside the proved Spring component-scanned web boundary.
+    task_type: INSPECTION
+  target:
+    repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    scope:
+      - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller
+      - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller
+      - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test
+      - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest
+  permissions:
+    source_read: true
+    source_write: false
+    database_read: false
+    database_write: false
+    network_read: false
+    external_write: false
+  inputs:
+    - name: already_verified_classes
+      value: CustomerFetchByPageController, CustomerFetchController, CustomerUpdateController, DomainLookupController, LookupManagementController
+  actions:
+    - id: STEP-001
+      instruction: Enumerate remaining candidate production classes in the scoped packages at the frozen commit.
+      expected_result: Candidate list excludes the five already verified classes.
+    - id: STEP-002
+      instruction: Inspect each remaining class for actual Spring HTTP exposure annotations and handler mappings.
+      expected_result: Every candidate is classified as exposed or not exposed using source evidence.
+    - id: STEP-003
+      instruction: Return proved class-level and method-level mapping facts for exposed components.
+      expected_result: The caller has enough evidence to finish the Controller inventory.
+  evidence:
+    required: true
+    requirements:
+      - source path for every candidate
+      - exposure annotation evidence for every exposed component
+      - mapping evidence where present
+  expected_output:
+    result_path: worker/results/WI-0003.md
+    run_path: worker/runs/WI-0003.md
+    format: MARKDOWN
+  completion_check:
+    - Every remaining candidate in the proved runtime boundary is classified.
+    - No class is accepted as exposed because of its filename alone.
+  blocker_policy:
+    plain_english_required: true
+    guessing_allowed: false
+    return_last_proven_point: true
+    suggest_alternatives: true
+  result_states: [COMPLETED, PARTIAL, BLOCKED, FAILED]
