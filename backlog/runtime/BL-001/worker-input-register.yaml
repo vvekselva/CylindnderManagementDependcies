@@ -1,9 +1,20 @@
 worker_inputs:
   WI-0004:
     work_unit: WU-BL001-001
-    state: READY
+    state: PARTIAL
     input: worker/inputs/WI-0004.yaml
     run: worker/runs/WI-0004.md
     result: worker/results/WI-0004.yaml
     result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
     accepted: false
+    attempts:
+      - attempt: 1
+        run_id: RUN-WI0004-20260822-001
+        run_state: CLOSED
+        result_state: PARTIAL
+        canonical_result_created: false
+        checkpoint:
+          proved_exposed_components: 6
+          proved_endpoints: 11
+          candidates_remaining_to_classify: 56
+    next_action: RETRY_OR_CONTINUE_SAME_APPROVED_SOURCE_CHECK
