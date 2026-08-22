@@ -52,17 +52,20 @@ Frozen source baseline:
 Current proved findings:
 
 - classification scope: **62 Java component candidates**;
-- **40 exposed components** are source-proved;
-- those components account for **106 proved caller-visible HTTP method/path combinations**;
+- **45 exposed components** are source-proved;
+- those components account for **114 proved caller-visible HTTP method/path combinations**;
 - **4 candidates are proved NOT_EXPOSED**;
-- **18 Java candidates remain to be classified**;
+- **13 Java candidates remain to be classified**;
+- the `misc.web.controller` package is fully classified at **12 / 12** candidates;
 - downstream call paths and final physical dependencies remain incomplete.
 
-Newly classified in attempt 9:
+Newly classified in attempt 10:
 
-- `SupplierIngestionController`: EXPOSED, `GET /ingestSupplier` and `POST /ingestSupplier`;
-- `SupplierTripIngestionController`: NOT_EXPOSED because its class-level `@Controller` is commented out;
-- `ToggleCustomerActiveStatusController`: EXPOSED, `POST /setCustomerInactive` and `POST /setCustomerActive`.
+- `VehicleTripIngestionController`: EXPOSED, `GET /addVechileTrip`, `POST /addVechileTrip`;
+- `WalkinSaleIngestionController`: EXPOSED, `GET /walkin-sale`, `POST /walkin-sale`;
+- `YardAuditDashboardController`: EXPOSED, `GET /yard-audit-dashboard`;
+- `YardStockCheckIngestionController`: EXPOSED, `GET /ingestYardStockCheck`, `POST /ingestYardStockCheck`;
+- `RestfulAddressServices`: EXPOSED, `GET /search/address/customer-address/{customerId}`; its older customer mapping is commented out and was not counted.
 
 Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml` and `worker/runs/WI-0004.md`.
 
@@ -79,15 +82,15 @@ Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml` and `wor
 
 ```text
 Worker Input: WI-0004
-Latest Attempt: 9
-Latest Run: RUN-WI0004-20260822-009
+Latest Attempt: 10
+Latest Run: RUN-WI0004-20260822-010
 Run State: CLOSED
 Attempt Result: PARTIAL
 Canonical Result: NOT CREATED / NOT ACCEPTED
-Proved Exposed Components: 40
-Proved HTTP Method/Path Combinations: 106
+Proved Exposed Components: 45
+Proved HTTP Method/Path Combinations: 114
 Proved NOT_EXPOSED Candidates: 4
-Candidates Remaining: 18
+Candidates Remaining: 13
 Next Action: continue the same approved Source Check
 ```
 
@@ -107,10 +110,10 @@ QG-TRC-002: IN PROGRESS
 QG-TRC-003: IN PROGRESS
 QG-TRC-004: IN PROGRESS
 Classification scope: 62 Java candidates
-Proved exposed components: 40
-Proved HTTP method/path combinations: 106
+Proved exposed components: 45
+Proved HTTP method/path combinations: 114
 Proved not-exposed candidates: 4
-Candidates remaining to classify: 18
+Candidates remaining to classify: 13
 Current Work Unit: WU-BL001-001
 Worker Input: WI-0004
 Open Worker runs: 0
