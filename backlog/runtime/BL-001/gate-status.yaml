@@ -18,9 +18,10 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - WI-0004 attempts 1 through 14 are CLOSED/PARTIAL
-        - endpoint-to-final-dependency tracing has started but remains incomplete
-        - 10 of 134 endpoints have been explicitly examined; all 10 stop at source-proved service handoffs because concrete implementation/final dependency is not yet proved
+        - WI-0004 attempts 1 through 15 are CLOSED/PARTIAL
+        - 10 of 134 endpoints have been explicitly examined for final dependencies
+        - 3 of the 10 examined endpoints now have complete controller-to-final-dependency evidence
+        - 7 examined endpoints remain UNRESOLVED and 124 remain not yet examined
         - canonical completed result is not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
@@ -45,8 +46,9 @@ quality_gate_status:
       name: No Guessing And Unresolved Quality
       state: IN_PROGRESS
       evidence:
-        - attempts 13 and 14 record unresolved endpoint paths at the last proven service handoff instead of inventing repositories or database tables
-        - controller comments naming physical tables are retained only as supporting evidence until concrete service/repository/query paths are proved
+        - attempts 13 through 15 preserve unresolved paths at the last source-proved component rather than guessing
+        - attempt 15 promotes only three paths to COMPLETE after proving concrete service, JPA repository/query, and physical database object mappings
+        - controller comments naming physical tables remain supporting evidence only until the implementation/query is proved
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
@@ -61,14 +63,13 @@ quality_gate_status:
   endpoint_trace_checkpoint:
     total_endpoints: 134
     explicitly_examined_for_final_dependency: 10
-    complete: 0
-    unresolved: 10
+    complete: 3
+    unresolved: 7
     not_yet_examined_for_final_dependency: 124
 
   close_allowed: false
   reason: >-
-    Controller classification is complete, but the Source Check remains incomplete. Attempt 14 advanced
-    dependency tracing to 10 of 134 endpoints and proved exact injected service qualifiers for seven
-    RestfulCylinderServices routes, but concrete implementations/final dependencies are not yet proved.
-    124 endpoints remain unexamined and worker/results/WI-0004.yaml is not yet a completed contract-valid
-    result. Matrix construction remains locked.
+    Attempt 15 resolved three previously unresolved Cylinder endpoint paths to source-proved final database
+    objects, but QG-TRC-002 remains IN_PROGRESS because seven examined endpoints remain unresolved, 124
+    endpoints remain unexamined, and worker/results/WI-0004.yaml is not yet a completed contract-valid result.
+    Matrix construction and dependent work units remain locked.
