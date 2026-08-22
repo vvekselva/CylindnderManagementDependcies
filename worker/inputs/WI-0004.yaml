@@ -1,0 +1,121 @@
+worker_input:
+  id: WI-0004
+  version: 1
+  state: READY
+
+  requested_by:
+    workflow_id: WF-001-controller-traceability
+    job_id: JOB-002
+    action_id: ACT-001
+
+  task:
+    name: Complete Source Repository Check for Initial Traceability Baseline
+    purpose: >-
+      Perform the first complete read-only analysis of the frozen CylinderManagement
+      source repository and produce one closed result package that contains all source
+      facts required to build the initial Controller Traceability Matrix. The
+      Traceability Matrix Job must not start from partial batches.
+    task_type: FULL_REPOSITORY_INSPECTION
+
+  target:
+    repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    scope:
+      - complete repository tree at the frozen commit
+      - production Java source under src/main/java
+      - Spring Boot bootstrap/component-scan configuration
+      - exposed MVC and REST components
+      - exposed HTTP handler mappings
+      - actual downstream method calls reachable from exposed handlers
+      - services, mediators, handlers, repositories, DAOs and adapters reached by those calls
+      - entity/table mappings and query/database-object evidence when database-backed
+      - external/file/cache/module terminal dependencies when present
+      - relevant configuration required to prove the call path
+      - Flyway migration files only when needed to identify/verify database objects
+
+  permissions:
+    source_read: true
+    source_write: false
+    database_read: false
+    database_write: false
+    network_read: false
+    external_write: false
+
+  inputs:
+    - name: frozen_source_commit
+      value: 3ae6e61442132d94a307275b08dd65fcef228d89
+    - name: prior_partial_results
+      value: worker/results/WI-0001.md, worker/results/WI-0002.md
+    - name: prior_partial_result_rule
+      value: MAY_BE_USED_AS EVIDENCE BUT MUST_BE_REVALIDATED_WITHIN_THIS_COMPLETE_RUN
+
+  actions:
+    - id: STEP-001
+      instruction: Enumerate the complete repository tree at the frozen commit and identify all production modules and source/configuration areas relevant to application execution.
+      expected_result: A complete repository/source scope inventory is recorded.
+
+    - id: STEP-002
+      instruction: Identify the Spring Boot application bootstrap and prove the production package/component-scan boundary used for web exposure.
+      expected_result: Runtime web-source scope is proved from configuration rather than filename assumptions.
+
+    - id: STEP-003
+      instruction: Inspect every candidate production web component in the proved runtime boundary and classify whether it actually exposes HTTP requests.
+      expected_result: Every candidate is classified EXPOSED or NOT_EXPOSED with source evidence.
+
+    - id: STEP-004
+      instruction: For every exposed component, enumerate every caller-visible HTTP method/path combination and the exact handler method.
+      expected_result: A complete endpoint set is produced with class/method mapping evidence.
+
+    - id: STEP-005
+      instruction: For every exposed endpoint, follow the actual source call path from the handler through every reachable application component required to identify the final dependency.
+      expected_result: Each endpoint has an evidence-backed call path to a final dependency or a clearly identified last proven point.
+
+    - id: STEP-006
+      instruction: For database-backed paths, continue through repository/DAO/query/entity evidence until the physical table, view or function is proved. Do not infer a database object from a class name alone.
+      expected_result: Database objects are recorded only when proved; otherwise the endpoint remains UNRESOLVED with the last proven component.
+
+    - id: STEP-007
+      instruction: Record every unresolved endpoint in simple English, including the last proven component, what is missing, why guessing is unsafe and what follow-up would be needed.
+      expected_result: No unresolved dependency is hidden or guessed.
+
+    - id: STEP-008
+      instruction: Produce one complete Worker result package containing the repository inventory, exposed-component inventory, endpoint inventory, endpoint call paths, final dependencies, unresolved list and evidence references.
+      expected_result: One closed result is sufficient for the orchestration Traceability Matrix Job to start without executing another source-inspection Worker Input for the initial baseline.
+
+  evidence:
+    required: true
+    requirements:
+      - frozen source commit recorded
+      - repository tree/scope evidence
+      - source path and annotation/mapping evidence for every exposed component
+      - handler evidence for every endpoint
+      - source evidence for every proved call-path hop
+      - entity/query/table/view/function evidence for every proved database dependency
+      - plain-English unresolved record for every unproved final dependency
+
+  expected_output:
+    result_path: worker/results/WI-0004.md
+    run_path: worker/runs/WI-0004.md
+    format: MARKDOWN
+    orchestration_artifact: traceability/source-repository-check.md
+
+  completion_check:
+    - The complete frozen repository tree has been checked for the defined initial traceability scope.
+    - Every candidate production web component in the proved runtime boundary is classified.
+    - Every exposed endpoint is inventoried.
+    - Every exposed endpoint has a trace result: COMPLETE or UNRESOLVED/BLOCKED with a clear stopping point.
+    - Every COMPLETE trace is backed by source evidence to its final dependency.
+    - The Worker run is CLOSED.
+    - The result is not PARTIAL.
+
+  blocker_policy:
+    plain_english_required: true
+    guessing_allowed: false
+    return_last_proven_point: true
+    suggest_alternatives: true
+
+  result_states:
+    - COMPLETED
+    - PARTIAL
+    - BLOCKED
+    - FAILED
