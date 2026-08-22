@@ -16,16 +16,16 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 10
-    complete: 10
+    examined_for_final_dependency: 12
+    complete: 12
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 124
+    not_yet_examined: 122
 
   latest_attempt:
-    number: 17
-    run_id: RUN-WI0004-20260822-017
+    number: 18
+    run_id: RUN-WI0004-20260822-018
     state: CLOSED
     result: PARTIAL
     evidence: worker/runs/WI-0004.md
@@ -97,6 +97,20 @@ analysis:
         repository_method: findByAddressTypeContainingIgnoreCase
         final_dependencies: [public.tbl_address_type]
         trace_state: COMPLETE
+      - endpoint: GET /search/driver/{searchText}
+        controller: RestfulDriverServices
+        service: DriverSearchService
+        repository: DriverJpaDao
+        repository_method: findByDriverNameContainingIgnoreCase
+        final_dependencies: [public.tbl_driver]
+        trace_state: COMPLETE
+      - endpoint: GET /find/Driver-by-Id/{driverId}
+        controller: RestfulDriverServices
+        service: DriverFetchByIdService
+        repository: DriverJpaDao
+        repository_method: findById
+        final_dependencies: [public.tbl_driver]
+        trace_state: COMPLETE
     unresolved_endpoint_traces: []
 
   quality_gate_effect:
@@ -114,18 +128,17 @@ analysis:
   proved_now:
     - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
     - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
-    - All ten endpoints examined so far now have COMPLETE controller-to-final-dependency evidence.
-    - The yard state search is proved through AvailableYardCylinderByStateSearchService and YardInventoryLineJpaDao to mapped physical tables including public.tbl_yard_inventory_line.
-    - The on-vehicle search is proved through CylindersOnVehicleSearchServiceWithOwnershipModel and CylinderLogisticsExecutionLineJpaDao to public.tbl_cylinder_logistics_execution_line and its joined persistence objects.
-    - Customer-held and supplier-held cylinder searches are proved by native queries against public.vw_cylinder_party_custody_with_identifiers with direct joins to public.tbl_cylinder and public.tbl_product.
-    - No examined endpoint remains UNRESOLVED after Attempt 17.
+    - Twelve endpoints examined so far now have COMPLETE controller-to-final-dependency evidence.
+    - Both RestfulDriverServices endpoints are proved through DriverSearchService or DriverFetchByIdService to DriverJpaDao, whose DriverDo entity explicitly maps to public.tbl_driver.
+    - DriverSearchService calls DriverJpaDao.findByDriverNameContainingIgnoreCase; DriverFetchByIdService calls JpaRepository.findById on the same mapped entity.
+    - No examined endpoint remains UNRESOLVED after Attempt 18.
 
   not_yet_proved:
-    - Final dependencies for the remaining 124 endpoints.
+    - Final dependencies for the remaining 122 endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Continue WU-BL001-001 by examining the remaining 124 endpoints and proving each endpoint path to its
+    Continue WU-BL001-001 by examining the remaining 122 endpoints and proving each endpoint path to its
     final dependency or recording a justified unresolved/blocked/failed result. Do not unlock Matrix
     construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result
     contract validates, and endpoint trace-result coverage equals 100 percent.
