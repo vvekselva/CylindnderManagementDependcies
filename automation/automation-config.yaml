@@ -1,4 +1,4 @@
-version: 4
+version: 5
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -13,9 +13,10 @@ control_files:
   execution_model: automation/execution-model.md
   workflow_contract: automation/workflow-contract.md
   task_contract: automation/task-contract.md
-  worker_service_contract: automation/worker-service-contract.md
-  source_analysis_worker_contract: automation/source-analysis-worker-contract.md
-  source_analysis_workspace: source-analysis/README.md
+  orchestration_worker_service_contract: automation/worker-service-contract.md
+  independent_worker_contract: automation/worker-component-contract.md
+  independent_worker_workspace: worker/README.md
+  independent_worker_input_template: worker/worker-input-template.yaml
   shared_log: logs/automation-log.md
   human_story: logs/automation-story.md
   sync_register: sync/source-artifact-sync-register.yaml
@@ -28,74 +29,77 @@ coordinator:
     - load_registered_workflows
     - build_runnable_job_queue
     - enforce_job_dependencies
-    - assign_jobs_to_workers
-    - request_source_facts_from_source_analysis_worker
+    - assign_jobs_to_orchestration_lanes
+    - create_or_select_worker_input_files
+    - submit_worker_input_to_independent_worker
+    - consume_closed_worker_results
     - enforce_resource_locks
-    - collect_worker_init_records
-    - collect_worker_service_results
-    - collect_worker_close_records
     - serialize_shared_file_updates
-    - open_human_readable_log_event_on_init
-    - close_human_readable_log_event_on_close
-    - recover_unclosed_worker_logs
+    - open_human_readable_orchestration_log_events
+    - close_human_readable_orchestration_log_events
+    - recover_unclosed_orchestration_logs
     - evaluate_quality_gates
     - run_source_artifact_sync_decisions
     - update_status_and_evidence
     - generate_human_story
 
-source_analysis_worker:
+independent_worker:
   enabled: true
+  component_name: WORKER
   independent_of_orchestration_pool: true
-  consumes_orchestration_worker_slot: false
-  read_only_source_access: true
-  contract: automation/source-analysis-worker-contract.md
-  request_result_template: source-analysis/source-analysis-request-result-template.md
-  target_repository: vvekselva/CylinderManagement
+  consumes_orchestration_lane: false
+  contract: automation/worker-component-contract.md
+  workspace: worker/
+  input_template: worker/worker-input-template.yaml
+  task_definition_source: INPUT_FILE_ONLY
   lifecycle:
     - INIT
     - SERVICE
     - CLOSE
-  responsibilities:
-    - enumerate_source_files
-    - inspect_source_annotations
-    - identify_exposed_spring_components
-    - identify_endpoint_mappings
-    - inspect_method_calls
-    - inspect_dependency_references
-    - inspect_repository_and_dao_calls
-    - inspect_entity_table_mappings
-    - inspect_query_and_database_object_evidence
-    - identify_external_or_terminal_dependencies
-    - return_proved_source_facts
-    - return_unresolved_source_facts_without_guessing
-  forbidden_actions:
+  hard_coded_project_task_logic: false
+  input_requirements:
+    - worker_input_id
+    - requested_by
+    - task_name
+    - task_purpose
+    - task_type
+    - target
+    - scope
+    - permissions
+    - actions
+    - evidence_requirements
+    - expected_output
+    - completion_check
+    - blocker_policy
+  rules:
+    - do_not_start_without_valid_input_file
+    - execute_only_actions_from_input_file
+    - do_not_broaden_scope_without_new_input
+    - do_not_escalate_permissions_from_input
+    - governance_overrides_input_permissions
+    - input_becomes_immutable_after_successful_init
+    - changed_task_requires_new_worker_input_id
+    - explain_blockers_in_plain_english
+    - do_not_guess
+  forbidden_orchestration_actions:
     - schedule_workflows
     - assign_orchestration_jobs
     - choose_job_priority
     - update_global_task_status
     - update_shared_automation_log
     - update_sync_register
-    - notify_user_directly
-    - edit_target_source
-    - create_target_source_branch
-    - commit_target_source_changes
-    - database_write
-  fact_confidence:
-    - PROVED
-    - UNRESOLVED
-    - NOT_APPLICABLE
+    - decide_user_notification
   runtime_paths:
-    runs: source-analysis/runs/SAR-*.md
-    results: source-analysis/results/SAR-*.md
-  mutable_shared_output_owner: NONE
-  same_baseline_parallel_reads_allowed: true
+    inputs: worker/inputs/WI-*.yaml
+    runs: worker/runs/WI-*.md
+    results: worker/results/WI-*.md
 
-worker_pool:
+orchestration_worker_pool:
   worker_count: 10
   lane_count: 10
   max_parallel_jobs: 10
-  source_analysis_worker_is_not_counted: true
-  one_active_job_per_worker: true
+  independent_worker_is_not_counted: true
+  one_active_job_per_lane: true
   lanes:
     - LANE-01
     - LANE-02
@@ -108,50 +112,14 @@ worker_pool:
     - LANE-09
     - LANE-10
 
-worker_service_lifecycle:
+orchestration_worker_service_lifecycle:
   contract: automation/worker-service-contract.md
   mandatory: true
-  applies_to: ORCHESTRATION_JOB_WORKERS
   phases:
     - INIT
     - SERVICE
     - CLOSE
-  init:
-    purpose: PREPARE_JOB_AND_OPEN_LOG
-    must_record:
-      - worker_lane
-      - workflow_id
-      - job_id
-      - run_id
-      - attempt
-      - source_baseline
-      - purpose
-      - planned_actions
-      - expected_output
-    success_state: INITIALIZED
-    blocker_state: BLOCKED_BEFORE_SERVICE
-  service:
-    purpose: EXECUTE_ASSIGNED_JOB_ACTIONS
-    allowed_results:
-      - COMPLETED
-      - PARTIAL
-      - BLOCKED
-      - FAILED
-  close:
-    purpose: FINALIZE_RESULT_AND_CLOSE_LOG
-    mandatory_after_init: true
-    exactly_once: true
-    must_record:
-      - actions_completed
-      - actions_not_completed
-      - outputs
-      - evidence
-      - blocker_or_failure
-      - alternatives
-      - final_result
-      - next_action
-      - end_time
-    final_log_state: CLOSED
+  close_mandatory_after_init: true
   stale_worker_recovery:
     coordinator_closes_unfinished_log: true
     result_state: RESULT_NOT_CONFIRMED
@@ -186,10 +154,9 @@ status_lifecycle:
 blocker_handling:
   plain_english_required: true
   technical_symptom_only_is_not_sufficient: true
-  worker_may_guess: false
-  worker_may_suggest_alternatives: true
-  worker_may_change_workflow_without_approval: false
-  approved_workflow_fallback_may_be_used: true
+  guessing_allowed: false
+  alternatives_may_be_suggested: true
+  workflow_or_architecture_change_requires_approval: true
 
 shared_file_ownership:
   owner: coordinator
@@ -240,10 +207,11 @@ execution:
   require_evidence_before_verified: true
   dependent_jobs_wait_for_completed_or_verified: true
   one_source_baseline_per_workflow: true
-  every_job_attempt_uses_worker_service_lifecycle: true
-  source_analysis_requests_use_independent_lifecycle: true
-  orchestration_workers_consume_source_facts_instead_of_guessing_source_structure: true
-  log_must_be_closed_before_worker_release: true
+  every_orchestration_job_attempt_uses_worker_service_lifecycle: true
+  independent_worker_requires_input_file: true
+  independent_worker_task_is_defined_by_input_file: true
+  independent_worker_run_must_close_before_result_is_accepted: true
+  orchestration_log_must_close_before_lane_release: true
 
 staleness:
   worker_heartbeat_minutes: 5
