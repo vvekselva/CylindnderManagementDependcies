@@ -12,26 +12,22 @@ Use this format for every per-controller artifact created by `WF-001-controller-
 - Source module: `<module>`
 - Source file: `<path>`
 - Exposure type: `MVC | REST | MIXED`
-- Worker lane: `<LANE-##>`
+- Orchestration lane: `<LANE-##>`
 - Run ID: `<RUN-...>`
-- Source Analysis requests used: `<SAR-...>`
-- Final worker result: `COMPLETED | PARTIAL | BLOCKED | FAILED`
+- Final lane result: `COMPLETED | PARTIAL | BLOCKED | FAILED`
 
 ## init()
 
-### What this orchestration worker is starting
+### What this lane is starting
 
-<Simple-English statement of the assigned controller trace.>
-
-### Why this controller is being traced
-
-<Reason this work belongs to the Controller Traceability workflow.>
+<Simple-English statement of the assigned Controller trace.>
 
 ### Planned actions
 
-1. Read the assigned Controller/Endpoint IDs from the workflow inventories.
-2. Request the required source facts from the independent Source Analysis Worker.
-3. Build the traceability artifact only from proved facts.
+1. Read the assigned Controller and Endpoint IDs.
+2. Create/select Worker Input files for the evidence needed.
+3. Consume only CLOSED Worker results.
+4. Assemble the traceability artifact.
 
 ### Expected result
 
@@ -43,7 +39,7 @@ Use this format for every per-controller artifact created by `WF-001-controller-
 - Class: `<class>`
 - Class-level mapping: `<path or none>`
 - Exposed endpoint count: `<n>`
-- Exposure Source Fact IDs: `<SAF-...>`
+- Controller discovery Worker Input/Result: `<WI-####>`
 
 ## Endpoint EP-###-01
 
@@ -54,37 +50,42 @@ Use this format for every per-controller artifact created by `WF-001-controller-
 - Controller method: `<method>`
 - Request/input type: `<type or NOT YET CONFIRMED>`
 - Response/output type: `<type or NOT YET CONFIRMED>`
-- Source Analysis Request: `<SAR-...>`
-- Source Fact IDs: `<SAF-...>`
+- Endpoint-discovery Worker Input/Result: `<WI-####>`
 
 ### service() - Call Path
 
-| Hop | Current Component | Current Method | Calls / Reaches | Source Analysis Fact | Evidence | Status |
-|---:|---|---|---|---|---|---|
-| 1 | `<Controller>` | `<method>` | `<next component>` | `<SAF-...>` | `<source evidence>` | PROVED |
-| 2 | `<component>` | `<method>` | `<next component>` | `<SAF-...>` | `<source evidence>` | PROVED |
+| Hop | Current Component | Current Method | Calls / Reaches | Worker Input / Fact | Status |
+|---:|---|---|---|---|---|
+| 1 | `<Controller>` | `<method>` | `<next component>` | `<WI-#### / fact>` | PROVED |
+| 2 | `<component>` | `<method>` | `<next component>` | `<WI-#### / fact>` | PROVED |
 
 ### Final Dependency
 
 - Type: `<DATABASE | EXTERNAL_API | MESSAGE_QUEUE | FILE_SYSTEM | EMAIL | OBJECT_STORAGE | CACHE | ANOTHER_MODULE | TERMINAL_APPLICATION_ACTION | UNKNOWN>`
 - Final component: `<component>`
 - Database/schema/object, when applicable: `<schema.table/view/function or NOT APPLICABLE>`
-- Final dependency Source Fact IDs: `<SAF-...>`
 - Endpoint trace state: `COMPLETE | UNRESOLVED | BLOCKED | FAILED`
+- Final evidence Worker Input/Result: `<WI-####>`
 
 ### If unresolved or blocked
 
-- Source Analysis Request: `<SAR-...>`
-- Last proven Source Fact: `<SAF-...>`
 - Last proven component: `<component>`
 - What is missing: `<simple-English explanation>`
-- Why the worker stopped: `<why continuing would require guessing or unsafe action>`
+- Why work stopped: `<why continuing would require guessing or unsafe action>`
+- Next Worker Input/task required: `<task description or WI-####>`
 - Alternatives: `<reasonable alternatives>`
-- Next Source Analysis request or Workflow action: `<next action>`
 
 ## Additional Endpoints
 
 Repeat the Endpoint section for every exposed endpoint in this Controller.
+
+## Worker Evidence Used
+
+| Worker Input | Run | Result | Purpose | State |
+|---|---|---|---|---|
+| `WI-####` | `worker/runs/WI-####.md` | `worker/results/WI-####.md` | `<task>` | CLOSED |
+
+Only CLOSED Worker runs may be used as final traceability evidence.
 
 ## close()
 
@@ -95,7 +96,6 @@ Repeat the Endpoint section for every exposed endpoint in this Controller.
 - Endpoints UNRESOLVED: `<n>`
 - Endpoints BLOCKED: `<n>`
 - Endpoints FAILED: `<n>`
-- Source Analysis requests consumed: `<SAR-...>`
 
 ### Outputs and evidence produced
 
@@ -107,7 +107,7 @@ Repeat the Endpoint section for every exposed endpoint in this Controller.
 
 ### What happens next
 
-<Coordinator verification, follow-up, decision, deeper Source Analysis request, or no further action.>
+<Coordinator verification, follow-up Worker Input, decision, or no further action.>
 
 ### Log state
 
@@ -117,9 +117,9 @@ Repeat the Endpoint section for every exposed endpoint in this Controller.
 ## Rules
 
 - Do not remove `init()`, `service()` or `close()` sections.
-- The orchestration worker owns the traceability artifact; the independent Source Analysis Worker owns source-fact generation.
-- Do not call a trace COMPLETE unless every hop to the final dependency references PROVED Source Analysis evidence.
+- The Generic Worker task must come from a `worker/inputs/WI-*.yaml` file.
+- Do not call a trace COMPLETE without evidence for every hop to the final dependency.
+- Do not accept evidence from an unclosed Worker run.
 - Do not guess a database table because of a repository or class name.
 - Record multiple database objects when the endpoint provably uses multiple objects.
-- An UNRESOLVED Source Analysis fact must remain unresolved until deeper analysis proves it.
-- Keep technical evidence short; the main explanation must remain readable in simple English.
+- Keep the main explanation readable in simple English.
