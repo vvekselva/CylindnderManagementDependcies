@@ -42,6 +42,28 @@ analysis:
         The top-level production web.controller package and its production test subpackage
         exist in the frozen baseline and must be classified by annotations/mappings.
 
+    exposed_controller_customer_spot_check:
+      state: PROVED
+      source: cyl.../web/controller/CustomerSpotCylinderCheckController.java
+      class_annotation: '@Controller'
+      class_mapping: /customer-spot-cylinder-check
+      endpoints:
+        - http_method: GET
+          path: /customer-spot-cylinder-check/fetch
+          handler: fetch
+        - http_method: POST
+          path: /customer-spot-cylinder-check/submit
+          handler: submit
+      proven_service_handoff:
+        service: CustomerSpotCylinderCheckService
+        calls:
+          - submitSpotCheck(requestDto)
+          - findActiveSpotCheckBooksForLoad(vehicleLoadId)
+      finding: >-
+        This class is a proved production HTTP Controller, not merely a filename candidate.
+        Its class-level and method-level mappings prove two caller-visible endpoints and
+        source inspection proves the immediate service handoff.
+
     web_controller_test_scope:
       state: PROVED_AS_CANDIDATE_SCOPE
       path: cyl.../web/controller/test/
