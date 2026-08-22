@@ -2,236 +2,231 @@
 
 ## Purpose
 
-This file tells the **orchestration workers** how they must work.
+This guide defines how the automation uses Workers.
 
-There are 10 orchestration worker lanes: `LANE-01` through `LANE-10`.
+There are two roles:
 
-A separate independent Source Analysis Worker exists outside this pool. Its contract is `automation/source-analysis-worker-contract.md`.
+1. **Orchestration lanes** `LANE-01` through `LANE-10` execute Workflow Jobs.
+2. A separate independent **Generic Worker** executes one task supplied through one Worker Input file.
 
-The orchestration workers execute Workflow Jobs. The Source Analysis Worker only reads source files and returns proved source facts.
+The Generic Worker is not a source-analysis worker and is not `LANE-11`.
 
-## Automation hierarchy
-
-The orchestration hierarchy is similar to GitHub Actions:
-
-```text
-AUTOMATION PROGRAM
-    |
-    +-- WORKFLOW
-          |
-          +-- JOB
-                |
-                +-- ACTION
-                +-- ACTION
-                +-- ACTION
-```
-
-A Workflow is the complete objective. A Job is one independently assignable unit of work. An Action is one clear step inside the Job.
-
-A worker receives one Job at a time. It must not invent another Job for itself.
-
-## Source-analysis boundary
-
-When an orchestration Job needs to understand Java source, it should request facts from the independent Source Analysis Worker rather than independently guessing or creating a separate interpretation of the source.
+## Core rule
 
 ```text
-Orchestration Job
-      |
-      | needs source facts
-      v
-Source Analysis Worker
-      |
-      | returns PROVED / UNRESOLVED facts
-      v
-Orchestration Job continues
+WORKER = fixed execution behaviour
+INPUT FILE = actual task
 ```
 
-The Source Analysis Worker:
+The Generic Worker must not contain permanent project-specific instructions.
 
-- does not consume a lane;
-- does not claim Workflow Jobs;
-- does not choose priorities;
-- does not update TaskStatus or the shared orchestration log;
-- does not change source code;
-- does not choose remediation or architecture;
-- returns source evidence only.
+If the task changes, the input file changes.
 
-## Worker Service Lifecycle
-
-Every assigned orchestration Job attempt must use the lifecycle defined in `automation/worker-service-contract.md`:
+## Orchestration hierarchy
 
 ```text
-Receive READY Job
-      |
-      v
-init()
-      |
-      +--> identify the Job
-      +--> confirm source baseline and prerequisites
-      +--> explain what work is about to start
-      +--> open the human-readable activity log
-      |
-      v
-service()
-      |
-      +--> perform ACTION-01
-      +--> perform ACTION-02
-      +--> request Source Analysis facts when needed
-      +--> collect meaningful evidence
-      |
-      v
-close()
-      |
-      +--> state whether work completed or not
-      +--> explain blockers/failures in simple English
-      +--> record outputs and evidence
-      +--> state what happens next
-      +--> close the activity log
-      |
-      v
-Return result to Coordinator
+WORKFLOW
+   |
+   +-- JOB
+         |
+         +-- ACTION
+         +-- ACTION
+         +-- ACTION
 ```
 
-Once `init()` opens a run, `close()` is mandatory exactly once. A worker must call `close()` even when it is blocked, fails, completes only part of the work, or is stopped.
+The coordinator decides which Jobs are READY and assigns them to the ten orchestration lanes.
 
-## init() - before actual work starts
+## Generic Worker input flow
 
-`init()` is preparation. It does not perform the actual Job.
+```text
+Workflow/Job needs work performed
+        |
+        v
+worker/inputs/WI-####.yaml
+        |
+        v
+GENERIC WORKER
+ init -> service -> close
+        |
+        +--> worker/runs/WI-####.md
+        +--> worker/results/WI-####.md
+        |
+        v
+Coordinator / orchestration Job consumes result
+```
 
-Before starting `service()`, the worker must confirm:
+The Generic Worker performs no task without a valid input file.
 
-- Workflow ID and Job ID;
-- Worker Lane;
-- Run ID and attempt number;
-- exact source repository;
-- exact source commit or baseline;
-- dependencies required by the Job;
-- required resource locks;
-- Actions that will be performed;
-- Source Analysis facts/requests required by the Job;
+## What belongs in an input file
+
+Every Worker Input must define:
+
+- Worker Input ID;
+- requesting Workflow/Job/Action when applicable;
+- task name;
+- task purpose;
+- target repository/resource;
+- exact baseline/ref when required;
+- allowed scope;
+- requested permissions;
+- ordered Actions;
+- evidence requirements;
 - expected output;
 - completion check;
-- logging rules.
+- blocker policy.
 
-The worker then explains in simple English what it is about to do.
+Use `worker/worker-input-template.yaml`.
 
-If required information is missing, `init()` returns `BLOCKED_BEFORE_SERVICE`. The worker must not guess. It skips `service()` and goes directly to `close()`.
+## Generic Worker lifecycle
 
-## service() - perform the assigned work
+### init()
 
-`service()` is where the worker performs the actual Job Actions.
+The Worker reads the input file and logs:
 
-The worker performs the Actions in the order defined by the Job unless the Workflow explicitly permits another order.
+- input ID;
+- task to perform;
+- purpose;
+- target and baseline;
+- scope;
+- permissions;
+- Actions;
+- expected output;
+- completion rule.
 
-When source understanding is required, the worker consumes Source Analysis facts. If deeper facts are needed, it requests deeper analysis through the defined request contract.
+If the input is missing, ambiguous or asks for a forbidden permission, `service()` does not start. `close()` still runs with `BLOCKED_BEFORE_SERVICE`.
 
-An orchestration worker must not use `service()` to:
+### service()
 
-- invent new work;
-- independently reinterpret source when a Source Analysis fact is unresolved;
-- change the architecture without approval;
-- change a public API without approval;
-- choose a new database strategy without approval;
-- perform unrelated refactoring or cleanup;
-- hide unresolved findings.
+The Worker performs only the Actions listed in the input.
 
-During `service()`, meaningful progress may be reported in plain English. Low-level technical noise is evidence, not the main human-readable explanation.
+The Worker must not:
 
-If the worker cannot continue safely, it stops at the last proven point and returns `BLOCKED` or `PARTIAL`. If an attempted Action produces the wrong result, it returns `FAILED`.
+- invent another task;
+- broaden scope;
+- increase permissions;
+- silently alter a Workflow;
+- choose a different architecture;
+- perform unrelated cleanup;
+- guess facts that cannot be proved.
 
-## close() - finish the attempt and close the log
+### close()
 
-`close()` always runs after `init()`.
+The Worker records:
 
-It must record:
-
-- whether `init()` succeeded;
-- whether `service()` ran;
 - Actions completed;
 - Actions not completed;
-- Source Analysis Request/Fact IDs used when applicable;
-- outputs produced;
-- evidence produced;
-- blocker/failure explanation, if any;
-- alternatives requiring a decision, if any;
-- final worker result;
-- next expected action;
-- end time;
-- log state `CLOSED`.
+- outputs;
+- evidence;
+- blockers/failures in simple English;
+- alternatives when useful;
+- final result;
+- next task/input required if more work is needed;
+- run state `CLOSED`.
 
-A worker is not released to another Job until its current Job attempt has been closed.
+A Worker result is not accepted as final evidence until its run is CLOSED.
 
-## Worker pool
+## Input immutability
 
-There are exactly 10 orchestration worker lanes: `LANE-01` through `LANE-10`.
+Once `init()` succeeds, the input file is frozen for that execution.
 
-The coordinator is separate from the 10 workers.
+Do not edit the same input to change the task while it is running or after it has produced evidence.
 
-The Source Analysis Worker is also separate and is not counted as lane 11.
+A changed task requires a new ID:
 
-Each orchestration lane may own only one active Job attempt at a time.
+```text
+WI-0017 -> original task
+WI-0018 -> follow-up or changed task
+```
 
-## Difference between BLOCKED and FAILED
+## Orchestration lane lifecycle
 
-`BLOCKED` means the worker cannot safely continue because something required is missing, unavailable, unclear or needs a decision.
+The ten orchestration lanes continue to use:
+
+```text
+automation/worker-service-contract.md
+```
+
+Each Job attempt follows:
+
+```text
+init -> service -> close
+```
+
+When a Job requires separate evidence-gathering work, the coordinator creates/selects a Worker Input and the Generic Worker executes it.
+
+The lane then consumes the CLOSED Worker result.
+
+## Permissions
+
+Worker permissions are explicit in the input file.
 
 Example:
 
-> Source Analysis proved that the endpoint reaches `TripQueryBuilder`, but the next query input comes from configuration that is not available in the frozen source. The database object cannot be confirmed. I am stopping at the last proved component instead of guessing.
+```yaml
+permissions:
+  source_read: true
+  source_write: false
+  database_read: false
+  database_write: false
+```
 
-`FAILED` means the worker was able to perform the requested Action, but the Action produced an incorrect result.
+Governance always wins over the input. An input cannot grant a permission forbidden by policy.
 
-These states must not be mixed together.
+## Blocked versus failed
 
-## How a worker reports a blocker
+`BLOCKED` means required information, permission or a decision is missing.
 
-Workers must explain blockers in simple English.
+`FAILED` means the requested Action was attempted but did not produce a valid result.
 
-Do not write only:
+A blocker must be explained in simple English:
 
-`Symbol resolution failed.`
-
-Instead write:
-
-> I was trying to complete the endpoint trace. The Source Analysis result proves the call reaches another component, but the source needed to prove the next dependency is not available. Because of that, I cannot confirm where the request finally goes. Continuing would require guessing, so I stopped here.
-
-Technical detail may be added as evidence.
-
-Every blocker report must answer:
-
-1. What was I trying to do?
-2. Where did I stop?
-3. What exactly prevented me from continuing?
-4. Why is it unsafe to continue without a decision?
-5. What information or decision would remove the blocker?
+1. What did the input ask the Worker to do?
+2. Where did it stop?
+3. What exactly prevents progress?
+4. Why would continuing require guessing or unsafe behaviour?
+5. What information, permission or new input is needed?
 6. What alternatives can be considered?
 
-The worker may suggest alternatives, but it must not change the Workflow, architecture, database strategy or public API on its own unless that alternative was already approved in the Workflow.
+## No guessing
 
-## No guessing rule
+When a task asks the Worker to inspect or prove a fact, use:
 
-When the worker cannot prove a fact, it must say `NOT YET CONFIRMED` or `UNRESOLVED`.
+- `PROVED`;
+- `UNRESOLVED`;
+- `NOT_APPLICABLE`.
 
-A `PROVED` Source Analysis fact may be used directly as evidence. An `UNRESOLVED` Source Analysis fact must remain unresolved until deeper analysis proves it.
+Do not replace `UNRESOLVED` with an assumption.
 
 ## Shared-file rule
 
-Orchestration workers do not directly edit shared control files while parallel workers are active.
-
-The coordinator owns shared files such as:
+The Generic Worker does not directly edit shared control files such as:
 
 - `TaskStatus.md`;
 - `logs/automation-log.md`;
 - `logs/automation-story.md`;
+- `repository-catalogue.md`;
 - `sync/source-artifact-sync-register.yaml`;
-- consolidated traceability reports.
+- consolidated workflow reports.
 
-The Source Analysis Worker is also prohibited from editing those shared files.
+The coordinator serializes shared-file updates after consuming CLOSED Worker results.
+
+## Controller Traceability example
+
+The Worker remains generic while input files carry the Controller Traceability tasks:
+
+```text
+WI-0001 -> determine production web-source boundary
+WI-0002 -> verify first exposed-component batch
+WI-0003 -> verify remaining exposed components
+later WI files -> endpoint mappings, call paths, repository/query/table evidence
+```
+
+If a later Workflow needs a completely different task, the same Worker is used with different inputs.
 
 ## Completion rule
 
-An orchestration worker may return `COMPLETED` only when every required Action was attempted, the expected result was produced, required Source Analysis facts are available, evidence exists, and the completion check passed.
+The Worker may return `COMPLETED` only when all required input Actions and completion checks pass.
 
-If these conditions are not met, the result remains `PARTIAL`, `BLOCKED` or `FAILED` as appropriate.
+Otherwise use `PARTIAL`, `BLOCKED` or `FAILED`.
 
-The coordinator, not the worker and not the Source Analysis Worker, decides whether a completed result becomes `VERIFIED` and `CLOSED` at Workflow level.
+The coordinator decides whether the Worker result satisfies the calling Workflow gate.
