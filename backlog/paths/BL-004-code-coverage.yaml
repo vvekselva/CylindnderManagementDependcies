@@ -1,0 +1,81 @@
+completion_path:
+  id: CP-BL-004-v1
+  backlog_item: BL-004
+  type: CODE_COVERAGE
+  name: Code Coverage Report Completion Path
+
+  purpose: >-
+    Produce a trustworthy code-coverage report from the verified unit/integration test
+    baseline without inventing thresholds that are not declared by project policy.
+
+  prerequisites:
+    backlog_items:
+      - BL-002
+      - BL-003
+    rule: ALL_VERIFIED_OR_CLOSED
+
+  phases:
+    - id: ANALYZE
+      owner: ORCHESTRATOR
+      actions:
+        - confirm Unit Test and Integration Test dependencies are satisfied
+        - identify modules to include/exclude from coverage
+        - identify the actual coverage tool/plugin and test commands configured in source
+        - identify any declared coverage thresholds or explicitly record NONE_DECLARED
+        - define aggregation rules for multi-module reporting
+      outputs:
+        - backlog/runtime/BL-004/analysis.yaml
+      gate: coverage command, scope and threshold policy are known or explicitly unresolved
+
+    - id: PLAN
+      owner: ORCHESTRATOR
+      actions:
+        - create Work Units for required coverage runs/aggregation
+        - define artifact paths and evidence requirements
+        - generate Worker Input files
+      outputs:
+        - backlog/runtime/BL-004/execution-plan.yaml
+        - worker/inputs/WI-*.yaml
+
+    - id: EXECUTE
+      owner: ORCHESTRATOR
+      actions:
+        - schedule coverage Worker Inputs
+        - run declared test/coverage commands
+        - collect machine coverage artifacts and summaries
+        - aggregate only using the rules established during analysis
+      outputs:
+        - backlog/runtime/BL-004/work-unit-status.yaml
+        - worker/results/WI-*.yaml
+
+    - id: VALIDATE
+      owner: ORCHESTRATOR
+      checks:
+        - coverage generation completed successfully
+        - report is based on the approved test/source baseline
+        - module totals reconcile with the generated artifacts
+        - declared thresholds are evaluated when they exist
+        - no threshold is invented when none is declared
+      outputs:
+        - quality/code-coverage/coverage-report.md
+        - quality/code-coverage/coverage-summary.yaml
+      gate: coverage report generated and validated
+
+    - id: CLOSE
+      owner: ORCHESTRATOR
+      actions:
+        - persist report/evidence
+        - close required runs
+        - mark BL-004 VERIFIED then CLOSED
+
+  parallelism:
+    max_parallel_work_units: 10
+    rule: independent module coverage runs may execute concurrently when aggregation remains deterministic
+
+  completion_conditions:
+    - prerequisite Backlog Items satisfied
+    - coverage scope/tooling analysed
+    - coverage report generated
+    - threshold policy evaluated without invention
+    - required outputs exist
+    - all required runs closed
