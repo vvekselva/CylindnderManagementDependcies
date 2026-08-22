@@ -1,0 +1,75 @@
+version: 1
+purpose: >-
+  Tell the Orchestrator which Backlog Items are currently allowed to run. This is the
+  execution switchboard for scheduled Orchestrator runs. A true flag does not bypass
+  dependencies or quality gates; it only makes the item eligible for consideration.
+
+selection:
+  mode: ENABLED_BACKLOG_ITEMS_ONLY
+  max_active_backlog_items: 1
+  choose_from_enabled_items_by: HIGHEST_PRIORITY_ELIGIBLE_ITEM
+  require_common_dependency_gate: true
+  require_item_specific_quality_gate: true
+  require_item_quality_gate_approved_by_user: true
+
+backlog_items:
+  BL-001:
+    name: Controller Traceability
+    run_enabled: true
+    completion_path: backlog/paths/BL-001-traceability.yaml
+    quality_gate: backlog/gates/BL-001-traceability.yaml
+    quality_gate_configured: true
+    quality_gate_approved: true
+
+  BL-002:
+    name: Unit Test Completion
+    run_enabled: false
+    completion_path: backlog/paths/BL-002-unit-test.yaml
+    quality_gate: null
+    quality_gate_configured: false
+    quality_gate_approved: false
+
+  BL-003:
+    name: Integration Test Completion
+    run_enabled: false
+    completion_path: backlog/paths/BL-003-integration-test.yaml
+    quality_gate: null
+    quality_gate_configured: false
+    quality_gate_approved: false
+
+  BL-004:
+    name: Code Coverage Report
+    run_enabled: false
+    completion_path: backlog/paths/BL-004-code-coverage.yaml
+    quality_gate: null
+    quality_gate_configured: false
+    quality_gate_approved: false
+
+  BL-005:
+    name: ArchUnit Architecture Test
+    run_enabled: false
+    completion_path: backlog/paths/BL-005-archunit.yaml
+    quality_gate: null
+    quality_gate_configured: false
+    quality_gate_approved: false
+
+  BL-006:
+    name: Requirements Traceability and Gap Analysis
+    run_enabled: false
+    completion_path: backlog/paths/BL-006-requirements.yaml
+    quality_gate: null
+    quality_gate_configured: false
+    quality_gate_approved: false
+
+scheduled_run_rules:
+  - read this file first
+  - ignore Backlog Items with run_enabled false
+  - apply QG-DEP-001 before item-specific work
+  - refuse execution when item-specific quality-gate config is missing or unapproved
+  - load the selected item's Completion Path
+  - perform Orchestrator analysis before creating/changing its Execution Plan
+  - generate Worker Inputs only from approved Work Units
+  - consume only CLOSED Worker results that satisfy their result contract
+  - evaluate all automatic item-specific quality gates before VERIFIED
+  - wait for explicit user approval when a USER-owned acceptance gate is reached
+  - never mark CLOSED without the required user acceptance
