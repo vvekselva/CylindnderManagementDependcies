@@ -46,7 +46,6 @@ Checkpoint: 19 exposed components, 55 proved caller-visible HTTP method/path com
 ---
 
 ## EVENT EVT-0012 - WI-0004 Fifth Source-Check Attempt Advanced Classification
-Time: `2026-08-22T03:01:05-05:30`
 Run: `RUN-WI0004-20260822-005`
 Status: `PARTIAL / CLOSED`
 Checkpoint: 24 exposed components, 67 proved caller-visible HTTP method/path combinations, 2 NOT_EXPOSED candidates, 36 candidates remaining.
@@ -61,27 +60,34 @@ Checkpoint: 28 exposed components, 77 proved caller-visible HTTP method/path com
 ---
 
 ## EVENT EVT-0014 - WI-0004 Seventh Source-Check Attempt Completed web.controller.test Classification
-Time: `2026-08-22T04:58:26-05:30`
+Run: `RUN-WI0004-20260822-007`
+Status: `PARTIAL / CLOSED`
+Checkpoint: 33 exposed components, 86 proved caller-visible HTTP method/path combinations, 3 NOT_EXPOSED candidates, 26 candidates remaining.
+
+---
+
+## EVENT EVT-0015 - WI-0004 Eighth Source-Check Attempt Advanced misc.web.controller Classification
+Time: `2026-08-22T06:02:23-05:30`
 Backlog Item: `BL-001 Controller Traceability`
 Work Unit: `WU-BL001-001 Complete Source Repository Check`
 Worker Input: `WI-0004`
-Run: `RUN-WI0004-20260822-007`
+Run: `RUN-WI0004-20260822-008`
 Status: `PARTIAL / CLOSED`
 Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ### What was attempted
-The Orchestrator re-read the backlog run-selection file, enforced `QG-DEP-001`, loaded the approved Traceability Quality Gate, and continued only the enabled BL-001 Source Check.
+The Orchestrator re-read the run-selection file, enforced the common dependency gate, loaded the approved BL-001 Quality Gate and continued only the enabled Traceability Source Check.
 
 ### What was proved
-The final five `web.controller.test` candidates were classified and all five are exposed controllers:
+Five `misc.web.controller` candidates were classified, all as exposed controllers:
 
-- `TripReturnController` — 2 HTTP method/path combinations.
-- `TripReviewController` — 3 HTTP method/path combinations.
-- `VehicleLoadByPageController` — 2 HTTP method/path combinations.
-- `VehicleLoadFetchByIdController` — 1 HTTP method/path combination.
-- `VehicleTripController` — 1 HTTP method/path combination.
+- `CustomerFetchByPageController` — 1 endpoint.
+- `CustomerFetchController` — 1 endpoint.
+- `CustomerUpdateController` — 1 endpoint.
+- `DomainLookupController` — 7 endpoints.
+- `LookupManagementController` — 6 endpoints.
 
-The `web.controller.test` package is now fully classified at **30 of 30 candidates**. The cumulative overall checkpoint advanced to **33 exposed components, 86 proved caller-visible HTTP method/path combinations, 3 proved NOT_EXPOSED candidates, and 26 candidates remaining to classify**.
+The cumulative checkpoint advanced to **38 exposed components, 102 proved caller-visible HTTP method/path combinations, 3 proved NOT_EXPOSED candidates, and 21 candidates remaining to classify**.
 
 ### Quality Gate effect
 - `QG-DEP-001`: PASS
@@ -92,4 +98,4 @@ The `web.controller.test` package is now fully classified at **30 of 30 candidat
 - `QG-TRC-005` through user acceptance: WAITING
 
 ### Result
-Attempt 7 closed as `PARTIAL`. The canonical completed `worker/results/WI-0004.yaml` was not created or accepted, so Matrix construction remains locked. The next run must continue the same approved Source Check through the remaining 26 candidates in the other scanned package trees and continue call-path/final-dependency evidence without guessing.
+Attempt 8 closed as `PARTIAL`. The canonical completed `worker/results/WI-0004.yaml` was not created or accepted, so Matrix construction remains locked. The next run must continue the same approved Source Check through the remaining 21 candidates and continue call-path/final-dependency evidence without guessing.
