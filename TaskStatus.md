@@ -13,34 +13,46 @@
 | Independent Worker consumes orchestration lane | NO |
 | Independent Worker task definition | INPUT FILE ONLY |
 | Independent Worker lifecycle | `init() -> service() -> close()` |
-| Worker Input template | `worker/worker-input-template.yaml` |
-| Human-readable automation log | ACTIVE |
-| Source-to-artifact synchronization | CONFIGURED |
-| Direct automation write to source `main` | Disabled by policy |
-| Repository catalogue | CONFIGURED FOR GENERIC WORKER PATHS |
+| Initial Traceability mode | `COMPLETE_REPOSITORY_CHECK_THEN_MATRIX` |
+| Repository catalogue | CONFIGURED FOR WORKER + WF-001 RUNTIME PATHS |
 
-## Execution Architecture
+## Initial Traceability Rule
+
+The first Controller Traceability baseline is strictly sequential:
 
 ```text
-                    COORDINATOR
-                         |
-            +------------+------------+
-            |                         |
-            v                         v
-   ORCHESTRATION PLANE           WORKER INPUT
-   LANE-01 ... LANE-10               |
-            |                        v
-            |                  GENERIC WORKER
-            |               init -> service -> close
-            |                        |
-            |<------ result ----------+
-            v
-      Workflow artifacts
+JOB-001 Freeze Source Baseline
+        |
+        v
+JOB-002 Complete Source Repository Check
+        |
+        | executes only WI-0004
+        | must finish COMPLETED + CLOSED
+        v
+traceability/source-repository-check.md
+        |
+        v
+JOB-003 Complete Traceability Matrix
+        |
+        +--> controller-inventory.md
+        +--> endpoint-inventory.md
+        +--> controller-traceability.md
+        +--> unresolved-traceability.md
+        |
+        v
+JOB-004 Register Initial Source Artifact Baseline
+        |
+        v
+JOB-005 Close Initial Traceability Run
 ```
 
-The independent component is called `WORKER`. It is not a special source-analysis worker and is not `LANE-11`.
+`JOB-003` is not allowed to start from partial Worker results.
 
-The Worker does not know its task until it reads a `worker/inputs/WI-*.yaml` file.
+## Frozen Source Baseline
+
+`3ae6e61442132d94a307275b08dd65fcef228d89` - `Base Projects`
+
+The complete Source Repository Check and the Traceability Matrix must both describe this exact commit.
 
 ## Orchestration Lane Pool
 
@@ -57,105 +69,116 @@ The Worker does not know its task until it reads a `worker/inputs/WI-*.yaml` fil
 | LANE-09 | IDLE | - | - | NOT_OPENED |
 | LANE-10 | IDLE | - | - | NOT_OPENED |
 
+The initial Source Repository Check is executed by the independent Generic Worker and therefore does not occupy an orchestration lane.
+
 ## Generic Worker
 
 | Item | Current State |
 |---|---|
 | Component | `WORKER` |
 | Contract | `automation/worker-component-contract.md` |
-| Workspace | `worker/` |
 | Input pattern | `worker/inputs/WI-*.yaml` |
 | Run pattern | `worker/runs/WI-*.md` |
 | Result pattern | `worker/results/WI-*.md` |
-| Counted in ten orchestration lanes | NO |
-| Hard-coded project task logic | NO |
 | Actual task source | INPUT FILE |
 | Open Worker runs | 0 |
-| Next Worker Input | `WI-0003` |
+| Current/next executable input | `WI-0004` |
 
-## Automation Framework Status
+## Worker Input State
 
-| Component | State | Notes |
-|---|---|---|
-| Repository catalogue | CONFIGURED | Generic Worker static files and dynamic input/run/result paths registered. |
-| Catalogue gate | CONFIGURED | Static files plus controlled dynamic runtime paths. |
-| Automation governance | CONFIGURED | Overall rules defined. |
-| Orchestration lane service contract | CONFIGURED | `automation/worker-service-contract.md`. |
-| Generic Worker component contract | CONFIGURED | `automation/worker-component-contract.md`. |
-| Worker input template | CONFIGURED | `worker/worker-input-template.yaml`. |
-| Worker operating guide | CONFIGURED | Input-driven Worker model documented. |
-| Execution model | CONFIGURED | Ten orchestration lanes plus independent input-driven Worker. |
-| Controller Traceability workflow | CONFIGURED / ACTIVE | Uses Worker Input files. |
-| Controller Traceability design | CONFIGURED | Tasks are inputs, not Worker identities. |
-| Controller trace template | CONFIGURED | Artifacts reference `WI-####` evidence. |
-| Source-artifact sync workflow | CONFIGURED | Also uses Generic Worker inputs. |
-| Obsolete source-analysis component/files | REMOVED | Useful history migrated to `WI-0001` and `WI-0002`. |
+| Worker Input | State | Purpose | Initial Matrix Use |
+|---|---|---|---|
+| `WI-0001` | CLOSED / HISTORICAL | Earlier source-boundary discovery | NO |
+| `WI-0002` | CLOSED / HISTORICAL | Earlier partial exposure verification | NO |
+| `WI-0003` | SUPERSEDED | Earlier remaining-controller batch | NO |
+| `WI-0004` | READY | Complete Source Repository Check | YES - sole source-check result for initial matrix |
 
-## WF-001 Controller Traceability
-
-Frozen source baseline:
-
-`3ae6e61442132d94a307275b08dd65fcef228d89` - `Base Projects`
+## WF-001 Job Status
 
 | Job | State | Current Result / Next Action |
 |---|---|---|
-| `JOB-001 Freeze Source Baseline` | VERIFIED | `GATE-TRC-001` passed. |
-| `JOB-002 Build Exposed Controller Inventory` | IN_PROGRESS | `WI-0001` and `WI-0002` closed; execute `WI-0003`. |
-| `JOB-003 Build Endpoint Inventory` | YET_TO_DO | Generate endpoint-discovery Worker Inputs after Controller inventory closes. |
-| `JOB-004 Trace Controllers In Parallel` | YET_TO_DO | Ten lanes use follow-up Worker Inputs for call-path evidence. |
-| `JOB-005 Consolidate Controller Traceability` | YET_TO_DO | Depends on Controller artifacts. |
-| `JOB-006 Run Source Artifact Sync Check` | YET_TO_DO | Depends on consolidated artifacts. |
-| `JOB-007 Validate Traceability Coverage` | YET_TO_DO | Coverage target 100%. |
-| `JOB-008 Generate Human Story` | YET_TO_DO | Runs after closure/evidence gates. |
+| `JOB-001 Freeze Source Baseline` | VERIFIED | Source baseline fixed; GATE-TRC-001 PASS. |
+| `JOB-002 Complete Source Repository Check` | READY | Execute `WI-0004` completely; accept only COMPLETED + CLOSED result. |
+| `JOB-003 Complete Traceability Matrix` | WAITING | Hard blocked until JOB-002 is VERIFIED and source repository check is closed. |
+| `JOB-004 Register Initial Source Artifact Baseline` | WAITING | Depends on completed Traceability Matrix. |
+| `JOB-005 Close Initial Traceability Run` | WAITING | Depends on source-artifact registration. |
 
-## Worker Input Progress
+## JOB-002 Required Output
 
-| Worker Input | State | Purpose |
-|---|---|---|
-| `WI-0001` | COMPLETED / CLOSED | Determine production web-source boundary. |
-| `WI-0002` | PARTIAL / CLOSED | Verify first five exposed-component candidates. |
-| `WI-0003` | READY | Verify remaining candidate production web components. |
+`WI-0004` must produce one complete result containing:
 
-## Proved Exposed Components So Far
+- complete repository/source scope inventory;
+- complete exposed production web-component set;
+- complete caller-visible endpoint set;
+- actual call-path trace for every exposed endpoint;
+- proved final dependency for every resolvable endpoint;
+- physical table/view/function evidence for database-backed COMPLETE paths;
+- explicit unresolved records with last proven component and next investigation step;
+- source evidence for all proved conclusions.
 
-- `CustomerFetchByPageController` - `GET /fetchCustomerByPage`
-- `CustomerFetchController` - `GET /displayCustomer`
-- `CustomerUpdateController` - `POST /updateCustomer`
-- `DomainLookupController` - includes `GET /domainLookup`
-- `LookupManagementController` - includes `GET /lookup` and `GET /lookupManagement`
+Accepted orchestration artifact:
 
-Stable `CTL-###` IDs are assigned only after the complete Controller set is proved.
+`traceability/source-repository-check.md`
 
-## Quality Gates
+## JOB-003 Traceability Matrix Rule
+
+After JOB-002 closes successfully, JOB-003 creates:
+
+- `traceability/controller-inventory.md`;
+- `traceability/endpoint-inventory.md`;
+- `traceability/controller-traceability.md`;
+- `traceability/unresolved-traceability.md`.
+
+The matrix must contain one trace result for every endpoint found by the complete repository check. Coverage must be 100 percent, even when some rows are explicitly UNRESOLVED.
+
+## Quality Gate State
 
 | Gate | State |
 |---|---|
 | GATE-TRC-001 Source Baseline Frozen | PASS |
-| GATE-TRC-002 Production Web Source Scope Proved | PASS |
-| GATE-TRC-003 Exposed Controller Inventory Complete | IN PROGRESS |
-| GATE-TRC-004 Exposed Endpoint Inventory Complete | YET TO DO |
-| GATE-TRC-005 Every Endpoint Has Trace Result | YET TO DO |
-| GATE-TRC-006 Complete Traces Reference Closed Worker Evidence | YET TO DO |
-| GATE-TRC-007 Unresolved Traces Have Clear Stopping Point | YET TO DO |
-| GATE-TRC-008 Coverage Is 100 Percent | YET TO DO |
-| GATE-TRC-009 Source Artifact Sync Registered | YET TO DO |
-| GATE-TRC-010 Worker/Orchestration Runs Closed And Story Current | YET TO DO |
+| GATE-TRC-002 Complete Source Repository Check Closed | WAITING ON WI-0004 |
+| GATE-TRC-003 Complete Exposed Controller Set Produced | WAITING ON WI-0004 |
+| GATE-TRC-004 Complete Endpoint Set Produced | WAITING ON WI-0004 |
+| GATE-TRC-005 Every Endpoint Has Trace Result | WAITING ON WI-0004 |
+| GATE-TRC-006 Complete Traces Have Source Evidence | WAITING ON WI-0004 |
+| GATE-TRC-007 Unresolved Traces Have Clear Stopping Point | WAITING ON WI-0004 |
+| GATE-TRC-008 Traceability Matrix Coverage Is 100 Percent | WAITING ON JOB-003 |
+| GATE-TRC-009 Source Artifact Sync Registered | WAITING ON JOB-004 |
+| GATE-TRC-010 Runs Closed And Story Current | WAITING ON JOB-005 |
+
+## Runtime Files
+
+The first run is tracked under:
+
+`workflows/WF-001-controller-traceability/runtime/`
+
+Current runtime files include:
+
+- `run.yaml`;
+- `job-status.yaml`;
+- `queue.yaml`;
+- `worker-input-register.yaml`;
+- `gate-status.yaml`;
+- `lane-assignments.yaml`.
 
 ## Scheduling State
 
 ```text
+Run: RUN-WF001-20260822-001
 Coordinator: WF-001 ACTIVE
+Current Job: JOB-002 READY
+Ready Worker Input: WI-0004
+Generic Worker: READY
 Orchestration active lanes: 0 / 10
-Generic Worker: READY FOR WI-0003
 Open Worker runs: 0
-Blocked Jobs: 0
+JOB-003 Traceability Matrix: WAITING / LOCKED
+Blocked Jobs requiring user decision: 0
 Failed Jobs: 0
 Verified Jobs: 1
-Current Job: JOB-002 IN_PROGRESS
 ```
 
 ## Branch State
 
-All current framework and WF-001 execution changes are on `chore/rename-dependency-files`.
+All current framework and WF-001 initial-run changes are on `chore/rename-dependency-files`.
 
 They have not been merged into `main`.
