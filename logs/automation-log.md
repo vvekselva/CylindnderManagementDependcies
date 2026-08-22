@@ -162,3 +162,17 @@ The Orchestrator continued only BL-001 / WU-BL001-001 and proved the four remain
 - `POST /search/cylinder/by-supplier` -> `CylindersBySupplierSearchServiceWithOwnershipModel` -> native `SupplierHeldCylinderSearchJpaDao` query against `public.vw_cylinder_party_custody_with_identifiers`, `public.tbl_cylinder`, and `public.tbl_product`.
 
 Checkpoint: 10 / 134 endpoints examined; **10 COMPLETE; 0 UNRESOLVED; 124 NOT YET EXAMINED**. The stale unresolved-traceability artifact was reconciled to this checkpoint. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS because the remaining 124 endpoints have not yet been traced and the canonical Source Check output is not complete. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, Matrix construction remains locked, and BL-001 remains PARTIAL and open.
+
+---
+
+## EVENT EVT-0026 - WI-0004 Eighteenth Attempt Proved Driver Endpoint Dependencies
+Run: `RUN-WI0004-20260822-018`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The Orchestrator continued only BL-001 / WU-BL001-001. Both `RestfulDriverServices` endpoints were proved through concrete Spring services and `DriverJpaDao` to `DriverDo`, which explicitly maps to `public.tbl_driver`:
+
+- `GET /search/driver/{searchText}` -> `DriverSearchService` -> `DriverJpaDao.findByDriverNameContainingIgnoreCase(...)` -> `public.tbl_driver`.
+- `GET /find/Driver-by-Id/{driverId}` -> `DriverFetchByIdService` -> `DriverJpaDao.findById(...)` -> `public.tbl_driver`.
+
+Checkpoint: **12 / 134 endpoints examined; 12 COMPLETE; 0 UNRESOLVED; 122 NOT YET EXAMINED**. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, matrix construction and dependent work units remain locked, and BL-001 remains PARTIAL and open.
