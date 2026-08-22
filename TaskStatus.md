@@ -27,7 +27,11 @@ The authoritative execution switchboard is `backlog/orchestrator-run-config.yaml
 | QG-TRC-003 Controller Inventory Completeness | **PASS** |
 | QG-TRC-004 Endpoint Inventory Completeness | **IN PROGRESS** |
 | QG-TRC-005 Source Check Output Validity | WAITING |
-| QG-TRC-006 through QG-TRC-014 | WAITING |
+| QG-TRC-006 Endpoint To Trace Completeness | WAITING |
+| QG-TRC-007 Call Path Evidence | WAITING |
+| QG-TRC-008 Final Dependency Evidence | WAITING |
+| QG-TRC-009 No Guessing / Unresolved Quality | **IN PROGRESS** |
+| QG-TRC-010 through QG-TRC-014 | WAITING |
 | QG-TRC-015 User Acceptance | WAITING - USER OWNED |
 
 BL-001 cannot be CLOSED until QG-TRC-001 through QG-TRC-014 pass and QG-TRC-015 is explicitly approved by the user.
@@ -39,16 +43,14 @@ Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 Current proved findings:
 
 - classification scope: **62 Java component candidates**;
-- candidate classification is now **complete: 62 / 62**;
+- candidate classification is **complete: 62 / 62**;
 - **57 exposed components** are source-proved;
 - **5 candidates are proved NOT_EXPOSED**;
-- **134 unique caller-visible HTTP method/path combinations** are source-proved at the classification checkpoint;
-- `web.rest` is fully classified at **14 / 14** candidates;
-- `misc.web.controller` is fully classified at **12 / 12** candidates;
-- `misc.cache` is fully classified at **1 / 1** candidate;
-- endpoint-to-final-dependency call-path evidence remains incomplete.
-
-A bookkeeping correction was applied because Attempt 11 listed `RestfulCustomerServices` as newly classified even though it had already been source-proved earlier. Counts now use unique components/endpoints only.
+- **134 unique caller-visible HTTP method/path combinations** are source-proved;
+- endpoint-to-final-dependency tracing has now started;
+- **3 / 134 endpoints have been explicitly examined for final-dependency tracing**;
+- those first 3 traces currently remain **UNRESOLVED** at a source-proved generic `ICylinderManagementApplicationSearchService` handoff because the concrete Spring implementation/DAO/final dependency was not yet proved;
+- **131 endpoints remain to be examined for final dependency**.
 
 ## Current Work Units
 
@@ -63,8 +65,8 @@ A bookkeeping correction was applied because Attempt 11 listed `RestfulCustomerS
 
 ```text
 Worker Input: WI-0004
-Latest Attempt: 12
-Latest Run: RUN-WI0004-20260822-012
+Latest Attempt: 13
+Latest Run: RUN-WI0004-20260822-013
 Run State: CLOSED
 Attempt Result: PARTIAL
 Canonical Result: NOT CREATED / NOT ACCEPTED
@@ -72,7 +74,11 @@ Proved Exposed Components: 57
 Proved HTTP Method/Path Combinations: 134
 Proved NOT_EXPOSED Candidates: 5
 Candidates Remaining To Classify: 0
-Next Action: trace all exposed endpoints to final dependencies
+Endpoint Traces Examined For Final Dependency: 3 / 134
+Complete Final-Dependency Traces: 0
+Unresolved Final-Dependency Traces: 3
+Not Yet Examined For Final Dependency: 131
+Next Action: resolve concrete search-service implementations and continue endpoint tracing
 ```
 
 Matrix construction remains locked because the canonical `worker/results/WI-0004.yaml` has not reached `COMPLETED`, contract-valid, 100%-trace-result-coverage status.
@@ -90,7 +96,10 @@ Classification complete: 62 / 62
 Proved exposed components: 57
 Proved HTTP method/path combinations: 134
 Proved not-exposed candidates: 5
-Candidates remaining to classify: 0
+Endpoint final-dependency examination: 3 / 134
+Complete final-dependency traces: 0
+Unresolved final-dependency traces: 3
+Remaining endpoint final-dependency examinations: 131
 Current Work Unit: WU-BL001-001
 Worker Input: WI-0004
 Open Worker runs: 0
