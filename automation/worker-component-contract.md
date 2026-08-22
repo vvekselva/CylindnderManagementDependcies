@@ -8,7 +8,7 @@ The Worker itself does **not** contain Controller Traceability logic, source-ana
 
 Its job is simple:
 
-> Read one approved Worker Input file, execute exactly the work described in that file, return evidence/results, and close the run.
+> Read one approved Worker Input file, execute exactly the work described in that file, return the result in the format/contract required by that input, and close the run.
 
 The actual task is always supplied through an input file.
 
@@ -26,7 +26,7 @@ Workflow -> Job -> Action -> LANE-01 ... LANE-10
              init -> service -> close
                     |
                     v
-              Worker Result
+            CANONICAL RESULT
                     |
                     v
          Orchestration consumes result
@@ -36,29 +36,13 @@ The Generic Worker is **not** `LANE-11` and does not consume one of the ten orch
 
 ## Worker identity versus task identity
 
-The Worker has a fixed execution behaviour.
-
-The task changes through the input file.
-
-Examples:
-
-```text
-Same Worker
-  + input: discover exposed controllers
-  + input: list endpoint mappings
-  + input: trace one endpoint call path
-  + input: inspect database-object evidence
-  + input: compare two source commits
-  + input: inspect a configuration dependency
-```
+The Worker has fixed execution behaviour. The task changes through the input file.
 
 Nothing in the Worker implementation should need to change when the task changes.
 
 ## Mandatory input file
 
-The Worker must not start actual work without one approved input file.
-
-Input files live under:
+The Worker must not start actual work without one approved input file under:
 
 ```text
 worker/inputs/
@@ -76,11 +60,12 @@ Every input must define at least:
 - requesting Workflow and Job, when applicable;
 - task name and purpose;
 - target repository/resource;
-- exact source baseline/ref when the task depends on source code;
+- exact source baseline/ref when source-dependent;
 - scope;
 - permissions;
 - ordered Actions;
-- expected output;
+- expected result path and format;
+- result contract when a downstream consumer requires structured data;
 - evidence requirements;
 - completion check;
 - blocker rules.
@@ -106,7 +91,7 @@ The Worker reads the input file and records in simple English:
 5. what scope it is allowed to inspect/change;
 6. what permissions are allowed;
 7. what Actions it will perform;
-8. what output is expected;
+8. what result format/contract is required;
 9. what completion rule must pass.
 
 If the input file is missing, invalid, ambiguous, or requests a permission not allowed by policy, the Worker does not run `service()`. It runs `close()` with `BLOCKED_BEFORE_SERVICE`.
@@ -115,13 +100,9 @@ If the input file is missing, invalid, ambiguous, or requests a permission not a
 
 The Worker executes only the Actions present in the input file and in the listed order unless the input explicitly permits another order.
 
-The Worker must not invent extra tasks.
+The Worker must not invent extra tasks, broaden scope, or escalate permissions.
 
-The Worker must not broaden the source scope, write permissions, database permissions, or output scope beyond the input file.
-
-When the input asks for source inspection, `service()` may read source and return source facts.
-
-When a future input asks for another permitted task, the same Worker executes that task instead.
+When the input requests a machine-readable result contract, the Worker must populate that contract from proved task evidence. It must not fill missing fields by guessing.
 
 ### close()
 
@@ -132,13 +113,16 @@ It records:
 - Worker Input ID;
 - Actions completed;
 - Actions not completed;
-- outputs produced;
+- result file produced;
+- result format/contract validation state;
 - evidence produced;
 - blocker/failure in simple English;
 - alternatives, when useful;
 - final result;
 - next requested input, when another task is needed;
 - end state `CLOSED`.
+
+A result is not accepted by orchestration until the Worker run is `CLOSED`.
 
 ## Result states
 
@@ -155,37 +139,24 @@ For individual facts produced by inspection tasks, use:
 - `UNRESOLVED`;
 - `NOT_APPLICABLE`.
 
+## Result formats
+
+A Worker Input may request:
+
+- `MARKDOWN` for a primarily human-consumed result;
+- `YAML` for a machine-consumed orchestration handoff.
+
+The human-readable lifecycle record always remains Markdown under `worker/runs/`.
+
+For machine-consumed results, the input must identify a result contract. The downstream Orchestrator consumes the canonical result file directly rather than reconstructing machine state from the human log.
+
 ## Plain-English blocker rule
 
-A Worker must never report only a technical symptom.
-
-It must explain:
-
-1. what the input asked it to do;
-2. where it stopped;
-3. what is missing or preventing progress;
-4. why continuing would require guessing or unsafe behaviour;
-5. what input, information, permission, or decision would allow work to continue;
-6. reasonable alternatives when available.
+A Worker must never report only a technical symptom. It must explain what was requested, where it stopped, what prevented progress, why continuing would require guessing or unsafe behaviour, and what would allow continuation.
 
 ## Permissions are input-driven but policy-limited
 
-The input file states requested permissions, for example:
-
-```yaml
-permissions:
-  source_read: true
-  source_write: false
-  database_read: false
-  database_write: false
-```
-
-The Worker may use only permissions that are both:
-
-1. requested by the input; and
-2. allowed by repository governance.
-
-An input file can restrict permissions further, but it cannot override governance to grant a forbidden capability.
+The Worker may use only permissions that are both requested by the input and allowed by governance. An input can restrict permissions further but cannot override governance.
 
 ## Separation from orchestration
 
@@ -203,20 +174,18 @@ The orchestration layer creates/selects the Worker Input and decides how to use 
 
 ## Runtime files
 
-Each execution uses three files:
+A normal execution uses:
 
 ```text
-worker/inputs/WI-####.yaml   # what the Worker must do
-worker/runs/WI-####.md       # init/service/close human-readable run
-worker/results/WI-####.md    # result/evidence returned to caller
+worker/inputs/WI-####.yaml      # what the Worker must do
+worker/runs/WI-####.md          # init/service/close human-readable run
+worker/results/WI-####.<format> # canonical result returned to caller
 ```
+
+The result extension/format is defined by the Worker Input. A source-check result used directly by orchestration should normally be YAML.
 
 The input file is immutable once execution begins. A changed task requires a new Worker Input ID.
 
 ## No hard-coded task rule
 
-The Generic Worker contract must contain execution behaviour only.
-
-Project-specific instructions belong in input files or Workflow definitions.
-
-Therefore terms such as "discover controllers", "trace repositories", or "find tables" may appear in Controller Traceability input files, but they must not be built into the Worker component as permanent responsibilities.
+The Generic Worker contract contains execution behaviour only. Project-specific instructions and output schemas belong in Worker Inputs and Workflow-specific contracts.
