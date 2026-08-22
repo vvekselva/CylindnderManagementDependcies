@@ -68,20 +68,18 @@ Frozen source baseline:
 Current proved findings:
 
 - the explicitly scanned package trees contain **62 Java component candidates**;
-- all **5 root `web.controller` Java files are classified as exposed MVC controllers**;
-- the latest run classified 5 more `web.controller.test` production candidates as exposed;
-- **11 exposed components** are now source-proved;
-- those components account for **17 proved caller-visible endpoints**;
-- **51 Java candidates remain to be classified** as EXPOSED or NOT_EXPOSED;
+- **16 exposed components** are now source-proved;
+- those components account for **39 proved caller-visible HTTP method/path combinations**;
+- **46 Java candidates remain to be classified** as EXPOSED or NOT_EXPOSED;
 - downstream call paths and final physical dependencies remain incomplete.
 
-Newly proved in the latest run:
+Newly proved in attempt 3:
 
-- `ChallanBookWebController`: GET `/logistics/challan-books/add-form`, POST `/logistics/challan-books/save`;
-- `ChallanEntryAgingDashboardController`: GET `/challan-entry-aging-dashboard`;
-- `ChallanHeatmapController`: GET `/challan-heatmap`;
-- `ChallanPagePhotoController`: GET `/challan-page-photo/{challanPagePhotoId}`;
-- `CompleteTripController`: POST `/complete-trip`.
+- `AddStopController`: 4 endpoints;
+- `CustomerAddressLocationController`: 10 endpoints;
+- `CustomerConsumptionDashboardController`: 4 GET method/path combinations;
+- `CustomerDemandController`: 3 endpoints;
+- `CustomerStopSelectionController`: 1 endpoint.
 
 Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml` and `worker/runs/WI-0004.md`.
 
@@ -98,14 +96,14 @@ Detailed evidence is recorded in `backlog/runtime/BL-001/analysis.yaml` and `wor
 
 ```text
 Worker Input: WI-0004
-Latest Attempt: 2
-Latest Run: RUN-WI0004-20260822-002
+Latest Attempt: 3
+Latest Run: RUN-WI0004-20260822-003
 Run State: CLOSED
 Attempt Result: PARTIAL
 Canonical Result: NOT CREATED / NOT ACCEPTED
-Proved Exposed Components: 11
-Proved Endpoints: 17
-Candidates Remaining: 51
+Proved Exposed Components: 16
+Proved HTTP Method/Path Combinations: 39
+Candidates Remaining: 46
 Next Action: continue/retry the same approved Source Check
 ```
 
@@ -125,9 +123,9 @@ QG-TRC-002: IN PROGRESS
 QG-TRC-003: IN PROGRESS
 QG-TRC-004: IN PROGRESS
 Classification scope: 62 Java candidates
-Proved exposed components: 11
-Proved endpoints: 17
-Candidates remaining to classify: 51
+Proved exposed components: 16
+Proved HTTP method/path combinations: 39
+Candidates remaining to classify: 46
 Current Work Unit: WU-BL001-001
 Worker Input: WI-0004
 Open Worker runs: 0
