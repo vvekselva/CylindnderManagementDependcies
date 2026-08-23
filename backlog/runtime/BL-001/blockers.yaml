@@ -49,9 +49,19 @@ blockers:
   remaining_work_constraint:
     state: OPEN
     affects_gate: QG-TRC-002
-    summary: 107 of 134 endpoint final-dependency traces remain not yet examined at the Attempt 26 checkpoint.
+    summary: 97 of 134 endpoint final-dependency traces remain not yet examined at the Attempt 27 checkpoint.
+
+  latest_attempt:
+    number: 27
+    invocation: INVOCATION-20260823-160000
+    new_endpoint_traces_examined: 10
+    new_complete: 10
+    new_unresolved: 0
+    lane_log_hygiene_preflight: PASS
+    lane_log_hygiene_post_aggregation: PASS
 
   note: >-
-    Two examined complex POST paths are explicitly unresolved and 107 endpoints are not yet examined.
-    These are evidence gaps/work volume rather than a global execution blocker. Independent source-check
+    Two examined complex POST paths remain explicitly unresolved and 97 endpoints are not yet examined.
+    These are evidence gaps/work volume rather than a global execution blocker. Attempt 27 added ten
+    source-proved COMPLETE traces without introducing a new unresolved path. Independent source-check
     work may continue under QG-LOG-001 lifecycle logging and the approved no-guessing rule.
