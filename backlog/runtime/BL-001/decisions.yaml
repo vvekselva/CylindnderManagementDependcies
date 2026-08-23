@@ -7,3 +7,13 @@ decisions:
     state: APPLIED
     decision: SOURCE_CHECK_OUTPUT_IS_MATRIX_INPUT
     reason: The canonical Worker YAML output is the formal input to the Orchestrator matrix Work Unit.
+  - id: DEC-BL001-003
+    state: APPLIED
+    decision: MAXIMIZE_SAFE_LANE_UTILIZATION_WITHIN_EACH_COORDINATOR_INVOCATION
+    reason: >-
+      The user identified that WU-BL001-001 was under-utilizing the ten-lane execution model by
+      closing small endpoint batches and then leaving capacity idle until the next hourly invocation.
+      WU-BL001-001 may now partition independent controller/endpoint families across up to ten lanes,
+      refill released lanes during the same invocation, and continue until no eligible independent work
+      remains or a documented stop condition is reached. Quality gates, frozen-source evidence and
+      no-guessing rules remain unchanged.
