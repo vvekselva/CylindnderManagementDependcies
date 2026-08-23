@@ -1,7 +1,9 @@
-version: 7
+version: 8
 purpose: >-
-  Tell the Orchestrator which Backlog Items may run and enforce the self-reliant production execution loop.
-  GitHub is VCS/persistence; the Automation Tool owns source staging, local execution, recovery, validation and synchronization.
+  Tell the Orchestrator which Backlog Items may run and enforce the self-reliant production execution loop,
+  including continuous Traceability Matrix projection from each accepted endpoint trace.
+  GitHub is VCS/persistence; the Automation Tool owns source staging, local execution, recovery, validation,
+  matrix projection and synchronization.
 
 selection:
   mode: ENABLED_BACKLOG_ITEMS_ONLY
@@ -17,6 +19,7 @@ execution_engine:
   owner: AUTOMATION_TOOL
   architecture: architecture/self-reliant-e2e-execution.md
   self_reliant_governance: governance/self-reliant-execution.yaml
+  incremental_matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
   backend: LOCAL_PROCESS_POOL
   max_parallel_workers: 10
   github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
@@ -65,6 +68,28 @@ production_source_contract:
     Start zero affected lanes when source integrity cannot be proved. Preserve BL-001 PARTIAL, record the exact
     source/binding failure and never substitute naming inference or an unpinned source file.
 
+incremental_matrix_contract:
+  workflow: workflows/WF-002-incremental-traceability-matrix.yaml
+  enabled_during_source_check: true
+  matrix_artifact: traceability/controller-traceability.md
+  unresolved_artifact: traceability/unresolved-traceability.md
+  progress_artifact: traceability/matrix-progress.yaml
+  row_key: HTTP_METHOD_PLUS_PATH
+  update_trigger: EACH_PRIMARY_ORCHESTRATOR_ACCEPTED_ENDPOINT_TRACE
+  accepted_states: [COMPLETE, UNRESOLVED, BLOCKED, FAILED]
+  worker_direct_matrix_write_allowed: false
+  raw_worker_candidate_is_matrix_truth: false
+  historical_backfill_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY
+  source_check_below_100_state: INCREMENTAL_PARTIAL
+  source_check_100_state: READY_FOR_FINAL_RECONCILIATION
+  finalization_owner: WU-BL001-002
+  downstream_validation_owner: WU-BL001-003
+  baseline_registration_owner: WU-BL001-004
+  rule: >-
+    Do not wait for complete Source Check before creating matrix rows. Immediately project each Orchestrator-accepted
+    endpoint trace into the matrix, keep unresolved accounting synchronized, and continue source analysis. Final matrix
+    validation remains fail-closed until 100 percent endpoint trace-result coverage.
+
 execution_recovery_contract:
   execution_journal_required: true
   dispatch_fingerprint_basis: FROZEN_BASELINE_PLUS_ORDERED_APPROVED_TASKS
@@ -73,7 +98,7 @@ execution_recovery_contract:
   interrupted_running_without_live_workers: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
   changed_fingerprint: START_NEW_EXECUTION_GENERATION
   already_closed_synced: NOOP_ALREADY_COMMITTED
-  github_sync_failure: PRESERVE_VALIDATED_RESULT_AS_PENDING_SYNC_AND_RETRY_SYNC_ONLY
+  github_sync_failure: PRESERVE_VALIDATED_RESULT_AND_MATRIX_CHANGES_AS_PENDING_SYNC_AND_RETRY_SYNC_ONLY
 
 backlog_items:
   BL-001:
@@ -124,8 +149,14 @@ scheduled_run_rules:
   - repeat bounded source staging while request sets change and verified source closure advances
   - fail closed on source-resolution stall or iteration limit
   - never auto-accept endpoint COMPLETE from worker evidence
+  - after each Orchestrator-accepted endpoint trace immediately upsert the traceability matrix row by HTTP method plus path
+  - synchronize unresolved blocked failed matrix rows and matrix-progress counters in the same checkpoint
+  - do not wait for 100 percent coverage before creating or updating matrix rows
+  - WU-BL001-002 finalizes/reconciles the incremental matrix only after WU-BL001-001 reaches 100 percent trace-result coverage
+  - WU-BL001-003 validates traceability gates from the reconciled matrix
+  - later backlog work may consume only a FINAL_VALIDATED matrix and must still pass its own SSOT/SOW/gates
   - enforce zero transient lane logs at invocation boundaries
   - evaluate QG-LANE-001 using measured natural SERVICE overlap; never add artificial delay merely to pass the gate
-  - synchronize only validated durable runtime/log/evidence changes back to GitHub
+  - synchronize only validated durable runtime/log/evidence/matrix changes back to GitHub
   - on GitHub sync failure preserve PENDING_SYNC and do not rerun the same worker batch
   - never mark CLOSED without required explicit user acceptance
