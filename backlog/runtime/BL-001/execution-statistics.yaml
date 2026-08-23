@@ -1,0 +1,119 @@
+execution_statistics:
+  version: 1
+  backlog_item: BL-001
+  authoritative_for_run_statistics: true
+  purpose: >-
+    Provide a machine-readable source for the user-visible Previous Run versus Current/Latest Run
+    statistics table. Percentages in this file are endpoint-trace coverage metrics for BL-001;
+    they are not an overall project-completion percentage.
+
+  metric_definitions:
+    progress_percentage:
+      formula: examined_for_final_dependency / total_endpoints * 100
+      meaning: percentage of caller-visible endpoints that have received a trace result examination
+    complete_percentage:
+      formula: complete / total_endpoints * 100
+      meaning: percentage of caller-visible endpoints currently classified COMPLETE
+    lane_utilization_percentage:
+      formula: distinct_lanes_used / configured_lane_count * 100
+      configured_lane_count: 10
+    endpoints_per_lane:
+      formula: endpoints_examined_added / distinct_lanes_used
+    meaningful_progress:
+      true_when_any:
+        - examined_for_final_dependency increases
+        - complete count increases
+        - an existing unresolved/blocked/failed trace is resolved with evidence
+        - a required gate advances toward PASS
+        - a Work Unit advances state
+        - a required artifact is created or validated
+    stale_cycle:
+      definition: >-
+        One completed Orchestrator invocation in which no meaningful_progress indicator advances.
+      stale_when: consecutive_no_progress_cycles > 0
+      stale_cycles_display: consecutive_no_progress_cycles
+
+  comparison_window:
+    previous_run:
+      attempt: 26
+      invocation_id: INVOCATION-20260823-145512
+      state: CLOSED
+      result: PARTIAL
+      start_checkpoint_examined: 22
+      end_checkpoint_examined: 27
+      total_endpoints: 134
+      progress_percentage: 20.15
+      complete: 25
+      complete_percentage: 18.66
+      unresolved: 2
+      blocked: 0
+      failed: 0
+      endpoints_examined_added: 5
+      distinct_lanes_used: 3
+      lane_utilization_percentage: 30.00
+      endpoints_per_lane: 1.67
+      invocation_start: '2026-08-23T14:55:12+05:30'
+      invocation_end: '2026-08-23T15:11:30+05:30'
+      stop_condition: INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED
+      meaningful_progress: true
+      stale: false
+      stale_cycles: 0
+      evidence: logs/runs/INVOCATION-20260823-145512.md
+
+    current_or_latest_run:
+      semantics: >-
+        When an invocation is ACTIVE this record is the live current-run checkpoint. When the
+        framework is BETWEEN_INVOCATIONS it represents the latest closed invocation checkpoint.
+      attempt: 27
+      invocation_id: INVOCATION-20260823-160000
+      invocation_state: CLOSED
+      runtime_state: BETWEEN_INVOCATIONS
+      result: PARTIAL
+      start_checkpoint_examined: 27
+      end_checkpoint_examined: 37
+      total_endpoints: 134
+      progress_percentage: 27.61
+      complete: 35
+      complete_percentage: 26.12
+      unresolved: 2
+      blocked: 0
+      failed: 0
+      endpoints_examined_added: 10
+      distinct_lanes_used: 3
+      lane_utilization_percentage: 30.00
+      endpoints_per_lane: 3.33
+      invocation_start: '2026-08-23T16:00:00+05:30'
+      invocation_end: '2026-08-23T16:35:00+05:30'
+      stop_condition: INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED
+      meaningful_progress: true
+      stale: false
+      stale_cycles: 0
+      evidence: logs/runs/INVOCATION-20260823-160000.md
+
+  run_over_run:
+    progress_percentage_point_change: 7.46
+    complete_percentage_point_change: 7.46
+    endpoints_examined_change: 10
+    complete_count_change: 10
+    unresolved_count_change: 0
+    lanes_used_change: 0
+    endpoints_per_lane_change: 1.66
+    throughput_direction: IMPROVED
+
+  staleness:
+    task: WU-BL001-001 Complete Source Repository Check
+    stale: false
+    consecutive_no_progress_cycles: 0
+    last_meaningful_progress_attempt: 27
+    last_meaningful_progress_invocation: INVOCATION-20260823-160000
+    last_meaningful_progress_summary: 10 additional endpoints examined and all 10 completed
+    current_status: ACTIVE_BACKLOG_BETWEEN_INVOCATIONS_NOT_STALE
+
+  update_rules:
+    - update at ORCHESTRATOR_INVOCATION_START with the new current-run baseline and zero lanes used
+    - update while an invocation is active when a synchronized checkpoint materially changes
+    - finalize at ORCHESTRATOR_INVOCATION_END after runtime synchronization
+    - shift the formerly current/latest closed run into previous_run when a newer invocation closes
+    - increment consecutive_no_progress_cycles only for a completed invocation with no meaningful progress
+    - reset consecutive_no_progress_cycles to zero whenever a completed invocation makes meaningful progress
+    - TaskStatus.md statistics table is derived from this file and must not override it
