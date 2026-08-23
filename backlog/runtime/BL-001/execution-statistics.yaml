@@ -1,134 +1,134 @@
 execution_statistics:
-  version: 3
+  version: 4
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
-    Machine-readable source for user-visible run statistics. BL-001 percentages are endpoint-trace
-    coverage metrics, not overall project-completion percentages. Lane participation and real worker
-    concurrency are separate metrics.
+    Machine-readable source for endpoint-trace coverage and self-reliant execution statistics. BL-001 percentages are
+    endpoint-trace coverage metrics, not overall project-completion percentages. Source closure, natural production
+    concurrency and backend capacity are separate metrics.
 
   metric_definitions:
-    progress_percentage: {formula: examined_for_final_dependency / total_endpoints * 100, meaning: percentage of caller-visible endpoints that have received trace examination}
-    complete_percentage: {formula: complete / total_endpoints * 100, meaning: percentage of caller-visible endpoints currently classified COMPLETE}
-    distinct_lane_participation_percentage: {formula: distinct_lanes_used / configured_lane_count * 100, configured_lane_count: 10, warning: this is not a concurrency metric}
-    peak_concurrent_lanes: {meaning: maximum number of worker execution intervals overlapping at the same time}
-    average_concurrent_lanes: {formula: aggregate_worker_seconds / worker_batch_wall_clock_seconds}
+    progress_percentage: {formula: examined_for_final_dependency / total_endpoints * 100, meaning: endpoint trace examination coverage}
+    complete_percentage: {formula: complete / total_endpoints * 100, meaning: endpoint traces currently COMPLETE}
+    peak_concurrent_lanes: {meaning: maximum natural overlapping LANE_SERVICE_START to LANE_SERVICE_END intervals}
+    average_concurrent_lanes: {formula: aggregate natural SERVICE seconds / SERVICE batch wall-clock seconds}
     peak_capacity_utilization_percentage: {formula: peak_concurrent_lanes / configured_lane_count * 100}
     expected_concurrent_lanes: {formula: min(configured_lane_count, eligible_safe_independent_tasks)}
-    meaningful_progress:
-      true_when_any: [examined_for_final_dependency increases, complete count increases, an unresolved/blocked/failed trace is resolved with evidence, a required gate or Work Unit advances, a required artifact is created or validated]
-    stale_cycle: {definition: one completed Orchestrator invocation in which no meaningful-progress indicator advances, stale_when: consecutive_no_progress_cycles > 0}
+    backend_capacity_probe: {meaning: isolated executor capability measurement, not a substitute for natural production QG-LANE-001}
+    source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
-  comparison_window:
-    previous_run:
-      attempt: 27
-      invocation_id: INVOCATION-20260823-160000
-      state: CLOSED
-      result: PARTIAL
-      start_checkpoint_examined: 27
-      end_checkpoint_examined: 37
-      total_endpoints: 134
-      progress_percentage: 27.61
-      complete: 35
-      complete_percentage: 26.12
-      unresolved: 2
-      blocked: 0
-      failed: 0
-      endpoints_examined_added: 10
-      distinct_lanes_used: 3
-      distinct_lane_participation_percentage: 30.00
-      peak_concurrent_lanes: 1
-      average_concurrent_lanes: 0.95
-      peak_capacity_utilization_percentage: 10.00
-      real_concurrency_metric_available: true
-      stop_condition: INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED
-      meaningful_progress: true
-      stale: false
-      stale_cycles: 0
-      evidence: logs/runs/INVOCATION-20260823-160000.md
+  accepted_trace_checkpoint:
+    latest_accepted_attempt: 27
+    latest_accepted_invocation: INVOCATION-20260823-160000
+    total_endpoints: 134
+    examined: 37
+    progress_percentage: 27.61
+    complete: 35
+    complete_percentage: 26.12
+    unresolved: 2
+    blocked: 0
+    failed: 0
+    not_yet_examined: 97
+    architecture_validation_changed_checkpoint: false
 
-    current_or_latest_run:
-      attempt: 28
-      invocation_id: INVOCATION-20260823-175300
-      invocation_state: CLOSED
-      runtime_state: WAITING_FOR_SOURCE_ACTIONS_EVIDENCE
-      result: PARTIAL_PLATFORM_WAIT
-      start_checkpoint_examined: 37
-      end_checkpoint_examined: 37
-      total_endpoints: 134
-      progress_percentage: 27.61
-      complete: 35
-      complete_percentage: 26.12
-      unresolved: 2
-      blocked: 0
-      failed: 0
-      endpoints_examined_added: 0
-      distinct_lanes_used: 0
-      distinct_lane_participation_percentage: 0.00
-      expected_concurrent_lanes: 10
-      peak_concurrent_lanes: null
-      average_concurrent_lanes: null
-      peak_capacity_utilization_percentage: null
-      worker_failures: null
-      qg_lane_001_state: BLOCKED_PLATFORM
-      real_concurrency_metric_available: false
-      concurrency_basis: >-
-        Dispatch generation 3 was synchronized to the source execution branch, but no source
-        automation/matrix-execution.yaml or workflow/job run ID is present. No concurrency value is inferred.
-      invocation_start: '2026-08-23T17:53:00+05:30'
-      invocation_end: '2026-08-23T18:00:00+05:30'
-      stop_condition: SOURCE_LOCAL_WORKFLOW_HAS_NOT_SELF_REPORTED_RUN_ID
-      meaningful_progress: true
-      meaningful_progress_summary: >-
-        Required matrix-dispatch artifact generation 3 was synchronized and verified on the source execution branch,
-        and lane-status was corrected so queued tasks no longer masquerade as external worker state.
-      stale: false
-      stale_cycles: 0
-      evidence: [logs/runs/INVOCATION-20260823-175300.md, backlog/runtime/BL-001/lane-dispatch.yaml]
+  prior_accepted_trace_run:
+    attempt: 27
+    invocation_id: INVOCATION-20260823-160000
+    state: CLOSED
+    result: PARTIAL
+    endpoints_examined_added: 10
+    distinct_lanes_used: 3
+    peak_concurrent_lanes: 1
+    average_concurrent_lanes: 0.95
+    peak_capacity_utilization_percentage: 10.0
+    meaningful_progress: true
+    evidence: logs/runs/INVOCATION-20260823-160000.md
 
-  real_lane_dispatch:
-    governance: governance/lane-execution.yaml
-    gate: QG-LANE-001
-    backend: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
-    workflow: vvekselva/CylinderManagement@automation/lane-matrix:.github/workflows/lane-matrix-dispatch.yml
-    queue: backlog/runtime/BL-001/lane-dispatch.yaml
-    source_dispatch_generation: 3
-    source_dispatch_id: MATRIX-BL001-SOURCE-003
+  self_reliant_architecture_validation:
+    report: tests/self-reliant-e2e-validation-2026-08-23.md
+    result: PASS_FOR_ARCHITECTURE_PROMOTION
+    backend: LOCAL_PROCESS_POOL
+    default_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    github_actions_dependency: NONE
+    mandatory_local_source_checkout: false
+    recovery_idempotency_cases_passed: 5
+    recovery_idempotency_cases_total: 5
+    backend_capacity_probe:
+      configured_lanes: 10
+      tasks: 10
+      peak_service_concurrent_lanes: 10
+      average_service_concurrent_lanes: 9.83
+      peak_capacity_utilization_percentage: 100.0
+      accepted_as_bl001_trace_evidence: false
+
+  canary_source_closure_run:
+    execution_id: E2E-STAGED-20260823-151800
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    workers_started: 1
+    worker_results_received: 1
+    worker_failures: 0
+    source_closure_complete: true
+    qg_source_001_state: SOURCE_CLOSURE_COMPLETE
+    missing_source_requests: 0
+    missing_binding_requests: 0
+    peak_concurrent_lanes: 1
+    average_concurrent_lanes: 1.0
+    qg_lane_001_state: PASS
+    individual_lane_logs_remaining: 0
+    accepted_as_bl001_trace_progress: false
+
+  latest_full_source_discovery_run:
+    execution_id: E2E-STAGED-20260823-151810
+    dispatch_fingerprint: 6c99cd0f51605ea5461169a349c7153cd9da658070f15727ab7d93ac7571522d
+    state: CLOSED_RESTAGE_REQUIRED
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    configured_lanes: 10
     safe_ready_tasks: 10
+    workers_started: 10
+    worker_results_received: 10
+    worker_failures: 0
+    source_closure_complete: false
+    qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    missing_source_requests: 21
+    missing_binding_requests: 0
     expected_concurrent_lanes: 10
-    workflow_run_id: null
-    external_workers_confirmed_started: 0
-    durable_aggregate_available: false
-    transient_individual_artifacts_consumed: false
-    state: BLOCKED_PLATFORM_PENDING_SOURCE_WORKFLOW_RUN_EVIDENCE
-    required_summary_fields: [distinct_lanes_used, peak_concurrent_lanes, average_concurrent_lanes, peak_capacity_utilization_percentage, worker_failures, qg_lane_001_state]
+    peak_concurrent_lanes: 4
+    average_concurrent_lanes: 0.26
+    peak_capacity_utilization_percentage: 40.0
+    qg_lane_001_state: UNDERUTILIZED
+    individual_lane_logs_remaining: 0
+    trace_evidence_auto_accepted: false
+    endpoint_trace_checkpoint_before: 37
+    endpoint_trace_checkpoint_after: 37
+    endpoints_examined_added: 0
+    interpretation: >-
+      This run validated production source staging/execution and generated the next exact restaging request set.
+      It is not an accepted endpoint-trace advancement. Natural SERVICE overlap is under target even though the backend
+      capacity probe proves ten-worker capability.
 
   run_over_run:
-    progress_percentage_point_change: 0.00
-    complete_percentage_point_change: 0.00
-    endpoints_examined_change: 0
-    complete_count_change: 0
-    unresolved_count_change: 0
-    distinct_lanes_used_change: -3
-    throughput_direction: NO_ENDPOINT_PROGRESS_PLATFORM_WAIT
-    concurrency_direction: NOT_MEASURABLE_SOURCE_WORKFLOW_NOT_STARTED
+    endpoint_progress_percentage_point_change: 0.0
+    complete_percentage_point_change: 0.0
+    endpoint_examined_change: 0
+    source_architecture_direction: LOCAL_CHECKOUT_OR_ACTIONS_DEPENDENCY_REMOVED
+    source_closure_direction: PROGRESSING_RESTAGE_REQUIRED
+    natural_concurrency_direction: MEASURED_UNDERUTILIZED
+    backend_capacity_direction: TEN_WORKER_CAPACITY_PROVED
 
   staleness:
     task: WU-BL001-001 Complete Source Repository Check
     stale: false
     consecutive_no_progress_cycles: 0
-    last_meaningful_progress_attempt: 28
-    last_meaningful_progress_invocation: INVOCATION-20260823-175300
-    last_meaningful_progress_summary: Matrix dispatch generation 3 synchronized and external lane-state semantics corrected
-    current_status: ACTIVE_BACKLOG_WAITING_FOR_SOURCE_ACTIONS_EVIDENCE
+    meaningful_progress_basis: >-
+      Required self-reliant architecture/governance/scripts were created and validated against real frozen source;
+      the latest discovery produced a concrete bounded source-restaging request set.
+    current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_ITERATION
 
   update_rules:
-    - update at ORCHESTRATOR_INVOCATION_START with new current-run baseline and zero lanes used
-    - update at meaningful synchronized checkpoints while ACTIVE
-    - for matrix dispatch consume only lane-dispatch-summary.yaml from lane-dispatch-aggregate after summarize completes
-    - never use distinct_lanes_used as a substitute for concurrency
-    - do not infer ASSIGNED WORKING WAITING or measured concurrency without workflow/job evidence
-    - finalize at ORCHESTRATOR_INVOCATION_END after runtime synchronization
-    - increment stale cycles only for completed invocations with no meaningful progress
-    - reset stale cycles to zero on completed meaningful progress
-    - TaskStatus.md statistics table is derived from this file and must not override it
+    - keep accepted endpoint checkpoint separate from architecture/discovery validation
+    - never use distinct lane participation as concurrency
+    - measure QG-LANE-001 from natural SERVICE overlap
+    - report backend capacity probe separately and never use it to fake a production PASS
+    - report QG-SOURCE-001 and source_closure_complete separately from QG-LANE-001
+    - a PENDING_SYNC retry must not duplicate worker execution statistics
+    - TaskStatus.md is derived from this file and must not override it
