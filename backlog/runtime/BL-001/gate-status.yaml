@@ -1,7 +1,37 @@
 quality_gate_status:
   backlog_item: BL-001
+  item_definition: backlog/items/BL-001-controller-traceability.yaml
   statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
   quality_gate_config: backlog/gates/BL-001-traceability.yaml
+
+  three_level_ssot_gate:
+    id: QG-SSOT-001
+    state: PASS
+    evidence:
+      level_1:
+        state: COMPLETE
+        evidence:
+          - backlog/backlog.yaml contains BL-001 exactly once with id, name, type, purpose, priority, state, item_definition, SOW, Completion Path, Quality Gate, dependencies, expected outputs and runtime
+      level_2:
+        state: COMPLETE
+        evidence:
+          - backlog/items/BL-001-controller-traceability.yaml exists and reconciles with Level 1
+          - backlog/sow/BL-001-controller-traceability.yaml exists and QG-SOW-001 passes
+          - backlog/paths/BL-001-traceability.yaml exists
+          - backlog/gates/BL-001-traceability.yaml exists and is approved
+      level_3:
+        state: COMPLETE
+        evidence:
+          - backlog/runtime/BL-001/analysis.yaml exists
+          - backlog/runtime/BL-001/execution-plan.yaml exists
+          - backlog/runtime/BL-001/work-unit-status.yaml exists
+          - backlog/runtime/BL-001/gate-status.yaml exists
+          - backlog/runtime/BL-001/blockers.yaml exists
+          - backlog/runtime/BL-001/decisions.yaml exists
+          - backlog/runtime/BL-001/worker-input-register.yaml exists
+          - backlog/runtime/BL-001/result.yaml exists
+    planning_allowed: true
+    replanning_allowed: true
 
   statement_of_work_gate:
     id: QG-SOW-001
@@ -83,9 +113,8 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    QG-SOW-001 and QG-DEP-001 pass. Attempt 24 proves the active Challan Type, City and Country REST mappings and their generic search-service handoffs,
-    but concrete Spring implementations, repository/query layers and final dependencies are not yet proved. QG-TRC-002
-    remains IN_PROGRESS because 112 of 134 endpoints are still not examined, three examined paths remain unresolved, and
-    worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result. QG-TRC-004 remains IN_PROGRESS
-    because the canonical Endpoint Inventory artifact is not yet validated. Matrix construction and dependent work units
-    remain locked.
+    QG-SSOT-001, QG-SOW-001 and QG-DEP-001 pass. BL-001 is therefore permitted to retain
+    and, when required, revise its Execution Plan under the Completion Path. Traceability
+    completion is still blocked by QG-TRC-002/QG-TRC-004 progress: 112 endpoints remain
+    unexamined, three examined paths remain unresolved, and worker/results/WI-0004.yaml is
+    not yet a completed contract-valid canonical result. Matrix construction remains locked.
