@@ -23,89 +23,45 @@ analysis:
     failed: 0
     not_yet_examined: 97
 
-  latest_attempt:
+  latest_accepted_trace_attempt:
     number: 27
     run_id: INVOCATION-20260823-160000
     state: CLOSED
     result: PARTIAL
     lifecycle_gate: QG-LOG-001
-    lifecycle_evidence:
-      - logs/runs/INVOCATION-20260823-160000.md
-    preflight_individual_lane_log_count: 0
-    post_aggregation_individual_lane_log_count: 0
-    lane_log_aggregation_result: PASS
-    endpoint_traces:
-      - endpoint: GET /login
-        controller: LoginController
-        final_dependency: LOGIN_FORM_VIEW
-        final_dependency_type: TERMINAL_APPLICATION_ACTION
-        trace_state: COMPLETE
-        evidence: LoginController.showLoginPage returns ModelAndView(LOGIN_FORM_VIEW) and has no service/DAO/repository/file/API/cache/database call.
-      - endpoint: GET /offline-map/status
-        controller: OfflineMapController
-        concrete_service: OfflineVectorTileService
-        final_dependencies: [configured_MBtiles_filesystem_path, sqlite.metadata, MapLibre_classpath_resources]
-        trace_state: COMPLETE
-      - endpoint: GET /offline-map/status-json
-        controller: OfflineMapController
-        concrete_service: OfflineVectorTileService
-        final_dependencies: [configured_MBtiles_filesystem_path, sqlite.metadata, MapLibre_classpath_resources]
-        trace_state: COMPLETE
-      - endpoint: GET /offline-map/style.json
-        controller: OfflineMapController
-        concrete_service: OfflineMapStyleService
-        final_dependencies: [OfflineMapProperties_configuration, request_application_base_url]
-        final_dependency_type: GENERATED_JSON_CONFIGURATION_ACTION
-        trace_state: COMPLETE
-      - endpoint: GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf
-        controller: OfflineMapController
-        concrete_service: OfflineVectorTileService
-        final_dependencies: [configured_MBtiles_filesystem_path, sqlite.tiles, sqlite.metadata]
-        trace_state: COMPLETE
-      - endpoint: GET /delivery-planning/predefined-trips
-        controller: PredefinedDeliveryTripController
-        concrete_services: [PredefinedDeliveryTripService, DeliveryPlanningStopService]
-        final_database_objects: [public.tbl_predefined_delivery_trip, public.tbl_predefined_delivery_trip_stop, public.tbl_delivery_planning_stop, public.vw_customer_address_location_status, public.vw_customer_delivery_planning_signal]
-        trace_state: COMPLETE
-      - endpoint: POST /delivery-planning/predefined-trips/create
-        controller: PredefinedDeliveryTripController
-        concrete_service: PredefinedDeliveryTripService
-        final_database_objects: [public.tbl_predefined_delivery_trip]
-        trace_state: COMPLETE
-      - endpoint: POST /delivery-planning/predefined-trips/add-stop
-        controller: PredefinedDeliveryTripController
-        concrete_service: PredefinedDeliveryTripService
-        final_database_objects: [public.tbl_predefined_delivery_trip, public.tbl_delivery_planning_stop, public.tbl_predefined_delivery_trip_stop]
-        trace_state: COMPLETE
-      - endpoint: POST /delivery-planning/predefined-trips/remove-stop
-        controller: PredefinedDeliveryTripController
-        concrete_service: PredefinedDeliveryTripService
-        final_database_objects: [public.tbl_predefined_delivery_trip_stop]
-        trace_state: COMPLETE
-      - endpoint: POST /delivery-planning/predefined-trips/remove
-        controller: PredefinedDeliveryTripController
-        concrete_service: PredefinedDeliveryTripService
-        final_database_objects: [public.tbl_predefined_delivery_trip]
-        trace_state: COMPLETE
+    trace_additions: {examined: 10, complete: 10, unresolved: 0}
+
+  latest_coordinator_invocation:
+    invocation_id: INVOCATION-20260823-175300
+    result: PARTIAL_PLATFORM_WAIT
+    endpoint_trace_progress: 0
+    preflight_individual_repo_lane_logs: 0
+    source_dispatch_generation: 3
+    source_dispatch_id: MATRIX-BL001-SOURCE-003
+    control_dispatch_id: MATRIX-BL001-DISPATCH-003
+    source_dispatch_copy_verified: true
+    source_workflow_installed: true
+    source_matrix_execution_file_present: false
+    source_workflow_run_id: null
+    external_workers_confirmed_started: 0
+    durable_lane_dispatch_aggregate_available: false
+    concurrency_measurement_available: false
+    qg_lane_001_state: BLOCKED_PLATFORM
     reason: >-
-      Attempt 27 added ten source-proved COMPLETE traces with no new unresolved path. The invocation
-      began with zero transient lane logs, every started lane emitted the required INIT/SERVICE/CLOSE
-      lifecycle boundaries, complete lane evidence was accumulated into the durable invocation log,
-      the transient lane logs were deleted, and the post-aggregation rescan again proved zero lane logs.
+      The approved ten-task matrix dispatch is synchronized to the source execution branch, but no
+      source-local workflow/job execution evidence exists. No in-chat logical lane work was started,
+      no external lane state was inferred from the queue alone, and no worker evidence was consumed.
 
   unresolved_from_prior_attempts:
-    - endpoint: POST /customer-spot-cylinder-check/submit
-      last_proven_component: CustomerSpotCylinderCheckService and directly injected persistence components
-      proved_database_objects: [public.tbl_customer_spot_cylinder_check]
-      reason: Complete database-object set for every submitSpotCheck branch is not yet source-proved.
-    - endpoint: POST /walkin-sale
-      last_proven_component: WalkinSaleServiceImpl and directly injected persistence components
-      proved_database_objects: [public.tbl_order, public.tbl_walk_in_sale, public.tbl_walk_in_pickup, public.tbl_walk_in_pickup_line, public.tbl_yard_entries]
-      reason: Complete database-object set across every conditional processRequest branch is not yet source-proved.
+    - {endpoint: POST /customer-spot-cylinder-check/submit, proved_database_objects: [public.tbl_customer_spot_cylinder_check], reason: Complete database-object set for every submitSpotCheck branch is not yet source-proved.}
+    - {endpoint: POST /walkin-sale, proved_database_objects: [public.tbl_order, public.tbl_walk_in_sale, public.tbl_walk_in_pickup, public.tbl_walk_in_pickup_line, public.tbl_yard_entries], reason: Complete database-object set across every conditional processRequest branch is not yet source-proved.}
 
   quality_gate_effect:
+    QG-SOW-001: PASS
+    QG-SSOT-001: PASS
     QG-DEP-001: PASS
     QG-LOG-001: PASS
+    QG-LANE-001: BLOCKED_PLATFORM
     QG-TRC-001: PASS
     QG-TRC-002: IN_PROGRESS
     QG-TRC-003: PASS
@@ -117,21 +73,23 @@ analysis:
   matrix_construction_unlocked: false
 
   proved_now:
-    - Thirty-seven of 134 endpoints have now been explicitly examined for final dependencies.
-    - Thirty-five endpoint traces are COMPLETE and two prior complex POST traces remain UNRESOLVED.
-    - GET /login terminates at the login view without a persistence dependency.
-    - Four OfflineMapController endpoints resolve to source-proved MBTiles SQLite/configuration/classpath dependencies.
-    - Five PredefinedDeliveryTripController endpoints resolve to explicit JPA/native-SQL PostgreSQL objects.
-    - Attempt 27 passed both preflight and post-aggregation zero-transient-lane-log checks.
+    - Thirty-seven of 134 endpoints remain explicitly examined; 35 are COMPLETE and 2 UNRESOLVED.
+    - Control dispatch generation 3 contains ten unique safe independent tasks and expects ten concurrent lanes.
+    - Source execution copy MATRIX-BL001-SOURCE-003 is present on automation/lane-matrix with matching control dispatch ID.
+    - Source-local Lane Matrix Dispatch workflow is installed with max-parallel 10.
+    - No source automation/matrix-execution.yaml exists, so no real workflow run ID or measured concurrency can be claimed.
+    - Lane SSOT was corrected to keep all lanes IDLE until workflow/job evidence proves external state.
 
   not_yet_proved:
-    - Complete database-object set for POST /customer-spot-cylinder-check/submit.
-    - Complete database-object set for POST /walkin-sale.
+    - Whether source-repository GitHub Actions is disabled/restricted or otherwise suppressing workflow startup.
+    - Any worker execution interval, peak concurrency, average concurrency, or worker failure count for dispatch generation 3.
+    - Durable lane-dispatch-aggregate and lane-dispatch-summary.yaml for generation 3.
+    - Complete database-object set for the two unresolved POST endpoints.
     - Final dependencies for the remaining 97 not-yet-examined endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Resolve the two prior complex POST paths first where safe source evidence is available, then continue
-    controller/service-family batches across the remaining 97 endpoints. Reuse source-proved relationships only
-    where the frozen source confirms the same path. Do not unlock Matrix construction until WI-0004 is COMPLETED,
-    the run is CLOSED, the result contract validates, and endpoint trace-result coverage equals 100 percent.
+    Verify GitHub Actions availability/policy for vvekselva/CylinderManagement, re-trigger the source dispatch if needed,
+    and wait for automation/matrix-execution.yaml to self-report a real run ID. Consume only the durable
+    lane-dispatch-aggregate after summarize completes, evaluate QG-LANE-001 from measured overlap, validate each
+    worker result against the frozen baseline, and only then update endpoint trace states. Do not start WU-BL001-002.
