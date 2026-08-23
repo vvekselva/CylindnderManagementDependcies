@@ -10,23 +10,24 @@ work_units:
     staged_worker: automation/staged-lane-worker-v3.py
     safe_ready_tasks: 10
     expected_concurrent_lanes: 10
-    latest_execution: E2E-STAGED-20260823-151810
+    latest_execution: E2E-STAGED-20260823-161214
     latest_workers_started: 10
     latest_worker_failures: 0
     qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
     source_closure_complete: false
-    missing_source_requests: 21
-    missing_binding_requests: 0
+    missing_source_requests: 16
+    binding_identities_unresolved: 0
+    binding_implementation_materializations_pending: 1
     qg_lane_001_state: UNDERUTILIZED
-    latest_peak_service_concurrent_lanes: 4
+    latest_peak_service_concurrent_lanes: 2
     backend_capacity_probe_peak_service_concurrent_lanes: 10
     qg_recovery_001_state: PASS
-    checkpoint: {examined: 37, total: 134, complete: 35, unresolved: 2, not_yet_examined: 97}
-    checkpoint_changed_by_architecture_validation: false
+    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260824-005711.md
+    checkpoint: {examined: 41, total: 134, complete: 39, unresolved: 2, not_yet_examined: 93, matrix_materialized_rows: 14}
     next_action: >-
-      Resolve and blob-verify the exact source requests from the latest discovery at the same frozen commit,
-      validate interface bindings as interface source becomes available, rerun the ten-task discovery, and repeat
-      only while source closure advances. Validate endpoint evidence only after the relevant source path is complete.
+      Continue direct source closure for ChallanHeatmapController, CustomerAddressLocationController and
+      CustomerConsumptionDashboardController while resolving and blob-verifying the 16 outstanding source requests.
+      Materialize validated source into the immutable snapshot and rerun the ten-task discovery only when source closure advances.
   WU-BL001-002: WAITING_FOR_DEPENDENCY
   WU-BL001-003: WAITING_FOR_DEPENDENCY
   WU-BL001-004: WAITING_FOR_DEPENDENCY
