@@ -1,0 +1,69 @@
+backlog_definition:
+  id: BL-001
+  version: 1
+  name: Controller Traceability
+  type: TRACEABILITY
+
+  purpose: >-
+    Establish a trusted endpoint-to-final-dependency traceability baseline for the frozen
+    CylinderManagement source version so every exposed HTTP endpoint is accounted for with
+    source-proved dependency evidence or an explicit unresolved/blocked/failed result.
+
+  statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
+
+  target:
+    repository: vvekselva/CylinderManagement
+    baseline_rule: FROZEN_COMMIT
+    frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+
+  scope:
+    in_scope:
+      - production HTTP-exposing component identification
+      - caller-visible HTTP endpoint inventory
+      - endpoint-to-final-dependency source tracing
+      - unresolved/blocked/failed trace accounting
+      - Traceability Matrix construction and validation
+      - source-artifact registration and user acceptance
+    out_of_scope:
+      - changing application business logic solely to make a trace complete
+      - guessing repositories, tables, views, APIs or dependencies
+      - bypassing Work Unit dependencies or Quality Gates
+
+  dependencies:
+    backlog_items: []
+    dependency_rule: ALL_VERIFIED_OR_CLOSED
+
+  deliverables:
+    - traceability/source-repository-check.md
+    - traceability/controller-inventory.md
+    - traceability/endpoint-inventory.md
+    - traceability/controller-traceability.md
+    - traceability/unresolved-traceability.md
+    - worker/results/WI-0004.yaml
+
+  acceptance_criteria:
+    - every production candidate is classified exactly once
+    - every exposed caller-visible HTTP method/path combination is inventoried
+    - every inventoried endpoint has exactly one trace result
+    - trace coverage reaches 100 percent with NOT_EXAMINED equal to zero
+    - every COMPLETE trace has source-proved final-dependency evidence
+    - unresolved, blocked or failed traces record last proven component, missing evidence and next step
+    - QG-TRC-001 through QG-TRC-014 pass before VERIFIED
+    - QG-TRC-015 receives explicit user approval before CLOSED
+
+  completion_path: backlog/paths/BL-001-traceability.yaml
+  quality_gate: backlog/gates/BL-001-traceability.yaml
+  runtime: backlog/runtime/BL-001/
+
+  ssot:
+    level_1_registry: backlog/backlog.yaml
+    level_2_definition: backlog/items/BL-001-controller-traceability.yaml
+    level_3_runtime: backlog/runtime/BL-001/
+    planning_gate: QG-SSOT-001
+
+  planning_authorization:
+    allowed_only_when:
+      - SSOT-L1 COMPLETE
+      - SSOT-L2 COMPLETE
+      - SSOT-L3 COMPLETE
+      - QG-SSOT-001 PASS
