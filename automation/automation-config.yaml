@@ -1,4 +1,4 @@
-version: 12
+version: 13
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -28,7 +28,8 @@ control_files:
   independent_worker_contract: automation/worker-component-contract.md
   independent_worker_input_template: worker/worker-input-template.yaml
   shared_log: logs/automation-log.md
-  invocation_and_lane_run_logs: logs/runs/*.md
+  invocation_aggregate_logs: logs/runs/INVOCATION-*.md
+  transient_lane_run_logs: logs/runs/*-LANE-*.md
   human_story: logs/automation-story.md
   sync_register: sync/source-artifact-sync-register.yaml
 
@@ -61,8 +62,10 @@ backlog_orchestration:
   missing_runtime_file_action: DO_NOT_PLAN_OR_EXECUTE
   missing_pre_phase_log_action: DO_NOT_START_PHASE
   missing_post_phase_log_action: RESULT_NOT_ACCEPTED_UNTIL_RECOVERED
+  leftover_lane_log_action: RECOVERY_AGGREGATE_VERIFY_DELETE_BEFORE_NEW_EXECUTION
   user_acceptance_required_before_close: true
   primary_hierarchy:
+    - PRE_INVOCATION_LANE_LOG_HYGIENE_CHECK
     - ORCHESTRATOR_INVOCATION_START_LOG
     - SSOT_LEVEL_1_BACKLOG_MASTER
     - SSOT_LEVEL_2_BACKLOG_DEFINITION_AND_SOW
@@ -74,6 +77,8 @@ backlog_orchestration:
     - LANE_ASSIGNMENT_OR_WORKER_INPUT
     - LANE_LIFECYCLE_LOGGED_EXECUTION
     - ORCHESTRATOR_VALIDATION
+    - ORCHESTRATOR_LANE_LOG_AGGREGATION
+    - ORCHESTRATOR_LANE_LOG_CLEANUP_ZERO_CHECK
     - ORCHESTRATOR_INVOCATION_END_LOG
     - USER_ACCEPTANCE_WHEN_CONFIGURED
     - BACKLOG_CLOSURE
@@ -111,6 +116,10 @@ coordinator:
   consumes_worker_slot: false
   owns_analysis_and_execution: true
   responsibilities:
+    - scan_for_leftover_individual_lane_logs_before_new_execution
+    - enter_recovery_only_mode_when_leftover_lane_logs_exist
+    - aggregate_verify_and_delete_leftover_lane_logs_before_starting_new_execution
+    - prove_zero_individual_lane_logs_before_invocation_start_execution
     - persist_orchestrator_invocation_start_before_any_analysis_or_execution
     - load_control_files
     - read_backlog_run_config_first
@@ -150,7 +159,14 @@ coordinator:
     - close_backlog_item_only_after_all_required_gates_pass
     - serialize_shared_file_updates
     - maintain_human_readable_logs_and_story
-    - persist_orchestrator_invocation_end_after_lanes_closed_and_runtime_synchronized
+    - persist_orchestrator_log_aggregation_start_after_all_lanes_closed
+    - accumulate_each_lane_log_into_invocation_aggregate
+    - consolidate_meaningful_lane_audit_into_shared_log
+    - verify_each_lane_log_is_represented_before_deletion
+    - delete_individual_lane_logs_after_verified_accumulation
+    - rescan_and_prove_zero_individual_lane_logs_before_invocation_end
+    - persist_orchestrator_log_aggregation_end_only_on_pass
+    - persist_orchestrator_invocation_end_after_log_cleanup_and_runtime_sync
     - run_source_artifact_sync_decisions
 
 independent_worker:
@@ -189,7 +205,8 @@ orchestration_worker_pool:
   one_active_job_per_lane: true
   lane_status_ssot: backlog/runtime/<BL-ID>/lane-status.yaml
   lane_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
-  lane_run_log_pattern: logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md
+  lane_run_log_pattern: logs/runs/INVOCATION-<timestamp>-LANE-<nn>.md
+  lane_run_logs_transient: true
   required_lifecycle_events: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
   assignment_rule: >-
     A lane becomes non-IDLE only after the coordinator records an eligible Work Unit/task assignment
@@ -199,8 +216,12 @@ orchestration_worker_pool:
     persist LANE_SERVICE_START. After service(), persist LANE_SERVICE_END. After close(), persist
     LANE_CLOSE_END. SERVICE events are omitted only when init ends BLOCKED_BEFORE_SERVICE.
   release_rule: >-
-    A lane may return to IDLE or receive new work only after LANE_CLOSE_END or coordinator recovery-close
-    evidence is persisted.
+    A lane may return to IDLE or receive new work within the same invocation only after
+    LANE_CLOSE_END or coordinator recovery-close evidence is persisted.
+  retention_rule: >-
+    Individual lane log files remain only until Orchestrator closure. The coordinator accumulates
+    them into the invocation aggregate/shared audit, verifies the transfer, then deletes them.
+    Closed invocation postcondition is zero individual lane log files.
   heartbeat_rule: >-
     WORKING lanes must record last_heartbeat; missing heartbeat beyond the configured stale interval
     moves the lane to STALE and returns the Work Unit to coordinator recovery.
@@ -218,20 +239,33 @@ orchestration_worker_service_lifecycle:
     coordinator_closes_unfinished_log: true
     result_state: RESULT_NOT_CONFIRMED
 
+lane_log_hygiene:
+  individual_lane_log_match: logs/runs/*-LANE-*.md
+  pre_invocation_required_count: 0
+  pre_invocation_nonzero_action: RECOVERY_ONLY_NO_NEW_EXECUTION
+  aggregate_into_invocation_log: true
+  aggregate_into_shared_audit_summary: true
+  verify_before_delete: true
+  delete_after_verified_aggregation: true
+  invocation_end_required_count: 0
+  new_invocation_forbidden_while_nonzero: true
+
 scheduler:
   invocation: EXTERNAL_CHATGPT_AUTOMATION
   cadence: HOURLY
   primary_coordinator_required: true
   duplicate_cylinder_coordinators_allowed: false
   run_config_source: backlog/orchestrator-run-config.yaml
-  invocation_log_pattern: logs/runs/INV-<invocation-id>-ORCHESTRATOR.md
+  invocation_log_pattern: logs/runs/INVOCATION-<timestamp>.md
+  pre_invocation_lane_log_scan_required: true
   invocation_start_log_required_before_analysis: true
-  invocation_end_log_required_after_runtime_sync: true
+  invocation_end_log_required_after_runtime_sync_and_lane_log_cleanup: true
   note: >-
     The actual hourly schedule is maintained by the ChatGPT scheduled automation. Each invocation
-    must first persist ORCHESTRATOR_INVOCATION_START, then read and enforce live governance. After
-    all started lanes are closed/recovery-closed and runtime is synchronized, it must persist
-    ORCHESTRATOR_INVOCATION_END even when no eligible work ran or the invocation was blocked.
+    first scans for leftover individual lane logs. New execution is forbidden until the count is
+    zero. It then persists ORCHESTRATOR_INVOCATION_START and executes eligible work. Closure must
+    aggregate and delete every individual lane log, prove the count is zero, synchronize runtime,
+    and only then persist ORCHESTRATOR_INVOCATION_END.
 
 registered_backlog_items:
   source: backlog/backlog.yaml
@@ -252,7 +286,7 @@ current_backlog_item:
   statement_of_work_gate: QG-SOW-001
   statement_of_work_gate_state: PASS
   lifecycle_logging_gate: QG-LOG-001
-  lifecycle_logging_gate_state: ENFORCED_FOR_NEXT_INVOCATION
+  lifecycle_logging_gate_state: ENFORCED_FOR_CURRENT_AND_FUTURE_INVOCATION_BOUNDARIES
   item_definition: backlog/items/BL-001-controller-traceability.yaml
   quality_gate: backlog/gates/BL-001-traceability.yaml
   quality_gate_approved: true
@@ -278,6 +312,8 @@ blocker_handling:
   missing_quality_gate_is_planning_and_execution_blocker: true
   missing_required_pre_phase_log_is_execution_blocker: true
   missing_required_post_phase_log_blocks_result_acceptance: true
+  leftover_individual_lane_logs_block_new_execution: true
+  failed_lane_log_aggregation_blocks_invocation_close: true
   alternatives_may_be_suggested: true
   completion_path_change_requires_approval: true
   workflow_or_architecture_change_requires_approval: true
@@ -295,10 +331,10 @@ shared_file_ownership:
     - repository-catalogue.md
     - governance/ssot-levels.yaml
     - governance/quality-gates.yaml
-  parallel_lane_owned_paths:
-    - logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md
+  transient_parallel_lane_owned_paths:
+    - logs/runs/INVOCATION-<timestamp>-LANE-<nn>.md
   coordinator_invocation_owned_paths:
-    - logs/runs/INV-<invocation-id>-ORCHESTRATOR.md
+    - logs/runs/INVOCATION-<timestamp>.md
 
 source_artifact_sync:
   enabled: true
@@ -333,6 +369,7 @@ execution:
   backlog_item_requires_approved_quality_gate: true
   backlog_analysis_required_before_material_plan_changes: true
   execution_plan_required_before_worker_input_generation: true
+  pre_invocation_lane_log_count_must_be_zero_before_new_execution: true
   orchestrator_invocation_start_log_required_before_analysis: true
   lane_assignment_must_be_recorded_before_execution: true
   lane_init_start_log_required_before_init: true
@@ -342,6 +379,9 @@ execution:
   lane_close_end_log_required_after_close: true
   lane_release_must_be_recorded_after_close_log: true
   qg_log_001_required_before_execution_result_acceptance: true
+  lane_log_aggregation_required_before_invocation_end: true
+  individual_lane_logs_must_be_deleted_after_verified_aggregation: true
+  post_invocation_lane_log_count_must_be_zero: true
   orchestrator_invocation_end_log_required_after_runtime_sync: true
   worker_input_generated_by_orchestrator_only: true
   independent_worker_run_must_close_before_result_is_accepted: true
