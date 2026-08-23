@@ -11,70 +11,40 @@ blockers:
     - id: PB-BL001-001
       state: OPEN
       affects_gate: QG-LANE-001
-      category: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING
+      category: SOURCE_REPOSITORY_ACTIONS_NOT_SELF_REPORTING
       summary: >-
-        The real worker backend has been moved into the private CylinderManagement repository on
-        branch automation/lane-matrix, but the source-local push-triggered GitHub Actions workflow
-        has not started or self-reported a run ID.
+        Dispatch generation 3 is now synchronized to vvekselva/CylinderManagement branch automation/lane-matrix,
+        and the source-local matrix workflow is installed, but the workflow still has not created
+        automation/matrix-execution.yaml or exposed a workflow/job run ID through available evidence.
       proved_facts:
-        - Control-side matrix run 32638659581 spawned ten matrix worker jobs.
-        - All ten control-side jobs failed before service while cloning private CylinderManagement because the control repository GITHUB_TOKEN has no cross-repository private access.
-        - The control-side auto-trigger was retired to prevent repeated known failures.
-        - CylinderManagement branch automation/lane-matrix was created from the frozen source baseline.
-        - The source-local workflow, worker scripts and ten-task dispatch copy are installed on that branch.
-        - No automation/matrix-execution.yaml has been created by the source workflow after the dispatch push.
-      not_yet_proved: >-
-        Whether source-repository Actions is disabled, restricted by repository/account policy, or another
-        workflow-start policy is preventing the push workflow from starting. The framework does not guess.
+        - Control-side run 32638659581 previously spawned ten workers but all failed before service because its repository token could not read the separate private source repository.
+        - Source-local execution is the approved replacement and requires no cross-repository PAT.
+        - Control dispatch MATRIX-BL001-DISPATCH-003 contains ten safe independent READY tasks.
+        - Source execution copy MATRIX-BL001-SOURCE-003 with matching control dispatch ID is present on automation/lane-matrix.
+        - The source workflow .github/workflows/lane-matrix-dispatch.yml is present and configured with max-parallel 10.
+        - No source automation/matrix-execution.yaml exists after the generation-3 dispatch synchronization.
+      not_yet_proved: Whether repository Actions is disabled/restricted, the push workflow is suppressed by policy, or another source-repository Actions setting prevents startup.
       impact: >-
-        BL-001 source tracing itself still has eligible work, but the newly required real parallel worker
-        backend cannot yet demonstrate or deliver parallel service execution. QG-LANE-001 cannot PASS.
+        BL-001 source tracing remains eligible, but real matrix execution and concurrency measurement cannot be claimed.
+        No external lane is marked working without workflow/job evidence, and no matrix worker evidence is accepted.
       next_action: >-
-        Verify that GitHub Actions is enabled/allowed for vvekselva/CylinderManagement and permits GitHub-owned
-        actions (checkout, setup-python, upload/download-artifact). Then re-trigger automation/lane-dispatch.yaml
-        on automation/lane-matrix and wait for automation/matrix-execution.yaml to record the run ID.
-      alternative: >-
-        A cross-repository PAT/GitHub App token secret in the control repository could also grant private source
-        access, but the source-local execution design avoids needing a new secret and is preferred.
+        Verify GitHub Actions is enabled/allowed for vvekselva/CylinderManagement and permits GitHub-owned
+        actions checkout/setup-python/upload-artifact/download-artifact. Then re-trigger the source dispatch and
+        require automation/matrix-execution.yaml plus the durable lane-dispatch-aggregate before consumption.
 
   active_evidence_gaps:
-    - id: EG-BL001-004
-      state: OPEN
-      affects_gate: QG-TRC-002
-      source_endpoint: POST /customer-spot-cylinder-check/submit
-      last_proven_component: CustomerSpotCylinderCheckService and directly injected persistence components
-      summary: Complete final database-object set for all submitSpotCheck branches is not yet proved.
-      why_not_guessed: The service reaches multiple DAOs/views/entities and the trace must verify every mapping rather than infer table names.
-      next_action: Verify the remaining challan-page, transaction-link, customer, cylinder and customer-custody DAO/entity/view mappings.
-      opened_by_run: INVOCATION-20260823-145512
-    - id: EG-BL001-005
-      state: OPEN
-      affects_gate: QG-TRC-002
-      source_endpoint: POST /walkin-sale
-      last_proven_component: WalkinSaleServiceImpl and directly injected persistence components
-      summary: Complete final database-object set across every conditional processRequest branch is not yet proved.
-      why_not_guessed: Multiple delivery, pickup, yard and challan branches are present; only explicitly mapped objects are accepted as evidence.
-      next_action: Verify remaining customer/address/cylinder/challan-page/challan-link/challan-type repository/entity mappings.
-      opened_by_run: INVOCATION-20260823-145512
+    - {id: EG-BL001-004, state: OPEN, affects_gate: QG-TRC-002, source_endpoint: POST /customer-spot-cylinder-check/submit, summary: Complete final database-object set for all submitSpotCheck branches is not yet proved.}
+    - {id: EG-BL001-005, state: OPEN, affects_gate: QG-TRC-002, source_endpoint: POST /walkin-sale, summary: Complete final database-object set across every conditional processRequest branch is not yet proved.}
 
   resolved_evidence_gaps:
-    - {id: EG-BL001-001, state: RESOLVED, affects_gate: QG-TRC-002, summary: Challan Type search final dependency is proved., resolution: 'ChallanTypeSearchService -> ChallanTypeJpaDao -> ChallanTypeDo -> public.tbl_challan_type', resolved_by_run: RUN-WI0004-20260823-025}
-    - {id: EG-BL001-002, state: RESOLVED, affects_gate: QG-TRC-002, summary: City search final dependency is proved., resolution: 'CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city', resolved_by_run: RUN-WI0004-20260823-025}
-    - {id: EG-BL001-003, state: RESOLVED, affects_gate: QG-TRC-002, summary: Country search final dependency is proved., resolution: 'CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country', resolved_by_run: RUN-WI0004-20260823-025}
+    - {id: EG-BL001-001, state: RESOLVED, resolution: ChallanTypeSearchService -> ChallanTypeJpaDao -> ChallanTypeDo -> public.tbl_challan_type}
+    - {id: EG-BL001-002, state: RESOLVED, resolution: CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city}
+    - {id: EG-BL001-003, state: RESOLVED, resolution: CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country}
 
   remaining_work_constraint:
     state: OPEN
     affects_gate: QG-TRC-002
-    summary: 97 of 134 endpoint final-dependency traces remain not yet examined at the Attempt 27 checkpoint.
+    summary: 97 of 134 endpoint final-dependency traces remain not yet examined.
 
-  latest_accepted_attempt:
-    number: 27
-    invocation: INVOCATION-20260823-160000
-    new_endpoint_traces_examined: 10
-    new_complete: 10
-    new_unresolved: 0
-
-  note: >-
-    Two complex POST evidence gaps and 97 not-yet-examined endpoints remain. The new platform blocker is
-    specific to real parallel execution and QG-LANE-001. No evidence from the failed control-side matrix
-    run is accepted because workers never reached service.
+  latest_accepted_attempt: {number: 27, invocation: INVOCATION-20260823-160000, new_endpoint_traces_examined: 10, new_complete: 10, new_unresolved: 0}
+  latest_coordinator_invocation: {invocation: INVOCATION-20260823-175300, endpoint_progress: 0, dispatch_generation_synchronized: 3, matrix_workflow_run_id: null, qg_lane_001_state: BLOCKED_PLATFORM}
