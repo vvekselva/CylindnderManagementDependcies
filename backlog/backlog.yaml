@@ -1,15 +1,19 @@
 backlog:
-  version: 4
+  version: 5
   target_repository: vvekselva/CylinderManagement
   run_config: backlog/orchestrator-run-config.yaml
   quality_gate_governance: governance/quality-gates.yaml
+  statement_of_work_template: backlog/statement-of-work-template.yaml
+  statement_of_work_gate: QG-SOW-001
   selection_policy: HIGHEST_PRIORITY_ELIGIBLE_ITEM
   max_parallel_backlog_items: 1
   note: >-
-    Run eligibility is controlled by backlog/orchestrator-run-config.yaml. A Backlog Item
-    must also pass QG-DEP-001 and have an approved item-specific Quality Gate before it
-    may execute. Only one Backlog Item is active at a time; safe Work Units inside it may
-    use parallel execution.
+    backlog.yaml is the authoritative Backlog register. A Backlog Item may be catalogued
+    without a Statement of Work, but it MUST NOT enter analysis, planning or execution until
+    its statement_of_work reference is non-null and QG-SOW-001 passes. Run eligibility is
+    also controlled by backlog/orchestrator-run-config.yaml. QG-DEP-001 and an approved
+    item-specific Quality Gate must pass as applicable. Only one Backlog Item is active at
+    a time; safe Work Units inside it may use parallel execution.
 
   states:
     - YET_TO_DO
@@ -33,6 +37,7 @@ backlog:
       type: TRACEABILITY
       priority: P1_BLOCKER_CLEARING
       state: PARTIAL
+      statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
       completion_path: backlog/paths/BL-001-traceability.yaml
       quality_gate: backlog/gates/BL-001-traceability.yaml
       implementation_workflow: workflows/WF-001-controller-traceability/workflow.yaml
@@ -51,6 +56,7 @@ backlog:
       type: UNIT_TEST
       priority: P2_CRITICAL_PATH
       state: YET_TO_DO
+      statement_of_work: null
       completion_path: backlog/paths/BL-002-unit-test.yaml
       quality_gate: null
       dependencies: []
@@ -64,6 +70,7 @@ backlog:
       type: INTEGRATION_TEST
       priority: P2_CRITICAL_PATH
       state: YET_TO_DO
+      statement_of_work: null
       completion_path: backlog/paths/BL-003-integration-test.yaml
       quality_gate: null
       dependencies: []
@@ -77,6 +84,7 @@ backlog:
       type: CODE_COVERAGE
       priority: P2_CRITICAL_PATH
       state: WAITING_FOR_DEPENDENCY
+      statement_of_work: null
       completion_path: backlog/paths/BL-004-code-coverage.yaml
       quality_gate: null
       dependencies: [BL-002, BL-003]
@@ -90,6 +98,7 @@ backlog:
       type: ARCHUNIT
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       completion_path: backlog/paths/BL-005-archunit.yaml
       quality_gate: null
       dependencies: []
@@ -103,6 +112,7 @@ backlog:
       type: REQUIREMENTS
       priority: P2_CRITICAL_PATH
       state: YET_TO_DO
+      statement_of_work: null
       completion_path: backlog/paths/BL-006-requirements.yaml
       quality_gate: null
       dependencies: []
@@ -116,6 +126,7 @@ backlog:
       type: DATABASE_MIGRATION
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -124,6 +135,7 @@ backlog:
       type: OWNERSHIP_MODEL
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -132,6 +144,7 @@ backlog:
       type: CHALLAN_MANAGEMENT
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -140,6 +153,7 @@ backlog:
       type: DASHBOARD
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -148,6 +162,7 @@ backlog:
       type: CRUD_SERVICES
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -156,6 +171,7 @@ backlog:
       type: CYLINDER_CHECK
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -164,6 +180,7 @@ backlog:
       type: CORRECTION_MANAGEMENT
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -172,6 +189,7 @@ backlog:
       type: INVOICE_INTEGRATION
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -180,6 +198,7 @@ backlog:
       type: ATTENDANCE_MANAGEMENT
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -188,6 +207,7 @@ backlog:
       type: TRIP_PLANNING
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -196,6 +216,7 @@ backlog:
       type: DASHBOARD
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -204,6 +225,7 @@ backlog:
       type: DATABASE_RESTORE
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -212,6 +234,7 @@ backlog:
       type: TASK_MANAGEMENT
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -220,6 +243,7 @@ backlog:
       type: DASHBOARD
       priority: P3_NORMAL
       state: YET_TO_DO
+      statement_of_work: null
       quality_gate: null
       dependencies: []
 
@@ -227,6 +251,9 @@ backlog:
     backlog_item: BL-001
     phase: EXECUTE_SOURCE_CHECK
     run_enabled: true
+    statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
+    statement_of_work_gate: QG-SOW-001
+    statement_of_work_valid: true
     quality_gate_configured: true
     quality_gate_approved: true
     analysis: backlog/runtime/BL-001/analysis.yaml
