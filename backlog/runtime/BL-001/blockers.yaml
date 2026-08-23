@@ -6,7 +6,25 @@ blockers:
 
   governance_blockers: []
 
-  active_evidence_gaps: []
+  active_evidence_gaps:
+    - id: EG-BL001-004
+      state: OPEN
+      affects_gate: QG-TRC-002
+      source_endpoint: POST /customer-spot-cylinder-check/submit
+      last_proven_component: CustomerSpotCylinderCheckService and directly injected persistence components
+      summary: Complete final database-object set for all submitSpotCheck branches is not yet proved.
+      why_not_guessed: The service reaches multiple DAOs/views/entities and the trace must verify every mapping rather than infer table names.
+      next_action: Verify the remaining challan-page, transaction-link, customer, cylinder and customer-custody DAO/entity/view mappings.
+      opened_by_run: INVOCATION-20260823-145512
+    - id: EG-BL001-005
+      state: OPEN
+      affects_gate: QG-TRC-002
+      source_endpoint: POST /walkin-sale
+      last_proven_component: WalkinSaleServiceImpl and directly injected persistence components
+      summary: Complete final database-object set across every conditional processRequest branch is not yet proved.
+      why_not_guessed: Multiple delivery, pickup, yard and challan branches are present; only explicitly mapped objects are accepted as evidence.
+      next_action: Verify remaining customer/address/cylinder/challan-page/challan-link/challan-type repository/entity mappings.
+      opened_by_run: INVOCATION-20260823-145512
 
   resolved_evidence_gaps:
     - id: EG-BL001-001
@@ -31,9 +49,9 @@ blockers:
   remaining_work_constraint:
     state: OPEN
     affects_gate: QG-TRC-002
-    summary: 112 of 134 endpoint final-dependency traces remain not yet examined at the current canonical checkpoint.
+    summary: 107 of 134 endpoint final-dependency traces remain not yet examined at the Attempt 26 checkpoint.
 
   note: >-
-    There is currently no active evidence gap among the 22 examined endpoint traces. The
-    backlog remains open because 112 endpoints have not yet been examined. This remaining
-    work volume is not a global blocker and eligible source-check work may continue.
+    Two examined complex POST paths are explicitly unresolved and 107 endpoints are not yet examined.
+    These are evidence gaps/work volume rather than a global execution blocker. Independent source-check
+    work may continue under QG-LOG-001 lifecycle logging and the approved no-guessing rule.
