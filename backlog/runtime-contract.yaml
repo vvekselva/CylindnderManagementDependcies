@@ -1,5 +1,5 @@
 runtime_ssot_contract:
-  version: 1
+  version: 2
   level: SSOT-L3
   planning_gate: QG-SSOT-001
 
@@ -20,19 +20,35 @@ runtime_ssot_contract:
       purpose: orchestrator/user decisions affecting execution
     worker-input-register.yaml:
       purpose: worker-input issuance/consumption state
+    lane-status.yaml:
+      purpose: authoritative live lane-to-task assignment, run, heartbeat, blocker and release state
+      may_exist_before_execution_as: INITIALIZED_ALL_IDLE
     result.yaml:
       purpose: final/current backlog result and closure state
+
+  lane_status_rules:
+    - exactly ten orchestration lane records must exist for LANE-01 through LANE-10
+    - every lane must have exactly one current lifecycle state
+    - a non-IDLE lane must identify the current Work Unit and task
+    - a WORKING lane must identify the current run and last heartbeat
+    - a BLOCKED lane must explain the blocker in plain English
+    - a CLOSED run must release its lane unless a newer assignment has replaced it
+    - summary counts must reconcile exactly to the ten lane records
+    - lane-status.yaml is the single point of truth for what each lane is doing now
 
   initialization_rule: >-
     All required Level 3 files must exist and identify the same Backlog Item before the
     Orchestrator may create or materially change an Execution Plan. Empty/initialized files
     are allowed before first planning only where explicitly permitted by this contract.
+    lane-status.yaml may begin with all ten lanes IDLE.
 
   consistency_rule: >-
     Level 3 files must reconcile to the same Level 1 registry item and Level 2 backlog
-    definition. A stale human-readable dashboard never overrides newer canonical runtime
-    state.
+    definition. lane-status.yaml must reconcile with current Work Units and open/closed runs.
+    A stale human-readable dashboard or historical worker log never overrides newer canonical
+    runtime state.
 
   failure_rule: >-
-    Missing or inconsistent Level 3 files fail QG-SSOT-001 and block PLAN/REPLAN. Only
-    runtime initialization/repair work needed to satisfy SSOT-L3 is permitted while failed.
+    Missing or inconsistent Level 3 files, including lane-status.yaml, fail QG-SSOT-001 and
+    block PLAN/REPLAN. Only runtime initialization/repair work needed to satisfy SSOT-L3 is
+    permitted while failed.
