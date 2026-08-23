@@ -28,13 +28,14 @@ quality_gate_status:
     source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
     preexisting_local_source_checkout_required: false
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-    validation_report: tests/self-reliant-e2e-validation-2026-08-23.md
+    latest_production_execution: E2E-STAGED-20260823-161214
     controller_roots_verified: 10
-    latest_full_discovery_execution: E2E-STAGED-20260823-151810
-    missing_source_requests: 21
-    missing_binding_requests: 0
+    materialized_verified_files: 29
+    missing_source_requests: 16
+    missing_binding_requests: 3
     source_closure_complete: false
-    canary_execution: E2E-STAGED-20260823-151800
+    restage_progress: PREVIOUS_21_SOURCE_REQUESTS_TO_CURRENT_16_SOURCE_PLUS_3_BINDINGS
+    canary_source_closure_execution: E2E-STAGED-20260823-151800
     canary_source_closure_complete: true
     tamper_test: PASS_BLOCK_BEFORE_SERVICE
     positive_interface_binding_test: PASS
@@ -44,11 +45,11 @@ quality_gate_status:
   execution_lifecycle_logging_gate:
     id: QG-LOG-001
     state: PASS
-    latest_tested_execution: E2E-STAGED-20260823-151810
+    latest_tested_execution: E2E-STAGED-20260823-161214
     workers_started: 10
+    worker_results_received: 10
     worker_failures: 0
     post_aggregate_individual_lane_logs: 0
-    note: Staged worker lifecycle and transient-log cleanup were validated; every new production batch re-runs the boundary checks.
 
   execution_recovery_gate:
     id: QG-RECOVERY-001
@@ -72,10 +73,10 @@ quality_gate_status:
     configured_lanes: 10
     safe_ready_tasks: 10
     expected_concurrent_lanes: 10
-    latest_natural_execution: E2E-STAGED-20260823-151810
-    measured_peak_service_concurrent_lanes: 4
-    measured_average_service_concurrent_lanes: 0.26
-    peak_service_capacity_utilization_percentage: 40.0
+    latest_natural_execution: E2E-STAGED-20260823-161214
+    measured_peak_service_concurrent_lanes: 2
+    measured_average_service_concurrent_lanes: 0.0
+    peak_service_capacity_utilization_percentage: 20.0
     backend_capacity_probe_peak_service_concurrent_lanes: 10
     worker_failures: 0
     individual_lane_logs_remaining: 0
@@ -102,6 +103,6 @@ quality_gate_status:
   endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 37, complete: 35, unresolved: 2, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 97}
   close_allowed: false
   reason: >-
-    BL-001 remains PARTIAL. The self-reliant execution architecture is validated and promoted, but the current ten-task
-    source snapshot still requires recursive source/binding closure, QG-LANE-001 remains underutilized for the latest natural
-    workload, 97 endpoint traces remain unexamined and explicit user acceptance has not been reached.
+    The live production fire completed correctly but source/binding closure is still partial. Sixteen exact source requests
+    and three explicit interface bindings remain, QG-LANE-001 is underutilized for the natural workload, 97 endpoint traces
+    remain unexamined, and QG-TRC-015 user acceptance is not yet available.
