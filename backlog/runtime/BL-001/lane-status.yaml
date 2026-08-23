@@ -1,5 +1,5 @@
 lane_status:
-  version: 4
+  version: 5
   backlog_item: BL-001
   authoritative: true
   purpose: >-
@@ -13,7 +13,7 @@ lane_status:
   last_reconciled_run: INVOCATION-20260823-145512
   invocation_state: ACTIVE
   current_invocation: INVOCATION-20260823-160000
-  current_idle_reason: AWAITING_SAFE_ASSIGNMENT_AFTER_CLEAN_PREFLIGHT
+  current_idle_reason: SAFE_CAPACITY_SELECTION_IN_PROGRESS
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
@@ -44,7 +44,7 @@ lane_status:
     valid_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
 
   lanes:
-    LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-01: {state: INITIALIZING, work_unit: WU-BL001-001, task: 'Trace LoginController GET /login to its final source-proved dependency or terminal view action', worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-027-L01, attempt: 27, started_at: '2026-08-23T16:08:00+05:30', last_heartbeat: '2026-08-23T16:08:00+05:30', last_lifecycle_event: null, blocker: null}
     LANE-02: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
     LANE-03: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
     LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
@@ -57,17 +57,16 @@ lane_status:
 
   summary:
     total_lanes: 10
-    idle: 10
+    idle: 9
     assigned: 0
-    initializing: 0
+    initializing: 1
     working: 0
     blocked: 0
     waiting: 0
     closing: 0
     stale: 0
-    active_lane_count: 0
+    active_lane_count: 1
 
   current_interpretation: >-
-    Invocation INVOCATION-20260823-160000 has passed lane-log hygiene preflight with zero
-    individual lane logs. The invocation START record is persisted and safe task assignment
-    may now begin after live gate validation.
+    LANE-01 is assigned to the independent LoginController endpoint trace. Additional safe
+    lane selection remains in progress; no dependent or shared-write work is parallelized.
