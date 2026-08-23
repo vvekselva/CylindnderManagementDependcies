@@ -1,0 +1,67 @@
+version: 1
+repository: vvekselva/CylinderManagement
+purpose: >-
+  Give the Primary Orchestrator a deterministic, governed way to turn imported Java FQCN values
+  into candidate repository paths for staged-source materialization. Candidate path generation is
+  only a lookup mechanism; source acceptance still requires exact frozen-ref fetch plus package/blob validation.
+
+frozen_baseline_for_validation: 3ae6e61442132d94a307275b08dd65fcef228d89
+
+package_module_rules:
+  - package_prefix: com.sreyas.datamatics.application.jpa
+    module: cylinder.management.dao
+    source_root: cylinder.management.dao/src/main/java
+  - package_prefix: com.sreyas.datamatics.application.service
+    module: framework
+    source_root: framework/src/main/java
+  - package_prefix: com.sreyas.datamatics.cylinder.management.services
+    module: cylindermanagement.custommapper.service
+    source_root: cylindermanagement.custommapper.service/src/main/java
+  - package_prefix: com.sreyas.datamatics.cylinder.management.mapper
+    module: cylindermanagement.custommapper.service
+    source_root: cylindermanagement.custommapper.service/src/main/java
+  - package_prefix: com.sreyas.datamatics.cylindermanagement.offlinemap
+    module: cylindermanagement.offlinemap
+    source_root: cylindermanagement.offlinemap/src/main/java
+  - package_prefix: com.sreyas.datamatics.cylindermanagement.web
+    module: cylindermanagement.web
+    source_root: cylindermanagement.web/src/main/java
+  - package_prefix: com.sreyas.datamatics.application.dto
+    module: Cylinder.management.dto
+    source_root: Cylinder.management.dto/src/main/java
+  - package_prefix: com.sreyas.datamatics.application.dashboard.dto
+    module: Cylinder.management.dto
+    source_root: Cylinder.management.dto/src/main/java
+  - package_prefix: com.sreyas.datamatics.application.request.dto
+    module: Cylinder.management.dto
+    source_root: Cylinder.management.dto/src/main/java
+  - package_prefix: com.sreyas.datamatics.application.response.dto
+    module: Cylinder.management.dto
+    source_root: Cylinder.management.dto/src/main/java
+  - package_prefix: com.sreyas.datamatics.application.usecase
+    module: Cylinder.management.dto
+    source_root: Cylinder.management.dto/src/main/java
+
+resolution_algorithm:
+  - choose the longest matching package_prefix
+  - convert the full package/class name to slash-separated relative Java path
+  - prepend the mapped source_root
+  - fetch that exact path from vvekselva/CylinderManagement at the frozen commit
+  - require returned source package declaration to equal the expected package
+  - record the Git blob SHA and byte length in the source snapshot manifest
+  - if the candidate is 404 or package validation fails, do not guess acceptance; record SOURCE_PATH_RESOLUTION_UNRESOLVED
+
+binding_candidate_rule: >-
+  For interface injection, qualifier or injection-variable naming may generate a candidate class name for lookup only.
+  The candidate must still be fetched at the frozen commit and prove the declared interface/generic signature and bean identity
+  before a binding is written to the snapshot manifest.
+
+validated_examples:
+  - fqcn: com.sreyas.datamatics.application.service.ICylinderManagementApplicationService
+    path: framework/src/main/java/com/sreyas/datamatics/application/service/ICylinderManagementApplicationService.java
+  - fqcn: com.sreyas.datamatics.cylinder.management.services.TripReturnWorkflowService
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/TripReturnWorkflowService.java
+  - fqcn: com.sreyas.datamatics.cylindermanagement.offlinemap.service.CustomerAddressLocationOfflineMapService
+    path: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/CustomerAddressLocationOfflineMapService.java
+  - fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPagePhotoDo
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/ChallanPagePhotoDo.java
