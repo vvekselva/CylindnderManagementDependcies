@@ -33,3 +33,14 @@ decisions:
       represented, and deleted. ORCHESTRATOR_INVOCATION_END is allowed only when the post-cleanup
       individual lane log count is zero. This preserves complete audit evidence while preventing stale
       per-lane files from surviving across invocation boundaries.
+  - id: DEC-BL001-006
+    state: APPLIED
+    decision: USER_VISIBLE_RUN_OVER_RUN_EXECUTION_STATISTICS_AND_STALE_CYCLE_TRACKING
+    reason: >-
+      The user requires a separate operational statistics table showing Previous Run versus Current/Latest
+      Run progress, lane usage and staleness. Level 3 now contains execution-statistics.yaml as the
+      machine-readable source. BL-001 progress percentage is explicitly endpoint trace coverage
+      (examined_for_final_dependency / 134), not an overall project percentage. Each completed invocation
+      records lanes used, lane utilization, endpoints added, throughput, and whether meaningful progress
+      occurred. Consecutive completed invocations with no meaningful progress increment stale_cycles;
+      any completed invocation with meaningful progress resets stale_cycles to zero.
