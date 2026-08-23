@@ -31,10 +31,11 @@ quality_gate_status:
     latest_production_execution: E2E-STAGED-20260823-161214
     controller_roots_verified: 10
     materialized_verified_files: 29
-    missing_source_requests: 16
-    missing_binding_requests: 3
+    missing_source_requests_from_latest_worker_batch: 16
+    binding_identities_unresolved: 0
+    binding_implementation_materializations_pending: 1
     source_closure_complete: false
-    restage_progress: PREVIOUS_21_SOURCE_REQUESTS_TO_CURRENT_16_SOURCE_PLUS_3_BINDINGS
+    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260824-003111.md
     canary_source_closure_execution: E2E-STAGED-20260823-151800
     canary_source_closure_complete: true
     tamper_test: PASS_BLOCK_BEFORE_SERVICE
@@ -50,6 +51,7 @@ quality_gate_status:
     worker_results_received: 10
     worker_failures: 0
     post_aggregate_individual_lane_logs: 0
+    latest_direct_checkpoint_created_lane_logs: 0
 
   execution_recovery_gate:
     id: QG-RECOVERY-001
@@ -85,24 +87,25 @@ quality_gate_status:
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
-    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS, evidence: [37 of 134 endpoints examined, 35 COMPLETE, 2 UNRESOLVED, 97 not yet examined]}
+    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS, evidence: [40 of 134 endpoints examined, 38 COMPLETE, 2 UNRESOLVED, 94 not yet examined]}
     QG-TRC-003: {name: Controller Inventory Completeness, state: PASS}
     QG-TRC-004: {name: Endpoint Inventory Completeness, state: IN_PROGRESS}
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
-    QG-TRC-007: {name: Call Path Evidence, state: WAITING}
-    QG-TRC-008: {name: Final Dependency Evidence, state: WAITING}
+    QG-TRC-007: {name: Call Path Evidence, state: IN_PROGRESS}
+    QG-TRC-008: {name: Final Dependency Evidence, state: IN_PROGRESS}
     QG-TRC-009: {name: No Guessing And Unresolved Quality, state: IN_PROGRESS}
-    QG-TRC-010: {name: Matrix Coverage, state: WAITING}
+    QG-TRC-010: {name: Matrix Coverage, state: IN_PROGRESS}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
-    QG-TRC-012: {name: Artifact Consistency, state: WAITING}
+    QG-TRC-012: {name: Artifact Consistency, state: IN_PROGRESS}
     QG-TRC-013: {name: Source Artifact Registration, state: WAITING}
     QG-TRC-014: {name: Execution Closure, state: WAITING}
     QG-TRC-015: {name: User Acceptance, state: WAITING, owner: USER, automatic: false}
 
-  endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 37, complete: 35, unresolved: 2, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 97}
+  endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 40, complete: 38, unresolved: 2, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 94, matrix_materialized_rows: 13}
   close_allowed: false
   reason: >-
-    The live production fire completed correctly but source/binding closure is still partial. Sixteen exact source requests
-    and three explicit interface bindings remain, QG-LANE-001 is underutilized for the natural workload, 97 endpoint traces
-    remain unexamined, and QG-TRC-015 user acceptance is not yet available.
+    Source closure remains partial. Sixteen exact source requests from the latest worker batch and one already validated
+    binding implementation materialization remain before the staged discovery snapshot can be declared closed. Ninety-four
+    endpoint traces remain unexamined, QG-LANE-001 is underutilized for the latest natural workload, and QG-TRC-015 user
+    acceptance is not yet available.
