@@ -1,11 +1,13 @@
-version: 1
+version: 2
 id: WF-002
 name: Incremental Traceability Matrix And Matrix-Driven Continuation
 purpose: >-
   Materialize the BL-001 Traceability Matrix continuously as endpoint source evidence is accepted,
+  preserve the complete Controller-to-final-dependency chain, regenerate the read-only HTML Explorer data,
   then drive final reconciliation, validation, baseline registration and controlled downstream handoff from the matrix.
 
 architecture: architecture/self-reliant-e2e-execution.md
+viewer_architecture: architecture/traceability-explorer.md
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 owner: PRIMARY_ORCHESTRATOR
 
@@ -13,6 +15,9 @@ incremental_matrix_policy:
   enabled: true
   begins_during_work_unit: WU-BL001-001
   matrix_artifact: traceability/controller-traceability.md
+  structured_matrix_artifact: traceability/explorer/traceability-matrix.json
+  browser_data_artifact: traceability/explorer/matrix-data.js
+  html_viewer: traceability/explorer/index.html
   unresolved_artifact: traceability/unresolved-traceability.md
   progress_artifact: traceability/matrix-progress.yaml
   update_trigger: EACH_ORCHESTRATOR_ACCEPTED_ENDPOINT_TRACE
@@ -23,20 +28,40 @@ incremental_matrix_policy:
     - guessed_dependency
     - unpinned_source
     - incomplete_source_binding_presented_as_complete
+    - final_table_without_proved_intermediate_chain_when_intermediate_components_exist
   required_row_fields:
     - http_method
     - path
     - controller
     - controller_method
     - trace_state
+    - chain_completeness
+    - ordered_or_branching_component_chain
     - final_dependency_type
     - final_dependency
     - source_baseline
     - evidence_reference
     - accepted_invocation
+  full_chain_rule: >-
+    A COMPLETE endpoint must preserve every source-proved hop that participates in reaching the final dependency:
+    Controller.method -> Service/Mediator -> additional Service(s) -> DAO/Repository -> Entity/View -> DB/File/API/terminal dependency.
+    Branching persistence paths are stored as multiple ordered paths. If an intermediate hop is not proved, mark the chain
+    incomplete/UNRESOLVED instead of jumping directly to a final database object.
   rule: >-
-    As soon as the Primary Orchestrator accepts an endpoint trace from frozen-source evidence, its matrix row is
-    created or updated immediately. The matrix is a live derived artifact and may be PARTIAL while Source Check continues.
+    As soon as the Primary Orchestrator accepts an endpoint trace from frozen-source evidence, its matrix row and structured
+    full-chain record are created or updated immediately. The matrix is a live derived artifact and may be PARTIAL while Source Check continues.
+
+viewer_projection:
+  canonical_model: traceability/explorer/traceability-matrix.json
+  generated_browser_copy: traceability/explorer/matrix-data.js
+  viewer: traceability/explorer/index.html
+  viewer_is_read_only: true
+  viewer_is_ssot: false
+  regenerate_after_each_accepted_matrix_checkpoint: true
+  tabs: [ENDPOINTS, COMPONENTS, FINAL_DEPENDENCIES, UNRESOLVED, EXECUTION_LOGS]
+  log_parser_input: logs/runs/*.md
+  log_parser_execution: LOCAL_BROWSER_ONLY
+  log_parser_may_modify_ssot: false
 
 matrix_status_semantics:
   INCREMENTAL_PARTIAL: accepted endpoint rows exist but canonical Source Check coverage is below 100 percent
@@ -47,12 +72,14 @@ flow:
   - source workers collect frozen-source evidence
   - Primary Orchestrator validates endpoint evidence and assigns COMPLETE UNRESOLVED BLOCKED or FAILED
   - immediately upsert the accepted endpoint row into traceability/controller-traceability.md
+  - immediately upsert its full ordered or branching component chain into traceability/explorer/traceability-matrix.json
+  - regenerate traceability/explorer/matrix-data.js from the same accepted structured model
   - if state is UNRESOLVED BLOCKED or FAILED also synchronize traceability/unresolved-traceability.md
   - update traceability/matrix-progress.yaml counters and evidence references
   - continue source analysis/restaging for remaining endpoints
   - when canonical Source Check coverage reaches 100 percent transition matrix to READY_FOR_FINAL_RECONCILIATION
-  - WU-BL001-002 reconciles inventory source-check output and incremental matrix; it does not recreate already accepted rows
-  - WU-BL001-003 validates uniqueness coverage call-path evidence final-dependency evidence no-guessing and consistency gates
+  - WU-BL001-002 reconciles inventory source-check output incremental matrix and structured full-chain model; it does not recreate already accepted rows
+  - WU-BL001-003 validates uniqueness coverage call-path evidence final-dependency evidence no-guessing structured-chain completeness and consistency gates
   - WU-BL001-004 registers the final source/matrix baseline and prepares explicit user acceptance
 
 matrix_driven_downstream_workflow:
@@ -60,6 +87,7 @@ matrix_driven_downstream_workflow:
     - matrix COMPLETE rows feed final consistency and artifact-registration checks
     - matrix UNRESOLVED BLOCKED FAILED rows feed the evidence-resolution queue until resolved or explicitly accepted as unresolved by gate policy
     - controller and endpoint inventories are reconciled against matrix row keys
+    - full component chains support Controller Service DAO Entity and DB reverse indexes
     - final gate validation is computed from the matrix plus immutable evidence references
   after_bl001:
     rule: >-
@@ -72,7 +100,10 @@ finalization_gate:
     - canonical_source_check_coverage_100_percent
     - every_caller_visible_endpoint_exactly_once_in_matrix
     - zero_duplicate_http_method_path_keys
+    - every_COMPLETE_row_has_source_proved_component_chain_to_final_dependency
     - every_matrix_row_has_frozen_source_evidence_reference
+    - structured_matrix_json_reconciles_with_markdown_matrix
+    - browser_data_reconciles_with_structured_matrix_json
     - unresolved_blocked_failed_accounting_reconciles
     - QG-TRC-006_PASS
     - QG-TRC-007_PASS
