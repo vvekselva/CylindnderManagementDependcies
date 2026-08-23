@@ -10,50 +10,58 @@ decisions:
   - id: DEC-BL001-003
     state: APPLIED
     decision: MAXIMIZE_SAFE_LANE_UTILIZATION_WITHIN_EACH_COORDINATOR_INVOCATION
-    reason: >-
-      WU-BL001-001 may partition independent controller/endpoint families across up to ten lanes,
-      refill released lanes during the same invocation, and continue until no eligible independent work
-      remains or a documented stop condition is reached. Quality gates, frozen-source evidence and
-      no-guessing rules remain unchanged.
+    reason: Independent controller/endpoint families may use up to ten lanes; quality gates and no-guessing rules remain unchanged.
   - id: DEC-BL001-004
     state: APPLIED
     decision: MANDATORY_ORCHESTRATOR_AND_LANE_LIFECYCLE_BOUNDARY_LOGGING
-    reason: >-
-      New executions must persist ORCHESTRATOR_INVOCATION_START before analysis/execution and
-      ORCHESTRATOR_INVOCATION_END after all started lanes close and runtime is synchronized. Each
-      lane logs INIT start/end, SERVICE start/end and CLOSE end. Every START identifies the exact task.
+    reason: Every worker execution logs INIT/SERVICE/CLOSE boundaries with exact task identity and closes cleanly.
   - id: DEC-BL001-005
     state: APPLIED
     decision: INDIVIDUAL_LANE_LOGS_ARE_TRANSIENT_AND_MUST_BE_CLEAN_AT_INVOCATION_BOUNDARIES
-    reason: >-
-      Before a new Orchestrator invocation begins execution, logs/runs must contain zero individual
-      lane logs from a previous invocation. Any leftover lane logs force recovery-only aggregation,
-      verification and deletion before new work may begin. During Orchestrator closure, every current
-      invocation lane log must be accumulated into the invocation aggregate/shared audit, verified as
-      represented, and deleted. ORCHESTRATOR_INVOCATION_END is allowed only when the post-cleanup
-      individual lane log count is zero.
+    reason: Leftover lane logs force recovery/aggregation/cleanup before new worker execution.
   - id: DEC-BL001-006
     state: APPLIED
     decision: USER_VISIBLE_RUN_OVER_RUN_EXECUTION_STATISTICS_AND_STALE_CYCLE_TRACKING
-    reason: >-
-      Level 3 contains execution-statistics.yaml as the machine-readable source for Previous Run versus
-      Current/Latest Run progress, lane usage and staleness. BL-001 progress percentage is endpoint trace
-      coverage, not an overall project percentage. Completed no-progress invocations increment stale_cycles;
-      meaningful progress resets the count to zero.
+    reason: execution-statistics.yaml is authoritative for operational metrics; endpoint coverage is not overall project completion.
   - id: DEC-BL001-007
     state: SUPERSEDED
     decision: REPLACE_LOGICAL_ONLY_LANE_PARTICIPATION_WITH_REAL_GITHUB_ACTIONS_MATRIX_WORKERS
-    reason: >-
-      This decision proved that logical lane participation was not real concurrency, but its GitHub Actions
-      execution backend was later removed because the user required the framework not to depend on GitHub Actions.
     superseded_by: DEC-BL001-008
+    reason: GitHub Actions was tested as an execution backend and later removed as a normal execution dependency.
   - id: DEC-BL001-008
-    state: APPLIED
+    state: SUPERSEDED_IN_PART
     decision: USE_LOCAL_PROCESS_POOL_FOR_REAL_PARALLEL_LANES_WITHOUT_GITHUB_ACTIONS_DEPENDENCY
+    superseded_by: DEC-BL001-009
+    retained_rule: LOCAL_PROCESS_POOL_IS_REAL_WORKER_BACKEND
     reason: >-
-      Real parallel execution now uses automation/local-lane-executor.py and automation/local-lane-worker.py,
-      fired on Windows through automation/fire-local-lanes.ps1. The executor verifies zero leftover lane logs,
-      creates a temporary detached Git worktree at the frozen source commit without switching the active checkout,
-      starts up to ten local OS worker processes, tracks PID/heartbeat lane state, measures peak and average SERVICE
-      overlap, aggregates evidence, deletes transient lane logs and closes local-execution.yaml. Worker evidence is
-      read-only and never auto-classifies endpoint traces; the primary Orchestrator remains final trace-decision owner.
+      Local OS workers remain the real execution backend, but requiring a pre-existing local CylinderManagement checkout
+      was removed by the self-reliant staged source provider.
+  - id: DEC-BL001-009
+    state: APPLIED
+    decision: USE_ORCHESTRATOR_STAGED_SNAPSHOT_AS_DEFAULT_SELF_RELIANT_SOURCE_PROVIDER
+    reason: >-
+      The Primary Orchestrator can read exact private source at the frozen Git commit, materialize a worker-readable
+      snapshot, record each Git blob SHA and let workers verify local bytes before read. GitHub remains VCS/persistence;
+      workers receive no GitHub credential and a local application checkout is optional rather than mandatory.
+    evidence: tests/self-reliant-e2e-validation-2026-08-23.md
+  - id: DEC-BL001-010
+    state: APPLIED
+    decision: RECURSIVE_SOURCE_AND_BINDING_CLOSURE_IS_FAIL_CLOSED_AND_BOUNDED
+    reason: >-
+      Workers return explicit missing_source_requests and missing_binding_requests. The Orchestrator resolves them from
+      the frozen source, validates interface implementation/generic/qualifier bindings and repeats for at most eight
+      progressing iterations. A repeated unresolved set becomes SOURCE_RESOLUTION_STALLED; nothing is guessed.
+  - id: DEC-BL001-011
+    state: APPLIED
+    decision: EXECUTION_JOURNAL_AND_DISPATCH_FINGERPRINT_CONTROL_IDEMPOTENT_RECOVERY
+    reason: >-
+      PENDING_SYNC retries persistence only; closed evidence awaiting validation is reused; interrupted RUNNING state
+      rejects partial output and recovers the boundary; changed dispatch creates a new generation; already synchronized
+      closed execution is a no-op. This prevents duplicate worker execution and duplicate trace acceptance.
+  - id: DEC-BL001-012
+    state: APPLIED
+    decision: QG_LANE_MEASURES_NATURAL_WORKLOAD_NOT_ARTIFICIAL_DELAY
+    reason: >-
+      A separate capacity probe proves the process pool can reach ten workers. Production QG-LANE-001 uses natural
+      SERVICE overlap; the system must not add fake sleep/work merely to make the performance gate pass. Underutilization
+      preserves correct source evidence but blocks a claim of full utilization.
