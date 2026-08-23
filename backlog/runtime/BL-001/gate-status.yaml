@@ -18,10 +18,11 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - WI-0004 attempts 1 through 23 are CLOSED/PARTIAL
-        - 19 of 134 endpoints have been explicitly examined for final dependencies
-        - all 19 examined endpoints are COMPLETE
-        - 115 endpoints remain not yet examined
+        - WI-0004 attempts 1 through 24 are CLOSED/PARTIAL
+        - 22 of 134 endpoints have been explicitly examined for final dependencies
+        - 19 examined endpoints are COMPLETE
+        - 3 examined endpoints are UNRESOLVED at source-proved generic search-service handoffs
+        - 112 endpoints remain not yet examined
         - canonical completed result is not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
@@ -47,8 +48,8 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - earlier unresolved paths were retained at their last proved component until concrete dependency evidence was found
-        - attempt 23 marks the two Vehicle endpoints and Supplier search COMPLETE only after controller, concrete service, repository, query and @Table evidence were proved
-        - no currently examined endpoint remains unresolved, blocked or failed
+        - attempt 24 records Challan Type, City and Country paths as UNRESOLVED at the injected generic service handoff
+        - no repository, query or database object was inferred from field or DTO naming
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
@@ -62,16 +63,16 @@ quality_gate_status:
 
   endpoint_trace_checkpoint:
     total_endpoints: 134
-    explicitly_examined_for_final_dependency: 19
+    explicitly_examined_for_final_dependency: 22
     complete: 19
-    unresolved: 0
-    not_yet_examined_for_final_dependency: 115
+    unresolved: 3
+    not_yet_examined_for_final_dependency: 112
 
   close_allowed: false
   reason: >-
-    Attempt 23 proves both Vehicle endpoints through VehicleJpaDao/VehicleDo to public.tbl_vehicle and Supplier
-    search through SupplierJpaDao/SupplierDo to public.tbl_supplier. All 19 examined endpoints are COMPLETE.
-    QG-TRC-002 remains IN_PROGRESS because 115 of 134 endpoints are still not examined and
-    worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result. QG-TRC-004 remains
-    IN_PROGRESS because the canonical Endpoint Inventory artifact is not yet validated. Matrix construction and
-    dependent work units remain locked.
+    Attempt 24 proves the active Challan Type, City and Country REST mappings and their generic search-service handoffs,
+    but concrete Spring implementations, repository/query layers and final dependencies are not yet proved. QG-TRC-002
+    remains IN_PROGRESS because 112 of 134 endpoints are still not examined, three examined paths remain unresolved, and
+    worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result. QG-TRC-004 remains IN_PROGRESS
+    because the canonical Endpoint Inventory artifact is not yet validated. Matrix construction and dependent work units
+    remain locked.
