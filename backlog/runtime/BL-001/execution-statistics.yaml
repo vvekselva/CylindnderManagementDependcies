@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 9
+  version: 10
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -19,26 +19,18 @@ execution_statistics:
 
   accepted_trace_checkpoint:
     latest_accepted_attempt: 34
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-020143
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-033550
     total_endpoints: 134
-    examined: 52
-    progress_percentage: 38.81
-    complete: 50
-    complete_percentage: 37.31
+    examined: 57
+    progress_percentage: 42.54
+    complete: 55
+    complete_percentage: 41.04
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 82
+    not_yet_examined: 77
     latest_newly_accepted_endpoints:
-      - GET /customer-address-location/missing
-      - GET /customer-address-location/points.geojson
-      - GET /yard-location/upload
-      - POST /yard-location/upload
-      - GET /yard-location/points.geojson
-      - GET /customer-address-location/upload
-      - POST /customer-address-location/upload
-      - GET /customer-address-location/import-whatsapp-export
-      - POST /customer-address-location/import-whatsapp-export
+      - GET /ownership-obligation-dashboard
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -83,33 +75,33 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-020143
+    checkpoint_id: PRODUCTION-FIRE-20260824-033550
     worker_fire_started: false
-    reason: CUSTOMER_ADDRESS_LOCATION_FAMILY_SOURCE_CLOSED_DIRECTLY_WITHOUT_DUPLICATE_WORKER_RERUN
-    endpoint_trace_checkpoint_before: 43
-    endpoint_trace_checkpoint_after: 52
-    endpoints_examined_added: 9
-    complete_added: 9
-    accepted_family: CustomerAddressLocationController
-    accepted_chain_states: [FULL, FULL_BRANCHING]
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-020143.md
+    reason: OWNERSHIP_OBLIGATION_DASHBOARD_SOURCE_CLOSED_DIRECTLY_WITHOUT_DUPLICATE_WORKER_RERUN
+    endpoint_trace_checkpoint_before: 56
+    endpoint_trace_checkpoint_after: 57
+    endpoints_examined_added: 1
+    complete_added: 1
+    accepted_family: OwnershipObligationDashboardController
+    accepted_chain_states: [FULL_BRANCHING]
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-033550.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
     source_resolution_progress: >-
-      The Primary Orchestrator source-closed the remaining nine CustomerAddressLocationController routes from exact frozen
-      controller/service/DAO/entity/mapper sources. Native SQL and JPA mappings prove the view/table dependencies; direct
-      terminal routes remain explicitly non-database. The unchanged ten-task worker discovery was not rerun.
+      The Primary Orchestrator source-closed GET /ownership-obligation-dashboard from exact frozen controller/service/DAO/entity
+      sources. Explicit @Subselect and native SQL prove custody/cylinder/customer/supplier table dependencies. The unchanged
+      ten-task worker discovery was not rerun.
 
   run_over_run:
-    endpoint_progress_percentage_point_change: 6.72
-    complete_percentage_point_change: 6.71
-    endpoint_examined_change: 9
-    complete_endpoint_change: 9
+    endpoint_progress_percentage_point_change: 0.75
+    complete_percentage_point_change: 0.74
+    endpoint_examined_change: 1
+    complete_endpoint_change: 1
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
     source_closure_direction: PARTIAL_RESTAGE_STILL_REQUIRED
-    trace_direction: PROGRESSED_NINE_ENDPOINTS_ONE_CONTROLLER_FAMILY_CLOSED
+    trace_direction: PROGRESSED_ONE_ENDPOINT_OWNERSHIP_OBLIGATION_DASHBOARD
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
     backend_capacity_direction: TEN_WORKER_CAPACITY_PROVED
 
@@ -118,8 +110,8 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      Nine CustomerAddressLocationController endpoints advanced to COMPLETE from source-proved full/branching chains and the
-      canonical checkpoint increased from 43 to 52 examined endpoints. Source-restage work remains active for the 16-source queue.
+      GET /ownership-obligation-dashboard advanced to COMPLETE from source-proved branching chains and the canonical checkpoint
+      increased from 56 to 57 examined endpoints. Source-restage work remains active for the 16-source queue.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
