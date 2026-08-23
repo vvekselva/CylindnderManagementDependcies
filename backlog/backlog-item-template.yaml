@@ -1,6 +1,6 @@
 backlog_item:
   id: BL-###
-  version: 1
+  version: 2
   name: <plain-English backlog item name>
   type: <TRACEABILITY|UNIT_TEST|INTEGRATION_TEST|CODE_COVERAGE|ARCHUNIT|REQUIREMENTS|OTHER>
   state: YET_TO_DO
@@ -8,6 +8,11 @@ backlog_item:
 
   purpose: >-
     <outcome this backlog item must achieve>
+
+  statement_of_work:
+    required: true
+    file: backlog/sow/<BL-ID>-<slug>.yaml
+    gate: QG-SOW-001
 
   target:
     repository: <owner/repository>
@@ -31,8 +36,14 @@ backlog_item:
   expected_outputs:
     - <artifact>
 
+  execution_prerequisites:
+    - QG-SOW-001 must PASS before analysis, planning or execution
+    - QG-DEP-001 must PASS
+    - item-specific quality-gate configuration must exist and be approved when required
+
   closure_rule:
     - all mandatory path steps complete
     - all mandatory gates pass
     - required outputs exist
     - no required run remains open
+    - required user acceptance is obtained
