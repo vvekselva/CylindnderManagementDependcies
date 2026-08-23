@@ -1,7 +1,10 @@
-version: 5
+version: 6
 name: Real Lane Dispatch And Utilization Governance
+architecture: architecture/self-reliant-e2e-execution.md
+self_reliant_governance: governance/self-reliant-execution.yaml
 purpose: >-
-  Convert orchestration lanes from logical labels into measurable independent OS worker executions while keeping GitHub as Version Control/persistence and the Automation Tool as source stager and execution engine.
+  Run measurable independent OS workers from source supplied by an approved self-reliant source provider,
+  while keeping GitHub as Version Control/persistence and the Automation Tool as Orchestrator/execution engine.
 
 architecture_roles:
   github:
@@ -9,16 +12,7 @@ architecture_roles:
     repositories: [vvekselva/CylinderManagement, vvekselva/CylindnderManagementDependcies]
     explicitly_not_required_for_execution: [GitHub Actions, GitHub-hosted runners, workflow run ID]
   automation_tool:
-    role: ORCHESTRATOR_SOURCE_STAGER_AND_EXECUTION_ENGINE
-    responsibilities:
-      - validate SSOT and gates
-      - select safe independent work
-      - materialize exact source input through an approved source provider
-      - create lane dispatch
-      - execute local process pool
-      - enforce lifecycle logging and aggregate cleanup
-      - measure real SERVICE concurrency
-      - validate endpoint evidence and synchronize accepted results
+    role: ORCHESTRATOR_SOURCE_STAGER_EXECUTION_VALIDATION_RECOVERY_ENGINE
   local_execution_engine:
     implementation: LOCAL_PROCESS_POOL
     max_parallel_workers: 10
@@ -30,6 +24,8 @@ source_provider:
   fallback: LOCAL_GIT_CHECKOUT
   preexisting_local_source_checkout_required: false
   workers_access_github_directly: false
+  recursive_source_requests: [missing_source_requests, missing_binding_requests]
+  maximum_staging_iterations: 8
 
 worker_backend:
   type: LOCAL_PROCESS_POOL
@@ -38,31 +34,43 @@ worker_backend:
   execution_ssot: backlog/runtime/<BL-ID>/local-execution.yaml
   source_repository: vvekselva/CylinderManagement
   max_parallel_workers: 10
-  staged_executor_script: automation/staged-lane-executor.py
-  staged_worker_script: automation/staged-lane-worker.py
+  staged_executor_script: automation/staged-lane-executor-v3.py
+  staged_worker_script: automation/staged-lane-worker-v3.py
   local_git_executor_script: automation/local-lane-executor.py
   local_git_worker_script: automation/local-lane-worker.py
   local_git_windows_fire_script: automation/fire-local-lanes.ps1
   github_actions_dependency: NONE
   final_trace_decision_owner: PRIMARY_ORCHESTRATOR
 
-source_integrity_rules:
-  - every worker source input is pinned to the dispatch source_baseline
-  - ORCHESTRATOR_STAGED_SNAPSHOT requires source-snapshot-manifest.json with repository baseline path and exact Git blob SHA for each materialized file
-  - staged workers recompute the Git blob hash before reading each source component
-  - a controller root hash mismatch or missing manifest entry blocks SERVICE
-  - missing downstream components remain explicit as missing_component_references and trigger another Orchestrator staging iteration
-  - LOCAL_GIT_CHECKOUT remains an optional fast path using a temporary detached worktree at the frozen commit
-  - source evidence from either provider never auto-classifies an endpoint COMPLETE
-
-safety_rules:
+preflight_rules:
   - every dispatched task must be READY and safe_independent=true
-  - workers are read-only against their verified source_root
-  - workers must not modify application source or shared control files
-  - one task is assigned to one lane for one execution
-  - every worker writes INIT SERVICE CLOSE lifecycle evidence with exact task identity
-  - no table view service or dependency may be accepted from naming alone
-  - individual lane logs are transient and must be aggregated verified deleted and rescanned to zero
+  - duplicate lane IDs are rejected before worker start
+  - duplicate task IDs are rejected before worker start
+  - source manifest repository and baseline must match dispatch
+  - every controller root must be present and integrity verified
+  - stale transient lane logs must equal zero
+  - source/binding integrity failure blocks affected SERVICE
+
+source_integrity_rules:
+  - every source input is pinned to dispatch source_baseline
+  - ORCHESTRATOR_STAGED_SNAPSHOT requires a manifest with repository baseline path and exact Git blob SHA
+  - staged workers recompute Git blob SHA before reading each component
+  - interface injection requires a source-validated manifest binding before following an implementation
+  - qualifier or variable naming may locate a candidate but never proves a dependency
+  - missing source/binding remains explicit and triggers bounded Orchestrator restage/rebind
+  - identical unresolved request set with no new verified source becomes SOURCE_RESOLUTION_STALLED
+  - source evidence from any provider never auto-classifies an endpoint COMPLETE
+
+lifecycle_and_recovery:
+  required_worker_events: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
+  heartbeat_required: true
+  execution_journal_required: true
+  dispatch_fingerprint_required: true
+  pending_sync_same_fingerprint: RETRY_SYNC_ONLY_NO_WORKER_RESTART
+  interrupted_running_without_live_workers: RECOVERY_REQUIRED_REJECT_PARTIAL_OUTPUT
+  closed_evidence_awaiting_validation: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
+  closed_synced_same_fingerprint: NOOP_ALREADY_COMMITTED
+  transient_lane_logs_after_aggregate_must_equal_zero: true
 
 metrics:
   configured_lanes: 10
@@ -70,6 +78,7 @@ metrics:
   peak_service_concurrent_lanes: maximum overlapping LANE_SERVICE_START to LANE_SERVICE_END intervals
   average_service_concurrent_lanes: aggregate service seconds / service batch wall-clock seconds
   peak_service_capacity_utilization_percentage: peak_service_concurrent_lanes / configured_lanes * 100
+  warning: Distinct lane IDs or process creation are not concurrency metrics.
 
 quality_gate:
   id: QG-LANE-001
@@ -77,32 +86,37 @@ quality_gate:
   owner: ORCHESTRATOR
   category: PERFORMANCE_GOVERNANCE
   pass_condition: >-
-    When two or more safe independent tasks are dispatched, measured peak SERVICE concurrency reaches expected safe concurrency. Fewer than two independent tasks require no artificial parallelism.
+    For the natural production workload, when two or more safe independent tasks are dispatched, measured
+    peak SERVICE concurrency reaches expected safe concurrency. Fewer than two tasks require no artificial parallelism.
   underutilized_condition: >-
-    measured peak SERVICE concurrency is below expected safe concurrency. Preserve valid source evidence but do not claim full utilization.
+    Natural workload peak SERVICE concurrency is below expected safe concurrency. Preserve correct source evidence,
+    record underutilization, and never manufacture delays solely to pass this performance gate.
+  backend_capacity_evidence: >-
+    A separate process-pool capacity probe may prove the backend can physically reach ten workers, but it does not
+    substitute for measured natural production SERVICE concurrency.
   fail_closed_for_parallelism_claim: true
   does_not_invalidate_source_evidence: true
 
-validated_real_source_run:
-  execution_id: PROD-STAGED-BL001-20260823-145139
-  source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
-  controller_roots_verified: 10
-  materialized_files: 25
-  workers_started: 10
-  worker_results_received: 10
-  worker_failures: 0
-  peak_service_concurrent_lanes: 9
-  average_service_concurrent_lanes: 4.65
-  peak_capacity_utilization_percentage: 90
-  qg_lane_001_state: UNDERUTILIZED
-  individual_lane_logs_remaining: 0
-  remaining_staged_component_references: [TripReturnWorkflowService, CustomerAddressLocationOfflineMapService]
+validation_2026_08_23:
+  report: tests/self-reliant-e2e-validation-2026-08-23.md
+  jpa_canary_execution: E2E-STAGED-20260823-151800
+  canary_qg_source: SOURCE_CLOSURE_COMPLETE
+  full_discovery_execution: E2E-STAGED-20260823-151810
+  full_discovery_workers_started: 10
+  full_discovery_worker_failures: 0
+  full_discovery_peak_service_concurrent_lanes: 4
+  full_discovery_average_service_concurrent_lanes: 0.26
+  full_discovery_qg_lane: UNDERUTILIZED
+  full_discovery_source_closure: PARTIAL_RESTAGE_REQUIRED
+  backend_capacity_probe_peak: 10
+  transient_lane_logs_remaining: 0
   trace_evidence_auto_accepted: false
 
 artifact_contract:
   staged_snapshot_manifest: source-snapshot-manifest.json
-  staged_execution_summary: production-fire-summary.json
+  source_staging_requests: source-staging-requests.json
+  execution_journal: execution-journal.json
+  staged_execution_summary: summary.json
   durable_invocation_log: logs/runs/<execution-id>.md
   durable_aggregate: worker/evidence/<execution-id>/
   execution_status_file: backlog/runtime/BL-001/local-execution.yaml
-  transient_individual_lane_logs_deleted_after_verified_aggregation: true
