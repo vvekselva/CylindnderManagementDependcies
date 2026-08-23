@@ -1,5 +1,5 @@
 lane_status:
-  version: 15
+  version: 16
   backlog_item: BL-001
   authoritative: true
   current_backlog_state: PARTIAL
@@ -7,9 +7,9 @@ lane_status:
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   last_reconciled_attempt: 27
   last_reconciled_run: INVOCATION-20260823-160000
-  invocation_state: BETWEEN_INVOCATIONS_PRODUCTION_PREFLIGHT_BLOCKED_ON_CURRENT_HOST
+  invocation_state: BETWEEN_INVOCATIONS_EXECUTION_HOST_PREFLIGHT_BLOCKED
   current_invocation: null
-  current_idle_reason: CURRENT_EXECUTION_HOST_HAS_NO_WORKER_READABLE_CYLINDERMANAGEMENT_CHECKOUT
+  current_idle_reason: CURRENT_EXECUTION_HOST_MISSING_SOURCE_AND_CONTROL_CHECKOUTS
 
   real_worker_backend:
     type: LOCAL_PROCESS_POOL
@@ -33,15 +33,23 @@ lane_status:
     state: READY_ON_VALID_EXECUTION_HOST
     external_service_dependency: NONE
     current_host_preflight:
-      state: BLOCKED_BEFORE_LANE_START
+      state: EXECUTION_HOST_PREFLIGHT_BLOCKED
+      attempted_at_utc: 2026-08-23T14:29:22Z
+      git_available: true
+      python3_available: true
       source_checkout_present: false
+      control_checkout_present: false
+      frozen_commit_verification: NOT_REACHED
+      control_execution_file_verification: NOT_REACHED
+      lane_log_hygiene_verification: NOT_PROVABLE
       lanes_started: 0
-      observed_error: "fatal: cannot change to '/mnt/data/CylinderManagement': No such file or directory"
-      classification: EXECUTION_HOST_SOURCE_STAGING_PREREQUISITE
+      classification: EXECUTION_HOST_PREFLIGHT_BLOCKED
+      exact_missing_prerequisites:
+        - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement
+        - local_or_mounted_control_checkout_of_vvekselva/CylindnderManagementDependcies
     note: >-
-      The engine and ten tasks are ready. The production fire was attempted on the current ChatGPT execution host but no local/mounted
-      CylinderManagement checkout exists there, so fail-closed preflight started zero lanes. On a valid execution host with the source
-      checkout and frozen commit available, the same dispatch remains ready to fire.
+      The engine and ten safe tasks remain ready, but the current execution host cannot satisfy production preflight because
+      neither required repository checkout is worker-readable here. No lane has been assigned or started.
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
@@ -97,6 +105,6 @@ lane_status:
     local_workers_confirmed_started: 0
 
   current_interpretation: >-
-    Production preflight was attempted and stopped before lane start because the current execution host has no worker-readable
-    CylinderManagement checkout. This is an execution-host source-staging prerequisite, not a GitHub Actions blocker. The ten-task
-    dispatch remains ready to fire on a valid execution host.
+    Production preflight failed closed on the current host because the source and control repositories are not mounted locally.
+    Git and Python are present, zero lanes were started, QG-LANE-001 remains READY_FOR_MEASUREMENT, and the ten-task dispatch
+    stays eligible for a later fire on a valid execution host.
