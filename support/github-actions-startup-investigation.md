@@ -1,5 +1,7 @@
 # GitHub Support Investigation - Workflow Does Not Start After Push
 
+> **STATUS: HOLD / DO NOT SEND YET.** The Automation Tool local process-pool execution engine has now been fired independently of GitHub Actions and proved 10/10 peak SERVICE concurrency with correct lifecycle closure and zero residual lane logs. GitHub Actions is not required for the current Cylinder execution architecture. Keep this note only as historical/optional investigation material unless a future GitHub-specific use case makes it relevant.
+
 ## Repository identity
 
 - Owner: `vvekselva`
@@ -64,3 +66,18 @@ Please help determine which of the following applies:
 ## Important architectural note
 
 This issue is now **non-blocking** for the Cylinder automation framework. GitHub has been reassigned to its intended role as Version Control System and durable persistence. The Automation Tool now owns execution through a local `LOCAL_PROCESS_POOL`, so no GitHub Actions workflow or runner is required for normal orchestration execution.
+
+## Local engine verification
+
+The Automation Tool execution engine was fired separately using the actual ten BL-001 lane task identities. The verification run achieved:
+
+- configured lanes: `10`
+- tasks fired: `10`
+- peak SERVICE concurrency: `10/10`
+- average SERVICE concurrency: `9.83`
+- peak capacity utilization: `100%`
+- lifecycle sequence verified: `INIT -> SERVICE -> CLOSE` for all lanes
+- all workers closed: `true`
+- residual individual lane logs after aggregation: `0`
+
+This verification is recorded at `worker/evidence/LOCAL-BL001-ENGINE-SMOKE-20260823/engine-fire-summary.yaml`. It proves the execution-engine concurrency mechanism, but it is deliberately **not accepted as BL-001 trace evidence** because the private CylinderManagement source checkout was not mounted in the ChatGPT execution runtime.
