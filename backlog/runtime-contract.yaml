@@ -1,5 +1,5 @@
 runtime_ssot_contract:
-  version: 2
+  version: 3
   level: SSOT-L3
   planning_gate: QG-SSOT-001
 
@@ -23,6 +23,11 @@ runtime_ssot_contract:
     lane-status.yaml:
       purpose: authoritative live lane-to-task assignment, run, heartbeat, blocker and release state
       may_exist_before_execution_as: INITIALIZED_ALL_IDLE
+    execution-statistics.yaml:
+      purpose: >-
+        authoritative run-over-run operational statistics used by the user-visible statistics table,
+        including trace coverage percentage, lanes utilized, throughput and stale/no-progress cycles
+      may_exist_before_first_execution_as: INITIALIZED_NO_RUN_HISTORY
     result.yaml:
       purpose: final/current backlog result and closure state
 
@@ -36,19 +41,31 @@ runtime_ssot_contract:
     - summary counts must reconcile exactly to the ten lane records
     - lane-status.yaml is the single point of truth for what each lane is doing now
 
+  execution_statistics_rules:
+    - progress percentage must declare its formula and metric basis; it must not be presented as an overall project percentage
+    - previous_run and current_or_latest_run must identify the invocation/attempt and reconcile with analysis.yaml and invocation logs
+    - current_or_latest_run represents the live current invocation when ACTIVE, otherwise the latest closed invocation checkpoint
+    - distinct_lanes_used must reconcile with lifecycle evidence for that invocation
+    - stale_cycles means consecutive completed Orchestrator invocations with no meaningful progress
+    - meaningful progress includes endpoint/trace progress, evidence-backed unresolved resolution, gate/work-unit advancement or required artifact creation/validation
+    - stale_cycles resets to zero whenever a completed invocation makes meaningful progress
+    - TaskStatus.md may render these statistics but must not become their source of truth
+
   initialization_rule: >-
     All required Level 3 files must exist and identify the same Backlog Item before the
     Orchestrator may create or materially change an Execution Plan. Empty/initialized files
     are allowed before first planning only where explicitly permitted by this contract.
-    lane-status.yaml may begin with all ten lanes IDLE.
+    lane-status.yaml may begin with all ten lanes IDLE and execution-statistics.yaml may begin
+    with no run history.
 
   consistency_rule: >-
     Level 3 files must reconcile to the same Level 1 registry item and Level 2 backlog
     definition. lane-status.yaml must reconcile with current Work Units and open/closed runs.
-    A stale human-readable dashboard or historical worker log never overrides newer canonical
-    runtime state.
+    execution-statistics.yaml must reconcile with analysis.yaml, lane-status.yaml and the
+    invocation aggregate logs for the compared runs. A stale human-readable dashboard or
+    historical worker log never overrides newer canonical runtime state.
 
   failure_rule: >-
-    Missing or inconsistent Level 3 files, including lane-status.yaml, fail QG-SSOT-001 and
-    block PLAN/REPLAN. Only runtime initialization/repair work needed to satisfy SSOT-L3 is
-    permitted while failed.
+    Missing or inconsistent Level 3 files, including lane-status.yaml or execution-statistics.yaml,
+    fail QG-SSOT-001 and block PLAN/REPLAN. Only runtime initialization/repair work needed to
+    satisfy SSOT-L3 is permitted while failed.
