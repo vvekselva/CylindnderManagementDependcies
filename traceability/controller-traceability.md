@@ -6,8 +6,8 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **42 / 134 examined; 40 COMPLETE; 2 UNRESOLVED; 92 not yet examined.**  
-Rows currently materialized below: **15**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **43 / 134 examined; 41 COMPLETE; 2 UNRESOLVED; 91 not yet examined.**  
+Rows currently materialized below: **16**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -26,6 +26,11 @@ Rows currently materialized below: **15**. The other 27 historically accepted ro
 | POST | `/logistics/challan-books/save` | `ChallanBookWebController.processBookIngestion` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEWS | `public.tbl_challan_book_registry`; conditional `public.tbl_challan_page_audit_ledger`; error-branch `public.tbl_summary_metric_lookup`; success redirect; error re-render view | `logs/runs/PRODUCTION-FIRE-20260824-003111.md` |
 | GET | `/challan-entry-aging-dashboard` | `ChallanEntryAgingDashboardController.showChallanEntryAgingDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | `public.tbl_trip_challan_entry_tracker`; `public.tbl_trip_challan_entry_tracker_audit`; `final-version-1/ChallanEntryAgingDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-005711.md` |
 | GET | `/challan-heatmap` | `ChallanHeatmapController.showHeatmap` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_challan_heatmap_metrics`; `final-version-1/ChallanHeatmapDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-013336.md` |
+| GET | `/customer-address-location/planning-map` | `CustomerAddressLocationController.showPlanningMap` | COMPLETE | FULL | TERMINAL_VIEW | `with-menu/CustomerAddressPlanningMap`; no service/DAO/database dependency | `logs/runs/PRODUCTION-FIRE-20260824-013546.md` |
+
+## `/customer-address-location/planning-map` full-chain summary
+
+Terminal chain: `CustomerAddressLocationController.showPlanningMap -> with-menu/CustomerAddressPlanningMap`. The method contains no downstream application/persistence dependency.
 
 ## `/challan-heatmap` full-chain summary
 
