@@ -1,7 +1,7 @@
-version: 6
+version: 7
 purpose: >-
-  Tell the Orchestrator which Backlog Items may run and define the production execution-input contract.
-  GitHub is VCS/persistence; the Automation Tool owns source staging and execution.
+  Tell the Orchestrator which Backlog Items may run and enforce the self-reliant production execution loop.
+  GitHub is VCS/persistence; the Automation Tool owns source staging, local execution, recovery, validation and synchronization.
 
 selection:
   mode: ENABLED_BACKLOG_ITEMS_ONLY
@@ -15,43 +15,65 @@ selection:
 
 execution_engine:
   owner: AUTOMATION_TOOL
+  architecture: architecture/self-reliant-e2e-execution.md
+  self_reliant_governance: governance/self-reliant-execution.yaml
   backend: LOCAL_PROCESS_POOL
   max_parallel_workers: 10
   github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
   github_actions_required: false
   external_worker_service_required: false
+  mandatory_local_source_checkout: false
   source_repository: vvekselva/CylinderManagement
   control_repository: vvekselva/CylindnderManagementDependcies
   source_provider_governance: governance/source-provider.yaml
+  source_layout: repository/source-layout.yaml
   default_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
   fallback_source_provider: LOCAL_GIT_CHECKOUT
+  staged_executor: automation/staged-lane-executor-v3.py
+  staged_worker: automation/staged-lane-worker-v3.py
 
 production_source_contract:
   gate: QG-SOURCE-001
   fail_closed: true
-  local_git_checkout_required: false
   staged_snapshot:
     owner: PRIMARY_ORCHESTRATOR
-    source: connected GitHub control-plane interface
     repository: vvekselva/CylinderManagement
     baseline: MUST_MATCH_DISPATCH_SOURCE_BASELINE
     manifest_required: true
     every_materialized_file_requires_git_blob_sha: true
     every_worker_verifies_file_before_read: true
-    tamper_or_manifest_mismatch: BLOCK_BEFORE_SERVICE
-    missing_component_behavior: RETURN_EXPLICIT_REFERENCE_TO_ORCHESTRATOR_FOR_RESTAGING
     workers_access_github_directly: false
+    source_request_types: [missing_source_requests, missing_binding_requests]
+    max_staging_iterations: 8
+    repeated_identical_request_set: SOURCE_RESOLUTION_STALLED
+    maximum_iterations_reached: SOURCE_RESOLUTION_LIMIT_REACHED
+  binding_validation:
+    naming_may_generate_candidate_only: true
+    implementation_source_must_prove_declared_interface: true
+    generic_signature_must_match_when_present: true
+    qualifier_or_default_bean_identity_must_match_when_present: true
   local_git_fallback:
     frozen_commit_must_exist_locally: true
     active_checkout_is_not_switched: true
     executor_uses_detached_worktree: true
   common_preflight:
-    - Python_3_available_on_execution_host
-    - approved executor worker and dispatch inputs available
-    - zero_leftover_individual_lane_logs_before_fire
+    - approved dispatch exists and contains only READY safe-independent tasks
+    - duplicate lane and task IDs are rejected
+    - approved executor worker and source manifest inputs are available
+    - zero leftover individual lane logs before fire
   failure_behavior: >-
     Start zero affected lanes when source integrity cannot be proved. Preserve BL-001 PARTIAL, record the exact
-    source-provider failure, and never substitute naming inference or an unpinned source file.
+    source/binding failure and never substitute naming inference or an unpinned source file.
+
+execution_recovery_contract:
+  execution_journal_required: true
+  dispatch_fingerprint_basis: FROZEN_BASELINE_PLUS_ORDERED_APPROVED_TASKS
+  same_fingerprint_pending_sync: RETRY_SYNC_ONLY_NO_WORKER_RESTART
+  same_fingerprint_closed_waiting_validation: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
+  interrupted_running_without_live_workers: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
+  changed_fingerprint: START_NEW_EXECUTION_GENERATION
+  already_closed_synced: NOOP_ALREADY_COMMITTED
+  github_sync_failure: PRESERVE_VALIDATED_RESULT_AS_PENDING_SYNC_AND_RETRY_SYNC_ONLY
 
 backlog_items:
   BL-001:
@@ -88,16 +110,22 @@ backlog_items:
 scheduled_run_rules:
   - read this file first
   - ignore Backlog Items with run_enabled false
-  - enforce QG-SOW-001 and QG-SSOT-001 before PLAN/REPLAN
+  - enforce QG-SOW-001 and QG-SSOT-001 before PLAN or REPLAN
   - apply QG-DEP-001 after the SSOT gate passes
+  - inspect execution journal before deciding whether to fire new workers
+  - if the same dispatch is PENDING_SYNC retry synchronization only
+  - if closed evidence awaits validation validate it without rerunning workers
   - create Worker Inputs only from approved in-scope Work Units
   - before worker fire enforce QG-SOURCE-001 using the highest-priority available source provider
-  - prefer ORCHESTRATOR_STAGED_SNAPSHOT; do not require a local source checkout when this provider is available
-  - stage exact files only at the frozen commit and record Git blob SHA in the snapshot manifest
-  - never give local workers direct GitHub credentials
-  - when workers report missing_component_references, stage those exact components from the same frozen commit and re-run affected evidence collection as needed
-  - never auto-accept endpoint COMPLETE from partial staged source closure
+  - prefer ORCHESTRATOR_STAGED_SNAPSHOT and do not require a local source checkout when it is available
+  - resolve source requests using repository/source-layout.yaml at the exact frozen commit
+  - never give local workers GitHub credentials
+  - validate interface bindings from source before following implementations
+  - repeat bounded source staging while request sets change and verified source closure advances
+  - fail closed on source-resolution stall or iteration limit
+  - never auto-accept endpoint COMPLETE from worker evidence
   - enforce zero transient lane logs at invocation boundaries
-  - evaluate QG-LANE-001 using measured SERVICE overlap
-  - synchronize only accepted durable runtime/log/evidence changes back to GitHub
+  - evaluate QG-LANE-001 using measured natural SERVICE overlap; never add artificial delay merely to pass the gate
+  - synchronize only validated durable runtime/log/evidence changes back to GitHub
+  - on GitHub sync failure preserve PENDING_SYNC and do not rerun the same worker batch
   - never mark CLOSED without required explicit user acceptance
