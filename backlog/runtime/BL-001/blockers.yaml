@@ -3,39 +3,30 @@ blockers:
   level: SSOT-L3
   planning_blocked: false
   execution_blocked: false
-  real_parallel_execution_blocked: true
+  real_parallel_execution_blocked: false
 
   governance_blockers: []
+  platform_blockers: []
 
-  platform_blockers:
+  resolved_platform_blockers:
     - id: PB-BL001-001
-      state: OPEN
-      affects_gate: QG-LANE-001
-      category: SOURCE_REPOSITORY_ACTIONS_NOT_SELF_REPORTING
-      summary: >-
-        A fresh generation-4 matrix dispatch was fired by updating vvekselva/CylinderManagement
-        branch automation/lane-matrix. The source-local matrix workflow and ten READY independent
-        lane tasks are present, but the workflow still has not created automation/matrix-execution.yaml
-        or exposed a workflow/job run ID through available evidence. Therefore zero external workers
-        are confirmed started and no real concurrency claim is allowed.
-      proved_facts:
-        - Control-side run 32638659581 previously spawned ten workers but all failed before service because its repository token could not read the separate private source repository.
-        - Source-local execution is the approved replacement and requires no cross-repository PAT.
-        - Control dispatch MATRIX-BL001-DISPATCH-004 contains ten safe independent READY tasks.
-        - Source execution copy MATRIX-BL001-SOURCE-004 is present on automation/lane-matrix at commit 6810c3d19cbc6b5757317c00f627333b6c31eb7a.
-        - The source workflow .github/workflows/lane-matrix-dispatch.yml is present and configured with max-parallel 10.
-        - The generation-4 dispatch file change was successfully committed to the source execution branch.
-        - No source automation/matrix-execution.yaml exists after the fresh generation-4 fire/check window.
-        - No workflow run ID or worker-job evidence is available through the connected GitHub evidence surface.
-      not_yet_proved: Whether repository Actions is disabled/restricted, the connector-originated push workflow is suppressed by policy, the workflow fails before record-start, or another source-repository Actions setting prevents startup.
-      impact: >-
-        BL-001 source tracing remains eligible, but real matrix execution and concurrency measurement cannot be claimed.
-        No external lane is marked WORKING without workflow/job evidence, and no matrix worker evidence is accepted.
-      next_action: >-
-        Verify GitHub Actions is enabled/allowed for vvekselva/CylinderManagement and inspect the Actions page for
-        Source Local Lane Matrix Dispatch. If no run exists, trigger it from a normal GitHub user push or enable a
-        supported workflow-dispatch path; then require automation/matrix-execution.yaml plus lane-dispatch-aggregate
-        before the Orchestrator consumes any worker evidence.
+      state: RESOLVED_BY_ARCHITECTURE_CHANGE
+      previous_category: SOURCE_REPOSITORY_ACTIONS_NOT_SELF_REPORTING
+      resolution: >-
+        The real worker backend no longer depends on GitHub Actions. BL-001 now uses a local process pool with up to ten OS worker processes, a temporary detached Git worktree at the frozen source baseline, local PID/heartbeat lane state, measured SERVICE concurrency and durable aggregate evidence.
+      replacement_backend: LOCAL_PROCESS_POOL
+      replacement_files: [automation/local-lane-executor.py, automation/local-lane-worker.py, automation/fire-local-lanes.ps1, backlog/runtime/BL-001/local-execution.yaml]
+
+  local_fire_readiness:
+    state: READY
+    affects_gate: QG-LANE-001
+    configured_lanes: 10
+    safe_ready_tasks: 10
+    expected_concurrent_lanes: 10
+    external_service_dependency: NONE
+    prerequisite: >-
+      A local CylinderManagement Git checkout containing frozen commit 3ae6e61442132d94a307275b08dd65fcef228d89 and Python 3 must be available on the execution machine. The executor does not require the active checkout to be switched to that commit.
+    next_action: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
 
   active_evidence_gaps:
     - {id: EG-BL001-004, state: OPEN, affects_gate: QG-TRC-002, source_endpoint: POST /customer-spot-cylinder-check/submit, summary: Complete final database-object set for all submitSpotCheck branches is not yet proved.}
@@ -52,4 +43,4 @@ blockers:
     summary: 97 of 134 endpoint final-dependency traces remain not yet examined.
 
   latest_accepted_attempt: {number: 27, invocation: INVOCATION-20260823-160000, new_endpoint_traces_examined: 10, new_complete: 10, new_unresolved: 0}
-  latest_manual_matrix_fire: {dispatch_generation: 4, control_dispatch: MATRIX-BL001-DISPATCH-004, source_dispatch: MATRIX-BL001-SOURCE-004, source_commit: 6810c3d19cbc6b5757317c00f627333b6c31eb7a, external_workers_confirmed_started: 0, matrix_workflow_run_id: null, qg_lane_001_state: BLOCKED_PLATFORM}
+  local_backend_transition: {state: COMPLETE_READY_FOR_FIRE, dispatch: LOCAL-BL001-DISPATCH-005, configured_lanes: 10, qg_lane_001_state: READY_FOR_MEASUREMENT}
