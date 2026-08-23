@@ -6,8 +6,8 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **52 / 134 examined; 50 COMPLETE; 2 UNRESOLVED; 82 not yet examined.**  
-Rows currently materialized below: **25**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **56 / 134 examined; 54 COMPLETE; 2 UNRESOLVED; 78 not yet examined.**  
+Rows currently materialized below: **29**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -36,6 +36,14 @@ Rows currently materialized below: **25**. The other 27 historically accepted ro
 | POST | `/customer-address-location/upload` | `CustomerAddressLocationController.saveLocation` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_REDIRECT | `public.tbl_customer_address`; `public.tbl_customer_address_location`; success/error redirects | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
 | GET | `/customer-address-location/import-whatsapp-export` | `CustomerAddressLocationController.showWhatsappImport` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_VIEW | `public.tbl_customer_location_import_inbox`; `with-menu/CustomerAddressLocationImport` | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
 | POST | `/customer-address-location/import-whatsapp-export` | `CustomerAddressLocationController.importWhatsappText` | COMPLETE | FULL | POSTGRES_TABLE_AND_REDIRECT | `public.tbl_customer_location_import_inbox`; redirect `/customer-address-location/import-whatsapp-export` | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| GET | `/customer-consumption` | `CustomerConsumptionDashboardController.dashboard` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/CustomerConsumptionDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
+| GET | `/customer-consumption/` | `CustomerConsumptionDashboardController.dashboard` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/CustomerConsumptionDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
+| GET | `/customer-consumption/dashboard` | `CustomerConsumptionDashboardController.dashboard` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/CustomerConsumptionDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
+| GET | `/customer-consumption/api/dashboard` | `CustomerConsumptionDashboardController.dashboardData` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_JSON | `public.vw_customer_product_consumption_projection`; `CustomerConsumptionDashboardDto` JSON response | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
+
+## `CustomerConsumptionDashboardController` full-chain summary
+
+The controller exposes four caller-visible GET paths: three URL variants mapped to `dashboard` and one JSON API mapped to `dashboardData`. All four call `CustomerConsumptionDashboardService.fetchDashboard`, which builds a Spring Data specification/page request, reads `CustomerProductConsumptionProjectionViewJpaDao`, and executes summary count/sum/status/average queries through the same repository. `CustomerProductConsumptionProjectionViewDo` uses an explicit `@Subselect` from `public.vw_customer_product_consumption_projection`; therefore the projection view is the source-proved database dependency for this family. The view handler terminates at `with-menu/CustomerConsumptionDashboard`; the API handler returns `CustomerConsumptionDashboardDto` as JSON. The entity's `@Synchronize` table names are retained as Hibernate synchronization metadata and are not promoted to direct final dependencies without view-definition proof.
 
 ## `CustomerAddressLocationController` full-chain summary
 
