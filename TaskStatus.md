@@ -44,26 +44,29 @@ Architecture reference: `architecture/execution-engine-architecture.md`.
 
 ## Latest Production Preflight - Current ChatGPT Execution Host
 
-Preflight timestamp: **2026-08-23T14:29:22Z**.
+Preflight timestamp: **2026-08-23T15:25:56Z**.
 
 | Preflight item | Result |
 |---|---|
 | Git available | **PASS** - `/usr/bin/git` |
 | Python 3 available | **PASS** - `/opt/pyvenv/bin/python3` |
-| Worker-readable `CylinderManagement` checkout | **FAIL - NOT MOUNTED** |
-| Worker-readable `CylindnderManagementDependcies` control checkout | **FAIL - NOT MOUNTED** |
-| Frozen commit verification | **NOT REACHED** |
-| Approved executor/worker/dispatch verification | **NOT REACHED** |
-| Zero leftover lane-log verification | **NOT PROVABLE WITHOUT CONTROL CHECKOUT** |
+| Worker-readable production `CylinderManagement` checkout | **FAIL - NO VALID CHECKOUT CONTAINING FROZEN COMMIT** |
+| Worker-readable production `CylindnderManagementDependcies` control checkout | **FAIL - NO VALID CONTROL GIT CHECKOUT** |
+| Frozen commit verification | **FAIL - neither discovered smoke-test Git repository contains `3ae6e61442132d94a307275b08dd65fcef228d89`** |
+| Approved executor/worker/dispatch/fire-script provenance | **NOT PROVABLE WITHOUT VALID CONTROL GIT CHECKOUT** |
+| Zero leftover lane-log verification | **NOT PROVABLE AGAINST AUTHORITATIVE CONTROL CHECKOUT** |
 | Lanes started | **0 / 10** |
 | BL-001 evidence accepted | **NO** |
+
+Two local Git repositories were found at `/mnt/data/_local_lane_test/source` and `/mnt/data/_local_lane_smoke2/source`; both are rejected smoke-test repositories because neither contains the frozen BL-001 commit. Two control-like smoke-test directories were also found, but neither is accepted as the production control Git checkout and neither proves the complete approved fire input set.
 
 Classification: **EXECUTION_HOST_PREFLIGHT_BLOCKED**.
 
 Exact missing prerequisites on this host:
 
-1. local or mounted Git checkout of `vvekselva/CylinderManagement`;
-2. local or mounted control checkout of `vvekselva/CylindnderManagementDependcies`.
+1. local or mounted Git checkout of `vvekselva/CylinderManagement` containing frozen commit `3ae6e61442132d94a307275b08dd65fcef228d89`;
+2. local or mounted Git checkout of `vvekselva/CylindnderManagementDependcies` containing the approved executor, worker, dispatch and fire-script inputs;
+3. provable zero leftover individual lane logs in that authoritative control checkout.
 
 This is **not** a GitHub Actions blocker, source-code blocker, or traceability Quality Gate failure. GitHub connector access remains available for control-plane reads/writes but does not make repository files available to local worker processes.
 
@@ -75,8 +78,8 @@ Before a production worker fire, the Orchestrator must prove:
 2. the frozen commit exists in that checkout's local Git object database;
 3. Git is available;
 4. Python 3 is available;
-5. the control checkout contains the approved executor, worker and dispatch files;
-6. zero leftover transient lane logs exist in the control checkout.
+5. the control checkout contains the approved executor, worker, dispatch and fire-script files;
+6. zero leftover transient individual lane logs exist in the control checkout.
 
 If any condition fails, **zero lanes start** and the exact missing prerequisite is recorded.
 
@@ -105,6 +108,6 @@ Open evidence gaps remain `POST /customer-spot-cylinder-check/submit` and `POST 
 
 ## Exact Next Action
 
-Make both source and control repository checkouts worker-readable on the execution host, verify the source checkout contains frozen commit `3ae6e61442132d94a307275b08dd65fcef228d89`, then rerun production preflight. No GitHub Actions step is required.
+Make valid source and control Git checkouts worker-readable on the execution host, verify the source checkout contains frozen commit `3ae6e61442132d94a307275b08dd65fcef228d89`, verify the control checkout contains the approved production fire inputs, prove zero leftover individual lane logs, then rerun production preflight. No GitHub Actions step is required.
 
 BL-001 remains **PARTIAL** and cannot become VERIFIED/CLOSED before all automatic gates pass and QG-TRC-015 explicit user acceptance is obtained.
