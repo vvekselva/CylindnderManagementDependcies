@@ -1,12 +1,16 @@
 decisions:
   - id: DEC-BL001-001
-    state: APPLIED
+    state: SUPERSEDED
     decision: COMPLETE_SOURCE_CHECK_BEFORE_MATRIX
-    reason: The first trusted traceability baseline must not be assembled from partial source-check batches.
+    superseded_by: DEC-BL001-013
+    reason: >-
+      The original rule protected the first trusted baseline from partial source-check results. The user has now
+      required the Traceability Matrix to exist and grow as source files/endpoints are accepted. Final matrix
+      validation still waits for 100 percent coverage; only the timing of safe matrix materialization changed.
   - id: DEC-BL001-002
     state: APPLIED
     decision: SOURCE_CHECK_OUTPUT_IS_MATRIX_INPUT
-    reason: The canonical Worker YAML output is the formal input to the Orchestrator matrix Work Unit.
+    reason: Canonical Orchestrator-accepted endpoint evidence is the formal input to matrix projection.
   - id: DEC-BL001-003
     state: APPLIED
     decision: MAXIMIZE_SAFE_LANE_UTILIZATION_WITHIN_EACH_COORDINATOR_INVOCATION
@@ -65,3 +69,16 @@ decisions:
       A separate capacity probe proves the process pool can reach ten workers. Production QG-LANE-001 uses natural
       SERVICE overlap; the system must not add fake sleep/work merely to make the performance gate pass. Underutilization
       preserves correct source evidence but blocks a claim of full utilization.
+  - id: DEC-BL001-013
+    state: APPLIED
+    decision: CREATE_AND_UPDATE_TRACEABILITY_MATRIX_INCREMENTALLY_AS_ENDPOINT_EVIDENCE_IS_ACCEPTED
+    reason: >-
+      Each Orchestrator-accepted endpoint trace is immediately upserted into the live Traceability Matrix using
+      HTTP method plus path as the stable row key. The matrix remains INCREMENTAL_PARTIAL until canonical Source Check
+      coverage reaches 100 percent. WU-BL001-002 becomes final reconciliation/finalization rather than first-time creation.
+      Raw worker candidates, guessed dependencies and unresolved bindings never become accepted matrix rows.
+    workflow: workflows/WF-002-incremental-traceability-matrix.yaml
+    artifacts:
+      - traceability/controller-traceability.md
+      - traceability/unresolved-traceability.md
+      - traceability/matrix-progress.yaml
