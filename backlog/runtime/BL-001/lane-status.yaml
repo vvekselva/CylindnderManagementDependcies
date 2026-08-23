@@ -1,5 +1,5 @@
 lane_status:
-  version: 14
+  version: 15
   backlog_item: BL-001
   authoritative: true
   current_backlog_state: PARTIAL
@@ -7,15 +7,16 @@ lane_status:
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   last_reconciled_attempt: 27
   last_reconciled_run: INVOCATION-20260823-160000
-  invocation_state: BETWEEN_INVOCATIONS_READY_FOR_LOCAL_FIRE
+  invocation_state: BETWEEN_INVOCATIONS_PRODUCTION_PREFLIGHT_BLOCKED_ON_CURRENT_HOST
   current_invocation: null
-  current_idle_reason: LOCAL_PROCESS_POOL_READY_NOT_YET_FIRED
+  current_idle_reason: CURRENT_EXECUTION_HOST_HAS_NO_WORKER_READABLE_CYLINDERMANAGEMENT_CHECKOUT
 
   real_worker_backend:
     type: LOCAL_PROCESS_POOL
     control_dispatch_ssot: backlog/runtime/BL-001/lane-dispatch.yaml
     local_execution_ssot: backlog/runtime/BL-001/local-execution.yaml
     governance: governance/lane-execution.yaml
+    orchestrator_run_config: backlog/orchestrator-run-config.yaml
     executor: automation/local-lane-executor.py
     worker: automation/local-lane-worker.py
     windows_fire_script: automation/fire-local-lanes.ps1
@@ -29,10 +30,18 @@ lane_status:
     actual_peak_worker_processes_alive: null
     actual_peak_service_concurrent_lanes: null
     actual_average_service_concurrent_lanes: null
-    state: READY_NOT_STARTED
+    state: READY_ON_VALID_EXECUTION_HOST
     external_service_dependency: NONE
+    current_host_preflight:
+      state: BLOCKED_BEFORE_LANE_START
+      source_checkout_present: false
+      lanes_started: 0
+      observed_error: "fatal: cannot change to '/mnt/data/CylinderManagement': No such file or directory"
+      classification: EXECUTION_HOST_SOURCE_STAGING_PREREQUISITE
     note: >-
-      The GitHub Actions backend has been retired. All ten safe tasks are ready for local process-pool fire. The executor will update lane state from local PIDs and heartbeat evidence when fired.
+      The engine and ten tasks are ready. The production fire was attempted on the current ChatGPT execution host but no local/mounted
+      CylinderManagement checkout exists there, so fail-closed preflight started zero lanes. On a valid execution host with the source
+      checkout and frozen commit available, the same dispatch remains ready to fire.
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
@@ -60,18 +69,19 @@ lane_status:
     non_idle_lane_must_identify_work_unit_and_task: true
     working_lane_requires_pid_and_heartbeat: true
     worker_evidence_does_not_auto_complete_trace: true
+    production_preflight_failure_starts_zero_lanes: true
 
   lanes:
-    LANE-01: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D001, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-02: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D002, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-03: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D003, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-04: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D004, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-05: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D005, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-06: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D006, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-07: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D007, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-08: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D008, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-09: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D009, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-10: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D010, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-01: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D001, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-02: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D002, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-03: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D003, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-04: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D004, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-05: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D005, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-06: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D006, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-07: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D007, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-08: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D008, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-09: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D009, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-10: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D010, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
 
   summary:
     total_lanes: 10
@@ -87,4 +97,6 @@ lane_status:
     local_workers_confirmed_started: 0
 
   current_interpretation: >-
-    Ten safe tasks are ready for local fire. All lanes are IDLE because the local executor has not yet been started. This is a READY state, not a GitHub Actions/platform blocker.
+    Production preflight was attempted and stopped before lane start because the current execution host has no worker-readable
+    CylinderManagement checkout. This is an execution-host source-staging prerequisite, not a GitHub Actions blocker. The ten-task
+    dispatch remains ready to fire on a valid execution host.
