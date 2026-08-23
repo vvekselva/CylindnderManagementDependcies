@@ -12,6 +12,8 @@ except ImportError:
     sys.exit(2)
 
 ROOT = Path(__file__).resolve().parents[1]
+EXPECTED_LANES = [f'LANE-{i:02d}' for i in range(1, 11)]
+VALID_LANE_STATES = {'IDLE', 'ASSIGNED', 'INITIALIZING', 'WORKING', 'BLOCKED', 'WAITING', 'CLOSING', 'STALE'}
 
 
 def load_yaml(rel: str) -> Any:
@@ -39,6 +41,59 @@ def normalized_text(value: Any) -> str:
 
 def fail(errors: list[str], msg: str) -> None:
     errors.append(msg)
+
+
+def validate_lane_status(backlog_id: str, runtime_path: Path, errors: list[str]) -> None:
+    lane_file = runtime_path / 'lane-status.yaml'
+    if not lane_file.is_file():
+        return
+    try:
+        doc = yaml.safe_load(lane_file.read_text(encoding='utf-8')) or {}
+    except Exception as exc:
+        fail(errors, f'{backlog_id}: SSOT-L3 invalid YAML lane-status.yaml: {exc}')
+        return
+
+    root = doc.get('lane_status', {})
+    if root.get('backlog_item') != backlog_id:
+        fail(errors, f'{backlog_id}: lane-status backlog_item mismatch')
+
+    lanes = root.get('lanes', {})
+    actual_names = sorted(lanes.keys()) if isinstance(lanes, dict) else []
+    if actual_names != EXPECTED_LANES:
+        fail(errors, f'{backlog_id}: lane-status must contain exactly LANE-01 through LANE-10')
+        return
+
+    counts = {state.lower(): 0 for state in VALID_LANE_STATES}
+    for lane_name in EXPECTED_LANES:
+        lane = lanes.get(lane_name) or {}
+        state = lane.get('state')
+        if state not in VALID_LANE_STATES:
+            fail(errors, f'{backlog_id}: {lane_name} has invalid state {state!r}')
+            continue
+        counts[state.lower()] += 1
+
+        if state != 'IDLE':
+            if not nonempty(lane.get('work_unit')):
+                fail(errors, f'{backlog_id}: {lane_name} non-IDLE without work_unit')
+            if not nonempty(lane.get('task')):
+                fail(errors, f'{backlog_id}: {lane_name} non-IDLE without task')
+        if state == 'WORKING':
+            if not nonempty(lane.get('run_id')):
+                fail(errors, f'{backlog_id}: {lane_name} WORKING without run_id')
+            if not nonempty(lane.get('last_heartbeat')):
+                fail(errors, f'{backlog_id}: {lane_name} WORKING without last_heartbeat')
+        if state == 'BLOCKED' and not nonempty(lane.get('blocker')):
+            fail(errors, f'{backlog_id}: {lane_name} BLOCKED without plain-English blocker')
+
+    summary = root.get('summary', {})
+    if summary.get('total_lanes') != 10:
+        fail(errors, f'{backlog_id}: lane-status summary total_lanes must equal 10')
+    for key, value in counts.items():
+        if summary.get(key) != value:
+            fail(errors, f'{backlog_id}: lane-status summary {key}={summary.get(key)!r} but lane records imply {value}')
+    active_expected = 10 - counts['idle']
+    if summary.get('active_lane_count') != active_expected:
+        fail(errors, f'{backlog_id}: lane-status active_lane_count does not reconcile to lane records')
 
 
 def main() -> int:
@@ -69,7 +124,6 @@ def main() -> int:
             fail(errors, f'{backlog_id}: SSOT-L1 missing master entry')
             continue
 
-        # Level 1
         l1_required = [
             'id', 'name', 'type', 'purpose', 'priority', 'state', 'item_definition',
             'statement_of_work', 'completion_path', 'quality_gate', 'dependencies',
@@ -85,7 +139,6 @@ def main() -> int:
         gate_file = item.get('quality_gate')
         runtime_dir = item.get('runtime')
 
-        # Level 2
         for label, rel in [('definition', definition_path), ('SOW', sow_path), ('Completion Path', path_file), ('Quality Gate', gate_file)]:
             if not rel:
                 fail(errors, f'{backlog_id}: SSOT-L2 {label} reference is null')
@@ -119,7 +172,6 @@ def main() -> int:
             if auth.get('sow_required') is not True or auth.get('structurally_valid') is not True or auth.get('placeholders_present') is not False:
                 fail(errors, f'{backlog_id}: QG-SOW-001 execution_authorization is not valid')
 
-        # Level 3
         if not runtime_dir:
             fail(errors, f'{backlog_id}: SSOT-L3 runtime reference is null')
         else:
@@ -139,8 +191,8 @@ def main() -> int:
                         continue
                     if backlog_id not in str(doc):
                         warnings.append(f'{backlog_id}: {filename} does not visibly contain the Backlog ID')
+                validate_lane_status(backlog_id, runtime_path, errors)
 
-        # Run-control reconciliation
         for field in ['item_definition', 'statement_of_work', 'runtime', 'completion_path', 'quality_gate']:
             if run_item.get(field) != item.get(field):
                 fail(errors, f'{backlog_id}: run-config {field} does not match Level 1')
