@@ -1,0 +1,56 @@
+statement_of_work:
+  backlog_item: BL-###
+  version: 1
+  title: <plain-English Statement of Work title>
+  status: DRAFT
+
+  objective: >-
+    <business/technical outcome this backlog item must achieve>
+
+  problem_statement: >-
+    <problem, gap, risk or requirement that justifies this backlog item>
+
+  scope:
+    in_scope:
+      - <included activity or component>
+    out_of_scope:
+      - <explicit exclusion>
+
+  target:
+    repository: <owner/repository>
+    baseline_rule: <FROZEN_COMMIT|CURRENT_APPROVED_REF|OTHER>
+
+  deliverables:
+    - <required artifact/output>
+
+  execution_requirements:
+    - <mandatory execution rule>
+
+  dependencies:
+    backlog_items: []
+    external_dependencies: []
+
+  acceptance_criteria:
+    - <objective condition that proves the work is acceptable>
+
+  quality_gate_requirements:
+    item_quality_gate: <backlog/gates/file.yaml>
+    user_acceptance_required: true
+
+  completion_definition:
+    - all in-scope work is accounted for
+    - all required deliverables exist
+    - all mandatory quality gates pass
+    - all required worker/work-unit runs are closed
+    - required user acceptance is obtained
+
+  execution_authorization:
+    sow_required: true
+    approved: false
+    approved_by: null
+    approved_at: null
+
+  governance_rule: >-
+    A Backlog Item MUST NOT enter analysis or execution unless this Statement of Work
+    exists, is structurally complete, has status APPROVED, and execution_authorization.approved
+    is true. Missing, draft, incomplete or unapproved SOW is a fail-closed governance blocker.
