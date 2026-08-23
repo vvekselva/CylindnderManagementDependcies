@@ -1,10 +1,22 @@
 execution_plan:
   backlog_item: BL-001
-  version: 1
+  version: 2
   state: PLANNED
   generated_by: ORCHESTRATOR
   completion_path: backlog/paths/BL-001-traceability.yaml
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+
+  planning_authorization:
+    gate: QG-SSOT-001
+    state: PASS
+    level_1: COMPLETE
+    level_2: COMPLETE
+    level_3: COMPLETE
+    statement_of_work_gate: QG-SOW-001
+    statement_of_work_state: PASS
+    note: >-
+      This existing plan has been revalidated against the mandatory three-level SSOT rule.
+      Any future PLAN/REPLAN must re-evaluate QG-SSOT-001 before material plan changes.
 
   work_units:
     - id: WU-BL001-001
@@ -49,4 +61,4 @@ execution_plan:
       outputs:
         - sync/source-artifact-sync-register.yaml
         - logs/automation-story.md
-      completion_rule: Source-artifact baseline registered and all required runs closed.
+      completion_rule: Source-artifact baseline registered, all required runs closed, automatic gates pass, and required user acceptance is obtained.
