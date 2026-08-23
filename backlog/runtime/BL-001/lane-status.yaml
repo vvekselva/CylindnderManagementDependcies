@@ -1,13 +1,13 @@
 lane_status:
-  version: 17
+  version: 18
   backlog_item: BL-001
   authoritative: true
   current_backlog_state: PARTIAL
   current_work_unit: WU-BL001-001
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  invocation_state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
+  invocation_state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_AND_BINDING_REQUIRED
   current_invocation: null
-  current_idle_reason: WAITING_FOR_PRIMARY_ORCHESTRATOR_SOURCE_RESTAGE_ITERATION
+  current_idle_reason: LATEST_PRODUCTION_FIRE_CLOSED_AND_RETURNED_EXACT_RESTAGE_BINDING_REQUESTS
 
   real_worker_backend:
     type: LOCAL_PROCESS_POOL
@@ -27,24 +27,24 @@ lane_status:
     expected_concurrent_lanes: 10
     qg_source_001: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
     qg_lane_001: UNDERUTILIZED
-    latest_execution_id: E2E-STAGED-20260823-151810
+    latest_execution_id: E2E-STAGED-20260823-161214
     latest_workers_started: 10
     latest_worker_results_received: 10
     latest_worker_failures: 0
-    latest_peak_service_concurrent_lanes: 4
-    latest_average_service_concurrent_lanes: 0.26
+    latest_missing_source_requests: 16
+    latest_missing_binding_requests: 3
+    latest_peak_service_concurrent_lanes: 2
+    latest_average_service_concurrent_lanes: 0.0
     backend_capacity_probe_peak_service_concurrent_lanes: 10
-    state: READY_FOR_SOURCE_RESTAGE_ITERATION
+    latest_individual_lane_logs_remaining: 0
+    state: READY_FOR_SOURCE_RESTAGE_AND_BINDING_ITERATION
     external_service_dependency: NONE
     github_actions_dependency: NONE
-    note: >-
-      The previous execution-host checkout blocker is resolved by the staged source provider. All worker lanes are
-      currently IDLE because the latest execution closed cleanly and returned explicit source-restaging requests.
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
-    latest_tested_execution: E2E-STAGED-20260823-151810
+    latest_tested_execution: E2E-STAGED-20260823-161214
     latest_tested_execution_lane_logs_remaining: 0
     local_worker_required_event_order: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
     heartbeat_required: true
@@ -55,31 +55,21 @@ lane_status:
     objective: MAXIMIZE_NATURAL_SAFE_LOCAL_SERVICE_CONCURRENCY
     max_parallel_lanes: 10
     expected_concurrency_formula: min(configured_lanes, safe_ready_tasks)
-    distinct_lane_participation_is_not_concurrency: true
     natural_service_overlap_is_gate_metric: true
     artificial_delay_to_pass_qg_lane_prohibited: true
     final_trace_decision_owner: PRIMARY_ORCHESTRATOR
 
-  policy:
-    one_active_job_per_lane: true
-    coordinator_is_not_a_lane: true
-    valid_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
-    non_idle_lane_must_identify_work_unit_and_task: true
-    working_lane_requires_pid_and_heartbeat: true
-    worker_evidence_does_not_auto_complete_trace: true
-    source_restaging_happens_between_worker_batches: true
-
   lanes:
-    LANE-01: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D001, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-02: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D002, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-03: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D003, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-04: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D004, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-05: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D005, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-06: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D006, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-07: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D007, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-08: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D008, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-09: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D009, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-10: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D010, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-01: {state: IDLE, dispatch_task_id: BL001-D001, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-02: {state: IDLE, dispatch_task_id: BL001-D002, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-03: {state: IDLE, dispatch_task_id: BL001-D003, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-04: {state: IDLE, dispatch_task_id: BL001-D004, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-05: {state: IDLE, dispatch_task_id: BL001-D005, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-06: {state: IDLE, dispatch_task_id: BL001-D006, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-07: {state: IDLE, dispatch_task_id: BL001-D007, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-08: {state: IDLE, dispatch_task_id: BL001-D008, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-09: {state: IDLE, dispatch_task_id: BL001-D009, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-10: {state: IDLE, dispatch_task_id: BL001-D010, run_id: E2E-STAGED-20260823-161214, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
 
   summary:
     total_lanes: 10
@@ -95,6 +85,6 @@ lane_status:
     latest_execution_workers_started: 10
 
   current_interpretation: >-
-    The self-reliant engine is between worker batches. The latest ten-worker discovery closed with zero worker failures
-    and zero residual lane logs, then requested additional exact source. No lane is blocked by GitHub Actions or a missing
-    local checkout. The next activity is Orchestrator source restaging/rebinding before the next worker batch.
+    Production fire E2E-STAGED-20260823-161214 closed cleanly with all ten workers returning evidence, zero worker
+    failures and zero residual lane logs. The engine is now between batches while the Primary Orchestrator resolves
+    16 exact source requests and 3 explicit interface bindings. No lane is blocked by GitHub Actions or a local checkout.
