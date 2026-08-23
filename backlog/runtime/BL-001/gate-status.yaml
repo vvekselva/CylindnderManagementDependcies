@@ -24,7 +24,7 @@ quality_gate_status:
     latest_closed_invocation: INVOCATION-20260823-175300
     preflight_individual_repo_lane_logs: 0
     post_invocation_individual_repo_lane_logs: 0
-    note: No in-chat lane execution occurred; matrix tasks were not duplicated while awaiting external workflow evidence.
+    note: No matrix lane service execution has been accepted; generation-4 fire produced no external worker evidence.
 
   real_lane_utilization_gate:
     id: QG-LANE-001
@@ -32,9 +32,10 @@ quality_gate_status:
     state: BLOCKED_PLATFORM
     governance: governance/lane-execution.yaml
     control_dispatch_queue: backlog/runtime/BL-001/lane-dispatch.yaml
-    dispatch_id: MATRIX-BL001-DISPATCH-003
-    source_dispatch_generation: 3
-    source_dispatch_id: MATRIX-BL001-SOURCE-003
+    dispatch_id: MATRIX-BL001-DISPATCH-004
+    source_dispatch_generation: 4
+    source_dispatch_id: MATRIX-BL001-SOURCE-004
+    source_dispatch_commit: 6810c3d19cbc6b5757317c00f627333b6c31eb7a
     worker_backend: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
     source_repository: vvekselva/CylinderManagement
     source_execution_branch: automation/lane-matrix
@@ -52,6 +53,7 @@ quality_gate_status:
     peak_capacity_utilization_percentage: null
     durable_aggregate_available: false
     blocker_id: PB-BL001-001
+    blocker_summary: Generation 4 was fired successfully at the repository level, but GitHub Actions produced no run-status or worker evidence.
     pass_evidence_required:
       - source automation/matrix-execution.yaml with real workflow run ID
       - durable lane-dispatch-aggregate after summarize completion
@@ -79,4 +81,4 @@ quality_gate_status:
 
   endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 37, complete: 35, unresolved: 2, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 97}
   close_allowed: false
-  reason: BL-001 remains PARTIAL; source-local Actions still has not self-reported a run ID, so real concurrency cannot be measured and 97 endpoint traces remain unexamined.
+  reason: BL-001 remains PARTIAL; generation-4 source-local Actions dispatch has no workflow/job evidence, so real concurrency cannot be measured and 97 endpoint traces remain unexamined.
