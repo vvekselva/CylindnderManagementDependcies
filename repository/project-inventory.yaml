@@ -1,0 +1,84 @@
+project_inventory:
+  version: 1
+  repository: vvekselva/CylinderManagement
+  source_branch: main
+  purpose: >-
+    Provide the Level 1 Single Source of Truth for top-level projects/modules in the
+    CylinderManagement repository and record governance classifications that affect
+    backlog scope. The Orchestrator must use this inventory instead of inferring testing
+    scope from project names or source structure.
+
+  unit_test_policy:
+    backlog_item: BL-002
+    rule: >-
+      Only projects explicitly classified UNIT_TEST_REQUIRED may enter BL-002 planning
+      or execution. Projects classified NO_UNIT_TEST_REQUIRED are excluded. Projects
+      classified UNIT_TEST_POSTPONED are excluded from the current BL-002 execution and
+      retained for a future user-authorized cycle. Projects classified
+      UNIT_TEST_SCOPE_UNCLASSIFIED block completion of BL-002 Level 2 scope definition;
+      the Orchestrator must not infer their status.
+
+  projects:
+    - id: PRJ-001
+      path: Cylinder.management.dto
+      unit_test_scope: NO_UNIT_TEST_REQUIRED
+      source: USER_DIRECTIVE_2026-08-23
+
+    - id: PRJ-002
+      path: NewOwnerShipModelv3
+      unit_test_scope: UNIT_TEST_SCOPE_UNCLASSIFIED
+      source: NOT_YET_DEFINED
+
+    - id: PRJ-003
+      path: cmas.database.operations
+      unit_test_scope: UNIT_TEST_POSTPONED
+      source: USER_DIRECTIVE_2026-08-23
+      note: Unit testing is required later, but postponed for the current cycle.
+
+    - id: PRJ-004
+      path: cylinder.datascripts
+      unit_test_scope: UNIT_TEST_SCOPE_UNCLASSIFIED
+      source: NOT_YET_DEFINED
+
+    - id: PRJ-005
+      path: cylinder.management.dao
+      unit_test_scope: NO_UNIT_TEST_REQUIRED
+      source: USER_DIRECTIVE_2026-08-23
+
+    - id: PRJ-006
+      path: cylindermanagement.custommapper.service
+      unit_test_scope: NO_UNIT_TEST_REQUIRED
+      source: USER_DIRECTIVE_2026-08-23
+
+    - id: PRJ-007
+      path: cylindermanagement.offlinemap
+      unit_test_scope: UNIT_TEST_POSTPONED
+      source: USER_DIRECTIVE_2026-08-23
+      note: Unit testing is required later, but postponed for the current cycle.
+
+    - id: PRJ-008
+      path: cylindermanagement.security
+      unit_test_scope: NO_UNIT_TEST_REQUIRED
+      source: USER_DIRECTIVE_2026-08-23
+
+    - id: PRJ-009
+      path: cylindermanagement.web
+      unit_test_scope: UNIT_TEST_SCOPE_UNCLASSIFIED
+      source: NOT_YET_DEFINED
+
+    - id: PRJ-010
+      path: framework
+      unit_test_scope: NO_UNIT_TEST_REQUIRED
+      source: USER_DIRECTIVE_2026-08-23
+
+  unit_test_scope_summary:
+    total_projects: 10
+    no_unit_test_required: 5
+    unit_test_postponed: 2
+    unit_test_required_current_cycle: 0
+    unit_test_scope_unclassified: 3
+    bl_002_scope_definition_complete: false
+    blocker: >-
+      BL-002 cannot complete Level 2 scope definition or become plannable until the
+      unit-test classification for NewOwnerShipModelv3, cylinder.datascripts and
+      cylindermanagement.web is explicitly defined.
