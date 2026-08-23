@@ -18,10 +18,10 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - WI-0004 attempts 1 through 22 are CLOSED/PARTIAL
-        - 16 of 134 endpoints have been explicitly examined for final dependencies
-        - all 16 examined endpoints are COMPLETE
-        - 118 endpoints remain not yet examined
+        - WI-0004 attempts 1 through 23 are CLOSED/PARTIAL
+        - 19 of 134 endpoints have been explicitly examined for final dependencies
+        - all 19 examined endpoints are COMPLETE
+        - 115 endpoints remain not yet examined
         - canonical completed result is not yet accepted
     QG-TRC-003:
       name: Controller Inventory Completeness
@@ -46,8 +46,8 @@ quality_gate_status:
       name: No Guessing And Unresolved Quality
       state: IN_PROGRESS
       evidence:
-        - attempt 21 left three generic REST search paths unresolved at the injected service handoff rather than guessing
-        - attempt 22 promoted those paths to COMPLETE only after concrete @Service, JpaRepository query, entity and @Table evidence were proved from the frozen source
+        - earlier unresolved paths were retained at their last proved component until concrete dependency evidence was found
+        - attempt 23 marks the two Vehicle endpoints and Supplier search COMPLETE only after controller, concrete service, repository, query and @Table evidence were proved
         - no currently examined endpoint remains unresolved, blocked or failed
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
@@ -62,15 +62,16 @@ quality_gate_status:
 
   endpoint_trace_checkpoint:
     total_endpoints: 134
-    explicitly_examined_for_final_dependency: 16
-    complete: 16
+    explicitly_examined_for_final_dependency: 19
+    complete: 19
     unresolved: 0
-    not_yet_examined_for_final_dependency: 118
+    not_yet_examined_for_final_dependency: 115
 
   close_allowed: false
   reason: >-
-    Attempt 22 resolved all three previously unresolved generic REST search paths, so all 16 examined endpoints
-    are now COMPLETE. QG-TRC-002 nevertheless remains IN_PROGRESS because 118 of 134 endpoints are still not
-    examined and worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result.
-    QG-TRC-004 remains IN_PROGRESS because the canonical Endpoint Inventory artifact is not yet validated.
-    Matrix construction and dependent work units remain locked.
+    Attempt 23 proves both Vehicle endpoints through VehicleJpaDao/VehicleDo to public.tbl_vehicle and Supplier
+    search through SupplierJpaDao/SupplierDo to public.tbl_supplier. All 19 examined endpoints are COMPLETE.
+    QG-TRC-002 remains IN_PROGRESS because 115 of 134 endpoints are still not examined and
+    worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result. QG-TRC-004 remains
+    IN_PROGRESS because the canonical Endpoint Inventory artifact is not yet validated. Matrix construction and
+    dependent work units remain locked.
