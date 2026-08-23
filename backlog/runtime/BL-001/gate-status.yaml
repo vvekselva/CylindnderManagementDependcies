@@ -21,17 +21,18 @@ quality_gate_status:
     id: QG-LOG-001
     name: Execution Lifecycle Logging Completeness
     state: PASS
-    effective_scope: NEW_INVOCATIONS_AND_LANE_RUNS_AFTER_CONTRACT_ACTIVATION
+    latest_invocation: INVOCATION-20260823-160000
     evidence:
-      - logs/runs/INVOCATION-20260823-145512.md contains persisted ORCHESTRATOR_INVOCATION_START before repository analysis/execution and persisted ORCHESTRATOR_INVOCATION_END after lane close/runtime synchronization
-      - logs/runs/INVOCATION-20260823-145512-LANE-01.md contains ordered LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END and LANE_CLOSE_END with Log State CLOSED
-      - logs/runs/INVOCATION-20260823-145512-LANE-02.md contains ordered LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END and LANE_CLOSE_END with Log State CLOSED
-      - logs/runs/INVOCATION-20260823-145512-LANE-03.md contains ordered LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END and LANE_CLOSE_END with Log State CLOSED
-      - backlog/runtime/BL-001/lane-status.yaml reconciles Attempt 26 to 10 IDLE lanes BETWEEN_INVOCATIONS with LANE_CLOSE_END recorded for all started lanes
-      - no started lane was released before its persisted LANE_CLOSE_END record
-      - historical attempts through Attempt 25 predate this contract and remain legacy evidence
-    result_acceptance_allowed_for_new_runs: true
-    reason: Attempt 26 is the first post-activation execution and demonstrates the complete required Orchestrator and lane lifecycle sequence without orphan OPEN events.
+      - invocation preflight proved zero transient *-LANE-*.md logs before execution
+      - logs/runs/INVOCATION-20260823-160000.md contains ORCHESTRATOR_INVOCATION_START with exact task and task_description
+      - all three Attempt 27 lanes contain ordered INIT START/END, SERVICE START/END and CLOSE END evidence inside the durable invocation aggregate
+      - all three transient lane files were verified as represented, then deleted
+      - post-aggregation logs/runs rescan proved zero individual *-LANE-*.md logs remain
+      - ORCHESTRATOR_LOG_AGGREGATION_END is PASS with 3 of 3 lane logs represented and deleted
+    preflight_individual_lane_logs: 0
+    post_aggregation_individual_lane_logs: 0
+    lane_log_aggregation_result: PASS
+    result_acceptance_allowed_for_latest_run: true
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
@@ -40,11 +41,11 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - 27 of 134 endpoints have been explicitly examined for final dependencies
-        - 25 examined endpoints are COMPLETE
+        - 37 of 134 endpoints have been explicitly examined for final dependencies
+        - 35 examined endpoints are COMPLETE
         - 2 examined endpoints are UNRESOLVED
-        - 107 endpoints remain not yet examined
-        - canonical completed result is not yet accepted
+        - 97 endpoints remain not yet examined
+        - canonical completed WI-0004 result is not yet accepted
     QG-TRC-003: {name: Controller Inventory Completeness, state: PASS}
     QG-TRC-004:
       name: Endpoint Inventory Completeness
@@ -60,8 +61,9 @@ quality_gate_status:
       name: No Guessing And Unresolved Quality
       state: IN_PROGRESS
       evidence:
-        - Attempt 26 left the two complex POST endpoints UNRESOLVED where their complete database-object sets were not yet proved
-        - no missing table/view names were inferred from field, DTO, repository or entity naming
+        - the two prior complex POST endpoints remain UNRESOLVED where complete database-object sets are not yet proved
+        - Attempt 27 introduced ten COMPLETE traces and zero new unresolved paths
+        - no missing table/view names were inferred from naming
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
@@ -71,16 +73,16 @@ quality_gate_status:
 
   endpoint_trace_checkpoint:
     total_endpoints: 134
-    explicitly_examined_for_final_dependency: 27
-    complete: 25
+    explicitly_examined_for_final_dependency: 37
+    complete: 35
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined_for_final_dependency: 107
+    not_yet_examined_for_final_dependency: 97
 
   close_allowed: false
   reason: >-
-    QG-SSOT-001, QG-SOW-001, QG-DEP-001 and post-activation QG-LOG-001 pass for Attempt 26.
-    BL-001 remains PARTIAL because 107 endpoints are not yet examined, two complex POST traces are
-    unresolved, and worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result.
-    Matrix construction remains locked.
+    SSOT, SOW, dependency and lifecycle-logging gates pass. BL-001 remains PARTIAL because 97
+    endpoints are not yet examined, two complex POST traces remain unresolved, and the canonical
+    WI-0004 result is not yet COMPLETED/contract-valid at 100 percent trace coverage. Matrix
+    construction remains locked.
