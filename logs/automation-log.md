@@ -169,3 +169,19 @@ For every lane execution, the required order is:
 When init ends `BLOCKED_BEFORE_SERVICE`, SERVICE events are skipped, but close and `LANE_CLOSE_END` remain mandatory. A lane is not reusable until its close/recovery-close log has been persisted. Missing required pre-phase logging blocks the phase; missing post-phase logging prevents result acceptance until recovery. Dedicated `logs/runs/*.md` files avoid parallel lanes writing the shared audit file concurrently; the coordinator remains the only serialized writer of this shared log.
 
 The active BL-001 execution plan and the enabled Cylinder Orchestrator schedule were updated so the next invocation must follow this contract. Historical runs before activation remain legacy evidence and are not retroactively invalidated.
+
+---
+
+## EVENT EVT-0035 - Attempt 26 Completed And Lane Logs Consolidated At Invocation Boundary
+Time: `2026-08-23T15:12:00+05:30`
+Invocation: `INVOCATION-20260823-145512`
+Status: `PARTIAL / CLOSED / LOG-CLEAN`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+Attempt 26 used three independent lanes for `CustomerSpotCylinderCheckController`, `YardAuditDashboardController`, and `WalkinSaleIngestionController`. Five endpoints were examined. Three reached source-proved final dependencies and two complex POST paths remain explicitly UNRESOLVED rather than guessed.
+
+Checkpoint advanced to **27 / 134 endpoints examined; 25 COMPLETE; 2 UNRESOLVED; 0 BLOCKED; 0 FAILED; 107 NOT YET EXAMINED**.
+
+After the invocation closed, the user introduced the stricter invocation-boundary lane-log hygiene rule. The three closed lane lifecycle logs were therefore accumulated into the durable invocation aggregate `logs/runs/INVOCATION-20260823-145512.md`, verified as represented, and then deleted. A repository re-scan proved that **0 individual lane logs remain**. The next invocation must start by proving the same zero-log precondition before new execution and must close only after all transient lane logs are accumulated, verified, deleted, and a zero-log postcondition is proved.
+
+This consolidation does not change the source-trace meaning of Attempt 26. Matrix construction remains locked and BL-001 remains PARTIAL.
