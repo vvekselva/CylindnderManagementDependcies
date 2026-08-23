@@ -1,10 +1,18 @@
 execution_plan:
   backlog_item: BL-001
-  version: 8
+  version: 9
   state: PLANNED
   generated_by: ORCHESTRATOR
   completion_path: backlog/paths/BL-001-traceability.yaml
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+
+  architecture_separation:
+    github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
+    automation_tool_role: ORCHESTRATION_AND_EXECUTION_ENGINE
+    execution_backend: LOCAL_PROCESS_POOL
+    github_actions_required: false
+    rule: >-
+      GitHub stores/version-controls source and control SSOT and receives synchronized results after execution. The Automation Tool owns planning, dispatch, local worker execution, lifecycle logging, aggregation, evidence validation and synchronization.
 
   planning_authorization:
     gate: QG-SSOT-001
@@ -14,7 +22,7 @@ execution_plan:
     level_3: COMPLETE
     statement_of_work_gate: QG-SOW-001
     statement_of_work_state: PASS
-    user_authorized_change: LOCAL_REAL_PARALLEL_LANE_EXECUTION
+    user_authorized_change: TOOL_EXECUTES_GITHUB_IS_VCS
 
   lifecycle_logging_policy:
     contract: governance/execution-lifecycle-logging.yaml
@@ -39,6 +47,7 @@ execution_plan:
     configured_lanes: 10
     max_parallel_workers: 10
     external_service_dependency: NONE
+    github_actions_dependency: NONE
     expected_concurrency_formula: min(configured_lanes, safe_ready_tasks)
     distinct_lane_ids_are_not_concurrency: true
     measure_peak_worker_processes_alive: true
@@ -70,7 +79,7 @@ execution_plan:
       phase: EXECUTE_SOURCE_CHECK
       state: READY
       parallel: true
-      executor: LOCAL_PROCESS_POOL_PLUS_CONTROL_ORCHESTRATOR_VALIDATION
+      executor: AUTOMATION_TOOL_LOCAL_PROCESS_POOL_PLUS_ORCHESTRATOR_VALIDATION
       parallel_scope: INDEPENDENT_CONTROLLER_OR_ENDPOINT_FAMILIES_ONLY
       max_parallel_lanes: 10
       batching_strategy: CONTROLLER_SERVICE_FAMILY
@@ -84,18 +93,20 @@ execution_plan:
       expected_result: worker/results/WI-0004.yaml
       result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
       execution_sequence:
-        - orchestrator selects safe independent not-yet-examined controller or endpoint families
-        - orchestrator writes authoritative lane-dispatch.yaml
-        - user or local scheduler fires automation/fire-local-lanes.ps1 against the local CylinderManagement checkout
+        - Orchestrator reads authoritative source/control state from GitHub or an in-sync local checkout
+        - Orchestrator selects safe independent not-yet-examined controller or endpoint families
+        - Orchestrator writes authoritative lane-dispatch.yaml
+        - Automation Tool fires the local process pool on the execution host
         - local executor verifies zero leftover lane logs and verifies the frozen source commit exists locally
         - local executor creates a temporary detached Git worktree at the exact frozen source commit without changing the active checkout
         - local executor starts up to ten independent OS worker processes
         - every worker logs INIT SERVICE CLOSE boundaries with exact task identity and reads only the temporary frozen-baseline worktree
         - local executor updates lane-status.yaml and local-execution.yaml from process state and heartbeat evidence
         - local executor measures peak worker-process overlap and peak/average SERVICE concurrency
-        - local executor aggregates evidence, verifies and deletes transient individual lane logs, and rescans to zero
+        - local executor aggregates evidence verifies and deletes transient individual lane logs and rescans to zero
         - local executor writes one durable lane-dispatch aggregate and closes local-execution.yaml
         - control Orchestrator validates endpoint-by-endpoint source evidence and updates canonical trace states
+        - Automation Tool synchronizes durable accepted SSOT/log/evidence changes back to GitHub
       evidence_rule: >-
         Each endpoint must still be traced independently to source-proved final dependency evidence. Local-worker dependency candidates are not final evidence until the control Orchestrator confirms the actual source call path. No naming inference or guessing is allowed.
       result_acceptance_rule: >-
