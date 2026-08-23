@@ -15,24 +15,28 @@ blockers:
       planning_blocked: false
       backlog_execution_globally_blocked: false
       qg_lane_001_effect: READY_FOR_MEASUREMENT_ON_VALID_HOST
-      latest_preflight_at_utc: 2026-08-23T14:29:22Z
+      latest_preflight_at_utc: 2026-08-23T15:25:56Z
       summary: >-
-        Production preflight stopped before lane start because the current execution host has no worker-readable
-        CylinderManagement checkout and no worker-readable CylindnderManagementDependcies control checkout.
+        Production preflight stopped before lane start because the current execution host has no accepted worker-readable
+        CylinderManagement Git checkout containing the frozen BL-001 commit and no accepted worker-readable control Git checkout.
       exact_missing_prerequisites:
-        - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement
-        - local_or_mounted_control_checkout_of_vvekselva/CylindnderManagementDependcies
+        - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement_containing_frozen_commit_3ae6e61442132d94a307275b08dd65fcef228d89
+        - local_or_mounted_Git_checkout_of_vvekselva/CylindnderManagementDependcies_with_approved_executor_worker_dispatch_and_fire_script
+        - provable_zero_leftover_individual_lane_logs_in_that_control_checkout
       proved_facts:
         - Git is available at /usr/bin/git.
         - Python 3 is available at /opt/pyvenv/bin/python3.
-        - No required source or control checkout was found in the execution-host filesystem search.
-        - Frozen commit verification was not reached because the source checkout is absent.
-        - Control executor/worker/dispatch verification and transient lane-log verification are not provable because the control checkout is absent.
+        - Two local smoke-test Git repositories were found at /mnt/data/_local_lane_test/source and /mnt/data/_local_lane_smoke2/source.
+        - Neither smoke-test source repository contains frozen commit 3ae6e61442132d94a307275b08dd65fcef228d89, so neither is accepted as the production CylinderManagement checkout.
+        - Two control-like smoke-test directories were found, but neither is an accepted control Git checkout and neither proves the complete approved production fire input set.
+        - Approved executor/worker/dispatch/fire-script provenance is not provable without a valid control Git checkout.
+        - Transient lane-log hygiene is not provable against the authoritative control checkout because that checkout is absent.
         - GitHub connector access is control-plane access and does not provide worker filesystem access.
         - Zero production lanes were started and zero BL-001 trace evidence was accepted.
       resolution_condition: >-
-        Make both repository checkouts worker-readable on the execution host, ensure the source checkout contains frozen commit
-        3ae6e61442132d94a307275b08dd65fcef228d89, then rerun production preflight.
+        Make valid source and control Git checkouts worker-readable on the execution host, ensure the source checkout contains frozen
+        commit 3ae6e61442132d94a307275b08dd65fcef228d89, prove the control checkout contains the approved fire inputs, prove zero leftover
+        individual lane logs, then rerun production preflight.
 
   resolved_platform_blockers:
     - id: PB-BL001-001
@@ -52,9 +56,10 @@ blockers:
     expected_concurrent_lanes: 10
     external_service_dependency: NONE
     prerequisite: >-
-      Worker-readable source and control checkouts must exist on the execution host; the source checkout must contain the frozen commit.
-      Git and Python 3 are already available on the current host.
-    next_action: MATERIALIZE_OR_MOUNT_SOURCE_AND_CONTROL_CHECKOUTS_THEN_RERUN_PREFLIGHT
+      Worker-readable valid source and control Git checkouts must exist on the execution host; the source checkout must contain the
+      frozen commit; the control checkout must prove approved production fire inputs and zero leftover transient lane logs. Git and
+      Python 3 are already available on the current host.
+    next_action: MATERIALIZE_OR_MOUNT_VALID_SOURCE_AND_CONTROL_GIT_CHECKOUTS_THEN_RERUN_PREFLIGHT
 
   active_evidence_gaps:
     - {id: EG-BL001-004, state: OPEN, affects_gate: QG-TRC-002, source_endpoint: POST /customer-spot-cylinder-check/submit, summary: Complete final database-object set for all submitSpotCheck branches is not yet proved.}
