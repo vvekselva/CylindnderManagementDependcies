@@ -1,0 +1,22 @@
+version: 1
+backlog_item: BL-001
+matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
+matrix_artifact: traceability/controller-traceability.md
+source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+state: INCREMENTAL_PARTIAL
+canonical_endpoint_inventory: 134
+canonical_accepted_examined: 37
+canonical_complete: 35
+canonical_unresolved: 2
+canonical_blocked: 0
+canonical_failed: 0
+canonical_not_yet_examined: 97
+materialized_matrix_rows: 10
+historical_accepted_rows_pending_backfill: 27
+latest_materialized_from_invocation: INVOCATION-20260823-160000
+update_rule: >-
+  Every newly accepted endpoint trace is immediately upserted into the matrix. Historical accepted traces may be
+  backfilled only from durable accepted evidence; counts must never be converted into invented rows.
+finalization_condition: >-
+  canonical accepted trace-result coverage is 100 percent, every caller-visible endpoint appears exactly once,
+  all row evidence references are valid at the frozen source baseline, and required traceability gates pass.
