@@ -1,6 +1,6 @@
 execution_plan:
   backlog_item: BL-001
-  version: 4
+  version: 5
   state: PLANNED
   generated_by: ORCHESTRATOR
   completion_path: backlog/paths/BL-001-traceability.yaml
@@ -16,14 +16,22 @@ execution_plan:
     statement_of_work_state: PASS
     note: >-
       This plan is revalidated against the three-level SSOT model. The user explicitly
-      authorized safe lane utilization and mandatory lifecycle boundary logging.
+      authorized safe lane utilization, mandatory lifecycle boundary logging, exact task
+      identity on START records, and invocation-boundary lane-log hygiene/aggregation.
 
   lifecycle_logging_policy:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
     effective_for_next_invocation: true
+    pre_invocation_lane_log_hygiene:
+      required: true
+      individual_lane_log_pattern: logs/runs/*-LANE-*.md
+      required_count_before_new_execution: 0
+      if_nonzero: RECOVERY_AGGREGATE_VERIFY_DELETE_ONLY_NO_NEW_EXECUTION
     orchestrator_event_order:
       - ORCHESTRATOR_INVOCATION_START
+      - ORCHESTRATOR_LOG_AGGREGATION_START
+      - ORCHESTRATOR_LOG_AGGREGATION_END
       - ORCHESTRATOR_INVOCATION_END
     lane_event_order:
       - LANE_INIT_START
@@ -34,14 +42,26 @@ execution_plan:
     blocked_before_service_exception: >-
       If LANE_INIT_END is BLOCKED_BEFORE_SERVICE, SERVICE_START/SERVICE_END are omitted;
       close() still executes and LANE_CLOSE_END remains mandatory.
+    lane_logs_are_transient: true
+    invocation_close_log_aggregation:
+      required: true
+      aggregate_target: logs/runs/<invocation-id>.md
+      shared_audit_target: logs/automation-log.md
+      verify_before_delete: true
+      delete_individual_lane_logs_after_verified_accumulation: true
+      required_individual_lane_log_count_after_cleanup: 0
+      invocation_end_requires_aggregation_pass: true
     fail_closed_rules:
+      - pre-invocation individual lane log count must be zero before new execution
       - invocation start log must persist before analysis/planning/assignment/execution
+      - every START log must contain exact task/task_description
       - lane INIT_START must persist before init executes
       - lane INIT_END INITIALIZED must persist before service may start
       - lane SERVICE_START must persist before service executes
       - SERVICE_END must persist after service returns
       - lane cannot be released until CLOSE_END or recovery-close persists
       - execution result is not accepted unless QG-LOG-001 reconciles required events
+      - invocation cannot close until all lane logs are accumulated verified deleted and zero remain
 
   invocation_utilization_policy:
     objective: MAXIMIZE_SAFE_PROGRESS_PER_COORDINATOR_INVOCATION
@@ -71,6 +91,7 @@ execution_plan:
       lane_assignment_ssot: backlog/runtime/BL-001/lane-status.yaml
       lifecycle_logging_contract: governance/execution-lifecycle-logging.yaml
       required_lane_events: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
+      lane_logs_transient_until_invocation_aggregation: true
       refill_released_lanes_within_same_invocation: true
       worker_input: worker/inputs/WI-0004.yaml
       expected_result: worker/results/WI-0004.yaml
@@ -116,4 +137,4 @@ execution_plan:
       outputs:
         - sync/source-artifact-sync-register.yaml
         - logs/automation-story.md
-      completion_rule: Source-artifact baseline registered, all required runs/logs closed, automatic gates pass, and required user acceptance is obtained.
+      completion_rule: Source-artifact baseline registered, all required runs/logs closed, lane-log aggregation clean, automatic gates pass, and required user acceptance is obtained.
