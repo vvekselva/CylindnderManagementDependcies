@@ -6,31 +6,27 @@ blockers:
 
   governance_blockers: []
 
-  active_evidence_gaps:
+  active_evidence_gaps: []
+
+  resolved_evidence_gaps:
     - id: EG-BL001-001
-      state: OPEN
-      blocks_planning: false
-      blocks_all_execution: false
+      state: RESOLVED
       affects_gate: QG-TRC-002
-      summary: Challan Type search final dependency is not yet proved.
-      last_proven_component: challanTypeSearchService
-      next_action: resolve the concrete Spring implementation, repository/query layer and final dependency from source evidence
+      summary: Challan Type search final dependency is proved.
+      resolution: ChallanTypeSearchService -> ChallanTypeJpaDao -> ChallanTypeDo -> public.tbl_challan_type
+      resolved_by_run: RUN-WI0004-20260823-025
     - id: EG-BL001-002
-      state: OPEN
-      blocks_planning: false
-      blocks_all_execution: false
+      state: RESOLVED
       affects_gate: QG-TRC-002
-      summary: City search final dependency is not yet proved.
-      last_proven_component: citySearchService
-      next_action: resolve the concrete Spring implementation, repository/query layer and final dependency from source evidence
+      summary: City search final dependency is proved.
+      resolution: CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city
+      resolved_by_run: RUN-WI0004-20260823-025
     - id: EG-BL001-003
-      state: OPEN
-      blocks_planning: false
-      blocks_all_execution: false
+      state: RESOLVED
       affects_gate: QG-TRC-002
-      summary: Country search final dependency is not yet proved.
-      last_proven_component: countrySearchService
-      next_action: resolve the concrete Spring implementation, repository/query layer and final dependency from source evidence
+      summary: Country search final dependency is proved.
+      resolution: CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country
+      resolved_by_run: RUN-WI0004-20260823-025
 
   remaining_work_constraint:
     state: OPEN
@@ -38,5 +34,6 @@ blockers:
     summary: 112 of 134 endpoint final-dependency traces remain not yet examined at the current canonical checkpoint.
 
   note: >-
-    This ledger makes Level 3 blocker/evidence-gap state explicit. Evidence gaps are not
-    treated as global execution blockers when independent trace work can continue.
+    There is currently no active evidence gap among the 22 examined endpoint traces. The
+    backlog remains open because 112 endpoints have not yet been examined. This remaining
+    work volume is not a global blocker and eligible source-check work may continue.
