@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cylinder Traceability Explorer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <div class="eyebrow">CylinderManagement Automation</div>
+      <h1>Traceability Explorer</h1>
+      <p class="subtitle">Browse the source-proved chain from HTTP endpoint to service, DAO/repository, entity/view and final DB/file/API dependency.</p>
+    </div>
+    <div class="header-actions">
+      <label class="file-button">Load Matrix
+        <input id="matrixFile" type="file" accept=".json,.md,.markdown,application/json,text/markdown,text/plain" />
+      </label>
+      <label class="file-button secondary">Load Logs
+        <input id="logFiles" type="file" multiple accept=".md,.markdown,text/markdown,text/plain" />
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <section id="summary" class="summary-grid" aria-label="Traceability summary"></section>
+
+    <section class="toolbar">
+      <input id="search" type="search" placeholder="Search endpoint, controller, service, DAO, entity, table/view..." />
+      <select id="stateFilter" aria-label="Filter by state">
+        <option value="ALL">All states</option>
+        <option value="COMPLETE">COMPLETE</option>
+        <option value="UNRESOLVED">UNRESOLVED</option>
+        <option value="BLOCKED">BLOCKED</option>
+        <option value="FAILED">FAILED</option>
+      </select>
+      <select id="methodFilter" aria-label="Filter by HTTP method"><option value="ALL">All methods</option></select>
+      <select id="sortBy" aria-label="Sort endpoints">
+        <option value="controller">Sort: Controller</option>
+        <option value="path">Sort: Path</option>
+        <option value="method">Sort: HTTP method</option>
+        <option value="state">Sort: State</option>
+        <option value="hops">Sort: Chain hops</option>
+      </select>
+      <button id="resetBtn" type="button">Reset</button>
+    </section>
+
+    <nav class="tabs" aria-label="Explorer views">
+      <button class="tab active" data-tab="endpoints">Endpoints</button>
+      <button class="tab" data-tab="components">Components</button>
+      <button class="tab" data-tab="dependencies">DB / Final Dependencies</button>
+      <button class="tab" data-tab="unresolved">Unresolved</button>
+      <button class="tab" data-tab="logs">Execution Logs</button>
+    </nav>
+
+    <section id="endpoints" class="tab-panel active"></section>
+    <section id="components" class="tab-panel"></section>
+    <section id="dependencies" class="tab-panel"></section>
+    <section id="unresolved" class="tab-panel"></section>
+    <section id="logs" class="tab-panel"></section>
+  </main>
+
+  <footer>
+    <strong>Viewer only.</strong> Canonical truth remains the GitHub SSOT and Orchestrator-accepted evidence. This page never promotes worker output or edits trace state.
+  </footer>
+
+  <script src="matrix-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
