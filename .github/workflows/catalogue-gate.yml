@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - chore/rename-dependency-files
   pull_request:
     branches:
       - main
