@@ -1,0 +1,64 @@
+lane_status:
+  version: 1
+  backlog_item: BL-001
+  authoritative: true
+  purpose: >-
+    Provide the single point of truth for what each orchestration lane is doing now.
+    This file records current lane assignment, task, Worker Input, run, heartbeat,
+    blocker and release state. Historical run logs do not replace this live runtime SSOT.
+
+  current_backlog_state: PARTIAL
+  current_work_unit: WU-BL001-001
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  last_reconciled_attempt: 25
+  last_reconciled_run: RUN-WI0004-20260823-025
+
+  policy:
+    one_active_job_per_lane: true
+    coordinator_is_not_a_lane: true
+    generic_worker_consumes_orchestration_lane: false
+    valid_states:
+      - IDLE
+      - ASSIGNED
+      - INITIALIZING
+      - WORKING
+      - BLOCKED
+      - WAITING
+      - CLOSING
+      - STALE
+    assignment_requirements:
+      - non-IDLE lane must identify its work_unit and task
+      - WORKING lane must identify its run_id and last_heartbeat
+      - BLOCKED lane must contain a plain-English blocker
+      - a CLOSED run must release its lane unless another assignment has already replaced it
+      - summary counts must reconcile exactly to the ten lane records
+
+  lanes:
+    LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-02: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-03: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-05: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-06: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-07: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-08: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-09: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-10: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+
+  summary:
+    total_lanes: 10
+    idle: 10
+    assigned: 0
+    initializing: 0
+    working: 0
+    blocked: 0
+    waiting: 0
+    closing: 0
+    stale: 0
+    active_lane_count: 0
+
+  current_interpretation: >-
+    No orchestration lane is actively executing at this checkpoint. WI-0004 Attempt 25 is
+    CLOSED/PARTIAL, so all lanes are released between scheduled invocations. BL-001 remains
+    active through WU-BL001-001, and the next coordinator cycle may assign independent
+    endpoint/controller-family tracing tasks to available lanes after dependency and scope checks.
