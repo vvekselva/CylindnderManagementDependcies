@@ -33,6 +33,10 @@ def nonempty(value: Any) -> bool:
     return True
 
 
+def normalized_text(value: Any) -> str:
+    return ' '.join(str(value or '').split())
+
+
 def fail(errors: list[str], msg: str) -> None:
     errors.append(msg)
 
@@ -72,7 +76,7 @@ def main() -> int:
             'expected_outputs', 'runtime'
         ]
         for field in l1_required:
-            if field not in item or not nonempty(item.get(field)) and field not in {'dependencies'}:
+            if field not in item or (not nonempty(item.get(field)) and field not in {'dependencies'}):
                 fail(errors, f'{backlog_id}: SSOT-L1 missing/empty {field}')
 
         definition_path = item.get('item_definition')
@@ -90,13 +94,17 @@ def main() -> int:
 
         if definition_path and (ROOT / definition_path).is_file():
             definition = load_yaml(definition_path).get('backlog_definition', {})
-            for field in ['id', 'name', 'purpose', 'statement_of_work', 'target', 'scope', 'dependencies', 'deliverables', 'acceptance_criteria', 'completion_path', 'quality_gate', 'runtime']:
+            for field in ['id', 'name', 'type', 'purpose', 'statement_of_work', 'target', 'scope', 'dependencies', 'deliverables', 'acceptance_criteria', 'completion_path', 'quality_gate', 'runtime']:
                 if not nonempty(definition.get(field)):
                     fail(errors, f'{backlog_id}: SSOT-L2 definition missing/empty {field}')
-            if definition.get('id') != backlog_id:
-                fail(errors, f'{backlog_id}: SSOT-L2 definition ID mismatch')
-            if definition.get('name') != item.get('name'):
-                fail(errors, f'{backlog_id}: SSOT-L2 definition name mismatch')
+            for field in ['id', 'name', 'type']:
+                if definition.get(field) != item.get(field):
+                    fail(errors, f'{backlog_id}: SSOT-L2 definition {field} mismatch')
+            if normalized_text(definition.get('purpose')) != normalized_text(item.get('purpose')):
+                fail(errors, f'{backlog_id}: SSOT-L2 definition purpose mismatch')
+            for field in ['statement_of_work', 'completion_path', 'quality_gate', 'runtime']:
+                if definition.get(field) != item.get(field):
+                    fail(errors, f'{backlog_id}: SSOT-L2 definition {field} does not match Level 1')
 
         if sow_path and (ROOT / sow_path).is_file():
             sow = load_yaml(sow_path).get('statement_of_work', {})
