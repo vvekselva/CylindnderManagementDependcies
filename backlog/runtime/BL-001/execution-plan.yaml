@@ -1,34 +1,49 @@
 execution_plan:
   backlog_item: BL-001
-  version: 9
+  version: 10
   state: PLANNED
   generated_by: ORCHESTRATOR
   completion_path: backlog/paths/BL-001-traceability.yaml
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  architecture: architecture/self-reliant-e2e-execution.md
+  self_reliant_governance: governance/self-reliant-execution.yaml
 
   architecture_separation:
     github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
-    automation_tool_role: ORCHESTRATION_AND_EXECUTION_ENGINE
+    automation_tool_role: ORCHESTRATION_SOURCE_STAGING_EXECUTION_RECOVERY_VALIDATION_AND_SYNC
     execution_backend: LOCAL_PROCESS_POOL
+    default_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    fallback_source_provider: LOCAL_GIT_CHECKOUT
     github_actions_required: false
-    rule: >-
-      GitHub stores/version-controls source and control SSOT and receives synchronized results after execution. The Automation Tool owns planning, dispatch, local worker execution, lifecycle logging, aggregation, evidence validation and synchronization.
+    preexisting_local_source_checkout_required: false
 
   planning_authorization:
     gate: QG-SSOT-001
     state: PASS
     level_1: COMPLETE
     level_2: COMPLETE
-    level_3: COMPLETE
+    level_3: COMPLETE_AFTER_SELF_RELIANT_RECONCILIATION
     statement_of_work_gate: QG-SOW-001
     statement_of_work_state: PASS
-    user_authorized_change: TOOL_EXECUTES_GITHUB_IS_VCS
+
+  source_execution_policy:
+    source_gate: QG-SOURCE-001
+    governance: governance/source-provider.yaml
+    source_layout: repository/source-layout.yaml
+    staged_executor: automation/staged-lane-executor-v3.py
+    staged_worker: automation/staged-lane-worker-v3.py
+    source_stage_max_iterations: 8
+    source_requests: [missing_source_requests, missing_binding_requests]
+    source_closure_success: SOURCE_CLOSURE_COMPLETE
+    source_stall_state: SOURCE_RESOLUTION_STALLED
+    interface_binding_requires_source_validation: true
+    worker_has_github_credentials: false
 
   lifecycle_logging_policy:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
-    every_start_requires_exact_task: true
     worker_required_events: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
+    heartbeat_required: true
     individual_lane_logs_transient: true
     invocation_aggregate_required: true
     transient_lane_logs_deleted_after_verified_aggregation: true
@@ -39,36 +54,37 @@ execution_plan:
     authoritative_dispatch_ssot: backlog/runtime/BL-001/lane-dispatch.yaml
     execution_status_ssot: backlog/runtime/BL-001/local-execution.yaml
     backend: LOCAL_PROCESS_POOL
-    executor: automation/local-lane-executor.py
-    worker: automation/local-lane-worker.py
-    windows_fire_script: automation/fire-local-lanes.ps1
-    source_repository: vvekselva/CylinderManagement
-    source_checkout_mode: TEMPORARY_DETACHED_GIT_WORKTREE_AT_FROZEN_COMMIT
     configured_lanes: 10
     max_parallel_workers: 10
-    external_service_dependency: NONE
-    github_actions_dependency: NONE
     expected_concurrency_formula: min(configured_lanes, safe_ready_tasks)
-    distinct_lane_ids_are_not_concurrency: true
-    measure_peak_worker_processes_alive: true
-    measure_peak_service_concurrent_lanes: true
-    measure_average_service_concurrent_lanes: true
+    natural_service_overlap_is_gate_metric: true
+    artificial_delay_to_pass_gate_prohibited: true
+    backend_capacity_probe_peak: 10
     worker_role: READ_ONLY_SOURCE_EVIDENCE_COLLECTION
-    final_trace_decision_owner: CONTROL_REPOSITORY_ORCHESTRATOR
+    final_trace_decision_owner: PRIMARY_ORCHESTRATOR
+
+  recovery_and_idempotency_policy:
+    gate: QG-RECOVERY-001
+    execution_journal_required: true
+    dispatch_fingerprint_required: true
+    same_fingerprint_pending_sync: RETRY_SYNC_ONLY
+    same_fingerprint_closed_waiting_validation: VALIDATE_EXISTING_EVIDENCE
+    interrupted_running_no_live_workers: RECOVER_AND_REJECT_PARTIAL_OUTPUT
+    changed_fingerprint: START_NEW_EXECUTION_GENERATION
+    already_closed_synced: NOOP_ALREADY_COMMITTED
 
   invocation_utilization_policy:
-    objective: MAXIMIZE_MEASURED_SAFE_LOCAL_CONCURRENCY
+    objective: MAXIMIZE_NATURAL_SAFE_LOCAL_CONCURRENCY
     one_primary_coordinator: true
     one_active_backlog_item: true
     fixed_small_endpoint_batch_limit: false
     fill_available_real_workers_when_safe: true
-    reuse_proved_relationships_only_when_source_confirms_same_path: true
     stop_conditions:
       - NO_ELIGIBLE_INDEPENDENT_WORK_REMAINS
       - HARD_BLOCKER_PREVENTS_FURTHER_ELIGIBLE_WORK
-      - RESOURCE_OR_SHARED_FILE_LOCK_PREVENTS_SAFE_PARALLELISM
-      - LOCAL_SOURCE_CHECKOUT_NOT_AVAILABLE
-      - FROZEN_SOURCE_COMMIT_NOT_AVAILABLE_LOCALLY
+      - SOURCE_RESOLUTION_STALLED
+      - SOURCE_RESOLUTION_LIMIT_REACHED
+      - SOURCE_INTEGRITY_OR_BINDING_FAILURE
       - LOCAL_WORKER_EXECUTION_FAILED
       - INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED
       - WORK_UNIT_COMPLETION_BOUNDARY_REACHED
@@ -79,38 +95,40 @@ execution_plan:
       phase: EXECUTE_SOURCE_CHECK
       state: READY
       parallel: true
-      executor: AUTOMATION_TOOL_LOCAL_PROCESS_POOL_PLUS_ORCHESTRATOR_VALIDATION
+      executor: AUTOMATION_TOOL_SELF_RELIANT_SOURCE_STAGER_PLUS_LOCAL_PROCESS_POOL_PLUS_ORCHESTRATOR_VALIDATION
       parallel_scope: INDEPENDENT_CONTROLLER_OR_ENDPOINT_FAMILIES_ONLY
       max_parallel_lanes: 10
-      batching_strategy: CONTROLLER_SERVICE_FAMILY
       lane_assignment_ssot: backlog/runtime/BL-001/lane-status.yaml
       lane_dispatch_ssot: backlog/runtime/BL-001/lane-dispatch.yaml
       local_execution_ssot: backlog/runtime/BL-001/local-execution.yaml
-      real_worker_governance: governance/lane-execution.yaml
-      real_lane_gate: QG-LANE-001
-      lifecycle_logging_contract: governance/execution-lifecycle-logging.yaml
       worker_input: worker/inputs/WI-0004.yaml
       expected_result: worker/results/WI-0004.yaml
       result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
       execution_sequence:
-        - Orchestrator reads authoritative source/control state from GitHub or an in-sync local checkout
+        - Orchestrator reads authoritative Level 1/2/3 state and inspects any prior execution journal
+        - recovery/idempotency rules decide sync-only validation-reuse recovery no-op or new execution
         - Orchestrator selects safe independent not-yet-examined controller or endpoint families
-        - Orchestrator writes authoritative lane-dispatch.yaml
-        - Automation Tool fires the local process pool on the execution host
-        - local executor verifies zero leftover lane logs and verifies the frozen source commit exists locally
-        - local executor creates a temporary detached Git worktree at the exact frozen source commit without changing the active checkout
-        - local executor starts up to ten independent OS worker processes
-        - every worker logs INIT SERVICE CLOSE boundaries with exact task identity and reads only the temporary frozen-baseline worktree
-        - local executor updates lane-status.yaml and local-execution.yaml from process state and heartbeat evidence
-        - local executor measures peak worker-process overlap and peak/average SERVICE concurrency
-        - local executor aggregates evidence verifies and deletes transient individual lane logs and rescans to zero
-        - local executor writes one durable lane-dispatch aggregate and closes local-execution.yaml
-        - control Orchestrator validates endpoint-by-endpoint source evidence and updates canonical trace states
-        - Automation Tool synchronizes durable accepted SSOT/log/evidence changes back to GitHub
+        - Orchestrator writes authoritative lane-dispatch.yaml and dispatch fingerprint
+        - Source Provider Manager prefers ORCHESTRATOR_STAGED_SNAPSHOT
+        - Orchestrator resolves controller/source requests through repository/source-layout.yaml and fetches exact files at the frozen commit
+        - staged snapshot manifest records repository baseline path Git blob SHA and source bindings
+        - QG-SOURCE-001 verifies all controller roots before discovery SERVICE
+        - staged executor starts up to ten independent OS worker processes
+        - workers verify blobs/bindings and emit lifecycle heartbeat and evidence only
+        - workers return explicit missing_source_requests and missing_binding_requests
+        - Orchestrator stages/rebinds exact requests and repeats discovery while the request set changes and source closure advances
+        - source loop stops successfully only at SOURCE_CLOSURE_COMPLETE or fail-closed on stall/iteration limit
+        - executor aggregates lifecycle/evidence deletes transient lane logs and rescans to zero
+        - QG-LANE-001 records natural SERVICE overlap separately from source correctness
+        - Primary Orchestrator validates endpoint-by-endpoint source evidence and updates canonical trace states only when proved
+        - accepted runtime/evidence is synchronized to GitHub; sync failure becomes PENDING_SYNC without worker rerun
       evidence_rule: >-
-        Each endpoint must still be traced independently to source-proved final dependency evidence. Local-worker dependency candidates are not final evidence until the control Orchestrator confirms the actual source call path. No naming inference or guessing is allowed.
+        Each endpoint is traced independently to source-proved final dependency evidence. Source/binding candidates are not
+        final evidence until the Primary Orchestrator confirms the actual call path. No naming inference or guessing is allowed.
       result_acceptance_rule: >-
-        Canonical Source Check result is accepted only when its run is CLOSED, result contract validates, QG-LOG-001 is satisfied and endpoint trace-result coverage reaches 100 percent. QG-LANE-001 governs claims of real parallel utilization; correct source evidence remains usable if utilization is under target.
+        Canonical Source Check result is accepted only when its run is CLOSED, result contract validates, QG-LOG-001 is
+        satisfied and endpoint trace-result coverage reaches 100 percent. QG-SOURCE-001 controls source integrity/closure;
+        QG-LANE-001 controls parallel-utilization claims; neither auto-accepts trace results.
       completion_rule: Worker result COMPLETED, run CLOSED, contract valid, lifecycle logging valid, coverage 100 percent.
 
     - id: WU-BL001-002
