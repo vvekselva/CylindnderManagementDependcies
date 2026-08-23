@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 env:
   DISPATCH_FILE: backlog/runtime/BL-001/lane-dispatch.yaml
@@ -37,13 +38,13 @@ jobs:
           python - <<'PY'
           import json, os, yaml
           from pathlib import Path
-          p = Path(os.environ['DISPATCH_FILE'])
-          d = yaml.safe_load(p.read_text())['lane_dispatch']
-          tasks = [t for t in d.get('tasks', []) if t.get('status') == 'READY' and t.get('safe_independent') is True]
-          tasks = tasks[:10]
+          d = yaml.safe_load(Path(os.environ['DISPATCH_FILE']).read_text())['lane_dispatch']
+          tasks = [t for t in d.get('tasks', []) if t.get('status') == 'READY' and t.get('safe_independent') is True][:10]
+          lanes = [t['lane'] for t in tasks]
+          if len(lanes) != len(set(lanes)):
+              raise SystemExit('Duplicate lane assignment in one matrix batch')
           include = [{'lane': t['lane'], 'task_id': t['task_id']} for t in tasks]
-          out = os.environ['GITHUB_OUTPUT']
-          with open(out, 'a', encoding='utf-8') as fh:
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as fh:
               fh.write('matrix=' + json.dumps({'include': include}, separators=(',', ':')) + '\n')
               fh.write('task_count=' + str(len(include)) + '\n')
               fh.write('source_baseline=' + str(d['source_baseline']) + '\n')
@@ -89,14 +90,14 @@ jobs:
             --task-id "$TASK_ID" \
             --source-root source \
             --output-dir "$OUT"
-      - name: Upload isolated lane result
+      - name: Upload transient isolated lane result
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lane-result-${{ matrix.lane }}-${{ matrix.task_id }}
           path: out/${{ matrix.lane }}-${{ matrix.task_id }}/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
 
   summarize:
     needs: [prepare, worker]
@@ -111,25 +112,42 @@ jobs:
           python-version: '3.12'
       - name: Install YAML parser
         run: python -m pip install --quiet pyyaml
-      - name: Download lane artifacts
+      - name: Download transient lane artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: lane-result-*
           path: downloaded-lane-results
-      - name: Calculate real concurrency
+      - name: Verify expected lane results and calculate real concurrency
         env:
           TASK_COUNT: ${{ needs.prepare.outputs.task_count }}
         run: |
+          FOUND=$(find downloaded-lane-results -name lane-result.yaml -type f | wc -l | tr -d ' ')
+          test "$FOUND" = "$TASK_COUNT"
           python automation/lane-summary.py \
             --results-root downloaded-lane-results \
             --output-dir lane-summary \
             --configured-lanes 10 \
             --eligible-tasks "$TASK_COUNT"
-      - name: Upload lane concurrency summary
-        if: always()
+          mkdir -p lane-summary/lanes
+          cp -R downloaded-lane-results/. lane-summary/lanes/
+      - name: Upload durable aggregated lane evidence
         uses: actions/upload-artifact@v4
         with:
-          name: lane-dispatch-summary
+          name: lane-dispatch-aggregate
           path: lane-summary/
           if-no-files-found: error
           retention-days: 14
+      - name: Delete transient individual lane artifacts after verified aggregation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          IDS=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" --paginate \
+            --jq '.artifacts[] | select(.name | startswith("lane-result-")) | .id')
+          for id in $IDS; do
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}"
+          done
+          REMAIN=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" --paginate \
+            --jq '[.artifacts[] | select(.name | startswith("lane-result-"))] | length')
+          test "$REMAIN" = "0"
+          echo "Transient lane artifacts remaining: $REMAIN"
