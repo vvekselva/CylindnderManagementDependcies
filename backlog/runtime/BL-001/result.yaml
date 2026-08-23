@@ -5,14 +5,26 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_construction_unlocked: false
-  latest_attempt: 27
-  latest_invocation: INVOCATION-20260823-160000
+  latest_accepted_trace_attempt: 27
+  latest_accepted_trace_invocation: INVOCATION-20260823-160000
+  latest_coordinator_invocation: INVOCATION-20260823-175300
+  latest_coordinator_result: PARTIAL_PLATFORM_WAIT
   lifecycle_gate:
     id: QG-LOG-001
     state: PASS
-    preflight_individual_lane_logs: 0
-    post_aggregation_individual_lane_logs: 0
-    aggregation_result: PASS
+    preflight_individual_repo_lane_logs: 0
+    post_invocation_individual_repo_lane_logs: 0
+  lane_utilization_gate:
+    id: QG-LANE-001
+    state: BLOCKED_PLATFORM
+    dispatch_id: MATRIX-BL001-DISPATCH-003
+    source_dispatch_generation: 3
+    source_dispatch_id: MATRIX-BL001-SOURCE-003
+    expected_concurrent_lanes: 10
+    external_workflow_run_id: null
+    measured_peak_concurrent_lanes: null
+    measured_average_concurrent_lanes: null
+    durable_aggregate_available: false
   checkpoint:
     total_endpoints: 134
     examined: 37
@@ -22,20 +34,22 @@ result:
     failed: 0
     not_yet_examined: 97
   unresolved_items:
-    - source_endpoint: POST /customer-spot-cylinder-check/submit
-      evidence_gap: Complete database-object set across all submitSpotCheck branches is not yet source-proved.
-    - source_endpoint: POST /walkin-sale
-      evidence_gap: Complete database-object set across all conditional processRequest branches is not yet source-proved.
-  latest_attempt_additions:
-    examined: 10
-    complete: 10
-    unresolved: 0
-    areas: [LoginController, OfflineMapController, PredefinedDeliveryTripController]
+    - {source_endpoint: POST /customer-spot-cylinder-check/submit, evidence_gap: Complete database-object set across all submitSpotCheck branches is not yet source-proved.}
+    - {source_endpoint: POST /walkin-sale, evidence_gap: Complete database-object set across all conditional processRequest branches is not yet source-proved.}
+  current_matrix_dispatch:
+    control_queue: backlog/runtime/BL-001/lane-dispatch.yaml
+    tasks: 10
+    safe_independent: 10
+    source_copy_verified: true
+    source_workflow_installed: true
+    source_workflow_started_with_evidence: false
+    worker_evidence_consumed: false
   final_outputs: []
   next_action: >-
-    Resolve the two explicit POST evidence gaps, then continue lifecycle-logged source tracing for the
-    remaining 97 endpoints. Keep Matrix construction locked until the canonical WI-0004 source check
-    result is CLOSED, COMPLETED, contract-valid and has 100 percent endpoint trace-result coverage.
+    Verify source-repository GitHub Actions policy/availability, obtain a real source workflow run ID and
+    durable lane-dispatch-aggregate, evaluate measured concurrency under QG-LANE-001, then validate each
+    worker endpoint path against the frozen source baseline before changing any trace state. Do not start
+    WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage and its result contract passes.
   note: >-
-    This is the current backlog runtime result, not the final BL-001 closure result. VERIFIED and CLOSED
-    remain false until all required Traceability gates and user acceptance pass.
+    BL-001 remains PARTIAL. The matrix dispatch synchronization is valid framework progress but produced no
+    new endpoint trace result. VERIFIED/CLOSED remain false and QG-TRC-015 user acceptance is still required.
