@@ -1,11 +1,12 @@
 lane_status:
-  version: 2
+  version: 3
   backlog_item: BL-001
   authoritative: true
   purpose: >-
     Provide the single point of truth for what each orchestration lane is doing now.
     This file records current lane assignment, task, Worker Input, run, heartbeat,
-    blocker and release state. Historical run logs do not replace this live runtime SSOT.
+    blocker, lifecycle-log boundary and release state. Historical run logs do not replace
+    this live runtime SSOT.
 
   current_backlog_state: PARTIAL
   current_work_unit: WU-BL001-001
@@ -14,6 +15,23 @@ lane_status:
   last_reconciled_run: RUN-WI0004-20260823-025
   invocation_state: BETWEEN_INVOCATIONS
   current_idle_reason: LAST_RECONCILED_RUN_CLOSED_NO_ACTIVE_COORDINATOR_INVOCATION
+
+  lifecycle_logging:
+    contract: governance/execution-lifecycle-logging.yaml
+    gate: QG-LOG-001
+    effective_for_next_invocation: true
+    invocation_start_required_before_analysis_or_execution: true
+    required_lane_event_order:
+      - LANE_INIT_START
+      - LANE_INIT_END
+      - LANE_SERVICE_START
+      - LANE_SERVICE_END
+      - LANE_CLOSE_END
+    blocked_before_service_exception: >-
+      SERVICE_START and SERVICE_END are omitted only when LANE_INIT_END is
+      BLOCKED_BEFORE_SERVICE. close() and LANE_CLOSE_END remain mandatory.
+    lane_release_requires_persisted_close_log: true
+    result_acceptance_requires_qg_log_001: true
 
   utilization_policy:
     objective: MAXIMIZE_SAFE_PROGRESS_PER_COORDINATOR_INVOCATION
@@ -40,34 +58,31 @@ lane_status:
     one_active_job_per_lane: true
     coordinator_is_not_a_lane: true
     generic_worker_consumes_orchestration_lane: false
-    valid_states:
-      - IDLE
-      - ASSIGNED
-      - INITIALIZING
-      - WORKING
-      - BLOCKED
-      - WAITING
-      - CLOSING
-      - STALE
+    valid_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
     assignment_requirements:
       - non-IDLE lane must identify its work_unit and task
       - WORKING lane must identify its run_id and last_heartbeat
       - BLOCKED lane must contain a plain-English blocker
-      - a CLOSED run must release its lane unless another assignment has already replaced it
+      - LANE_INIT_START must exist before init executes
+      - LANE_INIT_END must be persisted immediately after init
+      - service may start only after persisted LANE_INIT_END equals INITIALIZED
+      - LANE_SERVICE_START must exist before service executes
+      - LANE_SERVICE_END must be persisted immediately after service
+      - LANE_CLOSE_END or recovery-close must exist before lane release/reuse
       - summary counts must reconcile exactly to the ten lane records
       - during an active invocation the coordinator should fill and refill safe independent lanes while eligible work remains
 
   lanes:
-    LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-02: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-03: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-05: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-06: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-07: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-08: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-09: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
-    LANE-10: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
+    LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-02: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-03: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-05: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-06: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-07: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-08: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-09: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-10: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
 
   summary:
     total_lanes: 10
@@ -82,9 +97,9 @@ lane_status:
     active_lane_count: 0
 
   current_interpretation: >-
-    No orchestration lane is actively executing at this checkpoint because WI-0004 Attempt 25
-    is CLOSED/PARTIAL and no coordinator invocation is currently active. This BETWEEN_INVOCATIONS
-    idle state is valid. During the next active coordinator invocation, BL-001 / WU-BL001-001
-    should partition eligible independent controller/endpoint families across available lanes,
-    fill safe capacity up to ten lanes, and refill released lanes within the same invocation while
-    eligible work remains. The coordinator must not intentionally stop after a fixed three-endpoint batch.
+    No orchestration lane is actively executing because Attempt 25 is CLOSED/PARTIAL and
+    no coordinator invocation is currently active. This BETWEEN_INVOCATIONS idle state is valid.
+    During the next invocation the coordinator must first persist ORCHESTRATOR_INVOCATION_START,
+    then assign eligible independent controller/endpoint families. Every assigned lane must follow
+    the mandatory INIT/SERVICE/CLOSE log boundaries, and a lane may be refilled only after its
+    persisted LANE_CLOSE_END or recovery-close record exists.
