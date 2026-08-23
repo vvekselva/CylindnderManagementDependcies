@@ -1,56 +1,52 @@
-version: 2
+version: 3
 name: Real Lane Dispatch And Utilization Governance
 purpose: >-
-  Convert orchestration lanes from logical labels into measurable independent worker executions.
-  The authoritative queue remains in the control repository, while the actual GitHub Actions matrix
-  executes source-locally in the private CylinderManagement repository so its repository-scoped token
-  can read the frozen source baseline without a cross-repository PAT.
+  Convert orchestration lanes from logical labels into measurable independent local OS worker executions without depending on GitHub Actions or another external worker service.
 
 worker_backend:
-  type: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
+  type: LOCAL_PROCESS_POOL
   control_repository: vvekselva/CylindnderManagementDependcies
   queue_ssot: backlog/runtime/<BL-ID>/lane-dispatch.yaml
+  lane_state_ssot: backlog/runtime/<BL-ID>/lane-status.yaml
+  execution_ssot: backlog/runtime/<BL-ID>/local-execution.yaml
   source_repository: vvekselva/CylinderManagement
-  source_execution_branch: automation/lane-matrix
-  source_dispatch_copy: automation/lane-dispatch.yaml
-  source_run_status: automation/matrix-execution.yaml
-  source_workflow: .github/workflows/lane-matrix-dispatch.yml
   max_parallel_workers: 10
-  source_worker_script: automation/lane-worker.py
-  source_summary_script: automation/lane-summary.py
-  source_evidence_only: true
+  executor_script: automation/local-lane-executor.py
+  worker_script: automation/local-lane-worker.py
+  windows_fire_script: automation/fire-local-lanes.ps1
+  external_service_dependency: NONE
   final_trace_decision_owner: CONTROL_REPOSITORY_ORCHESTRATOR
 
-synchronization_rule: >-
-  The control-repository lane-dispatch.yaml is authoritative. Before a batch is executed, the
-  Orchestrator copies the approved task set and frozen source baseline into the source execution
-  branch dispatch file. The source copy must identify the control dispatch ID and is execution input
-  only; it may not redefine backlog scope or final trace decisions.
-
-authentication_rule: >-
-  A repository-scoped GitHub Actions token cannot read a different private repository. Therefore the
-  control-side matrix auto-trigger is retired. The private-source matrix must run inside
-  vvekselva/CylinderManagement. No PAT or new secret is required when source-repository Actions are enabled.
+source_baseline_rule: >-
+  The executor never changes the user's active source checkout. It verifies that the frozen commit exists and creates a temporary detached Git worktree at the exact source baseline. All local lane workers read that worktree concurrently and the worktree is removed after closure.
 
 safety_rules:
-  - source execution branch was created from the frozen source baseline
-  - each worker separately checks out the exact frozen baseline into its source-baseline working directory
-  - workers are read-only against the frozen application source
-  - execution bridge files live only on automation/lane-matrix and do not change the frozen baseline commit
+  - every dispatched task must be READY and safe_independent=true
+  - local workers are read-only against the temporary frozen-baseline worktree
   - workers must not modify application source or shared control files
-  - each matrix job owns only its transient artifact
-  - source evidence collected by a worker is not automatically a COMPLETE trace
-  - the control Orchestrator validates endpoint-by-endpoint call paths and may preserve UNRESOLVED
+  - one task is assigned to one lane for one execution
+  - every worker writes INIT SERVICE CLOSE lifecycle evidence with exact task identity
+  - worker evidence does not automatically classify an endpoint COMPLETE
+  - the primary Orchestrator validates endpoint-by-endpoint call paths and may preserve UNRESOLVED
   - no table/view/service dependency may be accepted from naming alone
+  - individual lane logs are transient and must be aggregated, verified and deleted before invocation closure
+  - local-execution.yaml and lane-status.yaml must be synchronized with OS process state and measured results
+
+logging_and_boundary_rules:
+  preflight: individual logs/runs/*-LANE-*.md count must be zero before fire
+  during_execution: one transient lane log per local worker is allowed
+  closure: aggregate all lane logs into the durable invocation log, verify representation, delete lane logs, rescan to zero
+  gate: QG-LOG-001
 
 metrics:
   configured_lanes: 10
   expected_concurrent_lanes_formula: min(configured_lanes, eligible_independent_tasks)
-  distinct_lanes_used: number of different lane IDs that actually produced worker results
-  peak_concurrent_lanes: maximum overlapping worker execution intervals
-  average_concurrent_lanes: aggregate worker execution seconds / matrix wall-clock seconds
-  distinct_lane_participation_percentage: distinct_lanes_used / configured_lanes * 100
-  peak_capacity_utilization_percentage: peak_concurrent_lanes / configured_lanes * 100
+  distinct_lanes_used: number of different lane IDs that produced worker results
+  peak_worker_processes_alive: maximum overlapping worker process intervals
+  average_worker_processes_alive: aggregate worker process seconds / worker batch wall-clock seconds
+  peak_service_concurrent_lanes: maximum overlapping LANE_SERVICE_START to LANE_SERVICE_END intervals
+  average_service_concurrent_lanes: aggregate service seconds / service batch wall-clock seconds
+  peak_service_capacity_utilization_percentage: peak_service_concurrent_lanes / configured_lanes * 100
 
 quality_gate:
   id: QG-LANE-001
@@ -58,26 +54,19 @@ quality_gate:
   owner: ORCHESTRATOR
   category: PERFORMANCE_GOVERNANCE
   pass_condition: >-
-    When two or more safe independent tasks are dispatchable, the source-local matrix execution
-    reaches expected safe concurrency, or a concrete GitHub runner/platform concurrency cap is recorded
-    and the measured peak reaches that cap. Fewer than two independent tasks require no artificial parallelism.
-  blocked_before_measurement_condition: >-
-    The source-local GitHub Actions workflow does not start, or workers cannot reach service because of
-    repository Actions policy/availability. In this state QG-LANE-001 is BLOCKED_PLATFORM and no real
-    utilization claim is made.
+    When two or more safe independent tasks are dispatchable, measured peak SERVICE concurrency reaches expected safe concurrency. Fewer than two independent tasks require no artificial parallelism.
+  ready_before_measurement_condition: >-
+    The local executor and worker scripts exist, the dispatch queue is valid, the source repository path is available, the frozen commit exists locally, and zero transient lane logs remain. In this state QG-LANE-001 is READY_FOR_MEASUREMENT until a fire occurs.
   underutilized_condition: >-
-    peak_concurrent_lanes is below expected safe concurrency and no dependency, resource lock,
-    runner-capacity limit or platform limit explains the shortfall.
+    peak_service_concurrent_lanes is below expected safe concurrency and no dependency, CPU/process/resource limit or source-lock constraint explains the shortfall.
   fail_closed_for_parallelism_claim: true
   does_not_invalidate_source_evidence: true
   on_underutilized: >-
-    Preserve valid worker evidence, mark LANE_UNDERUTILIZED, record the exact concurrency gap, and
-    correct dispatch/runner capacity before claiming the utilization problem solved.
+    Preserve valid worker evidence, mark LANE_UNDERUTILIZED, record the measured concurrency gap, and correct local process capacity or dispatch before claiming the utilization problem solved.
 
 artifact_contract:
-  worker_artifact_pattern: lane-result-<lane>-<task-id>
-  required_worker_files: [lane-result.yaml, lane-evidence.md, lane-lifecycle.md]
-  durable_aggregate_artifact: lane-dispatch-aggregate
-  summary_files: [lane-dispatch-summary.yaml, lane-dispatch-summary.md]
-  source_run_status_file: automation/matrix-execution.yaml
-  transient_individual_artifacts_deleted_after_verified_aggregation: true
+  durable_invocation_log: logs/runs/LOCAL-BL001-<timestamp>.md
+  durable_aggregate: worker/evidence/LOCAL-BL001-<timestamp>/lane-dispatch-aggregate.yaml
+  summary_file: worker/evidence/LOCAL-BL001-<timestamp>/lane-dispatch-summary.md
+  execution_status_file: backlog/runtime/BL-001/local-execution.yaml
+  transient_individual_lane_logs_deleted_after_verified_aggregation: true
