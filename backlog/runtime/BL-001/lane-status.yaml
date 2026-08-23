@@ -1,24 +1,29 @@
 lane_status:
-  version: 8
+  version: 9
   backlog_item: BL-001
   authoritative: true
   current_backlog_state: PARTIAL
   current_work_unit: WU-BL001-001
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  last_reconciled_attempt: 26
-  last_reconciled_run: INVOCATION-20260823-145512
-  invocation_state: ACTIVE
-  current_invocation: INVOCATION-20260823-160000
-  current_idle_reason: SAFE_CAPACITY_SELECTION_IN_PROGRESS
+  last_reconciled_attempt: 27
+  last_reconciled_run: INVOCATION-20260823-160000
+  invocation_state: BETWEEN_INVOCATIONS
+  current_invocation: null
+  current_idle_reason: ATTEMPT_27_CLOSED_RUNTIME_SYNCHRONIZED
+
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
-    invocation_start_persisted: true
+    latest_invocation_start_persisted: true
     preflight_individual_lane_log_count: 0
     preflight_lane_log_hygiene_result: PASS
+    lane_log_aggregation_result: PASS
+    post_aggregation_individual_lane_log_count: 0
+    post_aggregation_lane_log_hygiene_result: PASS
     required_lane_event_order: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
     lane_release_requires_persisted_close_log: true
     result_acceptance_requires_qg_log_001: true
+
   utilization_policy:
     objective: MAXIMIZE_SAFE_PROGRESS_PER_COORDINATOR_INVOCATION
     fixed_small_batch_limit: false
@@ -30,15 +35,17 @@ lane_status:
     idle_during_active_invocation_requires_reason_when_eligible_work_exists: true
     do_not_parallelize: [DEPENDENT_WORK, CONFLICTING_SHARED_FILE_WRITES, RESOURCE_LOCK_CONFLICTS, WORK_REQUIRING_UNPROVED_DEPENDENCY_ASSUMPTIONS]
     stop_conditions: [NO_ELIGIBLE_INDEPENDENT_WORK_REMAINS, HARD_BLOCKER_PREVENTS_FURTHER_ELIGIBLE_WORK, RESOURCE_OR_SHARED_FILE_LOCK_PREVENTS_SAFE_PARALLELISM, INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED, WORK_UNIT_COMPLETION_BOUNDARY_REACHED]
+
   policy:
     one_active_job_per_lane: true
     coordinator_is_not_a_lane: true
     generic_worker_consumes_orchestration_lane: false
     valid_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
+
   lanes:
     LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
     LANE-02: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
-    LANE-03: {state: INITIALIZING, work_unit: WU-BL001-001, task: 'Trace PredefinedDeliveryTripController endpoint family to source-proved PostgreSQL dependencies', worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-027-L03, attempt: 27, started_at: '2026-08-23T16:20:00+05:30', last_heartbeat: '2026-08-23T16:20:00+05:30', last_lifecycle_event: null, blocker: null}
+    LANE-03: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
     LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-05: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-06: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
@@ -46,17 +53,21 @@ lane_status:
     LANE-08: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-09: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-10: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+
   summary:
     total_lanes: 10
-    idle: 9
+    idle: 10
     assigned: 0
-    initializing: 1
+    initializing: 0
     working: 0
     blocked: 0
     waiting: 0
     closing: 0
     stale: 0
-    active_lane_count: 1
+    active_lane_count: 0
+
   current_interpretation: >-
-    LANE-02 completed and was released only after its CLOSE log persisted. LANE-03 is assigned
-    to the independent PredefinedDeliveryTripController family after its DAO/entity dependencies were source-located.
+    Attempt 27 is execution-closed and all three used lanes have persisted LANE_CLOSE_END evidence.
+    Their transient lane logs were fully accumulated into logs/runs/INVOCATION-20260823-160000.md,
+    verified, deleted, and the post-cleanup rescan proved zero individual lane logs. All ten lanes
+    are now IDLE between invocations while BL-001 remains PARTIAL with eligible work remaining.
