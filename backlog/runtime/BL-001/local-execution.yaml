@@ -1,5 +1,5 @@
 local_execution:
-  version: 14
+  version: 15
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T02:33:21+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-023321.md
+    checkpoint_time: 2026-08-24T03:35:50+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-033550.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -79,26 +79,6 @@ local_execution:
           - logs/runs/PRODUCTION-FIRE-20260824-013546.md
           - logs/runs/PRODUCTION-FIRE-20260824-020143.md
         family_state: SOURCE_CLOSED_ALL_10_ENDPOINTS
-        endpoints:
-          - {method: GET, path: /customer-address-location/planning-map, state: COMPLETE, chain_completeness: FULL}
-          - {method: GET, path: /customer-address-location/missing, state: COMPLETE, chain_completeness: FULL}
-          - {method: GET, path: /customer-address-location/points.geojson, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-          - {method: GET, path: /yard-location/upload, state: COMPLETE, chain_completeness: FULL}
-          - {method: POST, path: /yard-location/upload, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-          - {method: GET, path: /yard-location/points.geojson, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-          - {method: GET, path: /customer-address-location/upload, state: COMPLETE, chain_completeness: FULL}
-          - {method: POST, path: /customer-address-location/upload, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-          - {method: GET, path: /customer-address-location/import-whatsapp-export, state: COMPLETE, chain_completeness: FULL}
-          - {method: POST, path: /customer-address-location/import-whatsapp-export, state: COMPLETE, chain_completeness: FULL}
-        final_dependencies:
-          - public.vw_customer_address_location_status
-          - public.tbl_customer_order_request
-          - public.tbl_yard_inventory
-          - public.tbl_yard_location
-          - public.tbl_customer_address
-          - public.tbl_customer_address_location
-          - public.tbl_customer_location_import_inbox
-          - terminal views/redirects/GeoJSON responses
       - controller: CustomerConsumptionDashboardController
         controller_blob_sha: 371961430eca7dfd7ac7dc62244377ed0a718a12
         service_blob_sha: f50182735f51ef168861a3df1d84eef1bf62040c
@@ -106,15 +86,23 @@ local_execution:
         entity_blob_sha: 15a8d9469a2783e210fc0f3ae66c62430a18d48a
         evidence: logs/runs/PRODUCTION-FIRE-20260824-023321.md
         family_state: SOURCE_CLOSED_ALL_4_CALLER_VISIBLE_PATHS
+      - controller: OwnershipObligationDashboardController
+        controller_blob_sha: 5bdd9577823c9ae1d15b87f8002382e54e17d025
+        service_blob_sha: ce1a0e238260fc7567b16b46214ca654787a6a53
+        detail_dao_blob_sha: 8530e73ac22c3f88012f71e2f64422a0f9521dbb
+        summary_dao_blob_sha: 44782e2b5fa842de61cf9b9c5e29eb465cc16229
+        detail_entity_blob_sha: 1b41b11601b446e1f85895330869c8c468f603f3
+        summary_entity_blob_sha: 3c35cb6f89b11f338a4c25519e0c38351f24ac39
+        evidence: logs/runs/PRODUCTION-FIRE-20260824-033550.md
+        family_state: SOURCE_CLOSED_CALLER_VISIBLE_ENDPOINT
         endpoints:
-          - {method: GET, path: /customer-consumption, state: COMPLETE, chain_completeness: FULL}
-          - {method: GET, path: /customer-consumption/, state: COMPLETE, chain_completeness: FULL}
-          - {method: GET, path: /customer-consumption/dashboard, state: COMPLETE, chain_completeness: FULL}
-          - {method: GET, path: /customer-consumption/api/dashboard, state: COMPLETE, chain_completeness: FULL}
+          - {method: GET, path: /ownership-obligation-dashboard, state: COMPLETE, chain_completeness: FULL_BRANCHING}
         final_dependencies:
-          - public.vw_customer_product_consumption_projection
-          - with-menu/CustomerConsumptionDashboard
-          - CustomerConsumptionDashboardDto JSON response
+          - public.tbl_cylinder_party_custody
+          - public.tbl_cylinder
+          - public.tbl_customer
+          - public.tbl_supplier
+          - final-version-1/OwnershipObligationDashboard
 
   source_state:
     gate: QG-SOURCE-001
@@ -165,20 +153,17 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 56
-    complete: 54
+    examined: 57
+    complete: 55
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 78
+    not_yet_examined: 77
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 29
+    matrix_materialized_rows: 30
     historical_accepted_rows_pending_backfill: 27
     latest_newly_accepted_endpoints:
-      - GET /customer-consumption
-      - GET /customer-consumption/
-      - GET /customer-consumption/dashboard
-      - GET /customer-consumption/api/dashboard
+      - GET /ownership-obligation-dashboard
 
   next_action: >-
     Continue other not-yet-examined endpoint families from exact frozen-source evidence while resolving/materializing the 16
