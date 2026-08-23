@@ -1,5 +1,5 @@
 local_execution:
-  version: 7
+  version: 8
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -42,13 +42,12 @@ local_execution:
     backend_capacity_probe_peak_service_concurrent_lanes: 10
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
-    accepted_endpoint_checkpoint_changed: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-23T23:07:30+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260823-230132.md
+    checkpoint_time: 2026-08-24T00:01:14+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-000114.md
     worker_fire_started: false
-    reason_worker_fire_not_started: QG_SOURCE_001_RECURSIVE_CLOSURE_NOT_READY_FOR_NEXT_SERVICE
+    reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
     exact_source_requests_pending_from_last_worker_batch: 16
     binding_requests_emitted_by_workers: 3
@@ -61,7 +60,7 @@ local_execution:
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
     complete_trip_source_boundary_verification:
-      state: PASS_CONTROLLER_AND_IMPLEMENTATION_REPROVED_SNAPSHOT_STILL_PENDING
+      state: PASS_FULL_CHAIN_ACCEPTED_ORCHESTRATOR_SOURCE_EVIDENCE
       controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CompleteTripController.java
       controller_blob_sha: f17008261fcaa641b7ab1f6d9c672bdd6eea5bf9
       http_method: POST
@@ -70,20 +69,33 @@ local_execution:
       declared_service: ICylinderManagementApplicationService<CompleteTripRequestDto, CompleteTripResponseDto>
       implementation: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
       implementation_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
-      first_proved_entity: VehicleLoadDo
-      first_proved_entity_blob_sha: 04ca5cba6023011b7ba39e84168aa74a63e5bf45
-      first_proved_table: public.tbl_vehicle_load
-      complete_chain_accepted: false
-      reason_not_accepted: >-
-        CompleteTripServiceImpl explicitly calls twelve JpaDao persistence components and the entire branching
-        DAO/entity/table chain has not yet been snapshot-materialized and source-proved. WF-002 forbids jumping from
-        the controller or service directly to a final table while intermediate participating components remain unproved.
+      validator: com.sreyas.datamatics.cylinder.management.validator.CompleteTripRequestValidator
+      validator_blob_sha: cd7684918b864ff14c0226aec7e75521510ccce6
+      complete_chain_accepted: true
+      accepted_evidence: logs/runs/PRODUCTION-FIRE-20260824-000114.md
+      accepted_chain_state: FULL_BRANCHING
+      final_dependencies:
+        - public.tbl_vehicle_load
+        - public.tbl_vehicle_trip
+        - public.tbl_trip_status
+        - public.tbl_vehicle_trip_stop
+        - public.tbl_stop_type
+        - public.tbl_yard_entries
+        - public.tbl_yard_inventory
+        - public.tbl_yard_inventory_line
+        - public.tbl_yard_inventory_source_type
+        - public.tbl_yard_inventory_allowed_state
+        - public.tbl_cylinder_states
+        - public.tbl_cylinder_logistics_execution
+        - public.tbl_cylinder_logistics_execution_line
+        - public.tbl_cylinder
+        - redirect:ViewConstants.REDIRECT_HOME_LINK
     note: >-
-      All three Spring interface bindings remain proved from source at the frozen commit. This checkpoint independently
-      re-proved the CompleteTrip controller path/blob, POST /complete-trip mapping, generic service declaration,
-      CompleteTripServiceImpl implementation/signature/blob, and the immediate VehicleLoadDo -> public.tbl_vehicle_load
-      persistence hop. The immutable worker snapshot itself remains at 29 materialized files, so no duplicate discovery
-      fire was started and no endpoint trace or matrix counter was advanced.
+      This checkpoint source-closed POST /complete-trip without rerunning the unchanged worker discovery batch. The
+      controller, service implementation, validator, every participating JpaDao generic entity binding, every entity
+      table mapping, the active logistics-line CylinderDo association and terminal redirect were fetched at the frozen
+      commit. The endpoint was therefore accepted COMPLETE/FULL_BRANCHING by the Primary Orchestrator. The worker snapshot
+      remains at 29 materialized files and unrelated recursive source-restage work remains pending.
 
   source_state:
     gate: QG-SOURCE-001
@@ -127,6 +139,7 @@ local_execution:
         implementation: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
         implementation_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
         worker_snapshot_state: MATERIALIZATION_PENDING
+        orchestrator_endpoint_trace_state: COMPLETE_FULL_BRANCHING
 
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
@@ -142,22 +155,20 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 37
-    complete: 35
+    examined: 38
+    complete: 36
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 97
+    not_yet_examined: 96
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 10
+    matrix_materialized_rows: 11
     historical_accepted_rows_pending_backfill: 27
+    latest_newly_accepted_endpoint: POST /complete-trip
 
   next_action: >-
-    Materialize CompleteTripServiceImpl plus the 16 exact source requests into the immutable staged snapshot at the
-    frozen commit, recording exact Git blob SHAs and package/binding proof. For POST /complete-trip, stage and prove the
-    explicitly called VehicleLoadJpaDao, VehicleTripJpaDao, VehicleTripStatusJpaDao, VehicleTripStopJpaDao,
-    VehicleTripStopTypeJpaDao, YardEntriesJpaDao, YardInventoryJpaDao, YardInventoryLineJpaDao,
-    YardInventorySourceTypeJpaDao, CylinderStateJpaDao, CylinderLogisticsExecutionJpaDao and
-    CylinderLogisticsExecutionLineJpaDao paths through their mapped entities/database objects. Then rerun the same
-    ten-task discovery dispatch only if staged executor preflight passes. Do not change the accepted 37/134 checkpoint
-    or matrix counters until the Primary Orchestrator validates new source-closed endpoint evidence.
+    Continue resolving and blob-verifying the 16 exact outstanding worker source requests, materialize the already validated
+    CompleteTripServiceImpl into the immutable worker snapshot if still absent, and fire the same ten-task discovery only
+    after the staged executor preflight proves the advanced snapshot. Prioritize source closure for POST
+    /customer-spot-cylinder-check/submit and POST /walkin-sale when their complete branching dependencies are available.
+    Do not infer dependencies or advance accepted counters without Primary-Orchestrator validation.
