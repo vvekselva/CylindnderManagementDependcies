@@ -1,5 +1,5 @@
 local_execution:
-  version: 5
+  version: 6
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -32,7 +32,7 @@ local_execution:
     worker_failures: 0
     source_closure_complete: false
     missing_source_requests: 16
-    missing_binding_requests: 3
+    missing_binding_requests_emitted_by_workers: 3
     qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
     expected_concurrent_lanes: 10
     peak_service_concurrent_lanes: 2
@@ -43,30 +43,74 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
     accepted_endpoint_checkpoint_changed: false
+
+  current_orchestrator_restage_iteration:
+    checkpoint_time: 2026-08-23T22:38:00+05:30
+    worker_fire_started: false
+    reason_worker_fire_not_started: QG_SOURCE_001_RECURSIVE_CLOSURE_NOT_READY_FOR_NEXT_SERVICE
+    source_snapshot_materialized_files: 29
+    exact_source_requests_pending_from_last_worker_batch: 16
+    binding_requests_emitted_by_workers: 3
+    binding_identities_source_validated: 3
+    binding_identities_unresolved: 0
+    binding_implementations_already_worker_staged: 2
+    binding_implementations_pending_snapshot_materialization: 1
+    pending_binding_implementation_source:
+      fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
+      path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
+      git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
     note: >-
-      This production fire used the promoted staged-lane-executor-v3.py and staged-lane-worker-v3.py against the
-      frozen BL-001 source baseline. The preceding compatibility-worker launch was rejected and is not authoritative.
-      The engine completed all ten worker tasks with zero worker failures, aggregated/deleted transient lane logs,
-      and returned the next exact source/binding restaging set without guessing or advancing canonical trace state.
+      All three Spring interface bindings are now proved from source at the frozen commit. ChallanHeatmapFetchService
+      proves ICylinderManagementApplicationService<ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto>
+      and the default Spring bean identity challanHeatmapFetchService. ChallanPagePhotoUploadService proves
+      ICylinderManagementApplicationService<ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto>
+      and the default Spring bean identity challanPagePhotoUploadService. CompleteTripServiceImpl proves
+      ICylinderManagementApplicationService<CompleteTripRequestDto, CompleteTripResponseDto>; CompleteTripController
+      has no qualifier. The CompleteTrip implementation still must be materialized into the immutable worker snapshot
+      with its blob proof before the next worker fire. No endpoint trace was accepted during this checkpoint.
 
   source_state:
     gate: QG-SOURCE-001
     state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
     controller_roots_verified: 10
     source_snapshot_materialized_files: 29
-    missing_source_requests: 16
-    missing_binding_requests: 3
-    next_phase: SOURCE_RESTAGE_AND_BINDING_RESOLUTION
+    exact_source_requests_pending: 16
+    binding_identities_unresolved: 0
+    binding_implementation_materializations_pending: 1
+    next_phase: SOURCE_RESTAGE_AND_IMPLEMENTATION_MATERIALIZATION
     restage_owner: PRIMARY_ORCHESTRATOR
     source_layout: repository/source-layout.yaml
     max_iterations: 8
     no_progress_state: SOURCE_RESOLUTION_STALLED
     local_checkout_blocker: RESOLVED_BY_ORCHESTRATOR_STAGED_SNAPSHOT
 
-  binding_requests_now:
-    - {source: AddStopController, variable: challanHeatmapFetchService, declared_type: ICylinderManagementApplicationService, generic_args: [ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto], qualifier: challanHeatmapFetchService}
-    - {source: AddStopController, variable: challanPagePhotoUploadService, declared_type: ICylinderManagementApplicationService, generic_args: [ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto], qualifier: challanPagePhotoUploadService}
-    - {source: CompleteTripController, variable: completeTripService, declared_type: ICylinderManagementApplicationService, generic_args: [CompleteTripRequestDto, CompleteTripResponseDto], qualifier: null}
+  binding_resolution:
+    state: PASS_IDENTITIES_VALIDATED_SNAPSHOT_MATERIALIZATION_PARTIAL
+    resolved:
+      - source: AddStopController
+        variable: challanHeatmapFetchService
+        declared_type: ICylinderManagementApplicationService
+        generic_args: [ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto]
+        qualifier: challanHeatmapFetchService
+        implementation: com.sreyas.datamatics.cylinder.management.services.ChallanHeatmapFetchService
+        implementation_blob_sha: 8c3f34b990bb9ca95b61c471047f9986023d9db2
+        worker_snapshot_state: STAGED
+      - source: AddStopController
+        variable: challanPagePhotoUploadService
+        declared_type: ICylinderManagementApplicationService
+        generic_args: [ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto]
+        qualifier: challanPagePhotoUploadService
+        implementation: com.sreyas.datamatics.cylinder.management.services.ChallanPagePhotoUploadService
+        implementation_blob_sha: 83ac81e5d5f0333602c4a90b2e444cfdeee75787
+        worker_snapshot_state: STAGED
+      - source: CompleteTripController
+        variable: completeTripService
+        declared_type: ICylinderManagementApplicationService
+        generic_args: [CompleteTripRequestDto, CompleteTripResponseDto]
+        qualifier: null
+        implementation: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
+        implementation_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
+        worker_snapshot_state: MATERIALIZATION_PENDING
 
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
@@ -88,9 +132,13 @@ local_execution:
     blocked: 0
     failed: 0
     not_yet_examined: 97
+    matrix_state: INCREMENTAL_PARTIAL
+    matrix_materialized_rows: 10
+    historical_accepted_rows_pending_backfill: 27
 
   next_action: >-
-    Resolve the 16 exact source requests and 3 explicit Spring interface bindings at the same frozen commit, add
-    path/blob/binding proof to the staged snapshot manifest, then fire the same ten-task dispatch again. Continue only
-    while the request set changes and verified source closure advances. Do not alter the accepted 37/134 checkpoint
-    until the Primary Orchestrator validates source-closed endpoint evidence.
+    Materialize CompleteTripServiceImpl plus the 16 exact source requests into the immutable staged snapshot at the
+    frozen commit, recording exact Git blob SHAs and required package/binding proof. Then rerun the same ten-task
+    discovery dispatch only if the staged executor preflight passes. Continue bounded restaging while the request set
+    changes and source closure advances. Do not change the accepted 37/134 checkpoint or matrix counters until the
+    Primary Orchestrator validates new source-closed endpoint evidence.
