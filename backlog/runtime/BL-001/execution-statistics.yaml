@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 4
+  version: 5
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -29,20 +29,7 @@ execution_statistics:
     blocked: 0
     failed: 0
     not_yet_examined: 97
-    architecture_validation_changed_checkpoint: false
-
-  prior_accepted_trace_run:
-    attempt: 27
-    invocation_id: INVOCATION-20260823-160000
-    state: CLOSED
-    result: PARTIAL
-    endpoints_examined_added: 10
-    distinct_lanes_used: 3
-    peak_concurrent_lanes: 1
-    average_concurrent_lanes: 0.95
-    peak_capacity_utilization_percentage: 10.0
-    meaningful_progress: true
-    evidence: logs/runs/INVOCATION-20260823-160000.md
+    latest_production_fire_changed_checkpoint: false
 
   self_reliant_architecture_validation:
     report: tests/self-reliant-e2e-validation-2026-08-23.md
@@ -61,57 +48,58 @@ execution_statistics:
       peak_capacity_utilization_percentage: 100.0
       accepted_as_bl001_trace_evidence: false
 
-  canary_source_closure_run:
-    execution_id: E2E-STAGED-20260823-151800
-    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
-    workers_started: 1
-    worker_results_received: 1
-    worker_failures: 0
-    source_closure_complete: true
-    qg_source_001_state: SOURCE_CLOSURE_COMPLETE
-    missing_source_requests: 0
-    missing_binding_requests: 0
-    peak_concurrent_lanes: 1
-    average_concurrent_lanes: 1.0
-    qg_lane_001_state: PASS
-    individual_lane_logs_remaining: 0
-    accepted_as_bl001_trace_progress: false
-
-  latest_full_source_discovery_run:
+  prior_full_source_discovery_run:
     execution_id: E2E-STAGED-20260823-151810
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    workers_started: 10
+    worker_results_received: 10
+    worker_failures: 0
+    source_closure_complete: false
+    missing_source_requests: 21
+    missing_binding_requests: 0
+    peak_concurrent_lanes: 4
+    average_concurrent_lanes: 0.26
+    qg_lane_001_state: UNDERUTILIZED
+    individual_lane_logs_remaining: 0
+
+  latest_production_fire:
+    execution_id: E2E-STAGED-20260823-161214
     dispatch_fingerprint: 6c99cd0f51605ea5461169a349c7153cd9da658070f15727ab7d93ac7571522d
-    state: CLOSED_RESTAGE_REQUIRED
+    phase: CLOSED_RESTAGE_REQUIRED
     source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
     configured_lanes: 10
     safe_ready_tasks: 10
+    source_snapshot_materialized_files: 29
+    verified_same_baseline_files_added_before_fire: 4
     workers_started: 10
     worker_results_received: 10
     worker_failures: 0
     source_closure_complete: false
     qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
-    missing_source_requests: 21
-    missing_binding_requests: 0
+    missing_source_requests: 16
+    missing_binding_requests: 3
     expected_concurrent_lanes: 10
-    peak_concurrent_lanes: 4
-    average_concurrent_lanes: 0.26
-    peak_capacity_utilization_percentage: 40.0
+    peak_concurrent_lanes: 2
+    average_concurrent_lanes: 0.0
+    peak_capacity_utilization_percentage: 20.0
     qg_lane_001_state: UNDERUTILIZED
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
     endpoint_trace_checkpoint_before: 37
     endpoint_trace_checkpoint_after: 37
     endpoints_examined_added: 0
-    interpretation: >-
-      This run validated production source staging/execution and generated the next exact restaging request set.
-      It is not an accepted endpoint-trace advancement. Natural SERVICE overlap is under target even though the backend
-      capacity probe proves ten-worker capability.
+    source_resolution_progress: >-
+      The previous explicit queue of 21 source requests was partially materialized from already verified frozen-baseline
+      cache entries. The next production discovery reduced the queue to 16 source requests and exposed 3 explicit interface
+      binding requests. This is forward source-closure progress and demonstrates the restage/rebind loop in production.
 
   run_over_run:
     endpoint_progress_percentage_point_change: 0.0
     complete_percentage_point_change: 0.0
     endpoint_examined_change: 0
-    source_architecture_direction: LOCAL_CHECKOUT_OR_ACTIONS_DEPENDENCY_REMOVED
-    source_closure_direction: PROGRESSING_RESTAGE_REQUIRED
+    source_request_count_change: -5
+    binding_request_count_change: 3
+    source_closure_direction: PROGRESSING_RESTAGE_AND_BINDING_REQUIRED
     natural_concurrency_direction: MEASURED_UNDERUTILIZED
     backend_capacity_direction: TEN_WORKER_CAPACITY_PROVED
 
@@ -120,9 +108,9 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      Required self-reliant architecture/governance/scripts were created and validated against real frozen source;
-      the latest discovery produced a concrete bounded source-restaging request set.
-    current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_ITERATION
+      The live production fire reduced unresolved source requests from 21 to 16 and surfaced 3 source-validated binding tasks,
+      while all 10 workers completed with zero failures and zero residual lane logs.
+    current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_BINDING_ITERATION
 
   update_rules:
     - keep accepted endpoint checkpoint separate from architecture/discovery validation
