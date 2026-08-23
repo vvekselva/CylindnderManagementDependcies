@@ -9,11 +9,13 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | File | Category | Purpose |
 |---|---|---|
 | `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and declared dynamic runtime/artifact paths. |
+| `.github/workflows/ssot-gate.yml` | Planning Gate | Runs the three-level SSOT validator; PLAN/REPLAN prerequisites must be valid for run-enabled backlog items. |
 | `TaskStatus.md` | Status | Human-readable consolidated dashboard; generated/derived status must not override canonical Level 1/2/3 SSOT. |
-| `automation/automation-config.yaml` | Automation | Machine-readable Backlog-driven Orchestrator, run-selection, Quality Gate, lane, Worker, scheduling and lock configuration. |
+| `automation/automation-config.yaml` | Automation | Machine-readable Backlog-driven Orchestrator, SSOT planning gates, lane, Worker, scheduling and lock configuration. |
 | `automation/backlog-contract.md` | Backlog Contract | Defines mandatory Level 1/2/3 SSOT, planning gate, Backlog lifecycle and execution/closure contract. |
-| `automation/execution-model.md` | Architecture Document | Main framework document showing components, files and end-to-end Backlog data flow. |
+| `automation/execution-model.md` | Architecture Document | Main framework document showing Level 1/2/3, planning gate and end-to-end execution flow. |
 | `automation/generate-automation-story.py` | Automation | Converts the human-readable automation log into the overall story. |
+| `automation/validate-ssot.py` | SSOT Validator | Machine-validates Level 1, Level 2, Level 3 and QG-SOW-001 prerequisites for every run-enabled backlog item. |
 | `automation/task-contract.md` | Automation | Defines Task/Job execution fields and lifecycle rules. |
 | `automation/worker-component-contract.md` | Worker | Defines the task-agnostic Generic Worker and result handoff rules. |
 | `automation/worker-service-contract.md` | Automation | Defines mandatory orchestration-lane `init() -> service() -> close()` lifecycle. |
@@ -55,17 +57,19 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 
 ## Catalogue Quality Gate
 
-Static framework, SSOT governance, run-control, approved Quality Gate and Completion-Path files must exist exactly as listed.
+Static framework, SSOT governance, validators, run-control, approved Quality Gate and Completion-Path files must exist exactly as listed.
 
 Per-backlog Level 2 definitions/SOWs, Level 3 runtime files, future approved Backlog gate files and generated artifacts are permitted only when they match declared dynamic patterns.
 
 <!-- CATALOGUE-FILES:START -->
 .github/workflows/catalogue-gate.yml
+.github/workflows/ssot-gate.yml
 TaskStatus.md
 automation/automation-config.yaml
 automation/backlog-contract.md
 automation/execution-model.md
 automation/generate-automation-story.py
+automation/validate-ssot.py
 automation/task-contract.md
 automation/worker-component-contract.md
 automation/worker-service-contract.md
