@@ -6,8 +6,8 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **43 / 134 examined; 41 COMPLETE; 2 UNRESOLVED; 91 not yet examined.**  
-Rows currently materialized below: **16**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **52 / 134 examined; 50 COMPLETE; 2 UNRESOLVED; 82 not yet examined.**  
+Rows currently materialized below: **25**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -27,38 +27,28 @@ Rows currently materialized below: **16**. The other 27 historically accepted ro
 | GET | `/challan-entry-aging-dashboard` | `ChallanEntryAgingDashboardController.showChallanEntryAgingDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | `public.tbl_trip_challan_entry_tracker`; `public.tbl_trip_challan_entry_tracker_audit`; `final-version-1/ChallanEntryAgingDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-005711.md` |
 | GET | `/challan-heatmap` | `ChallanHeatmapController.showHeatmap` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_challan_heatmap_metrics`; `final-version-1/ChallanHeatmapDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-013336.md` |
 | GET | `/customer-address-location/planning-map` | `CustomerAddressLocationController.showPlanningMap` | COMPLETE | FULL | TERMINAL_VIEW | `with-menu/CustomerAddressPlanningMap`; no service/DAO/database dependency | `logs/runs/PRODUCTION-FIRE-20260824-013546.md` |
+| GET | `/customer-address-location/missing` | `CustomerAddressLocationController.showMissingLocations` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_address_location_status`; `with-menu/CustomerAddressLocationMissing` | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| GET | `/customer-address-location/points.geojson` | `CustomerAddressLocationController.customerAddressPointsGeoJson` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_TABLE_AND_TERMINAL_JSON | `public.vw_customer_address_location_status`; `public.tbl_customer_order_request`; generated GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| GET | `/yard-location/upload` | `CustomerAddressLocationController.showYardLocationUpload` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_VIEW | `public.tbl_yard_inventory`; `with-menu/YardLocationUpload` | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| POST | `/yard-location/upload` | `CustomerAddressLocationController.saveYardLocation` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_REDIRECT | `public.tbl_yard_inventory`; `public.tbl_yard_location`; redirect `/yard-location/upload` | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| GET | `/yard-location/points.geojson` | `CustomerAddressLocationController.yardLocationsGeoJson` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_JSON | `public.tbl_yard_location`; `public.tbl_yard_inventory`; generated GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| GET | `/customer-address-location/upload` | `CustomerAddressLocationController.showUpload` | COMPLETE | FULL | TERMINAL_VIEW | `with-menu/CustomerAddressLocationUpload`; no service/DAO/database dependency | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| POST | `/customer-address-location/upload` | `CustomerAddressLocationController.saveLocation` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_REDIRECT | `public.tbl_customer_address`; `public.tbl_customer_address_location`; success/error redirects | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| GET | `/customer-address-location/import-whatsapp-export` | `CustomerAddressLocationController.showWhatsappImport` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_VIEW | `public.tbl_customer_location_import_inbox`; `with-menu/CustomerAddressLocationImport` | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
+| POST | `/customer-address-location/import-whatsapp-export` | `CustomerAddressLocationController.importWhatsappText` | COMPLETE | FULL | POSTGRES_TABLE_AND_REDIRECT | `public.tbl_customer_location_import_inbox`; redirect `/customer-address-location/import-whatsapp-export` | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
 
-## `/customer-address-location/planning-map` full-chain summary
+## `CustomerAddressLocationController` full-chain summary
 
-Terminal chain: `CustomerAddressLocationController.showPlanningMap -> with-menu/CustomerAddressPlanningMap`. The method contains no downstream application/persistence dependency.
+The controller exposes ten caller-visible endpoints. All ten are now source-closed, including the previously accepted planning-map route. The service-backed routes are proved through `CustomerAddressLocationOfflineMapService` and the exact Spring Data/native-query components: `CustomerAddressLocationJpaDao`, `CustomerAddressJpaDao`, `YardInventoryJpaDao`, `YardLocationJpaDao`, and `CustomerLocationImportInboxJpaDao`. Their source proves dependencies on `public.vw_customer_address_location_status`, `public.tbl_customer_order_request`, `public.tbl_yard_inventory`, `public.tbl_yard_location`, `public.tbl_customer_address`, `public.tbl_customer_address_location`, and `public.tbl_customer_location_import_inbox`. Mapping components are explicit source-proved mapper calls and contain no persistence access. Branching query/persistence paths are preserved separately in the structured Explorer delta `traceability-matrix-delta-20260824-020143.json`.
 
-## `/challan-heatmap` full-chain summary
+## Prior accepted full-chain summaries
 
-Persistence/query branch: `ChallanHeatmapController.showHeatmap -> ChallanHeatmapFetchService.processRequest -> ChallanHeatmapMetricsViewJpaDao.findHeatmapMetrics/findDistinctBookTypes/findDistinctBookCodes/findDistinctSeriesPrefixes -> ChallanHeatmapMetricsViewDo -> public.vw_challan_heatmap_metrics -> ChallanHeatmapMetricsViewMapper.mapDoToDto`.
+- `/challan-heatmap`: `ChallanHeatmapController.showHeatmap -> ChallanHeatmapFetchService.processRequest -> ChallanHeatmapMetricsViewJpaDao -> ChallanHeatmapMetricsViewDo -> public.vw_challan_heatmap_metrics -> mapper -> final-version-1/ChallanHeatmapDashboard`.
+- `/challan-entry-aging-dashboard`: tracker and audit branches flow through `ChallanEntryAgingDashboardService`, their respective JPA DAOs/entities/tables, mapper, then `final-version-1/ChallanEntryAgingDashboard`.
+- `/complete-trip`: `CompleteTripController.completeTrip -> CompleteTripServiceImpl.processRequest`, validator/service DAO branches, entity mappings, PostgreSQL objects and terminal redirect are preserved in the Explorer.
+- `ChallanBookWebController`: add-form follows summary-metric lookup to its table and view; save follows ingestion/registry persistence with optional audit ledger and error lookup branches.
 
-Terminal branch: `ChallanHeatmapController.showHeatmap -> final-version-1/ChallanHeatmapDashboard`.
-
-The controller does not set the service's assigned-book query-data flags, so the `TripChallanBookAssignmentViewJpaDao` / page-window branch is not part of this endpoint trace.
-
-## `/challan-entry-aging-dashboard` full-chain summary
-
-Tracker branch: `ChallanEntryAgingDashboardController.showChallanEntryAgingDashboard -> ChallanEntryAgingDashboardService.fetchDashboard -> TripChallanEntryTrackerJpaDao.countByTrackerStatus/findDashboardRows -> TripChallanEntryTrackerDo -> public.tbl_trip_challan_entry_tracker -> ChallanEntryAgingDashboardMapper.mapTrackerDosToDtos`.
-
-Audit branch: `ChallanEntryAgingDashboardController.showChallanEntryAgingDashboard -> ChallanEntryAgingDashboardService.fetchDashboard -> TripChallanEntryTrackerAuditJpaDao.findDashboardRows -> TripChallanEntryTrackerAuditDo -> public.tbl_trip_challan_entry_tracker_audit -> ChallanEntryAgingDashboardMapper.mapAuditDosToDtos`.
-
-Terminal branch: controller returns `final-version-1/ChallanEntryAgingDashboard`.
-
-## `/complete-trip` full-chain summary
-
-The structured Explorer preserves separate ordered branches. The principal flow is `POST /complete-trip -> CompleteTripController.completeTrip -> CompleteTripServiceImpl.processRequest`. `CompleteTripRequestValidator.validate` and the service prove the listed DAO/entity/table branches, including `YardInventoryAllowedStateJpaDao -> YardInventoryAllowedStateDo -> public.tbl_yard_inventory_allowed_state -> CylinderStateDo -> public.tbl_cylinder_states`, and `CylinderLogisticsExecutionLineDo.getCylinder() -> CylinderDo -> public.tbl_cylinder`. Terminal action is the configured home redirect.
-
-## `ChallanBookWebController` full-chain summary
-
-`GET /logistics/challan-books/add-form` follows `ChallanBookWebController.showAddBookForm -> SummaryMetricLookupFetchService -> SummaryMetricLookupJpaDao.findByLookUpKeyIn -> SummaryMetricLookupDo -> public.tbl_summary_metric_lookup`, then maps the rows and returns the add-book view.
-
-`POST /logistics/challan-books/save` follows `ChallanBookWebController.processBookIngestion -> ChallanBookIngestionService.processRequest -> ChallanBookRegistryMapper -> ChallanBookRegistryJpaDao.saveAndFlush -> ChallanBookRegistryDo -> public.tbl_challan_book_registry`; submitted page rows cascade through `ChallanPageAuditLedgerMapper -> ChallanPageAuditLedgerDo -> public.tbl_challan_page_audit_ledger`. The error path reuses the summary-metric chain before re-rendering.
-
-No intermediate dependency was inferred from naming; participating source components and explicit table mappings were fetched from the frozen baseline.
+No intermediate dependency was inferred from naming; participating source components and explicit native SQL/entity mappings were fetched from the frozen baseline.
 
 ## Incremental update rule
 
@@ -67,6 +57,6 @@ No intermediate dependency was inferred from naming; participating source compon
 3. Immediately upsert the row by `(HTTP method, path)`.
 4. Preserve the full ordered or branching Controller -> Service/Validator/Mediator -> DAO/Repository -> Entity/View -> DB/File/API/terminal chain.
 5. Synchronize unresolved/blocked/failed rows with `traceability/unresolved-traceability.md`.
-6. Update `traceability/matrix-progress.yaml`, structured JSON and browser data.
+6. Update `traceability/matrix-progress.yaml`, structured JSON/deltas and browser data/deltas.
 7. Continue source analysis; do not wait until 100% coverage to create the matrix.
 8. At 100% source-check coverage, WU-BL001-002 performs final reconciliation rather than recreating the matrix.
