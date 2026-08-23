@@ -40,22 +40,11 @@ No unchanged discovery batch was rerun because the immutable snapshot still requ
 
 ## Latest Orchestrator Checkpoint
 
-Checkpoint: **`PRODUCTION-FIRE-20260824-020143`**
+Checkpoint: **`PRODUCTION-FIRE-20260824-023321`**
 
-The remaining nine endpoints in `CustomerAddressLocationController` advanced to **COMPLETE**, closing all ten endpoints in that controller family. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-020143.md` plus the prior planning-map checkpoint.
+`CustomerConsumptionDashboardController` is now fully source-closed for all four caller-visible GET paths. The three dashboard URL variants and the JSON API all flow through `CustomerConsumptionDashboardService`, `CustomerProductConsumptionProjectionViewJpaDao`, and `CustomerProductConsumptionProjectionViewDo` to the explicit database view `public.vw_customer_product_consumption_projection`.
 
-Source-proved dependencies for the family include:
-
-- `public.vw_customer_address_location_status`
-- `public.tbl_customer_order_request`
-- `public.tbl_yard_inventory`
-- `public.tbl_yard_location`
-- `public.tbl_customer_address`
-- `public.tbl_customer_address_location`
-- `public.tbl_customer_location_import_inbox`
-- terminal views, redirects and generated GeoJSON responses where no additional persistence dependency exists.
-
-The structured Traceability Explorer preserves the service/DAO/entity/mapper hops and branching database paths rather than flattening them into a final-table list.
+The three page routes terminate at `with-menu/CustomerConsumptionDashboard`; `/customer-consumption/api/dashboard` terminates as a `CustomerConsumptionDashboardDto` JSON response. The entity's `@Synchronize` table list is retained only as Hibernate synchronization metadata and is not promoted to a direct endpoint dependency without view-definition proof.
 
 ## Framework / Gate State
 
@@ -79,16 +68,16 @@ All **10 lanes are IDLE between worker fires**. The last worker batch closed cle
 | Metric | Current value |
 |---|---:|
 | Caller-visible endpoints | **134** |
-| Examined | **52** |
-| COMPLETE | **50** |
+| Examined | **56** |
+| COMPLETE | **54** |
 | UNRESOLVED | **2** |
 | BLOCKED / FAILED | **0 / 0** |
-| NOT YET EXAMINED | **82** |
+| NOT YET EXAMINED | **78** |
 | Traceability Matrix | **INCREMENTAL_PARTIAL** |
-| Materialized full-chain rows | **25** |
+| Materialized full-chain rows | **29** |
 | Historical accepted rows awaiting evidence backfill | **27** |
 
-Current examination coverage: **38.81%**. Current COMPLETE coverage: **37.31%**.
+Current examination coverage: **41.79%**. Current COMPLETE coverage: **40.30%**.
 
 Open canonical evidence gaps remain:
 
@@ -106,6 +95,6 @@ Open canonical evidence gaps remain:
 
 ## Exact Next Action
 
-Continue `CustomerConsumptionDashboardController` and other not-yet-examined endpoint families from exact frozen-source evidence while resolving and blob-verifying the **16 outstanding worker source requests** and materializing the validated `CompleteTripServiceImpl` into the immutable snapshot. Fire the ten-worker discovery only after staged preflight proves the snapshot advanced. Preserve the two canonical unresolved POST endpoints until every branch dependency is source-proved.
+Continue other not-yet-examined endpoint families from exact frozen-source evidence while resolving and blob-verifying the **16 outstanding worker source requests** and materializing the validated `CompleteTripServiceImpl` into the immutable snapshot. Fire the ten-worker discovery only after staged preflight proves the snapshot advanced. Preserve the two canonical unresolved POST endpoints until every branch dependency is source-proved.
 
 BL-001 remains **PARTIAL** and cannot close before 100% endpoint trace-result coverage, final matrix reconciliation/gates, and explicit `QG-TRC-015` user acceptance.
