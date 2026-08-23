@@ -1,8 +1,9 @@
 completion_path:
-  id: CP-BL-001-v3
+  id: CP-BL-001-v4
   backlog_item: BL-001
   type: TRACEABILITY
   name: Controller Traceability Completion Path
+  ssot_planning_gate: QG-SSOT-001
   statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
   statement_of_work_gate: QG-SOW-001
   common_dependency_gate: QG-DEP-001
@@ -13,8 +14,9 @@ completion_path:
     frozen CylinderManagement source version.
 
   prerequisites:
-    - QG-SOW-001 must PASS before analysis, planning or execution
-    - QG-DEP-001 must PASS
+    - SSOT-L1, SSOT-L2 and SSOT-L3 must be COMPLETE and QG-SSOT-001 must PASS before PLAN or REPLAN
+    - QG-SOW-001 must PASS
+    - QG-DEP-001 must PASS before execution work
     - BL-001 run_enabled must be true in backlog/orchestrator-run-config.yaml
     - backlog/gates/BL-001-traceability.yaml must be configured and user-approved
 
@@ -23,16 +25,18 @@ completion_path:
       owner: ORCHESTRATOR
       required: true
       actions:
+        - validate Level 1, Level 2 and Level 3 SSOT consistency
         - confirm the BL-001 Statement of Work remains valid and in force
         - freeze/confirm one source baseline
         - inspect current traceability runtime state
         - determine the complete Source Repository Check scope
-        - create/update the full repository-check Worker Input
+        - create/update the full repository-check Worker Input only from an authorized plan
       outputs:
         - backlog/runtime/BL-001/analysis.yaml
         - backlog/runtime/BL-001/execution-plan.yaml
         - worker/inputs/WI-0004.yaml
       gates:
+        - QG-SSOT-001
         - QG-SOW-001
         - QG-TRC-001
 
@@ -81,7 +85,7 @@ completion_path:
       actions:
         - register source-artifact baseline
         - confirm every required Worker/Work Unit run is CLOSED
-        - update human story/status
+        - update human story/status from canonical runtime
       gates:
         - QG-TRC-013
         - QG-TRC-014
@@ -109,6 +113,7 @@ completion_path:
     matrix_build: false
 
   completion_conditions:
+    - QG-SSOT-001 PASS
     - QG-SOW-001 PASS
     - QG-DEP-001 PASS
     - QG-TRC-001 through QG-TRC-014 PASS
