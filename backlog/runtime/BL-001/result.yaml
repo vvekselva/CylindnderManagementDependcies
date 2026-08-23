@@ -4,52 +4,79 @@ result:
   verified: false
   closed: false
   canonical_source_check_result_accepted: false
-  matrix_construction_unlocked: false
-  latest_accepted_trace_attempt: 27
-  latest_accepted_trace_invocation: INVOCATION-20260823-160000
-  latest_coordinator_invocation: INVOCATION-20260823-175300
-  latest_coordinator_result: PARTIAL_PLATFORM_WAIT
+  matrix_state: INCREMENTAL_PARTIAL
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-003111.md
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+
   lifecycle_gate:
     id: QG-LOG-001
     state: PASS
     preflight_individual_repo_lane_logs: 0
     post_invocation_individual_repo_lane_logs: 0
+
+  source_gate:
+    id: QG-SOURCE-001
+    state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    latest_worker_execution: E2E-STAGED-20260823-161214
+    worker_snapshot_materialized_files: 29
+    exact_source_requests_pending_from_latest_worker_batch: 16
+    binding_identities_unresolved: 0
+    binding_implementation_materializations_pending: 1
+
   lane_utilization_gate:
     id: QG-LANE-001
-    state: BLOCKED_PLATFORM
-    dispatch_id: MATRIX-BL001-DISPATCH-003
-    source_dispatch_generation: 3
-    source_dispatch_id: MATRIX-BL001-SOURCE-003
+    state: UNDERUTILIZED
+    latest_worker_execution: E2E-STAGED-20260823-161214
     expected_concurrent_lanes: 10
-    external_workflow_run_id: null
-    measured_peak_concurrent_lanes: null
-    measured_average_concurrent_lanes: null
-    durable_aggregate_available: false
+    measured_peak_concurrent_lanes: 2
+    backend_capacity_probe_peak: 10
+    worker_failures: 0
+    residual_lane_logs: 0
+
   checkpoint:
     total_endpoints: 134
-    examined: 37
-    complete: 35
+    examined: 40
+    complete: 38
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 97
+    not_yet_examined: 94
+    matrix_materialized_rows: 13
+    historical_accepted_rows_pending_backfill: 27
+
+  latest_newly_accepted_endpoints:
+    - method: GET
+      path: /logistics/challan-books/add-form
+      state: COMPLETE
+      chain_completeness: FULL_BRANCHING
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-003111.md
+    - method: POST
+      path: /logistics/challan-books/save
+      state: COMPLETE
+      chain_completeness: FULL_BRANCHING
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-003111.md
+
   unresolved_items:
     - {source_endpoint: POST /customer-spot-cylinder-check/submit, evidence_gap: Complete database-object set across all submitSpotCheck branches is not yet source-proved.}
     - {source_endpoint: POST /walkin-sale, evidence_gap: Complete database-object set across all conditional processRequest branches is not yet source-proved.}
-  current_matrix_dispatch:
-    control_queue: backlog/runtime/BL-001/lane-dispatch.yaml
-    tasks: 10
-    safe_independent: 10
-    source_copy_verified: true
-    source_workflow_installed: true
-    source_workflow_started_with_evidence: false
-    worker_evidence_consumed: false
+
+  execution_backend:
+    owner: AUTOMATION_TOOL
+    type: LOCAL_PROCESS_POOL
+    max_workers: 10
+    github_actions_required: false
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    fallback_source_provider: LOCAL_GIT_CHECKOUT
+
   final_outputs: []
+
   next_action: >-
-    Verify source-repository GitHub Actions policy/availability, obtain a real source workflow run ID and
-    durable lane-dispatch-aggregate, evaluate measured concurrency under QG-LANE-001, then validate each
-    worker endpoint path against the frozen source baseline before changing any trace state. Do not start
-    WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage and its result contract passes.
+    Continue bounded recursive source restaging and direct frozen-source closure for the remaining dispatch families.
+    Materialize already validated sources into the immutable worker snapshot, then rerun the ten-task discovery only when
+    QG-SOURCE-001 preflight proves an advanced snapshot. Preserve the two unresolved POST endpoints until every branch is
+    source-proved. Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage.
+
   note: >-
-    BL-001 remains PARTIAL. The matrix dispatch synchronization is valid framework progress but produced no
-    new endpoint trace result. VERIFIED/CLOSED remain false and QG-TRC-015 user acceptance is still required.
+    BL-001 remains PARTIAL. Incremental matrix creation is active during Source Check. VERIFIED/CLOSED remain false and
+    QG-TRC-015 explicit user acceptance is still required after all automatic gates pass.
