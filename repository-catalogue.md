@@ -4,6 +4,8 @@ This is the authoritative catalogue for files tracked by `vvekselva/CylindnderMa
 
 The repository controls backlog-driven automation executed against `vvekselva/CylinderManagement`.
 
+**Architecture rule:** GitHub is the Version Control System and durable persistence layer. The Automation Tool is the Orchestrator and Execution Engine. Normal Cylinder execution does not depend on GitHub Actions.
+
 ## Catalogue
 
 | File | Category | Purpose |
@@ -11,6 +13,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and declared dynamic runtime/artifact paths. |
 | `.github/workflows/ssot-gate.yml` | Planning Gate | Runs the three-level SSOT validator. |
 | `TaskStatus.md` | Status | Human-readable derived dashboard; never overrides canonical SSOT. |
+| `architecture/execution-engine-architecture.md` | Architecture | Defines GitHub as VCS/persistence and the Automation Tool/local process pool as execution engine. |
 | `automation/automation-config.yaml` | Automation | Machine-readable Orchestrator configuration. |
 | `automation/backlog-contract.md` | Backlog Contract | Defines mandatory Level 1/2/3 SSOT and backlog lifecycle. |
 | `automation/execution-model.md` | Architecture Document | End-to-end execution model. |
@@ -41,7 +44,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `governance/ssot-levels.yaml` | SSOT Governance | Defines SSOT-L1/L2/L3 and QG-SSOT-001. |
 | `governance/quality-gates.yaml` | Quality Gate Governance | Defines QG-SSOT-001, QG-SOW-001, QG-DEP-001, QG-LOG-001, QG-LANE-001 and item gates. |
 | `governance/execution-lifecycle-logging.yaml` | Execution Logging | Invocation and lane lifecycle logging contract. |
-| `governance/lane-execution.yaml` | Lane Governance | Local process-pool backend, concurrency metrics and QG-LANE-001. |
+| `governance/lane-execution.yaml` | Lane Governance | Local process-pool backend, GitHub VCS separation, concurrency metrics and QG-LANE-001. |
 | `governance/automation-log-policy.md` | Governance | Plain-English audit logging. |
 | `governance/automation-policy.md` | Governance | Governing automation rules. |
 | `governance/source-artifact-sync-policy.md` | Governance | Source-to-artifact synchronization rules. |
@@ -50,6 +53,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `logs/automation-story.md` | Story | Human-readable automation story. |
 | `repository/project-inventory.yaml` | Level 1 SSOT | Authoritative source project/module inventory. |
 | `repository-catalogue.md` | Governance | This catalogue. |
+| `support/github-actions-startup-investigation.md` | Support Evidence | Historical GitHub Actions startup issue template; non-blocking for current execution architecture. |
 | `sync/source-artifact-sync-register.yaml` | Synchronization | Source-to-artifact synchronization list. |
 | `traceability/README.md` | Traceability | Traceability output-area guide. |
 | `traceability/controller-traceability-design.md` | Traceability Design | Source Check Output -> Matrix flow. |
@@ -69,6 +73,7 @@ Static framework files must exist exactly as listed. Per-backlog definitions/SOW
 .github/workflows/catalogue-gate.yml
 .github/workflows/ssot-gate.yml
 TaskStatus.md
+architecture/execution-engine-architecture.md
 automation/automation-config.yaml
 automation/backlog-contract.md
 automation/execution-model.md
@@ -108,6 +113,7 @@ logs/automation-log.md
 logs/automation-story.md
 repository/project-inventory.yaml
 repository-catalogue.md
+support/github-actions-startup-investigation.md
 sync/source-artifact-sync-register.yaml
 traceability/README.md
 traceability/controller-traceability-design.md
