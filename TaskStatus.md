@@ -35,19 +35,16 @@ Latest worker execution: **`E2E-STAGED-20260823-161214`**
 | QG-LANE-001 | **UNDERUTILIZED** |
 | Backend capacity probe | **10 / 10** |
 
-No unchanged discovery batch was rerun in the latest Orchestrator checkpoint because the immutable snapshot still requires unrelated source restaging.
+No unchanged discovery batch was rerun because the immutable snapshot still requires source restaging.
 
 ## Latest Orchestrator Checkpoint
 
-Checkpoint: **`PRODUCTION-FIRE-20260824-000114`**
+Checkpoint: **`PRODUCTION-FIRE-20260824-013546`**
 
-`POST /complete-trip` has now been accepted **COMPLETE / FULL_BRANCHING** from frozen-source evidence. The complete path includes `CompleteTripController.completeTrip`, `CompleteTripServiceImpl.processRequest`, `CompleteTripRequestValidator.validate`, all participating Spring Data DAOs/entities, the associated `CylinderDo` read, all proved PostgreSQL objects, and the terminal redirect.
+Two endpoints advanced during the latest production invocation:
 
-A validator-only dependency that was not present in the earlier service-only list was found and proved:
-
-`YardInventoryAllowedStateJpaDao -> YardInventoryAllowedStateDo -> public.tbl_yard_inventory_allowed_state -> CylinderStateDo -> public.tbl_cylinder_states`.
-
-Evidence: `logs/runs/PRODUCTION-FIRE-20260824-000114.md`.
+- `GET /challan-heatmap` -> **COMPLETE / FULL_BRANCHING**. Source-proved chain: `ChallanHeatmapController.showHeatmap -> ChallanHeatmapFetchService.processRequest -> ChallanHeatmapMetricsViewJpaDao -> ChallanHeatmapMetricsViewDo -> public.vw_challan_heatmap_metrics -> ChallanHeatmapMetricsViewMapper`, plus terminal `final-version-1/ChallanHeatmapDashboard`. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-013336.md`.
+- `GET /customer-address-location/planning-map` -> **COMPLETE / FULL**. Controller directly returns `with-menu/CustomerAddressPlanningMap`; no service/DAO/database dependency exists on this method. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-013546.md`.
 
 ## Framework / Gate State
 
@@ -64,23 +61,23 @@ Evidence: `logs/runs/PRODUCTION-FIRE-20260824-000114.md`.
 
 ## Current Lane State
 
-All **10 lanes are IDLE between worker fires**. The last worker batch closed cleanly. The Primary Orchestrator is continuing source-restage and direct frozen-source trace closure work; workers restart only when QG-SOURCE-001 proves an advanced immutable snapshot.
+All **10 lanes are IDLE between worker fires**. The last worker batch closed cleanly. Direct frozen-source trace closure continues while the shared immutable snapshot is restaged; workers restart only after QG-SOURCE-001 proves the snapshot advanced.
 
 ## Current BL-001 Traceability Runtime
 
 | Metric | Current value |
 |---|---:|
 | Caller-visible endpoints | **134** |
-| Examined | **38** |
-| COMPLETE | **36** |
+| Examined | **43** |
+| COMPLETE | **41** |
 | UNRESOLVED | **2** |
 | BLOCKED / FAILED | **0 / 0** |
-| NOT YET EXAMINED | **96** |
+| NOT YET EXAMINED | **91** |
 | Traceability Matrix | **INCREMENTAL_PARTIAL** |
-| Materialized full-chain rows | **11** |
+| Materialized full-chain rows | **16** |
 | Historical accepted rows awaiting evidence backfill | **27** |
 
-Current examination coverage: **28.36%**. Current COMPLETE coverage: **26.87%**.
+Current examination coverage: **32.09%**. Current COMPLETE coverage: **30.60%**.
 
 Open canonical evidence gaps remain:
 
@@ -98,6 +95,6 @@ Open canonical evidence gaps remain:
 
 ## Exact Next Action
 
-Continue resolving and blob-verifying the **16 outstanding worker source requests**, materialize the already validated `CompleteTripServiceImpl` into the immutable worker snapshot if still absent, and fire the same ten-task discovery only after staged preflight proves the snapshot advanced. In parallel, source-close the two canonical unresolved POST endpoints when complete branching evidence is available. Every accepted trace must immediately update the Markdown matrix, structured JSON, browser data and matrix counters.
+Continue the remaining `CustomerAddressLocationController` service-backed routes and then `CustomerConsumptionDashboardController`, while resolving and blob-verifying the **16 outstanding worker source requests** and materializing validated sources into the immutable snapshot. Fire the ten-worker discovery only after staged preflight proves the snapshot advanced. Preserve the two canonical unresolved POST endpoints until every branch dependency is source-proved.
 
 BL-001 remains **PARTIAL** and cannot close before 100% endpoint trace-result coverage, final matrix reconciliation/gates, and explicit `QG-TRC-015` user acceptance.
