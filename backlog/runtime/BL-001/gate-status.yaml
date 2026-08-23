@@ -12,18 +12,7 @@ quality_gate_status:
       level_2: {state: COMPLETE, evidence: [backlog/items/BL-001-controller-traceability.yaml, backlog/sow/BL-001-controller-traceability.yaml, backlog/paths/BL-001-traceability.yaml, backlog/gates/BL-001-traceability.yaml]}
       level_3:
         state: COMPLETE
-        evidence:
-          - backlog/runtime/BL-001/analysis.yaml
-          - backlog/runtime/BL-001/execution-plan.yaml
-          - backlog/runtime/BL-001/work-unit-status.yaml
-          - backlog/runtime/BL-001/gate-status.yaml
-          - backlog/runtime/BL-001/blockers.yaml
-          - backlog/runtime/BL-001/decisions.yaml
-          - backlog/runtime/BL-001/worker-input-register.yaml
-          - backlog/runtime/BL-001/lane-status.yaml
-          - backlog/runtime/BL-001/lane-dispatch.yaml
-          - backlog/runtime/BL-001/execution-statistics.yaml
-          - backlog/runtime/BL-001/result.yaml
+        evidence: [backlog/runtime/BL-001/analysis.yaml, backlog/runtime/BL-001/execution-plan.yaml, backlog/runtime/BL-001/work-unit-status.yaml, backlog/runtime/BL-001/gate-status.yaml, backlog/runtime/BL-001/blockers.yaml, backlog/runtime/BL-001/decisions.yaml, backlog/runtime/BL-001/worker-input-register.yaml, backlog/runtime/BL-001/lane-status.yaml, backlog/runtime/BL-001/lane-dispatch.yaml, backlog/runtime/BL-001/execution-statistics.yaml, backlog/runtime/BL-001/result.yaml]
     planning_allowed: true
     replanning_allowed: true
 
@@ -34,57 +23,62 @@ quality_gate_status:
     id: QG-LOG-001
     name: Execution Lifecycle Logging Completeness
     state: PASS
-    latest_invocation: INVOCATION-20260823-160000
+    latest_accepted_invocation: INVOCATION-20260823-160000
     evidence:
       - Attempt 27 preflight and post-aggregation both proved zero transient repository lane logs
       - every started Attempt 27 lane has ordered INIT START/END, SERVICE START/END and CLOSE END evidence
-      - matrix workers are now also required to emit lane-lifecycle.md and aggregate/remove transient individual artifacts
-    result_acceptance_allowed_for_latest_run: true
+      - source-local matrix workers are configured to emit lane-lifecycle.md and aggregate/remove transient individual artifacts
+    result_acceptance_allowed_for_latest_accepted_run: true
 
   real_lane_utilization_gate:
     id: QG-LANE-001
     name: Real Lane Utilization Gate
-    state: PENDING_EXECUTION_EVIDENCE
+    state: BLOCKED_PLATFORM
     governance: governance/lane-execution.yaml
-    dispatch_queue: backlog/runtime/BL-001/lane-dispatch.yaml
-    worker_backend: GITHUB_ACTIONS_MATRIX
-    workflow: .github/workflows/lane-matrix-dispatch.yml
+    control_dispatch_queue: backlog/runtime/BL-001/lane-dispatch.yaml
+    worker_backend: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
+    source_repository: vvekselva/CylinderManagement
+    source_execution_branch: automation/lane-matrix
+    source_workflow: .github/workflows/lane-matrix-dispatch.yml
+    source_run_status: automation/matrix-execution.yaml
     configured_lanes: 10
-    safe_ready_tasks_in_seed_batch: 10
+    safe_ready_tasks: 10
     expected_concurrent_lanes: 10
-    previous_logical_run_observation:
-      attempt: 27
-      distinct_lanes_used: 3
-      inferred_peak_concurrent_lanes: 1
-      interpretation: DISTINCT_LANE_PARTICIPATION_DID_NOT_PROVE_REAL_CONCURRENCY
+    failed_control_repository_attempt:
+      workflow_run_id: 32638659581
+      matrix_worker_jobs_spawned: 10
+      workers_reached_service: 0
+      failure: CONTROL_REPOSITORY_TOKEN_CANNOT_READ_PRIVATE_SOURCE_REPOSITORY
+      evidence: Worker job log reports fatal could not read Username for https://github.com while cloning CylinderManagement.
+      trace_evidence_accepted: false
+    source_local_attempt:
+      dispatch_id: MATRIX-BL001-SOURCE-002
+      workflow_installed: true
+      dispatch_installed: true
+      self_reported_run_id: null
+      state: SOURCE_WORKFLOW_NOT_STARTING_OR_NOT_PERMITTED
+      blocker_id: PB-BL001-001
     pass_evidence_required:
-      - lane-dispatch-summary.yaml from a real matrix run
-      - measured peak_concurrent_lanes
-      - measured average_concurrent_lanes
-      - worker result count and transient artifact cleanup result
+      - source automation/matrix-execution.yaml with a real workflow run ID
+      - lane-dispatch-summary.yaml from the durable aggregate artifact
+      - measured peak_concurrent_lanes and average_concurrent_lanes
+      - worker result count equals expected task count
+      - transient individual matrix artifacts remaining equals zero after aggregation
     source_evidence_validity_effect: >-
-      QG-LANE-001 does not invalidate correct source evidence. It blocks only a claim that real
-      parallel lane utilization is solved until measured concurrency is available and acceptable.
+      QG-LANE-001 does not invalidate correct source evidence. It prevents a claim that real parallel
+      lane utilization is solved until source-local worker service actually runs and concurrency is measured.
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
     QG-TRC-002:
       name: Complete Source Check
       state: IN_PROGRESS
-      evidence:
-        - all 62 Java component candidates are classified
-        - 37 of 134 endpoints have been explicitly examined for final dependencies
-        - 35 examined endpoints are COMPLETE
-        - 2 examined endpoints are UNRESOLVED
-        - 97 endpoints remain not yet examined
-        - canonical completed WI-0004 result is not yet accepted
+      evidence: [all 62 Java component candidates are classified, 37 of 134 endpoints have been explicitly examined for final dependencies, 35 examined endpoints are COMPLETE, 2 examined endpoints are UNRESOLVED, 97 endpoints remain not yet examined, canonical completed WI-0004 result is not yet accepted]
     QG-TRC-003: {name: Controller Inventory Completeness, state: PASS}
     QG-TRC-004:
       name: Endpoint Inventory Completeness
       state: IN_PROGRESS
-      evidence:
-        - 134 unique caller-visible HTTP method/path combinations are source-proved
-        - canonical Endpoint Inventory artifact remains locked behind completed Source Check Output
+      evidence: [134 unique caller-visible HTTP method/path combinations are source-proved, canonical Endpoint Inventory artifact remains locked behind completed Source Check Output]
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
     QG-TRC-007: {name: Call Path Evidence, state: WAITING}
@@ -92,10 +86,7 @@ quality_gate_status:
     QG-TRC-009:
       name: No Guessing And Unresolved Quality
       state: IN_PROGRESS
-      evidence:
-        - two complex POST endpoints remain UNRESOLVED where complete final dependency sets are not proved
-        - no missing table/view names are inferred from naming
-        - matrix workers collect candidates only; Orchestrator retains final trace-decision authority
+      evidence: [two complex POST endpoints remain UNRESOLVED where complete final dependency sets are not proved, no missing table/view names are inferred from naming, matrix workers collect candidates only and the control Orchestrator retains final trace-decision authority]
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
@@ -115,6 +106,5 @@ quality_gate_status:
   close_allowed: false
   reason: >-
     BL-001 remains PARTIAL because 97 endpoints are not yet examined, two complex POST traces remain
-    unresolved, and the canonical WI-0004 result is not yet COMPLETED/contract-valid at 100 percent
-    coverage. QG-LANE-001 is additionally waiting for the first real GitHub Actions matrix concurrency
-    summary; this does not block collection or use of valid source evidence.
+    unresolved and WI-0004 is not complete at 100 percent coverage. QG-LANE-001 is BLOCKED_PLATFORM
+    until the source-local private-repository Actions workflow starts and produces measured concurrency evidence.
