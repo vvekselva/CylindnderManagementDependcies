@@ -1,76 +1,97 @@
 runtime_ssot_contract:
-  version: 6
+  version: 7
   level: SSOT-L3
   planning_gate: QG-SSOT-001
+  architecture: architecture/self-reliant-e2e-execution.md
+  self_reliant_governance: governance/self-reliant-execution.yaml
 
   required_files:
     analysis.yaml: {purpose: current analysis proved facts progress and next step, may_exist_before_analysis_as: INITIALIZED}
     execution-plan.yaml: {purpose: current approved execution plan/work units, may_exist_before_first_plan_as: INITIALIZED_EMPTY}
     work-unit-status.yaml: {purpose: authoritative work-unit lifecycle states}
-    gate-status.yaml: {purpose: authoritative current quality/pre-execution gate states including QG-SOURCE-001}
-    blockers.yaml: {purpose: explicit blockers evidence gaps and source-staging gaps}
+    gate-status.yaml: {purpose: authoritative current quality/pre-execution gate states including QG-SOURCE-001 and recovery state}
+    blockers.yaml: {purpose: explicit blockers evidence gaps source-resolution gaps and recovery blockers}
     decisions.yaml: {purpose: orchestrator/user decisions affecting execution}
     worker-input-register.yaml: {purpose: worker-input issuance/consumption state}
     lane-status.yaml: {purpose: authoritative live lane-to-task assignment run heartbeat blocker and release state, may_exist_before_execution_as: INITIALIZED_ALL_IDLE}
     lane-dispatch.yaml: {purpose: authoritative queue of safe independent tasks and selected source-provider policy, may_exist_before_execution_as: INITIALIZED_EMPTY_QUEUE}
-    local-execution.yaml: {purpose: authoritative process-pool execution source-provider state measured concurrency aggregate evidence and closure state}
-    execution-statistics.yaml: {purpose: authoritative run-over-run operational statistics including trace coverage real lane concurrency throughput and stale/no-progress cycles}
+    local-execution.yaml: {purpose: authoritative self-reliant execution journal summary including dispatch fingerprint source-provider stage process state aggregate validation and sync state}
+    execution-statistics.yaml: {purpose: authoritative run-over-run operational statistics including trace coverage source closure natural lane concurrency backend capacity and stale/no-progress cycles}
     result.yaml: {purpose: final/current backlog result and closure state}
 
   source_provider_rules:
     governance: governance/source-provider.yaml
+    source_layout: repository/source-layout.yaml
     gate: QG-SOURCE-001
     preferred_provider: ORCHESTRATOR_STAGED_SNAPSHOT
     fallback_provider: LOCAL_GIT_CHECKOUT
     local_checkout_is_not_mandatory: true
     staged_snapshot_rules:
       - manifest identifies repository and exact dispatch baseline
-      - every materialized source file records exact Git blob SHA
+      - every materialized source file records exact Git blob SHA and byte length
       - worker recomputes blob SHA before reading each file
       - controller root integrity failure blocks SERVICE
-      - missing downstream component references remain explicit and trigger Orchestrator restaging
+      - interface binding is followed only from a source-validated manifest binding
+      - missing_source_requests and missing_binding_requests remain explicit
+      - Orchestrator performs at most eight progressing restage/rebind iterations
+      - repeated identical unresolved request set without new verified source becomes SOURCE_RESOLUTION_STALLED
       - partial source closure never auto-completes endpoint traces
     local_git_rules:
       - frozen commit must exist in local Git object database
       - detached temporary worktree is used without switching active checkout
 
   lane_status_rules:
-    - exactly ten orchestration lane records must exist for LANE-01 through LANE-10
-    - a non-IDLE lane identifies Work Unit task and current execution
-    - WORKING state must be supported by process/lifecycle evidence
-    - CLOSED execution releases all lanes unless a newer assignment exists
+    - exactly ten orchestration lane records exist for LANE-01 through LANE-10
+    - a non-IDLE lane identifies Work Unit task current execution PID when applicable and lifecycle/heartbeat evidence
+    - WORKING state is supported by process/lifecycle evidence
+    - CLOSED or restage-required execution releases all worker lanes unless a newer assignment exists
     - summary counts reconcile to exactly ten lanes
 
   lane_dispatch_rules:
-    - lane-dispatch.yaml identifies backlog item work unit frozen source baseline backend source-provider policy and configured lane count
+    - lane-dispatch identifies backlog item work unit frozen baseline backend source-provider policy source-layout policy and configured lane count
     - worker_backend is LOCAL_PROCESS_POOL
+    - authoritative staged scripts are automation/staged-lane-executor-v3.py and automation/staged-lane-worker-v3.py
     - READY tasks identify task_id lane exact task task_description controller path and safe_independent=true
-    - no lane appears more than once in one active batch and no more than ten tasks are concurrent
+    - duplicate lane or task IDs are rejected before fire
+    - no more than ten tasks are concurrent
     - worker evidence never automatically makes an endpoint COMPLETE
 
+  execution_journal_rules:
+    - every execution records execution_id dispatch_fingerprint source_baseline source_provider phase worker state aggregate result fingerprint validation state and sync state
+    - same dispatch fingerprint plus PENDING_SYNC causes sync-only retry and no worker restart
+    - same fingerprint plus closed evidence awaiting validation causes validation reuse and no worker restart
+    - interrupted RUNNING execution without live workers enters recovery and rejects partial output
+    - changed dispatch fingerprint creates a new execution generation
+    - already CLOSED_SYNCED same fingerprint is a no-op
+
   execution_rules:
-    - before source-reading worker SERVICE QG-SOURCE-001 must pass for the task root
+    - before source-reading worker SERVICE QG-SOURCE-001 passes for the task root
     - before fire transient logs/runs/*-LANE-*.md count is zero
-    - staged mode uses automation/staged-lane-executor.py and automation/staged-lane-worker.py
+    - staged mode uses automation/staged-lane-executor-v3.py and automation/staged-lane-worker-v3.py
     - local Git mode uses automation/local-lane-executor.py and automation/local-lane-worker.py
     - GitHub Actions or another external worker service is not required
-    - QG-LANE-001 uses overlapping SERVICE intervals rather than lane IDs or process creation
-    - every transient lane log is aggregated verified deleted and rescanned to zero before closure
-    - final endpoint trace validation remains primary-Orchestrator owned
+    - workers never receive connected GitHub credentials
+    - QG-LANE-001 uses natural overlapping SERVICE intervals rather than lane IDs or process creation
+    - artificial workload delay is not used merely to make QG-LANE-001 pass
+    - every transient lane log is aggregated verified deleted and rescanned to zero before execution closure
+    - final endpoint trace validation remains Primary-Orchestrator owned
+    - after validation GitHub write failure yields PENDING_SYNC and does not cause same-fingerprint worker rerun
 
   execution_statistics_rules:
-    - percentages declare formula and must not be presented as overall project completion unless formally weighted
-    - peak_concurrent_lanes means peak overlapping SERVICE intervals
-    - average_concurrent_lanes means aggregate SERVICE seconds divided by SERVICE batch wall-clock seconds
-    - peak_capacity_utilization_percentage equals peak SERVICE concurrency / configured lane count * 100
-    - source-provider state and source_closure_complete are reported separately from QG-LANE-001
+    - percentages declare formula and are not presented as overall project completion unless formally weighted
+    - peak_concurrent_lanes means peak natural overlapping SERVICE intervals
+    - average_concurrent_lanes means aggregate natural SERVICE seconds divided by SERVICE batch wall-clock seconds
+    - backend capacity probe is reported separately from natural production QG-LANE-001
+    - source-provider state and source_closure_complete are separate from lane-utilization state
     - QG-LANE-001 underutilization preserves correctly verified source evidence
     - TaskStatus.md is derived and never overrides Level-3 runtime
 
   consistency_rule: >-
     Level 3 files reconcile to the same Level 1 item and Level 2 definition. lane-dispatch, source-provider state,
-    local-execution, lane-status, execution statistics and aggregate evidence must identify the same baseline and execution.
+    execution journal/local-execution, lane-status, execution statistics, aggregate evidence, validation and sync state
+    identify the same baseline and execution generation.
 
   failure_rule: >-
-    Missing or inconsistent Level 3 files fail QG-SSOT-001. Source integrity failures fail QG-SOURCE-001 and block
-    affected worker SERVICE without converting missing evidence into guessed traceability conclusions.
+    Missing or inconsistent Level 3 files fail QG-SSOT-001. Source integrity/binding failures fail QG-SOURCE-001 for
+    affected paths. Recovery/persistence failures preserve valid closed evidence and fail closed without duplicate execution
+    or guessed traceability conclusions.
