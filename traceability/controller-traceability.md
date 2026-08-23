@@ -6,8 +6,8 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **56 / 134 examined; 54 COMPLETE; 2 UNRESOLVED; 78 not yet examined.**  
-Rows currently materialized below: **29**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **57 / 134 examined; 55 COMPLETE; 2 UNRESOLVED; 77 not yet examined.**  
+Rows currently materialized below: **30**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -40,6 +40,11 @@ Rows currently materialized below: **29**. The other 27 historically accepted ro
 | GET | `/customer-consumption/` | `CustomerConsumptionDashboardController.dashboard` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/CustomerConsumptionDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
 | GET | `/customer-consumption/dashboard` | `CustomerConsumptionDashboardController.dashboard` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/CustomerConsumptionDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
 | GET | `/customer-consumption/api/dashboard` | `CustomerConsumptionDashboardController.dashboardData` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_JSON | `public.vw_customer_product_consumption_projection`; `CustomerConsumptionDashboardDto` JSON response | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
+| GET | `/ownership-obligation-dashboard` | `OwnershipObligationDashboardController.showOwnershipObligationDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | `public.tbl_cylinder_party_custody`; `public.tbl_cylinder`; `public.tbl_customer`; `public.tbl_supplier`; `final-version-1/OwnershipObligationDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-033550.md` |
+
+## `OwnershipObligationDashboardController` full-chain summary
+
+The controller calls `OwnershipObligationDashboardService.fetchDashboard`. The detail branch uses `OwnershipObligationDetailJpaDao` and `OwnershipObligationDetailViewDo`; its explicit `@Subselect` reads `public.tbl_cylinder_party_custody`, `public.tbl_cylinder`, `public.tbl_customer`, and `public.tbl_supplier`. The party-summary branch uses `OwnershipObligationPartySummaryJpaDao` and `OwnershipObligationPartySummaryViewDo`; its explicit `@Subselect` reads `public.tbl_cylinder_party_custody`, `public.tbl_customer`, and `public.tbl_supplier`. A separate closed-today metric executes native SQL directly against `public.tbl_cylinder_party_custody`. Both mapped result branches terminate in `final-version-1/OwnershipObligationDashboard`.
 
 ## `CustomerConsumptionDashboardController` full-chain summary
 
