@@ -40,11 +40,9 @@ No unchanged discovery batch was rerun because the immutable snapshot still requ
 
 ## Latest Orchestrator Checkpoint
 
-Checkpoint: **`PRODUCTION-FIRE-20260824-023321`**
+Checkpoint: **`PRODUCTION-FIRE-20260824-033550`**
 
-`CustomerConsumptionDashboardController` is now fully source-closed for all four caller-visible GET paths. The three dashboard URL variants and the JSON API all flow through `CustomerConsumptionDashboardService`, `CustomerProductConsumptionProjectionViewJpaDao`, and `CustomerProductConsumptionProjectionViewDo` to the explicit database view `public.vw_customer_product_consumption_projection`.
-
-The three page routes terminate at `with-menu/CustomerConsumptionDashboard`; `/customer-consumption/api/dashboard` terminates as a `CustomerConsumptionDashboardDto` JSON response. The entity's `@Synchronize` table list is retained only as Hibernate synchronization metadata and is not promoted to a direct endpoint dependency without view-definition proof.
+`GET /ownership-obligation-dashboard` is now source-closed as **COMPLETE / FULL_BRANCHING**. The controller calls `OwnershipObligationDashboardService.fetchDashboard`. The detail path uses `OwnershipObligationDetailJpaDao` and `OwnershipObligationDetailViewDo`; the explicit `@Subselect` reads `public.tbl_cylinder_party_custody`, `public.tbl_cylinder`, `public.tbl_customer`, and `public.tbl_supplier`. The party-summary path uses `OwnershipObligationPartySummaryJpaDao` and `OwnershipObligationPartySummaryViewDo` and reads the custody/customer/supplier tables. The closed-today metric executes native SQL directly on `public.tbl_cylinder_party_custody`. The route terminates at `final-version-1/OwnershipObligationDashboard`.
 
 ## Framework / Gate State
 
@@ -68,16 +66,16 @@ All **10 lanes are IDLE between worker fires**. The last worker batch closed cle
 | Metric | Current value |
 |---|---:|
 | Caller-visible endpoints | **134** |
-| Examined | **56** |
-| COMPLETE | **54** |
+| Examined | **57** |
+| COMPLETE | **55** |
 | UNRESOLVED | **2** |
 | BLOCKED / FAILED | **0 / 0** |
-| NOT YET EXAMINED | **78** |
+| NOT YET EXAMINED | **77** |
 | Traceability Matrix | **INCREMENTAL_PARTIAL** |
-| Materialized full-chain rows | **29** |
+| Materialized full-chain rows | **30** |
 | Historical accepted rows awaiting evidence backfill | **27** |
 
-Current examination coverage: **41.79%**. Current COMPLETE coverage: **40.30%**.
+Current examination coverage: **42.54%**. Current COMPLETE coverage: **41.04%**.
 
 Open canonical evidence gaps remain:
 
