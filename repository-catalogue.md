@@ -9,69 +9,74 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | File | Category | Purpose |
 |---|---|---|
 | `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and declared dynamic runtime/artifact paths. |
-| `.github/workflows/ssot-gate.yml` | Planning Gate | Runs the three-level SSOT validator; PLAN/REPLAN prerequisites must be valid for run-enabled backlog items. |
-| `TaskStatus.md` | Status | Human-readable consolidated dashboard; generated/derived status must not override canonical Level 1/2/3 SSOT. |
-| `automation/automation-config.yaml` | Automation | Machine-readable Backlog-driven Orchestrator, SSOT planning gates, lane, lifecycle logging, Worker, scheduling and lock configuration. |
-| `automation/backlog-contract.md` | Backlog Contract | Defines mandatory Level 1/2/3 SSOT, planning gate, Backlog lifecycle and execution/closure contract. |
-| `automation/execution-model.md` | Architecture Document | Main framework document showing Level 1/2/3, lane execution, logging and end-to-end execution flow. |
-| `automation/generate-automation-story.py` | Automation | Converts the human-readable automation log into the overall story. |
-| `automation/validate-ssot.py` | SSOT Validator | Machine-validates Level 1, Level 2, Level 3 and QG-SOW-001 prerequisites for every run-enabled backlog item. |
+| `.github/workflows/ssot-gate.yml` | Planning Gate | Runs the three-level SSOT validator. |
+| `.github/workflows/lane-matrix-dispatch.yml` | Real Lane Execution | Dispatches up to ten independent read-only matrix workers, aggregates evidence, measures real concurrency and removes transient lane artifacts. |
+| `TaskStatus.md` | Status | Human-readable derived dashboard; never overrides canonical SSOT. |
+| `automation/automation-config.yaml` | Automation | Machine-readable Orchestrator configuration. |
+| `automation/backlog-contract.md` | Backlog Contract | Defines mandatory Level 1/2/3 SSOT and backlog lifecycle. |
+| `automation/execution-model.md` | Architecture Document | End-to-end execution model. |
+| `automation/generate-automation-story.py` | Automation | Generates the human-readable automation story. |
+| `automation/validate-ssot.py` | SSOT Validator | Validates Level 1/2/3 and SOW prerequisites. |
+| `automation/lane-worker.py` | Matrix Worker | Read-only source-evidence collector with INIT/SERVICE/CLOSE lifecycle evidence. |
+| `automation/lane-summary.py` | Matrix Summary | Calculates distinct participation, peak/average concurrency and QG-LANE-001 state. |
 | `automation/task-contract.md` | Automation | Defines Task/Job execution fields and lifecycle rules. |
-| `automation/worker-component-contract.md` | Worker | Defines the task-agnostic Generic Worker and result handoff rules. |
-| `automation/worker-service-contract.md` | Automation | Defines mandatory lane lifecycle plus INIT/SERVICE/CLOSE boundary logging. |
-| `automation/workflow-contract.md` | Automation | Defines Workflow -> Job -> Action execution representation and producer/consumer Job handoff. |
-| `backlog/README.md` | Backlog | Explains Backlog workspace, mandatory SOW, three-level SSOT and runtime files. |
+| `automation/worker-component-contract.md` | Worker | Generic Worker and result handoff rules. |
+| `automation/worker-service-contract.md` | Automation | Mandatory worker lifecycle logging. |
+| `automation/workflow-contract.md` | Automation | Workflow -> Job -> Action contract. |
+| `backlog/README.md` | Backlog | Backlog workspace and SSOT overview. |
 | `backlog/backlog.yaml` | Level 1 SSOT | Authoritative Backlog Master register. |
-| `backlog/backlog-item-template.yaml` | Backlog | Standard Backlog registration shape. |
-| `backlog/item-definition-template.yaml` | Level 2 SSOT | Standard per-backlog definition shape used before planning. |
-| `backlog/statement-of-work-template.yaml` | Level 2 SOW | Standard mandatory Statement of Work contract. |
-| `backlog/runtime-contract.yaml` | Level 3 SSOT | Defines every runtime file required before PLAN/REPLAN. |
-| `backlog/orchestrator-run-config.yaml` | Orchestrator Run Control | Execution switchboard; QG-SSOT-001 and SOW validation are fail-closed. |
-| `backlog/gates/BL-001-traceability.yaml` | Backlog Quality Gate | User-approved Controller Traceability Quality Gate set QG-TRC-001 through QG-TRC-015. |
-| `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability route bound to SOW, SSOT/dependency prerequisites and approved Traceability gates. |
-| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route constrained by repository/project-inventory.yaml. |
-| `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test route; non-plannable until required Level 1/2/3 and gates are complete. |
-| `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage route; non-plannable until required dependencies/gates are complete. |
-| `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit route; non-plannable until required Level 1/2/3 and gates are complete. |
-| `backlog/paths/BL-006-requirements.yaml` | Completion Path | Requirements route; non-plannable until required Level 1/2/3 and gates are complete. |
-| `database-dependency-neon.md` | Dependency | Neon/PostgreSQL/Flyway dependency and database change-control ledger. |
-| `governance/ssot-levels.yaml` | SSOT Governance | Defines SSOT-L1, SSOT-L2, SSOT-L3 and fail-closed QG-SSOT-001 planning gate. |
-| `governance/quality-gates.yaml` | Quality Gate Governance | Defines QG-SSOT-001, QG-SOW-001, QG-DEP-001, QG-LOG-001 and item-specific Quality Gate registry. |
-| `governance/execution-lifecycle-logging.yaml` | Execution Logging | Mandatory Orchestrator invocation and lane INIT/SERVICE/CLOSE boundary logging contract and QG-LOG-001. |
-| `governance/automation-log-policy.md` | Governance | Defines plain-English invocation/lane lifecycle audit logging. |
-| `governance/automation-policy.md` | Governance | Governing rules for automated work. |
-| `governance/source-artifact-sync-policy.md` | Governance | Defines change classification, artifact refresh and notification rules. |
-| `governance/worker-operating-guide.md` | Governance | Defines orchestration-lane behaviour and input-driven Generic Worker model. |
-| `logs/automation-log.md` | Audit Log | Coordinator-owned consolidated human-readable orchestration history. |
-| `logs/automation-story.md` | Story | Human-readable overall automation story. |
-| `repository/project-inventory.yaml` | Level 1 SSOT | Authoritative CylinderManagement project/module inventory and backlog scope classifications. |
-| `repository-catalogue.md` | Governance | Authoritative catalogue of static control files and allowed dynamic paths. |
-| `sync/source-artifact-sync-register.yaml` | Synchronization | Machine-readable source-component to artifact synchronization list. |
-| `traceability/README.md` | Traceability | Explains Controller Traceability output area. |
-| `traceability/controller-traceability-design.md` | Traceability Design | Defines Source Check Output -> Orchestrator -> Traceability Matrix flow used by BL-001. |
-| `traceability/controller-trace-template.md` | Traceability Template | Standard per-controller trace artifact referencing evidence. |
+| `backlog/backlog-item-template.yaml` | Backlog | Standard backlog registration shape. |
+| `backlog/item-definition-template.yaml` | Level 2 SSOT | Standard per-backlog definition shape. |
+| `backlog/statement-of-work-template.yaml` | Level 2 SOW | Mandatory Statement of Work contract. |
+| `backlog/runtime-contract.yaml` | Level 3 SSOT | Defines every runtime file required before PLAN/REPLAN, including lane dispatch/statistics. |
+| `backlog/orchestrator-run-config.yaml` | Orchestrator Run Control | Execution switchboard. |
+| `backlog/gates/BL-001-traceability.yaml` | Backlog Quality Gate | BL-001 traceability gates. |
+| `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability route. |
+| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test route constrained by project inventory. |
+| `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test route. |
+| `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage route. |
+| `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit route. |
+| `backlog/paths/BL-006-requirements.yaml` | Completion Path | Requirements route. |
+| `database-dependency-neon.md` | Dependency | Neon/PostgreSQL/Flyway dependency ledger. |
+| `governance/ssot-levels.yaml` | SSOT Governance | Defines SSOT-L1/L2/L3 and QG-SSOT-001. |
+| `governance/quality-gates.yaml` | Quality Gate Governance | Defines QG-SSOT-001, QG-SOW-001, QG-DEP-001, QG-LOG-001, QG-LANE-001 and item gates. |
+| `governance/execution-lifecycle-logging.yaml` | Execution Logging | Invocation and lane lifecycle logging contract. |
+| `governance/lane-execution.yaml` | Lane Governance | Real matrix-worker backend, concurrency metrics and QG-LANE-001. |
+| `governance/automation-log-policy.md` | Governance | Plain-English audit logging. |
+| `governance/automation-policy.md` | Governance | Governing automation rules. |
+| `governance/source-artifact-sync-policy.md` | Governance | Source-to-artifact synchronization rules. |
+| `governance/worker-operating-guide.md` | Governance | Lane and Generic Worker operating rules. |
+| `logs/automation-log.md` | Audit Log | Coordinator-owned consolidated audit history. |
+| `logs/automation-story.md` | Story | Human-readable automation story. |
+| `repository/project-inventory.yaml` | Level 1 SSOT | Authoritative source project/module inventory. |
+| `repository-catalogue.md` | Governance | This catalogue. |
+| `sync/source-artifact-sync-register.yaml` | Synchronization | Source-to-artifact synchronization list. |
+| `traceability/README.md` | Traceability | Traceability output-area guide. |
+| `traceability/controller-traceability-design.md` | Traceability Design | Source Check Output -> Matrix flow. |
+| `traceability/controller-trace-template.md` | Traceability Template | Per-controller trace artifact template. |
 | `usecases/Readme.md` | Use Cases | Use-case documentation entry point. |
-| `worker/README.md` | Worker | Explains Worker input/run/result workspace and machine-readable handoff. |
-| `worker/worker-input-template.yaml` | Worker | Standard generated task input and result-contract format for the Generic Worker. |
-| `workflows/WF-001-controller-traceability/source-check-output-contract.yaml` | Workflow Contract | Canonical Source Check Output contract used by BL-001. |
-| `workflows/WF-001-controller-traceability/workflow.yaml` | Workflow | Existing Traceability execution workflow retained as BL-001 implementation detail. |
-| `workflows/WF-002-source-artifact-sync/workflow.yaml` | Workflow | Ongoing source-to-artifact synchronization workflow. |
+| `worker/README.md` | Worker | Worker input/run/result workspace. |
+| `worker/worker-input-template.yaml` | Worker | Generic Worker input/result format. |
+| `workflows/WF-001-controller-traceability/source-check-output-contract.yaml` | Workflow Contract | Canonical Source Check Output contract. |
+| `workflows/WF-001-controller-traceability/workflow.yaml` | Workflow | BL-001 implementation workflow. |
+| `workflows/WF-002-source-artifact-sync/workflow.yaml` | Workflow | Source-to-artifact synchronization workflow. |
 
 ## Catalogue Quality Gate
 
-Static framework, SSOT governance, logging governance, validators, run-control, approved Quality Gate and Completion-Path files must exist exactly as listed.
-
-Per-backlog Level 2 definitions/SOWs, Level 3 runtime files, future approved Backlog gate files and generated artifacts are permitted only when they match declared dynamic patterns.
+Static framework files must exist exactly as listed. Per-backlog definitions/SOWs, Level-3 runtime files, generated traceability artifacts and transient/durable run artifacts are allowed only under declared dynamic paths.
 
 <!-- CATALOGUE-FILES:START -->
 .github/workflows/catalogue-gate.yml
 .github/workflows/ssot-gate.yml
+.github/workflows/lane-matrix-dispatch.yml
 TaskStatus.md
 automation/automation-config.yaml
 automation/backlog-contract.md
 automation/execution-model.md
 automation/generate-automation-story.py
 automation/validate-ssot.py
+automation/lane-worker.py
+automation/lane-summary.py
 automation/task-contract.md
 automation/worker-component-contract.md
 automation/worker-service-contract.md
@@ -94,6 +99,7 @@ database-dependency-neon.md
 governance/ssot-levels.yaml
 governance/quality-gates.yaml
 governance/execution-lifecycle-logging.yaml
+governance/lane-execution.yaml
 governance/automation-log-policy.md
 governance/automation-policy.md
 governance/source-artifact-sync-policy.md
