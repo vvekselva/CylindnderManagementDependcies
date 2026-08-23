@@ -7,7 +7,7 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
 Current canonical checkpoint: **57 / 134 examined; 55 COMPLETE; 2 UNRESOLVED; 77 not yet examined.**  
-Rows currently materialized below: **30**. The other 27 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Rows currently materialized below: **31**. The other 26 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -41,6 +41,11 @@ Rows currently materialized below: **30**. The other 27 historically accepted ro
 | GET | `/customer-consumption/dashboard` | `CustomerConsumptionDashboardController.dashboard` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/CustomerConsumptionDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
 | GET | `/customer-consumption/api/dashboard` | `CustomerConsumptionDashboardController.dashboardData` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_JSON | `public.vw_customer_product_consumption_projection`; `CustomerConsumptionDashboardDto` JSON response | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
 | GET | `/ownership-obligation-dashboard` | `OwnershipObligationDashboardController.showOwnershipObligationDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | `public.tbl_cylinder_party_custody`; `public.tbl_cylinder`; `public.tbl_customer`; `public.tbl_supplier`; `final-version-1/OwnershipObligationDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-033550.md` |
+| GET | `/walkin-sale` | `WalkinSaleIngestionController` GET handler | COMPLETE | FULL | TERMINAL_VIEW | `final-version-1/WalkinSaleIngestion`; durable accepted source evidence records no persistence service call | `logs/runs/INVOCATION-20260823-145512.md` / LANE-03 |
+
+## Historical backfill: `GET /walkin-sale`
+
+Attempt 26 already accepted this endpoint from the frozen source baseline as a terminal application action. Its GET handler returns `final-version-1/WalkinSaleIngestion` without a persistence service call. This row is a materialization of previously accepted evidence, not a new endpoint acceptance; therefore canonical Source Check counts remain 57/55/2/77. The distinct `POST /walkin-sale` path remains UNRESOLVED and is not changed by this backfill.
 
 ## `OwnershipObligationDashboardController` full-chain summary
 
