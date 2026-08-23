@@ -1,88 +1,73 @@
 runtime_ssot_contract:
-  version: 4
+  version: 5
   level: SSOT-L3
   planning_gate: QG-SSOT-001
 
   required_files:
-    analysis.yaml:
-      purpose: current analysis, proved facts, progress and next step
-      may_exist_before_analysis_as: INITIALIZED
-    execution-plan.yaml:
-      purpose: current approved execution plan/work units
-      may_exist_before_first_plan_as: INITIALIZED_EMPTY
-    work-unit-status.yaml:
-      purpose: authoritative work-unit lifecycle states
-    gate-status.yaml:
-      purpose: authoritative current quality/pre-execution gate states
-    blockers.yaml:
-      purpose: explicit blockers/evidence gaps and whether they prevent planning or execution
-    decisions.yaml:
-      purpose: orchestrator/user decisions affecting execution
-    worker-input-register.yaml:
-      purpose: worker-input issuance/consumption state
-    lane-status.yaml:
-      purpose: authoritative live lane-to-task assignment, run, heartbeat, blocker and release state
-      may_exist_before_execution_as: INITIALIZED_ALL_IDLE
-    lane-dispatch.yaml:
-      purpose: authoritative queue of safe independent lane tasks and the real worker backend used to dispatch them
-      may_exist_before_execution_as: INITIALIZED_EMPTY_QUEUE
-    execution-statistics.yaml:
-      purpose: >-
-        authoritative run-over-run operational statistics used by the user-visible statistics table,
-        including trace coverage, real lane concurrency, throughput and stale/no-progress cycles
-      may_exist_before_first_execution_as: INITIALIZED_NO_RUN_HISTORY
-    result.yaml:
-      purpose: final/current backlog result and closure state
+    analysis.yaml: {purpose: current analysis proved facts progress and next step, may_exist_before_analysis_as: INITIALIZED}
+    execution-plan.yaml: {purpose: current approved execution plan/work units, may_exist_before_first_plan_as: INITIALIZED_EMPTY}
+    work-unit-status.yaml: {purpose: authoritative work-unit lifecycle states}
+    gate-status.yaml: {purpose: authoritative current quality/pre-execution gate states}
+    blockers.yaml: {purpose: explicit blockers/evidence gaps and whether they prevent planning or execution}
+    decisions.yaml: {purpose: orchestrator/user decisions affecting execution}
+    worker-input-register.yaml: {purpose: worker-input issuance/consumption state}
+    lane-status.yaml: {purpose: authoritative live lane-to-task assignment run heartbeat blocker and release state, may_exist_before_execution_as: INITIALIZED_ALL_IDLE}
+    lane-dispatch.yaml: {purpose: authoritative queue of safe independent tasks selected for real parallel execution, may_exist_before_execution_as: INITIALIZED_EMPTY_QUEUE}
+    local-execution.yaml: {purpose: authoritative local process-pool execution identity process state measured concurrency aggregate evidence and closure state, may_exist_before_first_local_fire_as: READY_FOR_LOCAL_FIRE}
+    execution-statistics.yaml: {purpose: authoritative run-over-run operational statistics including trace coverage real lane concurrency throughput and stale/no-progress cycles, may_exist_before_first_execution_as: INITIALIZED_NO_RUN_HISTORY}
+    result.yaml: {purpose: final/current backlog result and closure state}
 
   lane_status_rules:
     - exactly ten orchestration lane records must exist for LANE-01 through LANE-10
     - every lane must have exactly one current lifecycle state
     - a non-IDLE lane must identify the current Work Unit and task
-    - a WORKING lane must identify the current run and last heartbeat
+    - a WORKING local lane must identify PID and last heartbeat
     - a BLOCKED lane must explain the blocker in plain English
-    - a CLOSED run must release its lane unless a newer assignment has replaced it
+    - a CLOSED local execution must release all lanes unless a newer assignment has replaced it
     - summary counts must reconcile exactly to the ten lane records
     - lane-status.yaml is the single point of truth for what each lane is doing now
 
   lane_dispatch_rules:
-    - lane-dispatch.yaml must identify backlog_item, work_unit, frozen source baseline, worker backend and configured lane count
-    - READY tasks must identify task_id, lane, exact task, task_description, controller/source scope and safe_independent=true
-    - no lane may appear more than once in one active matrix batch
+    - lane-dispatch.yaml must identify backlog_item work_unit frozen source baseline worker backend and configured lane count
+    - worker_backend for current BL-001 execution is LOCAL_PROCESS_POOL
+    - READY tasks must identify task_id lane exact task task_description controller/source scope and safe_independent=true
+    - no lane may appear more than once in one active local batch
     - no more than ten tasks may be dispatched concurrently
-    - matrix workers are read-only evidence collectors and may not update shared runtime/control files
+    - local workers are read-only evidence collectors and may not update application source
     - worker evidence does not automatically make an endpoint COMPLETE; the Orchestrator validates final trace states
     - expected_concurrent_lanes equals min(configured_lane_count, safe READY task count)
 
+  local_execution_rules:
+    - local-execution.yaml must reconcile to lane-dispatch.yaml backlog work_unit source baseline and configured lane count
+    - executor is automation/local-lane-executor.py and worker is automation/local-lane-worker.py
+    - Windows fire wrapper is automation/fire-local-lanes.ps1
+    - no GitHub Actions workflow or external worker service is required
+    - before fire individual logs/runs/*-LANE-*.md count must be zero
+    - the source checkout must contain the frozen commit; the executor creates a temporary detached Git worktree at that commit
+    - local worker processes must write lifecycle logs with exact task identity before/after INIT and SERVICE and after CLOSE
+    - lane-status.yaml must reflect local process/PID/heartbeat state while the executor is active
+    - QG-LANE-001 uses measured SERVICE overlap, not distinct lane IDs and not merely process creation
+    - every transient lane log must be accumulated verified deleted and rescanned to zero before local execution closure
+    - durable aggregate evidence is stored under worker/evidence/LOCAL-BL001-<timestamp>/
+
   execution_statistics_rules:
     - progress percentage must declare its formula and metric basis; it must not be presented as an overall project percentage
-    - previous_run and current_or_latest_run must identify the invocation/attempt and reconcile with analysis.yaml and invocation logs
-    - current_or_latest_run represents the live current invocation when ACTIVE, otherwise the latest closed invocation checkpoint
-    - distinct_lanes_used must reconcile with lifecycle or matrix-worker evidence for that invocation
-    - peak_concurrent_lanes means maximum overlapping worker execution intervals, not the number of lane IDs that participated
-    - average_concurrent_lanes means aggregate worker execution seconds divided by worker-batch wall-clock seconds
-    - peak_capacity_utilization_percentage equals peak_concurrent_lanes / configured_lane_count * 100
-    - QG-LANE-001 compares peak concurrency with expected safe concurrency and records under-utilization explicitly
+    - previous_run and current_or_latest_run must identify invocation/attempt and reconcile with analysis.yaml and invocation logs
+    - distinct_lanes_used must reconcile with lifecycle/local worker evidence
+    - peak_concurrent_lanes means peak overlapping SERVICE intervals for the current local backend
+    - average_concurrent_lanes means aggregate SERVICE seconds divided by SERVICE batch wall-clock seconds
+    - peak_capacity_utilization_percentage equals peak service concurrency / configured lane count * 100
+    - QG-LANE-001 compares peak SERVICE concurrency with expected safe concurrency and records under-utilization explicitly
     - stale_cycles means consecutive completed Orchestrator invocations with no meaningful progress
-    - meaningful progress includes endpoint/trace progress, evidence-backed unresolved resolution, gate/work-unit advancement or required artifact creation/validation
+    - meaningful progress includes endpoint/trace progress evidence-backed resolution gate/work-unit advancement or required artifact creation/validation
     - stale_cycles resets to zero whenever a completed invocation makes meaningful progress
     - TaskStatus.md may render these statistics but must not become their source of truth
 
   initialization_rule: >-
-    All required Level 3 files must exist and identify the same Backlog Item before the
-    Orchestrator may create or materially change an Execution Plan. Empty/initialized files
-    are allowed before first planning only where explicitly permitted. lane-status.yaml may
-    begin with all lanes IDLE, lane-dispatch.yaml may begin with an empty queue, and
-    execution-statistics.yaml may begin with no run history.
+    All required Level 3 files must exist and identify the same Backlog Item before the Orchestrator may create or materially change an Execution Plan. lane-status.yaml may begin all IDLE, lane-dispatch.yaml may begin empty, local-execution.yaml may begin READY_FOR_LOCAL_FIRE, and execution-statistics.yaml may begin with no run history.
 
   consistency_rule: >-
-    Level 3 files must reconcile to the same Level 1 registry item and Level 2 backlog
-    definition. lane-status.yaml must reconcile with current Work Units and open/closed runs.
-    lane-dispatch.yaml must reconcile with the active Work Unit and source baseline.
-    execution-statistics.yaml must reconcile with analysis.yaml, lane-status.yaml, matrix summary
-    artifacts when matrix dispatch is used, and invocation aggregate logs. A stale dashboard or
-    historical worker log never overrides newer canonical runtime state.
+    Level 3 files must reconcile to the same Level 1 registry item and Level 2 backlog definition. lane-status.yaml must reconcile with current Work Units and open/closed local process execution. lane-dispatch.yaml must reconcile with active Work Unit and frozen source baseline. local-execution.yaml must reconcile with the dispatch, local invocation log, aggregate worker evidence and lane-status. A stale dashboard or historical worker log never overrides newer canonical runtime state.
 
   failure_rule: >-
-    Missing or inconsistent Level 3 files, including lane-status.yaml, lane-dispatch.yaml or
-    execution-statistics.yaml, fail QG-SSOT-001 and block PLAN/REPLAN. Only runtime initialization
-    or repair work needed to satisfy SSOT-L3 is permitted while failed.
+    Missing or inconsistent Level 3 files, including lane-status.yaml lane-dispatch.yaml local-execution.yaml or execution-statistics.yaml, fail QG-SSOT-001 and block PLAN/REPLAN. Only runtime initialization or repair work needed to satisfy SSOT-L3 is permitted while failed.
