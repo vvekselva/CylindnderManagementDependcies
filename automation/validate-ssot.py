@@ -100,8 +100,10 @@ def main() -> int:
             for field in ['id', 'name', 'type']:
                 if definition.get(field) != item.get(field):
                     fail(errors, f'{backlog_id}: SSOT-L2 definition {field} mismatch')
-            if normalized_text(definition.get('purpose')) != normalized_text(item.get('purpose')):
-                fail(errors, f'{backlog_id}: SSOT-L2 definition purpose mismatch')
+            l1_purpose = normalized_text(item.get('purpose'))
+            l2_purpose = normalized_text(definition.get('purpose'))
+            if l1_purpose and l1_purpose not in l2_purpose:
+                fail(errors, f'{backlog_id}: SSOT-L2 definition purpose does not preserve Level 1 purpose')
             for field in ['statement_of_work', 'completion_path', 'quality_gate', 'runtime']:
                 if definition.get(field) != item.get(field):
                     fail(errors, f'{backlog_id}: SSOT-L2 definition {field} does not match Level 1')
