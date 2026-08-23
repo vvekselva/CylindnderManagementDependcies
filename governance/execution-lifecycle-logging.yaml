@@ -1,9 +1,10 @@
-version: 1
+version: 2
 name: Execution Lifecycle Logging Contract
 purpose: >-
   Make every Orchestrator invocation and every orchestration-lane execution auditable at
   its lifecycle boundaries. Required log records are written before/after invocation and
-  before/after INIT/SERVICE/CLOSE phases. Missing mandatory boundary logs fail closed.
+  before/after INIT/SERVICE/CLOSE phases. Every START record must identify the task that is
+  about to execute. Missing mandatory boundary logs or missing START-task identity fail closed.
 
 effective_scope:
   applies_to: ALL_ORCHESTRATOR_INVOCATIONS_AND_ORCHESTRATION_LANE_RUNS_AFTER_ACTIVATION
@@ -18,6 +19,23 @@ log_locations:
     artifact so independent lanes do not edit one shared file concurrently. The coordinator
     may consolidate significant lifecycle records into logs/automation-log.md in serialized order.
 
+start_log_task_rule:
+  mandatory: true
+  applies_to:
+    - ORCHESTRATOR_INVOCATION_START
+    - LANE_INIT_START
+    - LANE_SERVICE_START
+  requirement: >-
+    Every START record must state the exact task that is about to run in plain English. The
+    task must be specific enough for a reader to know the Backlog Item/Work Unit/controller or
+    endpoint family/action being worked on. A generic value such as RUN AUTOMATION is not valid.
+  orchestrator_when_selection_not_yet_final: >-
+    If the invocation START is written before final backlog selection, task must explicitly say
+    that the coordinator is selecting the highest-priority eligible backlog and continuing its
+    eligible Work Unit, and should include the currently expected Backlog Item/Work Unit when
+    already known from Level 3 runtime.
+  fail_closed_if_missing_or_generic: true
+
 orchestrator_required_events:
   - event: ORCHESTRATOR_INVOCATION_START
     timing: BEFORE_ANY_ANALYSIS_PLANNING_ASSIGNMENT_OR_EXECUTION
@@ -26,6 +44,10 @@ orchestrator_required_events:
       - invocation_id
       - coordinator
       - trigger
+      - task
+      - task_description
+      - expected_or_current_backlog_item
+      - expected_or_current_work_unit
       - control_repository
       - control_branch
       - intended_backlog_selection_policy
@@ -55,7 +77,17 @@ lane_required_event_order:
 lane_event_rules:
   LANE_INIT_START:
     timing: BEFORE_INIT_EXECUTES
-    required_fields: [timestamp, invocation_id, backlog_item, work_unit, lane_id, task, run_id, attempt, source_baseline]
+    required_fields:
+      - timestamp
+      - invocation_id
+      - backlog_item
+      - work_unit
+      - lane_id
+      - task
+      - task_description
+      - run_id
+      - attempt
+      - source_baseline
     fail_closed_if_missing: true
   LANE_INIT_END:
     timing: IMMEDIATELY_AFTER_INIT_RETURNS
@@ -64,7 +96,16 @@ lane_event_rules:
     service_may_start_only_if: INITIALIZED
   LANE_SERVICE_START:
     timing: BEFORE_SERVICE_EXECUTES
-    required_fields: [timestamp, invocation_id, lane_id, run_id, task, assigned_actions]
+    required_fields:
+      - timestamp
+      - invocation_id
+      - backlog_item
+      - work_unit
+      - lane_id
+      - run_id
+      - task
+      - task_description
+      - assigned_actions
     fail_closed_if_missing: true
   LANE_SERVICE_END:
     timing: IMMEDIATELY_AFTER_SERVICE_RETURNS
@@ -102,12 +143,13 @@ quality_gate:
   fail_closed: true
   pass_condition: >-
     Every in-scope Orchestrator invocation has ORCHESTRATOR_INVOCATION_START and
-    ORCHESTRATOR_INVOCATION_END; every lane run has the required applicable lifecycle events
-    in order; no lane is released before a persisted close record; shared/runtime status
-    reconciles with run logs; no open/orphan lifecycle event remains.
+    ORCHESTRATOR_INVOCATION_END; every START event has a specific task and task description;
+    every lane run has the required applicable lifecycle events in order; no lane is released
+    before a persisted close record; shared/runtime status reconciles with run logs; no
+    open/orphan lifecycle event remains.
   on_fail: EXECUTION_RESULT_NOT_ACCEPTED_AND_RECOVERY_LOG_REQUIRED
 
 plain_english_rule: >-
-  Lifecycle logs must say what is starting/ending, why, what happened, what evidence exists,
-  what blocked progress if anything, and what happens next. Raw tool calls are evidence details,
-  not the main log narrative.
+  Lifecycle logs must say which task is starting/ending, why, what happened, what evidence
+  exists, what blocked progress if anything, and what happens next. Raw tool calls are evidence
+  details, not the main log narrative.
