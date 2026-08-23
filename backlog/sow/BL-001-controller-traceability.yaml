@@ -1,0 +1,94 @@
+statement_of_work:
+  backlog_item: BL-001
+  version: 1
+  title: Controller Traceability Statement of Work
+  status: ACTIVE
+
+  objective: >-
+    Establish a trusted, auditable endpoint-to-final-dependency traceability baseline for
+    the frozen CylinderManagement source version.
+
+  problem_statement: >-
+    The application exposes many HTTP endpoints, but a complete evidence-backed map from
+    exposed controller handlers through actual intermediate components to final database,
+    external, file, cache or module dependencies is not yet complete. The work must avoid
+    inferred or guessed dependencies and must explicitly account for unresolved paths.
+
+  scope:
+    in_scope:
+      - freeze and preserve one exact CylinderManagement source baseline
+      - identify every production component that actually exposes HTTP requests
+      - inventory every caller-visible HTTP method/path combination
+      - trace every exposed endpoint through real source-proved intermediate components
+      - record source-proved final dependencies
+      - record unresolved, blocked or failed traces without guessing
+      - build and validate the Controller Traceability Matrix and supporting artifacts
+      - register final artifacts against the frozen source baseline
+      - present coverage, resolution and unresolved items for user acceptance
+    out_of_scope:
+      - changing application business behavior merely to make a trace complete
+      - inventing repositories, tables, views, APIs or dependencies without source evidence
+      - starting dependent BL-001 work units before their prerequisite outputs/gates pass
+      - closing BL-001 without the configured user acceptance gate
+
+  target:
+    repository: vvekselva/CylinderManagement
+    baseline_rule: FROZEN_COMMIT
+    frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+
+  deliverables:
+    - traceability/source-repository-check.md
+    - traceability/controller-inventory.md
+    - traceability/endpoint-inventory.md
+    - traceability/controller-traceability.md
+    - traceability/unresolved-traceability.md
+    - worker/results/WI-0004.yaml
+
+  execution_requirements:
+    - execute only against the frozen source baseline
+    - inspect the complete defined production scope
+    - preserve one primary Orchestrator coordinator
+    - use parallelism only where work is independent and does not violate work-unit dependencies
+    - accept only source-proved facts
+    - mark an unprovable path UNRESOLVED, BLOCKED or FAILED at the last proven component
+    - keep runtime, gate, worker, traceability and backlog artifacts synchronized
+    - do not unlock Matrix construction until the Source Check result is CLOSED, COMPLETED, contract-valid and has 100 percent endpoint trace-result coverage
+
+  dependencies:
+    backlog_items: []
+    external_dependencies:
+      - access to frozen CylinderManagement source commit
+
+  acceptance_criteria:
+    - all production component candidates are classified exactly once
+    - every exposed caller-visible HTTP method/path combination is inventoried
+    - every inventoried endpoint has exactly one trace result
+    - trace-result coverage is 100 percent and NOT_EXAMINED equals zero
+    - every COMPLETE path has source evidence through the final dependency
+    - every unresolved, blocked or failed path records the last proven component, missing evidence, reason and next investigation step
+    - all BL-001 automatic quality gates QG-TRC-001 through QG-TRC-014 pass before VERIFIED
+    - QG-TRC-015 is explicitly approved by the user before CLOSED
+
+  quality_gate_requirements:
+    common_dependency_gate: QG-DEP-001
+    statement_of_work_gate: QG-SOW-001
+    item_quality_gate: backlog/gates/BL-001-traceability.yaml
+    user_acceptance_required: true
+
+  completion_definition:
+    - all mandatory BL-001 Completion Path phases are complete
+    - required traceability artifacts exist and reconcile to the same frozen source commit
+    - all mandatory quality gates pass
+    - all required worker and work-unit runs are closed
+    - source-artifact registration is complete
+    - explicit user acceptance is obtained
+
+  execution_authorization:
+    sow_required: true
+    structurally_valid: true
+    placeholders_present: false
+    validated_by: ORCHESTRATOR
+    validation_evidence: >-
+      Objective, problem statement, scope, target, deliverables, execution requirements,
+      dependencies, acceptance criteria, quality-gate requirements and completion definition
+      are populated and align with the approved BL-001 Completion Path and Quality Gates.
