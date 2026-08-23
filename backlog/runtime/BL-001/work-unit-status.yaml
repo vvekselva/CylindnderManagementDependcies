@@ -1,17 +1,32 @@
 work_units:
   WU-BL001-001:
     state: PARTIAL
-    execution_mode: GITHUB_ACTIONS_MATRIX_EVIDENCE_COLLECTION
+    execution_mode: SELF_RELIANT_STAGED_SOURCE_PLUS_LOCAL_PROCESS_POOL
+    architecture: architecture/self-reliant-e2e-execution.md
     dispatch_queue: backlog/runtime/BL-001/lane-dispatch.yaml
-    dispatch_id: MATRIX-BL001-DISPATCH-003
-    source_dispatch_generation: 3
+    dispatch_id: LOCAL-BL001-DISPATCH-005
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    staged_executor: automation/staged-lane-executor-v3.py
+    staged_worker: automation/staged-lane-worker-v3.py
     safe_ready_tasks: 10
     expected_concurrent_lanes: 10
-    external_workflow_run_id: null
-    external_workers_confirmed_started: 0
-    qg_lane_001_state: BLOCKED_PLATFORM
+    latest_execution: E2E-STAGED-20260823-151810
+    latest_workers_started: 10
+    latest_worker_failures: 0
+    qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    source_closure_complete: false
+    missing_source_requests: 21
+    missing_binding_requests: 0
+    qg_lane_001_state: UNDERUTILIZED
+    latest_peak_service_concurrent_lanes: 4
+    backend_capacity_probe_peak_service_concurrent_lanes: 10
+    qg_recovery_001_state: PASS
     checkpoint: {examined: 37, total: 134, complete: 35, unresolved: 2, not_yet_examined: 97}
-    next_action: Verify source-repository Actions start permission/availability and obtain automation/matrix-execution.yaml plus the durable lane-dispatch-aggregate before consuming worker evidence.
+    checkpoint_changed_by_architecture_validation: false
+    next_action: >-
+      Resolve and blob-verify the exact source requests from the latest discovery at the same frozen commit,
+      validate interface bindings as interface source becomes available, rerun the ten-task discovery, and repeat
+      only while source closure advances. Validate endpoint evidence only after the relevant source path is complete.
   WU-BL001-002: WAITING_FOR_DEPENDENCY
   WU-BL001-003: WAITING_FOR_DEPENDENCY
   WU-BL001-004: WAITING_FOR_DEPENDENCY
