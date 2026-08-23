@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 6
+  version: 7
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,18 +18,18 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 28
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-000114
+    latest_accepted_attempt: 32
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-013336
     total_endpoints: 134
-    examined: 38
-    progress_percentage: 28.36
-    complete: 36
-    complete_percentage: 26.87
+    examined: 42
+    progress_percentage: 31.34
+    complete: 40
+    complete_percentage: 29.85
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 96
-    latest_newly_accepted_endpoint: POST /complete-trip
+    not_yet_examined: 92
+    latest_newly_accepted_endpoint: GET /challan-heatmap
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -74,23 +74,23 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-000114
+    checkpoint_id: PRODUCTION-FIRE-20260824-013336
     worker_fire_started: false
     reason: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
-    endpoint_trace_checkpoint_before: 37
-    endpoint_trace_checkpoint_after: 38
+    endpoint_trace_checkpoint_before: 41
+    endpoint_trace_checkpoint_after: 42
     endpoints_examined_added: 1
     complete_added: 1
-    accepted_endpoint: POST /complete-trip
+    accepted_endpoint: GET /challan-heatmap
     accepted_chain_state: FULL_BRANCHING
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-000114.md
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-013336.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
     source_resolution_progress: >-
-      The Primary Orchestrator source-closed the previously partial Complete Trip path directly from frozen-baseline
-      controller, service, validator, DAO and entity evidence, including a validator-only YardInventoryAllowedState dependency.
-      No unchanged worker discovery batch was rerun.
+      The Primary Orchestrator source-closed the Challan Heatmap path directly from frozen-baseline controller,
+      concrete service, native-query DAO, JPA view entity and mapper evidence. The controller's actual branch reaches
+      public.vw_challan_heatmap_metrics and the terminal dashboard view; the assigned-book service branch is not claimed.
 
   run_over_run:
     endpoint_progress_percentage_point_change: 0.75
@@ -109,8 +109,8 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      POST /complete-trip advanced from source-partial evidence to COMPLETE/FULL_BRANCHING and the canonical checkpoint
-      increased from 37 to 38 examined endpoints. Source-restage work remains active for the unrelated 16-source queue.
+      GET /challan-heatmap advanced to COMPLETE/FULL_BRANCHING from exact frozen-source evidence and the canonical checkpoint
+      increased from 41 to 42 examined endpoints. Source-restage work remains active for the unrelated 16-source queue.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
