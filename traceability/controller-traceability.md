@@ -7,7 +7,7 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
 Current canonical checkpoint: **57 / 134 examined; 55 COMPLETE; 2 UNRESOLVED; 77 not yet examined.**  
-Rows currently materialized below: **31**. The other 26 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Rows currently materialized below: **33**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -42,10 +42,12 @@ Rows currently materialized below: **31**. The other 26 historically accepted ro
 | GET | `/customer-consumption/api/dashboard` | `CustomerConsumptionDashboardController.dashboardData` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_JSON | `public.vw_customer_product_consumption_projection`; `CustomerConsumptionDashboardDto` JSON response | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
 | GET | `/ownership-obligation-dashboard` | `OwnershipObligationDashboardController.showOwnershipObligationDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | `public.tbl_cylinder_party_custody`; `public.tbl_cylinder`; `public.tbl_customer`; `public.tbl_supplier`; `final-version-1/OwnershipObligationDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-033550.md` |
 | GET | `/walkin-sale` | `WalkinSaleIngestionController` GET handler | COMPLETE | FULL | TERMINAL_VIEW | `final-version-1/WalkinSaleIngestion`; durable accepted source evidence records no persistence service call | `logs/runs/INVOCATION-20260823-145512.md` / LANE-03 |
+| GET | `/customer-spot-cylinder-check/fetch` | `CustomerSpotCylinderCheckController` fetch handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_VIEW | `CustomerSpotCylinderCheckService.findActiveSpotCheckBooksForLoad` -> `TripChallanBookAssignmentViewJpaDao` -> `public.vw_trip_challan_book_assignments` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-01 |
+| GET | `/yard-audit-dashboard` | `YardAuditDashboardController` dashboard handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_TABLES | `YardAuditDashboardFetchService.processRequest` -> `YardQualityGateJpaDao` -> `public.tbl_yard_stock_check`; `public.tbl_yard_stock_check_line`; `public.tbl_yard_quality_gate`; `public.tbl_cylinder_states`; `public.tbl_yard_check_event` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-02 |
 
-## Historical backfill: `GET /walkin-sale`
+## Historical backfill: Attempt 26 accepted traces
 
-Attempt 26 already accepted this endpoint from the frozen source baseline as a terminal application action. Its GET handler returns `final-version-1/WalkinSaleIngestion` without a persistence service call. This row is a materialization of previously accepted evidence, not a new endpoint acceptance; therefore canonical Source Check counts remain 57/55/2/77. The distinct `POST /walkin-sale` path remains UNRESOLVED and is not changed by this backfill.
+The durable Attempt 26 invocation already accepted three COMPLETE GET traces at the frozen source baseline: `GET /walkin-sale`, `GET /customer-spot-cylinder-check/fetch`, and `GET /yard-audit-dashboard`. These rows are materializations of previously accepted evidence, not new endpoint acceptances; therefore canonical Source Check counts remain 57/55/2/77. The historical evidence does not preserve every intermediate class name for the latter two paths, so their Explorer chains are explicitly marked `PARTIAL_INTERMEDIATE_HOPS` rather than inventing missing hops. The distinct `POST /walkin-sale` and `POST /customer-spot-cylinder-check/submit` paths remain UNRESOLVED.
 
 ## `OwnershipObligationDashboardController` full-chain summary
 
