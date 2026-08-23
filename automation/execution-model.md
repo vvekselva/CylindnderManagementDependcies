@@ -127,29 +127,9 @@ Canonical lane file:
 backlog/runtime/<BL-ID>/lane-status.yaml
 ```
 
-Every lane record contains:
+Every lane record contains current state, Work Unit, task/assignment, Worker Input when applicable, Run ID/attempt, start time, heartbeat and blocker.
 
-- current state;
-- current Work Unit;
-- current task/assignment;
-- Worker Input when applicable;
-- Run ID / attempt;
-- start time;
-- last heartbeat;
-- plain-English blocker when blocked.
-
-Valid states are:
-
-```text
-IDLE
-ASSIGNED
-INITIALIZING
-WORKING
-BLOCKED
-WAITING
-CLOSING
-STALE
-```
+Valid states are `IDLE`, `ASSIGNED`, `INITIALIZING`, `WORKING`, `BLOCKED`, `WAITING`, `CLOSING`, and `STALE`.
 
 Rules:
 
@@ -160,6 +140,50 @@ Rules:
 5. A CLOSED run releases the lane unless a newer assignment replaced it.
 6. Summary counts must reconcile exactly to all ten lane records.
 7. Historical Worker logs never override `lane-status.yaml` for current lane state.
+
+---
+
+# 5.1 Within-invocation lane utilization
+
+The hourly scheduler starts one finite coordinator invocation. It does **not** create ten persistent background workers. Therefore IDLE between coordinator invocations is valid, but idle capacity during an active invocation should not be wasted when independent eligible work is available.
+
+For an active invocation:
+
+```text
+Eligible independent controller/endpoint families
+        |
+        v
+Fill available safe lanes up to LANE-01 ... LANE-10
+        |
+        v
+Execute + record lane state/heartbeat/evidence
+        |
+        v
+A lane closes
+        |
+        +--> eligible independent work remains? -- YES --> refill that lane in same invocation
+        |                                           |
+        |                                           v
+        |                                      continue execution
+        |
+        NO
+        v
+Consolidate checkpoint and end invocation
+```
+
+The coordinator must not intentionally stop after a fixed small batch such as three endpoints when more independent source-trace work is safely eligible in the same invocation.
+
+Safe utilization rules:
+
+- use up to ten lanes only for independent controller/endpoint-family work;
+- prefer controller/service-family batches so source relationships can be reused efficiently;
+- reuse a previously proved service/DAO/entity relationship only when the frozen source confirms the same path;
+- never parallelize dependent Work Units prematurely;
+- never parallelize conflicting shared-file writes or resource-lock conflicts;
+- preserve the same no-guessing and evidence gates regardless of throughput;
+- refill released lanes in the same invocation while safe eligible work remains.
+
+A coordinator invocation may stop when no eligible independent work remains, a hard blocker prevents further safe work, a shared-resource lock prevents useful parallel work, the invocation/tool execution limit is reached, or the Work Unit completion boundary is reached.
 
 ---
 
@@ -185,13 +209,15 @@ The Orchestrator:
 8. evaluates dependencies and item-specific Quality Gates;
 9. creates Work Units;
 10. generates Worker Inputs for approved Work Units;
-11. assigns only eligible independent work to available lanes;
-12. records assignment in lane-status before work begins;
-13. updates lane lifecycle/heartbeat/blocker state while work runs;
-14. consumes/validates Worker results;
-15. releases lanes after run close;
-16. synchronizes analysis, plan, work-unit state, gates, blockers, decisions, lane status and result;
-17. produces required artifacts and obtains required user acceptance.
+11. partitions eligible independent work into controller/endpoint-family tasks;
+12. fills available safe lanes up to the configured ten-lane capacity;
+13. records assignment in lane-status before work begins;
+14. updates lane lifecycle/heartbeat/blocker state while work runs;
+15. refills released lanes during the same invocation while eligible independent work remains;
+16. consumes/validates Worker results and source evidence;
+17. releases lanes after run close;
+18. synchronizes analysis, plan, work-unit state, gates, blockers, decisions, lane status and result;
+19. produces required artifacts and obtains required user acceptance.
 
 The Orchestrator is separate from execution lanes and remains the single primary coordinator.
 
@@ -233,6 +259,10 @@ INIT -> WORKING (+ heartbeat)
 CLOSING -> run CLOSED
    |
    v
+More eligible independent work in same invocation?
+   | YES -> reassign released lane
+   | NO
+   v
 Release lane -> IDLE
 ```
 
@@ -240,7 +270,9 @@ Release lane -> IDLE
 
 # 10. Current BL-001 Example
 
-Current Level 3 includes `lane-status.yaml`. At the checkpoint after WI-0004 Attempt 25, all ten lanes are IDLE because the run is CLOSED/PARTIAL, while BL-001 / WU-BL001-001 remains active for the next scheduled assignment cycle.
+Current Level 3 includes `lane-status.yaml`. At the checkpoint after WI-0004 Attempt 25, all ten lanes are IDLE because the run is CLOSED/PARTIAL and no coordinator invocation is currently active. That BETWEEN_INVOCATIONS state is valid.
+
+The active `WU-BL001-001` plan is now lane-parallel: independent controller/endpoint families may use up to ten lanes, and released lanes should be refilled during the same invocation while safe eligible work remains. There is no fixed three-endpoint batch limit.
 
 Traceability checkpoint:
 
