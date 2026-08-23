@@ -17,35 +17,45 @@ analysis:
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
     examined_for_final_dependency: 22
-    complete: 19
-    unresolved: 3
+    complete: 22
+    unresolved: 0
     blocked: 0
     failed: 0
     not_yet_examined: 112
 
   latest_attempt:
-    number: 24
-    run_id: RUN-WI0004-20260823-024
+    number: 25
+    run_id: RUN-WI0004-20260823-025
     state: CLOSED
     result: PARTIAL
     evidence: worker/runs/WI-0004.md
     endpoint_traces:
       - endpoint: GET /search/challantype/{searchText}
         controller: RestfulChallanTypeServices
-        last_proven_component: challanTypeSearchService
-        trace_state: UNRESOLVED
+        concrete_service: ChallanTypeSearchService
+        repository: ChallanTypeJpaDao
+        entity: ChallanTypeDo
+        final_dependency: public.tbl_challan_type
+        trace_state: COMPLETE
       - endpoint: GET /search/city/{searchText}
         controller: RestfulCityServices
-        last_proven_component: citySearchService
-        trace_state: UNRESOLVED
+        concrete_service: CitySearchService
+        repository: CityJpaDao
+        entity: CityDo
+        final_dependency: public.tbl_city
+        trace_state: COMPLETE
       - endpoint: GET /search/country/{searchText}
         controller: RestfulCountryServices
-        last_proven_component: countrySearchService
-        trace_state: UNRESOLVED
+        concrete_service: CountrySearchService
+        repository: CountryJpaDao
+        entity: CountryDo
+        final_dependency: public.tbl_country
+        trace_state: COMPLETE
     reason: >-
-      Frozen source evidence proves all three active REST mappings and their injected generic application-search-service
-      handoffs. The concrete Spring implementation selected for each injection, repository/query layer and final dependency
-      are not yet proved, so each trace stops at the last proven service field rather than inferring from names.
+      Attempt 25 resolved the three Attempt 24 generic service handoffs through concrete Spring
+      services, Spring Data DAO methods and explicit JPA entity table mappings. All 22 examined
+      endpoints now have source-proved final dependencies. The source check remains incomplete
+      because 112 endpoints have not yet been examined.
 
   quality_gate_effect:
     QG-DEP-001: PASS
@@ -62,18 +72,19 @@ analysis:
   proved_now:
     - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
     - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
-    - Twenty-two endpoints have now been explicitly examined for final dependencies.
-    - Nineteen examined endpoints remain COMPLETE.
-    - Three newly examined generic REST search endpoints are explicitly UNRESOLVED at their last source-proved service handoffs.
+    - Twenty-two endpoints have been explicitly examined for final dependencies.
+    - All twenty-two examined endpoints are now COMPLETE.
+    - Challan Type resolves to ChallanTypeSearchService -> ChallanTypeJpaDao -> ChallanTypeDo -> public.tbl_challan_type.
+    - City resolves to CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city.
+    - Country resolves to CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country.
 
   not_yet_proved:
-    - Concrete implementations and downstream dependencies for Challan Type, City and Country generic search services.
     - Final dependencies for the remaining 112 endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Resolve the concrete Spring implementations for challanTypeSearchService, citySearchService and countrySearchService,
-    then continue independent endpoint-to-final-dependency tracing across the remaining 112 endpoints. Record any
-    unprovable path at the last proven component rather than guessing. Do not unlock Matrix construction until
-    worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result contract validates, and endpoint
-    trace-result coverage equals 100 percent.
+    Continue source-proved endpoint-to-final-dependency tracing across the remaining 112 endpoints,
+    reusing already-proved component relationships only where the frozen source confirms the same path.
+    Record any unprovable path at the last proven component rather than guessing. Do not unlock Matrix
+    construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result
+    contract validates, and endpoint trace-result coverage equals 100 percent.
