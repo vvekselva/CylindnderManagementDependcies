@@ -1,0 +1,42 @@
+blockers:
+  backlog_item: BL-001
+  level: SSOT-L3
+  planning_blocked: false
+  execution_blocked: false
+
+  governance_blockers: []
+
+  active_evidence_gaps:
+    - id: EG-BL001-001
+      state: OPEN
+      blocks_planning: false
+      blocks_all_execution: false
+      affects_gate: QG-TRC-002
+      summary: Challan Type search final dependency is not yet proved.
+      last_proven_component: challanTypeSearchService
+      next_action: resolve the concrete Spring implementation, repository/query layer and final dependency from source evidence
+    - id: EG-BL001-002
+      state: OPEN
+      blocks_planning: false
+      blocks_all_execution: false
+      affects_gate: QG-TRC-002
+      summary: City search final dependency is not yet proved.
+      last_proven_component: citySearchService
+      next_action: resolve the concrete Spring implementation, repository/query layer and final dependency from source evidence
+    - id: EG-BL001-003
+      state: OPEN
+      blocks_planning: false
+      blocks_all_execution: false
+      affects_gate: QG-TRC-002
+      summary: Country search final dependency is not yet proved.
+      last_proven_component: countrySearchService
+      next_action: resolve the concrete Spring implementation, repository/query layer and final dependency from source evidence
+
+  remaining_work_constraint:
+    state: OPEN
+    affects_gate: QG-TRC-002
+    summary: 112 of 134 endpoint final-dependency traces remain not yet examined at the current canonical checkpoint.
+
+  note: >-
+    This ledger makes Level 3 blocker/evidence-gap state explicit. Evidence gaps are not
+    treated as global execution blockers when independent trace work can continue.
