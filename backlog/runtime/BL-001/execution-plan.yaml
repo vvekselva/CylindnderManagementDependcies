@@ -1,6 +1,6 @@
 execution_plan:
   backlog_item: BL-001
-  version: 6
+  version: 7
   state: PLANNED
   generated_by: ORCHESTRATOR
   completion_path: backlog/paths/BL-001-traceability.yaml
@@ -19,31 +19,33 @@ execution_plan:
   lifecycle_logging_policy:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
-    pre_invocation_individual_repo_lane_logs_required: 0
     every_start_requires_exact_task: true
     matrix_worker_required_events: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
     matrix_worker_lifecycle_evidence_file: lane-lifecycle.md
     matrix_individual_artifacts_transient: true
     matrix_aggregate_artifact_required: lane-dispatch-aggregate
     transient_matrix_artifacts_deleted_after_verified_aggregation: true
-    orchestrator_invocation_end_requires_runtime_and_statistics_sync: true
 
   real_lane_dispatch_policy:
     governance: governance/lane-execution.yaml
     gate: QG-LANE-001
-    dispatch_ssot: backlog/runtime/BL-001/lane-dispatch.yaml
-    backend: GITHUB_ACTIONS_MATRIX
-    workflow: .github/workflows/lane-matrix-dispatch.yml
+    authoritative_dispatch_ssot: backlog/runtime/BL-001/lane-dispatch.yaml
+    backend: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
+    source_repository: vvekselva/CylinderManagement
+    source_execution_branch: automation/lane-matrix
+    source_dispatch_copy: automation/lane-dispatch.yaml
+    source_run_status: automation/matrix-execution.yaml
+    source_workflow: .github/workflows/lane-matrix-dispatch.yml
     configured_lanes: 10
     expected_concurrency_formula: min(configured_lanes, safe_ready_tasks)
     distinct_lane_ids_are_not_concurrency: true
     measure_peak_concurrent_lanes: true
     measure_average_concurrent_lanes: true
     worker_role: READ_ONLY_SOURCE_EVIDENCE_COLLECTION
-    final_trace_decision_owner: ORCHESTRATOR
-    quality_rule: >-
-      Matrix evidence may accelerate source inspection but never changes the no-guessing rule.
-      The Orchestrator validates each endpoint path before classifying COMPLETE or UNRESOLVED.
+    final_trace_decision_owner: CONTROL_REPOSITORY_ORCHESTRATOR
+    authentication_reason: >-
+      CylinderManagement is private. The control repository GITHUB_TOKEN is repository-scoped and cannot
+      clone it, so real workers execute inside the private source repository without a cross-repository PAT.
 
   invocation_utilization_policy:
     objective: MAXIMIZE_MEASURED_SAFE_CONCURRENCY
@@ -56,6 +58,7 @@ execution_plan:
       - NO_ELIGIBLE_INDEPENDENT_WORK_REMAINS
       - HARD_BLOCKER_PREVENTS_FURTHER_ELIGIBLE_WORK
       - RESOURCE_OR_SHARED_FILE_LOCK_PREVENTS_SAFE_PARALLELISM
+      - SOURCE_REPOSITORY_ACTIONS_NOT_STARTING
       - EXTERNAL_WORKER_BACKEND_FAILED
       - INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED
       - WORK_UNIT_COMPLETION_BOUNDARY_REACHED
@@ -66,38 +69,43 @@ execution_plan:
       phase: EXECUTE_SOURCE_CHECK
       state: READY
       parallel: true
-      executor: GITHUB_ACTIONS_MATRIX_EVIDENCE_WORKERS_PLUS_ORCHESTRATOR_VALIDATION
+      executor: SOURCE_LOCAL_GITHUB_ACTIONS_MATRIX_PLUS_CONTROL_ORCHESTRATOR_VALIDATION
       parallel_scope: INDEPENDENT_CONTROLLER_OR_ENDPOINT_FAMILIES_ONLY
       max_parallel_lanes: 10
       batching_strategy: CONTROLLER_SERVICE_FAMILY
       lane_assignment_ssot: backlog/runtime/BL-001/lane-status.yaml
       lane_dispatch_ssot: backlog/runtime/BL-001/lane-dispatch.yaml
+      source_execution_branch: automation/lane-matrix
+      source_dispatch_copy: automation/lane-dispatch.yaml
+      source_matrix_status: automation/matrix-execution.yaml
       real_worker_workflow: .github/workflows/lane-matrix-dispatch.yml
       real_worker_governance: governance/lane-execution.yaml
       real_lane_gate: QG-LANE-001
       lifecycle_logging_contract: governance/execution-lifecycle-logging.yaml
-      matrix_worker_output: lane-dispatch-aggregate artifact
+      matrix_worker_output: lane-dispatch-aggregate artifact in vvekselva/CylinderManagement
       worker_input: worker/inputs/WI-0004.yaml
       expected_result: worker/results/WI-0004.yaml
       result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
       execution_sequence:
-        - orchestrator selects safe independent not-yet-examined controller/endpoint families
-        - orchestrator writes lane-dispatch.yaml
-        - GitHub Actions matrix starts up to ten independent read-only workers
+        - orchestrator selects safe independent not-yet-examined controller or endpoint families
+        - orchestrator writes authoritative control lane-dispatch.yaml
+        - orchestrator synchronizes the approved batch into CylinderManagement automation/lane-matrix/automation/lane-dispatch.yaml
+        - source-local GitHub Actions matrix starts up to ten independent read-only workers
+        - each worker checks out the exact frozen source commit into a separate working directory
         - every worker logs INIT SERVICE CLOSE boundaries and uploads isolated evidence
         - summary job calculates actual peak and average concurrency
         - summary job aggregates lane evidence and deletes transient individual artifacts
-        - orchestrator consumes the aggregate and validates endpoint-by-endpoint trace results
-        - orchestrator synchronizes analysis statistics gates blockers and lane status
+        - source automation/matrix-execution.yaml records run ID, measurements and aggregate readiness
+        - control Orchestrator consumes the durable aggregate and validates endpoint-by-endpoint trace results
+        - Orchestrator synchronizes analysis statistics gates blockers and lane status in the control repository
       evidence_rule: >-
         Each endpoint must still be traced independently to source-proved final dependency evidence.
-        Worker-discovered dependency candidates are not final evidence until the Orchestrator confirms
+        Worker-discovered dependency candidates are not final evidence until the control Orchestrator confirms
         the actual source call path. No naming inference or guessing is allowed.
       result_acceptance_rule: >-
-        Canonical source-check result is accepted only when its run is CLOSED, its result contract
-        validates, QG-LOG-001 is satisfied, and endpoint trace-result coverage reaches 100 percent.
-        QG-LANE-001 governs claims of parallel utilization; valid source evidence remains usable even
-        if lane utilization is under target.
+        Canonical Source Check result is accepted only when its run is CLOSED, result contract validates,
+        QG-LOG-001 is satisfied and endpoint trace-result coverage reaches 100 percent. QG-LANE-001 governs
+        claims of real parallel utilization; correct source evidence remains usable if utilization is under target.
       completion_rule: Worker result COMPLETED, run CLOSED, contract valid, lifecycle logging valid, coverage 100 percent.
 
     - id: WU-BL001-002
@@ -108,12 +116,7 @@ execution_plan:
       executor: ORCHESTRATION_LANE
       input: worker/results/WI-0004.yaml
       source_read_allowed: false
-      outputs:
-        - traceability/source-repository-check.md
-        - traceability/controller-inventory.md
-        - traceability/endpoint-inventory.md
-        - traceability/controller-traceability.md
-        - traceability/unresolved-traceability.md
+      outputs: [traceability/source-repository-check.md, traceability/controller-inventory.md, traceability/endpoint-inventory.md, traceability/controller-traceability.md, traceability/unresolved-traceability.md]
 
     - id: WU-BL001-003
       name: Validate Traceability Gates
@@ -129,7 +132,5 @@ execution_plan:
       state: WAITING_FOR_DEPENDENCY
       needs: [WU-BL001-003]
       executor: ORCHESTRATOR
-      outputs:
-        - sync/source-artifact-sync-register.yaml
-        - logs/automation-story.md
+      outputs: [sync/source-artifact-sync-register.yaml, logs/automation-story.md]
       completion_rule: Source-artifact baseline registered, all required runs/logs closed, automatic gates pass, and required user acceptance is obtained.
