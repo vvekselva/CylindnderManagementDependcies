@@ -4,27 +4,9 @@
 
 ## Framework Mode
 
-The framework is **Backlog-driven**, uses a mandatory **three-level Single Source of Truth**, and planning/execution are fail-closed.
+The framework is **Backlog-driven**, uses a mandatory **three-level Single Source of Truth**, and planning/execution are fail-closed. New execution is also controlled by `QG-LOG-001 Execution Lifecycle Logging Completeness`.
 
-A Backlog Item may be catalogued, but PLAN/REPLAN is forbidden until SSOT-L1, SSOT-L2 and SSOT-L3 are complete and `QG-SSOT-001` passes. Every executable Backlog must have a valid Statement of Work (`QG-SOW-001`). New execution also requires the mandatory lifecycle logging contract (`QG-LOG-001`).
-
-## Backlog Inventory
-
-- Total registered Backlog Items: **20** (`BL-001` through `BL-020`).
-- `BL-001 Controller Traceability`: **RUN ENABLED / ACTIVE / PARTIAL**.
-- `BL-002` through `BL-020`: **RUN DISABLED / NON-PLANNABLE** until their required Level 1/2/3 references and Quality Gates are complete.
-
-## Level 1 Project / Module Inventory
-
-Canonical source: `repository/project-inventory.yaml`.
-
-- Total top-level CylinderManagement projects/modules: **10**.
-- Unit testing **NOT REQUIRED**: 5 - `Cylinder.management.dto`, `cylinder.management.dao`, `cylindermanagement.custommapper.service`, `cylindermanagement.security`, `framework`.
-- Unit testing **POSTPONED**: 2 - `cmas.database.operations`, `cylindermanagement.offlinemap`.
-- Unit-test scope **UNCLASSIFIED**: 3 - `NewOwnerShipModelv3`, `cylinder.datascripts`, `cylindermanagement.web`.
-- BL-002 remains non-plannable until those three classifications and its Level 2/3 definition/gates are completed.
-
-## BL-001 Three-Level SSOT
+## BL-001 Three-Level SSOT / Common Gates
 
 | Level / Gate | State |
 |---|---|
@@ -33,26 +15,14 @@ Canonical source: `repository/project-inventory.yaml`.
 | QG-SOW-001 Statement of Work | **PASS** |
 | SSOT-L3 Runtime SSOT | **COMPLETE** |
 | QG-SSOT-001 Planning Gate | **PASS** |
-| QG-LOG-001 Lifecycle Logging | **ENFORCED FOR NEXT INVOCATION** |
+| QG-DEP-001 Dependency Gate | **PASS** |
+| QG-LOG-001 Lifecycle Logging | **PASS - DEMONSTRATED BY ATTEMPT 26** |
 
 ## Mandatory Invocation / Lane Logging
 
-Machine-readable contract: `governance/execution-lifecycle-logging.yaml`.
+The Orchestrator must persist `ORCHESTRATOR_INVOCATION_START` before repository analysis, planning, lane assignment or execution, and must persist `ORCHESTRATOR_INVOCATION_END` after all started lanes are closed/recovery-closed and runtime is synchronized.
 
-### Orchestrator
-
-```text
-ORCHESTRATOR_INVOCATION_START
-  - persisted BEFORE repository analysis, planning, lane assignment or execution
-
-... coordinator work / lane execution / runtime synchronization ...
-
-ORCHESTRATOR_INVOCATION_END
-  - persisted AFTER all started lanes are CLOSED/recovery-closed and runtime is synchronized
-  - mandatory even when no eligible work ran, the invocation was blocked, or it failed
-```
-
-### Every orchestration lane
+Every started orchestration lane must persist this ordered lifecycle:
 
 ```text
 LANE_INIT_START
@@ -65,38 +35,39 @@ LANE_SERVICE_END
 LANE_CLOSE_END (Log State CLOSED)
 ```
 
-If `LANE_INIT_END = BLOCKED_BEFORE_SERVICE`, SERVICE_START/SERVICE_END are skipped, but `close()` and `LANE_CLOSE_END` remain mandatory.
+If INIT ends `BLOCKED_BEFORE_SERVICE`, SERVICE events are omitted, but close and `LANE_CLOSE_END` remain mandatory. A lane is not released or reused until its close/recovery-close log is persisted.
 
-Fail-closed rules:
-
-- no `LANE_INIT_START` -> init does not start;
-- no persisted `LANE_INIT_END = INITIALIZED` -> service does not start;
-- no `LANE_SERVICE_START` -> service does not start;
-- lane is not released/reused until `LANE_CLOSE_END` or recovery-close is persisted;
-- new execution result is not accepted unless QG-LOG-001 reconciles required lifecycle events.
-
-Parallel-safe log locations:
-
-- shared audit: `logs/automation-log.md` - coordinator-only serialized writer;
-- invocation log: `logs/runs/INV-<invocation-id>-ORCHESTRATOR.md`;
-- lane log: `logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md`.
+Attempt 26 is the first post-activation invocation to demonstrate the complete logging contract. Its Orchestrator invocation log contains both START and END, and all three started lanes contain the five applicable ordered lifecycle boundary records with `Log State: CLOSED`.
 
 ## Lane Utilization
 
-`WU-BL001-001` is lane-parallel for independent controller/endpoint families:
+`WU-BL001-001` remains lane-parallel for independent controller/endpoint families:
 
-- up to **10 lanes**;
+- up to **10 safe lanes**;
 - no fixed three-endpoint limit;
 - controller/service-family batching preferred;
-- released lanes are refilled within the same invocation while safe eligible work remains;
-- dependent work, shared-file conflicts and resource-lock conflicts remain serialized;
-- source-proved relationships may be reused only when the frozen source proves the same path.
+- released lanes may be refilled in the same invocation while safe eligible work remains;
+- dependent work, conflicting shared-file writes and resource-lock conflicts stay serialized;
+- no source relationship may be reused unless the frozen source proves the same path.
 
 ## Current Lane SSOT
 
 Canonical source: `backlog/runtime/BL-001/lane-status.yaml`.
 
-All ten lanes are currently **IDLE** because the runtime is **BETWEEN_INVOCATIONS** and Attempt 25 is CLOSED/PARTIAL. This is not a lack-of-work state: 112 endpoint traces remain.
+Current state: **BETWEEN_INVOCATIONS**. Attempt 26 is closed and all ten lanes are released.
+
+| Lane | State | Last lifecycle evidence |
+|---|---|---|
+| LANE-01 | IDLE | `LANE_CLOSE_END` |
+| LANE-02 | IDLE | `LANE_CLOSE_END` |
+| LANE-03 | IDLE | `LANE_CLOSE_END` |
+| LANE-04 | IDLE | None - not used in Attempt 26 |
+| LANE-05 | IDLE | None - not used in Attempt 26 |
+| LANE-06 | IDLE | None - not used in Attempt 26 |
+| LANE-07 | IDLE | None - not used in Attempt 26 |
+| LANE-08 | IDLE | None - not used in Attempt 26 |
+| LANE-09 | IDLE | None - not used in Attempt 26 |
+| LANE-10 | IDLE | None - not used in Attempt 26 |
 
 Lane summary: **10 total / 10 IDLE / 0 WORKING / 0 BLOCKED / 0 STALE**.
 
@@ -111,19 +82,25 @@ Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 | Exposed components | 57 |
 | NOT_EXPOSED | 5 |
 | Caller-visible endpoints | 134 |
-| Examined for final dependency | **22 / 134** |
-| COMPLETE | **22** |
-| UNRESOLVED | **0** |
+| Examined for final dependency | **27 / 134** |
+| COMPLETE | **25** |
+| UNRESOLVED | **2** |
 | BLOCKED / FAILED | 0 / 0 |
-| NOT YET EXAMINED | **112** |
-| Latest attempt | `RUN-WI0004-20260823-025` - PARTIAL / CLOSED |
+| NOT YET EXAMINED | **107** |
+| Latest attempt | `INVOCATION-20260823-145512` / Attempt 26 - PARTIAL / CLOSED |
 | Traceability Matrix | **LOCKED** |
 
-Attempt 25 proved the previous Challan Type, City and Country gaps:
+## Attempt 26 Progress
 
-- Challan Type -> `ChallanTypeSearchService` -> `ChallanTypeJpaDao` -> `ChallanTypeDo` -> `public.tbl_challan_type`;
-- City -> `CitySearchService` -> `CityJpaDao` -> `CityDo` -> `public.tbl_city`;
-- Country -> `CountrySearchService` -> `CountryJpaDao` -> `CountryDo` -> `public.tbl_country`.
+Three independent controller families were executed under lifecycle logging and five additional endpoint traces were examined.
+
+- `GET /customer-spot-cylinder-check/fetch` -> **COMPLETE** -> `public.vw_trip_challan_book_assignments`.
+- `POST /customer-spot-cylinder-check/submit` -> **UNRESOLVED**. The concrete service and several persistence components are proved, including `public.tbl_customer_spot_cylinder_check`, but the complete database-object set across all branches still needs proof.
+- `GET /yard-audit-dashboard` -> **COMPLETE**. Explicit `YardQualityGateJpaDao` SQL proves dependencies including `public.tbl_yard_stock_check`, `public.tbl_yard_stock_check_line`, `public.tbl_yard_quality_gate`, `public.tbl_cylinder_states`, and `public.tbl_yard_check_event`.
+- `GET /walkin-sale` -> **COMPLETE** as terminal application action returning `final-version-1/WalkinSaleIngestion` without persistence access.
+- `POST /walkin-sale` -> **UNRESOLVED**. Proved objects include `public.tbl_order`, `public.tbl_walk_in_sale`, `public.tbl_walk_in_pickup`, `public.tbl_walk_in_pickup_line`, and `public.tbl_yard_entries`; the remaining conditional-branch persistence mappings still require proof.
+
+No unproved database object was inferred or guessed.
 
 ## Current Work Units
 
@@ -134,14 +111,12 @@ Attempt 25 proved the previous Challan Type, City and Country gaps:
 | `WU-BL001-003` | Validate Traceability Gates | WAITING_FOR_DEPENDENCY |
 | `WU-BL001-004` | Register baseline / prepare acceptance and closure | WAITING_FOR_DEPENDENCY |
 
-Matrix construction remains locked until the canonical Source Check result is CLOSED + COMPLETED + contract-valid + 100% endpoint trace-result coverage and the new lifecycle logging requirements are satisfied for in-scope executions.
-
 ## Quality Gate Summary
 
 - `QG-SSOT-001`: **PASS**
 - `QG-SOW-001`: **PASS**
 - `QG-DEP-001`: **PASS**
-- `QG-LOG-001`: **ENFORCED FOR NEXT INVOCATION / execution evidence not yet demonstrated under the new contract**
+- `QG-LOG-001`: **PASS**
 - `QG-TRC-001`: **PASS**
 - `QG-TRC-002`: **IN PROGRESS**
 - `QG-TRC-003`: **PASS**
@@ -155,13 +130,12 @@ Matrix construction remains locked until the canonical Source Check result is CL
 
 - Governance planning blocker: **NONE**.
 - Global execution blocker: **NONE**.
-- Active evidence gaps among examined endpoints: **0**.
-- Remaining execution volume: **112 endpoint traces**.
-- Lane utilization issue: **RESOLVED IN PLAN/POLICY**.
-- Lifecycle logging gap: **RESOLVED IN CONTRACT/POLICY; first compliant execution evidence is expected from the next invocation**.
+- Active evidence gaps: **2** - the two complex POST traces above.
+- Remaining not-yet-examined execution volume: **107 endpoints**.
+- Matrix construction: **LOCKED** until the canonical Source Check result reaches CLOSED + COMPLETED + contract-valid + 100% endpoint trace-result coverage.
 
-Next eligible action: run `WU-BL001-001` under the revised 10-lane utilization and mandatory lifecycle logging rules, then synchronize runtime, shared audit log and traceability checkpoint.
+Next eligible action: resolve the two Attempt 26 POST evidence gaps, then continue lifecycle-logged independent controller/service-family tracing across the remaining 107 endpoints.
 
 ## Branch State
 
-All current control-repository framework changes remain on `chore/rename-dependency-files`; they have not been merged into `main`.
+All current control-repository framework/runtime changes remain on `chore/rename-dependency-files`; they have not been merged into `main`.
