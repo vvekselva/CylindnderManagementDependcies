@@ -5,7 +5,7 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-003111.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-005711.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -36,26 +36,21 @@ result:
 
   checkpoint:
     total_endpoints: 134
-    examined: 40
-    complete: 38
+    examined: 41
+    complete: 39
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 94
-    matrix_materialized_rows: 13
+    not_yet_examined: 93
+    matrix_materialized_rows: 14
     historical_accepted_rows_pending_backfill: 27
 
   latest_newly_accepted_endpoints:
     - method: GET
-      path: /logistics/challan-books/add-form
+      path: /challan-entry-aging-dashboard
       state: COMPLETE
       chain_completeness: FULL_BRANCHING
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-003111.md
-    - method: POST
-      path: /logistics/challan-books/save
-      state: COMPLETE
-      chain_completeness: FULL_BRANCHING
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-003111.md
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-005711.md
 
   unresolved_items:
     - {source_endpoint: POST /customer-spot-cylinder-check/submit, evidence_gap: Complete database-object set across all submitSpotCheck branches is not yet source-proved.}
@@ -72,8 +67,9 @@ result:
   final_outputs: []
 
   next_action: >-
-    Continue bounded recursive source restaging and direct frozen-source closure for the remaining dispatch families.
-    Materialize already validated sources into the immutable worker snapshot, then rerun the ten-task discovery only when
+    Continue direct frozen-source closure for ChallanHeatmapController, CustomerAddressLocationController and
+    CustomerConsumptionDashboardController while resolving and blob-verifying the outstanding recursive source set.
+    Materialize validated sources into the immutable worker snapshot, then rerun the ten-task discovery only when
     QG-SOURCE-001 preflight proves an advanced snapshot. Preserve the two unresolved POST endpoints until every branch is
     source-proved. Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage.
 
