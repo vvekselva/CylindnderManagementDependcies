@@ -75,12 +75,16 @@ Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 - NOT_EXPOSED components: **5**;
 - caller-visible HTTP method/path combinations: **134**;
 - endpoints examined for final dependency: **22 / 134**;
-- COMPLETE traces: **19**;
-- UNRESOLVED traces: **3**;
+- COMPLETE traces: **22**;
+- UNRESOLVED traces: **0**;
 - BLOCKED / FAILED traces: **0**;
 - NOT YET EXAMINED: **112**.
 
-The three current unresolved evidence gaps are the Challan Type, City and Country generic search-service paths. Their controller/service handoffs are proved, but concrete Spring implementations, repository/query layers and final dependencies are not yet proved.
+Attempt 25 resolved the prior Challan Type, City and Country evidence gaps through concrete Spring services, Spring Data DAOs and explicit JPA entity table mappings:
+
+- Challan Type → `ChallanTypeSearchService` → `ChallanTypeJpaDao` → `ChallanTypeDo` → `public.tbl_challan_type`;
+- City → `CitySearchService` → `CityJpaDao` → `CityDo` → `public.tbl_city`;
+- Country → `CountrySearchService` → `CountryJpaDao` → `CountryDo` → `public.tbl_country`.
 
 ## Current Work Units
 
@@ -95,16 +99,16 @@ The three current unresolved evidence gaps are the Challan Type, City and Countr
 
 ```text
 Worker Input: WI-0004
-Latest Attempt: 24
-Latest Run: RUN-WI0004-20260823-024
+Latest Attempt: 25
+Latest Run: RUN-WI0004-20260823-025
 Run State: CLOSED
 Attempt Result: PARTIAL
 Canonical Result: NOT CREATED / NOT ACCEPTED
 Endpoint Traces Examined: 22 / 134
-Complete Traces: 19
-Unresolved Traces: 3
+Complete Traces: 22
+Unresolved Traces: 0
 Not Yet Examined: 112
-Next Action: resolve Challan Type, City and Country concrete dependency paths, then continue the remaining endpoint traces
+Next Action: continue the remaining endpoint-to-final-dependency traces using source-proved reusable relationships where applicable
 ```
 
 Matrix construction remains locked because `worker/results/WI-0004.yaml` has not reached CLOSED + COMPLETED + contract-valid + 100%-trace-result-coverage status.
@@ -115,7 +119,7 @@ Canonical blocker ledger: `backlog/runtime/BL-001/blockers.yaml`.
 
 - Governance blocker preventing planning: **NONE** - `QG-SSOT-001 PASS`.
 - Global execution blocker: **NONE**.
-- Active evidence gaps affecting `QG-TRC-002`: **3**.
+- Active evidence gaps among examined endpoints: **0**.
 - Remaining execution volume: **112 endpoint traces not yet examined**.
 
 ## Current Execution State
