@@ -1,5 +1,5 @@
 local_execution:
-  version: 9
+  version: 10
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -26,7 +26,6 @@ local_execution:
     state: CLOSED
     result: SOURCE_RESTAGE_AND_BINDING_REQUIRED
     source_snapshot_materialized_files: 29
-    source_restage_files_reused_from_prior_verified_same_baseline_cache: 4
     workers_started: 10
     worker_results_received: 10
     worker_failures: 0
@@ -44,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T00:31:11+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-003111.md
+    checkpoint_time: 2026-08-24T00:57:11+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-005711.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -59,40 +58,28 @@ local_execution:
       fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
-    directly_source_closed_families_this_iteration:
+    directly_source_closed_families:
       - controller: ChallanBookWebController
-        controller_blob_sha: a634ad4e03a4d781fd17f3588a1342987f94cb05
+        evidence: logs/runs/PRODUCTION-FIRE-20260824-003111.md
         endpoints:
-          - method: GET
-            path: /logistics/challan-books/add-form
-            state: COMPLETE
-            chain_completeness: FULL_BRANCHING
-          - method: POST
-            path: /logistics/challan-books/save
-            state: COMPLETE
-            chain_completeness: FULL_BRANCHING
+          - {method: GET, path: /logistics/challan-books/add-form, state: COMPLETE, chain_completeness: FULL_BRANCHING}
+          - {method: POST, path: /logistics/challan-books/save, state: COMPLETE, chain_completeness: FULL_BRANCHING}
+      - controller: ChallanEntryAgingDashboardController
+        controller_blob_sha: 0478afe4841dba29a3e6ce69866f3fb1109a8d2c
+        evidence: logs/runs/PRODUCTION-FIRE-20260824-005711.md
+        endpoints:
+          - {method: GET, path: /challan-entry-aging-dashboard, state: COMPLETE, chain_completeness: FULL_BRANCHING}
         proved_components:
-          ChallanBookIngestionService: 158610ef2df2b79652e23244df1d5d43ac619071
-          SummaryMetricLookupFetchService: fa5092cdf56551d38fdf24d95aa6411761cde11a
-          ChallanBookRegistryJpaDao: 9b28f1e6ddf78b145e806a39f5bf8f479ae700a0
-          SummaryMetricLookupJpaDao: 1f5144a3b287233eedf84fc2497bd688c12627ed
-          ChallanBookRegistryDo: c185c9ef3081d0ce135075ae500b059e790b46ed
-          SummaryMetricLookupDo: e8310d4a0ce9917c8cd97b11e799fda9179cfe8c
-          ChallanBookRegistryMapper: 7b7d7bfe7914c19e387b095bc762f22efde2faae
-          ChallanPageAuditLedgerMapper: 3e857c18ca20a2e41a3589ef73b1cb2a36f3bb77
-          ChallanPageAuditLedgerDo: 6e2fc468564c64906cbc4d760501f2b170a9f070
-          SummaryMetricLookupMapper: 2810d214f63cd44d940b7e997a1c143231acb552
+          ChallanEntryAgingDashboardService: f9070a3f78e7e6113d08caff4282c538cc9c1007
+          TripChallanEntryTrackerJpaDao: 5909d523dc1b92b78e681f8f3a68689e09caa9cf
+          TripChallanEntryTrackerAuditJpaDao: c295a85a90eb20d04bc1edad335918af68716fa1
+          TripChallanEntryTrackerDo: 9978de1f2ac0808df8a959f63f62114ac4d8546d
+          TripChallanEntryTrackerAuditDo: ee61245bcbf84fcfafff4a77786ca41bd7eb9b82
+          ChallanEntryAgingDashboardMapper: 622f4bc4c8e0cc73c3823248a14b0d36f00d9c74
         final_dependencies:
-          - public.tbl_challan_book_registry
-          - public.tbl_challan_page_audit_ledger
-          - public.tbl_summary_metric_lookup
-          - final-version-1/add-challan-book.html
-          - redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10
-    note: >-
-      This checkpoint source-closed the two ChallanBookWebController endpoints directly from the frozen source baseline.
-      It proved the ingestion and summary-metric service/DAO/entity/table paths, the conditional cascaded page-ledger path,
-      and terminal view/redirect behavior without rerunning the unchanged worker discovery batch. Unrelated recursive source
-      restage work remains pending.
+          - public.tbl_trip_challan_entry_tracker
+          - public.tbl_trip_challan_entry_tracker_audit
+          - final-version-1/ChallanEntryAgingDashboard
 
   source_state:
     gate: QG-SOURCE-001
@@ -114,25 +101,16 @@ local_execution:
     resolved:
       - source: AddStopController
         variable: challanHeatmapFetchService
-        declared_type: ICylinderManagementApplicationService
-        generic_args: [ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto]
-        qualifier: challanHeatmapFetchService
         implementation: com.sreyas.datamatics.cylinder.management.services.ChallanHeatmapFetchService
         implementation_blob_sha: 8c3f34b990bb9ca95b61c471047f9986023d9db2
         worker_snapshot_state: STAGED
       - source: AddStopController
         variable: challanPagePhotoUploadService
-        declared_type: ICylinderManagementApplicationService
-        generic_args: [ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto]
-        qualifier: challanPagePhotoUploadService
         implementation: com.sreyas.datamatics.cylinder.management.services.ChallanPagePhotoUploadService
         implementation_blob_sha: 83ac81e5d5f0333602c4a90b2e444cfdeee75787
         worker_snapshot_state: STAGED
       - source: CompleteTripController
         variable: completeTripService
-        declared_type: ICylinderManagementApplicationService
-        generic_args: [CompleteTripRequestDto, CompleteTripResponseDto]
-        qualifier: null
         implementation: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
         implementation_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
         worker_snapshot_state: MATERIALIZATION_PENDING
@@ -152,22 +130,22 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 40
-    complete: 38
+    examined: 41
+    complete: 39
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 94
+    not_yet_examined: 93
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 13
+    matrix_materialized_rows: 14
     historical_accepted_rows_pending_backfill: 27
     latest_newly_accepted_endpoints:
-      - GET /logistics/challan-books/add-form
-      - POST /logistics/challan-books/save
+      - GET /challan-entry-aging-dashboard
 
   next_action: >-
-    Continue resolving and blob-verifying the outstanding worker source requests and source-close additional dispatch families
-    where full chains are already provable. Materialize the validated CompleteTripServiceImpl and newly verified sources into
-    the immutable worker snapshot if still absent, and fire the same ten-task discovery only after staged-executor preflight
-    proves the advanced snapshot. Prioritize the two canonical unresolved POST endpoints when every branch dependency becomes
-    source-proved. Do not infer dependencies or advance accepted counters without Primary-Orchestrator validation.
+    Continue direct frozen-source closure for ChallanHeatmapController, CustomerAddressLocationController and
+    CustomerConsumptionDashboardController while resolving and blob-verifying the outstanding source requests.
+    Materialize validated sources into the immutable worker snapshot and fire the same ten-task discovery only after
+    staged-executor preflight proves an advanced snapshot. Prioritize the two canonical unresolved POST endpoints when
+    every branch dependency becomes source-proved. Do not infer dependencies or advance accepted counters without
+    Primary-Orchestrator validation.
