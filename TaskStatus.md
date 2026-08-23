@@ -1,6 +1,6 @@
 # CylinderManagement Automation Task Status
 
-> Human-readable derived dashboard. Canonical truth is Level 1 `backlog/backlog.yaml`, Level 2 per-backlog definition/SOW/Completion Path/Quality Gate, and Level 3 `backlog/runtime/<BL-ID>/`.
+> Human-readable derived dashboard. Canonical truth is Level 1 `backlog/backlog.yaml` plus `repository/project-inventory.yaml`, Level 2 per-backlog definition/SOW/Completion Path/Quality Gate, and Level 3 `backlog/runtime/<BL-ID>/`.
 
 ## Framework Mode
 
@@ -8,9 +8,9 @@ The framework is **Backlog-driven**, uses a mandatory **three-level Single Sourc
 
 A Backlog Item may be catalogued, but PLAN/REPLAN is forbidden until:
 
-1. **SSOT-L1 Backlog Master** is COMPLETE;
+1. **SSOT-L1 Backlog Master and Repository Scope** is COMPLETE;
 2. **SSOT-L2 Backlog Definition** is COMPLETE and `QG-SOW-001` passes;
-3. **SSOT-L3 Runtime SSOT** is COMPLETE;
+3. **SSOT-L3 Runtime SSOT** is COMPLETE, including `lane-status.yaml`;
 4. `QG-SSOT-001 Three-Level SSOT Planning Gate` passes.
 
 ## Backlog Inventory
@@ -19,11 +19,21 @@ A Backlog Item may be catalogued, but PLAN/REPLAN is forbidden until:
 - `BL-001 Controller Traceability`: **RUN ENABLED / ACTIVE / PARTIAL**.
 - `BL-002` through `BL-020`: **RUN DISABLED / NON-PLANNABLE** until their own Level 1/2/3 planning references and Quality Gates are complete.
 
+## Level 1 Project / Module Inventory
+
+Canonical source: `repository/project-inventory.yaml`.
+
+- Total top-level CylinderManagement projects/modules: **10**.
+- Unit testing **NOT REQUIRED**: **5** - `Cylinder.management.dto`, `cylinder.management.dao`, `cylindermanagement.custommapper.service`, `cylindermanagement.security`, `framework`.
+- Unit testing **POSTPONED**: **2** - `cmas.database.operations`, `cylindermanagement.offlinemap`.
+- Unit-test scope **UNCLASSIFIED**: **3** - `NewOwnerShipModelv3`, `cylinder.datascripts`, `cylindermanagement.web`.
+- BL-002 Unit Test scope definition remains **INCOMPLETE / NON-PLANNABLE** until those three classifications are explicitly defined.
+
 ## BL-001 Three-Level SSOT Status
 
 | Level / Gate | State | Authoritative source |
 |---|---|---|
-| SSOT-L1 Backlog Master | **COMPLETE** | `backlog/backlog.yaml` |
+| SSOT-L1 Backlog Master / Repository Scope | **COMPLETE** | `backlog/backlog.yaml`, `repository/project-inventory.yaml` |
 | SSOT-L2 Backlog Definition | **COMPLETE** | `backlog/items/BL-001-controller-traceability.yaml` |
 | QG-SOW-001 Statement of Work | **PASS** | `backlog/sow/BL-001-controller-traceability.yaml` |
 | SSOT-L3 Runtime SSOT | **COMPLETE** | `backlog/runtime/BL-001/` |
@@ -42,7 +52,29 @@ All mandatory BL-001 runtime files exist:
 - `blockers.yaml`;
 - `decisions.yaml`;
 - `worker-input-register.yaml`;
+- `lane-status.yaml` - authoritative current lane-to-task map;
 - `result.yaml`.
+
+## Current Lane SSOT
+
+Canonical source: `backlog/runtime/BL-001/lane-status.yaml`.
+
+| Lane | State | Current task / assignment |
+|---|---|---|
+| LANE-01 | IDLE | None |
+| LANE-02 | IDLE | None |
+| LANE-03 | IDLE | None |
+| LANE-04 | IDLE | None |
+| LANE-05 | IDLE | None |
+| LANE-06 | IDLE | None |
+| LANE-07 | IDLE | None |
+| LANE-08 | IDLE | None |
+| LANE-09 | IDLE | None |
+| LANE-10 | IDLE | None |
+
+Lane summary: **10 total / 10 IDLE / 0 WORKING / 0 BLOCKED / 0 STALE**.
+
+Attempt 25 is CLOSED/PARTIAL, so all lanes are correctly released between scheduled invocations. The active Backlog Item and Work Unit remain `BL-001 / WU-BL001-001`; the next coordinator cycle may assign independent endpoint/controller-family traces to available lanes. A lane must be recorded in `lane-status.yaml` before execution begins and released there after its run closes.
 
 ## BL-001 Quality Gate Status
 
@@ -82,9 +114,9 @@ Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
 Attempt 25 resolved the prior Challan Type, City and Country evidence gaps through concrete Spring services, Spring Data DAOs and explicit JPA entity table mappings:
 
-- Challan Type → `ChallanTypeSearchService` → `ChallanTypeJpaDao` → `ChallanTypeDo` → `public.tbl_challan_type`;
-- City → `CitySearchService` → `CityJpaDao` → `CityDo` → `public.tbl_city`;
-- Country → `CountrySearchService` → `CountryJpaDao` → `CountryDo` → `public.tbl_country`.
+- Challan Type -> `ChallanTypeSearchService` -> `ChallanTypeJpaDao` -> `ChallanTypeDo` -> `public.tbl_challan_type`;
+- City -> `CitySearchService` -> `CityJpaDao` -> `CityDo` -> `public.tbl_city`;
+- Country -> `CountrySearchService` -> `CountryJpaDao` -> `CountryDo` -> `public.tbl_country`.
 
 ## Current Work Units
 
@@ -137,6 +169,8 @@ QG-DEP-001: PASS
 Current Work Unit: WU-BL001-001
 Worker Input: WI-0004
 Open Worker runs: 0
+Active orchestration lanes: 0 / 10
+Lane SSOT: backlog/runtime/BL-001/lane-status.yaml
 Traceability Matrix: LOCKED
 User Acceptance: NOT YET REACHED
 BL-001 Closed: NO
@@ -144,7 +178,7 @@ BL-001 Closed: NO
 
 ## Coordinator State
 
-Exactly **one primary scheduled Cylinder coordinator** should remain enabled. Its prompt must enforce Level 1/2/3 and `QG-SSOT-001` before PLAN/REPLAN.
+Exactly **one primary scheduled Cylinder coordinator** should remain enabled. Its prompt must enforce Level 1/2/3 and `QG-SSOT-001` before PLAN/REPLAN. It owns `lane-status.yaml` and must update it before assigning lane work and after lane lifecycle changes.
 
 ## Branch State
 
