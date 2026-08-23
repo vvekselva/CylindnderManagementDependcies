@@ -1,0 +1,113 @@
+version: 1
+purpose: >-
+  Define the mandatory three-level Single Source of Truth model. Planning or replanning
+  for a Backlog Item is fail-closed until Level 1, Level 2 and Level 3 are all complete
+  and internally consistent for that item.
+
+planning_gate:
+  id: QG-SSOT-001
+  name: Three-Level SSOT Planning Gate
+  owner: ORCHESTRATOR
+  applies_to: ALL_BACKLOG_ITEMS
+  fail_closed: true
+  pass_condition: ALL_LEVELS_PASS
+  on_fail: BLOCKED_SSOT_INCOMPLETE_NO_PLANNING
+  on_pass: PLANNING_MAY_BE_CONSIDERED_AFTER_REQUIRED_ANALYSIS
+
+levels:
+  level_1:
+    id: SSOT-L1
+    name: Backlog Master SSOT
+    authoritative_file: backlog/backlog.yaml
+    purpose: >-
+      Answer what work exists and provide the authoritative master registry entry for
+      each Backlog Item.
+    required_item_fields:
+      - id
+      - name
+      - type
+      - priority
+      - state
+      - item_definition
+      - statement_of_work
+      - completion_path
+      - quality_gate
+      - dependencies
+      - expected_outputs
+      - runtime
+    validation_rules:
+      - selected Backlog Item exists exactly once in backlog/backlog.yaml
+      - id/name/type references reconcile with Level 2
+      - all file references required for planning are non-null and resolvable
+      - state and dependency declarations are machine-readable
+    pass_state: COMPLETE
+
+  level_2:
+    id: SSOT-L2
+    name: Backlog Definition SSOT
+    authoritative_pattern: backlog/items/BL-*.yaml
+    purpose: >-
+      Define what the selected Backlog Item means, why it exists, its Statement of Work,
+      scope, target, execution constraints, dependencies, deliverables, acceptance criteria,
+      Completion Path and Quality Gates.
+    required_components:
+      - backlog item definition file
+      - valid Statement of Work
+      - Completion Path
+      - item-specific Quality Gate configuration
+    required_definition_fields:
+      - id
+      - name
+      - purpose
+      - statement_of_work
+      - target
+      - scope
+      - dependencies
+      - deliverables
+      - acceptance_criteria
+      - completion_path
+      - quality_gate
+      - runtime
+    validation_rules:
+      - QG-SOW-001 must PASS
+      - definition id/name/type reconcile with Level 1
+      - SOW, Completion Path and Quality Gate references exist
+      - deliverables and acceptance criteria are non-placeholder
+      - execution scope cannot be invented outside the SOW
+    pass_state: COMPLETE
+
+  level_3:
+    id: SSOT-L3
+    name: Runtime SSOT
+    authoritative_pattern: backlog/runtime/<BL-ID>/
+    purpose: >-
+      Answer what is happening now and preserve the complete current execution state before
+      an Execution Plan is created or changed.
+    required_runtime_files:
+      - analysis.yaml
+      - execution-plan.yaml
+      - work-unit-status.yaml
+      - gate-status.yaml
+      - blockers.yaml
+      - decisions.yaml
+      - worker-input-register.yaml
+      - result.yaml
+    validation_rules:
+      - all required runtime files exist before PLAN or REPLAN
+      - runtime files identify the same Backlog Item
+      - blockers.yaml explicitly records active blockers or an empty blocker set
+      - gate-status.yaml records QG-SSOT-001 and other applicable pre-execution gates
+      - execution-plan.yaml may be INITIALIZED/EMPTY before first planning but must exist
+      - no stale runtime value may be treated as authoritative over newer canonical runtime evidence
+    pass_state: COMPLETE
+
+planning_rule: >-
+  The Orchestrator MUST NOT create, replace, extend or materially modify an Execution Plan
+  until SSOT-L1, SSOT-L2 and SSOT-L3 all validate COMPLETE and QG-SSOT-001 is PASS. If any
+  level is incomplete, the Backlog Item remains catalogued but planning/replanning is
+  forbidden. The Orchestrator may only perform framework/definition/runtime-initialization
+  work needed to make the three SSOT levels complete.
+
+execution_rule: >-
+  Passing QG-SSOT-001 does not itself authorize execution. Statement of Work, dependency,
+  item-specific quality-gate, Work Unit and other Completion Path rules continue to apply.
