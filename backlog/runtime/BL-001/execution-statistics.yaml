@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 8
+  version: 9
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,18 +18,27 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 33
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-013546
+    latest_accepted_attempt: 34
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-020143
     total_endpoints: 134
-    examined: 43
-    progress_percentage: 32.09
-    complete: 41
-    complete_percentage: 30.60
+    examined: 52
+    progress_percentage: 38.81
+    complete: 50
+    complete_percentage: 37.31
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 91
-    latest_newly_accepted_endpoint: GET /customer-address-location/planning-map
+    not_yet_examined: 82
+    latest_newly_accepted_endpoints:
+      - GET /customer-address-location/missing
+      - GET /customer-address-location/points.geojson
+      - GET /yard-location/upload
+      - POST /yard-location/upload
+      - GET /yard-location/points.geojson
+      - GET /customer-address-location/upload
+      - POST /customer-address-location/upload
+      - GET /customer-address-location/import-whatsapp-export
+      - POST /customer-address-location/import-whatsapp-export
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -74,32 +83,33 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-013546
+    checkpoint_id: PRODUCTION-FIRE-20260824-020143
     worker_fire_started: false
-    reason: CONTROLLER_TERMINAL_PATH_SOURCE_CLOSED_WITHOUT_WORKER_RERUN
-    endpoint_trace_checkpoint_before: 42
-    endpoint_trace_checkpoint_after: 43
-    endpoints_examined_added: 1
-    complete_added: 1
-    accepted_endpoint: GET /customer-address-location/planning-map
-    accepted_chain_state: FULL
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-013546.md
+    reason: CUSTOMER_ADDRESS_LOCATION_FAMILY_SOURCE_CLOSED_DIRECTLY_WITHOUT_DUPLICATE_WORKER_RERUN
+    endpoint_trace_checkpoint_before: 43
+    endpoint_trace_checkpoint_after: 52
+    endpoints_examined_added: 9
+    complete_added: 9
+    accepted_family: CustomerAddressLocationController
+    accepted_chain_states: [FULL, FULL_BRANCHING]
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-020143.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
     source_resolution_progress: >-
-      The Primary Orchestrator accepted a controller-terminal route directly from frozen-baseline source. The method returns
-      with-menu/CustomerAddressPlanningMap and contains no service, DAO, file, API or database dependency.
+      The Primary Orchestrator source-closed the remaining nine CustomerAddressLocationController routes from exact frozen
+      controller/service/DAO/entity/mapper sources. Native SQL and JPA mappings prove the view/table dependencies; direct
+      terminal routes remain explicitly non-database. The unchanged ten-task worker discovery was not rerun.
 
   run_over_run:
-    endpoint_progress_percentage_point_change: 0.75
-    complete_percentage_point_change: 0.75
-    endpoint_examined_change: 1
-    complete_endpoint_change: 1
+    endpoint_progress_percentage_point_change: 6.72
+    complete_percentage_point_change: 6.71
+    endpoint_examined_change: 9
+    complete_endpoint_change: 9
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
     source_closure_direction: PARTIAL_RESTAGE_STILL_REQUIRED
-    trace_direction: PROGRESSED_ONE_TERMINAL_ENDPOINT
+    trace_direction: PROGRESSED_NINE_ENDPOINTS_ONE_CONTROLLER_FAMILY_CLOSED
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
     backend_capacity_direction: TEN_WORKER_CAPACITY_PROVED
 
@@ -108,8 +118,8 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      GET /customer-address-location/planning-map advanced to COMPLETE/FULL and the canonical checkpoint increased from
-      42 to 43 examined endpoints. Source-restage work remains active for the unrelated 16-source queue.
+      Nine CustomerAddressLocationController endpoints advanced to COMPLETE from source-proved full/branching chains and the
+      canonical checkpoint increased from 43 to 52 examined endpoints. Source-restage work remains active for the 16-source queue.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
