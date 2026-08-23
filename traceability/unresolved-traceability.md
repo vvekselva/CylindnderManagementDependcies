@@ -1,52 +1,51 @@
-# Unresolved Controller Traceability
+# BL-001 Incremental Unresolved Traceability
 
-Status: PARTIAL — Source Check in progress
-Backlog Item: BL-001 Controller Traceability
-Work Unit: WU-BL001-001 Complete Source Repository Check
+Status: **OPEN / INCREMENTAL**  
+Backlog Item: BL-001 Controller Traceability  
+Work Unit: WU-BL001-001 Complete Source Repository Check  
 Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-This artifact records endpoint paths whose final dependency has not yet been source-proved. An entry remains UNRESOLVED until the concrete implementation, repository/query path, and final dependency are evidenced. No repository or database object is inferred from naming alone.
+This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESOLVED`, `BLOCKED`, or `FAILED`. It contains only source-proved facts and explicit evidence gaps; it is not a place for speculative dependencies.
 
-## Current checkpoint
+## Current canonical checkpoint
 
-- Total source-proved endpoint inventory: 134
-- Explicitly examined for final dependency: 22
-- COMPLETE: 19
-- UNRESOLVED: 3
-- BLOCKED: 0
-- FAILED: 0
-- Not yet examined: 112
+- Total caller-visible endpoints: **134**
+- Explicitly examined for final dependency: **37**
+- COMPLETE: **35**
+- UNRESOLVED: **2**
+- BLOCKED: **0**
+- FAILED: **0**
+- Not yet examined: **97**
 
 ## Current unresolved paths
 
-### `GET /search/challantype/{searchText}`
+### `POST /customer-spot-cylinder-check/submit`
 
-Last proven component: injected `challanTypeSearchService` typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, ChallanTypeSearchResponseDto>`.
+State: **UNRESOLVED**
 
-Missing evidence: concrete Spring implementation selected for this injection, invoked repository/query, entity/view mapping, and final dependency.
+Proved dependency evidence so far: `public.tbl_customer_spot_cylinder_check`.
 
-Next investigation step: resolve the concrete Challan Type search bean and follow its persistence/query path from the frozen source.
+Missing proof: the complete database-object set for every `submitSpotCheck` branch is not yet source-proved.
 
-### `GET /search/city/{searchText}`
+Next investigation step: follow every conditional branch at the frozen source baseline and accept the row only after the final dependency set is complete.
 
-Last proven component: injected `citySearchService` typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CitySearchResponseDto>`.
+### `POST /walkin-sale`
 
-Missing evidence: concrete Spring implementation selected for this injection, invoked repository/query, entity/view mapping, and final dependency.
+State: **UNRESOLVED**
 
-Next investigation step: resolve the concrete City search bean and follow its persistence/query path from the frozen source.
+Proved dependency evidence so far: `public.tbl_order`, `public.tbl_walk_in_sale`, `public.tbl_walk_in_pickup`, `public.tbl_walk_in_pickup_line`, and `public.tbl_yard_entries`.
 
-### `GET /search/country/{searchText}`
+Missing proof: the complete final dependency set across every conditional `processRequest` branch is not yet source-proved.
 
-Last proven component: injected `countrySearchService` typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CountrySearchResponsesDto>`.
+Next investigation step: resolve every branch and any source-bound service/repository implementation at the frozen source baseline without naming inference.
 
-Missing evidence: concrete Spring implementation selected for this injection, invoked repository/query, entity/view mapping, and final dependency.
+## Incremental matrix synchronization rule
 
-Next investigation step: resolve the concrete Country search bean and follow its persistence/query path from the frozen source.
+When the Primary Orchestrator proves an unresolved path:
 
-## Evidence discipline
+1. update the corresponding `(HTTP method, path)` row in `traceability/controller-traceability.md`;
+2. update or close the matching entry here in the same synchronization checkpoint;
+3. update `traceability/matrix-progress.yaml` counters;
+4. continue source analysis without waiting for the entire Source Check to finish.
 
-The active controller mappings and generic search-service calls are proved from the frozen source. These paths are deliberately not marked COMPLETE until the concrete implementation and final dependency are source-proved.
-
-## Next action
-
-Resolve these three generic search-service implementations, then continue `WU-BL001-001` across the remaining 112 not-yet-examined endpoints. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
+The final matrix is not declared `FINAL_VALIDATED` until 100 percent endpoint trace-result coverage and all required traceability gates pass.
