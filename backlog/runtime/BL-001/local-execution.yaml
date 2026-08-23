@@ -1,5 +1,5 @@
 local_execution:
-  version: 16
+  version: 17
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T04:27:14+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-042714.md
+    checkpoint_time: 2026-08-24T04:57:42+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-045742.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -160,12 +160,13 @@ local_execution:
     failed: 0
     not_yet_examined: 77
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 31
-    historical_accepted_rows_pending_backfill: 26
+    matrix_materialized_rows: 33
+    historical_accepted_rows_pending_backfill: 24
     latest_newly_accepted_endpoints:
       - GET /ownership-obligation-dashboard
     latest_historical_backfill:
-      - GET /walkin-sale
+      - GET /customer-spot-cylinder-check/fetch
+      - GET /yard-audit-dashboard
 
   next_action: >-
     Continue other not-yet-examined endpoint families from exact frozen-source evidence while resolving/materializing the 16
