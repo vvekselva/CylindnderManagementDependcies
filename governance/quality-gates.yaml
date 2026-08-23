@@ -1,4 +1,4 @@
-version: 6
+version: 7
 purpose: >-
   Define the common Backlog pre-planning/pre-execution gates and register the approved
   quality-gate configuration for every Backlog Item. A Backlog Item may be planned only
@@ -53,13 +53,20 @@ execution_lifecycle_logging_gate:
   governance: governance/execution-lifecycle-logging.yaml
   fail_closed: true
   pass_condition: >-
-    Every in-scope Orchestrator invocation contains persisted ORCHESTRATOR_INVOCATION_START
-    and ORCHESTRATOR_INVOCATION_END records. Every lane run contains the applicable ordered
-    lifecycle boundary records: LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START,
-    LANE_SERVICE_END and LANE_CLOSE_END, except that SERVICE events are omitted when init
-    ends BLOCKED_BEFORE_SERVICE. No lane is released before a persisted close/recovery-close
-    record, and run logs reconcile with lane-status/runtime state.
+    Before new execution begins, the pre-invocation lane-log hygiene check proves that no
+    individual lane log from a prior invocation exists. Every in-scope Orchestrator invocation
+    contains persisted ORCHESTRATOR_INVOCATION_START, ORCHESTRATOR_LOG_AGGREGATION_START,
+    ORCHESTRATOR_LOG_AGGREGATION_END and ORCHESTRATOR_INVOCATION_END records. Every START event
+    identifies the exact task/task description. Every lane run contains the applicable ordered
+    lifecycle boundary records. Every individual lane log is accumulated into the invocation
+    aggregate/shared audit and verified before deletion. No lane is released without close or
+    recovery-close evidence. ORCHESTRATOR_INVOCATION_END is allowed only when aggregation PASSes,
+    runtime/log evidence reconciles, no orphan OPEN event remains and the repository contains
+    zero individual lane logs.
   on_fail: EXECUTION_RESULT_NOT_ACCEPTED_AND_RECOVERY_LOG_REQUIRED
+  recovery_rule: >-
+    Leftover individual lane logs at the next invocation boundary force recovery-only mode.
+    They must be closed/recovered, accumulated, verified and deleted before new execution begins.
   historical_rule: Historical runs before contract activation remain legacy evidence and are not retroactively invalidated.
 
 user_verification:
@@ -94,6 +101,8 @@ backlog_quality_gates:
 orchestrator_rule: >-
   For PLAN or REPLAN, the Orchestrator must first validate QG-SSOT-001. After planning is
   permitted, dependency and item-specific gates still apply. Every new Orchestrator invocation
-  and lane execution must also comply with QG-LOG-001. A mandatory pre-phase lifecycle log
-  failure blocks that phase; a missing post-phase record prevents the result from being accepted
-  until recovery logging reconciles the lifecycle.
+  and lane execution must comply with QG-LOG-001. Pre-invocation leftover lane logs block new
+  execution and force recovery-only cleanup. A mandatory pre-phase lifecycle log failure blocks
+  that phase. A missing post-phase record prevents result acceptance. Invocation closure is not
+  complete until all lane logs have been accumulated, verified, deleted and a zero-lane-log
+  postcondition has been proved.
