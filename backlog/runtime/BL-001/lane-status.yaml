@@ -9,7 +9,7 @@ lane_status:
   last_reconciled_run: INVOCATION-20260823-160000
   invocation_state: BETWEEN_INVOCATIONS_EXECUTION_HOST_PREFLIGHT_BLOCKED
   current_invocation: null
-  current_idle_reason: CURRENT_EXECUTION_HOST_MISSING_SOURCE_AND_CONTROL_CHECKOUTS
+  current_idle_reason: CURRENT_EXECUTION_HOST_LACKS_VALID_SOURCE_AND_CONTROL_GIT_CHECKOUTS
 
   real_worker_backend:
     type: LOCAL_PROCESS_POOL
@@ -34,22 +34,26 @@ lane_status:
     external_service_dependency: NONE
     current_host_preflight:
       state: EXECUTION_HOST_PREFLIGHT_BLOCKED
-      attempted_at_utc: 2026-08-23T14:29:22Z
+      attempted_at_utc: 2026-08-23T15:25:56Z
       git_available: true
       python3_available: true
       source_checkout_present: false
+      source_candidates_rejected: 2
       control_checkout_present: false
-      frozen_commit_verification: NOT_REACHED
-      control_execution_file_verification: NOT_REACHED
-      lane_log_hygiene_verification: NOT_PROVABLE
+      control_candidates_rejected: 2
+      frozen_commit_verification: FAILED_NO_VALID_SOURCE_CHECKOUT_CONTAINS_FROZEN_COMMIT
+      control_execution_file_verification: NOT_PROVABLE_NO_VALID_CONTROL_GIT_CHECKOUT
+      lane_log_hygiene_verification: NOT_PROVABLE_NO_VALID_CONTROL_GIT_CHECKOUT
       lanes_started: 0
       classification: EXECUTION_HOST_PREFLIGHT_BLOCKED
       exact_missing_prerequisites:
-        - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement
-        - local_or_mounted_control_checkout_of_vvekselva/CylindnderManagementDependcies
+        - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement_containing_frozen_commit_3ae6e61442132d94a307275b08dd65fcef228d89
+        - local_or_mounted_Git_checkout_of_vvekselva/CylindnderManagementDependcies_with_approved_executor_worker_dispatch_and_fire_script
+        - provable_zero_leftover_individual_lane_logs_in_that_control_checkout
     note: >-
-      The engine and ten safe tasks remain ready, but the current execution host cannot satisfy production preflight because
-      neither required repository checkout is worker-readable here. No lane has been assigned or started.
+      Git and Python are available. Two smoke-test source repositories and two control-like smoke-test directories were found but rejected:
+      neither source repository contains the frozen commit, and neither control directory is a valid control Git checkout proving the
+      complete approved production fire inputs. No lane has been assigned or started.
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
@@ -105,6 +109,6 @@ lane_status:
     local_workers_confirmed_started: 0
 
   current_interpretation: >-
-    Production preflight failed closed on the current host because the source and control repositories are not mounted locally.
-    Git and Python are present, zero lanes were started, QG-LANE-001 remains READY_FOR_MEASUREMENT, and the ten-task dispatch
-    stays eligible for a later fire on a valid execution host.
+    Production preflight failed closed on the current host. Git and Python are present, but no valid source checkout containing the
+    frozen commit and no valid control Git checkout proving the approved production fire inputs are worker-readable here. Zero lanes
+    were started, QG-LANE-001 remains READY_FOR_MEASUREMENT, and the ten-task dispatch stays eligible for a later fire on a valid host.
