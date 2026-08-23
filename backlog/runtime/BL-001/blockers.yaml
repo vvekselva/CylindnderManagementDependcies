@@ -7,59 +7,56 @@ blockers:
   governance_blockers: []
   platform_blockers: []
 
-  execution_host_prerequisites:
+  resolved_execution_host_prerequisites:
     - id: EH-BL001-001
-      state: OPEN_ON_CURRENT_CHATGPT_EXECUTION_HOST
-      category: EXECUTION_HOST_PREFLIGHT_BLOCKED
-      affects: PRODUCTION_LOCAL_FIRE_ON_CURRENT_HOST
-      planning_blocked: false
-      backlog_execution_globally_blocked: false
-      qg_lane_001_effect: READY_FOR_MEASUREMENT_ON_VALID_HOST
-      latest_preflight_at_utc: 2026-08-23T15:25:56Z
-      summary: >-
-        Production preflight stopped before lane start because the current execution host has no accepted worker-readable
-        CylinderManagement Git checkout containing the frozen BL-001 commit and no accepted worker-readable control Git checkout.
-      exact_missing_prerequisites:
-        - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement_containing_frozen_commit_3ae6e61442132d94a307275b08dd65fcef228d89
-        - local_or_mounted_Git_checkout_of_vvekselva/CylindnderManagementDependcies_with_approved_executor_worker_dispatch_and_fire_script
-        - provable_zero_leftover_individual_lane_logs_in_that_control_checkout
-      proved_facts:
-        - Git is available at /usr/bin/git.
-        - Python 3 is available at /opt/pyvenv/bin/python3.
-        - Two local smoke-test Git repositories were found at /mnt/data/_local_lane_test/source and /mnt/data/_local_lane_smoke2/source.
-        - Neither smoke-test source repository contains frozen commit 3ae6e61442132d94a307275b08dd65fcef228d89, so neither is accepted as the production CylinderManagement checkout.
-        - Two control-like smoke-test directories were found, but neither is an accepted control Git checkout and neither proves the complete approved production fire input set.
-        - Approved executor/worker/dispatch/fire-script provenance is not provable without a valid control Git checkout.
-        - Transient lane-log hygiene is not provable against the authoritative control checkout because that checkout is absent.
-        - GitHub connector access is control-plane access and does not provide worker filesystem access.
-        - Zero production lanes were started and zero BL-001 trace evidence was accepted.
-      resolution_condition: >-
-        Make valid source and control Git checkouts worker-readable on the execution host, ensure the source checkout contains frozen
-        commit 3ae6e61442132d94a307275b08dd65fcef228d89, prove the control checkout contains the approved fire inputs, prove zero leftover
-        individual lane logs, then rerun production preflight.
+      state: RESOLVED_BY_SELF_RELIANT_SOURCE_PROVIDER
+      previous_category: EXECUTION_HOST_PREFLIGHT_BLOCKED
+      resolution: >-
+        A pre-existing local CylinderManagement/control checkout is no longer mandatory. The Primary Orchestrator
+        stages exact private source at the frozen commit into a worker-readable snapshot with Git blob integrity,
+        and the staged local process pool has executed real source workers successfully.
+      evidence: tests/self-reliant-e2e-validation-2026-08-23.md
 
   resolved_platform_blockers:
     - id: PB-BL001-001
       state: RESOLVED_BY_ARCHITECTURE_CHANGE
       previous_category: SOURCE_REPOSITORY_ACTIONS_NOT_SELF_REPORTING
-      resolution: >-
-        The real worker backend no longer depends on GitHub Actions. BL-001 uses a local process pool with up to ten OS workers,
-        a temporary detached worktree at the frozen source baseline, PID/heartbeat lane state, measured SERVICE concurrency and durable aggregate evidence.
+      resolution: GitHub Actions and GitHub runners are not normal Cylinder execution dependencies.
       replacement_backend: LOCAL_PROCESS_POOL
-      replacement_files: [automation/local-lane-executor.py, automation/local-lane-worker.py, automation/fire-local-lanes.ps1, backlog/runtime/BL-001/local-execution.yaml]
+      replacement_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
 
-  local_fire_readiness:
-    state: READY_ON_VALID_EXECUTION_HOST
-    affects_gate: QG-LANE-001
-    configured_lanes: 10
-    safe_ready_tasks: 10
-    expected_concurrent_lanes: 10
-    external_service_dependency: NONE
-    prerequisite: >-
-      Worker-readable valid source and control Git checkouts must exist on the execution host; the source checkout must contain the
-      frozen commit; the control checkout must prove approved production fire inputs and zero leftover transient lane logs. Git and
-      Python 3 are already available on the current host.
-    next_action: MATERIALIZE_OR_MOUNT_VALID_SOURCE_AND_CONTROL_GIT_CHECKOUTS_THEN_RERUN_PREFLIGHT
+  source_resolution_work:
+    - id: SR-BL001-001
+      state: OPEN_PROGRESSING_NOT_GLOBAL_BLOCKER
+      category: RECURSIVE_SOURCE_STAGE_CONTINUATION
+      affects: WU-BL001-001_SOURCE_CLOSURE
+      qg_source_001_effect: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+      latest_execution: E2E-STAGED-20260823-151810
+      latest_missing_source_request_count: 21
+      latest_missing_binding_request_count: 0
+      planning_blocked: false
+      worker_backend_blocked: false
+      summary: >-
+        The latest ten-worker discovery proved controller-root integrity and returned exact additional source requests.
+        This is normal bounded source-staging work, not an external infrastructure blocker.
+      resolution_condition: >-
+        Resolve exact requests through repository/source-layout.yaml at the same frozen commit; stage/blob-verify them;
+        validate interface bindings as interface source becomes available; rerun discovery until both missing request
+        sets are zero. Fail closed if the unresolved request set repeats without progress or eight iterations are reached.
+
+  performance_observation:
+    - id: PERF-BL001-001
+      state: OPEN_UNDERUTILIZATION
+      category: QG_LANE_001_PERFORMANCE_GOVERNANCE
+      latest_execution: E2E-STAGED-20260823-151810
+      expected_concurrent_lanes: 10
+      measured_peak_service_concurrent_lanes: 4
+      measured_average_service_concurrent_lanes: 0.26
+      backend_capacity_probe_peak_service_concurrent_lanes: 10
+      source_evidence_invalidated: false
+      summary: >-
+        Natural discovery work measured below ten-way SERVICE overlap even though the process-pool capacity probe reached 10/10.
+        Do not add artificial delay to manufacture a PASS. Continue to measure natural workloads and optimize real scheduling only.
 
   active_evidence_gaps:
     - {id: EG-BL001-004, state: OPEN, affects_gate: QG-TRC-002, source_endpoint: POST /customer-spot-cylinder-check/submit, summary: Complete final database-object set for all submitSpotCheck branches is not yet proved.}
@@ -70,10 +67,18 @@ blockers:
     - {id: EG-BL001-002, state: RESOLVED, resolution: CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city}
     - {id: EG-BL001-003, state: RESOLVED, resolution: CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country}
 
+  recovery_validation:
+    gate: QG-RECOVERY-001
+    state: PASS_VALIDATED_STATE_MACHINE
+    cases_passed: 5
+    cases_total: 5
+    pending_sync_does_not_restart_workers: true
+    interrupted_partial_output_not_accepted: true
+
   remaining_work_constraint:
     state: OPEN
     affects_gate: QG-TRC-002
     summary: 97 of 134 endpoint final-dependency traces remain not yet examined.
 
   latest_accepted_attempt: {number: 27, invocation: INVOCATION-20260823-160000, new_endpoint_traces_examined: 10, new_complete: 10, new_unresolved: 0}
-  local_backend_transition: {state: COMPLETE_READY_ON_VALID_HOST, dispatch: LOCAL-BL001-DISPATCH-005, configured_lanes: 10, qg_lane_001_state: READY_FOR_MEASUREMENT}
+  self_reliant_backend_transition: {state: COMPLETE_ARCHITECTURE_PROMOTED, dispatch: LOCAL-BL001-DISPATCH-005, configured_lanes: 10, source_provider: ORCHESTRATOR_STAGED_SNAPSHOT}
