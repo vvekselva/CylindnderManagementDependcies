@@ -1,7 +1,7 @@
-version: 3
+version: 4
 purpose: >-
   Define the common Backlog pre-planning/pre-execution gates and register the approved
-  quality-gate configuration for each Backlog Item. A Backlog Item may be planned only
+  quality-gate configuration for every Backlog Item. A Backlog Item may be planned only
   after its three Single Source of Truth levels are complete. Execution additionally
   requires Statement of Work, dependency and item-specific Quality Gate rules to pass.
 
@@ -54,41 +54,26 @@ user_verification:
     has been approved by the user.
 
 backlog_quality_gates:
-  BL-001:
-    name: Controller Traceability
-    configured: true
-    config: backlog/gates/BL-001-traceability.yaml
-    approved_by_user: true
-  BL-002:
-    name: Unit Test Completion
-    configured: false
-    config: null
-    approved_by_user: false
-    execution_allowed: false
-  BL-003:
-    name: Integration Test Completion
-    configured: false
-    config: null
-    approved_by_user: false
-    execution_allowed: false
-  BL-004:
-    name: Code Coverage Report
-    configured: false
-    config: null
-    approved_by_user: false
-    execution_allowed: false
-  BL-005:
-    name: ArchUnit Architecture Test
-    configured: false
-    config: null
-    approved_by_user: false
-    execution_allowed: false
-  BL-006:
-    name: Requirements Traceability and Gap Analysis
-    configured: false
-    config: null
-    approved_by_user: false
-    execution_allowed: false
+  BL-001: {name: Controller Traceability, configured: true, config: backlog/gates/BL-001-traceability.yaml, approved_by_user: true, execution_allowed: true}
+  BL-002: {name: Unit Test Completion, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-003: {name: Integration Test Completion, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-004: {name: Code Coverage Report, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-005: {name: ArchUnit Architecture Test, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-006: {name: Requirements Traceability and Gap Analysis, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-007: {name: Migration of the Database to the Ownership Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-008: {name: Supplier Owned, Customer Owned and Company Owned Cylinder Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-009: {name: Physical Challan Book Location, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-010: {name: Ownership Dashboard Changes, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-011: {name: CRUD Services for All Tables, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-012: {name: On Spot Cylinder Checks, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-013: {name: Correction Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-014: {name: Invoice Generation and Check in Tally, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-015: {name: Attendance Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-016: {name: Trip Planning for the Customers, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-017: {name: CEO Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-018: {name: Restoring the Logical Backup, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-019: {name: Task Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-020: {name: Customer Data Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
 
 orchestrator_rule: >-
   For PLAN or REPLAN, the Orchestrator must first validate QG-SSOT-001. If Level 1, Level 2
