@@ -1,26 +1,46 @@
-version: 1
+version: 2
 name: Real Lane Dispatch And Utilization Governance
 purpose: >-
   Convert orchestration lanes from logical labels into measurable independent worker executions.
-  GitHub Actions matrix jobs provide the current real parallel worker backend for source-evidence
-  collection. The Orchestrator remains the only authority that may accept final trace states.
+  The authoritative queue remains in the control repository, while the actual GitHub Actions matrix
+  executes source-locally in the private CylinderManagement repository so its repository-scoped token
+  can read the frozen source baseline without a cross-repository PAT.
 
 worker_backend:
-  type: GITHUB_ACTIONS_MATRIX
-  workflow: .github/workflows/lane-matrix-dispatch.yml
+  type: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
+  control_repository: vvekselva/CylindnderManagementDependcies
   queue_ssot: backlog/runtime/<BL-ID>/lane-dispatch.yaml
+  source_repository: vvekselva/CylinderManagement
+  source_execution_branch: automation/lane-matrix
+  source_dispatch_copy: automation/lane-dispatch.yaml
+  source_run_status: automation/matrix-execution.yaml
+  source_workflow: .github/workflows/lane-matrix-dispatch.yml
   max_parallel_workers: 10
-  worker_script: automation/lane-worker.py
-  summary_script: automation/lane-summary.py
+  source_worker_script: automation/lane-worker.py
+  source_summary_script: automation/lane-summary.py
   source_evidence_only: true
-  final_trace_decision_owner: ORCHESTRATOR
+  final_trace_decision_owner: CONTROL_REPOSITORY_ORCHESTRATOR
+
+synchronization_rule: >-
+  The control-repository lane-dispatch.yaml is authoritative. Before a batch is executed, the
+  Orchestrator copies the approved task set and frozen source baseline into the source execution
+  branch dispatch file. The source copy must identify the control dispatch ID and is execution input
+  only; it may not redefine backlog scope or final trace decisions.
+
+authentication_rule: >-
+  A repository-scoped GitHub Actions token cannot read a different private repository. Therefore the
+  control-side matrix auto-trigger is retired. The private-source matrix must run inside
+  vvekselva/CylinderManagement. No PAT or new secret is required when source-repository Actions are enabled.
 
 safety_rules:
-  - workers are read-only against the frozen CylinderManagement source baseline
+  - source execution branch was created from the frozen source baseline
+  - each worker separately checks out the exact frozen baseline into its source-baseline working directory
+  - workers are read-only against the frozen application source
+  - execution bridge files live only on automation/lane-matrix and do not change the frozen baseline commit
   - workers must not modify application source or shared control files
-  - each matrix job owns only its own artifact
+  - each matrix job owns only its transient artifact
   - source evidence collected by a worker is not automatically a COMPLETE trace
-  - the Orchestrator must validate endpoint-by-endpoint call paths and may preserve UNRESOLVED
+  - the control Orchestrator validates endpoint-by-endpoint call paths and may preserve UNRESOLVED
   - no table/view/service dependency may be accepted from naming alone
 
 metrics:
@@ -38,21 +58,26 @@ quality_gate:
   owner: ORCHESTRATOR
   category: PERFORMANCE_GOVERNANCE
   pass_condition: >-
-    When two or more safe independent tasks are dispatchable, the matrix execution reaches the
-    expected safe concurrency, where expected concurrency is min(configured lanes, eligible tasks),
-    OR a concrete platform/runners capacity limit is recorded and achieved. When fewer than two
-    independent tasks exist, the gate passes without requiring artificial parallelism.
+    When two or more safe independent tasks are dispatchable, the source-local matrix execution
+    reaches expected safe concurrency, or a concrete GitHub runner/platform concurrency cap is recorded
+    and the measured peak reaches that cap. Fewer than two independent tasks require no artificial parallelism.
+  blocked_before_measurement_condition: >-
+    The source-local GitHub Actions workflow does not start, or workers cannot reach service because of
+    repository Actions policy/availability. In this state QG-LANE-001 is BLOCKED_PLATFORM and no real
+    utilization claim is made.
   underutilized_condition: >-
     peak_concurrent_lanes is below expected safe concurrency and no dependency, resource lock,
     runner-capacity limit or platform limit explains the shortfall.
   fail_closed_for_parallelism_claim: true
   does_not_invalidate_source_evidence: true
   on_underutilized: >-
-    Preserve valid worker evidence, mark the run LANE_UNDERUTILIZED, record the exact concurrency
-    gap, and correct dispatch/runner capacity before claiming the lane-utilization problem solved.
+    Preserve valid worker evidence, mark LANE_UNDERUTILIZED, record the exact concurrency gap, and
+    correct dispatch/runner capacity before claiming the utilization problem solved.
 
 artifact_contract:
   worker_artifact_pattern: lane-result-<lane>-<task-id>
-  required_worker_files: [lane-result.yaml, lane-evidence.md]
-  summary_artifact: lane-dispatch-summary
+  required_worker_files: [lane-result.yaml, lane-evidence.md, lane-lifecycle.md]
+  durable_aggregate_artifact: lane-dispatch-aggregate
   summary_files: [lane-dispatch-summary.yaml, lane-dispatch-summary.md]
+  source_run_status_file: automation/matrix-execution.yaml
+  transient_individual_artifacts_deleted_after_verified_aggregation: true
