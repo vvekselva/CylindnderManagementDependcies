@@ -55,6 +55,23 @@ All mandatory BL-001 runtime files exist:
 - `lane-status.yaml` - authoritative current lane-to-task map;
 - `result.yaml`.
 
+## Lane Utilization Fix Applied
+
+The earlier BL-001 plan had `WU-BL001-001` configured with `parallel: false`. That was unnecessarily limiting throughput even though independent controller/endpoint families can be traced safely in parallel.
+
+The active execution plan is now updated so that:
+
+- `WU-BL001-001` is **lane-parallel**;
+- up to **10 orchestration lanes** may be used for independent controller/endpoint-family traces;
+- batching preference is **controller/service family**;
+- there is **no fixed three-endpoint batch limit**;
+- released lanes should be **refilled in the same coordinator invocation** while additional safe independent work remains;
+- dependent Work Units, conflicting shared-file writes and resource-lock conflicts remain serialized;
+- previously proved relationships may be reused only when the frozen source confirms the same path;
+- all no-guessing and traceability Quality Gates remain unchanged.
+
+This corrects utilization without weakening evidence quality or unlocking the Traceability Matrix prematurely.
+
 ## Current Lane SSOT
 
 Canonical source: `backlog/runtime/BL-001/lane-status.yaml`.
@@ -74,7 +91,7 @@ Canonical source: `backlog/runtime/BL-001/lane-status.yaml`.
 
 Lane summary: **10 total / 10 IDLE / 0 WORKING / 0 BLOCKED / 0 STALE**.
 
-Attempt 25 is CLOSED/PARTIAL, so all lanes are correctly released between scheduled invocations. The active Backlog Item and Work Unit remain `BL-001 / WU-BL001-001`; the next coordinator cycle may assign independent endpoint/controller-family traces to available lanes. A lane must be recorded in `lane-status.yaml` before execution begins and released there after its run closes.
+Current invocation state: **BETWEEN_INVOCATIONS**. Attempt 25 is CLOSED/PARTIAL, so all lanes are correctly released at this checkpoint. This does **not** mean there is no work: BL-001 / WU-BL001-001 remains active with 112 endpoint traces unexamined. During the next active coordinator invocation, the coordinator must partition safe independent controller/endpoint families across available lanes and refill released lanes while eligible work remains.
 
 ## BL-001 Quality Gate Status
 
@@ -122,7 +139,7 @@ Attempt 25 resolved the prior Challan Type, City and Country evidence gaps throu
 
 | Work Unit | Purpose | State |
 |---|---|---|
-| `WU-BL001-001` | Complete Source Repository Check | **PARTIAL - CONTINUE REQUIRED** |
+| `WU-BL001-001` | Complete Source Repository Check - up to 10 independent controller/endpoint-family lanes | **PARTIAL - CONTINUE REQUIRED / LANE-PARALLEL** |
 | `WU-BL001-002` | Build Traceability Matrix from accepted Source Check Output | WAITING_FOR_DEPENDENCY |
 | `WU-BL001-003` | Validate approved Traceability Quality Gates | WAITING_FOR_DEPENDENCY |
 | `WU-BL001-004` | Register baseline and prepare user acceptance/closure | WAITING_FOR_DEPENDENCY |
@@ -140,7 +157,7 @@ Endpoint Traces Examined: 22 / 134
 Complete Traces: 22
 Unresolved Traces: 0
 Not Yet Examined: 112
-Next Action: continue the remaining endpoint-to-final-dependency traces using source-proved reusable relationships where applicable
+Next Action: use the revised lane-parallel WU-BL001-001 plan to continue independent controller/endpoint-family tracing; fill/refill safe lanes within the same coordinator invocation
 ```
 
 Matrix construction remains locked because `worker/results/WI-0004.yaml` has not reached CLOSED + COMPLETED + contract-valid + 100%-trace-result-coverage status.
@@ -153,6 +170,7 @@ Canonical blocker ledger: `backlog/runtime/BL-001/blockers.yaml`.
 - Global execution blocker: **NONE**.
 - Active evidence gaps among examined endpoints: **0**.
 - Remaining execution volume: **112 endpoint traces not yet examined**.
+- Lane-utilization blocker: **RESOLVED IN PLAN/POLICY** - next invocation is instructed to fill/refill safe lane capacity rather than stop at a fixed small batch.
 
 ## Current Execution State
 
@@ -167,9 +185,13 @@ QG-SSOT-001: PASS
 QG-SOW-001: PASS
 QG-DEP-001: PASS
 Current Work Unit: WU-BL001-001
+WU-BL001-001 Parallelism: ENABLED FOR INDEPENDENT CONTROLLER/ENDPOINT FAMILIES
+Maximum orchestration lanes: 10
+Refill released lanes within invocation: TRUE
+Fixed small endpoint batch limit: FALSE
 Worker Input: WI-0004
 Open Worker runs: 0
-Active orchestration lanes: 0 / 10
+Active orchestration lanes: 0 / 10 (BETWEEN_INVOCATIONS)
 Lane SSOT: backlog/runtime/BL-001/lane-status.yaml
 Traceability Matrix: LOCKED
 User Acceptance: NOT YET REACHED
@@ -178,7 +200,7 @@ BL-001 Closed: NO
 
 ## Coordinator State
 
-Exactly **one primary scheduled Cylinder coordinator** should remain enabled. Its prompt must enforce Level 1/2/3 and `QG-SSOT-001` before PLAN/REPLAN. It owns `lane-status.yaml` and must update it before assigning lane work and after lane lifecycle changes.
+Exactly **one primary scheduled Cylinder coordinator** remains the required model. Its scheduled prompt has been updated to require `lane-status.yaml`, fill available safe lanes with independent controller/endpoint-family work, refill released lanes during the same invocation, and avoid a fixed three-endpoint batch when more eligible work remains.
 
 ## Branch State
 
