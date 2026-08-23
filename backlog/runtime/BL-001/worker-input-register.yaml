@@ -7,6 +7,15 @@ worker_inputs:
     result: worker/results/WI-0004.yaml
     result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
     accepted: false
+    latest_attempt: 24
+    current_checkpoint:
+      endpoint_traces_examined_total: 22
+      complete_final_dependencies_total: 19
+      unresolved_final_dependencies_total: 3
+      blocked_total: 0
+      failed_total: 0
+      not_yet_examined: 112
+      total_endpoint_inventory: 134
     attempts:
       - {attempt: 1, run_id: RUN-WI0004-20260822-001, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 6, proved_endpoints: 11, candidates_remaining_to_classify: 56}}
       - {attempt: 2, run_id: RUN-WI0004-20260822-002, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {proved_exposed_components: 11, proved_endpoints: 17, candidates_remaining_to_classify: 51}}
@@ -24,4 +33,12 @@ worker_inputs:
       - {attempt: 14, run_id: RUN-WI0004-20260822-014, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 10, complete_final_dependencies_total: 0, unresolved_final_dependencies_total: 10, not_yet_examined: 124, total_endpoint_inventory: 134}}
       - {attempt: 15, run_id: RUN-WI0004-20260822-015, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 10, complete_final_dependencies_total: 3, unresolved_final_dependencies_total: 7, not_yet_examined: 124, total_endpoint_inventory: 134}}
       - {attempt: 16, run_id: RUN-WI0004-20260822-016, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 10, complete_final_dependencies_total: 6, unresolved_final_dependencies_total: 4, not_yet_examined: 124, total_endpoint_inventory: 134}}
-    next_action: CONTINUE_ENDPOINT_TO_FINAL_DEPENDENCY_TRACING
+      - {attempt: 17, run_id: RUN-WI0004-20260822-017, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 10, complete_final_dependencies_total: 10, unresolved_final_dependencies_total: 0, not_yet_examined: 124, total_endpoint_inventory: 134}}
+      - {attempt: 18, run_id: RUN-WI0004-20260822-018, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 12, complete_final_dependencies_total: 12, unresolved_final_dependencies_total: 0, not_yet_examined: 122, total_endpoint_inventory: 134}}
+      - {attempt: 19, run_id: RUN-WI0004-20260823-019, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 13, complete_final_dependencies_total: 12, unresolved_final_dependencies_total: 1, not_yet_examined: 121, total_endpoint_inventory: 134}}
+      - {attempt: 20, run_id: RUN-WI0004-20260823-020, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 13, complete_final_dependencies_total: 13, unresolved_final_dependencies_total: 0, not_yet_examined: 121, total_endpoint_inventory: 134}}
+      - {attempt: 21, run_id: RUN-WI0004-20260823-021, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 16, complete_final_dependencies_total: 13, unresolved_final_dependencies_total: 3, not_yet_examined: 118, total_endpoint_inventory: 134}}
+      - {attempt: 22, run_id: RUN-WI0004-20260823-022, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 16, complete_final_dependencies_total: 16, unresolved_final_dependencies_total: 0, not_yet_examined: 118, total_endpoint_inventory: 134}}
+      - {attempt: 23, run_id: RUN-WI0004-20260823-023, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 19, complete_final_dependencies_total: 19, unresolved_final_dependencies_total: 0, not_yet_examined: 115, total_endpoint_inventory: 134}}
+      - {attempt: 24, run_id: RUN-WI0004-20260823-024, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 22, complete_final_dependencies_total: 19, unresolved_final_dependencies_total: 3, not_yet_examined: 112, total_endpoint_inventory: 134}}
+    next_action: RESOLVE_CURRENT_EVIDENCE_GAPS_THEN_CONTINUE_ENDPOINT_TO_FINAL_DEPENDENCY_TRACING
