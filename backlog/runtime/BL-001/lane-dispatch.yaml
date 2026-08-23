@@ -1,5 +1,9 @@
 lane_dispatch:
-  version: 1
+  version: 2
+  dispatch_generation: 2
+  dispatch_id: MATRIX-BL001-DISPATCH-002
+  requested_at: '2026-08-23T17:24:00+05:30'
+  requested_by: USER_APPROVED_ORCHESTRATOR_CHANGE
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: READY_FOR_DISPATCH
@@ -17,100 +21,24 @@ lane_dispatch:
     - every task must be independent and read-only against the frozen source baseline
     - one task is assigned to one lane for one matrix execution
     - workers produce isolated artifacts and never update shared runtime files
+    - every worker emits INIT SERVICE CLOSE lifecycle evidence with exact task identity
     - worker evidence does not automatically classify an endpoint COMPLETE
     - the Orchestrator validates and consolidates evidence after matrix completion
     - no dependency may be inferred from naming alone
+    - summary job measures actual worker overlap and evaluates QG-LANE-001
+    - individual worker artifacts are transient and deleted after verified aggregate creation
 
   tasks:
-    - task_id: BL001-D001
-      lane: LANE-01
-      status: READY
-      safe_independent: true
-      task: Trace AddStopController family evidence
-      task_description: Collect source-proved endpoint mappings, injected service/DAO components and explicit persistence/file/API evidence reachable from AddStopController for Orchestrator validation.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java
-      max_components: 50
-
-    - task_id: BL001-D002
-      lane: LANE-02
-      status: READY
-      safe_independent: true
-      task: Trace ChallanBookWebController family evidence
-      task_description: Collect source-proved endpoint mappings and downstream component/dependency evidence for ChallanBookWebController without making a final trace decision.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
-      max_components: 40
-
-    - task_id: BL001-D003
-      lane: LANE-03
-      status: READY
-      safe_independent: true
-      task: Trace ChallanEntryAgingDashboardController family evidence
-      task_description: Collect source-proved endpoint mappings and downstream dashboard service/repository/table/view evidence for ChallanEntryAgingDashboardController.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanEntryAgingDashboardController.java
-      max_components: 40
-
-    - task_id: BL001-D004
-      lane: LANE-04
-      status: READY
-      safe_independent: true
-      task: Trace ChallanHeatmapController family evidence
-      task_description: Collect source-proved endpoint mappings and downstream service/repository/table/view evidence for ChallanHeatmapController.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanHeatmapController.java
-      max_components: 45
-
-    - task_id: BL001-D005
-      lane: LANE-05
-      status: READY
-      safe_independent: true
-      task: Trace ChallanPagePhotoController family evidence
-      task_description: Collect source-proved endpoint mappings and explicit service/file/persistence evidence for ChallanPagePhotoController.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanPagePhotoController.java
-      max_components: 40
-
-    - task_id: BL001-D006
-      lane: LANE-06
-      status: READY
-      safe_independent: true
-      task: Trace CompleteTripController family evidence
-      task_description: Collect source-proved endpoint mappings and downstream trip-completion service/DAO/entity/table/view evidence for CompleteTripController.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CompleteTripController.java
-      max_components: 50
-
-    - task_id: BL001-D007
-      lane: LANE-07
-      status: READY
-      safe_independent: true
-      task: Trace CustomerAddressLocationController family evidence
-      task_description: Collect source-proved endpoint mappings and downstream customer-address/location service, repository and database evidence for CustomerAddressLocationController.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java
-      max_components: 50
-
-    - task_id: BL001-D008
-      lane: LANE-08
-      status: READY
-      safe_independent: true
-      task: Trace CustomerConsumptionDashboardController family evidence
-      task_description: Collect source-proved endpoint mappings and dashboard service/repository/table/view evidence for CustomerConsumptionDashboardController.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerConsumptionDashboardController.java
-      max_components: 45
-
-    - task_id: BL001-D009
-      lane: LANE-09
-      status: READY
-      safe_independent: true
-      task: Trace Uc02Phase01VehicleLoadController family evidence
-      task_description: Collect source-proved endpoint mappings and downstream vehicle-load service/DAO/entity/table evidence for Uc02Phase01VehicleLoadController.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase01VehicleLoadController.java
-      max_components: 55
-
-    - task_id: BL001-D010
-      lane: LANE-10
-      status: READY
-      safe_independent: true
-      task: Trace Uc02Phase02CylinderDeliveryController family evidence
-      task_description: Collect source-proved endpoint mappings and downstream cylinder-delivery service/DAO/entity/table evidence for Uc02Phase02CylinderDeliveryController.
-      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase02CylinderDeliveryController.java
-      max_components: 55
+    - {task_id: BL001-D001, lane: LANE-01, status: READY, safe_independent: true, task: Trace AddStopController family evidence, task_description: Collect source-proved endpoint mappings injected downstream components and explicit persistence/file/API evidence reachable from AddStopController for Orchestrator validation., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java, max_components: 50}
+    - {task_id: BL001-D002, lane: LANE-02, status: READY, safe_independent: true, task: Trace ChallanBookWebController family evidence, task_description: Collect source-proved endpoint mappings and downstream component/dependency evidence for ChallanBookWebController without making a final trace decision., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java, max_components: 40}
+    - {task_id: BL001-D003, lane: LANE-03, status: READY, safe_independent: true, task: Trace ChallanEntryAgingDashboardController family evidence, task_description: Collect source-proved endpoint mappings and downstream dashboard service/repository/table/view evidence for ChallanEntryAgingDashboardController., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanEntryAgingDashboardController.java, max_components: 40}
+    - {task_id: BL001-D004, lane: LANE-04, status: READY, safe_independent: true, task: Trace ChallanHeatmapController family evidence, task_description: Collect source-proved endpoint mappings and downstream service/repository/table/view evidence for ChallanHeatmapController., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanHeatmapController.java, max_components: 45}
+    - {task_id: BL001-D005, lane: LANE-05, status: READY, safe_independent: true, task: Trace ChallanPagePhotoController family evidence, task_description: Collect source-proved endpoint mappings and explicit service/file/persistence evidence for ChallanPagePhotoController., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanPagePhotoController.java, max_components: 40}
+    - {task_id: BL001-D006, lane: LANE-06, status: READY, safe_independent: true, task: Trace CompleteTripController family evidence, task_description: Collect source-proved endpoint mappings and downstream trip-completion service/DAO/entity/table/view evidence for CompleteTripController., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CompleteTripController.java, max_components: 50}
+    - {task_id: BL001-D007, lane: LANE-07, status: READY, safe_independent: true, task: Trace CustomerAddressLocationController family evidence, task_description: Collect source-proved endpoint mappings and downstream customer-address/location service repository and database evidence for CustomerAddressLocationController., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java, max_components: 50}
+    - {task_id: BL001-D008, lane: LANE-08, status: READY, safe_independent: true, task: Trace CustomerConsumptionDashboardController family evidence, task_description: Collect source-proved endpoint mappings and dashboard service/repository/table/view evidence for CustomerConsumptionDashboardController., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerConsumptionDashboardController.java, max_components: 45}
+    - {task_id: BL001-D009, lane: LANE-09, status: READY, safe_independent: true, task: Trace Uc02Phase01VehicleLoadController family evidence, task_description: Collect source-proved endpoint mappings and downstream vehicle-load service/DAO/entity/table evidence for Uc02Phase01VehicleLoadController., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase01VehicleLoadController.java, max_components: 55}
+    - {task_id: BL001-D010, lane: LANE-10, status: READY, safe_independent: true, task: Trace Uc02Phase02CylinderDeliveryController family evidence, task_description: Collect source-proved endpoint mappings and downstream cylinder-delivery service/DAO/entity/table evidence for Uc02Phase02CylinderDeliveryController., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase02CylinderDeliveryController.java, max_components: 55}
 
   summary:
     total_tasks: 10
