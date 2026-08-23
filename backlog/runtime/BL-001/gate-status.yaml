@@ -3,6 +3,7 @@ quality_gate_status:
   item_definition: backlog/items/BL-001-controller-traceability.yaml
   statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
   quality_gate_config: backlog/gates/BL-001-traceability.yaml
+  architecture: architecture/self-reliant-e2e-execution.md
 
   three_level_ssot_gate:
     id: QG-SSOT-001
@@ -11,54 +12,75 @@ quality_gate_status:
       level_1: {state: COMPLETE, evidence: [backlog/backlog.yaml, repository/project-inventory.yaml]}
       level_2: {state: COMPLETE, evidence: [backlog/items/BL-001-controller-traceability.yaml, backlog/sow/BL-001-controller-traceability.yaml, backlog/paths/BL-001-traceability.yaml, backlog/gates/BL-001-traceability.yaml]}
       level_3:
-        state: COMPLETE
+        state: COMPLETE_SELF_RELIANT_RUNTIME_RECONCILED
         evidence: [backlog/runtime/BL-001/analysis.yaml, backlog/runtime/BL-001/execution-plan.yaml, backlog/runtime/BL-001/work-unit-status.yaml, backlog/runtime/BL-001/gate-status.yaml, backlog/runtime/BL-001/blockers.yaml, backlog/runtime/BL-001/decisions.yaml, backlog/runtime/BL-001/worker-input-register.yaml, backlog/runtime/BL-001/lane-status.yaml, backlog/runtime/BL-001/lane-dispatch.yaml, backlog/runtime/BL-001/local-execution.yaml, backlog/runtime/BL-001/execution-statistics.yaml, backlog/runtime/BL-001/result.yaml]
     planning_allowed: true
     replanning_allowed: true
 
   statement_of_work_gate: {id: QG-SOW-001, state: PASS}
   common_dependency_gate: {id: QG-DEP-001, state: PASS, evidence: BL-001 declares no Backlog dependencies}
+
+  execution_source_gate:
+    id: QG-SOURCE-001
+    name: Execution Source Availability And Integrity
+    state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    governance: governance/source-provider.yaml
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    preexisting_local_source_checkout_required: false
+    source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+    validation_report: tests/self-reliant-e2e-validation-2026-08-23.md
+    controller_roots_verified: 10
+    latest_full_discovery_execution: E2E-STAGED-20260823-151810
+    missing_source_requests: 21
+    missing_binding_requests: 0
+    source_closure_complete: false
+    canary_execution: E2E-STAGED-20260823-151800
+    canary_source_closure_complete: true
+    tamper_test: PASS_BLOCK_BEFORE_SERVICE
+    positive_interface_binding_test: PASS
+    negative_interface_binding_test: PASS_IMPLEMENTATION_SIGNATURE_MISMATCH
+    next_state_when_requests_reach_zero: SOURCE_CLOSURE_COMPLETE
+
   execution_lifecycle_logging_gate:
     id: QG-LOG-001
     state: PASS
-    latest_closed_invocation: INVOCATION-20260823-175300
-    preflight_individual_repo_lane_logs: 0
-    post_invocation_individual_repo_lane_logs: 0
-    note: The local executor will re-run zero-lane-log preflight and enforce lifecycle aggregation on every local fire.
+    latest_tested_execution: E2E-STAGED-20260823-151810
+    workers_started: 10
+    worker_failures: 0
+    post_aggregate_individual_lane_logs: 0
+    note: Staged worker lifecycle and transient-log cleanup were validated; every new production batch re-runs the boundary checks.
+
+  execution_recovery_gate:
+    id: QG-RECOVERY-001
+    state: PASS
+    governance: governance/self-reliant-execution.yaml
+    validated_cases: 5
+    total_cases: 5
+    pending_sync_restarts_workers: false
+    interrupted_partial_output_accepted: false
 
   real_lane_utilization_gate:
     id: QG-LANE-001
     name: Real Lane Utilization Gate
-    state: READY_FOR_MEASUREMENT
+    state: UNDERUTILIZED
     governance: governance/lane-execution.yaml
-    control_dispatch_queue: backlog/runtime/BL-001/lane-dispatch.yaml
-    local_execution_ssot: backlog/runtime/BL-001/local-execution.yaml
     dispatch_id: LOCAL-BL001-DISPATCH-005
     worker_backend: LOCAL_PROCESS_POOL
-    executor: automation/local-lane-executor.py
-    worker: automation/local-lane-worker.py
-    windows_fire_script: automation/fire-local-lanes.ps1
-    source_repository: vvekselva/CylinderManagement
-    source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-    source_checkout_mode: TEMPORARY_DETACHED_GIT_WORKTREE_AT_FROZEN_COMMIT
+    executor: automation/staged-lane-executor-v3.py
+    worker: automation/staged-lane-worker-v3.py
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
     configured_lanes: 10
     safe_ready_tasks: 10
     expected_concurrent_lanes: 10
-    external_service_dependency: NONE
-    local_workers_confirmed_started: 0
-    measured_peak_worker_processes_alive: null
-    measured_peak_service_concurrent_lanes: null
-    measured_average_service_concurrent_lanes: null
-    peak_service_capacity_utilization_percentage: null
-    durable_aggregate_available: false
-    blocker_id: null
-    pass_evidence_required:
-      - local-execution.yaml with CLOSED local execution ID and zero remaining lane logs
-      - durable worker/evidence/LOCAL-BL001-<timestamp>/lane-dispatch-aggregate.yaml
-      - peak_service_concurrent_lanes and average_service_concurrent_lanes measured from lifecycle timestamps
-      - all expected worker results received and no worker execution failures
-      - transient individual lane logs remaining equals zero after verified aggregation
-    source_evidence_validity_effect: QG-LANE-001 does not automatically accept endpoint traces; the primary Orchestrator validates worker evidence.
+    latest_natural_execution: E2E-STAGED-20260823-151810
+    measured_peak_service_concurrent_lanes: 4
+    measured_average_service_concurrent_lanes: 0.26
+    peak_service_capacity_utilization_percentage: 40.0
+    backend_capacity_probe_peak_service_concurrent_lanes: 10
+    worker_failures: 0
+    individual_lane_logs_remaining: 0
+    source_evidence_validity_effect: Correct source evidence remains usable; underutilization only blocks a claim of full natural production utilization.
+    artificial_delay_to_pass_gate_prohibited: true
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
@@ -79,4 +101,7 @@ quality_gate_status:
 
   endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 37, complete: 35, unresolved: 2, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 97}
   close_allowed: false
-  reason: BL-001 remains PARTIAL; real local concurrency is ready to be measured and 97 endpoint traces remain unexamined.
+  reason: >-
+    BL-001 remains PARTIAL. The self-reliant execution architecture is validated and promoted, but the current ten-task
+    source snapshot still requires recursive source/binding closure, QG-LANE-001 remains underutilized for the latest natural
+    workload, 97 endpoint traces remain unexamined and explicit user acceptance has not been reached.
