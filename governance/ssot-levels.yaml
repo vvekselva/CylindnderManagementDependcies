@@ -1,4 +1,4 @@
-version: 1
+version: 2
 purpose: >-
   Define the mandatory three-level Single Source of Truth model. Planning or replanning
   for a Backlog Item is fail-closed until Level 1, Level 2 and Level 3 are all complete
@@ -26,6 +26,7 @@ levels:
       - id
       - name
       - type
+      - purpose
       - priority
       - state
       - item_definition
@@ -37,7 +38,7 @@ levels:
       - runtime
     validation_rules:
       - selected Backlog Item exists exactly once in backlog/backlog.yaml
-      - id/name/type references reconcile with Level 2
+      - id/name/type/purpose references reconcile with Level 2
       - all file references required for planning are non-null and resolvable
       - state and dependency declarations are machine-readable
     pass_state: COMPLETE
@@ -58,6 +59,7 @@ levels:
     required_definition_fields:
       - id
       - name
+      - type
       - purpose
       - statement_of_work
       - target
@@ -70,7 +72,7 @@ levels:
       - runtime
     validation_rules:
       - QG-SOW-001 must PASS
-      - definition id/name/type reconcile with Level 1
+      - definition id/name/type/purpose reconcile with Level 1
       - SOW, Completion Path and Quality Gate references exist
       - deliverables and acceptance criteria are non-placeholder
       - execution scope cannot be invented outside the SOW
