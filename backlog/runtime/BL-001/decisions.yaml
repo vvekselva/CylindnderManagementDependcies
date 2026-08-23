@@ -31,16 +31,23 @@ decisions:
       verification and deletion before new work may begin. During Orchestrator closure, every current
       invocation lane log must be accumulated into the invocation aggregate/shared audit, verified as
       represented, and deleted. ORCHESTRATOR_INVOCATION_END is allowed only when the post-cleanup
-      individual lane log count is zero. This preserves complete audit evidence while preventing stale
-      per-lane files from surviving across invocation boundaries.
+      individual lane log count is zero.
   - id: DEC-BL001-006
     state: APPLIED
     decision: USER_VISIBLE_RUN_OVER_RUN_EXECUTION_STATISTICS_AND_STALE_CYCLE_TRACKING
     reason: >-
-      The user requires a separate operational statistics table showing Previous Run versus Current/Latest
-      Run progress, lane usage and staleness. Level 3 now contains execution-statistics.yaml as the
-      machine-readable source. BL-001 progress percentage is explicitly endpoint trace coverage
-      (examined_for_final_dependency / 134), not an overall project percentage. Each completed invocation
-      records lanes used, lane utilization, endpoints added, throughput, and whether meaningful progress
-      occurred. Consecutive completed invocations with no meaningful progress increment stale_cycles;
-      any completed invocation with meaningful progress resets stale_cycles to zero.
+      Level 3 contains execution-statistics.yaml as the machine-readable source for Previous Run versus
+      Current/Latest Run progress, lane usage and staleness. BL-001 progress percentage is endpoint trace
+      coverage, not an overall project percentage. Completed no-progress invocations increment stale_cycles;
+      meaningful progress resets the count to zero.
+  - id: DEC-BL001-007
+    state: APPLIED
+    decision: REPLACE_LOGICAL_ONLY_LANE_PARTICIPATION_WITH_REAL_GITHUB_ACTIONS_MATRIX_WORKERS
+    reason: >-
+      Attempt 27 used three lane IDs but the recorded intervals were effectively sequential, so distinct
+      lane participation did not prove concurrency. WU-BL001-001 now uses lane-dispatch.yaml plus the
+      Lane Matrix Dispatch GitHub Actions workflow for up to ten independent read-only evidence workers.
+      Workers produce isolated lifecycle-logged evidence artifacts, a summary job measures peak/average
+      overlapping workers, aggregates the lane artifacts and removes the transient individual artifacts.
+      QG-LANE-001 governs claims of real utilization. The Orchestrator remains the only authority that may
+      classify endpoint traces COMPLETE or UNRESOLVED.
