@@ -1,9 +1,24 @@
-version: 2
+version: 3
 purpose: >-
-  Define the common Backlog pre-execution gates and register the approved quality-gate
-  configuration for each Backlog Item. A Backlog Item may execute only when its Statement
-  of Work gate and dependency gate pass and an approved item-specific quality-gate
-  configuration exists.
+  Define the common Backlog pre-planning/pre-execution gates and register the approved
+  quality-gate configuration for each Backlog Item. A Backlog Item may be planned only
+  after its three Single Source of Truth levels are complete. Execution additionally
+  requires Statement of Work, dependency and item-specific Quality Gate rules to pass.
+
+three_level_ssot_gate:
+  id: QG-SSOT-001
+  name: Three-Level SSOT Planning Gate
+  applies_to: ALL_BACKLOG_ITEMS
+  owner: ORCHESTRATOR
+  governance: governance/ssot-levels.yaml
+  fail_closed: true
+  pass_condition: >-
+    SSOT-L1 Backlog Master, SSOT-L2 Backlog Definition and SSOT-L3 Runtime SSOT are all
+    COMPLETE and mutually consistent for the selected Backlog Item. Level 2 includes a
+    valid Statement of Work that passes QG-SOW-001. Level 3 contains every file required
+    by backlog/runtime-contract.yaml, including blockers.yaml.
+  on_pass: ITEM_MAY_PROCEED_TO_REQUIRED_ANALYSIS_AND_PLANNING_RULES
+  on_fail: BLOCKED_SSOT_INCOMPLETE_NO_PLANNING
 
 statement_of_work_gate:
   id: QG-SOW-001
@@ -16,7 +31,7 @@ statement_of_work_gate:
     in-scope work, deliverables, execution requirements, acceptance criteria and completion
     definition contain non-placeholder content. execution_authorization.sow_required must
     be true, structurally_valid must be true and placeholders_present must be false.
-  on_pass: ITEM_MAY_CONTINUE_TO_DEPENDENCY_GATE
+  on_pass: SOW_COMPONENT_OF_SSOT_L2_IS_VALID
   on_fail: BLOCKED_MISSING_OR_INVALID_STATEMENT_OF_WORK
   fail_closed: true
 
@@ -76,8 +91,9 @@ backlog_quality_gates:
     execution_allowed: false
 
 orchestrator_rule: >-
-  The Orchestrator must first enforce QG-SOW-001. It must not analyze, plan or execute a
-  Backlog Item with a missing, null, malformed, placeholder or structurally invalid
-  Statement of Work. After QG-SOW-001 passes, QG-DEP-001 and the item-specific quality-gate
-  rules apply. Missing SOW or missing/unapproved item quality gates are governance blockers,
-  not permission to invent requirements or execute work automatically.
+  For PLAN or REPLAN, the Orchestrator must first validate QG-SSOT-001. If Level 1, Level 2
+  or Level 3 is incomplete, only framework/definition/runtime initialization or repair work
+  required to make those levels complete is permitted; planning is forbidden. QG-SOW-001 is
+  a mandatory component of Level 2 and remains independently fail-closed. After QG-SSOT-001
+  passes, dependency and item-specific Quality Gate rules still apply. Missing SSOT, SOW or
+  Quality Gate configuration is a governance blocker, not permission to invent requirements.
