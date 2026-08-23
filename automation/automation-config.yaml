@@ -1,4 +1,4 @@
-version: 9
+version: 10
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -9,6 +9,10 @@ control_files:
   backlog_contract: automation/backlog-contract.md
   backlog_register: backlog/backlog.yaml
   backlog_run_config: backlog/orchestrator-run-config.yaml
+  ssot_governance: governance/ssot-levels.yaml
+  runtime_contract: backlog/runtime-contract.yaml
+  item_definition_template: backlog/item-definition-template.yaml
+  statement_of_work_template: backlog/statement-of-work-template.yaml
   quality_gate_governance: governance/quality-gates.yaml
   backlog_quality_gate_root: backlog/gates/
   backlog_item_template: backlog/backlog-item-template.yaml
@@ -30,23 +34,34 @@ backlog_orchestration:
   enabled: true
   run_config: backlog/orchestrator-run-config.yaml
   backlog_register: backlog/backlog.yaml
+  item_definition_root: backlog/items/
+  statement_of_work_root: backlog/sow/
   completion_path_root: backlog/paths/
   quality_gate_root: backlog/gates/
   runtime_root: backlog/runtime/
+  runtime_contract: backlog/runtime-contract.yaml
   selection_policy: HIGHEST_PRIORITY_ELIGIBLE_ITEM
   enabled_items_only: true
   max_parallel_backlog_items: 1
   max_parallel_work_units_per_item: 10
+  planning_gate: QG-SSOT-001
+  statement_of_work_gate: QG-SOW-001
   common_dependency_gate: QG-DEP-001
+  require_level_1_complete_before_plan: true
+  require_level_2_complete_before_plan: true
+  require_level_3_complete_before_plan: true
+  plan_fail_closed_when_ssot_incomplete: true
   item_specific_quality_gate_required: true
   item_specific_quality_gate_user_approval_required: true
-  missing_quality_gate_action: DO_NOT_EXECUTE
+  missing_quality_gate_action: DO_NOT_PLAN_OR_EXECUTE
+  missing_statement_of_work_action: DO_NOT_PLAN_OR_EXECUTE
+  missing_runtime_file_action: DO_NOT_PLAN_OR_EXECUTE
   user_acceptance_required_before_close: true
   primary_hierarchy:
-    - BACKLOG
-    - BACKLOG_ITEM
-    - COMPLETION_PATH
-    - QUALITY_GATES
+    - SSOT_LEVEL_1_BACKLOG_MASTER
+    - SSOT_LEVEL_2_BACKLOG_DEFINITION_AND_SOW
+    - SSOT_LEVEL_3_RUNTIME
+    - QG_SSOT_001
     - ORCHESTRATOR_ANALYSIS
     - EXECUTION_PLAN
     - WORK_UNIT
@@ -78,25 +93,32 @@ backlog_orchestration:
     work_unit_status: work-unit-status.yaml
     worker_input_register: worker-input-register.yaml
     gate_status: gate-status.yaml
+    blockers: blockers.yaml
     decisions: decisions.yaml
     result: result.yaml
 
 coordinator:
   enabled: true
+  primary_coordinator_count: 1
   consumes_worker_slot: false
   owns_analysis_and_execution: true
   responsibilities:
     - load_control_files
     - read_backlog_run_config_first
     - ignore_run_disabled_backlog_items
-    - load_backlog_register
-    - select_highest_priority_enabled_eligible_backlog_item
+    - load_level_1_backlog_master
+    - validate_or_repair_level_1
+    - load_level_2_backlog_definition
+    - validate_qg_sow_001
+    - validate_or_repair_level_2
+    - initialize_or_repair_level_3_runtime
+    - validate_qg_ssot_001_before_plan_or_replan
+    - refuse_plan_or_replan_when_any_ssot_level_is_incomplete
+    - perform_required_analysis_inside_level_3_runtime
+    - create_or_change_execution_plan_only_after_qg_ssot_001_pass
     - enforce_common_backlog_dependency_gate
     - require_approved_item_specific_quality_gate
     - load_backlog_completion_path
-    - analyse_backlog_item_current_state
-    - write_backlog_analysis
-    - build_backlog_execution_plan
     - create_work_units
     - generate_worker_input_files_from_approved_work_units
     - validate_worker_input_files
@@ -105,8 +127,9 @@ coordinator:
     - consume_only_closed_worker_results
     - validate_worker_result_contracts
     - analyse_worker_results_for_follow_up_work
+    - maintain_blockers_ledger
     - evaluate_item_specific_quality_gates
-    - refuse_to_invent_missing_quality_gates
+    - refuse_to_invent_missing_scope_or_quality_gates
     - wait_for_user_acceptance_gate_when_required
     - produce_backlog_artifacts
     - update_backlog_status
@@ -163,27 +186,36 @@ orchestration_worker_service_lifecycle:
 scheduler:
   invocation: EXTERNAL_CHATGPT_AUTOMATION
   cadence: HOURLY
+  primary_coordinator_required: true
+  duplicate_cylinder_coordinators_allowed: false
   run_config_source: backlog/orchestrator-run-config.yaml
   note: >-
     The actual hourly schedule is maintained by the ChatGPT scheduled automation. Every
-    invocation must re-read the run-selection file and Quality Gate governance before work.
+    invocation must re-read Level 1/2/3 SSOT, run-selection and Quality Gate governance.
 
 registered_backlog_items:
-  - {id: BL-001, name: Controller Traceability, completion_path: backlog/paths/BL-001-traceability.yaml, quality_gate: backlog/gates/BL-001-traceability.yaml}
-  - {id: BL-002, name: Unit Test Completion, completion_path: backlog/paths/BL-002-unit-test.yaml, quality_gate: null}
-  - {id: BL-003, name: Integration Test Completion, completion_path: backlog/paths/BL-003-integration-test.yaml, quality_gate: null}
-  - {id: BL-004, name: Code Coverage Report, completion_path: backlog/paths/BL-004-code-coverage.yaml, quality_gate: null}
-  - {id: BL-005, name: ArchUnit Architecture Test, completion_path: backlog/paths/BL-005-archunit.yaml, quality_gate: null}
-  - {id: BL-006, name: Requirements Traceability and Gap Analysis, completion_path: backlog/paths/BL-006-requirements.yaml, quality_gate: null}
+  source: backlog/backlog.yaml
+  count: 20
+  note: >-
+    The Level 1 Backlog Master is authoritative. Entries with null Level 2/3 planning
+    references are registered but intentionally non-plannable until repaired.
 
 current_backlog_item:
   id: BL-001
   run_enabled: true
-  state: PLANNED
+  state: PARTIAL
+  ssot_level_1: COMPLETE
+  ssot_level_2: COMPLETE
+  ssot_level_3: COMPLETE
+  planning_gate: QG-SSOT-001
+  planning_gate_state: PASS
+  statement_of_work_gate: QG-SOW-001
+  statement_of_work_gate_state: PASS
+  item_definition: backlog/items/BL-001-controller-traceability.yaml
   quality_gate: backlog/gates/BL-001-traceability.yaml
   quality_gate_approved: true
   runtime: backlog/runtime/BL-001/
-  next_work_unit: WU-BL001-001
+  current_work_unit: WU-BL001-001
   next_worker_input: worker/inputs/WI-0004.yaml
 
 scheduling:
@@ -197,7 +229,10 @@ scheduling:
 blocker_handling:
   plain_english_required: true
   guessing_allowed: false
-  missing_quality_gate_is_blocker: true
+  blockers_file_required: true
+  missing_ssot_is_planning_blocker: true
+  missing_statement_of_work_is_planning_blocker: true
+  missing_quality_gate_is_planning_and_execution_blocker: true
   alternatives_may_be_suggested: true
   completion_path_change_requires_approval: true
   workflow_or_architecture_change_requires_approval: true
@@ -212,6 +247,8 @@ shared_file_ownership:
     - logs/automation-story.md
     - sync/source-artifact-sync-register.yaml
     - repository-catalogue.md
+    - governance/ssot-levels.yaml
+    - governance/quality-gates.yaml
 
 source_artifact_sync:
   enabled: true
@@ -235,11 +272,16 @@ execution:
   source_branch_pattern: automation/{backlog_id}/{run_id}/{work_unit_id}
   direct_write_to_main: false
   require_evidence_before_verified: true
-  backlog_item_requires_completion_path: true
   backlog_item_requires_run_enabled: true
+  backlog_item_requires_complete_level_1_before_plan: true
+  backlog_item_requires_complete_level_2_before_plan: true
+  backlog_item_requires_complete_level_3_before_plan: true
+  backlog_item_requires_qg_ssot_001_pass_before_plan_or_replan: true
+  backlog_item_requires_valid_statement_of_work: true
+  backlog_item_requires_completion_path: true
   backlog_item_requires_dependency_gate_pass: true
   backlog_item_requires_approved_quality_gate: true
-  backlog_analysis_required_before_execution_plan: true
+  backlog_analysis_required_before_material_plan_changes: true
   execution_plan_required_before_worker_input_generation: true
   worker_input_generated_by_orchestrator_only: true
   independent_worker_run_must_close_before_result_is_accepted: true
