@@ -1,16 +1,17 @@
 execution_plan:
   backlog_item: BL-001
-  version: 10
+  version: 11
   state: PLANNED
   generated_by: ORCHESTRATOR
   completion_path: backlog/paths/BL-001-traceability.yaml
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   architecture: architecture/self-reliant-e2e-execution.md
   self_reliant_governance: governance/self-reliant-execution.yaml
+  incremental_matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 
   architecture_separation:
     github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
-    automation_tool_role: ORCHESTRATION_SOURCE_STAGING_EXECUTION_RECOVERY_VALIDATION_AND_SYNC
+    automation_tool_role: ORCHESTRATION_SOURCE_STAGING_EXECUTION_RECOVERY_VALIDATION_MATRIX_PROJECTION_AND_SYNC
     execution_backend: LOCAL_PROCESS_POOL
     default_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
     fallback_source_provider: LOCAL_GIT_CHECKOUT
@@ -38,6 +39,21 @@ execution_plan:
     source_stall_state: SOURCE_RESOLUTION_STALLED
     interface_binding_requires_source_validation: true
     worker_has_github_credentials: false
+
+  incremental_matrix_policy:
+    enabled_during_source_check: true
+    workflow: workflows/WF-002-incremental-traceability-matrix.yaml
+    matrix_artifact: traceability/controller-traceability.md
+    unresolved_artifact: traceability/unresolved-traceability.md
+    progress_artifact: traceability/matrix-progress.yaml
+    row_key: HTTP_METHOD_PLUS_PATH
+    update_trigger: EACH_PRIMARY_ORCHESTRATOR_ACCEPTED_ENDPOINT_TRACE
+    worker_may_write_matrix: false
+    matrix_state_while_coverage_below_100_percent: INCREMENTAL_PARTIAL
+    finalization_work_unit: WU-BL001-002
+    finalization_rule: >-
+      WU-BL001-002 reconciles and finalizes the already-growing matrix after canonical Source Check reaches 100 percent;
+      it does not wait until then to create the first rows.
 
   lifecycle_logging_policy:
     contract: governance/execution-lifecycle-logging.yaml
@@ -72,6 +88,7 @@ execution_plan:
     interrupted_running_no_live_workers: RECOVER_AND_REJECT_PARTIAL_OUTPUT
     changed_fingerprint: START_NEW_EXECUTION_GENERATION
     already_closed_synced: NOOP_ALREADY_COMMITTED
+    matrix_upsert_idempotency: SAME_METHOD_PATH_AND_ACCEPTED_EVIDENCE_FINGERPRINT_IS_UPDATE_OR_NOOP_NOT_DUPLICATE
 
   invocation_utilization_policy:
     objective: MAXIMIZE_NATURAL_SAFE_LOCAL_CONCURRENCY
@@ -91,8 +108,8 @@ execution_plan:
 
   work_units:
     - id: WU-BL001-001
-      name: Complete Source Repository Check
-      phase: EXECUTE_SOURCE_CHECK
+      name: Complete Source Repository Check And Maintain Incremental Matrix
+      phase: EXECUTE_SOURCE_CHECK_AND_PROJECT_MATRIX
       state: READY
       parallel: true
       executor: AUTOMATION_TOOL_SELF_RELIANT_SOURCE_STAGER_PLUS_LOCAL_PROCESS_POOL_PLUS_ORCHESTRATOR_VALIDATION
@@ -104,6 +121,10 @@ execution_plan:
       worker_input: worker/inputs/WI-0004.yaml
       expected_result: worker/results/WI-0004.yaml
       result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+      incremental_matrix_outputs:
+        - traceability/controller-traceability.md
+        - traceability/unresolved-traceability.md
+        - traceability/matrix-progress.yaml
       execution_sequence:
         - Orchestrator reads authoritative Level 1/2/3 state and inspects any prior execution journal
         - recovery/idempotency rules decide sync-only validation-reuse recovery no-op or new execution
@@ -120,11 +141,18 @@ execution_plan:
         - source loop stops successfully only at SOURCE_CLOSURE_COMPLETE or fail-closed on stall/iteration limit
         - executor aggregates lifecycle/evidence deletes transient lane logs and rescans to zero
         - QG-LANE-001 records natural SERVICE overlap separately from source correctness
-        - Primary Orchestrator validates endpoint-by-endpoint source evidence and updates canonical trace states only when proved
-        - accepted runtime/evidence is synchronized to GitHub; sync failure becomes PENDING_SYNC without worker rerun
+        - Primary Orchestrator validates endpoint-by-endpoint source evidence and assigns canonical COMPLETE UNRESOLVED BLOCKED or FAILED only when proved
+        - immediately after each accepted endpoint trace the Orchestrator upserts its HTTP method/path row into traceability/controller-traceability.md
+        - unresolved blocked or failed accepted rows are synchronized with traceability/unresolved-traceability.md
+        - traceability/matrix-progress.yaml is updated in the same accepted synchronization checkpoint
+        - source analysis continues while the matrix remains INCREMENTAL_PARTIAL until canonical endpoint trace-result coverage reaches 100 percent
+        - accepted runtime evidence and incremental matrix updates are synchronized to GitHub; sync failure becomes PENDING_SYNC without worker rerun
       evidence_rule: >-
         Each endpoint is traced independently to source-proved final dependency evidence. Source/binding candidates are not
         final evidence until the Primary Orchestrator confirms the actual call path. No naming inference or guessing is allowed.
+      matrix_rule: >-
+        Matrix rows are created as accepted traces become available, but only Primary-Orchestrator-validated evidence may
+        become matrix truth. Historical accepted rows may be backfilled only from durable accepted evidence.
       result_acceptance_rule: >-
         Canonical Source Check result is accepted only when its run is CLOSED, result contract validates, QG-LOG-001 is
         satisfied and endpoint trace-result coverage reaches 100 percent. QG-SOURCE-001 controls source integrity/closure;
@@ -132,28 +160,48 @@ execution_plan:
       completion_rule: Worker result COMPLETED, run CLOSED, contract valid, lifecycle logging valid, coverage 100 percent.
 
     - id: WU-BL001-002
-      name: Build Traceability Matrix Artifacts
-      phase: BUILD_MATRIX
+      name: Finalize And Reconcile Traceability Matrix Artifacts
+      phase: FINALIZE_MATRIX
       state: WAITING_FOR_DEPENDENCY
       needs: [WU-BL001-001]
       executor: ORCHESTRATION_LANE
-      input: worker/results/WI-0004.yaml
+      inputs:
+        - worker/results/WI-0004.yaml
+        - traceability/controller-traceability.md
+        - traceability/unresolved-traceability.md
+        - traceability/matrix-progress.yaml
+        - traceability/controller-inventory.md
+        - traceability/endpoint-inventory.md
       source_read_allowed: false
-      outputs: [traceability/source-repository-check.md, traceability/controller-inventory.md, traceability/endpoint-inventory.md, traceability/controller-traceability.md, traceability/unresolved-traceability.md]
+      outputs:
+        - traceability/source-repository-check.md
+        - traceability/controller-inventory.md
+        - traceability/endpoint-inventory.md
+        - traceability/controller-traceability.md
+        - traceability/unresolved-traceability.md
+        - traceability/matrix-progress.yaml
+      completion_rule: >-
+        Reconcile the incremental matrix against canonical Source Check and inventories; every caller-visible endpoint appears
+        exactly once by HTTP method/path, all evidence references are valid, unresolved accounting reconciles, and matrix state
+        becomes READY_FOR_FINAL_RECONCILIATION or FINAL_VALIDATED only according to the defined traceability gates.
 
     - id: WU-BL001-003
-      name: Validate Traceability Gates
+      name: Validate Traceability Gates From Final Matrix
       phase: VALIDATE
       state: WAITING_FOR_DEPENDENCY
       needs: [WU-BL001-002]
       executor: ORCHESTRATOR
-      completion_rule: Every exposed endpoint appears exactly once; coverage 100 percent; evidence/unresolved/logging rules pass.
+      principal_input: traceability/controller-traceability.md
+      completion_rule: Every exposed endpoint appears exactly once; coverage 100 percent; evidence/unresolved/logging/matrix rules pass.
 
     - id: WU-BL001-004
-      name: Register Baseline and Close Backlog Item
+      name: Register Source And Matrix Baseline And Close Backlog Item
       phase: CLOSE
       state: WAITING_FOR_DEPENDENCY
       needs: [WU-BL001-003]
       executor: ORCHESTRATOR
+      inputs:
+        - traceability/controller-traceability.md
+        - traceability/matrix-progress.yaml
       outputs: [sync/source-artifact-sync-register.yaml, logs/automation-story.md]
-      completion_rule: Source-artifact baseline registered, all required runs/logs closed, automatic gates pass, and required user acceptance is obtained.
+      completion_rule: Source/matrix baseline registered, all required runs/logs closed, automatic gates pass, and required user acceptance is obtained.
