@@ -13,9 +13,9 @@ lane_status:
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   last_reconciled_attempt: 26
   last_reconciled_run: INVOCATION-20260823-145512
-  invocation_state: CLOSING
-  current_invocation: INVOCATION-20260823-145512
-  current_idle_reason: ALL_STARTED_LANES_CLOSED_COORDINATOR_SYNCHRONIZING_RUNTIME
+  invocation_state: BETWEEN_INVOCATIONS
+  current_invocation: null
+  current_idle_reason: LAST_INVOCATION_CLOSED_ALL_LANES_RELEASED
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
@@ -71,5 +71,6 @@ lane_status:
     active_lane_count: 0
 
   current_interpretation: >-
-    All three Attempt 26 lane runs persisted LANE_CLOSE_END and have been released to IDLE.
-    The coordinator is completing shared runtime synchronization and the invocation close log.
+    Attempt 26 and its Orchestrator invocation are CLOSED. All started lanes have persisted
+    lifecycle CLOSE records and all ten lanes are currently IDLE between invocations. BL-001
+    remains active with two explicit evidence gaps and 107 not-yet-examined endpoints.
