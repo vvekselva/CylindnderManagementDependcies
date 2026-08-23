@@ -2,6 +2,19 @@
 
 > Derived dashboard. Canonical truth remains Level 1/2/3 SSOT. Run statistics come from `backlog/runtime/BL-001/execution-statistics.yaml`; dispatch truth from `lane-dispatch.yaml`; current lane state from `lane-status.yaml`; local worker execution truth from `local-execution.yaml`.
 
+## Architecture Responsibility Boundary
+
+| Component | Role |
+|---|---|
+| GitHub - `vvekselva/CylinderManagement` | **VERSION CONTROL SYSTEM** for application source, branches, commits and frozen source baseline |
+| GitHub - `vvekselva/CylindnderManagementDependcies` | **VERSION CONTROL + DURABLE SSOT PERSISTENCE** for backlog/SOW/gates/runtime/logs/evidence |
+| Primary Automation Tool / Orchestrator | **COORDINATOR + EXECUTION OWNER** for analysis, planning, dispatch, validation and synchronization |
+| Local Execution Engine | **EXECUTOR** using `LOCAL_PROCESS_POOL` with up to 10 OS workers |
+
+**GitHub Actions is not required for normal Cylinder execution.** GitHub is used before execution to obtain/version source and control truth, and after execution to persist synchronized durable results. The Automation Tool owns execution.
+
+Architecture reference: `architecture/execution-engine-architecture.md`.
+
 ## Framework / Gate State
 
 | Gate | State |
@@ -18,6 +31,8 @@
 | Item | Current value |
 |---|---|
 | Backend | **LOCAL_PROCESS_POOL** |
+| Execution owner | **Automation Tool** |
+| GitHub role | **VCS + durable persistence** |
 | GitHub Actions dependency | **NONE** |
 | Local executor | `automation/local-lane-executor.py` |
 | Local worker | `automation/local-lane-worker.py` |
@@ -28,10 +43,12 @@
 | Expected service concurrency | **10** |
 | Source baseline | `3ae6e61442132d94a307275b08dd65fcef228d89` |
 | Source checkout handling | Temporary detached Git worktree at frozen commit; active Eclipse/Git checkout is not switched |
-| Current workers started | **0** - executor has not yet been fired locally |
+| Current workers started | **0** - executor has not yet been fired on the execution host |
 | Current lane state | **10 IDLE / READY FOR LOCAL FIRE** |
 
-The prior GitHub Actions startup blocker is **resolved by architecture change**. The framework no longer waits for a workflow run ID or GitHub runner. The only next execution prerequisite is a local `CylinderManagement` Git checkout that contains the frozen commit and Python 3 on the execution machine.
+## Historical GitHub Actions Investigation
+
+The prior GitHub Actions startup problem is no longer an execution blocker because the architecture no longer depends on Actions. A support-ready investigation note is stored at `support/github-actions-startup-investigation.md` for separate review with GitHub Support.
 
 ## Fire Command
 
@@ -51,10 +68,11 @@ If both repositories are sibling folders named `CylindnderManagementDependcies` 
 4. Starts up to 10 independent local Python OS worker processes.
 5. Updates `lane-status.yaml` from PID and heartbeat evidence.
 6. Each worker logs `LANE_INIT_START/END`, `LANE_SERVICE_START/END`, and `LANE_CLOSE_END` with exact task identity.
-7. Measures peak worker-process overlap and, separately, peak/average **SERVICE** concurrency.
+7. Measures peak worker-process overlap and, separately, peak/average SERVICE concurrency.
 8. Aggregates all worker evidence under `worker/evidence/LOCAL-BL001-<timestamp>/`.
 9. Accumulates and deletes every transient individual lane log and rescans to zero.
 10. Closes `local-execution.yaml`; the primary Orchestrator then validates endpoint evidence before changing trace states.
+11. Accepted durable runtime/log/evidence changes are synchronized back to GitHub for versioning and persistence.
 
 ## Execution Statistics - Previous Accepted Trace Run
 
@@ -97,6 +115,6 @@ Open evidence gaps remain `POST /customer-spot-cylinder-check/submit` and `POST 
 
 ## Exact Next Action
 
-Fire the local process pool on the machine containing the `CylinderManagement` Git checkout. After it closes, commit/push the generated `local-execution.yaml`, durable `logs/runs/LOCAL-BL001-*.md` invocation log, `worker/evidence/LOCAL-BL001-*/` aggregate, and synchronized `lane-status.yaml`. The primary Orchestrator can then consume that evidence, evaluate QG-LANE-001, and continue the BL-001 trace checkpoint.
+Fire the Automation Tool local process pool on the execution host containing the `CylinderManagement` Git checkout. GitHub Actions is not part of this step. After local closure, synchronize the generated `local-execution.yaml`, durable `logs/runs/LOCAL-BL001-*.md` invocation log, `worker/evidence/LOCAL-BL001-*/` aggregate and `lane-status.yaml` back to GitHub. The primary Orchestrator then validates evidence, evaluates QG-LANE-001 and advances the BL-001 trace checkpoint when source proof permits.
 
 BL-001 remains **PARTIAL** and cannot become VERIFIED/CLOSED before all automatic gates pass and QG-TRC-015 explicit user acceptance is obtained.
