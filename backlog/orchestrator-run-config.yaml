@@ -1,9 +1,7 @@
-version: 5
+version: 6
 purpose: >-
-  Tell the Orchestrator which Backlog Items are currently allowed to run and define the
-  production execution-host prerequisites. This is the execution switchboard for scheduled
-  Orchestrator runs. A true run_enabled flag does not bypass the three-level SSOT planning gate,
-  Statement of Work validation, dependencies, quality gates or execution-host preflight.
+  Tell the Orchestrator which Backlog Items may run and define the production execution-input contract.
+  GitHub is VCS/persistence; the Automation Tool owns source staging and execution.
 
 selection:
   mode: ENABLED_BACKLOG_ITEMS_ONLY
@@ -24,37 +22,36 @@ execution_engine:
   external_worker_service_required: false
   source_repository: vvekselva/CylinderManagement
   control_repository: vvekselva/CylindnderManagementDependcies
+  source_provider_governance: governance/source-provider.yaml
+  default_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+  fallback_source_provider: LOCAL_GIT_CHECKOUT
 
-production_execution_host_contract:
-  required_before_worker_fire: true
+production_source_contract:
+  gate: QG-SOURCE-001
   fail_closed: true
-  required_capabilities:
-    - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement
-    - checkout_contains_frozen_source_commit
-    - Git_available_on_execution_host
+  local_git_checkout_required: false
+  staged_snapshot:
+    owner: PRIMARY_ORCHESTRATOR
+    source: connected GitHub control-plane interface
+    repository: vvekselva/CylinderManagement
+    baseline: MUST_MATCH_DISPATCH_SOURCE_BASELINE
+    manifest_required: true
+    every_materialized_file_requires_git_blob_sha: true
+    every_worker_verifies_file_before_read: true
+    tamper_or_manifest_mismatch: BLOCK_BEFORE_SERVICE
+    missing_component_behavior: RETURN_EXPLICIT_REFERENCE_TO_ORCHESTRATOR_FOR_RESTAGING
+    workers_access_github_directly: false
+  local_git_fallback:
+    frozen_commit_must_exist_locally: true
+    active_checkout_is_not_switched: true
+    executor_uses_detached_worktree: true
+  common_preflight:
     - Python_3_available_on_execution_host
-    - control_checkout_contains_local_executor_worker_and_dispatch_files
+    - approved executor worker and dispatch inputs available
     - zero_leftover_individual_lane_logs_before_fire
-  source_access_rule: >-
-    The Automation Tool may use the connected GitHub interface for control-plane repository reads
-    and writes, but local OS worker processes cannot inherit that connector credential. Production
-    workers therefore require the source repository to be locally mounted/staged on the same
-    execution host before fire. A connector-readable private repository is not by itself a worker-readable
-    filesystem checkout.
-  baseline_handling: >-
-    The active Eclipse/Git checkout is not switched. The local executor verifies the frozen commit exists
-    in the local Git object database and creates a temporary detached Git worktree at that exact commit.
-  preflight_sequence:
-    - verify source checkout path exists
-    - verify source checkout is a Git repository
-    - verify frozen source commit exists locally
-    - verify Python 3 and Git are available
-    - verify zero transient lane logs remain
-    - only then assign/start local worker processes
-  preflight_failure_behavior: >-
-    Do not start any lane. Record EXECUTION_HOST_PREFLIGHT_BLOCKED with the exact missing prerequisite,
-    keep QG-LANE-001 READY_FOR_MEASUREMENT, preserve BL-001 as PARTIAL, and do not treat the failure as
-    a GitHub Actions or source-code blocker.
+  failure_behavior: >-
+    Start zero affected lanes when source integrity cannot be proved. Preserve BL-001 PARTIAL, record the exact
+    source-provider failure, and never substitute naming inference or an unpinned source file.
 
 backlog_items:
   BL-001:
@@ -91,22 +88,16 @@ backlog_items:
 scheduled_run_rules:
   - read this file first
   - ignore Backlog Items with run_enabled false
-  - initialize/repair only the selected item's SSOT files when Level 1, Level 2 or Level 3 is incomplete
-  - apply QG-SOW-001 as the mandatory Statement of Work component of Level 2
-  - apply QG-SSOT-001 before PLAN or REPLAN
-  - refuse PLAN or REPLAN unless SSOT-L1, SSOT-L2 and SSOT-L3 are all COMPLETE
-  - refuse planning when item_definition, statement_of_work, runtime, completion_path or quality_gate references required by Level 1/2 are null or unresolved
-  - require all Level 3 runtime files listed in backlog/runtime-contract.yaml before planning
-  - apply QG-DEP-001 after the three-level SSOT gate passes
-  - refuse execution when item-specific quality-gate config is missing or unapproved
-  - load the selected item's Level 2 definition and Statement of Work before its Completion Path
-  - perform Orchestrator analysis only inside the initialized Level 3 runtime area
-  - create/change the Execution Plan only after QG-SSOT-001 PASS and required analysis is complete
-  - generate Worker Inputs only from approved Work Units and within SOW scope
-  - before production worker fire apply production_execution_host_contract preflight
-  - never infer source checkout availability from GitHub connector access alone
-  - on production preflight failure start zero lanes and record the exact execution-host prerequisite
-  - consume only CLOSED Worker results that satisfy their result contract
-  - evaluate all automatic item-specific quality gates before VERIFIED
-  - wait for explicit user approval when a USER-owned acceptance gate is reached
-  - never mark CLOSED without the required user acceptance
+  - enforce QG-SOW-001 and QG-SSOT-001 before PLAN/REPLAN
+  - apply QG-DEP-001 after the SSOT gate passes
+  - create Worker Inputs only from approved in-scope Work Units
+  - before worker fire enforce QG-SOURCE-001 using the highest-priority available source provider
+  - prefer ORCHESTRATOR_STAGED_SNAPSHOT; do not require a local source checkout when this provider is available
+  - stage exact files only at the frozen commit and record Git blob SHA in the snapshot manifest
+  - never give local workers direct GitHub credentials
+  - when workers report missing_component_references, stage those exact components from the same frozen commit and re-run affected evidence collection as needed
+  - never auto-accept endpoint COMPLETE from partial staged source closure
+  - enforce zero transient lane logs at invocation boundaries
+  - evaluate QG-LANE-001 using measured SERVICE overlap
+  - synchronize only accepted durable runtime/log/evidence changes back to GitHub
+  - never mark CLOSED without required explicit user acceptance
