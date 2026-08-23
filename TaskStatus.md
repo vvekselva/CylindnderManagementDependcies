@@ -1,6 +1,6 @@
 # CylinderManagement Automation Task Status
 
-> Human-readable derived dashboard. Canonical truth is Level 1 `backlog/backlog.yaml` + `repository/project-inventory.yaml`, Level 2 per-backlog definition/SOW/Completion Path/Quality Gate, and Level 3 `backlog/runtime/<BL-ID>/`. Lifecycle logging is governed by `governance/execution-lifecycle-logging.yaml`.
+> Human-readable derived dashboard. Canonical truth is Level 1 `backlog/backlog.yaml` + `repository/project-inventory.yaml`, Level 2 per-backlog definition/SOW/Completion Path/Quality Gate, and Level 3 `backlog/runtime/<BL-ID>/`. Lifecycle logging is governed by `governance/execution-lifecycle-logging.yaml`. Run-over-run statistics are sourced from `backlog/runtime/<BL-ID>/execution-statistics.yaml`.
 
 ## Framework / Gate State
 
@@ -15,6 +15,38 @@ The framework is **Backlog-driven**, uses a mandatory **three-level Single Sourc
 | QG-SSOT-001 Planning Gate | **PASS** |
 | QG-DEP-001 Dependency Gate | **PASS** |
 | QG-LOG-001 Lifecycle Logging | **PASS - ATTEMPT 27 NATIVE PREFLIGHT + LIFECYCLE + AGGREGATION/CLEANUP VERIFIED** |
+
+## Execution Statistics - Previous Run vs Current / Latest Run
+
+Canonical source: `backlog/runtime/BL-001/execution-statistics.yaml`.
+
+**Percentage basis:** `examined_for_final_dependency / 134 × 100`. This is **BL-001 endpoint trace coverage**, not an overall project-completion percentage.
+
+Because the framework is currently `BETWEEN_INVOCATIONS`, the **Current / Latest Run** column represents the latest closed invocation (Attempt 27). During an active invocation, the same column becomes the live synchronized current-run checkpoint.
+
+| Statistic | Previous Run - Attempt 26 | Current / Latest Run - Attempt 27 | Change / Interpretation |
+|---|---:|---:|---|
+| Invocation | `INVOCATION-20260823-145512` | `INVOCATION-20260823-160000` | Latest run advanced |
+| Run result | PARTIAL / CLOSED | PARTIAL / CLOSED | BL-001 still active |
+| Endpoint trace coverage | **20.15%** (27/134) | **27.61%** (37/134) | **+7.46 percentage points** |
+| COMPLETE percentage | **18.66%** (25/134) | **26.12%** (35/134) | **+7.46 percentage points** |
+| Endpoints examined during run | **+5** | **+10** | Throughput doubled by endpoint count |
+| COMPLETE traces added during run | **+3 net complete** with 2 new unresolved | **+10** with 0 new unresolved | Current run quality/throughput improved |
+| UNRESOLVED at run end | 2 | 2 | No increase in Attempt 27 |
+| Distinct lanes utilized | **3 / 10** | **3 / 10** | Same lane count |
+| Lane utilization | **30.00%** | **30.00%** | Capacity still available if safe work exists |
+| Endpoints examined per utilized lane | **1.67** | **3.33** | Improved by **+1.66** endpoints/lane |
+| Invocation stop condition | Invocation/tool limit | Invocation/tool limit | Not a global execution blocker |
+| Meaningful progress made? | YES | YES | Progress in both runs |
+| Task stale? | NO | **NO** | Latest run made meaningful progress |
+| Consecutive stale/no-progress cycles | 0 | **0** | No stale cycle currently |
+| Last meaningful-progress attempt | 26 at that checkpoint | **27** | Latest progress is Attempt 27 |
+
+### Staleness Rule
+
+A **stale cycle** is one completed Orchestrator invocation in which no meaningful progress occurs. Meaningful progress includes at least one of: endpoint examination increases, COMPLETE count increases, an existing unresolved/blocked/failed path is resolved with evidence, a required gate or Work Unit advances, or a required artifact is created/validated.
+
+`stale_cycles` is the number of **consecutive completed no-progress invocations**. It resets to `0` whenever a completed invocation makes meaningful progress. Therefore BL-001 / `WU-BL001-001` is currently **NOT STALE; stale_cycles = 0**.
 
 ## Invocation-Boundary Lane-Log Hygiene
 
@@ -123,9 +155,10 @@ These are evidence gaps, not a global execution blocker.
 - Individual lane-log boundary state: **CLEAN - 0 files**.
 - Active trace evidence gaps: **2**.
 - Remaining not-yet-examined execution volume: **97 endpoints**.
+- Task stale state: **NO; consecutive stale/no-progress cycles = 0**.
 - Matrix construction: **LOCKED** until the canonical Source Check result reaches CLOSED + COMPLETED + contract-valid + 100% endpoint trace-result coverage.
 
-Next eligible action: a later invocation must first prove zero individual lane logs, then resolve the two prior complex POST evidence gaps where source evidence permits and continue lifecycle-logged independent controller/service-family tracing across the remaining 97 endpoints. Closure must again aggregate, verify and remove every transient lane log and prove zero remain before the invocation END.
+Next eligible action: a later invocation must first prove zero individual lane logs, then resolve the two prior complex POST evidence gaps where source evidence permits and continue lifecycle-logged independent controller/service-family tracing across the remaining 97 endpoints. Closure must again aggregate, verify and remove every transient lane log and prove zero remain before the invocation END. `execution-statistics.yaml` and the separate statistics table must be synchronized at invocation start, meaningful checkpoints and invocation end.
 
 ## Branch State
 
