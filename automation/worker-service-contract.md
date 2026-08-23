@@ -47,11 +47,30 @@ The required logging is not optional progress reporting. It is part of the execu
 
 Every lane START record must identify the exact task that is about to execute.
 
-- `LANE_INIT_START` must contain `task` and `task_description` before `init()` begins.
-- `LANE_SERVICE_START` must repeat the same task identity and list the assigned Actions before `service()` begins.
-- A generic value such as `run traceability` is not sufficient when the real task is known. Prefer specific names such as `Trace VehicleTripController endpoint family` or `Resolve Supplier search service to final dependency`.
-- The task identity must reconcile with the current Work Unit and with the assignment stored in `lane-status.yaml`.
+- `LANE_INIT_START` contains `task` and `task_description` before `init()` begins.
+- `LANE_SERVICE_START` repeats the same task identity and lists the assigned Actions before `service()` begins.
+- Generic values such as `run traceability` are not sufficient when the real task is known. Prefer specific names such as `Trace VehicleTripController endpoint family` or `Resolve Supplier search service to final dependency`.
+- The task identity must reconcile with the current Work Unit and `lane-status.yaml` assignment.
 - If the task is missing, ambiguous or inconsistent, the phase must not start.
+
+## Transient individual lane-log rule
+
+Each lane writes its lifecycle boundary evidence to a lane-specific log while the Orchestrator invocation is active. That file exists only to make parallel logging safe.
+
+```text
+logs/runs/INVOCATION-<timestamp>-LANE-<nn>.md
+```
+
+The individual lane log is **transient**:
+
+1. it may exist while the invocation is ACTIVE;
+2. it must contain complete CLOSE or recovery-close evidence before the lane can be treated as finished;
+3. it may remain temporarily after lane close so the same invocation can reuse the lane and the coordinator can later aggregate all lifecycle evidence;
+4. during Orchestrator closure, its complete lifecycle evidence must be accumulated into the invocation aggregate log and meaningful audit content synchronized to `logs/automation-log.md`;
+5. only after successful accumulation verification may the individual lane log be deleted;
+6. `ORCHESTRATOR_INVOCATION_END` is not allowed while any individual lane log remains.
+
+A lane run therefore produces durable audit evidence through the invocation aggregate/shared audit, not by leaving the individual per-lane file permanently in the repository.
 
 ## Fail-closed rules
 
@@ -62,8 +81,9 @@ Every lane START record must identify the exact task that is about to execute.
 5. If `LANE_SERVICE_START` does not identify the exact task and assigned Actions, `service()` must not execute.
 6. After `service()` returns, `LANE_SERVICE_END` must be persisted with the actual service result.
 7. `close()` still runs for safety even if post-service logging encounters a failure.
-8. The lane is not reusable until `LANE_CLOSE_END` or a coordinator recovery-close record is persisted.
-9. Missing lifecycle logs make the result ineligible for final acceptance until `QG-LOG-001` is satisfied.
+8. The lane may not be released/reused until `LANE_CLOSE_END` or coordinator recovery-close evidence is persisted.
+9. The execution result is not accepted until `QG-LOG-001` reconciles the lifecycle.
+10. Invocation closure is blocked until the lane log is accumulated, verified and deleted.
 
 ## 1. init()
 
@@ -152,9 +172,11 @@ It must state Actions completed/not completed, evidence summary, and blocker/fai
 
 The lane persists `LANE_CLOSE_END` with `Log State: CLOSED`.
 
-Only after this record is persisted may the coordinator release the lane to IDLE or assign new work.
+Only after this record is persisted may the coordinator release the lane to IDLE or assign new work within the same invocation.
 
-If the lane stops unexpectedly before close, the coordinator performs recovery closure with `RESULT_NOT_CONFIRMED` and persists the recovery close before release.
+If the lane stops unexpectedly before close, the coordinator performs recovery closure with `RESULT_NOT_CONFIRMED` and persists recovery evidence before release.
+
+The per-lane file is **not deleted by the lane itself**. The coordinator deletes it only during invocation closure after successful accumulation verification.
 
 ## Relationship to lane-status.yaml
 
@@ -165,10 +187,11 @@ LANE_INIT_START      -> lane ASSIGNED/INITIALIZING + exact task
 LANE_INIT_END        -> lane INITIALIZING or BLOCKED
 LANE_SERVICE_START   -> lane WORKING + same task
 LANE_SERVICE_END     -> lane WORKING/BLOCKED/CLOSING
-LANE_CLOSE_END       -> lane may be released to IDLE
+LANE_CLOSE_END       -> lane may be released/reused in same invocation
+INVOCATION AGGREGATION PASS -> individual lane log may be deleted
 ```
 
-A historical log never overrides current `lane-status.yaml`, but the current lane state must reconcile with the most recent lifecycle event for its open run.
+A historical aggregate log never overrides current `lane-status.yaml`, but the current lane state must reconcile with the most recent lifecycle event for its open run.
 
 ## Plain-English blocker rule
 
@@ -176,10 +199,10 @@ If execution stops, the lane explains what it was trying to do, where it stopped
 
 ## Worker ownership
 
-A lane owns only its current assigned Job attempt and its own per-run lifecycle log artifact. The coordinator owns shared-file consolidation, shared audit log ordering, final status changes, verification gates, retry/replan decisions and lane release.
+A lane owns only its current assigned Job attempt and its transient per-run lifecycle log. The coordinator owns invocation-wide log accumulation, shared audit log ordering, final status changes, verification gates, retry/replan decisions, lane-log deletion and invocation closure.
 
 ## Completion rule
 
 The Worker may return `COMPLETED` only when all required Actions and completion checks pass. Otherwise use `PARTIAL`, `BLOCKED` or `FAILED`.
 
-A result is not accepted as final input until the run is closed, the declared result contract validates, and required lifecycle logging passes `QG-LOG-001`.
+A result is not accepted as final input until the run is closed, the declared result contract validates, and required lifecycle logging passes `QG-LOG-001`. The Orchestrator invocation itself is not closed until all individual lane logs have been accumulated and removed.
