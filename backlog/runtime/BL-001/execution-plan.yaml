@@ -1,6 +1,6 @@
 execution_plan:
   backlog_item: BL-001
-  version: 2
+  version: 3
   state: PLANNED
   generated_by: ORCHESTRATOR
   completion_path: backlog/paths/BL-001-traceability.yaml
@@ -15,18 +15,49 @@ execution_plan:
     statement_of_work_gate: QG-SOW-001
     statement_of_work_state: PASS
     note: >-
-      This existing plan has been revalidated against the mandatory three-level SSOT rule.
-      Any future PLAN/REPLAN must re-evaluate QG-SSOT-001 before material plan changes.
+      This plan was revalidated against the mandatory three-level SSOT rule. The user
+      explicitly authorized correction of lane under-utilization for WU-BL001-001. Future
+      PLAN/REPLAN changes must continue to re-evaluate QG-SSOT-001.
+
+  invocation_utilization_policy:
+    objective: MAXIMIZE_SAFE_PROGRESS_PER_COORDINATOR_INVOCATION
+    one_primary_coordinator: true
+    one_active_backlog_item: true
+    fixed_small_endpoint_batch_limit: false
+    fill_available_lanes_when_safe: true
+    refill_released_lanes_within_same_invocation: true
+    reuse_proved_relationships_only_when_source_confirms_same_path: true
+    stop_conditions:
+      - NO_ELIGIBLE_INDEPENDENT_WORK_REMAINS
+      - HARD_BLOCKER_PREVENTS_FURTHER_ELIGIBLE_WORK
+      - RESOURCE_OR_SHARED_FILE_LOCK_PREVENTS_SAFE_PARALLELISM
+      - INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED
+      - WORK_UNIT_COMPLETION_BOUNDARY_REACHED
+    note: >-
+      The coordinator must not intentionally stop after a fixed three-endpoint batch when
+      additional independent controller/endpoint-family work is eligible in the same
+      invocation. Released lanes should be reassigned during the same invocation while
+      safe work remains.
 
   work_units:
     - id: WU-BL001-001
       name: Complete Source Repository Check
       phase: EXECUTE_SOURCE_CHECK
       state: READY
-      parallel: false
+      parallel: true
+      executor: ORCHESTRATOR_WITH_ORCHESTRATION_LANES
+      parallel_scope: INDEPENDENT_CONTROLLER_OR_ENDPOINT_FAMILIES_ONLY
+      max_parallel_lanes: 10
+      batching_strategy: CONTROLLER_SERVICE_FAMILY
+      lane_assignment_ssot: backlog/runtime/BL-001/lane-status.yaml
+      refill_released_lanes_within_same_invocation: true
       worker_input: worker/inputs/WI-0004.yaml
       expected_result: worker/results/WI-0004.yaml
       result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
+      evidence_rule: >-
+        Each endpoint must still be traced independently to source-proved final dependency
+        evidence. Shared previously proved component relationships may be reused only when
+        the frozen source proves the same path. No naming inference or guessing is allowed.
       completion_rule: Worker result COMPLETED, run CLOSED, contract valid, coverage 100 percent.
 
     - id: WU-BL001-002
