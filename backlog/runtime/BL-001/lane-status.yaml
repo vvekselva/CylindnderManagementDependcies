@@ -60,9 +60,9 @@ lane_status:
       - during an active invocation the coordinator should fill and refill safe independent lanes while eligible work remains
 
   lanes:
-    LANE-01: {state: INITIALIZING, work_unit: WU-BL001-001, task: Trace CustomerSpotCylinderCheckController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L01, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: null, last_lifecycle_event: LANE_INIT_START, blocker: null}
-    LANE-02: {state: INITIALIZING, work_unit: WU-BL001-001, task: Trace YardAuditDashboardController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L02, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: null, last_lifecycle_event: LANE_INIT_START, blocker: null}
-    LANE-03: {state: INITIALIZING, work_unit: WU-BL001-001, task: Trace WalkinSaleIngestionController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L03, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: null, last_lifecycle_event: LANE_INIT_START, blocker: null}
+    LANE-01: {state: WORKING, work_unit: WU-BL001-001, task: Trace CustomerSpotCylinderCheckController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L01, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: '2026-08-23T15:03:55+05:30', last_lifecycle_event: LANE_SERVICE_START, blocker: null}
+    LANE-02: {state: WORKING, work_unit: WU-BL001-001, task: Trace YardAuditDashboardController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L02, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: '2026-08-23T15:03:55+05:30', last_lifecycle_event: LANE_SERVICE_START, blocker: null}
+    LANE-03: {state: WORKING, work_unit: WU-BL001-001, task: Trace WalkinSaleIngestionController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L03, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: '2026-08-23T15:03:55+05:30', last_lifecycle_event: LANE_SERVICE_START, blocker: null}
     LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-05: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-06: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
@@ -75,8 +75,8 @@ lane_status:
     total_lanes: 10
     idle: 7
     assigned: 0
-    initializing: 3
-    working: 0
+    initializing: 0
+    working: 3
     blocked: 0
     waiting: 0
     closing: 0
@@ -85,6 +85,6 @@ lane_status:
 
   current_interpretation: >-
     Invocation INVOCATION-20260823-145512 is active. Three independent controller families
-    have persisted LANE_INIT_START and are initializing under WU-BL001-001. Remaining idle
-    capacity may be filled only when additional safe independent scope is selected without
-    creating shared-file conflicts or unproved dependency assumptions.
+    are in SERVICE under WU-BL001-001 with persisted lifecycle boundaries and current
+    heartbeats. Remaining idle capacity may be filled only when additional safe independent
+    scope is selected without shared-file conflicts or unproved dependency assumptions.
