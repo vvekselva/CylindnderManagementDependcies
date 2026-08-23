@@ -12,6 +12,7 @@ quality_gate_status:
         state: COMPLETE
         evidence:
           - backlog/backlog.yaml contains BL-001 exactly once with id, name, type, purpose, priority, state, item_definition, SOW, Completion Path, Quality Gate, dependencies, expected outputs and runtime
+          - repository/project-inventory.yaml provides the Level 1 repository/module scope inventory
       level_2:
         state: COMPLETE
         evidence:
@@ -29,6 +30,8 @@ quality_gate_status:
           - backlog/runtime/BL-001/blockers.yaml exists
           - backlog/runtime/BL-001/decisions.yaml exists
           - backlog/runtime/BL-001/worker-input-register.yaml exists
+          - backlog/runtime/BL-001/lane-status.yaml exists and contains LANE-01 through LANE-10 exactly once
+          - lane-status.yaml currently reconciles to 10 IDLE lanes and 0 active lane assignments after closed Attempt 25
           - backlog/runtime/BL-001/result.yaml exists
     planning_allowed: true
     replanning_allowed: true
@@ -114,9 +117,9 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    QG-SSOT-001, QG-SOW-001 and QG-DEP-001 pass. Attempt 25 removed the three active
-    evidence gaps by proving their concrete service/DAO/entity/table chains, so all 22
-    examined endpoints are now COMPLETE. Traceability completion remains blocked by
-    QG-TRC-002/QG-TRC-004 progress because 112 endpoints are still unexamined and
+    QG-SSOT-001, QG-SOW-001 and QG-DEP-001 pass. The Level 3 runtime now includes
+    lane-status.yaml as the authoritative live lane-to-task map. Attempt 25 removed the three
+    active trace evidence gaps, so all 22 examined endpoints are COMPLETE. Traceability
+    completion remains in progress because 112 endpoints are still unexamined and
     worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result.
     Matrix construction remains locked.
