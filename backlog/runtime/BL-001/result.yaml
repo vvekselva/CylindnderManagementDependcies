@@ -1,8 +1,31 @@
 result:
   backlog_item: BL-001
-  state: NOT_YET_COMPLETE
+  state: PARTIAL
   verified: false
   closed: false
+  canonical_source_check_result_accepted: false
+  matrix_construction_unlocked: false
+  latest_attempt: 26
+  latest_invocation: INVOCATION-20260823-145512
+  lifecycle_gate: {id: QG-LOG-001, state: PASS}
+  checkpoint:
+    total_endpoints: 134
+    examined: 27
+    complete: 25
+    unresolved: 2
+    blocked: 0
+    failed: 0
+    not_yet_examined: 107
+  unresolved_items:
+    - source_endpoint: POST /customer-spot-cylinder-check/submit
+      evidence_gap: Complete database-object set across all submitSpotCheck branches is not yet source-proved.
+    - source_endpoint: POST /walkin-sale
+      evidence_gap: Complete database-object set across all conditional processRequest branches is not yet source-proved.
   final_outputs: []
-  unresolved_items: []
-  note: Final result is written only after all BL-001 Completion Path gates pass.
+  next_action: >-
+    Resolve the two explicit POST evidence gaps, continue lifecycle-logged source tracing for the
+    remaining 107 endpoints, and keep Matrix construction locked until the canonical WI-0004 source
+    check result is CLOSED, COMPLETED, contract-valid and has 100 percent endpoint trace-result coverage.
+  note: >-
+    This is the current backlog runtime result, not the final BL-001 closure result. VERIFIED and CLOSED
+    remain false until all required Traceability gates and user acceptance pass.
