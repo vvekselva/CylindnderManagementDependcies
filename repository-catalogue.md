@@ -18,19 +18,20 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `automation/worker-component-contract.md` | Worker | Defines the task-agnostic Generic Worker and result handoff rules. |
 | `automation/worker-service-contract.md` | Automation | Defines mandatory orchestration-lane `init() -> service() -> close()` lifecycle. |
 | `automation/workflow-contract.md` | Automation | Defines Workflow -> Job -> Action execution representation and producer/consumer Job handoff. |
-| `backlog/README.md` | Backlog | Explains Backlog workspace and runtime files. |
-| `backlog/backlog.yaml` | Backlog | Authoritative Backlog register, priorities, dependencies, Completion Paths and Quality Gate links. |
-| `backlog/backlog-item-template.yaml` | Backlog | Template for future Backlog Items. |
-| `backlog/orchestrator-run-config.yaml` | Orchestrator Run Control | Execution switchboard read on every scheduled run; currently only BL-001 is enabled. |
+| `backlog/README.md` | Backlog | Explains Backlog workspace, mandatory Statement of Work and runtime files. |
+| `backlog/backlog.yaml` | Backlog | Authoritative Backlog register, SOW references, priorities, dependencies, Completion Paths and Quality Gate links. |
+| `backlog/backlog-item-template.yaml` | Backlog | Template for future Backlog Items, including mandatory Statement of Work reference. |
+| `backlog/statement-of-work-template.yaml` | Backlog Governance | Standard Statement of Work contract required before a Backlog Item may execute. |
+| `backlog/orchestrator-run-config.yaml` | Orchestrator Run Control | Execution switchboard read on every scheduled run; SOW validation is fail-closed and currently only BL-001 is enabled. |
 | `backlog/gates/BL-001-traceability.yaml` | Backlog Quality Gate | User-approved Controller Traceability Quality Gate set QG-TRC-001 through QG-TRC-015. |
-| `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability completion route bound to its approved Quality Gates. |
-| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route; execution remains disabled until its Quality Gate is approved. |
-| `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test completion route; execution remains disabled until its Quality Gate is approved. |
-| `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage completion route; execution remains disabled until its Quality Gate is approved. |
-| `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit completion route; execution remains disabled until its Quality Gate is approved. |
-| `backlog/paths/BL-006-requirements.yaml` | Completion Path | Requirements completion route; execution remains disabled until its Quality Gate is approved. |
+| `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability completion route bound to mandatory QG-SOW-001 and approved Traceability Quality Gates. |
+| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route; execution remains disabled until its SOW and Quality Gate are configured. |
+| `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test completion route; execution remains disabled until its SOW and Quality Gate are configured. |
+| `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage completion route; execution remains disabled until its SOW and Quality Gate are configured. |
+| `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit completion route; execution remains disabled until its SOW and Quality Gate are configured. |
+| `backlog/paths/BL-006-requirements.yaml` | Completion Path | Requirements completion route; execution remains disabled until its SOW and Quality Gate are configured. |
 | `database-dependency-neon.md` | Dependency | Neon/PostgreSQL/Flyway dependency and database change-control ledger. |
-| `governance/quality-gates.yaml` | Quality Gate Governance | Defines common QG-DEP-001 and the registry of approved/missing item-specific Quality Gates. |
+| `governance/quality-gates.yaml` | Quality Gate Governance | Defines mandatory QG-SOW-001, common QG-DEP-001 and the registry of approved/missing item-specific Quality Gates. |
 | `governance/automation-log-policy.md` | Governance | Defines plain-English lifecycle, blocker, evidence and decision logging. |
 | `governance/automation-policy.md` | Governance | Governing rules for automated work. |
 | `governance/source-artifact-sync-policy.md` | Governance | Defines change classification, artifact refresh and notification rules. |
@@ -53,7 +54,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 
 Static framework, run-control, approved Quality Gate and Completion-Path files must exist exactly as listed.
 
-Runtime files, future approved Backlog gate files and generated artifacts are permitted only when they match declared dynamic patterns.
+Runtime files, per-backlog Statement of Work files, future approved Backlog gate files and generated artifacts are permitted only when they match declared dynamic patterns.
 
 <!-- CATALOGUE-FILES:START -->
 .github/workflows/catalogue-gate.yml
@@ -69,6 +70,7 @@ automation/workflow-contract.md
 backlog/README.md
 backlog/backlog.yaml
 backlog/backlog-item-template.yaml
+backlog/statement-of-work-template.yaml
 backlog/orchestrator-run-config.yaml
 backlog/gates/BL-001-traceability.yaml
 backlog/paths/BL-001-traceability.yaml
@@ -99,6 +101,7 @@ workflows/WF-002-source-artifact-sync/workflow.yaml
 <!-- CATALOGUE-FILES:END -->
 
 <!-- CATALOGUE-DYNAMIC-PATHS:START -->
+backlog/sow/BL-*.yaml
 backlog/gates/BL-*.yaml
 backlog/runtime/*/*.yaml
 worker/inputs/WI-*.yaml
