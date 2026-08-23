@@ -2,37 +2,95 @@
 
 ## Purpose
 
-The automation framework is driven by a **Backlog**.
+The automation framework is driven by a **Backlog**. A Backlog Item represents one outcome the automation must complete. The Orchestrator owns selection, analysis, planning, execution coordination, validation and closure; the Generic Worker remains task-agnostic and executes only approved Worker Inputs.
 
-A Backlog Item represents one outcome that the automation must complete, for example:
+## Mandatory three-level Single Source of Truth
 
-- Controller Traceability;
-- Unit Tests;
-- Integration Tests;
-- Code Coverage Report;
-- ArchUnit Tests;
-- Requirements Analysis;
-- future quality, documentation, migration or release work.
+No Backlog Item may be planned or replanned until **Level 1, Level 2 and Level 3 are complete for that item and `QG-SSOT-001` passes**.
 
-The Orchestrator owns both the analysis of a Backlog Item and the execution process required to complete it.
+### Level 1 - Backlog Master SSOT
 
-The Generic Worker remains task-agnostic. It executes only Worker Input files created by the Orchestrator.
+Authoritative file: `backlog/backlog.yaml`.
+
+It answers **what work exists**. For a plannable item it must provide the authoritative ID, name, type, purpose, priority, state, Level 2 definition reference, Statement of Work reference, Completion Path, Quality Gate, dependencies, expected outputs and Level 3 runtime reference.
+
+### Level 2 - Backlog Definition SSOT
+
+Authoritative item files: `backlog/items/BL-*.yaml` together with the referenced `backlog/sow/BL-*.yaml`, Completion Path and item-specific Quality Gate.
+
+It answers **what this Backlog Item means and what must be delivered**. It contains/references the Statement of Work, target, scope, dependencies, deliverables, acceptance criteria, Completion Path, Quality Gates and runtime location.
+
+`QG-SOW-001` is a mandatory Level 2 component. Missing or incomplete SOW fails closed.
+
+### Level 3 - Runtime SSOT
+
+Authoritative directory: `backlog/runtime/<BL-ID>/`.
+
+It answers **what is happening now**. Before PLAN/REPLAN the directory must contain all files required by `backlog/runtime-contract.yaml`:
+
+```text
+analysis.yaml
+execution-plan.yaml
+work-unit-status.yaml
+gate-status.yaml
+blockers.yaml
+decisions.yaml
+worker-input-register.yaml
+result.yaml
+```
+
+The execution-plan file may be initialized/empty before first planning, but it must exist. A missing runtime file blocks planning.
+
+## Fail-closed planning rule
+
+```text
+SELECT BACKLOG ITEM
+       |
+       v
+SSOT-L1 COMPLETE?
+       | NO -> REPAIR LEVEL 1 ONLY / NO PLAN
+      YES
+       |
+       v
+SSOT-L2 COMPLETE + QG-SOW-001 PASS?
+       | NO -> COMPLETE DEFINITION/SOW ONLY / NO PLAN
+      YES
+       |
+       v
+SSOT-L3 COMPLETE?
+       | NO -> INITIALIZE/REPAIR RUNTIME ONLY / NO PLAN
+      YES
+       |
+       v
+QG-SSOT-001 PASS
+       |
+       v
+REQUIRED ANALYSIS
+       |
+       v
+PLAN / REPLAN MAY BEGIN
+```
+
+`QG-SSOT-001` passing does not by itself authorize execution. Dependency and item-specific Quality Gates still apply.
 
 ## Top-level hierarchy
 
 ```text
-BACKLOG
+BACKLOG MASTER (LEVEL 1)
    |
-   +-- BACKLOG ITEM
+   +-- BACKLOG DEFINITION + SOW (LEVEL 2)
           |
-          +-- COMPLETION PATH
+          +-- RUNTIME SSOT (LEVEL 3)
                  |
-                 +-- ANALYZE
-                 +-- PLAN
-                 +-- GENERATE WORKER INPUTS
-                 +-- EXECUTE
-                 +-- VALIDATE
-                 +-- CLOSE
+                 +-- COMPLETION PATH
+                        |
+                        +-- ANALYZE
+                        +-- PLAN
+                        +-- GENERATE WORKER INPUTS
+                        +-- EXECUTE
+                        +-- VALIDATE
+                        +-- USER ACCEPTANCE
+                        +-- CLOSE
 ```
 
 The hierarchy below the execution-plan level remains:
@@ -45,26 +103,26 @@ WORKFLOW / RUN PLAN
          +-- ACTION
 ```
 
-## Core responsibility split
-
-### Orchestrator
+## Orchestrator responsibilities
 
 The Orchestrator owns:
 
-- selecting the next eligible Backlog Item;
-- reading its Completion Path;
-- analysing the repository/current state for that Backlog Item;
-- deciding the concrete work units required by the Completion Path;
-- generating Worker Input files;
-- placing generated Worker Inputs into the execution queue;
-- consuming Worker results;
-- deciding whether follow-up Worker Inputs are required;
-- validating completion gates;
-- producing the Backlog Item artifacts;
-- updating Backlog status;
-- closing the Backlog Item only after all gates pass.
+- selecting the next run-enabled Backlog Item;
+- validating/repairing the three SSOT levels;
+- enforcing `QG-SSOT-001` before PLAN/REPLAN;
+- enforcing `QG-SOW-001`, dependency gates and item-specific Quality Gates;
+- reading the Level 2 definition, SOW and Completion Path;
+- analysing repository/current state inside the Level 3 runtime area;
+- creating/changing an Execution Plan only after the planning gate passes;
+- deciding concrete Work Units;
+- generating Worker Inputs from approved Work Units;
+- scheduling Worker execution;
+- consuming and validating Worker results;
+- updating Level 3 analysis, gates, blockers, work-unit status, decisions and result;
+- producing required artifacts;
+- closing only after all automatic gates and required user acceptance pass.
 
-### Generic Worker
+## Generic Worker responsibility
 
 The Generic Worker owns only:
 
@@ -72,11 +130,9 @@ The Generic Worker owns only:
 read input -> init -> service -> close -> return result
 ```
 
-It does not choose the Backlog Item, Completion Path, work priority, next Worker Input, or completion decision.
+It does not choose Backlog Items, define Statements of Work, create Completion Paths, alter Quality Gates, decide priorities or authorize closure.
 
-## Backlog Item lifecycle
-
-Use these Backlog Item states:
+## Backlog lifecycle
 
 ```text
 YET_TO_DO
@@ -101,6 +157,9 @@ EXECUTING
 VALIDATING
    |
    v
+WAITING_FOR_USER_VERIFICATION
+   |
+   v
 VERIFIED
    |
    v
@@ -109,171 +168,28 @@ CLOSED
 
 `WAITING_FOR_DEPENDENCY` and `WAITING_FOR_DECISION` may be used when appropriate.
 
+A catalogued item whose Level 1/2/3 prerequisites are incomplete remains non-plannable even if it is run-enabled accidentally.
+
+## Statement of Work
+
+Every executable Backlog Item must reference a structurally valid SOW under `backlog/sow/`. The SOW defines objective, problem statement, scope, target, deliverables, execution requirements, dependencies, acceptance criteria, Quality Gate requirements and completion definition. The Orchestrator may not invent missing scope.
+
 ## Completion Path
 
-Every Backlog Item must reference one **Completion Path** file.
+Every executable Backlog Item must reference a Completion Path. The path defines ordered execution phases, prerequisites, analysis requirements, planning rules, Worker Input rules, expected artifacts, validation gates, blocker handling and completion conditions.
 
-The Completion Path defines the ordered route by which that specific item becomes complete.
+## Analysis and planning
 
-A Completion Path must define:
+Analysis is an Orchestrator responsibility and is persisted in Level 3 `analysis.yaml`.
 
-- path ID and version;
-- Backlog Item type;
-- purpose;
-- prerequisites;
-- analysis requirements;
-- analysis outputs;
-- planning rules;
-- Worker Input generation rules;
-- execution phases;
-- expected artifacts;
-- validation gates;
-- blocker rules;
-- completion conditions.
+After required analysis, the Orchestrator may create or modify `execution-plan.yaml` only when `QG-SSOT-001` is PASS. Every Work Unit must define ID, Backlog Item, Completion Path step, purpose, dependencies/ordering, parallelism, permissions, expected result, validation rule and Worker Input.
 
-The Orchestrator may not replace a Completion Path with an improvised route unless the path explicitly allows it or a user decision authorizes a change.
+## Worker Input and execution
 
-## Analysis phase
+The Orchestrator converts approved Work Units into `worker/inputs/WI-####.yaml`, submits them to the Generic Worker, tracks runs/results, validates result contracts and updates Level 3 runtime state. Independent Work Units may use available lanes only when the Completion Path permits it.
 
-The analysis phase is an **Orchestrator responsibility**.
+## Validation and closure
 
-During analysis, the Orchestrator determines the current state required by the Completion Path.
+Worker completion does not imply Backlog completion. Required Quality Gates must pass, outputs must exist, blockers/unresolved items must be accounted for, all required runs must be closed, and user acceptance must be obtained where configured.
 
-Examples:
-
-- Traceability: inspect source structure and determine the complete source-check task that must run;
-- Unit Tests: identify production classes, existing tests, testable units and missing test areas;
-- Integration Tests: identify integration boundaries, existing integration tests, infrastructure requirements and uncovered flows;
-- Code Coverage: identify modules, test commands, coverage tooling and report aggregation rules;
-- ArchUnit: identify architectural packages/layers and rules that should be validated;
-- Requirements: identify requirement sources, implemented features and requirement-to-code evidence.
-
-The Orchestrator writes the analysis result under the Backlog Item runtime area.
-
-## Planning phase
-
-After analysis, the Orchestrator creates an **Execution Plan**.
-
-The plan breaks the Completion Path into concrete work units.
-
-Each work unit must state:
-
-- Work Unit ID;
-- Backlog Item ID;
-- Completion Path step;
-- purpose;
-- dependency/ordering rule;
-- whether it can run in parallel;
-- requested permissions;
-- expected result;
-- validation rule;
-- Worker Input ID to generate.
-
-The plan is the bridge between analysis and Worker Input generation.
-
-## Worker Input generation
-
-The Orchestrator converts approved Work Units into `worker/inputs/WI-####.yaml` files.
-
-```text
-Backlog Item
-    |
-Completion Path
-    |
-Orchestrator Analysis
-    |
-Execution Plan
-    |
-Work Units
-    |
-GENERATE WI FILES
-    |
-worker/inputs/WI-####.yaml
-```
-
-The Generic Worker does not generate its own next task.
-
-When Worker result evidence proves that additional work is required, the Orchestrator analyses the result and may add another Work Unit and generate another Worker Input.
-
-## Execution phase
-
-The Orchestrator owns execution scheduling.
-
-It:
-
-1. validates the generated Worker Input;
-2. submits it to the Generic Worker;
-3. tracks its run/result;
-4. validates the returned result contract;
-5. attaches the result to the Work Unit;
-6. decides whether the Work Unit is complete;
-7. updates the execution plan;
-8. schedules the next eligible Work Unit.
-
-Independent Work Units may use up to ten orchestration lanes when the Completion Path allows parallel execution.
-
-## Validation phase
-
-A Backlog Item cannot be closed merely because all Worker Inputs have run.
-
-The Orchestrator must evaluate the Completion Path gates.
-
-Examples:
-
-- Traceability: every exposed endpoint has a trace row and coverage is 100%;
-- Unit Tests: required unit-test scope is covered and tests pass;
-- Integration Tests: required integration scenarios exist and pass;
-- Code Coverage: the coverage report is successfully generated and required thresholds are evaluated;
-- ArchUnit: required architecture rules exist and the ArchUnit suite passes;
-- Requirements: every requirement is mapped to implementation/evidence or explicitly unresolved.
-
-## Backlog dependencies
-
-A Backlog Item may depend on other Backlog Items.
-
-Example:
-
-```text
-BL-002 Unit Tests --------+
-                          +--> BL-004 Code Coverage Report
-BL-003 Integration Tests -+
-```
-
-A dependent item remains `WAITING_FOR_DEPENDENCY` until its dependency rule is satisfied.
-
-## Runtime files
-
-Each Backlog Item run uses:
-
-```text
-backlog/runtime/<BL-ID>/
-  analysis.yaml
-  execution-plan.yaml
-  work-unit-status.yaml
-  worker-input-register.yaml
-  gate-status.yaml
-  decisions.yaml
-  result.yaml
-```
-
-These are Orchestrator-owned files.
-
-Worker files remain separate:
-
-```text
-worker/inputs/WI-####.yaml
-worker/runs/WI-####.md
-worker/results/WI-####.yaml|md
-```
-
-## Closing rule
-
-A Backlog Item may move to `CLOSED` only when:
-
-- all mandatory Completion Path steps are complete;
-- every mandatory Work Unit has an accepted result;
-- all required outputs exist;
-- all completion gates pass;
-- unresolved items are recorded where the path permits them;
-- analysis/execution/validation state is persisted;
-- no required Worker or orchestration run remains open.
+A Backlog Item may move to `CLOSED` only when all mandatory Completion Path steps, automatic gates, artifact requirements, runtime consistency checks and required user acceptance are complete.
