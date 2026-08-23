@@ -52,6 +52,30 @@ quality_gate_status:
     state: PASS
     evidence: BL-001 declares no Backlog dependencies
 
+  execution_lifecycle_logging_gate:
+    id: QG-LOG-001
+    name: Execution Lifecycle Logging Completeness
+    state: IN_PROGRESS
+    effective_scope: NEW_INVOCATIONS_AND_LANE_RUNS_AFTER_CONTRACT_ACTIVATION
+    evidence:
+      - governance/execution-lifecycle-logging.yaml defines mandatory Orchestrator invocation START/END records and lane lifecycle boundary records
+      - automation/worker-service-contract.md requires LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END and LANE_CLOSE_END in the applicable order
+      - automation/automation-config.yaml requires lifecycle logs before phase start and before lane release/result acceptance
+      - backlog/runtime/BL-001/execution-plan.yaml version 4 requires QG-LOG-001 and lifecycle logging for WU-BL001-001
+      - backlog/runtime/BL-001/lane-status.yaml version 3 records lifecycle logging requirements and last lifecycle event fields
+      - the enabled Cylinder Orchestrator schedule has been updated to create invocation and lane boundary logs
+      - historical attempts through Attempt 25 predate this contract and remain legacy evidence rather than being retroactively invalidated
+    pass_condition_remaining: >-
+      The first post-activation Orchestrator invocation must persist ORCHESTRATOR_INVOCATION_START
+      before analysis/execution, produce all applicable ordered lane lifecycle logs, leave no orphan
+      OPEN lane event, release lanes only after persisted CLOSE/recovery-close, synchronize runtime,
+      and persist ORCHESTRATOR_INVOCATION_END. The resulting evidence must reconcile with lane-status.
+    result_acceptance_allowed_for_new_runs: false
+    reason: >-
+      The logging contract and execution/scheduler rules are installed, but no post-activation
+      invocation has yet demonstrated the complete lifecycle sequence. QG-LOG-001 therefore
+      remains IN_PROGRESS rather than being guessed PASS.
+
   gates:
     QG-TRC-001:
       name: Source Baseline Integrity
@@ -117,9 +141,9 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    QG-SSOT-001, QG-SOW-001 and QG-DEP-001 pass. The Level 3 runtime now includes
-    lane-status.yaml as the authoritative live lane-to-task map. Attempt 25 removed the three
-    active trace evidence gaps, so all 22 examined endpoints are COMPLETE. Traceability
-    completion remains in progress because 112 endpoints are still unexamined and
-    worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result.
-    Matrix construction remains locked.
+    QG-SSOT-001, QG-SOW-001 and QG-DEP-001 pass. QG-LOG-001 is now mandatory for
+    post-activation execution and remains IN_PROGRESS until the first compliant invocation proves
+    the complete Orchestrator/lane lifecycle log sequence. Attempt 25 removed the active trace
+    evidence gaps, so all 22 examined endpoints are COMPLETE. Traceability completion also remains
+    in progress because 112 endpoints are still unexamined and worker/results/WI-0004.yaml is not
+    yet a completed contract-valid canonical result. Matrix construction remains locked.
