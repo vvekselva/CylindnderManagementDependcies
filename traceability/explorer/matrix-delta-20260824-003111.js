@@ -1,0 +1,87 @@
+(function () {
+  const d = window.TRACEABILITY_DATA;
+  if (!d || !Array.isArray(d.endpoints)) return;
+  d.metadata.canonicalAcceptedExamined = 40;
+  d.metadata.canonicalComplete = 38;
+  d.metadata.canonicalUnresolved = 2;
+  d.metadata.canonicalNotYetExamined = 94;
+  d.metadata.materializedMatrixRows = 13;
+  d.metadata.historicalAcceptedRowsPendingBackfill = 27;
+  d.metadata.latestMaterializedFromInvocation = "PRODUCTION-FIRE-20260824-003111";
+
+  const rows = [
+    {
+      method: "GET",
+      path: "/logistics/challan-books/add-form",
+      controller: "ChallanBookWebController",
+      controllerMethod: "showAddBookForm",
+      state: "COMPLETE",
+      chainCompleteness: "FULL_BRANCHING",
+      paths: [
+        {label:"Summary metrics",nodes:[
+          {type:"CONTROLLER",name:"ChallanBookWebController",method:"showAddBookForm"},
+          {type:"SERVICE",name:"SummaryMetricLookupFetchService",method:"fetchChallanBookTotalMetrics / fetchChallanBookActiveMetrics / fetchChallanBookUnusedPageMetrics"},
+          {type:"DAO",name:"SummaryMetricLookupJpaDao",method:"findByLookUpKeyIn"},
+          {type:"ENTITY",name:"SummaryMetricLookupDo"},
+          {type:"POSTGRES_TABLE",name:"public.tbl_summary_metric_lookup"},
+          {type:"MAPPER",name:"SummaryMetricLookupMapper",method:"mapDoToDto"}
+        ]},
+        {label:"Terminal view",nodes:[
+          {type:"CONTROLLER",name:"ChallanBookWebController",method:"showAddBookForm"},
+          {type:"TERMINAL_VIEW",name:"final-version-1/add-challan-book.html"}
+        ]}
+      ],
+      finalDependencies:["public.tbl_summary_metric_lookup","final-version-1/add-challan-book.html"],
+      evidence:["logs/runs/PRODUCTION-FIRE-20260824-003111.md"]
+    },
+    {
+      method: "POST",
+      path: "/logistics/challan-books/save",
+      controller: "ChallanBookWebController",
+      controllerMethod: "processBookIngestion",
+      state: "COMPLETE",
+      chainCompleteness: "FULL_BRANCHING",
+      paths: [
+        {label:"Book registry save",nodes:[
+          {type:"CONTROLLER",name:"ChallanBookWebController",method:"processBookIngestion"},
+          {type:"SERVICE",name:"ChallanBookIngestionService",method:"processRequest"},
+          {type:"MAPPER",name:"ChallanBookRegistryMapper",method:"mapDtoToDo"},
+          {type:"DAO",name:"ChallanBookRegistryJpaDao",method:"saveAndFlush"},
+          {type:"ENTITY",name:"ChallanBookRegistryDo"},
+          {type:"POSTGRES_TABLE",name:"public.tbl_challan_book_registry"}
+        ]},
+        {label:"Conditional page cascade",nodes:[
+          {type:"CONTROLLER",name:"ChallanBookWebController",method:"processBookIngestion"},
+          {type:"SERVICE",name:"ChallanBookIngestionService",method:"processRequest"},
+          {type:"MAPPER",name:"ChallanBookRegistryMapper",method:"mapDtoToDo"},
+          {type:"MAPPER",name:"ChallanPageAuditLedgerMapper",method:"mapDtoToDo"},
+          {type:"ENTITY",name:"ChallanPageAuditLedgerDo"},
+          {type:"POSTGRES_TABLE",name:"public.tbl_challan_page_audit_ledger"}
+        ]},
+        {label:"Error summary metrics",nodes:[
+          {type:"CONTROLLER",name:"ChallanBookWebController",method:"processBookIngestion"},
+          {type:"SERVICE",name:"SummaryMetricLookupFetchService",method:"fetch metrics"},
+          {type:"DAO",name:"SummaryMetricLookupJpaDao",method:"findByLookUpKeyIn"},
+          {type:"ENTITY",name:"SummaryMetricLookupDo"},
+          {type:"POSTGRES_TABLE",name:"public.tbl_summary_metric_lookup"},
+          {type:"MAPPER",name:"SummaryMetricLookupMapper",method:"mapDoToDto"}
+        ]},
+        {label:"Success redirect",nodes:[
+          {type:"CONTROLLER",name:"ChallanBookWebController",method:"processBookIngestion"},
+          {type:"TERMINAL_VIEW",name:"redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10"}
+        ]},
+        {label:"Error re-render",nodes:[
+          {type:"CONTROLLER",name:"ChallanBookWebController",method:"processBookIngestion"},
+          {type:"TERMINAL_VIEW",name:"final-version-1/add-challan-book"}
+        ]}
+      ],
+      finalDependencies:["public.tbl_challan_book_registry","public.tbl_challan_page_audit_ledger","public.tbl_summary_metric_lookup","redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10","final-version-1/add-challan-book"],
+      evidence:["logs/runs/PRODUCTION-FIRE-20260824-003111.md"]
+    }
+  ];
+
+  for (const row of rows) {
+    const i = d.endpoints.findIndex(e => e.method === row.method && e.path === row.path);
+    if (i >= 0) d.endpoints[i] = row; else d.endpoints.push(row);
+  }
+})();
