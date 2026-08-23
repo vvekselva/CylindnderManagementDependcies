@@ -61,10 +61,10 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - WI-0004 attempts 1 through 24 are CLOSED/PARTIAL
+        - WI-0004 attempts 1 through 25 are CLOSED/PARTIAL
         - 22 of 134 endpoints have been explicitly examined for final dependencies
-        - 19 examined endpoints are COMPLETE
-        - 3 examined endpoints are UNRESOLVED at source-proved generic search-service handoffs
+        - all 22 examined endpoints are COMPLETE
+        - 0 examined endpoints are UNRESOLVED
         - 112 endpoints remain not yet examined
         - canonical completed result is not yet accepted
     QG-TRC-003:
@@ -91,7 +91,8 @@ quality_gate_status:
       state: IN_PROGRESS
       evidence:
         - earlier unresolved paths were retained at their last proved component until concrete dependency evidence was found
-        - attempt 24 records Challan Type, City and Country paths as UNRESOLVED at the injected generic service handoff
+        - attempt 25 resolved Challan Type, City and Country only after concrete Spring service, DAO method and explicit entity table evidence was found
+        - Challan Type maps to public.tbl_challan_type, City to public.tbl_city, Country to public.tbl_country
         - no repository, query or database object was inferred from field or DTO naming
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
@@ -107,14 +108,15 @@ quality_gate_status:
   endpoint_trace_checkpoint:
     total_endpoints: 134
     explicitly_examined_for_final_dependency: 22
-    complete: 19
-    unresolved: 3
+    complete: 22
+    unresolved: 0
     not_yet_examined_for_final_dependency: 112
 
   close_allowed: false
   reason: >-
-    QG-SSOT-001, QG-SOW-001 and QG-DEP-001 pass. BL-001 is therefore permitted to retain
-    and, when required, revise its Execution Plan under the Completion Path. Traceability
-    completion is still blocked by QG-TRC-002/QG-TRC-004 progress: 112 endpoints remain
-    unexamined, three examined paths remain unresolved, and worker/results/WI-0004.yaml is
-    not yet a completed contract-valid canonical result. Matrix construction remains locked.
+    QG-SSOT-001, QG-SOW-001 and QG-DEP-001 pass. Attempt 25 removed the three active
+    evidence gaps by proving their concrete service/DAO/entity/table chains, so all 22
+    examined endpoints are now COMPLETE. Traceability completion remains blocked by
+    QG-TRC-002/QG-TRC-004 progress because 112 endpoints are still unexamined and
+    worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result.
+    Matrix construction remains locked.
