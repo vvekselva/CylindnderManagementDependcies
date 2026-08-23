@@ -11,14 +11,14 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and declared dynamic runtime/artifact paths. |
 | `.github/workflows/ssot-gate.yml` | Planning Gate | Runs the three-level SSOT validator; PLAN/REPLAN prerequisites must be valid for run-enabled backlog items. |
 | `TaskStatus.md` | Status | Human-readable consolidated dashboard; generated/derived status must not override canonical Level 1/2/3 SSOT. |
-| `automation/automation-config.yaml` | Automation | Machine-readable Backlog-driven Orchestrator, SSOT planning gates, lane, Worker, scheduling and lock configuration. |
+| `automation/automation-config.yaml` | Automation | Machine-readable Backlog-driven Orchestrator, SSOT planning gates, lane, lifecycle logging, Worker, scheduling and lock configuration. |
 | `automation/backlog-contract.md` | Backlog Contract | Defines mandatory Level 1/2/3 SSOT, planning gate, Backlog lifecycle and execution/closure contract. |
-| `automation/execution-model.md` | Architecture Document | Main framework document showing Level 1/2/3, planning gate and end-to-end execution flow. |
+| `automation/execution-model.md` | Architecture Document | Main framework document showing Level 1/2/3, lane execution, logging and end-to-end execution flow. |
 | `automation/generate-automation-story.py` | Automation | Converts the human-readable automation log into the overall story. |
 | `automation/validate-ssot.py` | SSOT Validator | Machine-validates Level 1, Level 2, Level 3 and QG-SOW-001 prerequisites for every run-enabled backlog item. |
 | `automation/task-contract.md` | Automation | Defines Task/Job execution fields and lifecycle rules. |
 | `automation/worker-component-contract.md` | Worker | Defines the task-agnostic Generic Worker and result handoff rules. |
-| `automation/worker-service-contract.md` | Automation | Defines mandatory orchestration-lane `init() -> service() -> close()` lifecycle. |
+| `automation/worker-service-contract.md` | Automation | Defines mandatory lane lifecycle plus INIT/SERVICE/CLOSE boundary logging. |
 | `automation/workflow-contract.md` | Automation | Defines Workflow -> Job -> Action execution representation and producer/consumer Job handoff. |
 | `backlog/README.md` | Backlog | Explains Backlog workspace, mandatory SOW, three-level SSOT and runtime files. |
 | `backlog/backlog.yaml` | Level 1 SSOT | Authoritative Backlog Master register. |
@@ -29,21 +29,22 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `backlog/orchestrator-run-config.yaml` | Orchestrator Run Control | Execution switchboard; QG-SSOT-001 and SOW validation are fail-closed. |
 | `backlog/gates/BL-001-traceability.yaml` | Backlog Quality Gate | User-approved Controller Traceability Quality Gate set QG-TRC-001 through QG-TRC-015. |
 | `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability route bound to SOW, SSOT/dependency prerequisites and approved Traceability gates. |
-| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route; scope is constrained by repository/project-inventory.yaml and remains non-plannable until Level 1/2/3 and Quality Gate requirements are complete. |
-| `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test completion route; non-plannable until Level 1/2/3 and Quality Gate requirements are complete. |
-| `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage route; non-plannable until Level 1/2/3, dependencies and Quality Gates are complete. |
-| `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit route; non-plannable until Level 1/2/3 and Quality Gate requirements are complete. |
-| `backlog/paths/BL-006-requirements.yaml` | Completion Path | Requirements route; non-plannable until Level 1/2/3 and Quality Gate requirements are complete. |
+| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route constrained by repository/project-inventory.yaml. |
+| `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test route; non-plannable until required Level 1/2/3 and gates are complete. |
+| `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage route; non-plannable until required dependencies/gates are complete. |
+| `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit route; non-plannable until required Level 1/2/3 and gates are complete. |
+| `backlog/paths/BL-006-requirements.yaml` | Completion Path | Requirements route; non-plannable until required Level 1/2/3 and gates are complete. |
 | `database-dependency-neon.md` | Dependency | Neon/PostgreSQL/Flyway dependency and database change-control ledger. |
 | `governance/ssot-levels.yaml` | SSOT Governance | Defines SSOT-L1, SSOT-L2, SSOT-L3 and fail-closed QG-SSOT-001 planning gate. |
-| `governance/quality-gates.yaml` | Quality Gate Governance | Defines QG-SSOT-001, QG-SOW-001, QG-DEP-001 and item-specific Quality Gate registry. |
-| `governance/automation-log-policy.md` | Governance | Defines plain-English lifecycle, blocker, evidence and decision logging. |
+| `governance/quality-gates.yaml` | Quality Gate Governance | Defines QG-SSOT-001, QG-SOW-001, QG-DEP-001, QG-LOG-001 and item-specific Quality Gate registry. |
+| `governance/execution-lifecycle-logging.yaml` | Execution Logging | Mandatory Orchestrator invocation and lane INIT/SERVICE/CLOSE boundary logging contract and QG-LOG-001. |
+| `governance/automation-log-policy.md` | Governance | Defines plain-English invocation/lane lifecycle audit logging. |
 | `governance/automation-policy.md` | Governance | Governing rules for automated work. |
 | `governance/source-artifact-sync-policy.md` | Governance | Defines change classification, artifact refresh and notification rules. |
 | `governance/worker-operating-guide.md` | Governance | Defines orchestration-lane behaviour and input-driven Generic Worker model. |
-| `logs/automation-log.md` | Audit Log | Coordinator-owned human-readable orchestration history. |
+| `logs/automation-log.md` | Audit Log | Coordinator-owned consolidated human-readable orchestration history. |
 | `logs/automation-story.md` | Story | Human-readable overall automation story. |
-| `repository/project-inventory.yaml` | Level 1 SSOT | Authoritative CylinderManagement project/module inventory and backlog scope classifications such as unit-test required, excluded, postponed or unclassified. |
+| `repository/project-inventory.yaml` | Level 1 SSOT | Authoritative CylinderManagement project/module inventory and backlog scope classifications. |
 | `repository-catalogue.md` | Governance | Authoritative catalogue of static control files and allowed dynamic paths. |
 | `sync/source-artifact-sync-register.yaml` | Synchronization | Machine-readable source-component to artifact synchronization list. |
 | `traceability/README.md` | Traceability | Explains Controller Traceability output area. |
@@ -58,7 +59,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 
 ## Catalogue Quality Gate
 
-Static framework, SSOT governance, validators, run-control, approved Quality Gate and Completion-Path files must exist exactly as listed.
+Static framework, SSOT governance, logging governance, validators, run-control, approved Quality Gate and Completion-Path files must exist exactly as listed.
 
 Per-backlog Level 2 definitions/SOWs, Level 3 runtime files, future approved Backlog gate files and generated artifacts are permitted only when they match declared dynamic patterns.
 
@@ -92,6 +93,7 @@ backlog/paths/BL-006-requirements.yaml
 database-dependency-neon.md
 governance/ssot-levels.yaml
 governance/quality-gates.yaml
+governance/execution-lifecycle-logging.yaml
 governance/automation-log-policy.md
 governance/automation-policy.md
 governance/source-artifact-sync-policy.md
