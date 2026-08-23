@@ -1,0 +1,192 @@
+version: 1
+name: Self-Reliant End-to-End Execution Governance
+architecture: architecture/self-reliant-e2e-execution.md
+purpose: >-
+  Define the production control loop that lets the Cylinder Automation Tool stage private source,
+  execute local workers, recover interrupted/pending-sync state, validate evidence and persist results
+  without GitHub Actions or a mandatory pre-existing local source checkout.
+
+roles:
+  github: VERSION_CONTROL_AND_DURABLE_PERSISTENCE
+  primary_orchestrator: PLAN_STAGE_DISPATCH_EXECUTE_VALIDATE_RECOVER_SYNCHRONIZE
+  workers: READ_ONLY_SOURCE_EVIDENCE_COLLECTION
+  final_trace_decision_owner: PRIMARY_ORCHESTRATOR
+
+external_execution_dependencies:
+  github_actions: false
+  github_runner: false
+  jenkins: false
+  mandatory_local_source_checkout: false
+
+source_provider_priority:
+  - ORCHESTRATOR_STAGED_SNAPSHOT
+  - LOCAL_GIT_CHECKOUT
+
+source_stage_loop:
+  max_iterations: 8
+  root_integrity_required_before_first_discovery_fire: true
+  request_types:
+    - missing_source_requests
+    - missing_binding_requests
+  continue_when: REQUEST_SET_CHANGED_AND_RESOLUTION_PROGRESS_PROVED
+  success_when: SOURCE_CLOSURE_COMPLETE
+  no_progress_state: SOURCE_RESOLUTION_STALLED
+  limit_state: SOURCE_RESOLUTION_LIMIT_REACHED
+  no_guessing: true
+
+binding_contract:
+  manifest_binding_required_for_non_terminal_interface_injection: true
+  binding_key_fields: [source_path, injection_kind, variable_name, declared_type, generic_args, qualifier]
+  candidate_generation_may_use: [import_fqcn, qualifier, injection_variable_name]
+  candidate_generation_is_not_acceptance: true
+  acceptance_requires:
+    - implementation_file_manifest_integrity_pass
+    - implementation_source_proves_declared_interface
+    - generic_signature_matches_when_generic_args_are_present
+    - qualifier_or_default_bean_identity_matches_when_qualifier_is_present
+  invalid_binding_state: SOURCE_BINDING_UNRESOLVED
+
+execution_state_machine:
+  states:
+    - BOOTSTRAP
+    - LOAD_SSOT
+    - VALIDATE_GATES
+    - BUILD_DISPATCH
+    - SOURCE_STAGE_ROOTS
+    - SOURCE_ROOTS_VERIFIED
+    - DISCOVERY_FIRE
+    - SOURCE_RESTAGE
+    - SOURCE_CLOSURE_COMPLETE
+    - PRODUCTION_FIRE
+    - AGGREGATING
+    - CLOSED_READY_FOR_VALIDATION
+    - VALIDATING_EVIDENCE
+    - VALIDATED_PENDING_SYNC
+    - PENDING_SYNC
+    - CLOSED_SYNCED
+    - RECOVERY_REQUIRED
+    - BLOCKED_SOURCE_INTEGRITY
+    - SOURCE_RESOLUTION_STALLED
+    - SOURCE_RESOLUTION_LIMIT_REACHED
+  normal_path:
+    - BOOTSTRAP
+    - LOAD_SSOT
+    - VALIDATE_GATES
+    - BUILD_DISPATCH
+    - SOURCE_STAGE_ROOTS
+    - SOURCE_ROOTS_VERIFIED
+    - DISCOVERY_FIRE
+    - SOURCE_CLOSURE_COMPLETE
+    - PRODUCTION_FIRE
+    - AGGREGATING
+    - CLOSED_READY_FOR_VALIDATION
+    - VALIDATING_EVIDENCE
+    - VALIDATED_PENDING_SYNC
+    - CLOSED_SYNCED
+
+execution_journal:
+  required: true
+  minimum_fields:
+    - execution_id
+    - dispatch_fingerprint
+    - source_baseline
+    - source_provider
+    - source_snapshot_id
+    - phase
+    - workers
+    - aggregate_log
+    - result_fingerprint
+    - source_closure_complete
+    - validation_state
+    - sync_state
+  dispatch_fingerprint_basis: FROZEN_BASELINE_PLUS_ORDERED_APPROVED_TASKS
+
+idempotency_rules:
+  same_fingerprint_pending_sync: RETRY_SYNC_ONLY_NO_WORKER_RESTART
+  same_fingerprint_closed_waiting_validation: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
+  changed_fingerprint: START_NEW_EXECUTION_GENERATION
+  already_closed_synced: NOOP_ALREADY_COMMITTED
+  duplicate_trace_acceptance_prohibited: true
+
+recovery_rules:
+  interrupted_running_no_live_workers:
+    state: RECOVERY_REQUIRED
+    accept_partial_output: false
+    required_actions: [aggregate_or_quarantine_existing_lane_logs, rescan_lane_logs_to_zero, mark_interrupted_execution_recovered, rerun_only_after_clean_boundary]
+  transient_worker_failure:
+    isolated_retry_limit: 1
+    retry_requires_clean_lane_lifecycle_recovery: true
+  integrity_failure:
+    automatic_retry: false
+    action: REPAIR_OR_RESTAGE_SOURCE_INPUT
+  staging_no_progress:
+    automatic_infinite_loop: false
+    action: RECORD_EXACT_UNRESOLVED_REQUEST_SET_AND_FAIL_CLOSED
+
+persistence_sync:
+  owner: PRIMARY_ORCHESTRATOR
+  transport: CONNECTED_GITHUB_CONTROL_PLANE
+  on_success: CLOSED_SYNCED
+  on_failure:
+    state: PENDING_SYNC
+    preserve_local_aggregate: true
+    preserve_result_fingerprint: true
+    rerun_workers_for_same_fingerprint: false
+    next_invocation_action: RETRY_SYNC_ONLY
+  verification: READ_BACK_OR_OTHER_SOURCE_PROVED_PERSISTENCE_CONFIRMATION
+
+worker_preflight:
+  require_safe_independent: true
+  duplicate_lane_rejected: true
+  duplicate_task_id_rejected: true
+  manifest_repository_match: vvekselva/CylinderManagement
+  manifest_baseline_equals_dispatch_baseline: true
+  controller_root_manifest_integrity_required: true
+  stale_lane_logs_must_equal_zero: true
+
+worker_lifecycle:
+  required_events: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
+  heartbeat_required: true
+  worker_writes_shared_ssot: false
+  worker_auto_accepts_trace: false
+
+aggregation:
+  transient_lane_logs_must_be_accumulated: true
+  transient_lane_logs_deleted_after_verified_aggregation: true
+  final_rescan_must_equal_zero: true
+  durable_aggregate_required: true
+  measured_metrics: [workers_started, worker_results_received, worker_failures, peak_service_concurrent_lanes, average_service_concurrent_lanes, source_closure_complete]
+
+quality_gates:
+  QG_SOURCE_001:
+    required: true
+    roots_pass: PASS_ROOTS_VERIFIED
+    closure_pass: SOURCE_CLOSURE_COMPLETE
+  QG_LOG_001:
+    required: true
+  QG_LANE_001:
+    required_for_parallelism_claim: true
+    category: PERFORMANCE_GOVERNANCE
+    underutilization_does_not_invalidate_correct_source_evidence: true
+
+validation_record_2026_08_23:
+  real_frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  tests:
+    controller_tamper_fail_closed: PASS
+    baseline_mismatch_preflight: PASS
+    duplicate_lane_preflight: PASS
+    stale_lane_log_preflight: PASS
+    jpa_canary_source_closure_complete: PASS
+    correct_interface_binding_validation: PASS
+    incorrect_interface_binding_rejected: PASS
+    transient_lane_log_cleanup_zero: PASS
+    worker_evidence_auto_accept_disabled: PASS
+    recovery_idempotency_cases: 5/5_PASS
+    engine_capacity_probe: 10/10_SERVICE_OVERLAP
+  full_bl001_discovery_batch:
+    workers_started: 10
+    worker_failures: 0
+    state: CLOSED_RESTAGE_REQUIRED
+    interpretation: >-
+      The full batch correctly reported explicit staged-source requests instead of pretending source closure.
+      Recursive staging remains normal execution work and is not an external infrastructure blocker.
