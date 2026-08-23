@@ -1,21 +1,50 @@
 matrix_execution:
-  version: 1
+  version: 2
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  dispatch_id: MATRIX-BL001-DISPATCH-003
-  workflow: Lane Matrix Dispatch
-  workflow_run_id: 32638659581
-  workflow_run_attempt: 1
-  workflow_run_url: https://github.com/vvekselva/CylindnderManagementDependcies/actions/runs/32638659581
-  triggering_sha: 812c7e4ce32ccf303e847ec5451030c355cd2739
-  state: RUNNING
-  started_at: '2026-08-23T12:11:21.158821+00:00'
-  expected_tasks: 10
-  expected_concurrent_lanes: 10
-  aggregate_artifact: lane-dispatch-aggregate
-  peak_concurrent_lanes: null
-  average_concurrent_lanes: null
-  peak_capacity_utilization_percentage: null
-  qg_lane_001_state: PENDING_EXECUTION_EVIDENCE
-  transient_lane_artifacts_remaining: null
-  orchestrator_consumption_state: WAITING_FOR_AGGREGATE
+  authoritative_for_external_executor_tracking: true
+
+  failed_control_repository_attempt:
+    dispatch_id: MATRIX-BL001-DISPATCH-003
+    repository: vvekselva/CylindnderManagementDependcies
+    workflow_run_id: 32638659581
+    workflow_run_url: https://github.com/vvekselva/CylindnderManagementDependcies/actions/runs/32638659581
+    state: FAILED_BEFORE_SERVICE
+    expected_tasks: 10
+    matrix_worker_jobs_spawned: 10
+    workers_reached_service: 0
+    common_failure_step: Checkout frozen CylinderManagement source
+    exact_failure: >-
+      The control-repository GITHUB_TOKEN is scoped to CylindnderManagementDependcies and could not
+      authenticate a clone of the separate private vvekselva/CylinderManagement repository. The worker
+      log reports: fatal: could not read Username for 'https://github.com'.
+    source_evidence_accepted: false
+    concurrency_result_accepted: false
+    qg_lane_001_effect: NOT_EVALUATED_WORKERS_NEVER_REACHED_SERVICE
+
+  active_backend:
+    type: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
+    source_repository: vvekselva/CylinderManagement
+    source_visibility: private
+    source_execution_branch: automation/lane-matrix
+    source_workflow: .github/workflows/lane-matrix-dispatch.yml
+    source_dispatch_copy: automation/lane-dispatch.yaml
+    source_run_status: automation/matrix-execution.yaml
+    control_dispatch_ssot: backlog/runtime/BL-001/lane-dispatch.yaml
+    control_dispatch_id: MATRIX-BL001-DISPATCH-003
+    source_dispatch_id: MATRIX-BL001-SOURCE-002
+    expected_tasks: 10
+    expected_concurrent_lanes: 10
+    state: WAITING_FOR_SOURCE_WORKFLOW_START
+    source_run_id: null
+    peak_concurrent_lanes: null
+    average_concurrent_lanes: null
+    peak_capacity_utilization_percentage: null
+    qg_lane_001_state: BLOCKED_PLATFORM_PENDING_SOURCE_ACTIONS
+    orchestrator_consumption_state: WAITING_FOR_SOURCE_MATRIX_STATUS
+
+  next_action: >-
+    The source-local workflow and ten-task dispatch are installed on CylinderManagement branch
+    automation/lane-matrix. GitHub Actions has not yet created automation/matrix-execution.yaml on that
+    branch, so the control Orchestrator must not claim the batch is running. Verify/enable source-repository
+    Actions policy, then re-trigger the source dispatch and consume only the resulting durable aggregate.
