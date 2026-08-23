@@ -1,10 +1,13 @@
-version: 2
+version: 3
 name: Execution Lifecycle Logging Contract
 purpose: >-
   Make every Orchestrator invocation and every orchestration-lane execution auditable at
   its lifecycle boundaries. Required log records are written before/after invocation and
-  before/after INIT/SERVICE/CLOSE phases. Every START record must identify the task that is
-  about to execute. Missing mandatory boundary logs or missing START-task identity fail closed.
+  before/after INIT/SERVICE/CLOSE phases. Every START record identifies the exact task.
+  Individual lane logs are transient invocation-working files: no prior lane log may remain
+  when a new invocation begins execution, and no individual lane log may remain after an
+  invocation closes. Missing boundary logs, missing task identity, failed aggregation or
+  leftover individual lane logs fail closed.
 
 effective_scope:
   applies_to: ALL_ORCHESTRATOR_INVOCATIONS_AND_ORCHESTRATION_LANE_RUNS_AFTER_ACTIVATION
@@ -12,12 +15,51 @@ effective_scope:
 
 log_locations:
   shared_audit_log: logs/automation-log.md
-  orchestrator_invocation_log_pattern: logs/runs/INV-<invocation-id>-ORCHESTRATOR.md
-  lane_run_log_pattern: logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md
+  orchestrator_invocation_log_pattern: logs/runs/INVOCATION-<timestamp>.md
+  lane_run_log_pattern: logs/runs/INVOCATION-<timestamp>-LANE-<nn>.md
+  lane_logs_are_transient: true
   rule: >-
-    The coordinator owns the shared audit log. Each invocation/lane run gets its own run-log
-    artifact so independent lanes do not edit one shared file concurrently. The coordinator
-    may consolidate significant lifecycle records into logs/automation-log.md in serialized order.
+    The coordinator owns the shared audit log and the invocation aggregate log. While an
+    invocation is ACTIVE, each lane may write its own transient lane log so parallel lanes do
+    not contend on one file. During Orchestrator closure, the coordinator accumulates every
+    individual lane lifecycle log into the invocation aggregate, verifies the accumulation,
+    writes the consolidated audit summary, and deletes the individual lane files. Closed
+    invocations retain the invocation aggregate and shared audit history, not individual lane logs.
+
+individual_lane_log_hygiene:
+  individual_lane_log_match: logs/runs/*-LANE-*.md
+  pre_invocation_check:
+    timing: BEFORE_ORCHESTRATOR_INVOCATION_START_IS_ALLOWED_TO_BEGIN_EXECUTION
+    required: true
+    expected_individual_lane_log_count: 0
+    rule: >-
+      The coordinator must inspect logs/runs for individual lane logs before a new invocation
+      begins repository analysis, planning, assignment or backlog/application execution. A
+      read-only hygiene check may occur before the START record; the START record remains the
+      first persisted execution-audit action.
+    if_logs_found: >-
+      Do not begin new backlog/application execution. Enter recovery-only mode: identify the
+      invocation/run each file belongs to, verify or recovery-close its lifecycle, accumulate
+      the log into the appropriate invocation aggregate/shared audit, delete the individual
+      lane log only after successful accumulation, and re-check until the count is zero.
+    fail_closed_until_zero: true
+  invocation_close_check:
+    timing: AFTER_ALL_STARTED_LANES_ARE_CLOSED_OR_RECOVERY_CLOSED_BEFORE_INVOCATION_END
+    required: true
+    steps:
+      - enumerate every individual lane log created or inherited for the invocation
+      - verify every applicable lifecycle event is complete and ordered
+      - accumulate complete lane lifecycle evidence into the invocation aggregate log
+      - record lane_id, task, run_id, final_result and source log identity in the aggregate
+      - consolidate meaningful audit content into logs/automation-log.md in serialized order
+      - verify every individual lane log has been represented in the aggregate
+      - delete every successfully accumulated individual lane log
+      - re-scan logs/runs and prove individual lane log count equals zero
+    invocation_end_allowed_only_when_lane_log_count_zero: true
+    if_aggregation_or_cleanup_fails: >-
+      Keep the invocation in RECOVERY_REQUIRED/OPEN state, do not emit a successful
+      ORCHESTRATOR_INVOCATION_END, do not accept final execution results, and do not start a
+      new invocation until recovery completes and zero individual lane logs remain.
 
 start_log_task_rule:
   mandatory: true
@@ -38,7 +80,7 @@ start_log_task_rule:
 
 orchestrator_required_events:
   - event: ORCHESTRATOR_INVOCATION_START
-    timing: BEFORE_ANY_ANALYSIS_PLANNING_ASSIGNMENT_OR_EXECUTION
+    timing: AFTER_PRE_INVOCATION_LANE_LOG_HYGIENE_CHECK_AND_BEFORE_ANY_ANALYSIS_PLANNING_ASSIGNMENT_OR_EXECUTION
     required_fields:
       - timestamp
       - invocation_id
@@ -51,9 +93,34 @@ orchestrator_required_events:
       - control_repository
       - control_branch
       - intended_backlog_selection_policy
+      - preflight_individual_lane_log_count
+      - preflight_lane_log_hygiene_result
+    required_preflight_values:
+      preflight_individual_lane_log_count: 0
+      preflight_lane_log_hygiene_result: PASS
     fail_closed_if_missing: true
+  - event: ORCHESTRATOR_LOG_AGGREGATION_START
+    timing: AFTER_ALL_STARTED_LANES_ARE_CLOSED_OR_RECOVERY_CLOSED_BEFORE_FINAL_RUNTIME_CLOSE
+    required_fields:
+      - timestamp
+      - invocation_id
+      - individual_lane_logs_detected
+      - aggregation_target
+  - event: ORCHESTRATOR_LOG_AGGREGATION_END
+    timing: AFTER_ALL_LANE_LOGS_ARE_ACCUMULATED_VERIFIED_AND_REMOVED
+    required_fields:
+      - timestamp
+      - invocation_id
+      - individual_lane_logs_accumulated
+      - individual_lane_logs_deleted
+      - individual_lane_logs_remaining
+      - shared_audit_sync_result
+      - aggregation_result
+    required_postcondition:
+      individual_lane_logs_remaining: 0
+      aggregation_result: PASS
   - event: ORCHESTRATOR_INVOCATION_END
-    timing: AFTER_ALL_STARTED_LANES_ARE_CLOSED_OR_RECOVERY_CLOSED_AND_RUNTIME_IS_SYNCHRONIZED
+    timing: AFTER_LOG_AGGREGATION_END_PASS_AND_RUNTIME_IS_SYNCHRONIZED
     required_fields:
       - timestamp
       - invocation_id
@@ -63,8 +130,13 @@ orchestrator_required_events:
       - actions_completed
       - blockers_or_stop_condition
       - runtime_sync_result
+      - lane_log_aggregation_result
+      - individual_lane_logs_remaining
       - final_invocation_result
       - next_action
+    required_postcondition:
+      lane_log_aggregation_result: PASS
+      individual_lane_logs_remaining: 0
     mandatory_even_when_no_work_or_failure: true
 
 lane_required_event_order:
@@ -113,9 +185,10 @@ lane_event_rules:
     allowed_results: [COMPLETED, PARTIAL, BLOCKED, FAILED]
   LANE_CLOSE_END:
     timing: AFTER_CLOSE_COMPLETES
-    required_fields: [timestamp, invocation_id, lane_id, run_id, final_result, outputs, evidence, next_action, log_state]
+    required_fields: [timestamp, invocation_id, lane_id, run_id, task, final_result, outputs, evidence, next_action, log_state]
     required_log_state: CLOSED
-    lane_reusable_only_after_persisted: true
+    lane_reusable_within_same_invocation_only_after_persisted: true
+    lane_log_deleted_only_during_orchestrator_closure_after_successful_aggregation: true
 
 conditional_flow:
   blocked_before_service: >-
@@ -123,10 +196,13 @@ conditional_flow:
     not emitted. close() still runs and LANE_CLOSE_END remains mandatory.
   stale_or_disappeared_lane: >-
     The coordinator creates a recovery close record, marks the final result RESULT_NOT_CONFIRMED,
-    persists LANE_CLOSE_END/recovery evidence, and only then releases the lane.
+    persists recovery evidence, and only then permits aggregation/release.
   logging_failure_after_service: >-
     close() must still execute for safety, but the result is not accepted as final until the
     missing lifecycle log is recovered and QG-LOG-001 can reconcile the event sequence.
+  leftover_lane_logs_at_next_invocation: >-
+    They are treated as recovery work from a prior invocation, not as valid new work. Recovery
+    and cleanup must finish before new execution begins.
 
 optional_events:
   - LANE_SERVICE_PROGRESS
@@ -142,11 +218,14 @@ quality_gate:
   owner: ORCHESTRATOR
   fail_closed: true
   pass_condition: >-
-    Every in-scope Orchestrator invocation has ORCHESTRATOR_INVOCATION_START and
-    ORCHESTRATOR_INVOCATION_END; every START event has a specific task and task description;
-    every lane run has the required applicable lifecycle events in order; no lane is released
-    before a persisted close record; shared/runtime status reconciles with run logs; no
-    open/orphan lifecycle event remains.
+    Every in-scope invocation starts with a zero-individual-lane-log hygiene check and contains
+    ORCHESTRATOR_INVOCATION_START, ORCHESTRATOR_LOG_AGGREGATION_START,
+    ORCHESTRATOR_LOG_AGGREGATION_END and ORCHESTRATOR_INVOCATION_END. Every START event has a
+    specific task and task description. Every lane run has the applicable lifecycle events in
+    order. All individual lane logs are accumulated into the invocation aggregate/shared audit,
+    verified, then deleted. No lane is released before close evidence, no orphan OPEN lifecycle
+    event remains, and individual lane log count is zero both before new execution begins and
+    after invocation closure.
   on_fail: EXECUTION_RESULT_NOT_ACCEPTED_AND_RECOVERY_LOG_REQUIRED
 
 plain_english_rule: >-
