@@ -1,8 +1,8 @@
-version: 3
+version: 4
 purpose: >-
   Define the mandatory three-level Single Source of Truth model. Planning or replanning
-  for a Backlog Item is fail-closed until Level 1, Level 2 and Level 3 are all complete
-  and internally consistent for that item.
+  for a Backlog Item is fail-closed until Level 1, Level 2 and Level 3 are complete and
+  internally consistent.
 
 planning_gate:
   id: QG-SSOT-001
@@ -23,33 +23,19 @@ levels:
       - repository/project-inventory.yaml
     purpose: >-
       Answer what work exists, which top-level CylinderManagement projects/modules exist,
-      and provide the authoritative master registry and cross-backlog scope classifications
-      that planning is allowed to use.
-    required_item_fields:
-      - id
-      - name
-      - type
-      - purpose
-      - priority
-      - state
-      - item_definition
-      - statement_of_work
-      - completion_path
-      - quality_gate
-      - dependencies
-      - expected_outputs
-      - runtime
+      and provide the authoritative master registry and cross-backlog scope classifications.
+    required_item_fields: [id, name, type, purpose, priority, state, item_definition, statement_of_work, completion_path, quality_gate, dependencies, expected_outputs, runtime]
     repository_inventory_rules:
       - every top-level CylinderManagement project/module must appear exactly once
       - backlog-specific scope classifications must be explicit and machine-readable
-      - the Orchestrator must not infer a missing project classification from project names or source layout
-      - postponed work must remain distinct from NOT_REQUIRED and COMPLETED work
+      - the Orchestrator must not infer missing project classifications
+      - postponed work remains distinct from NOT_REQUIRED and COMPLETED work
     validation_rules:
       - selected Backlog Item exists exactly once in backlog/backlog.yaml
       - id/name/type/purpose references reconcile with Level 2
-      - all file references required for planning are non-null and resolvable
+      - planning references are non-null and resolvable
       - state and dependency declarations are machine-readable
-      - any Level 1 project/module scope classification required by the selected backlog is complete before Level 2 is considered complete
+      - required Level 1 project/module scope classifications are complete before Level 2 is complete
     pass_state: COMPLETE
 
   level_2:
@@ -58,33 +44,19 @@ levels:
     authoritative_pattern: backlog/items/BL-*.yaml
     purpose: >-
       Define what the selected Backlog Item means, why it exists, its Statement of Work,
-      scope, target, execution constraints, dependencies, deliverables, acceptance criteria,
-      Completion Path and Quality Gates.
+      scope, target, constraints, dependencies, deliverables, acceptance criteria, Completion Path and Quality Gates.
     required_components:
       - backlog item definition file
       - valid Statement of Work
       - Completion Path
       - item-specific Quality Gate configuration
-    required_definition_fields:
-      - id
-      - name
-      - type
-      - purpose
-      - statement_of_work
-      - target
-      - scope
-      - dependencies
-      - deliverables
-      - acceptance_criteria
-      - completion_path
-      - quality_gate
-      - runtime
+    required_definition_fields: [id, name, type, purpose, statement_of_work, target, scope, dependencies, deliverables, acceptance_criteria, completion_path, quality_gate, runtime]
     validation_rules:
       - QG-SOW-001 must PASS
-      - definition id/name/type/purpose reconcile with Level 1
+      - definition reconciles with Level 1
       - SOW, Completion Path and Quality Gate references exist
       - deliverables and acceptance criteria are non-placeholder
-      - execution scope cannot be invented outside the SOW or contradict Level 1 project/module classifications
+      - execution scope cannot be invented outside the SOW or contradict Level 1 classifications
     pass_state: COMPLETE
 
   level_3:
@@ -92,8 +64,8 @@ levels:
     name: Runtime SSOT
     authoritative_pattern: backlog/runtime/<BL-ID>/
     purpose: >-
-      Answer what is happening now and preserve the complete current execution state before
-      an Execution Plan is created or changed.
+      Answer what is happening now, including current work-unit state, blockers, worker inputs,
+      results and the live assignment of tasks to orchestration lanes.
     required_runtime_files:
       - analysis.yaml
       - execution-plan.yaml
@@ -102,23 +74,29 @@ levels:
       - blockers.yaml
       - decisions.yaml
       - worker-input-register.yaml
+      - lane-status.yaml
       - result.yaml
     validation_rules:
       - all required runtime files exist before PLAN or REPLAN
       - runtime files identify the same Backlog Item
-      - blockers.yaml explicitly records active blockers or an empty blocker set
-      - gate-status.yaml records QG-SSOT-001 and other applicable pre-execution gates
+      - blockers.yaml records active blockers or an empty blocker set
+      - gate-status.yaml records QG-SSOT-001 and applicable pre-execution gates
       - execution-plan.yaml may be INITIALIZED/EMPTY before first planning but must exist
-      - no stale runtime value may be treated as authoritative over newer canonical runtime evidence
+      - lane-status.yaml contains LANE-01 through LANE-10 exactly once
+      - lane-status.yaml is the authoritative current lane-to-task map
+      - every non-IDLE lane reconciles to an eligible Work Unit and current task/run assignment
+      - lane summary counts reconcile to ten lane records
+      - closed runs release their lane unless a newer assignment replaced them
+      - stale runtime values never override newer canonical runtime evidence
     pass_state: COMPLETE
 
 planning_rule: >-
-  The Orchestrator MUST NOT create, replace, extend or materially modify an Execution Plan
-  until SSOT-L1, SSOT-L2 and SSOT-L3 all validate COMPLETE and QG-SSOT-001 is PASS. If any
-  level is incomplete, the Backlog Item remains catalogued but planning/replanning is
-  forbidden. The Orchestrator may only perform framework/definition/runtime-initialization
-  work needed to make the three SSOT levels complete.
+  The Orchestrator must not create, replace, extend or materially modify an Execution Plan
+  until SSOT-L1, SSOT-L2 and SSOT-L3 all validate COMPLETE and QG-SSOT-001 is PASS.
+  If any level is incomplete, only framework/definition/runtime initialization or repair is allowed.
 
 execution_rule: >-
   Passing QG-SSOT-001 does not itself authorize execution. Statement of Work, dependency,
-  item-specific quality-gate, Work Unit and other Completion Path rules continue to apply.
+  item-specific quality gates, Work Unit rules and user acceptance continue to apply.
+  lane-status.yaml must be updated when a lane is assigned, changes lifecycle state,
+  becomes blocked/stale, receives a heartbeat, or is released.
