@@ -8,6 +8,31 @@ blockers:
   governance_blockers: []
   platform_blockers: []
 
+  execution_host_prerequisites:
+    - id: EH-BL001-001
+      state: OPEN_ON_CURRENT_CHATGPT_EXECUTION_HOST
+      category: SOURCE_CHECKOUT_NOT_MOUNTED_ON_EXECUTION_HOST
+      affects: PRODUCTION_LOCAL_FIRE_ON_CURRENT_HOST
+      planning_blocked: false
+      backlog_execution_globally_blocked: false
+      qg_lane_001_effect: READY_FOR_MEASUREMENT_ON_VALID_HOST
+      summary: >-
+        The local process-pool engine and ten-task dispatch are ready, but the current ChatGPT execution runtime does not contain
+        a worker-readable local/mounted checkout of vvekselva/CylinderManagement. The production fire therefore stopped before
+        any lane started.
+      observed_error: "fatal: cannot change to '/mnt/data/CylinderManagement': No such file or directory"
+      proved_facts:
+        - Git is available on the current execution host.
+        - Python 3 is available on the current execution host.
+        - The connected GitHub interface can read and update the private repositories for control-plane operations.
+        - Local OS worker processes do not inherit the connected GitHub credential as filesystem access.
+        - A full frozen-commit repository archive/mount is not exposed to the local runtime by the connected GitHub interface.
+        - Zero production lanes were started and zero BL-001 trace evidence was accepted from the failed preflight.
+      resolution_condition: >-
+        Run the fire on an execution host where a local or mounted CylinderManagement Git checkout exists and contains
+        commit 3ae6e61442132d94a307275b08dd65fcef228d89.
+      fire_command: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
+
   resolved_platform_blockers:
     - id: PB-BL001-001
       state: RESOLVED_BY_ARCHITECTURE_CHANGE
@@ -18,14 +43,14 @@ blockers:
       replacement_files: [automation/local-lane-executor.py, automation/local-lane-worker.py, automation/fire-local-lanes.ps1, backlog/runtime/BL-001/local-execution.yaml]
 
   local_fire_readiness:
-    state: READY
+    state: READY_ON_VALID_EXECUTION_HOST
     affects_gate: QG-LANE-001
     configured_lanes: 10
     safe_ready_tasks: 10
     expected_concurrent_lanes: 10
     external_service_dependency: NONE
     prerequisite: >-
-      A local CylinderManagement Git checkout containing frozen commit 3ae6e61442132d94a307275b08dd65fcef228d89 and Python 3 must be available on the execution machine. The executor does not require the active checkout to be switched to that commit.
+      A local/mounted CylinderManagement Git checkout containing frozen commit 3ae6e61442132d94a307275b08dd65fcef228d89 and Python 3 must be available on the execution host. The executor does not require the active checkout to be switched to that commit.
     next_action: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
 
   active_evidence_gaps:
@@ -43,4 +68,4 @@ blockers:
     summary: 97 of 134 endpoint final-dependency traces remain not yet examined.
 
   latest_accepted_attempt: {number: 27, invocation: INVOCATION-20260823-160000, new_endpoint_traces_examined: 10, new_complete: 10, new_unresolved: 0}
-  local_backend_transition: {state: COMPLETE_READY_FOR_FIRE, dispatch: LOCAL-BL001-DISPATCH-005, configured_lanes: 10, qg_lane_001_state: READY_FOR_MEASUREMENT}
+  local_backend_transition: {state: COMPLETE_READY_ON_VALID_HOST, dispatch: LOCAL-BL001-DISPATCH-005, configured_lanes: 10, qg_lane_001_state: READY_FOR_MEASUREMENT}
