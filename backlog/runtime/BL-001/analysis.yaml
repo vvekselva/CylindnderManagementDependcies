@@ -16,48 +16,48 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 16
-    complete: 16
+    examined_for_final_dependency: 19
+    complete: 19
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 118
+    not_yet_examined: 115
 
   latest_attempt:
-    number: 22
-    run_id: RUN-WI0004-20260823-022
+    number: 23
+    run_id: RUN-WI0004-20260823-023
     state: CLOSED
     result: PARTIAL
     evidence: worker/runs/WI-0004.md
     endpoint_traces:
-      - endpoint: GET /search/product-category/{searchText}
-        controller: RestfulProductCategoryServices
-        concrete_service: ProductCategorySearchService
-        repository: ProductCategoryJpaDao
-        query: findByProductCategoryContainingIgnoreCase
-        entity: ProductCategoryDo
-        final_dependency: public.tbl_product_category
+      - endpoint: GET /search/vehicle/{searchText}
+        controller: RestfulVehicleServices
+        concrete_service: VehicleSearchService
+        repository: VehicleJpaDao
+        query: findByVehicleNumberContainingIgnoreCase
+        entity: VehicleDo
+        final_dependency: public.tbl_vehicle
         trace_state: COMPLETE
-      - endpoint: GET /search/product-uom/{searchText}
-        controller: RestfulProductUomServices
-        concrete_service: ProductUomSearchService
-        repository: ProductUomJpaDao
-        query: findByProductUomContainingIgnoreCase
-        entity: ProductUomDo
-        final_dependency: public.tbl_product_uom
+      - endpoint: GET /find/Vehicle-by-Id/{vehicleId}
+        controller: RestfulVehicleServices
+        concrete_service: VehicleFetchByIdService
+        repository: VehicleJpaDao
+        query: findById
+        entity: VehicleDo
+        final_dependency: public.tbl_vehicle
         trace_state: COMPLETE
-      - endpoint: GET /search/state/{searchText}
-        controller: RestfulStateServices
-        concrete_service: StateSearchService
-        repository: StateJpaDao
-        query: findByStateNameContainingIgnoreCase
-        entity: StateDo
-        final_dependency: public.tbl_state
+      - endpoint: GET /search/supplier/{searchText}
+        controller: RestfulSupplierSearchService
+        concrete_service: SupplierSearchService
+        repository: SupplierJpaDao
+        query: findBySupplierNameContainingIgnoreCase
+        entity: SupplierDo
+        final_dependency: public.tbl_supplier
         trace_state: COMPLETE
     reason: >-
-      Frozen source evidence resolves all three previously unresolved generic search-service handoffs.
-      Each concrete @Service directly injects the corresponding Spring Data JpaRepository, invokes a
-      derived query, and returns an entity whose @Table mapping proves the physical database table.
+      Frozen source evidence proves the active controller mappings, concrete Spring services,
+      Spring Data repositories, invoked repository methods and physical @Table mappings for both
+      Vehicle endpoints and the Supplier search endpoint.
 
   quality_gate_effect:
     QG-DEP-001: PASS
@@ -74,18 +74,17 @@ analysis:
   proved_now:
     - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
     - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
-    - Sixteen endpoints have been explicitly examined for final dependencies.
-    - All sixteen examined endpoints are now COMPLETE; no examined endpoint is UNRESOLVED, BLOCKED or FAILED.
-    - Product category search resolves to public.tbl_product_category.
-    - Product UOM search resolves to public.tbl_product_uom.
-    - State search resolves to public.tbl_state.
+    - Nineteen endpoints have been explicitly examined for final dependencies.
+    - All nineteen examined endpoints are COMPLETE; no examined endpoint is UNRESOLVED, BLOCKED or FAILED.
+    - Vehicle search and vehicle-by-ID both resolve to public.tbl_vehicle.
+    - Supplier search resolves to public.tbl_supplier.
 
   not_yet_proved:
-    - Final dependencies for the remaining 118 endpoints.
+    - Final dependencies for the remaining 115 endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Continue independent endpoint-to-final-dependency tracing across the remaining 118 endpoints. Record any
+    Continue independent endpoint-to-final-dependency tracing across the remaining 115 endpoints. Record any
     unprovable path at the last proven component rather than guessing. Do not unlock Matrix construction until
     worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result contract validates, and
     endpoint trace-result coverage equals 100 percent.
