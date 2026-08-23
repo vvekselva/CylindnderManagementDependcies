@@ -1,9 +1,9 @@
 lane_dispatch:
-  version: 2
-  dispatch_generation: 2
-  dispatch_id: MATRIX-BL001-DISPATCH-002
-  requested_at: '2026-08-23T17:24:00+05:30'
+  version: 3
+  dispatch_generation: 3
+  dispatch_id: MATRIX-BL001-DISPATCH-003
   requested_by: USER_APPROVED_ORCHESTRATOR_CHANGE
+  trigger_reason: VERIFY_REAL_TEN_WAY_CONCURRENCY_WITH_SELF_REPORTED_RUN_ID
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: READY_FOR_DISPATCH
@@ -27,6 +27,7 @@ lane_dispatch:
     - no dependency may be inferred from naming alone
     - summary job measures actual worker overlap and evaluates QG-LANE-001
     - individual worker artifacts are transient and deleted after verified aggregate creation
+    - workflow records its GitHub run ID and measurements in backlog/runtime/BL-001/matrix-execution.yaml
 
   tasks:
     - {task_id: BL001-D001, lane: LANE-01, status: READY, safe_independent: true, task: Trace AddStopController family evidence, task_description: Collect source-proved endpoint mappings injected downstream components and explicit persistence/file/API evidence reachable from AddStopController for Orchestrator validation., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java, max_components: 50}
