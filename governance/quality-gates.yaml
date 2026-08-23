@@ -1,4 +1,4 @@
-version: 4
+version: 5
 purpose: >-
   Define the common Backlog pre-planning/pre-execution gates and register the approved
   quality-gate configuration for every Backlog Item. A Backlog Item may be planned only
@@ -13,10 +13,12 @@ three_level_ssot_gate:
   governance: governance/ssot-levels.yaml
   fail_closed: true
   pass_condition: >-
-    SSOT-L1 Backlog Master, SSOT-L2 Backlog Definition and SSOT-L3 Runtime SSOT are all
-    COMPLETE and mutually consistent for the selected Backlog Item. Level 2 includes a
-    valid Statement of Work that passes QG-SOW-001. Level 3 contains every file required
-    by backlog/runtime-contract.yaml, including blockers.yaml.
+    SSOT-L1 Backlog Master/Repository Scope, SSOT-L2 Backlog Definition and SSOT-L3 Runtime
+    SSOT are all COMPLETE and mutually consistent for the selected Backlog Item. Level 2
+    includes a valid Statement of Work that passes QG-SOW-001. Level 3 contains every file
+    required by backlog/runtime-contract.yaml, including blockers.yaml and lane-status.yaml.
+    lane-status.yaml must contain all ten lanes exactly once and reconcile current lane/task/run
+    state with the rest of the Level 3 runtime.
   on_pass: ITEM_MAY_PROCEED_TO_REQUIRED_ANALYSIS_AND_PLANNING_RULES
   on_fail: BLOCKED_SSOT_INCOMPLETE_NO_PLANNING
 
