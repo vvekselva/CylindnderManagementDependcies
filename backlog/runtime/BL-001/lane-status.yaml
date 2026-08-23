@@ -13,20 +13,16 @@ lane_status:
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   last_reconciled_attempt: 25
   last_reconciled_run: RUN-WI0004-20260823-025
-  invocation_state: BETWEEN_INVOCATIONS
-  current_idle_reason: LAST_RECONCILED_RUN_CLOSED_NO_ACTIVE_COORDINATOR_INVOCATION
+  invocation_state: ACTIVE
+  current_invocation: INVOCATION-20260823-145512
+  current_idle_reason: SAFE_CAPACITY_NOT_YET_FILLED_DURING_INITIAL_ASSIGNMENT
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
     effective_for_next_invocation: true
     invocation_start_required_before_analysis_or_execution: true
-    required_lane_event_order:
-      - LANE_INIT_START
-      - LANE_INIT_END
-      - LANE_SERVICE_START
-      - LANE_SERVICE_END
-      - LANE_CLOSE_END
+    required_lane_event_order: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
     blocked_before_service_exception: >-
       SERVICE_START and SERVICE_END are omitted only when LANE_INIT_END is
       BLOCKED_BEFORE_SERVICE. close() and LANE_CLOSE_END remain mandatory.
@@ -42,17 +38,8 @@ lane_status:
     refill_released_lanes_within_same_invocation: true
     idle_between_invocations_is_valid: true
     idle_during_active_invocation_requires_reason_when_eligible_work_exists: true
-    do_not_parallelize:
-      - DEPENDENT_WORK
-      - CONFLICTING_SHARED_FILE_WRITES
-      - RESOURCE_LOCK_CONFLICTS
-      - WORK_REQUIRING_UNPROVED_DEPENDENCY_ASSUMPTIONS
-    stop_conditions:
-      - NO_ELIGIBLE_INDEPENDENT_WORK_REMAINS
-      - HARD_BLOCKER_PREVENTS_FURTHER_ELIGIBLE_WORK
-      - RESOURCE_OR_SHARED_FILE_LOCK_PREVENTS_SAFE_PARALLELISM
-      - INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED
-      - WORK_UNIT_COMPLETION_BOUNDARY_REACHED
+    do_not_parallelize: [DEPENDENT_WORK, CONFLICTING_SHARED_FILE_WRITES, RESOURCE_LOCK_CONFLICTS, WORK_REQUIRING_UNPROVED_DEPENDENCY_ASSUMPTIONS]
+    stop_conditions: [NO_ELIGIBLE_INDEPENDENT_WORK_REMAINS, HARD_BLOCKER_PREVENTS_FURTHER_ELIGIBLE_WORK, RESOURCE_OR_SHARED_FILE_LOCK_PREVENTS_SAFE_PARALLELISM, INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED, WORK_UNIT_COMPLETION_BOUNDARY_REACHED]
 
   policy:
     one_active_job_per_lane: true
@@ -73,9 +60,9 @@ lane_status:
       - during an active invocation the coordinator should fill and refill safe independent lanes while eligible work remains
 
   lanes:
-    LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-02: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
-    LANE-03: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-01: {state: INITIALIZING, work_unit: WU-BL001-001, task: Trace CustomerSpotCylinderCheckController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L01, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: null, last_lifecycle_event: LANE_INIT_START, blocker: null}
+    LANE-02: {state: INITIALIZING, work_unit: WU-BL001-001, task: Trace YardAuditDashboardController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L02, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: null, last_lifecycle_event: LANE_INIT_START, blocker: null}
+    LANE-03: {state: INITIALIZING, work_unit: WU-BL001-001, task: Trace WalkinSaleIngestionController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L03, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: null, last_lifecycle_event: LANE_INIT_START, blocker: null}
     LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-05: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-06: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
@@ -86,20 +73,18 @@ lane_status:
 
   summary:
     total_lanes: 10
-    idle: 10
+    idle: 7
     assigned: 0
-    initializing: 0
+    initializing: 3
     working: 0
     blocked: 0
     waiting: 0
     closing: 0
     stale: 0
-    active_lane_count: 0
+    active_lane_count: 3
 
   current_interpretation: >-
-    No orchestration lane is actively executing because Attempt 25 is CLOSED/PARTIAL and
-    no coordinator invocation is currently active. This BETWEEN_INVOCATIONS idle state is valid.
-    During the next invocation the coordinator must first persist ORCHESTRATOR_INVOCATION_START,
-    then assign eligible independent controller/endpoint families. Every assigned lane must follow
-    the mandatory INIT/SERVICE/CLOSE log boundaries, and a lane may be refilled only after its
-    persisted LANE_CLOSE_END or recovery-close record exists.
+    Invocation INVOCATION-20260823-145512 is active. Three independent controller families
+    have persisted LANE_INIT_START and are initializing under WU-BL001-001. Remaining idle
+    capacity may be filled only when additional safe independent scope is selected without
+    creating shared-file conflicts or unproved dependency assumptions.
