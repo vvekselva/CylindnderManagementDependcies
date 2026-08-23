@@ -3,6 +3,8 @@ analysis:
   state: SOURCE_ANALYSIS_IN_PROGRESS
   target_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  architecture: architecture/self-reliant-e2e-execution.md
+  self_reliant_governance: governance/self-reliant-execution.yaml
   completion_path: backlog/paths/BL-001-traceability.yaml
   quality_gate_config: backlog/gates/BL-001-traceability.yaml
 
@@ -22,35 +24,65 @@ analysis:
     blocked: 0
     failed: 0
     not_yet_examined: 97
+    changed_by_architecture_validation: false
 
   latest_accepted_trace_attempt:
     number: 27
     run_id: INVOCATION-20260823-160000
     state: CLOSED
     result: PARTIAL
-    lifecycle_gate: QG-LOG-001
     trace_additions: {examined: 10, complete: 10, unresolved: 0}
 
-  latest_coordinator_invocation:
-    invocation_id: INVOCATION-20260823-175300
-    result: PARTIAL_PLATFORM_WAIT
-    endpoint_trace_progress: 0
-    preflight_individual_repo_lane_logs: 0
-    source_dispatch_generation: 3
-    source_dispatch_id: MATRIX-BL001-SOURCE-003
-    control_dispatch_id: MATRIX-BL001-DISPATCH-003
-    source_dispatch_copy_verified: true
-    source_workflow_installed: true
-    source_matrix_execution_file_present: false
-    source_workflow_run_id: null
-    external_workers_confirmed_started: 0
-    durable_lane_dispatch_aggregate_available: false
-    concurrency_measurement_available: false
-    qg_lane_001_state: BLOCKED_PLATFORM
-    reason: >-
-      The approved ten-task matrix dispatch is synchronized to the source execution branch, but no
-      source-local workflow/job execution evidence exists. No in-chat logical lane work was started,
-      no external lane state was inferred from the queue alone, and no worker evidence was consumed.
+  self_reliant_architecture_validation:
+    report: tests/self-reliant-e2e-validation-2026-08-23.md
+    result: PASS_FOR_ARCHITECTURE_PROMOTION
+    github_actions_required: false
+    mandatory_local_source_checkout: false
+    default_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    source_layout: repository/source-layout.yaml
+    production_staged_executor: automation/staged-lane-executor-v3.py
+    production_staged_worker: automation/staged-lane-worker-v3.py
+    tests:
+      controller_tamper_fail_closed: PASS
+      baseline_mismatch_fail_closed: PASS
+      duplicate_lane_fail_closed: PASS
+      stale_lane_log_fail_closed: PASS
+      jpa_canary_source_closure_complete: PASS
+      positive_interface_binding: PASS
+      negative_interface_binding_rejected: PASS
+      recovery_idempotency: 5/5_PASS
+      backend_capacity_probe_peak_service: 10
+
+  latest_real_source_canary:
+    execution_id: E2E-STAGED-20260823-151800
+    phase: CLOSED_READY_FOR_VALIDATION
+    workers_started: 1
+    worker_failures: 0
+    qg_source_001: SOURCE_CLOSURE_COMPLETE
+    missing_source_requests: 0
+    missing_binding_requests: 0
+    qg_lane_001: PASS
+    residual_lane_logs: 0
+    trace_evidence_auto_accepted: false
+
+  latest_full_source_discovery:
+    execution_id: E2E-STAGED-20260823-151810
+    phase: CLOSED_RESTAGE_REQUIRED
+    workers_started: 10
+    worker_results_received: 10
+    worker_failures: 0
+    qg_source_001: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    missing_source_requests: 21
+    missing_binding_requests: 0
+    peak_natural_service_concurrency: 4
+    average_natural_service_concurrency: 0.26
+    qg_lane_001: UNDERUTILIZED
+    residual_lane_logs: 0
+    trace_evidence_auto_accepted: false
+    interpretation: >-
+      Infrastructure self-reliance is proven: source was read from the private VCS through the Orchestrator,
+      staged and executed without GitHub Actions or a mounted source checkout. The batch correctly requested
+      additional source instead of guessing. Recursive source/binding closure remains normal WU-BL001-001 work.
 
   unresolved_from_prior_attempts:
     - {endpoint: POST /customer-spot-cylinder-check/submit, proved_database_objects: [public.tbl_customer_spot_cylinder_check], reason: Complete database-object set for every submitSpotCheck branch is not yet source-proved.}
@@ -58,10 +90,12 @@ analysis:
 
   quality_gate_effect:
     QG-SOW-001: PASS
-    QG-SSOT-001: PASS
+    QG-SSOT-001: PASS_AFTER_SELF_RELIANT_RUNTIME_RECONCILIATION
     QG-DEP-001: PASS
-    QG-LOG-001: PASS
-    QG-LANE-001: BLOCKED_PLATFORM
+    QG-SOURCE-001: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    QG-LOG-001: PASS_LATEST_TESTED_EXECUTION_BOUNDARY
+    QG-LANE-001: UNDERUTILIZED_LATEST_FULL_DISCOVERY
+    QG-RECOVERY-001: PASS_VALIDATION_5_OF_5
     QG-TRC-001: PASS
     QG-TRC-002: IN_PROGRESS
     QG-TRC-003: PASS
@@ -73,23 +107,17 @@ analysis:
   matrix_construction_unlocked: false
 
   proved_now:
-    - Thirty-seven of 134 endpoints remain explicitly examined; 35 are COMPLETE and 2 UNRESOLVED.
-    - Control dispatch generation 3 contains ten unique safe independent tasks and expects ten concurrent lanes.
-    - Source execution copy MATRIX-BL001-SOURCE-003 is present on automation/lane-matrix with matching control dispatch ID.
-    - Source-local Lane Matrix Dispatch workflow is installed with max-parallel 10.
-    - No source automation/matrix-execution.yaml exists, so no real workflow run ID or measured concurrency can be claimed.
-    - Lane SSOT was corrected to keep all lanes IDLE until workflow/job evidence proves external state.
-
-  not_yet_proved:
-    - Whether source-repository GitHub Actions is disabled/restricted or otherwise suppressing workflow startup.
-    - Any worker execution interval, peak concurrency, average concurrency, or worker failure count for dispatch generation 3.
-    - Durable lane-dispatch-aggregate and lane-dispatch-summary.yaml for generation 3.
-    - Complete database-object set for the two unresolved POST endpoints.
-    - Final dependencies for the remaining 97 not-yet-examined endpoints.
-    - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
+    - GitHub Actions and a pre-existing local source checkout are not required for normal source-reading execution.
+    - Private source can be staged at the exact frozen commit with Git blob integrity verification.
+    - Incorrect or tampered source/bindings fail closed before they can support final evidence.
+    - Execution journal and dispatch fingerprint support idempotent validation/recovery/PENDING_SYNC decisions.
+    - The local process-pool backend can physically reach ten concurrent SERVICE workers in a separate capacity probe.
+    - The latest natural ten-task discovery run used ten workers with zero worker failures and zero residual lane logs, but measured peak SERVICE overlap was four and therefore remains UNDERUTILIZED.
+    - The latest full discovery exposes 21 source requests for the next bounded restaging iteration.
 
   next_step: >-
-    Verify GitHub Actions availability/policy for vvekselva/CylinderManagement, re-trigger the source dispatch if needed,
-    and wait for automation/matrix-execution.yaml to self-report a real run ID. Consume only the durable
-    lane-dispatch-aggregate after summarize completes, evaluate QG-LANE-001 from measured overlap, validate each
-    worker result against the frozen baseline, and only then update endpoint trace states. Do not start WU-BL001-002.
+    Continue WU-BL001-001 through the self-reliant source-stage loop: resolve the 21 exact source requests through
+    repository/source-layout.yaml at the frozen commit, stage and blob-verify them, resolve any interface bindings that
+    then become visible, rerun discovery, and repeat only while the request set changes and source closure advances.
+    Once SOURCE_CLOSURE_COMPLETE is reached for the batch, validate the existing worker evidence endpoint-by-endpoint;
+    do not start WU-BL001-002 and do not change the accepted 37/134 checkpoint until Orchestrator validation proves it.
