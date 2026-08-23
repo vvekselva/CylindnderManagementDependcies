@@ -8,107 +8,49 @@ quality_gate_status:
     id: QG-SSOT-001
     state: PASS
     evidence:
-      level_1:
-        state: COMPLETE
-        evidence:
-          - backlog/backlog.yaml contains BL-001 exactly once with id, name, type, purpose, priority, state, item_definition, SOW, Completion Path, Quality Gate, dependencies, expected outputs and runtime
-          - repository/project-inventory.yaml provides the Level 1 repository/module scope inventory
-      level_2:
-        state: COMPLETE
-        evidence:
-          - backlog/items/BL-001-controller-traceability.yaml exists and reconciles with Level 1
-          - backlog/sow/BL-001-controller-traceability.yaml exists and QG-SOW-001 passes
-          - backlog/paths/BL-001-traceability.yaml exists
-          - backlog/gates/BL-001-traceability.yaml exists and is approved
-      level_3:
-        state: COMPLETE
-        evidence:
-          - backlog/runtime/BL-001/analysis.yaml exists
-          - backlog/runtime/BL-001/execution-plan.yaml exists
-          - backlog/runtime/BL-001/work-unit-status.yaml exists
-          - backlog/runtime/BL-001/gate-status.yaml exists
-          - backlog/runtime/BL-001/blockers.yaml exists
-          - backlog/runtime/BL-001/decisions.yaml exists
-          - backlog/runtime/BL-001/worker-input-register.yaml exists
-          - backlog/runtime/BL-001/lane-status.yaml exists and contains LANE-01 through LANE-10 exactly once
-          - lane-status.yaml currently reconciles to 10 IDLE lanes and 0 active lane assignments after closed Attempt 25
-          - backlog/runtime/BL-001/result.yaml exists
+      level_1: {state: COMPLETE, evidence: [backlog/backlog.yaml, repository/project-inventory.yaml]}
+      level_2: {state: COMPLETE, evidence: [backlog/items/BL-001-controller-traceability.yaml, backlog/sow/BL-001-controller-traceability.yaml, backlog/paths/BL-001-traceability.yaml, backlog/gates/BL-001-traceability.yaml]}
+      level_3: {state: COMPLETE, evidence: [backlog/runtime/BL-001/analysis.yaml, backlog/runtime/BL-001/execution-plan.yaml, backlog/runtime/BL-001/work-unit-status.yaml, backlog/runtime/BL-001/gate-status.yaml, backlog/runtime/BL-001/blockers.yaml, backlog/runtime/BL-001/decisions.yaml, backlog/runtime/BL-001/worker-input-register.yaml, backlog/runtime/BL-001/lane-status.yaml, backlog/runtime/BL-001/result.yaml]}
     planning_allowed: true
     replanning_allowed: true
 
-  statement_of_work_gate:
-    id: QG-SOW-001
-    state: PASS
-    evidence:
-      - BL-001 declares backlog/sow/BL-001-controller-traceability.yaml
-      - Statement of Work exists and backlog_item equals BL-001
-      - objective, problem statement, in-scope work, deliverables, execution requirements, acceptance criteria and completion definition are populated
-      - execution_authorization.sow_required is true
-      - execution_authorization.structurally_valid is true
-      - execution_authorization.placeholders_present is false
-
-  common_dependency_gate:
-    id: QG-DEP-001
-    state: PASS
-    evidence: BL-001 declares no Backlog dependencies
+  statement_of_work_gate: {id: QG-SOW-001, state: PASS}
+  common_dependency_gate: {id: QG-DEP-001, state: PASS, evidence: BL-001 declares no Backlog dependencies}
 
   execution_lifecycle_logging_gate:
     id: QG-LOG-001
     name: Execution Lifecycle Logging Completeness
-    state: IN_PROGRESS
+    state: PASS
     effective_scope: NEW_INVOCATIONS_AND_LANE_RUNS_AFTER_CONTRACT_ACTIVATION
     evidence:
-      - governance/execution-lifecycle-logging.yaml defines mandatory Orchestrator invocation START/END records and lane lifecycle boundary records
-      - automation/worker-service-contract.md requires LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END and LANE_CLOSE_END in the applicable order
-      - automation/automation-config.yaml requires lifecycle logs before phase start and before lane release/result acceptance
-      - backlog/runtime/BL-001/execution-plan.yaml version 4 requires QG-LOG-001 and lifecycle logging for WU-BL001-001
-      - backlog/runtime/BL-001/lane-status.yaml version 3 records lifecycle logging requirements and last lifecycle event fields
-      - the enabled Cylinder Orchestrator schedule has been updated to create invocation and lane boundary logs
-      - historical attempts through Attempt 25 predate this contract and remain legacy evidence rather than being retroactively invalidated
-    pass_condition_remaining: >-
-      The first post-activation Orchestrator invocation must persist ORCHESTRATOR_INVOCATION_START
-      before analysis/execution, produce all applicable ordered lane lifecycle logs, leave no orphan
-      OPEN lane event, release lanes only after persisted CLOSE/recovery-close, synchronize runtime,
-      and persist ORCHESTRATOR_INVOCATION_END. The resulting evidence must reconcile with lane-status.
-    result_acceptance_allowed_for_new_runs: false
-    reason: >-
-      The logging contract and execution/scheduler rules are installed, but no post-activation
-      invocation has yet demonstrated the complete lifecycle sequence. QG-LOG-001 therefore
-      remains IN_PROGRESS rather than being guessed PASS.
+      - logs/runs/INVOCATION-20260823-145512.md contains ORCHESTRATOR_INVOCATION_START before repository analysis/execution and will contain the final invocation close after synchronized runtime update
+      - logs/runs/INVOCATION-20260823-145512-LANE-01.md contains ordered LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END and LANE_CLOSE_END with Log State CLOSED
+      - logs/runs/INVOCATION-20260823-145512-LANE-02.md contains ordered LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END and LANE_CLOSE_END with Log State CLOSED
+      - logs/runs/INVOCATION-20260823-145512-LANE-03.md contains ordered LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END and LANE_CLOSE_END with Log State CLOSED
+      - no started lane was released before its persisted LANE_CLOSE_END record
+      - historical attempts through Attempt 25 predate this contract and remain legacy evidence
+    result_acceptance_allowed_for_new_runs: true
+    reason: Attempt 26 is the first post-activation execution and demonstrates the required lane lifecycle sequence without orphan OPEN lane events.
 
   gates:
-    QG-TRC-001:
-      name: Source Baseline Integrity
-      state: PASS
-      evidence:
-        - frozen source commit 3ae6e61442132d94a307275b08dd65fcef228d89
-        - source analysis is pinned to that exact commit
+    QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
     QG-TRC-002:
       name: Complete Source Check
       state: IN_PROGRESS
       evidence:
         - all 62 Java component candidates are classified
-        - WI-0004 attempts 1 through 25 are CLOSED/PARTIAL
-        - 22 of 134 endpoints have been explicitly examined for final dependencies
-        - all 22 examined endpoints are COMPLETE
-        - 0 examined endpoints are UNRESOLVED
-        - 112 endpoints remain not yet examined
+        - 27 of 134 endpoints have been explicitly examined for final dependencies
+        - 25 examined endpoints are COMPLETE
+        - 2 examined endpoints are UNRESOLVED
+        - 107 endpoints remain not yet examined
         - canonical completed result is not yet accepted
-    QG-TRC-003:
-      name: Controller Inventory Completeness
-      state: PASS
-      evidence:
-        - all 62 production candidates are classified exactly once
-        - 57 are proved EXPOSED
-        - 5 are proved NOT_EXPOSED
-        - no candidates remain unclassified
+    QG-TRC-003: {name: Controller Inventory Completeness, state: PASS}
     QG-TRC-004:
       name: Endpoint Inventory Completeness
       state: IN_PROGRESS
       evidence:
         - 134 unique caller-visible HTTP method/path combinations are source-proved
-        - candidate classification is complete
-        - canonical Endpoint Inventory artifact is not yet generated/validated from the completed Source Check Output
+        - canonical Endpoint Inventory artifact remains locked behind the completed Source Check Output
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: WAITING}
     QG-TRC-007: {name: Call Path Evidence, state: WAITING}
@@ -117,33 +59,27 @@ quality_gate_status:
       name: No Guessing And Unresolved Quality
       state: IN_PROGRESS
       evidence:
-        - earlier unresolved paths were retained at their last proved component until concrete dependency evidence was found
-        - attempt 25 resolved Challan Type, City and Country only after concrete Spring service, DAO method and explicit entity table evidence was found
-        - Challan Type maps to public.tbl_challan_type, City to public.tbl_city, Country to public.tbl_country
-        - no repository, query or database object was inferred from field or DTO naming
+        - Attempt 26 left the two complex POST endpoints UNRESOLVED where their complete database-object sets were not yet proved
+        - no missing table/view names were inferred from field, DTO, repository or entity naming
     QG-TRC-010: {name: Matrix Coverage, state: WAITING}
     QG-TRC-011: {name: Resolution Accounting, state: WAITING}
     QG-TRC-012: {name: Artifact Consistency, state: WAITING}
     QG-TRC-013: {name: Source Artifact Registration, state: WAITING}
     QG-TRC-014: {name: Execution Closure, state: WAITING}
-    QG-TRC-015:
-      name: User Acceptance
-      state: WAITING
-      owner: USER
-      automatic: false
+    QG-TRC-015: {name: User Acceptance, state: WAITING, owner: USER, automatic: false}
 
   endpoint_trace_checkpoint:
     total_endpoints: 134
-    explicitly_examined_for_final_dependency: 22
-    complete: 22
-    unresolved: 0
-    not_yet_examined_for_final_dependency: 112
+    explicitly_examined_for_final_dependency: 27
+    complete: 25
+    unresolved: 2
+    blocked: 0
+    failed: 0
+    not_yet_examined_for_final_dependency: 107
 
   close_allowed: false
   reason: >-
-    QG-SSOT-001, QG-SOW-001 and QG-DEP-001 pass. QG-LOG-001 is now mandatory for
-    post-activation execution and remains IN_PROGRESS until the first compliant invocation proves
-    the complete Orchestrator/lane lifecycle log sequence. Attempt 25 removed the active trace
-    evidence gaps, so all 22 examined endpoints are COMPLETE. Traceability completion also remains
-    in progress because 112 endpoints are still unexamined and worker/results/WI-0004.yaml is not
-    yet a completed contract-valid canonical result. Matrix construction remains locked.
+    QG-SSOT-001, QG-SOW-001, QG-DEP-001 and post-activation QG-LOG-001 pass for Attempt 26.
+    BL-001 remains PARTIAL because 107 endpoints are not yet examined, two complex POST traces are
+    unresolved, and worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result.
+    Matrix construction remains locked.
