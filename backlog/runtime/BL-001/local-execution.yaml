@@ -1,8 +1,8 @@
 local_execution:
-  version: 2
+  version: 3
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: READY_FOR_PRODUCTION_FIRE_ON_VALID_EXECUTION_HOST
+  state: EXECUTION_HOST_PREFLIGHT_BLOCKED
   backend: LOCAL_PROCESS_POOL
   source_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -23,7 +23,7 @@ local_execution:
     peak_service_capacity_utilization_percentage: null
   qg_lane_001_state: READY_FOR_MEASUREMENT
   aggregate_evidence: null
-  individual_lane_logs_remaining: 0
+  individual_lane_logs_remaining: null
   external_service_dependency: NONE
 
   production_host_contract:
@@ -32,30 +32,39 @@ local_execution:
     frozen_commit_required_in_local_git_object_database: true
     git_required: true
     python3_required: true
+    control_checkout_required_on_execution_host: true
     zero_leftover_lane_logs_required: true
     connector_access_alone_is_not_worker_filesystem_access: true
 
   latest_production_fire_attempt:
     attempted: true
+    attempted_at_utc: 2026-08-23T14:29:22Z
     attempt_type: PRODUCTION_PREFLIGHT
     result: BLOCKED_BEFORE_LANE_START
     execution_host: CURRENT_CHATGPT_EXECUTION_RUNTIME
-    source_checkout_candidate: /mnt/data/CylinderManagement
-    source_checkout_present: false
     git_available: true
+    git_path: /usr/bin/git
     python3_available: true
+    python3_path: /opt/pyvenv/bin/python3
+    source_checkout_present: false
+    source_checkout_candidates_found: []
+    control_checkout_present: false
+    control_checkout_candidates_found: []
+    frozen_commit_verification: NOT_REACHED_SOURCE_CHECKOUT_MISSING
+    approved_executor_worker_dispatch_file_verification: NOT_REACHED_CONTROL_CHECKOUT_MISSING
+    zero_leftover_lane_log_verification: NOT_PROVABLE_CONTROL_CHECKOUT_MISSING
     lanes_started: 0
     trace_evidence_accepted: false
-    observed_error: "fatal: cannot change to '/mnt/data/CylinderManagement': No such file or directory"
-    github_archive_fallback_attempted: true
-    github_archive_fallback_result: CONNECTED_GITHUB_INTERFACE_DOES_NOT_EXPOSE_APPROVED_FULL_REPOSITORY_ARCHIVE_OR_MOUNT_TO_LOCAL_WORKER_RUNTIME
-    classification: EXECUTION_HOST_SOURCE_STAGING_PREREQUISITE
+    classification: EXECUTION_HOST_PREFLIGHT_BLOCKED
+    exact_missing_prerequisites:
+      - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement
+      - local_or_mounted_control_checkout_of_vvekselva/CylindnderManagementDependcies
     not_classified_as: [GITHUB_ACTIONS_BLOCKER, SOURCE_CODE_BLOCKER, QUALITY_GATE_FAILURE]
-    next_action: FIRE_ON_EXECUTION_HOST_WITH_LOCAL_OR_MOUNTED_CYLINDERMANAGEMENT_CHECKOUT
+    next_action: MATERIALIZE_OR_MOUNT_SOURCE_AND_CONTROL_CHECKOUTS_ON_EXECUTION_HOST_THEN_RERUN_PREFLIGHT
 
   fire_command_windows: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
   note: >-
-    The local process pool and ten-task dispatch are ready. The first production attempt was fail-closed before any lane started
-    because the current ChatGPT execution runtime does not contain a worker-readable CylinderManagement checkout. On an execution
-    host where that checkout exists and contains the frozen commit, the executor can create a temporary detached worktree and fire
-    up to ten local OS workers without GitHub Actions.
+    The current production preflight passed Git and Python availability but fail-closed before any lane start because this
+    ChatGPT execution host contains neither a worker-readable CylinderManagement Git checkout nor a mounted control checkout.
+    Therefore the frozen commit, approved local executor/worker/dispatch files, and control-repository lane-log hygiene cannot be
+    proved on this host. QG-LANE-001 remains READY_FOR_MEASUREMENT, BL-001 remains PARTIAL, and zero production lanes were started.
