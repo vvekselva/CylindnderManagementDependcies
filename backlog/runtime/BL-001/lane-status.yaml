@@ -1,5 +1,5 @@
 lane_status:
-  version: 11
+  version: 12
   backlog_item: BL-001
   authoritative: true
   current_backlog_state: PARTIAL
@@ -7,9 +7,9 @@ lane_status:
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   last_reconciled_attempt: 27
   last_reconciled_run: INVOCATION-20260823-160000
-  invocation_state: WAITING_FOR_SOURCE_ACTIONS
-  current_invocation: MATRIX-BL001-SOURCE-002
-  current_idle_reason: null
+  invocation_state: WAITING_FOR_SOURCE_ACTIONS_EVIDENCE
+  current_invocation: INVOCATION-20260823-175300
+  current_idle_reason: NO_EXTERNAL_WORKFLOW_OR_JOB_EVIDENCE_YET
 
   real_worker_backend:
     type: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
@@ -26,11 +26,12 @@ lane_status:
     expected_concurrent_lanes: 10
     actual_peak_concurrent_lanes: null
     actual_average_concurrent_lanes: null
-    state: WAITING_FOR_SOURCE_WORKFLOW_START
+    state: NO_EXTERNAL_RUN_EVIDENCE
     blocker: >-
-      The source-local workflow has been installed and its dispatch file updated, but it has not
-      self-reported automation/matrix-execution.yaml. The framework does not infer whether Actions is
-      disabled or restricted; repository Actions policy/availability must be verified.
+      Dispatch generation 3 is synchronized to the source execution branch, but no source
+      automation/matrix-execution.yaml exists and no source workflow/job run ID is available.
+      Therefore no lane is marked ASSIGNED, WORKING or WAITING. The framework does not infer
+      external worker state from the dispatch queue alone.
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
@@ -57,33 +58,34 @@ lane_status:
     valid_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
     non_idle_lane_must_identify_work_unit_and_task: true
     working_lane_requires_external_run_id_or_heartbeat: true
+    external_worker_state_requires_workflow_or_job_evidence: true
     worker_evidence_does_not_auto_complete_trace: true
 
   lanes:
-    LANE-01: {state: WAITING, work_unit: WU-BL001-001, task: Trace AddStopController family evidence, dispatch_task_id: BL001-D001, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-02: {state: WAITING, work_unit: WU-BL001-001, task: Trace ChallanBookWebController family evidence, dispatch_task_id: BL001-D002, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-03: {state: WAITING, work_unit: WU-BL001-001, task: Trace ChallanEntryAgingDashboardController family evidence, dispatch_task_id: BL001-D003, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-04: {state: WAITING, work_unit: WU-BL001-001, task: Trace ChallanHeatmapController family evidence, dispatch_task_id: BL001-D004, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-05: {state: WAITING, work_unit: WU-BL001-001, task: Trace ChallanPagePhotoController family evidence, dispatch_task_id: BL001-D005, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-06: {state: WAITING, work_unit: WU-BL001-001, task: Trace CompleteTripController family evidence, dispatch_task_id: BL001-D006, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-07: {state: WAITING, work_unit: WU-BL001-001, task: Trace CustomerAddressLocationController family evidence, dispatch_task_id: BL001-D007, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-08: {state: WAITING, work_unit: WU-BL001-001, task: Trace CustomerConsumptionDashboardController family evidence, dispatch_task_id: BL001-D008, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-09: {state: WAITING, work_unit: WU-BL001-001, task: Trace Uc02Phase01VehicleLoadController family evidence, dispatch_task_id: BL001-D009, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
-    LANE-10: {state: WAITING, work_unit: WU-BL001-001, task: Trace Uc02Phase02CylinderDeliveryController family evidence, dispatch_task_id: BL001-D010, worker_input: backlog/runtime/BL-001/lane-dispatch.yaml, run_id: WAITING_SOURCE_ACTIONS, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING}
+    LANE-01: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D001, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-02: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D002, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-03: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D003, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-04: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D004, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-05: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D005, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-06: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D006, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-07: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D007, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-08: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D008, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-09: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D009, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
+    LANE-10: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D010, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
 
   summary:
     total_lanes: 10
-    idle: 0
+    idle: 10
     assigned: 0
     initializing: 0
     working: 0
     blocked: 0
-    waiting: 10
+    waiting: 0
     closing: 0
     stale: 0
-    active_lane_count: 10
+    active_lane_count: 0
 
   current_interpretation: >-
-    All ten approved tasks remain queued, but none is WORKING because the source-local GitHub Actions
-    workflow has not started. This is a platform wait state, not evidence that the tasks themselves are
-    blocked. The failed control-side matrix run is closed and contributed no source evidence.
+    Ten safe tasks are queued for the external matrix backend, but no external workflow/job
+    execution evidence exists yet. All lanes therefore remain IDLE in the lane SSOT. The queue
+    must not be mistaken for proof of worker assignment or concurrency.
