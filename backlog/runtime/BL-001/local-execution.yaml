@@ -1,5 +1,5 @@
 local_execution:
-  version: 4
+  version: 5
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -19,42 +19,54 @@ local_execution:
   github_actions_dependency: NONE
   external_worker_service_dependency: NONE
 
-  latest_execution_journal:
-    execution_id: E2E-STAGED-20260823-151810
+  latest_production_fire:
+    execution_id: E2E-STAGED-20260823-161214
     dispatch_fingerprint: 6c99cd0f51605ea5461169a349c7153cd9da658070f15727ab7d93ac7571522d
     phase: CLOSED_RESTAGE_REQUIRED
-    started_at: 2026-08-23T15:18:10.982201+00:00
-    ended_at: 2026-08-23T15:18:13.570061+00:00
-    result_fingerprint: bb21672ff08c21f463b8ffb82ebc591205afadca41c0c885bfc4fbd3b58b4b9b
-    sync_state: PENDING_ORCHESTRATOR_VALIDATION
-    source_closure_complete: false
+    state: CLOSED
+    result: SOURCE_RESTAGE_AND_BINDING_REQUIRED
+    source_snapshot_materialized_files: 29
+    source_restage_files_reused_from_prior_verified_same_baseline_cache: 4
     workers_started: 10
     worker_results_received: 10
     worker_failures: 0
+    source_closure_complete: false
+    missing_source_requests: 16
+    missing_binding_requests: 3
+    qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    expected_concurrent_lanes: 10
+    peak_service_concurrent_lanes: 2
+    average_service_concurrent_lanes: 0.0
+    peak_service_capacity_utilization_percentage: 20.0
+    qg_lane_001_state: UNDERUTILIZED
+    backend_capacity_probe_peak_service_concurrent_lanes: 10
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
+    accepted_endpoint_checkpoint_changed: false
+    note: >-
+      This production fire used the promoted staged-lane-executor-v3.py and staged-lane-worker-v3.py against the
+      frozen BL-001 source baseline. The preceding compatibility-worker launch was rejected and is not authoritative.
+      The engine completed all ten worker tasks with zero worker failures, aggregated/deleted transient lane logs,
+      and returned the next exact source/binding restaging set without guessing or advancing canonical trace state.
 
   source_state:
     gate: QG-SOURCE-001
     state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
     controller_roots_verified: 10
-    missing_source_requests: 21
-    missing_binding_requests: 0
-    next_phase: SOURCE_RESTAGE
+    source_snapshot_materialized_files: 29
+    missing_source_requests: 16
+    missing_binding_requests: 3
+    next_phase: SOURCE_RESTAGE_AND_BINDING_RESOLUTION
     restage_owner: PRIMARY_ORCHESTRATOR
     source_layout: repository/source-layout.yaml
     max_iterations: 8
     no_progress_state: SOURCE_RESOLUTION_STALLED
     local_checkout_blocker: RESOLVED_BY_ORCHESTRATOR_STAGED_SNAPSHOT
 
-  metrics:
-    expected_concurrent_lanes: 10
-    peak_service_concurrent_lanes: 4
-    average_service_concurrent_lanes: 0.26
-    peak_service_capacity_utilization_percentage: 40.0
-    backend_capacity_probe_peak_service_concurrent_lanes: 10
-    qg_lane_001_state: UNDERUTILIZED
-    metric_basis: NATURAL_FULL_SOURCE_DISCOVERY_WORKLOAD
+  binding_requests_now:
+    - {source: AddStopController, variable: challanHeatmapFetchService, declared_type: ICylinderManagementApplicationService, generic_args: [ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto], qualifier: challanHeatmapFetchService}
+    - {source: AddStopController, variable: challanPagePhotoUploadService, declared_type: ICylinderManagementApplicationService, generic_args: [ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto], qualifier: challanPagePhotoUploadService}
+    - {source: CompleteTripController, variable: completeTripService, declared_type: ICylinderManagementApplicationService, generic_args: [CompleteTripRequestDto, CompleteTripResponseDto], qualifier: null}
 
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
@@ -68,20 +80,17 @@ local_execution:
     validation_cases_passed: 5
     validation_cases_total: 5
 
-  canary_proof:
-    execution_id: E2E-STAGED-20260823-151800
-    dispatch_fingerprint: a7c73e0742744aeaee9183a72bdda2e1dec2e61d4d3164b3ee502879106caf23
-    phase: CLOSED_READY_FOR_VALIDATION
-    qg_source_001_state: SOURCE_CLOSURE_COMPLETE
-    source_closure_complete: true
-    workers_started: 1
-    worker_failures: 0
-    individual_lane_logs_remaining: 0
-    proved_physical_candidates: [public.tbl_challan_page_photo, public.tbl_challan_page_audit_ledger, public.tbl_challan_book_registry]
-    trace_evidence_auto_accepted: false
+  accepted_trace_checkpoint:
+    total_endpoints: 134
+    examined: 37
+    complete: 35
+    unresolved: 2
+    blocked: 0
+    failed: 0
+    not_yet_examined: 97
 
   next_action: >-
-    Stage the latest 21 exact source requests using repository/source-layout.yaml at the frozen commit, add verified
-    interface bindings as they become discoverable, rerun the same ten-task discovery batch, and continue only while
-    the request set changes and source closure advances. Do not alter the accepted 37/134 trace checkpoint merely
-    because discovery evidence exists.
+    Resolve the 16 exact source requests and 3 explicit Spring interface bindings at the same frozen commit, add
+    path/blob/binding proof to the staged snapshot manifest, then fire the same ten-task dispatch again. Continue only
+    while the request set changes and verified source closure advances. Do not alter the accepted 37/134 checkpoint
+    until the Primary Orchestrator validates source-closed endpoint evidence.
