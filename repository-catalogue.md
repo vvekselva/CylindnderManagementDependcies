@@ -10,15 +10,15 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 |---|---|---|
 | `.github/workflows/catalogue-gate.yml` | Quality Gate | Verifies exact static control files and declared dynamic runtime/artifact paths. |
 | `.github/workflows/ssot-gate.yml` | Planning Gate | Runs the three-level SSOT validator. |
-| `.github/workflows/lane-matrix-dispatch.yml` | Real Lane Execution | Dispatches up to ten independent read-only matrix workers, aggregates evidence, measures real concurrency and removes transient lane artifacts. |
 | `TaskStatus.md` | Status | Human-readable derived dashboard; never overrides canonical SSOT. |
 | `automation/automation-config.yaml` | Automation | Machine-readable Orchestrator configuration. |
 | `automation/backlog-contract.md` | Backlog Contract | Defines mandatory Level 1/2/3 SSOT and backlog lifecycle. |
 | `automation/execution-model.md` | Architecture Document | End-to-end execution model. |
+| `automation/fire-local-lanes.ps1` | Local Lane Fire | Windows entry point that fires up to ten local OS lane workers. |
+| `automation/local-lane-executor.py` | Local Lane Executor | Creates frozen-baseline worktree, starts/monitors local workers, measures concurrency, aggregates evidence and cleans lane logs. |
+| `automation/local-lane-worker.py` | Local Lane Worker | Read-only source-evidence collector with INIT/SERVICE/CLOSE lifecycle evidence and heartbeat. |
 | `automation/generate-automation-story.py` | Automation | Generates the human-readable automation story. |
 | `automation/validate-ssot.py` | SSOT Validator | Validates Level 1/2/3 and SOW prerequisites. |
-| `automation/lane-worker.py` | Matrix Worker | Read-only source-evidence collector with INIT/SERVICE/CLOSE lifecycle evidence. |
-| `automation/lane-summary.py` | Matrix Summary | Calculates distinct participation, peak/average concurrency and QG-LANE-001 state. |
 | `automation/task-contract.md` | Automation | Defines Task/Job execution fields and lifecycle rules. |
 | `automation/worker-component-contract.md` | Worker | Generic Worker and result handoff rules. |
 | `automation/worker-service-contract.md` | Automation | Mandatory worker lifecycle logging. |
@@ -28,7 +28,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `backlog/backlog-item-template.yaml` | Backlog | Standard backlog registration shape. |
 | `backlog/item-definition-template.yaml` | Level 2 SSOT | Standard per-backlog definition shape. |
 | `backlog/statement-of-work-template.yaml` | Level 2 SOW | Mandatory Statement of Work contract. |
-| `backlog/runtime-contract.yaml` | Level 3 SSOT | Defines every runtime file required before PLAN/REPLAN, including lane dispatch/statistics. |
+| `backlog/runtime-contract.yaml` | Level 3 SSOT | Defines every runtime file required before PLAN/REPLAN, including lane dispatch, local execution and statistics. |
 | `backlog/orchestrator-run-config.yaml` | Orchestrator Run Control | Execution switchboard. |
 | `backlog/gates/BL-001-traceability.yaml` | Backlog Quality Gate | BL-001 traceability gates. |
 | `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability route. |
@@ -41,7 +41,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `governance/ssot-levels.yaml` | SSOT Governance | Defines SSOT-L1/L2/L3 and QG-SSOT-001. |
 | `governance/quality-gates.yaml` | Quality Gate Governance | Defines QG-SSOT-001, QG-SOW-001, QG-DEP-001, QG-LOG-001, QG-LANE-001 and item gates. |
 | `governance/execution-lifecycle-logging.yaml` | Execution Logging | Invocation and lane lifecycle logging contract. |
-| `governance/lane-execution.yaml` | Lane Governance | Real matrix-worker backend, concurrency metrics and QG-LANE-001. |
+| `governance/lane-execution.yaml` | Lane Governance | Local process-pool backend, concurrency metrics and QG-LANE-001. |
 | `governance/automation-log-policy.md` | Governance | Plain-English audit logging. |
 | `governance/automation-policy.md` | Governance | Governing automation rules. |
 | `governance/source-artifact-sync-policy.md` | Governance | Source-to-artifact synchronization rules. |
@@ -63,20 +63,20 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 
 ## Catalogue Quality Gate
 
-Static framework files must exist exactly as listed. Per-backlog definitions/SOWs, Level-3 runtime files, generated traceability artifacts and transient/durable run artifacts are allowed only under declared dynamic paths.
+Static framework files must exist exactly as listed. Per-backlog definitions/SOWs, Level-3 runtime files, generated traceability artifacts and local run evidence are allowed only under declared dynamic paths.
 
 <!-- CATALOGUE-FILES:START -->
 .github/workflows/catalogue-gate.yml
 .github/workflows/ssot-gate.yml
-.github/workflows/lane-matrix-dispatch.yml
 TaskStatus.md
 automation/automation-config.yaml
 automation/backlog-contract.md
 automation/execution-model.md
+automation/fire-local-lanes.ps1
+automation/local-lane-executor.py
+automation/local-lane-worker.py
 automation/generate-automation-story.py
 automation/validate-ssot.py
-automation/lane-worker.py
-automation/lane-summary.py
 automation/task-contract.md
 automation/worker-component-contract.md
 automation/worker-service-contract.md
@@ -129,6 +129,8 @@ worker/inputs/WI-*.yaml
 worker/runs/WI-*.md
 worker/results/WI-*.md
 worker/results/WI-*.yaml
+worker/evidence/LOCAL-BL001-*/*.yaml
+worker/evidence/LOCAL-BL001-*/*.md
 workflows/WF-001-controller-traceability/runtime/*.yaml
 workflows/WF-001-controller-traceability/evidence/*.yaml
 traceability/source-repository-check.md
