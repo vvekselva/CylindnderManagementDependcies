@@ -18,22 +18,38 @@ Validation report: `tests/self-reliant-e2e-validation-2026-08-23.md`
 
 **Normal execution has no GitHub Actions dependency and no mandatory pre-existing local `CylinderManagement` checkout.** Workers never receive the GitHub connector credential; the Orchestrator stages immutable source for them.
 
-## Self-Reliance Validation
+## Live Production Fire
 
-| Validation | Result |
-|---|---|
-| Private source staging at frozen commit | **PASS** |
-| Controller Git blob integrity | **PASS** |
-| Deliberate source tamper | **PASS - BLOCKED BEFORE SERVICE** |
-| Baseline mismatch | **PASS - FAIL CLOSED** |
-| Duplicate lane preflight | **PASS - FAIL CLOSED** |
-| Stale lane-log preflight | **PASS - FAIL CLOSED** |
-| JPA canary source closure | **PASS - SOURCE_CLOSURE_COMPLETE** |
-| Correct Spring interface binding | **PASS** |
-| Incorrect interface binding | **PASS - REJECTED** |
-| Recovery / idempotency cases | **5 / 5 PASS** |
-| Backend process-pool capacity | **10 / 10 SERVICE workers** |
-| Worker evidence auto-accept | **DISABLED / PASS** |
+Latest authoritative production fire: **`E2E-STAGED-20260823-161214`**
+
+| Metric | Result |
+|---|---:|
+| Dispatch | `LOCAL-BL001-DISPATCH-005` |
+| Source provider | `ORCHESTRATOR_STAGED_SNAPSHOT` |
+| Frozen source baseline | `3ae6e61442132d94a307275b08dd65fcef228d89` |
+| Verified snapshot files before this fire | **29** |
+| Workers started | **10 / 10** |
+| Worker results received | **10 / 10** |
+| Worker failures | **0** |
+| Residual individual lane logs | **0** |
+| Source closure | **PARTIAL - RESTAGE/BINDING REQUIRED** |
+| Exact source requests remaining | **16** |
+| Explicit interface binding requests | **3** |
+| QG-SOURCE-001 | **PASS ROOTS VERIFIED / CLOSURE PARTIAL** |
+| Peak natural SERVICE concurrency | **2 / 10** |
+| QG-LANE-001 | **UNDERUTILIZED** |
+| Backend capacity probe | **10 / 10** |
+| Endpoint traces auto-accepted | **0** |
+
+The production loop is working as designed. The previous full discovery had **21 source requests**. Four already-verified same-baseline source files were materialized into the production snapshot and the next fire reduced the source queue to **16**, while exposing **3 explicit Spring interface bindings** that must now be proved from implementation source.
+
+The three bindings now waiting for source validation are:
+
+1. `AddStopController.challanHeatmapFetchService` -> `ICylinderManagementApplicationService<ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto>` with qualifier `challanHeatmapFetchService`;
+2. `AddStopController.challanPagePhotoUploadService` -> `ICylinderManagementApplicationService<ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto>` with qualifier `challanPagePhotoUploadService`;
+3. `CompleteTripController.completeTripService` -> `ICylinderManagementApplicationService<CompleteTripRequestDto, CompleteTripResponseDto>`.
+
+No binding is accepted from naming alone. The implementation source must prove the interface/generic signature and bean identity at the same frozen commit.
 
 ## Framework / Gate State
 
@@ -43,53 +59,16 @@ Validation report: `tests/self-reliant-e2e-validation-2026-08-23.md`
 | QG-SSOT-001 | **PASS - self-reliant Level-3 runtime reconciled** |
 | QG-DEP-001 | **PASS** |
 | QG-SOURCE-001 | **PASS ROOTS VERIFIED / SOURCE CLOSURE PARTIAL** |
-| QG-LOG-001 | **PASS - latest tested batch left 0 lane logs** |
+| QG-LOG-001 | **PASS - latest production fire left 0 lane logs** |
 | QG-RECOVERY-001 | **PASS - 5/5 state cases** |
-| QG-LANE-001 | **UNDERUTILIZED - latest natural full discovery 4/10** |
+| QG-LANE-001 | **UNDERUTILIZED - latest natural production fire 2/10** |
 | QG-TRC-002 Complete Source Check | **IN PROGRESS** |
 
-`QG-LANE-001` is a performance-governance gate. The backend capacity probe reached **10/10**, but the latest natural source-discovery workload reached **4/10** peak SERVICE overlap. Artificial delays are not permitted merely to manufacture a PASS.
-
-## Latest Self-Reliant Full Discovery
-
-Execution: **`E2E-STAGED-20260823-151810`**
-
-| Metric | Result |
-|---|---:|
-| Source provider | `ORCHESTRATOR_STAGED_SNAPSHOT` |
-| Configured / safe lanes | **10 / 10** |
-| Workers started | **10** |
-| Worker results received | **10** |
-| Worker failures | **0** |
-| Controller roots integrity verified | **10 / 10** |
-| Missing source requests | **21** |
-| Missing binding requests this iteration | **0** |
-| Source closure | **PARTIAL - RESTAGE REQUIRED** |
-| Peak natural SERVICE concurrency | **4 / 10** |
-| Average natural SERVICE concurrency | **0.26** |
-| Backend capacity probe | **10 / 10** |
-| Residual individual lane logs | **0** |
-| Endpoint traces auto-accepted | **0** |
-
-The 21 requests are normal recursive source-staging work. They are resolved through `repository/source-layout.yaml` at the same frozen commit. Once interface files are staged, implementation bindings must be source-validated before a worker follows them.
-
-A request set that repeats without new verified source causes **`SOURCE_RESOLUTION_STALLED`**; the Orchestrator cannot loop indefinitely or guess.
+`QG-LANE-001` is performance governance only. The backend capacity probe has already demonstrated **10/10** process SERVICE capability; the latest natural source-discovery workload reached **2/10** peak overlap in this execution environment. Artificial delays are not permitted merely to manufacture a PASS.
 
 ## Current Lane State
 
-All **10 lanes are IDLE between source-staging iterations**. The latest worker batch closed cleanly. No lane has the previous execution-host checkout blocker.
-
-The next worker batch is fired only after the Primary Orchestrator stages the next exact source/binding set and QG-SOURCE-001 again validates the source roots.
-
-## Recovery / Idempotency
-
-The execution journal and dispatch fingerprint prevent duplicate execution:
-
-- `PENDING_SYNC` -> retry GitHub synchronization only;
-- closed evidence awaiting validation -> validate existing evidence only;
-- interrupted RUNNING state with no live workers -> recover, reject partial output, clean boundary;
-- changed dispatch fingerprint -> new execution generation;
-- already synchronized closed execution -> no-op.
+All **10 lanes are IDLE** because the production fire closed cleanly. Every worker emitted its lifecycle and the transient lane logs were aggregated and removed. The engine is now between worker batches while the Primary Orchestrator performs source restaging and binding resolution.
 
 ## Current BL-001 Traceability Runtime
 
@@ -103,19 +82,29 @@ The execution journal and dispatch fingerprint prevent duplicate execution:
 | NOT YET EXAMINED | **97** |
 | Traceability Matrix | **LOCKED** |
 
-The architecture/source-discovery tests **did not change this checkpoint**. Open evidence gaps remain `POST /customer-spot-cylinder-check/submit` and `POST /walkin-sale`.
+The production fire **did not change this checkpoint**. Worker discovery evidence is never auto-promoted. Open evidence gaps remain `POST /customer-spot-cylinder-check/submit` and `POST /walkin-sale`.
+
+## Recovery / Idempotency
+
+The execution journal and dispatch fingerprint prevent duplicate execution:
+
+- `PENDING_SYNC` -> retry GitHub synchronization only;
+- closed evidence awaiting validation -> validate existing evidence only;
+- interrupted RUNNING state with no live workers -> recover, reject partial output, clean boundary;
+- changed dispatch fingerprint -> new execution generation;
+- already synchronized closed execution -> no-op.
 
 ## Current Work Units
 
 | Work Unit | State |
 |---|---|
-| WU-BL001-001 Complete Source Repository Check | **PARTIAL / SOURCE RESTAGE ITERATION** |
+| WU-BL001-001 Complete Source Repository Check | **PARTIAL / SOURCE RESTAGE + BINDING ITERATION** |
 | WU-BL001-002 Build Traceability Matrix | WAITING_FOR_DEPENDENCY |
 | WU-BL001-003 Validate Traceability Gates | WAITING_FOR_DEPENDENCY |
 | WU-BL001-004 Register Baseline / Closure | WAITING_FOR_DEPENDENCY |
 
 ## Exact Next Action
 
-The Primary Orchestrator stages and blob-verifies the **21 exact source requests** from `E2E-STAGED-20260823-151810`, validates any interface bindings that become visible, and reruns the same ten-task discovery. Repeat only while the request set changes and source closure advances. When `QG-SOURCE-001 = SOURCE_CLOSURE_COMPLETE`, validate the resulting endpoint evidence under the existing no-guessing BL-001 trace gates.
+Resolve and blob-verify the **16 exact source requests** and **3 binding requests** at the frozen commit, update the immutable source snapshot manifest, and fire the same ten-task dispatch again. Continue only while the request set changes and source closure advances. When `QG-SOURCE-001 = SOURCE_CLOSURE_COMPLETE`, the Primary Orchestrator validates the source-closed evidence endpoint by endpoint under the BL-001 no-guessing gates.
 
 BL-001 remains **PARTIAL** and cannot become VERIFIED/CLOSED before complete source-check coverage, all automatic gates and explicit `QG-TRC-015` user acceptance.
