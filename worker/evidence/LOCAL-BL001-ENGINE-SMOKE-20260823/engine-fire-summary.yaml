@@ -1,0 +1,18 @@
+engine_fire_verification:
+  id: LOCAL-BL001-ENGINE-SMOKE-20260823
+  purpose: Verify the local process-pool execution engine independently of GitHub Actions.
+  accepted_as_bl001_trace_evidence: false
+  reason_not_trace_evidence: Private CylinderManagement source checkout was not mounted in the ChatGPT execution runtime; this run verifies execution-engine concurrency and lifecycle behavior only.
+  backend: LOCAL_PROCESS_POOL
+  configured_lanes: 10
+  tasks_fired: 10
+  task_identity_source: BL-001 lane dispatch
+  peak_service_concurrent_lanes: 10
+  average_service_concurrent_lanes: 9.83
+  peak_capacity_utilization_percentage: 100.0
+  lifecycle_order_verified: true
+  all_workers_closed: true
+  individual_lane_logs_remaining_after_aggregation: 0
+  qg_lane_001_engine_mechanism_result: PASS_ENGINE_CAPABILITY
+  canonical_bl001_qg_lane_001_effect: NONE_UNTIL_REAL_SOURCE_FIRE
+  note: The first fire in the ChatGPT container reached 7/10 because child Python processes inherited an unrelated spreadsheet-runtime startup hook. A second fire bypassed that environment-only hook and reached 10/10 real SERVICE overlap. This is not a GitHub issue.
