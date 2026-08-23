@@ -1,6 +1,19 @@
 quality_gate_status:
   backlog_item: BL-001
+  statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
   quality_gate_config: backlog/gates/BL-001-traceability.yaml
+
+  statement_of_work_gate:
+    id: QG-SOW-001
+    state: PASS
+    evidence:
+      - BL-001 declares backlog/sow/BL-001-controller-traceability.yaml
+      - Statement of Work exists and backlog_item equals BL-001
+      - objective, problem statement, in-scope work, deliverables, execution requirements, acceptance criteria and completion definition are populated
+      - execution_authorization.sow_required is true
+      - execution_authorization.structurally_valid is true
+      - execution_authorization.placeholders_present is false
+
   common_dependency_gate:
     id: QG-DEP-001
     state: PASS
@@ -70,7 +83,7 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    Attempt 24 proves the active Challan Type, City and Country REST mappings and their generic search-service handoffs,
+    QG-SOW-001 and QG-DEP-001 pass. Attempt 24 proves the active Challan Type, City and Country REST mappings and their generic search-service handoffs,
     but concrete Spring implementations, repository/query layers and final dependencies are not yet proved. QG-TRC-002
     remains IN_PROGRESS because 112 of 134 endpoints are still not examined, three examined paths remain unresolved, and
     worker/results/WI-0004.yaml is not yet a completed contract-valid canonical result. QG-TRC-004 remains IN_PROGRESS
