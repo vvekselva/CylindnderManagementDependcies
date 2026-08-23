@@ -4,41 +4,43 @@ blockers:
   planning_blocked: false
   execution_blocked: false
   real_parallel_execution_blocked: false
-
   governance_blockers: []
   platform_blockers: []
 
   execution_host_prerequisites:
     - id: EH-BL001-001
       state: OPEN_ON_CURRENT_CHATGPT_EXECUTION_HOST
-      category: SOURCE_CHECKOUT_NOT_MOUNTED_ON_EXECUTION_HOST
+      category: EXECUTION_HOST_PREFLIGHT_BLOCKED
       affects: PRODUCTION_LOCAL_FIRE_ON_CURRENT_HOST
       planning_blocked: false
       backlog_execution_globally_blocked: false
       qg_lane_001_effect: READY_FOR_MEASUREMENT_ON_VALID_HOST
+      latest_preflight_at_utc: 2026-08-23T14:29:22Z
       summary: >-
-        The local process-pool engine and ten-task dispatch are ready, but the current ChatGPT execution runtime does not contain
-        a worker-readable local/mounted checkout of vvekselva/CylinderManagement. The production fire therefore stopped before
-        any lane started.
-      observed_error: "fatal: cannot change to '/mnt/data/CylinderManagement': No such file or directory"
+        Production preflight stopped before lane start because the current execution host has no worker-readable
+        CylinderManagement checkout and no worker-readable CylindnderManagementDependcies control checkout.
+      exact_missing_prerequisites:
+        - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement
+        - local_or_mounted_control_checkout_of_vvekselva/CylindnderManagementDependcies
       proved_facts:
-        - Git is available on the current execution host.
-        - Python 3 is available on the current execution host.
-        - The connected GitHub interface can read and update the private repositories for control-plane operations.
-        - Local OS worker processes do not inherit the connected GitHub credential as filesystem access.
-        - A full frozen-commit repository archive/mount is not exposed to the local runtime by the connected GitHub interface.
-        - Zero production lanes were started and zero BL-001 trace evidence was accepted from the failed preflight.
+        - Git is available at /usr/bin/git.
+        - Python 3 is available at /opt/pyvenv/bin/python3.
+        - No required source or control checkout was found in the execution-host filesystem search.
+        - Frozen commit verification was not reached because the source checkout is absent.
+        - Control executor/worker/dispatch verification and transient lane-log verification are not provable because the control checkout is absent.
+        - GitHub connector access is control-plane access and does not provide worker filesystem access.
+        - Zero production lanes were started and zero BL-001 trace evidence was accepted.
       resolution_condition: >-
-        Run the fire on an execution host where a local or mounted CylinderManagement Git checkout exists and contains
-        commit 3ae6e61442132d94a307275b08dd65fcef228d89.
-      fire_command: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
+        Make both repository checkouts worker-readable on the execution host, ensure the source checkout contains frozen commit
+        3ae6e61442132d94a307275b08dd65fcef228d89, then rerun production preflight.
 
   resolved_platform_blockers:
     - id: PB-BL001-001
       state: RESOLVED_BY_ARCHITECTURE_CHANGE
       previous_category: SOURCE_REPOSITORY_ACTIONS_NOT_SELF_REPORTING
       resolution: >-
-        The real worker backend no longer depends on GitHub Actions. BL-001 now uses a local process pool with up to ten OS worker processes, a temporary detached Git worktree at the frozen source baseline, local PID/heartbeat lane state, measured SERVICE concurrency and durable aggregate evidence.
+        The real worker backend no longer depends on GitHub Actions. BL-001 uses a local process pool with up to ten OS workers,
+        a temporary detached worktree at the frozen source baseline, PID/heartbeat lane state, measured SERVICE concurrency and durable aggregate evidence.
       replacement_backend: LOCAL_PROCESS_POOL
       replacement_files: [automation/local-lane-executor.py, automation/local-lane-worker.py, automation/fire-local-lanes.ps1, backlog/runtime/BL-001/local-execution.yaml]
 
@@ -50,8 +52,9 @@ blockers:
     expected_concurrent_lanes: 10
     external_service_dependency: NONE
     prerequisite: >-
-      A local/mounted CylinderManagement Git checkout containing frozen commit 3ae6e61442132d94a307275b08dd65fcef228d89 and Python 3 must be available on the execution host. The executor does not require the active checkout to be switched to that commit.
-    next_action: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
+      Worker-readable source and control checkouts must exist on the execution host; the source checkout must contain the frozen commit.
+      Git and Python 3 are already available on the current host.
+    next_action: MATERIALIZE_OR_MOUNT_SOURCE_AND_CONTROL_CHECKOUTS_THEN_RERUN_PREFLIGHT
 
   active_evidence_gaps:
     - {id: EG-BL001-004, state: OPEN, affects_gate: QG-TRC-002, source_endpoint: POST /customer-spot-cylinder-check/submit, summary: Complete final database-object set for all submitSpotCheck branches is not yet proved.}
