@@ -2,294 +2,200 @@
 
 ## Purpose
 
-The automation log is the human-readable history of what the automation did.
+The automation log is the human-readable audit history of what the Orchestrator and execution lanes did. It must be understandable without reading tool-call JSON, raw stack traces or shell output.
 
-It is not a low-level technical trace. A person should be able to read the log and understand the work without needing to understand tool calls, stack traces, shell commands or internal automation details.
+The machine-enforced lifecycle event contract is `governance/execution-lifecycle-logging.yaml`.
 
-## Worker lifecycle and log lifecycle
+## Mandatory logging principle
 
-Every worker Job attempt follows:
+Execution is **log-first at lifecycle boundaries**.
 
-```text
-init() -> service() -> close()
-```
-
-The human-readable log follows the same lifecycle:
+The framework must persist the required boundary record before the corresponding phase is allowed to start. A missing mandatory pre-phase record is a fail-closed condition.
 
 ```text
-NOT_OPENED
-    |
-    v
-OPEN      <- init() opens the event
-    |
-    v
-CLOSED    <- close() closes the event
+ORCHESTRATOR INVOCATION
+  ORCHESTRATOR_INVOCATION_START   <- written before analysis/planning/assignment/execution
+        |
+        v
+  eligible lane execution
+        |
+        v
+  runtime/result synchronization
+        |
+        v
+  ORCHESTRATOR_INVOCATION_END     <- written after all started lanes are closed/recovery-closed
+
+EACH LANE RUN
+  LANE_INIT_START                  <- before init()
+        |
+        v
+      init()
+        |
+        v
+  LANE_INIT_END                    <- after init()
+        |
+        +-- BLOCKED_BEFORE_SERVICE -> close() -> LANE_CLOSE_END
+        |
+        v
+  LANE_SERVICE_START               <- before service()
+        |
+        v
+     service()
+        |
+        v
+  LANE_SERVICE_END                 <- after service()
+        |
+        v
+      close()
+        |
+        v
+  LANE_CLOSE_END                   <- after close(); Log State = CLOSED
 ```
 
-Once an INIT event is opened, it must eventually receive a CLOSE record.
+## Log locations and parallel safety
 
-If the worker stops unexpectedly before close(), the coordinator creates a recovery close entry. That recovery entry must clearly say that the final result is not confirmed.
+The shared audit log is:
 
-## Main rule
+```text
+logs/automation-log.md
+```
 
-Every meaningful automation activity must explain:
+The coordinator is the only writer to this shared file.
 
-- what the worker is about to do;
-- why the work is needed;
-- what the worker actually did;
-- what it found;
-- what changed, if anything;
-- what is blocking progress, if anything;
-- what alternatives are available;
+Every Orchestrator invocation also has its own run log:
+
+```text
+logs/runs/INV-<invocation-id>-ORCHESTRATOR.md
+```
+
+Every lane run has its own run log:
+
+```text
+logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md
+```
+
+This lets ten independent lanes persist their own lifecycle evidence without racing to edit one shared file. The coordinator serially consolidates meaningful records into `logs/automation-log.md`.
+
+## Orchestrator invocation START record
+
+`ORCHESTRATOR_INVOCATION_START` is mandatory and must be persisted **before any repository analysis, planning, lane assignment or execution work begins**.
+
+It records at minimum:
+
+- timestamp;
+- invocation ID;
+- coordinator identity;
+- trigger/scheduler source;
+- control repository and branch;
+- intended backlog-selection policy;
+- statement that execution has not yet started.
+
+If this record cannot be persisted, the invocation must not begin application/backlog execution.
+
+Example:
+
+> The primary Cylinder Orchestrator invocation has started. No lane work has started yet. The coordinator will load the control repository, validate Level 1/2/3 SSOT and gates, select only eligible work, and then assign safe independent tasks.
+
+## Orchestrator invocation END record
+
+`ORCHESTRATOR_INVOCATION_END` is mandatory after all started lanes are CLOSED or recovery-closed and the canonical runtime has been synchronized.
+
+It records at minimum:
+
+- timestamp and invocation ID;
+- selected backlog item;
+- Work Units touched;
+- lanes used;
+- work completed;
+- blockers or valid stop condition;
+- runtime/status synchronization result;
+- final invocation result;
+- next action.
+
+An END record is mandatory even when no eligible work ran, the invocation failed, or a hard blocker stopped execution.
+
+## Lane INIT boundary records
+
+Before `init()` executes, the lane must persist `LANE_INIT_START`.
+
+It identifies:
+
+- invocation ID;
+- backlog item and Work Unit;
+- lane;
+- task;
+- Worker Input when applicable;
+- run ID and attempt;
+- source baseline;
+- what the lane is about to initialize and why.
+
+Immediately after `init()` returns, the lane persists `LANE_INIT_END` with either:
+
+- `INITIALIZED`; or
+- `BLOCKED_BEFORE_SERVICE`.
+
+`service()` may not start unless `LANE_INIT_END = INITIALIZED` has been persisted.
+
+## Lane SERVICE boundary records
+
+Immediately before `service()` executes, the lane persists `LANE_SERVICE_START` containing the task and assigned Actions.
+
+Immediately after `service()` returns, the lane persists `LANE_SERVICE_END` containing:
+
+- service result: `COMPLETED`, `PARTIAL`, `BLOCKED` or `FAILED`;
+- Actions completed/not completed;
+- meaningful evidence summary;
+- blocker/failure explanation when applicable.
+
+Meaningful progress events and heartbeats may be logged between these boundaries, but they do not replace the mandatory START/END records.
+
+## Lane CLOSE boundary record
+
+`close()` always runs after a started lane attempt, including blocked or failed attempts and `BLOCKED_BEFORE_SERVICE`.
+
+After `close()` completes, the lane must persist `LANE_CLOSE_END` with:
+
+- final result;
+- outputs/evidence;
+- unresolved/blocker information;
+- next action;
+- end time;
+- `Log State: CLOSED`.
+
+A lane is **not reusable** until its persisted close record exists. If a lane disappears before close, the coordinator writes a recovery close with `RESULT_NOT_CONFIRMED` before releasing the lane.
+
+## QG-LOG-001 - Lifecycle Logging Completeness
+
+`QG-LOG-001` passes only when:
+
+1. every in-scope invocation has START and END records;
+2. every lane run has the applicable boundary events in the required order;
+3. no phase starts before its mandatory START record;
+4. no lane is released without a persisted close/recovery-close record;
+5. runtime/lane-status and run logs reconcile;
+6. no orphan OPEN lifecycle event remains.
+
+Historical runs before activation of this contract remain legacy evidence and are not retroactively invalidated. All new invocations/runs must comply.
+
+## Plain-English content rule
+
+Every meaningful log must explain:
+
+- what is about to happen;
+- why it is needed;
+- what happened;
+- what changed;
 - what evidence supports the result;
-- whether the work completed or not;
-- what should happen next.
+- what blocked progress, if anything;
+- why unsafe continuation was avoided;
+- what happens next.
 
-## Who writes the shared log
+Do not make raw tool JSON, internal messages, secrets, long stack traces or low-level protocol output the primary log content.
 
-Workers do not directly edit the shared log while they are running in parallel.
+## Immutability and corrections
 
-Each worker returns lifecycle records to the coordinator:
-
-- INIT record;
-- meaningful SERVICE progress/result records when needed;
-- CLOSE record.
-
-The coordinator writes those results into `logs/automation-log.md` in a controlled order.
-
-This prevents 10 workers from trying to edit the same file at the same time.
-
-## INIT log record
-
-When `init()` begins, the log event is opened.
-
-The INIT part must include:
-
-```markdown
-## EVENT <event-id>
-
-Log State: OPEN
-Time Started:
-Workflow:
-Job:
-Worker:
-Run ID:
-Attempt:
-Source baseline:
-
-### What is about to start
-
-Plain-English description of the Job.
-
-### Why this work is needed
-
-Plain-English reason.
-
-### What the worker plans to do
-
-List the main assigned Actions in simple English.
-
-### Expected result
-
-State what should exist when the Job is successfully completed.
-```
-
-Example:
-
-> LANE-04 is starting the VehicleTripController trace. The worker will identify its exposed endpoints, follow each endpoint through the application, and record the final dependencies that can be proved from the approved source baseline.
-
-## SERVICE log content
-
-`service()` performs the actual assigned Actions.
-
-The human-readable log should record meaningful findings or major progress, not every technical operation.
-
-Example:
-
-> Four exposed endpoints were found. Three have been traced to their final database dependencies. One path currently ends at `TripQueryBuilder` and needs further examination.
-
-If the service becomes blocked, the worker must explain the real problem in simple English.
-
-## CLOSE log record
-
-Every opened event must end with a CLOSE section.
-
-The CLOSE part must include:
-
-```markdown
-### Work completed
-
-Explain what was completed.
-
-### Work not completed
-
-Write `Nothing` when everything completed.
-
-### What is blocking progress
-
-Write `Nothing` when there is no blocker.
-
-### Why the worker could not safely continue
-
-Write `Not applicable` when there is no blocker.
-
-### Alternatives that can be considered
-
-Write `None required` when no decision is needed.
-
-### Evidence
-
-List source files, artifacts, tests, commit IDs or other proof.
-
-### Final worker result
-
-Use COMPLETED, PARTIAL, BLOCKED or FAILED.
-
-### What happens next
-
-State the next expected action.
-
-Time Ended:
-Log State: CLOSED
-```
-
-The CLOSE record must make it obvious whether the worker completed the Job or did not complete it.
-
-## Example complete lifecycle entry
-
-```markdown
-## EVENT EVT-014
-
-Log State: OPEN
-Time Started: 2026-08-22T05:20:00+05:30
-Workflow: WF-001 Controller Traceability
-Job: Trace VehicleTripController
-Worker: LANE-04
-Run ID: RUN-014
-Attempt: 1
-Source baseline: abc123
-
-### What is about to start
-
-LANE-04 is starting the VehicleTripController trace.
-
-### Why this work is needed
-
-The controller traceability artifact must show where every exposed request finally goes.
-
-### What the worker plans to do
-
-The worker will list the exposed endpoints, follow their real application calls, and record the final dependencies that can be proved.
-
-### Expected result
-
-One complete VehicleTripController traceability artifact.
-
-### Service progress
-
-Four endpoints were found. Three traces completed. The fourth reached another query component.
-
-### Work completed
-
-Three endpoint traces were completed and recorded.
-
-### Work not completed
-
-One endpoint has not yet reached a confirmed final database dependency.
-
-### What is blocking progress
-
-The final query is built by another component whose required configuration is not available in the current source baseline.
-
-### Why the worker could not safely continue
-
-Naming a database table now would require guessing.
-
-### Alternatives that can be considered
-
-1. Supply or locate the missing configuration.
-2. Use approved Flyway/database evidence to continue the trace.
-3. Keep this path unresolved and schedule a follow-up Job.
-
-### Evidence
-
-VehicleTripController, the downstream Service/Repository path, and source baseline abc123.
-
-### Final worker result
-
-PARTIAL
-
-### What happens next
-
-The coordinator should record the unresolved path and obtain a decision on the next investigation method.
-
-Time Ended: 2026-08-22T05:28:00+05:30
-Log State: CLOSED
-```
-
-## Allowed status values
-
-Use these values consistently:
-
-- `READY` - the work can start;
-- `IN_PROGRESS` - the worker is currently performing it;
-- `COMPLETED` - the requested work was produced;
-- `VERIFIED` - the result was checked and accepted by its gate;
-- `PARTIAL` - useful work was produced but something remains incomplete;
-- `BLOCKED` - the worker cannot safely continue because something required is missing or a decision is needed;
-- `FAILED` - the work was attempted but the expected result was not achieved;
-- `WAITING_FOR_DECISION` - alternatives have been identified and a decision owner must choose.
-
-Worker lifecycle-only states may also appear inside one Job attempt:
-
-- `INITIALIZED`;
-- `BLOCKED_BEFORE_SERVICE`;
-- `OPEN`;
-- `CLOSED`;
-- `RESULT_NOT_CONFIRMED` for coordinator recovery of a stale worker.
-
-## Plain-English blocker rule
-
-The blocker section must describe the real problem, not only the technical symptom.
-
-Bad:
-
-> SQLState 42P01.
-
-Better:
-
-> The worker tried to verify the database query, but the table named by the query does not exist in the database version currently being checked. Because the source and database do not agree, the worker cannot confirm the trace until the expected table name or migration state is clarified.
-
-The technical code may be added under Evidence, but it must not be the main explanation.
-
-## Blocker decision rule
-
-When a blocker is found, the worker must not silently choose a new design.
-
-The worker should explain reasonable alternatives in simple English. The coordinator or designated decision owner decides what happens next unless the Workflow already contains an approved fallback.
-
-## What must not appear as the main log content
-
-Do not fill the human-readable log with:
-
-- tool invocation JSON;
-- internal agent messages;
-- token counts;
-- raw stack traces;
-- long shell output;
-- raw Git protocol output;
-- secrets, passwords, tokens or connection strings.
-
-Technical evidence may be referenced briefly under Evidence or stored in a separate evidence artifact when required.
-
-## Immutability rule
-
-A completed CLOSED event should not be silently rewritten to make history look cleaner.
-
-If a previous event needs correction, add a new event explaining the correction and point to the earlier event.
+A completed CLOSED lifecycle event must not be silently rewritten to make history cleaner. Corrections are new records that identify the earlier event and explain what is being corrected.
 
 ## Story generation
 
-`automation/generate-automation-story.py` reads `logs/automation-log.md` and produces `logs/automation-story.md`.
-
-The story generator must not invent missing facts. If the log says a Job was partial, blocked, failed or not confirmed, the story must preserve that meaning.
+`automation/generate-automation-story.py` reads `logs/automation-log.md` and produces `logs/automation-story.md`. The story generator must preserve PARTIAL/BLOCKED/FAILED/RESULT_NOT_CONFIRMED meaning and must not invent missing facts.
