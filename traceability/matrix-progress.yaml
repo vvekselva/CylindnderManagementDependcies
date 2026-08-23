@@ -1,11 +1,19 @@
-version: 2
+version: 3
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
 structured_matrix_artifact: traceability/explorer/traceability-matrix.json
 browser_data_artifact: traceability/explorer/matrix-data.js
+structured_delta_artifacts:
+  - traceability/explorer/traceability-matrix-delta-20260824-003111.json
+  - traceability/explorer/traceability-matrix-delta-20260824-005711.json
+browser_delta_artifacts:
+  - traceability/explorer/matrix-delta-20260824-003111.js
+  - traceability/explorer/matrix-delta-20260824-005711.js
+viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 state: INCREMENTAL_PARTIAL
+projection_state: BASE_PLUS_ORDERED_DELTAS_CURRENT
 canonical_endpoint_inventory: 134
 canonical_accepted_examined: 41
 canonical_complete: 39
@@ -22,10 +30,15 @@ latest_newly_accepted_endpoints:
     state: COMPLETE
     chain_completeness: FULL_BRANCHING
     evidence: logs/runs/PRODUCTION-FIRE-20260824-005711.md
+projection_note: >-
+  The immutable/base Explorer files currently represent the earlier accepted snapshot. Ordered checked-in delta artifacts
+  reconcile the browser-visible and structured incremental projection to the canonical 41/39/2/93 checkpoint without
+  inventing historical rows. index.html loads browser deltas in checkpoint order. A later consolidation may fold deltas
+  into the base files only if semantic identity is preserved.
 update_rule: >-
-  Every newly accepted endpoint trace is immediately upserted into the Markdown matrix and structured full-chain model.
+  Every newly accepted endpoint trace is immediately upserted into the Markdown matrix and structured full-chain projection.
   Historical accepted traces may be backfilled only from durable accepted evidence; counts must never be converted into invented rows.
 finalization_condition: >-
   Canonical accepted trace-result coverage is 100 percent, every caller-visible endpoint appears exactly once,
   every COMPLETE row has a source-proved full/branching chain, all row evidence references are valid at the frozen
-  source baseline, structured JSON/browser data reconcile, and required traceability gates pass.
+  source baseline, the base-plus-delta structured/browser projection reconciles, and required traceability gates pass.
