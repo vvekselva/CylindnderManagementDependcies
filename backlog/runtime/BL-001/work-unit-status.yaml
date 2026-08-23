@@ -1,5 +1,17 @@
 work_units:
-  WU-BL001-001: PARTIAL
+  WU-BL001-001:
+    state: PARTIAL
+    execution_mode: GITHUB_ACTIONS_MATRIX_EVIDENCE_COLLECTION
+    dispatch_queue: backlog/runtime/BL-001/lane-dispatch.yaml
+    dispatch_id: MATRIX-BL001-DISPATCH-003
+    source_dispatch_generation: 3
+    safe_ready_tasks: 10
+    expected_concurrent_lanes: 10
+    external_workflow_run_id: null
+    external_workers_confirmed_started: 0
+    qg_lane_001_state: BLOCKED_PLATFORM
+    checkpoint: {examined: 37, total: 134, complete: 35, unresolved: 2, not_yet_examined: 97}
+    next_action: Verify source-repository Actions start permission/availability and obtain automation/matrix-execution.yaml plus the durable lane-dispatch-aggregate before consuming worker evidence.
   WU-BL001-002: WAITING_FOR_DEPENDENCY
   WU-BL001-003: WAITING_FOR_DEPENDENCY
   WU-BL001-004: WAITING_FOR_DEPENDENCY
