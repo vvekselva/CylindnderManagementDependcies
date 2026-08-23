@@ -1,5 +1,5 @@
 lane_status:
-  version: 1
+  version: 2
   backlog_item: BL-001
   authoritative: true
   purpose: >-
@@ -12,6 +12,29 @@ lane_status:
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   last_reconciled_attempt: 25
   last_reconciled_run: RUN-WI0004-20260823-025
+  invocation_state: BETWEEN_INVOCATIONS
+  current_idle_reason: LAST_RECONCILED_RUN_CLOSED_NO_ACTIVE_COORDINATOR_INVOCATION
+
+  utilization_policy:
+    objective: MAXIMIZE_SAFE_PROGRESS_PER_COORDINATOR_INVOCATION
+    fixed_small_batch_limit: false
+    max_parallel_lanes: 10
+    batching_strategy: CONTROLLER_SERVICE_FAMILY
+    fill_available_lanes_when_safe: true
+    refill_released_lanes_within_same_invocation: true
+    idle_between_invocations_is_valid: true
+    idle_during_active_invocation_requires_reason_when_eligible_work_exists: true
+    do_not_parallelize:
+      - DEPENDENT_WORK
+      - CONFLICTING_SHARED_FILE_WRITES
+      - RESOURCE_LOCK_CONFLICTS
+      - WORK_REQUIRING_UNPROVED_DEPENDENCY_ASSUMPTIONS
+    stop_conditions:
+      - NO_ELIGIBLE_INDEPENDENT_WORK_REMAINS
+      - HARD_BLOCKER_PREVENTS_FURTHER_ELIGIBLE_WORK
+      - RESOURCE_OR_SHARED_FILE_LOCK_PREVENTS_SAFE_PARALLELISM
+      - INVOCATION_OR_TOOL_EXECUTION_LIMIT_REACHED
+      - WORK_UNIT_COMPLETION_BOUNDARY_REACHED
 
   policy:
     one_active_job_per_lane: true
@@ -32,6 +55,7 @@ lane_status:
       - BLOCKED lane must contain a plain-English blocker
       - a CLOSED run must release its lane unless another assignment has already replaced it
       - summary counts must reconcile exactly to the ten lane records
+      - during an active invocation the coordinator should fill and refill safe independent lanes while eligible work remains
 
   lanes:
     LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, blocker: null}
@@ -58,7 +82,9 @@ lane_status:
     active_lane_count: 0
 
   current_interpretation: >-
-    No orchestration lane is actively executing at this checkpoint. WI-0004 Attempt 25 is
-    CLOSED/PARTIAL, so all lanes are released between scheduled invocations. BL-001 remains
-    active through WU-BL001-001, and the next coordinator cycle may assign independent
-    endpoint/controller-family tracing tasks to available lanes after dependency and scope checks.
+    No orchestration lane is actively executing at this checkpoint because WI-0004 Attempt 25
+    is CLOSED/PARTIAL and no coordinator invocation is currently active. This BETWEEN_INVOCATIONS
+    idle state is valid. During the next active coordinator invocation, BL-001 / WU-BL001-001
+    should partition eligible independent controller/endpoint families across available lanes,
+    fill safe capacity up to ten lanes, and refill released lanes within the same invocation while
+    eligible work remains. The coordinator must not intentionally stop after a fixed three-endpoint batch.
