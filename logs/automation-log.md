@@ -128,3 +128,15 @@ Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 The Orchestrator continued only BL-001 / WU-BL001-001 and traced three independent active endpoints to physical database dependencies. `GET /search/vehicle/{searchText}` reaches `VehicleSearchService` and `VehicleJpaDao.findByVehicleNumberContainingIgnoreCase(...)`; `GET /find/Vehicle-by-Id/{vehicleId}` reaches `VehicleFetchByIdService` and `VehicleJpaDao.findById(...)`; both resolve through `VehicleDo` to `public.tbl_vehicle`. `GET /search/supplier/{searchText}` reaches `SupplierSearchService` and `SupplierJpaDao.findBySupplierNameContainingIgnoreCase(...)`, resolving through `SupplierDo` to `public.tbl_supplier`.
 
 Checkpoint advanced to **19 / 134 endpoints examined; 19 COMPLETE; 0 UNRESOLVED; 0 BLOCKED; 0 FAILED; 115 NOT YET EXAMINED**. QG-TRC-002 remains IN_PROGRESS because 115 endpoints remain unexamined and the canonical completed worker result does not yet exist. QG-TRC-004 and QG-TRC-009 remain IN_PROGRESS. `worker/results/WI-0004.yaml` remains uncreated/unaccepted; matrix construction and dependent work units remain locked; BL-001 remains PARTIAL and open.
+
+---
+
+## EVENT EVT-0032 - WI-0004 Twenty-Fourth Attempt Examined Challan Type, City And Country Search Paths
+Time: `2026-08-23T06:55:32+05:30`
+Run: `RUN-WI0004-20260823-024`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The Orchestrator continued only BL-001 / WU-BL001-001 and examined three independent active REST endpoints: `GET /search/challantype/{searchText}`, `GET /search/city/{searchText}`, and `GET /search/country/{searchText}`. The frozen controller source proves each mapping and its injected generic `ICylinderManagementApplicationSearchService` handoff. The concrete Spring implementation, repository/query layer and final dependency for each injection are not yet proved, so all three paths were recorded UNRESOLVED at their last proven service handoff rather than guessing.
+
+Checkpoint advanced to **22 / 134 endpoints examined; 19 COMPLETE; 3 UNRESOLVED; 0 BLOCKED; 0 FAILED; 112 NOT YET EXAMINED**. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS; QG-TRC-009 remains IN_PROGRESS with positive no-guessing evidence. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, matrix construction and dependent work units remain locked, and BL-001 remains PARTIAL and open.
