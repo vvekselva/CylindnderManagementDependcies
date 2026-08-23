@@ -1,4 +1,4 @@
-version: 2
+version: 3
 purpose: >-
   Define the mandatory three-level Single Source of Truth model. Planning or replanning
   for a Backlog Item is fail-closed until Level 1, Level 2 and Level 3 are all complete
@@ -17,11 +17,14 @@ planning_gate:
 levels:
   level_1:
     id: SSOT-L1
-    name: Backlog Master SSOT
-    authoritative_file: backlog/backlog.yaml
+    name: Backlog Master and Repository Scope SSOT
+    authoritative_files:
+      - backlog/backlog.yaml
+      - repository/project-inventory.yaml
     purpose: >-
-      Answer what work exists and provide the authoritative master registry entry for
-      each Backlog Item.
+      Answer what work exists, which top-level CylinderManagement projects/modules exist,
+      and provide the authoritative master registry and cross-backlog scope classifications
+      that planning is allowed to use.
     required_item_fields:
       - id
       - name
@@ -36,11 +39,17 @@ levels:
       - dependencies
       - expected_outputs
       - runtime
+    repository_inventory_rules:
+      - every top-level CylinderManagement project/module must appear exactly once
+      - backlog-specific scope classifications must be explicit and machine-readable
+      - the Orchestrator must not infer a missing project classification from project names or source layout
+      - postponed work must remain distinct from NOT_REQUIRED and COMPLETED work
     validation_rules:
       - selected Backlog Item exists exactly once in backlog/backlog.yaml
       - id/name/type/purpose references reconcile with Level 2
       - all file references required for planning are non-null and resolvable
       - state and dependency declarations are machine-readable
+      - any Level 1 project/module scope classification required by the selected backlog is complete before Level 2 is considered complete
     pass_state: COMPLETE
 
   level_2:
@@ -75,7 +84,7 @@ levels:
       - definition id/name/type/purpose reconcile with Level 1
       - SOW, Completion Path and Quality Gate references exist
       - deliverables and acceptance criteria are non-placeholder
-      - execution scope cannot be invented outside the SOW
+      - execution scope cannot be invented outside the SOW or contradict Level 1 project/module classifications
     pass_state: COMPLETE
 
   level_3:
