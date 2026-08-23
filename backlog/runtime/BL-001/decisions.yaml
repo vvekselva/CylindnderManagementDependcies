@@ -19,9 +19,17 @@ decisions:
     state: APPLIED
     decision: MANDATORY_ORCHESTRATOR_AND_LANE_LIFECYCLE_BOUNDARY_LOGGING
     reason: >-
-      The user requires visible audit records before and after every coordinator invocation and at
-      each lane lifecycle boundary. New executions must persist ORCHESTRATOR_INVOCATION_START before
-      analysis/execution and ORCHESTRATOR_INVOCATION_END after all started lanes close and runtime is
-      synchronized. Each lane must log INIT start/end, SERVICE start/end and CLOSE end. A missing
-      mandatory pre-phase log blocks that phase; a lane is not released until its close/recovery-close
-      record is persisted; execution results require QG-LOG-001 compliance before acceptance.
+      New executions must persist ORCHESTRATOR_INVOCATION_START before analysis/execution and
+      ORCHESTRATOR_INVOCATION_END after all started lanes close and runtime is synchronized. Each
+      lane logs INIT start/end, SERVICE start/end and CLOSE end. Every START identifies the exact task.
+  - id: DEC-BL001-005
+    state: APPLIED
+    decision: INDIVIDUAL_LANE_LOGS_ARE_TRANSIENT_AND_MUST_BE_CLEAN_AT_INVOCATION_BOUNDARIES
+    reason: >-
+      Before a new Orchestrator invocation begins execution, logs/runs must contain zero individual
+      lane logs from a previous invocation. Any leftover lane logs force recovery-only aggregation,
+      verification and deletion before new work may begin. During Orchestrator closure, every current
+      invocation lane log must be accumulated into the invocation aggregate/shared audit, verified as
+      represented, and deleted. ORCHESTRATOR_INVOCATION_END is allowed only when the post-cleanup
+      individual lane log count is zero. This preserves complete audit evidence while preventing stale
+      per-lane files from surviving across invocation boundaries.
