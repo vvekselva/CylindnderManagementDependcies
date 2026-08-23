@@ -1,8 +1,10 @@
 completion_path:
-  id: CP-BL-001-v2
+  id: CP-BL-001-v3
   backlog_item: BL-001
   type: TRACEABILITY
   name: Controller Traceability Completion Path
+  statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
+  statement_of_work_gate: QG-SOW-001
   common_dependency_gate: QG-DEP-001
   quality_gate_config: backlog/gates/BL-001-traceability.yaml
 
@@ -11,6 +13,7 @@ completion_path:
     frozen CylinderManagement source version.
 
   prerequisites:
+    - QG-SOW-001 must PASS before analysis, planning or execution
     - QG-DEP-001 must PASS
     - BL-001 run_enabled must be true in backlog/orchestrator-run-config.yaml
     - backlog/gates/BL-001-traceability.yaml must be configured and user-approved
@@ -20,6 +23,7 @@ completion_path:
       owner: ORCHESTRATOR
       required: true
       actions:
+        - confirm the BL-001 Statement of Work remains valid and in force
         - freeze/confirm one source baseline
         - inspect current traceability runtime state
         - determine the complete Source Repository Check scope
@@ -29,6 +33,7 @@ completion_path:
         - backlog/runtime/BL-001/execution-plan.yaml
         - worker/inputs/WI-0004.yaml
       gates:
+        - QG-SOW-001
         - QG-TRC-001
 
     - id: EXECUTE_SOURCE_CHECK
@@ -104,6 +109,7 @@ completion_path:
     matrix_build: false
 
   completion_conditions:
+    - QG-SOW-001 PASS
     - QG-DEP-001 PASS
     - QG-TRC-001 through QG-TRC-014 PASS
     - QG-TRC-015 explicitly APPROVED by user
