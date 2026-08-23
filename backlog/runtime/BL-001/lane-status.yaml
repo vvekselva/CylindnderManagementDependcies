@@ -1,30 +1,27 @@
 lane_status:
-  version: 3
+  version: 4
   backlog_item: BL-001
   authoritative: true
   purpose: >-
     Provide the single point of truth for what each orchestration lane is doing now.
-    This file records current lane assignment, task, Worker Input, run, heartbeat,
-    blocker, lifecycle-log boundary and release state. Historical run logs do not replace
-    this live runtime SSOT.
+    Historical lifecycle logs do not override this current runtime SSOT.
 
   current_backlog_state: PARTIAL
   current_work_unit: WU-BL001-001
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   last_reconciled_attempt: 26
   last_reconciled_run: INVOCATION-20260823-145512
-  invocation_state: BETWEEN_INVOCATIONS
-  current_invocation: null
-  current_idle_reason: LAST_INVOCATION_CLOSED_ALL_LANES_RELEASED
+  invocation_state: ACTIVE
+  current_invocation: INVOCATION-20260823-160000
+  current_idle_reason: AWAITING_SAFE_ASSIGNMENT_AFTER_CLEAN_PREFLIGHT
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
-    invocation_start_required_before_analysis_or_execution: true
+    invocation_start_persisted: true
+    preflight_individual_lane_log_count: 0
+    preflight_lane_log_hygiene_result: PASS
     required_lane_event_order: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
-    blocked_before_service_exception: >-
-      SERVICE_START and SERVICE_END are omitted only when LANE_INIT_END is
-      BLOCKED_BEFORE_SERVICE. close() and LANE_CLOSE_END remain mandatory.
     lane_release_requires_persisted_close_log: true
     result_acceptance_requires_qg_log_001: true
 
@@ -71,6 +68,6 @@ lane_status:
     active_lane_count: 0
 
   current_interpretation: >-
-    Attempt 26 and its Orchestrator invocation are CLOSED. All started lanes have persisted
-    lifecycle CLOSE records and all ten lanes are currently IDLE between invocations. BL-001
-    remains active with two explicit evidence gaps and 107 not-yet-examined endpoints.
+    Invocation INVOCATION-20260823-160000 has passed lane-log hygiene preflight with zero
+    individual lane logs. The invocation START record is persisted and safe task assignment
+    may now begin after live gate validation.
