@@ -12,7 +12,7 @@ quality_gate_status:
       level_2: {state: COMPLETE, evidence: [backlog/items/BL-001-controller-traceability.yaml, backlog/sow/BL-001-controller-traceability.yaml, backlog/paths/BL-001-traceability.yaml, backlog/gates/BL-001-traceability.yaml]}
       level_3:
         state: COMPLETE
-        evidence: [backlog/runtime/BL-001/analysis.yaml, backlog/runtime/BL-001/execution-plan.yaml, backlog/runtime/BL-001/work-unit-status.yaml, backlog/runtime/BL-001/gate-status.yaml, backlog/runtime/BL-001/blockers.yaml, backlog/runtime/BL-001/decisions.yaml, backlog/runtime/BL-001/worker-input-register.yaml, backlog/runtime/BL-001/lane-status.yaml, backlog/runtime/BL-001/lane-dispatch.yaml, backlog/runtime/BL-001/execution-statistics.yaml, backlog/runtime/BL-001/result.yaml]
+        evidence: [backlog/runtime/BL-001/analysis.yaml, backlog/runtime/BL-001/execution-plan.yaml, backlog/runtime/BL-001/work-unit-status.yaml, backlog/runtime/BL-001/gate-status.yaml, backlog/runtime/BL-001/blockers.yaml, backlog/runtime/BL-001/decisions.yaml, backlog/runtime/BL-001/worker-input-register.yaml, backlog/runtime/BL-001/lane-status.yaml, backlog/runtime/BL-001/lane-dispatch.yaml, backlog/runtime/BL-001/local-execution.yaml, backlog/runtime/BL-001/execution-statistics.yaml, backlog/runtime/BL-001/result.yaml]
     planning_allowed: true
     replanning_allowed: true
 
@@ -24,43 +24,41 @@ quality_gate_status:
     latest_closed_invocation: INVOCATION-20260823-175300
     preflight_individual_repo_lane_logs: 0
     post_invocation_individual_repo_lane_logs: 0
-    note: No matrix lane service execution has been accepted; generation-4 fire produced no external worker evidence.
+    note: The local executor will re-run zero-lane-log preflight and enforce lifecycle aggregation on every local fire.
 
   real_lane_utilization_gate:
     id: QG-LANE-001
     name: Real Lane Utilization Gate
-    state: BLOCKED_PLATFORM
+    state: READY_FOR_MEASUREMENT
     governance: governance/lane-execution.yaml
     control_dispatch_queue: backlog/runtime/BL-001/lane-dispatch.yaml
-    dispatch_id: MATRIX-BL001-DISPATCH-004
-    source_dispatch_generation: 4
-    source_dispatch_id: MATRIX-BL001-SOURCE-004
-    source_dispatch_commit: 6810c3d19cbc6b5757317c00f627333b6c31eb7a
-    worker_backend: SOURCE_REPOSITORY_LOCAL_GITHUB_ACTIONS_MATRIX
+    local_execution_ssot: backlog/runtime/BL-001/local-execution.yaml
+    dispatch_id: LOCAL-BL001-DISPATCH-005
+    worker_backend: LOCAL_PROCESS_POOL
+    executor: automation/local-lane-executor.py
+    worker: automation/local-lane-worker.py
+    windows_fire_script: automation/fire-local-lanes.ps1
     source_repository: vvekselva/CylinderManagement
-    source_execution_branch: automation/lane-matrix
-    source_workflow: .github/workflows/lane-matrix-dispatch.yml
-    source_run_status: automation/matrix-execution.yaml
+    source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+    source_checkout_mode: TEMPORARY_DETACHED_GIT_WORKTREE_AT_FROZEN_COMMIT
     configured_lanes: 10
     safe_ready_tasks: 10
     expected_concurrent_lanes: 10
-    source_dispatch_copy_verified: true
-    source_workflow_installed: true
-    source_workflow_run_id: null
-    external_workers_confirmed_started: 0
-    measured_peak_concurrent_lanes: null
-    measured_average_concurrent_lanes: null
-    peak_capacity_utilization_percentage: null
+    external_service_dependency: NONE
+    local_workers_confirmed_started: 0
+    measured_peak_worker_processes_alive: null
+    measured_peak_service_concurrent_lanes: null
+    measured_average_service_concurrent_lanes: null
+    peak_service_capacity_utilization_percentage: null
     durable_aggregate_available: false
-    blocker_id: PB-BL001-001
-    blocker_summary: Generation 4 was fired successfully at the repository level, but GitHub Actions produced no run-status or worker evidence.
+    blocker_id: null
     pass_evidence_required:
-      - source automation/matrix-execution.yaml with real workflow run ID
-      - durable lane-dispatch-aggregate after summarize completion
-      - lane-dispatch-summary.yaml with worker result count and lifecycle verification
-      - measured peak_concurrent_lanes and average_concurrent_lanes
-      - transient individual matrix artifacts remaining equals zero after aggregation
-    source_evidence_validity_effect: QG-LANE-001 does not invalidate valid source evidence, but no matrix worker evidence exists yet.
+      - local-execution.yaml with CLOSED local execution ID and zero remaining lane logs
+      - durable worker/evidence/LOCAL-BL001-<timestamp>/lane-dispatch-aggregate.yaml
+      - peak_service_concurrent_lanes and average_service_concurrent_lanes measured from lifecycle timestamps
+      - all expected worker results received and no worker execution failures
+      - transient individual lane logs remaining equals zero after verified aggregation
+    source_evidence_validity_effect: QG-LANE-001 does not automatically accept endpoint traces; the primary Orchestrator validates worker evidence.
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
@@ -81,4 +79,4 @@ quality_gate_status:
 
   endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 37, complete: 35, unresolved: 2, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 97}
   close_allowed: false
-  reason: BL-001 remains PARTIAL; generation-4 source-local Actions dispatch has no workflow/job evidence, so real concurrency cannot be measured and 97 endpoint traces remain unexamined.
+  reason: BL-001 remains PARTIAL; real local concurrency is ready to be measured and 97 endpoint traces remain unexamined.
