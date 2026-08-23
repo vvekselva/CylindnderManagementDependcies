@@ -1,9 +1,9 @@
-version: 4
+version: 5
 purpose: >-
-  Tell the Orchestrator which Backlog Items are currently allowed to run. This is the
-  execution switchboard for scheduled Orchestrator runs. A true run_enabled flag does not
-  bypass the three-level SSOT planning gate, Statement of Work validation, dependencies or
-  quality gates; it only makes the item eligible for consideration.
+  Tell the Orchestrator which Backlog Items are currently allowed to run and define the
+  production execution-host prerequisites. This is the execution switchboard for scheduled
+  Orchestrator runs. A true run_enabled flag does not bypass the three-level SSOT planning gate,
+  Statement of Work validation, dependencies, quality gates or execution-host preflight.
 
 selection:
   mode: ENABLED_BACKLOG_ITEMS_ONLY
@@ -14,6 +14,47 @@ selection:
   require_common_dependency_gate: true
   require_item_specific_quality_gate: true
   require_item_quality_gate_approved_by_user: true
+
+execution_engine:
+  owner: AUTOMATION_TOOL
+  backend: LOCAL_PROCESS_POOL
+  max_parallel_workers: 10
+  github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
+  github_actions_required: false
+  external_worker_service_required: false
+  source_repository: vvekselva/CylinderManagement
+  control_repository: vvekselva/CylindnderManagementDependcies
+
+production_execution_host_contract:
+  required_before_worker_fire: true
+  fail_closed: true
+  required_capabilities:
+    - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement
+    - checkout_contains_frozen_source_commit
+    - Git_available_on_execution_host
+    - Python_3_available_on_execution_host
+    - control_checkout_contains_local_executor_worker_and_dispatch_files
+    - zero_leftover_individual_lane_logs_before_fire
+  source_access_rule: >-
+    The Automation Tool may use the connected GitHub interface for control-plane repository reads
+    and writes, but local OS worker processes cannot inherit that connector credential. Production
+    workers therefore require the source repository to be locally mounted/staged on the same
+    execution host before fire. A connector-readable private repository is not by itself a worker-readable
+    filesystem checkout.
+  baseline_handling: >-
+    The active Eclipse/Git checkout is not switched. The local executor verifies the frozen commit exists
+    in the local Git object database and creates a temporary detached Git worktree at that exact commit.
+  preflight_sequence:
+    - verify source checkout path exists
+    - verify source checkout is a Git repository
+    - verify frozen source commit exists locally
+    - verify Python 3 and Git are available
+    - verify zero transient lane logs remain
+    - only then assign/start local worker processes
+  preflight_failure_behavior: >-
+    Do not start any lane. Record EXECUTION_HOST_PREFLIGHT_BLOCKED with the exact missing prerequisite,
+    keep QG-LANE-001 READY_FOR_MEASUREMENT, preserve BL-001 as PARTIAL, and do not treat the failure as
+    a GitHub Actions or source-code blocker.
 
 backlog_items:
   BL-001:
@@ -62,6 +103,9 @@ scheduled_run_rules:
   - perform Orchestrator analysis only inside the initialized Level 3 runtime area
   - create/change the Execution Plan only after QG-SSOT-001 PASS and required analysis is complete
   - generate Worker Inputs only from approved Work Units and within SOW scope
+  - before production worker fire apply production_execution_host_contract preflight
+  - never infer source checkout availability from GitHub connector access alone
+  - on production preflight failure start zero lanes and record the exact execution-host prerequisite
   - consume only CLOSED Worker results that satisfy their result contract
   - evaluate all automatic item-specific quality gates before VERIFIED
   - wait for explicit user approval when a USER-owned acceptance gate is reached
