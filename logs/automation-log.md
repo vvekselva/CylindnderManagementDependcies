@@ -185,3 +185,19 @@ Checkpoint advanced to **27 / 134 endpoints examined; 25 COMPLETE; 2 UNRESOLVED;
 After the invocation closed, the user introduced the stricter invocation-boundary lane-log hygiene rule. The three closed lane lifecycle logs were therefore accumulated into the durable invocation aggregate `logs/runs/INVOCATION-20260823-145512.md`, verified as represented, and then deleted. A repository re-scan proved that **0 individual lane logs remain**. The next invocation must start by proving the same zero-log precondition before new execution and must close only after all transient lane logs are accumulated, verified, deleted, and a zero-log postcondition is proved.
 
 This consolidation does not change the source-trace meaning of Attempt 26. Matrix construction remains locked and BL-001 remains PARTIAL.
+
+---
+
+## EVENT EVT-0036 - Attempt 27 Added Ten Complete Traces And Began Clean Log Aggregation
+Time: `2026-08-23T16:28:30+05:30`
+Invocation: `INVOCATION-20260823-160000`
+Status: `PARTIAL / EXECUTION-CLOSED / AGGREGATING`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The invocation preflight proved **0 individual lane logs** before execution and persisted its exact-task invocation START record before analysis/assignment. Three lane runs then completed with the required logged INIT, SERVICE and CLOSE boundaries.
+
+Attempt 27 examined **10 additional endpoints, all COMPLETE**. `GET /login` is a source-proved terminal view action with no service/DAO/database dependency. Four `OfflineMapController` endpoints were proved to use the configured MBTiles filesystem file, read-only SQLite tables `tiles` / `metadata`, explicit classpath resources, or configuration-driven JSON as applicable. Five `PredefinedDeliveryTripController` endpoints were proved through concrete services/DAOs/entities/native SQL to `public.tbl_predefined_delivery_trip`, `public.tbl_predefined_delivery_trip_stop`, `public.tbl_delivery_planning_stop`, and, for the metrics page path, explicitly referenced views `public.vw_customer_address_location_status` and `public.vw_customer_delivery_planning_signal`.
+
+Provisional post-execution checkpoint: **37 / 134 endpoints examined; 35 COMPLETE; 2 UNRESOLVED; 0 BLOCKED; 0 FAILED; 97 NOT YET EXAMINED**. The two UNRESOLVED paths remain the prior `POST /customer-spot-cylinder-check/submit` and `POST /walkin-sale`; no new unresolved trace was introduced.
+
+Complete lane lifecycle evidence has been copied into `logs/runs/INVOCATION-20260823-160000.md`. Final result acceptance remains conditional on deletion of the three transient lane files, a zero-log rescan, QG-LOG-001 reconciliation, runtime synchronization, and a persisted `ORCHESTRATOR_INVOCATION_END`. Matrix construction remains locked and BL-001 remains PARTIAL.
