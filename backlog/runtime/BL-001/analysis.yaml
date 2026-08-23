@@ -16,49 +16,65 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 22
-    complete: 22
-    unresolved: 0
+    examined_for_final_dependency: 27
+    complete: 25
+    unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 112
+    not_yet_examined: 107
 
   latest_attempt:
-    number: 25
-    run_id: RUN-WI0004-20260823-025
+    number: 26
+    run_id: INVOCATION-20260823-145512
     state: CLOSED
     result: PARTIAL
-    evidence: worker/runs/WI-0004.md
+    lifecycle_gate: QG-LOG-001
+    lifecycle_evidence:
+      - logs/runs/INVOCATION-20260823-145512.md
+      - logs/runs/INVOCATION-20260823-145512-LANE-01.md
+      - logs/runs/INVOCATION-20260823-145512-LANE-02.md
+      - logs/runs/INVOCATION-20260823-145512-LANE-03.md
     endpoint_traces:
-      - endpoint: GET /search/challantype/{searchText}
-        controller: RestfulChallanTypeServices
-        concrete_service: ChallanTypeSearchService
-        repository: ChallanTypeJpaDao
-        entity: ChallanTypeDo
-        final_dependency: public.tbl_challan_type
+      - endpoint: GET /customer-spot-cylinder-check/fetch
+        controller: CustomerSpotCylinderCheckController
+        concrete_service: CustomerSpotCylinderCheckService
+        repository: TripChallanBookAssignmentViewJpaDao
+        final_dependency: public.vw_trip_challan_book_assignments
         trace_state: COMPLETE
-      - endpoint: GET /search/city/{searchText}
-        controller: RestfulCityServices
-        concrete_service: CitySearchService
-        repository: CityJpaDao
-        entity: CityDo
-        final_dependency: public.tbl_city
+      - endpoint: POST /customer-spot-cylinder-check/submit
+        controller: CustomerSpotCylinderCheckController
+        concrete_service: CustomerSpotCylinderCheckService
+        last_proven_component: CustomerSpotCylinderCheckService and its directly injected persistence components
+        proved_database_objects: [public.tbl_customer_spot_cylinder_check]
+        trace_state: UNRESOLVED
+        reason: Complete database-object set for every submitSpotCheck branch is not yet source-proved.
+      - endpoint: GET /yard-audit-dashboard
+        controller: YardAuditDashboardController
+        concrete_service: YardAuditDashboardFetchService
+        repository: YardQualityGateJpaDao
+        final_database_objects: [public.tbl_yard_stock_check, public.tbl_yard_stock_check_line, public.tbl_yard_quality_gate, public.tbl_cylinder_states, public.tbl_yard_check_event]
         trace_state: COMPLETE
-      - endpoint: GET /search/country/{searchText}
-        controller: RestfulCountryServices
-        concrete_service: CountrySearchService
-        repository: CountryJpaDao
-        entity: CountryDo
-        final_dependency: public.tbl_country
+      - endpoint: GET /walkin-sale
+        controller: WalkinSaleIngestionController
+        final_dependency: final-version-1/WalkinSaleIngestion
+        final_dependency_type: TERMINAL_APPLICATION_ACTION
         trace_state: COMPLETE
+      - endpoint: POST /walkin-sale
+        controller: WalkinSaleIngestionController
+        concrete_service: WalkinSaleServiceImpl
+        proved_database_objects: [public.tbl_order, public.tbl_walk_in_sale, public.tbl_walk_in_pickup, public.tbl_walk_in_pickup_line, public.tbl_yard_entries]
+        last_proven_component: WalkinSaleServiceImpl and its directly injected persistence components
+        trace_state: UNRESOLVED
+        reason: Complete database-object set across every conditional processRequest branch is not yet source-proved.
     reason: >-
-      Attempt 25 resolved the three Attempt 24 generic service handoffs through concrete Spring
-      services, Spring Data DAO methods and explicit JPA entity table mappings. All 22 examined
-      endpoints now have source-proved final dependencies. The source check remains incomplete
-      because 112 endpoints have not yet been examined.
+      Attempt 26 used three lifecycle-logged lanes to examine five additional endpoint traces.
+      Three reached complete source-proved final dependencies. Two complex POST paths were retained
+      as UNRESOLVED at their last proved service/persistence boundary instead of guessing the
+      remaining database objects. QG-LOG-001 lifecycle boundaries were recorded for all started lanes.
 
   quality_gate_effect:
     QG-DEP-001: PASS
+    QG-LOG-001: PASS
     QG-TRC-001: PASS
     QG-TRC-002: IN_PROGRESS
     QG-TRC-003: PASS
@@ -72,19 +88,22 @@ analysis:
   proved_now:
     - All 62 production component candidates remain classified exactly once as EXPOSED or NOT_EXPOSED.
     - The endpoint inventory remains 134 unique caller-visible HTTP method/path combinations.
-    - Twenty-two endpoints have been explicitly examined for final dependencies.
-    - All twenty-two examined endpoints are now COMPLETE.
-    - Challan Type resolves to ChallanTypeSearchService -> ChallanTypeJpaDao -> ChallanTypeDo -> public.tbl_challan_type.
-    - City resolves to CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city.
-    - Country resolves to CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country.
+    - Twenty-seven endpoints have now been explicitly examined for final dependencies.
+    - Twenty-five endpoint traces are COMPLETE and two are explicitly UNRESOLVED.
+    - GET /customer-spot-cylinder-check/fetch resolves to public.vw_trip_challan_book_assignments.
+    - GET /yard-audit-dashboard resolves through explicit YardQualityGateJpaDao SQL to five proved database objects.
+    - GET /walkin-sale is a terminal application action returning final-version-1/WalkinSaleIngestion without persistence access.
+    - All three Attempt 26 lane executions contain INIT_START, INIT_END, SERVICE_START, SERVICE_END and CLOSE_END records.
 
   not_yet_proved:
-    - Final dependencies for the remaining 112 endpoints.
+    - Complete database-object set for POST /customer-spot-cylinder-check/submit.
+    - Complete database-object set for POST /walkin-sale.
+    - Final dependencies for the remaining 107 not-yet-examined endpoints.
     - Contract-valid canonical worker/results/WI-0004.yaml with 100 percent endpoint trace-result coverage.
 
   next_step: >-
-    Continue source-proved endpoint-to-final-dependency tracing across the remaining 112 endpoints,
-    reusing already-proved component relationships only where the frozen source confirms the same path.
-    Record any unprovable path at the last proven component rather than guessing. Do not unlock Matrix
-    construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED, the result
-    contract validates, and endpoint trace-result coverage equals 100 percent.
+    First resolve the two Attempt 26 complex POST paths by verifying every remaining DAO/entity/view/native-query mapping,
+    then continue controller/service-family batches across the remaining 107 endpoints. Reuse source-proved relationships
+    only where the frozen source confirms the same path. Keep mandatory invocation and lane lifecycle logs for every new
+    execution. Do not unlock Matrix construction until worker/results/WI-0004.yaml is COMPLETED, the Worker run is CLOSED,
+    the result contract validates, and endpoint trace-result coverage equals 100 percent.
