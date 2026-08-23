@@ -1,5 +1,5 @@
 local_execution:
-  version: 6
+  version: 7
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -45,7 +45,8 @@ local_execution:
     accepted_endpoint_checkpoint_changed: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-23T22:38:00+05:30
+    checkpoint_time: 2026-08-23T23:07:30+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260823-230132.md
     worker_fire_started: false
     reason_worker_fire_not_started: QG_SOURCE_001_RECURSIVE_CLOSURE_NOT_READY_FOR_NEXT_SERVICE
     source_snapshot_materialized_files: 29
@@ -59,15 +60,30 @@ local_execution:
       fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
+    complete_trip_source_boundary_verification:
+      state: PASS_CONTROLLER_AND_IMPLEMENTATION_REPROVED_SNAPSHOT_STILL_PENDING
+      controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CompleteTripController.java
+      controller_blob_sha: f17008261fcaa641b7ab1f6d9c672bdd6eea5bf9
+      http_method: POST
+      endpoint: /complete-trip
+      controller_method: completeTrip
+      declared_service: ICylinderManagementApplicationService<CompleteTripRequestDto, CompleteTripResponseDto>
+      implementation: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
+      implementation_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
+      first_proved_entity: VehicleLoadDo
+      first_proved_entity_blob_sha: 04ca5cba6023011b7ba39e84168aa74a63e5bf45
+      first_proved_table: public.tbl_vehicle_load
+      complete_chain_accepted: false
+      reason_not_accepted: >-
+        CompleteTripServiceImpl explicitly calls twelve JpaDao persistence components and the entire branching
+        DAO/entity/table chain has not yet been snapshot-materialized and source-proved. WF-002 forbids jumping from
+        the controller or service directly to a final table while intermediate participating components remain unproved.
     note: >-
-      All three Spring interface bindings are now proved from source at the frozen commit. ChallanHeatmapFetchService
-      proves ICylinderManagementApplicationService<ChallanHeatmapFetchRequestDto, ChallanHeatmapFetchResponseDto>
-      and the default Spring bean identity challanHeatmapFetchService. ChallanPagePhotoUploadService proves
-      ICylinderManagementApplicationService<ChallanPagePhotoUploadRequestDto, ChallanPagePhotoUploadResponseDto>
-      and the default Spring bean identity challanPagePhotoUploadService. CompleteTripServiceImpl proves
-      ICylinderManagementApplicationService<CompleteTripRequestDto, CompleteTripResponseDto>; CompleteTripController
-      has no qualifier. The CompleteTrip implementation still must be materialized into the immutable worker snapshot
-      with its blob proof before the next worker fire. No endpoint trace was accepted during this checkpoint.
+      All three Spring interface bindings remain proved from source at the frozen commit. This checkpoint independently
+      re-proved the CompleteTrip controller path/blob, POST /complete-trip mapping, generic service declaration,
+      CompleteTripServiceImpl implementation/signature/blob, and the immediate VehicleLoadDo -> public.tbl_vehicle_load
+      persistence hop. The immutable worker snapshot itself remains at 29 materialized files, so no duplicate discovery
+      fire was started and no endpoint trace or matrix counter was advanced.
 
   source_state:
     gate: QG-SOURCE-001
@@ -138,7 +154,10 @@ local_execution:
 
   next_action: >-
     Materialize CompleteTripServiceImpl plus the 16 exact source requests into the immutable staged snapshot at the
-    frozen commit, recording exact Git blob SHAs and required package/binding proof. Then rerun the same ten-task
-    discovery dispatch only if the staged executor preflight passes. Continue bounded restaging while the request set
-    changes and source closure advances. Do not change the accepted 37/134 checkpoint or matrix counters until the
-    Primary Orchestrator validates new source-closed endpoint evidence.
+    frozen commit, recording exact Git blob SHAs and package/binding proof. For POST /complete-trip, stage and prove the
+    explicitly called VehicleLoadJpaDao, VehicleTripJpaDao, VehicleTripStatusJpaDao, VehicleTripStopJpaDao,
+    VehicleTripStopTypeJpaDao, YardEntriesJpaDao, YardInventoryJpaDao, YardInventoryLineJpaDao,
+    YardInventorySourceTypeJpaDao, CylinderStateJpaDao, CylinderLogisticsExecutionJpaDao and
+    CylinderLogisticsExecutionLineJpaDao paths through their mapped entities/database objects. Then rerun the same
+    ten-task discovery dispatch only if staged executor preflight passes. Do not change the accepted 37/134 checkpoint
+    or matrix counters until the Primary Orchestrator validates new source-closed endpoint evidence.
