@@ -1,78 +1,64 @@
 lane_status:
-  version: 16
+  version: 17
   backlog_item: BL-001
   authoritative: true
   current_backlog_state: PARTIAL
   current_work_unit: WU-BL001-001
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  last_reconciled_attempt: 27
-  last_reconciled_run: INVOCATION-20260823-160000
-  invocation_state: BETWEEN_INVOCATIONS_EXECUTION_HOST_PREFLIGHT_BLOCKED
+  invocation_state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
   current_invocation: null
-  current_idle_reason: CURRENT_EXECUTION_HOST_LACKS_VALID_SOURCE_AND_CONTROL_GIT_CHECKOUTS
+  current_idle_reason: WAITING_FOR_PRIMARY_ORCHESTRATOR_SOURCE_RESTAGE_ITERATION
 
   real_worker_backend:
     type: LOCAL_PROCESS_POOL
+    architecture: architecture/self-reliant-e2e-execution.md
     control_dispatch_ssot: backlog/runtime/BL-001/lane-dispatch.yaml
     local_execution_ssot: backlog/runtime/BL-001/local-execution.yaml
     governance: governance/lane-execution.yaml
-    orchestrator_run_config: backlog/orchestrator-run-config.yaml
-    executor: automation/local-lane-executor.py
-    worker: automation/local-lane-worker.py
-    windows_fire_script: automation/fire-local-lanes.ps1
+    source_provider_governance: governance/source-provider.yaml
+    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    source_layout: repository/source-layout.yaml
+    executor: automation/staged-lane-executor-v3.py
+    worker: automation/staged-lane-worker-v3.py
     source_repository: vvekselva/CylinderManagement
-    source_checkout_mode: TEMPORARY_DETACHED_GIT_WORKTREE_AT_FROZEN_COMMIT
+    preexisting_local_source_checkout_required: false
     configured_lanes: 10
     queued_safe_tasks: 10
     expected_concurrent_lanes: 10
-    qg_lane_001: READY_FOR_MEASUREMENT
-    local_workers_confirmed_started: 0
-    actual_peak_worker_processes_alive: null
-    actual_peak_service_concurrent_lanes: null
-    actual_average_service_concurrent_lanes: null
-    state: READY_ON_VALID_EXECUTION_HOST
+    qg_source_001: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    qg_lane_001: UNDERUTILIZED
+    latest_execution_id: E2E-STAGED-20260823-151810
+    latest_workers_started: 10
+    latest_worker_results_received: 10
+    latest_worker_failures: 0
+    latest_peak_service_concurrent_lanes: 4
+    latest_average_service_concurrent_lanes: 0.26
+    backend_capacity_probe_peak_service_concurrent_lanes: 10
+    state: READY_FOR_SOURCE_RESTAGE_ITERATION
     external_service_dependency: NONE
-    current_host_preflight:
-      state: EXECUTION_HOST_PREFLIGHT_BLOCKED
-      attempted_at_utc: 2026-08-23T15:25:56Z
-      git_available: true
-      python3_available: true
-      source_checkout_present: false
-      source_candidates_rejected: 2
-      control_checkout_present: false
-      control_candidates_rejected: 2
-      frozen_commit_verification: FAILED_NO_VALID_SOURCE_CHECKOUT_CONTAINS_FROZEN_COMMIT
-      control_execution_file_verification: NOT_PROVABLE_NO_VALID_CONTROL_GIT_CHECKOUT
-      lane_log_hygiene_verification: NOT_PROVABLE_NO_VALID_CONTROL_GIT_CHECKOUT
-      lanes_started: 0
-      classification: EXECUTION_HOST_PREFLIGHT_BLOCKED
-      exact_missing_prerequisites:
-        - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement_containing_frozen_commit_3ae6e61442132d94a307275b08dd65fcef228d89
-        - local_or_mounted_Git_checkout_of_vvekselva/CylindnderManagementDependcies_with_approved_executor_worker_dispatch_and_fire_script
-        - provable_zero_leftover_individual_lane_logs_in_that_control_checkout
+    github_actions_dependency: NONE
     note: >-
-      Git and Python are available. Two smoke-test source repositories and two control-like smoke-test directories were found but rejected:
-      neither source repository contains the frozen commit, and neither control directory is a valid control Git checkout proving the
-      complete approved production fire inputs. No lane has been assigned or started.
+      The previous execution-host checkout blocker is resolved by the staged source provider. All worker lanes are
+      currently IDLE because the latest execution closed cleanly and returned explicit source-restaging requests.
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
-    latest_closed_invocation: INVOCATION-20260823-175300
-    latest_closed_invocation_logging_state: PASS
+    latest_tested_execution: E2E-STAGED-20260823-151810
+    latest_tested_execution_lane_logs_remaining: 0
     local_worker_required_event_order: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
+    heartbeat_required: true
     individual_lane_logs_transient: true
     durable_invocation_aggregate_required: true
 
   utilization_policy:
-    objective: MAXIMIZE_MEASURED_SAFE_LOCAL_SERVICE_CONCURRENCY
+    objective: MAXIMIZE_NATURAL_SAFE_LOCAL_SERVICE_CONCURRENCY
     max_parallel_lanes: 10
     expected_concurrency_formula: min(configured_lanes, safe_ready_tasks)
     distinct_lane_participation_is_not_concurrency: true
-    measure_peak_worker_processes_alive: true
-    measure_peak_service_concurrent_lanes: true
-    measure_average_service_concurrent_lanes: true
-    final_trace_decision_owner: CONTROL_REPOSITORY_ORCHESTRATOR
+    natural_service_overlap_is_gate_metric: true
+    artificial_delay_to_pass_qg_lane_prohibited: true
+    final_trace_decision_owner: PRIMARY_ORCHESTRATOR
 
   policy:
     one_active_job_per_lane: true
@@ -81,19 +67,19 @@ lane_status:
     non_idle_lane_must_identify_work_unit_and_task: true
     working_lane_requires_pid_and_heartbeat: true
     worker_evidence_does_not_auto_complete_trace: true
-    production_preflight_failure_starts_zero_lanes: true
+    source_restaging_happens_between_worker_batches: true
 
   lanes:
-    LANE-01: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D001, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-02: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D002, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-03: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D003, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-04: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D004, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-05: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D005, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-06: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D006, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-07: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D007, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-08: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D008, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-09: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D009, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
-    LANE-10: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D010, run_id: null, pid: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: EH-BL001-001}
+    LANE-01: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D001, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-02: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D002, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-03: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D003, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-04: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D004, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-05: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D005, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-06: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D006, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-07: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D007, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-08: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D008, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-09: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D009, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-10: {state: IDLE, work_unit: null, task: null, dispatch_task_id: BL001-D010, run_id: null, pid: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
 
   summary:
     total_lanes: 10
@@ -106,9 +92,9 @@ lane_status:
     closing: 0
     stale: 0
     active_lane_count: 0
-    local_workers_confirmed_started: 0
+    latest_execution_workers_started: 10
 
   current_interpretation: >-
-    Production preflight failed closed on the current host. Git and Python are present, but no valid source checkout containing the
-    frozen commit and no valid control Git checkout proving the approved production fire inputs are worker-readable here. Zero lanes
-    were started, QG-LANE-001 remains READY_FOR_MEASUREMENT, and the ten-task dispatch stays eligible for a later fire on a valid host.
+    The self-reliant engine is between worker batches. The latest ten-worker discovery closed with zero worker failures
+    and zero residual lane logs, then requested additional exact source. No lane is blocked by GitHub Actions or a missing
+    local checkout. The next activity is Orchestrator source restaging/rebinding before the next worker batch.
