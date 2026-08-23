@@ -1,0 +1,32 @@
+local_execution:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-001
+  state: READY_FOR_LOCAL_FIRE
+  backend: LOCAL_PROCESS_POOL
+  source_repository: vvekselva/CylinderManagement
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  source_checkout_mode: TEMPORARY_DETACHED_GIT_WORKTREE_AT_FROZEN_COMMIT
+  configured_lanes: 10
+  max_parallel_workers: 10
+  selected_safe_tasks: 10
+  execution_id: null
+  started_at: null
+  ended_at: null
+  workers: []
+  metrics:
+    expected_concurrent_lanes: 10
+    peak_worker_processes_alive: null
+    average_worker_processes_alive: null
+    peak_service_concurrent_lanes: null
+    average_service_concurrent_lanes: null
+    peak_service_capacity_utilization_percentage: null
+  qg_lane_001_state: READY_FOR_MEASUREMENT
+  aggregate_evidence: null
+  individual_lane_logs_remaining: 0
+  external_service_dependency: NONE
+  fire_command_windows: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
+  note: >-
+    The local process pool is ready but has not yet been fired on the user's machine. The executor creates a temporary detached
+    Git worktree at the frozen baseline, starts up to ten local OS processes, measures real service overlap, aggregates evidence,
+    deletes transient lane logs, and leaves final endpoint trace decisions to the primary Orchestrator.
