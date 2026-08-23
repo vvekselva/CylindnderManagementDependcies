@@ -1,21 +1,35 @@
 lane_dispatch:
-  version: 3
+  version: 4
   dispatch_generation: 3
   dispatch_id: MATRIX-BL001-DISPATCH-003
   requested_by: USER_APPROVED_ORCHESTRATOR_CHANGE
   trigger_reason: VERIFY_REAL_TEN_WAY_CONCURRENCY_WITH_SELF_REPORTED_RUN_ID
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: READY_FOR_DISPATCH
+  state: QUEUED_AWAITING_SOURCE_WORKFLOW_EVIDENCE
   authoritative_for_dispatch_queue: true
   worker_backend: GITHUB_ACTIONS_MATRIX
   workflow: .github/workflows/lane-matrix-dispatch.yml
   governance: governance/lane-execution.yaml
   source_repository: vvekselva/CylinderManagement
+  source_execution_branch: automation/lane-matrix
+  source_dispatch_copy: automation/lane-dispatch.yaml
+  source_run_status: automation/matrix-execution.yaml
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   configured_lane_count: 10
   max_parallel_workers: 10
   result_semantics: EVIDENCE_COLLECTION_ONLY_ORCHESTRATOR_VALIDATES_FINAL_TRACE
+  source_sync:
+    source_dispatch_generation: 3
+    source_dispatch_id: MATRIX-BL001-SOURCE-003
+    control_dispatch_id_verified: MATRIX-BL001-DISPATCH-003
+    source_copy_verified: true
+    source_copy_evidence: vvekselva/CylinderManagement@automation/lane-matrix:automation/lane-dispatch.yaml
+    source_workflow_installed: true
+    source_workflow_evidence: vvekselva/CylinderManagement@automation/lane-matrix:.github/workflows/lane-matrix-dispatch.yml
+    matrix_execution_file_present: false
+    source_workflow_run_id: null
+    external_worker_state_evidence: NONE_YET
 
   rules:
     - every task must be independent and read-only against the frozen source baseline
@@ -27,7 +41,8 @@ lane_dispatch:
     - no dependency may be inferred from naming alone
     - summary job measures actual worker overlap and evaluates QG-LANE-001
     - individual worker artifacts are transient and deleted after verified aggregate creation
-    - workflow records its GitHub run ID and measurements in backlog/runtime/BL-001/matrix-execution.yaml
+    - durable evidence is consumed only from lane-dispatch-aggregate after summarize completes
+    - no lane is marked ASSIGNED WORKING or WAITING solely from this queue; external lane state requires workflow/job evidence
 
   tasks:
     - {task_id: BL001-D001, lane: LANE-01, status: READY, safe_independent: true, task: Trace AddStopController family evidence, task_description: Collect source-proved endpoint mappings injected downstream components and explicit persistence/file/API evidence reachable from AddStopController for Orchestrator validation., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java, max_components: 50}
@@ -46,4 +61,6 @@ lane_dispatch:
     ready_tasks: 10
     safe_independent_tasks: 10
     expected_concurrent_lanes: 10
+    workflow_run_id: null
+    external_workers_confirmed_started: 0
     final_trace_decision_owner: ORCHESTRATOR
