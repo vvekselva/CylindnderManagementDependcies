@@ -1,0 +1,78 @@
+version: 1
+name: Execution Source Provider Governance
+purpose: >-
+  Remove the hard dependency on a pre-existing local CylinderManagement checkout by defining
+  how the primary Automation Tool materializes immutable worker-readable source from the
+  private GitHub Version Control System before real lane execution.
+
+architecture_boundary:
+  github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE
+  automation_tool_role: ORCHESTRATOR_SOURCE_STAGER_EXECUTOR_VALIDATOR
+  workers_access_github_directly: false
+  github_actions_required: false
+
+approved_source_providers:
+  - id: ORCHESTRATOR_STAGED_SNAPSHOT
+    priority: 1
+    default_for_tool_hosted_execution: true
+    requires_preexisting_source_checkout: false
+    materialization_owner: PRIMARY_ORCHESTRATOR
+    materialization_method: >-
+      Read exact files from vvekselva/CylinderManagement through the connected GitHub control-plane
+      interface at the frozen commit and write them into a worker-readable immutable snapshot.
+    integrity_model:
+      manifest_required: true
+      repository_must_equal: vvekselva/CylinderManagement
+      baseline_must_equal_dispatch_baseline: true
+      every_materialized_file_records_git_blob_sha: true
+      worker_verifies_blob_before_read: true
+      tamper_or_missing_manifest_entry: BLOCK_BEFORE_SERVICE
+    closure_model:
+      controller_roots_required_before_first_fire: true
+      downstream_components_staged_iteratively: true
+      missing_component_references_are_explicit: true
+      missing_components_trigger_orchestrator_restage_cycle: true
+      missing_components_must_never_be_silently_inferred_or_auto_accepted: true
+
+  - id: LOCAL_GIT_CHECKOUT
+    priority: 2
+    default_for_tool_hosted_execution: false
+    requires_preexisting_source_checkout: true
+    materialization_owner: LOCAL_EXECUTOR
+    materialization_method: TEMPORARY_DETACHED_GIT_WORKTREE_AT_FROZEN_COMMIT
+    integrity_model:
+      frozen_commit_must_exist_locally: true
+      worker_verifies_git_head: true
+
+quality_gate:
+  id: QG-SOURCE-001
+  name: Execution Source Availability And Integrity
+  owner: ORCHESTRATOR
+  fail_closed: true
+  pass_for_evidence_collection_condition: >-
+    At least one approved source provider materializes every dispatched controller root at the exact
+    frozen baseline and the provider-specific integrity checks pass. For a staged snapshot, every
+    controller root must exist in the manifest and its local Git blob hash must match the recorded
+    blob hash before any SERVICE event may start.
+  source_closure_complete_condition: >-
+    Every source component discovered by the approved recursive evidence-collection policy is staged
+    and integrity-verified, leaving zero missing_component_references for the batch.
+  partial_closure_rule: >-
+    PASS_ROOTS_VERIFIED permits evidence collection but not automatic endpoint COMPLETE decisions.
+    Missing downstream components remain explicit and the Orchestrator stages them in a subsequent
+    source-materialization iteration before accepting evidence that depends on them.
+  on_integrity_failure: BLOCK_BEFORE_SERVICE_AND_RECORD_EXACT_FILE_HASH_OR_MANIFEST_FAILURE
+
+validated_behavior_2026_08_23:
+  frozen_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  dispatch: LOCAL-BL001-DISPATCH-005
+  controller_roots_verified: 10
+  tamper_test: PASS_FAIL_CLOSED_BLOB_MISMATCH_BEFORE_SERVICE
+  production_staged_fire_latest: PROD-STAGED-BL001-20260823-145139
+  workers_started: 10
+  worker_results_received: 10
+  worker_failures: 0
+  peak_service_concurrent_lanes: 9
+  individual_lane_logs_remaining_after_aggregation: 0
+  staged_missing_component_references_after_iteration: 2
+  trace_evidence_auto_accepted: false
