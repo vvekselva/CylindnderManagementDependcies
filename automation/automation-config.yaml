@@ -1,4 +1,4 @@
-version: 10
+version: 11
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -65,7 +65,7 @@ backlog_orchestration:
     - ORCHESTRATOR_ANALYSIS
     - EXECUTION_PLAN
     - WORK_UNIT
-    - WORKER_INPUT_OR_ORCHESTRATION_ACTION
+    - LANE_ASSIGNMENT_OR_WORKER_INPUT
     - EXECUTION
     - ORCHESTRATOR_VALIDATION
     - USER_ACCEPTANCE_WHEN_CONFIGURED
@@ -92,6 +92,7 @@ backlog_orchestration:
     execution_plan: execution-plan.yaml
     work_unit_status: work-unit-status.yaml
     worker_input_register: worker-input-register.yaml
+    lane_status: lane-status.yaml
     gate_status: gate-status.yaml
     blockers: blockers.yaml
     decisions: decisions.yaml
@@ -123,6 +124,8 @@ coordinator:
     - generate_worker_input_files_from_approved_work_units
     - validate_worker_input_files
     - assign_orchestration_work_to_lanes
+    - maintain_lane_status_ssot
+    - release_lane_after_closed_run
     - submit_worker_input_to_independent_worker
     - consume_only_closed_worker_results
     - validate_worker_result_contracts
@@ -172,6 +175,14 @@ orchestration_worker_pool:
   max_parallel_jobs: 10
   independent_worker_is_not_counted: true
   one_active_job_per_lane: true
+  lane_status_ssot: backlog/runtime/<BL-ID>/lane-status.yaml
+  lane_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
+  assignment_rule: >-
+    A lane becomes non-IDLE only after the coordinator records an eligible Work Unit/task assignment
+    in lane-status.yaml. A closed run releases the lane unless a newer assignment already replaced it.
+  heartbeat_rule: >-
+    WORKING lanes must record last_heartbeat; missing heartbeat beyond the configured stale interval
+    moves the lane to STALE and returns the Work Unit to coordinator recovery.
   lanes: [LANE-01, LANE-02, LANE-03, LANE-04, LANE-05, LANE-06, LANE-07, LANE-08, LANE-09, LANE-10]
 
 orchestration_worker_service_lifecycle:
@@ -215,6 +226,7 @@ current_backlog_item:
   quality_gate: backlog/gates/BL-001-traceability.yaml
   quality_gate_approved: true
   runtime: backlog/runtime/BL-001/
+  lane_status: backlog/runtime/BL-001/lane-status.yaml
   current_work_unit: WU-BL001-001
   next_worker_input: worker/inputs/WI-0004.yaml
 
@@ -242,6 +254,7 @@ shared_file_ownership:
   files:
     - backlog/backlog.yaml
     - backlog/orchestrator-run-config.yaml
+    - backlog/runtime/<BL-ID>/lane-status.yaml
     - TaskStatus.md
     - logs/automation-log.md
     - logs/automation-story.md
@@ -283,6 +296,8 @@ execution:
   backlog_item_requires_approved_quality_gate: true
   backlog_analysis_required_before_material_plan_changes: true
   execution_plan_required_before_worker_input_generation: true
+  lane_assignment_must_be_recorded_before_execution: true
+  lane_release_must_be_recorded_after_close: true
   worker_input_generated_by_orchestrator_only: true
   independent_worker_run_must_close_before_result_is_accepted: true
   machine_result_contract_must_validate_before_orchestrator_consumes: true
