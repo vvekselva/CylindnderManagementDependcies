@@ -1,7 +1,39 @@
-version: 3
+version: 4
 name: Real Lane Dispatch And Utilization Governance
 purpose: >-
-  Convert orchestration lanes from logical labels into measurable independent local OS worker executions without depending on GitHub Actions or another external worker service.
+  Convert orchestration lanes from logical labels into measurable independent local OS worker executions.
+  GitHub is the Version Control System and durable persistence layer; the Automation Tool is the execution engine.
+
+architecture_roles:
+  github:
+    role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE
+    repositories:
+      - vvekselva/CylinderManagement
+      - vvekselva/CylindnderManagementDependcies
+    responsibilities:
+      - store application source commits branches and frozen baseline identity
+      - store backlog SOW gates runtime SSOT logs aggregate evidence and history
+      - receive synchronized durable results after execution
+    explicitly_not_required_for_execution:
+      - GitHub Actions
+      - GitHub-hosted runners
+      - workflow trigger or workflow run ID
+  automation_tool:
+    role: ORCHESTRATION_AND_EXECUTION_ENGINE
+    responsibilities:
+      - read and validate SSOT
+      - analyze and plan eligible work
+      - create lane dispatch
+      - execute the local process pool
+      - enforce lifecycle logging
+      - measure real concurrency
+      - aggregate worker evidence
+      - validate endpoint evidence and quality gates
+      - synchronize durable results back to GitHub
+  local_execution_engine:
+    implementation: LOCAL_PROCESS_POOL
+    execution_host: machine_with_local_CylinderManagement_git_checkout
+    max_parallel_workers: 10
 
 worker_backend:
   type: LOCAL_PROCESS_POOL
@@ -15,10 +47,14 @@ worker_backend:
   worker_script: automation/local-lane-worker.py
   windows_fire_script: automation/fire-local-lanes.ps1
   external_service_dependency: NONE
+  github_actions_dependency: NONE
   final_trace_decision_owner: CONTROL_REPOSITORY_ORCHESTRATOR
 
 source_baseline_rule: >-
   The executor never changes the user's active source checkout. It verifies that the frozen commit exists and creates a temporary detached Git worktree at the exact source baseline. All local lane workers read that worktree concurrently and the worktree is removed after closure.
+
+github_interaction_rule: >-
+  GitHub participates before execution as VCS/SSOT source and after execution as durable persistence. The actual worker execution occurs in the Automation Tool local process pool. GitHub Actions availability, workflow triggers and runner capacity must not block normal Cylinder orchestration execution.
 
 safety_rules:
   - every dispatched task must be READY and safe_independent=true
@@ -29,13 +65,13 @@ safety_rules:
   - worker evidence does not automatically classify an endpoint COMPLETE
   - the primary Orchestrator validates endpoint-by-endpoint call paths and may preserve UNRESOLVED
   - no table/view/service dependency may be accepted from naming alone
-  - individual lane logs are transient and must be aggregated, verified and deleted before invocation closure
+  - individual lane logs are transient and must be aggregated verified and deleted before invocation closure
   - local-execution.yaml and lane-status.yaml must be synchronized with OS process state and measured results
 
 logging_and_boundary_rules:
   preflight: individual logs/runs/*-LANE-*.md count must be zero before fire
   during_execution: one transient lane log per local worker is allowed
-  closure: aggregate all lane logs into the durable invocation log, verify representation, delete lane logs, rescan to zero
+  closure: aggregate all lane logs into the durable invocation log verify representation delete lane logs rescan to zero
   gate: QG-LOG-001
 
 metrics:
@@ -58,11 +94,11 @@ quality_gate:
   ready_before_measurement_condition: >-
     The local executor and worker scripts exist, the dispatch queue is valid, the source repository path is available, the frozen commit exists locally, and zero transient lane logs remain. In this state QG-LANE-001 is READY_FOR_MEASUREMENT until a fire occurs.
   underutilized_condition: >-
-    peak_service_concurrent_lanes is below expected safe concurrency and no dependency, CPU/process/resource limit or source-lock constraint explains the shortfall.
+    peak_service_concurrent_lanes is below expected safe concurrency and no dependency CPU/process/resource limit or source-lock constraint explains the shortfall.
   fail_closed_for_parallelism_claim: true
   does_not_invalidate_source_evidence: true
   on_underutilized: >-
-    Preserve valid worker evidence, mark LANE_UNDERUTILIZED, record the measured concurrency gap, and correct local process capacity or dispatch before claiming the utilization problem solved.
+    Preserve valid worker evidence, mark LANE_UNDERUTILIZATION, record the measured concurrency gap, and correct local process capacity or dispatch before claiming the utilization problem solved.
 
 artifact_contract:
   durable_invocation_log: logs/runs/LOCAL-BL001-<timestamp>.md
