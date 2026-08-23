@@ -43,15 +43,27 @@ LANE_CLOSE_END
 
 The required logging is not optional progress reporting. It is part of the execution contract.
 
+## START log task rule
+
+Every lane START record must identify the exact task that is about to execute.
+
+- `LANE_INIT_START` must contain `task` and `task_description` before `init()` begins.
+- `LANE_SERVICE_START` must repeat the same task identity and list the assigned Actions before `service()` begins.
+- A generic value such as `run traceability` is not sufficient when the real task is known. Prefer specific names such as `Trace VehicleTripController endpoint family` or `Resolve Supplier search service to final dependency`.
+- The task identity must reconcile with the current Work Unit and with the assignment stored in `lane-status.yaml`.
+- If the task is missing, ambiguous or inconsistent, the phase must not start.
+
 ## Fail-closed rules
 
 1. If `LANE_INIT_START` cannot be persisted, `init()` must not execute.
-2. `service()` may start only after `LANE_INIT_END = INITIALIZED` is persisted.
-3. If `LANE_SERVICE_START` cannot be persisted, `service()` must not execute.
-4. After `service()` returns, `LANE_SERVICE_END` must be persisted with the actual service result.
-5. `close()` still runs for safety even if post-service logging encounters a failure.
-6. The lane is not reusable until `LANE_CLOSE_END` or a coordinator recovery-close record is persisted.
-7. Missing lifecycle logs make the result ineligible for final acceptance until `QG-LOG-001` is satisfied.
+2. If `LANE_INIT_START` does not identify the exact task, `init()` must not execute.
+3. `service()` may start only after `LANE_INIT_END = INITIALIZED` is persisted.
+4. If `LANE_SERVICE_START` cannot be persisted, `service()` must not execute.
+5. If `LANE_SERVICE_START` does not identify the exact task and assigned Actions, `service()` must not execute.
+6. After `service()` returns, `LANE_SERVICE_END` must be persisted with the actual service result.
+7. `close()` still runs for safety even if post-service logging encounters a failure.
+8. The lane is not reusable until `LANE_CLOSE_END` or a coordinator recovery-close record is persisted.
+9. Missing lifecycle logs make the result ineligible for final acceptance until `QG-LOG-001` is satisfied.
 
 ## 1. init()
 
@@ -66,7 +78,8 @@ The lane persists `LANE_INIT_START` with:
 - backlog item;
 - Work Unit;
 - lane ID;
-- task;
+- exact task;
+- plain-English task description;
 - Worker Input when applicable;
 - run ID and attempt;
 - target repository;
@@ -95,7 +108,7 @@ The lane persists `LANE_INIT_END` with one result:
 
 ### Before service()
 
-The lane persists `LANE_SERVICE_START` identifying the task and Actions that are about to run.
+The lane persists `LANE_SERVICE_START` identifying the exact task, task description and Actions that are about to run.
 
 ### During service()
 
@@ -126,6 +139,7 @@ It must state Actions completed/not completed, evidence summary, and blocker/fai
 
 - lane/Workflow/Job/run/attempt;
 - start/end times;
+- task performed;
 - init result;
 - whether service ran;
 - completed/not-completed Actions;
@@ -147,9 +161,9 @@ If the lane stops unexpectedly before close, the coordinator performs recovery c
 The lifecycle and Lane SSOT must agree:
 
 ```text
-LANE_INIT_START      -> lane ASSIGNED/INITIALIZING
+LANE_INIT_START      -> lane ASSIGNED/INITIALIZING + exact task
 LANE_INIT_END        -> lane INITIALIZING or BLOCKED
-LANE_SERVICE_START   -> lane WORKING
+LANE_SERVICE_START   -> lane WORKING + same task
 LANE_SERVICE_END     -> lane WORKING/BLOCKED/CLOSING
 LANE_CLOSE_END       -> lane may be released to IDLE
 ```
