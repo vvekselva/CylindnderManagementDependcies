@@ -7,11 +7,11 @@ worker_inputs:
     result: worker/results/WI-0004.yaml
     result_contract: workflows/WF-001-controller-traceability/source-check-output-contract.yaml
     accepted: false
-    latest_attempt: 24
+    latest_attempt: 25
     current_checkpoint:
       endpoint_traces_examined_total: 22
-      complete_final_dependencies_total: 19
-      unresolved_final_dependencies_total: 3
+      complete_final_dependencies_total: 22
+      unresolved_final_dependencies_total: 0
       blocked_total: 0
       failed_total: 0
       not_yet_examined: 112
@@ -41,4 +41,5 @@ worker_inputs:
       - {attempt: 22, run_id: RUN-WI0004-20260823-022, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 16, complete_final_dependencies_total: 16, unresolved_final_dependencies_total: 0, not_yet_examined: 118, total_endpoint_inventory: 134}}
       - {attempt: 23, run_id: RUN-WI0004-20260823-023, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 19, complete_final_dependencies_total: 19, unresolved_final_dependencies_total: 0, not_yet_examined: 115, total_endpoint_inventory: 134}}
       - {attempt: 24, run_id: RUN-WI0004-20260823-024, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 22, complete_final_dependencies_total: 19, unresolved_final_dependencies_total: 3, not_yet_examined: 112, total_endpoint_inventory: 134}}
-    next_action: RESOLVE_CURRENT_EVIDENCE_GAPS_THEN_CONTINUE_ENDPOINT_TO_FINAL_DEPENDENCY_TRACING
+      - {attempt: 25, run_id: RUN-WI0004-20260823-025, run_state: CLOSED, result_state: PARTIAL, canonical_result_created: false, checkpoint: {endpoint_traces_examined_total: 22, complete_final_dependencies_total: 22, unresolved_final_dependencies_total: 0, blocked_total: 0, failed_total: 0, not_yet_examined: 112, total_endpoint_inventory: 134}}
+    next_action: CONTINUE_ENDPOINT_TO_FINAL_DEPENDENCY_TRACING
