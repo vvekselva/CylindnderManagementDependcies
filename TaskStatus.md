@@ -30,6 +30,7 @@ Latest worker execution: **`E2E-STAGED-20260823-161214`**
 | Exact source requests remaining | **16** |
 | Worker-emitted binding requests | **3** |
 | Binding identities unresolved now | **0** |
+| Binding implementations pending snapshot materialization | **1** |
 | QG-SOURCE-001 | **PASS ROOTS VERIFIED / CLOSURE PARTIAL** |
 | Peak natural SERVICE concurrency | **2 / 10** |
 | QG-LANE-001 | **UNDERUTILIZED** |
@@ -39,12 +40,22 @@ No unchanged discovery batch was rerun because the immutable snapshot still requ
 
 ## Latest Orchestrator Checkpoint
 
-Checkpoint: **`PRODUCTION-FIRE-20260824-013546`**
+Checkpoint: **`PRODUCTION-FIRE-20260824-020143`**
 
-Two endpoints advanced during the latest production invocation:
+The remaining nine endpoints in `CustomerAddressLocationController` advanced to **COMPLETE**, closing all ten endpoints in that controller family. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-020143.md` plus the prior planning-map checkpoint.
 
-- `GET /challan-heatmap` -> **COMPLETE / FULL_BRANCHING**. Source-proved chain: `ChallanHeatmapController.showHeatmap -> ChallanHeatmapFetchService.processRequest -> ChallanHeatmapMetricsViewJpaDao -> ChallanHeatmapMetricsViewDo -> public.vw_challan_heatmap_metrics -> ChallanHeatmapMetricsViewMapper`, plus terminal `final-version-1/ChallanHeatmapDashboard`. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-013336.md`.
-- `GET /customer-address-location/planning-map` -> **COMPLETE / FULL**. Controller directly returns `with-menu/CustomerAddressPlanningMap`; no service/DAO/database dependency exists on this method. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-013546.md`.
+Source-proved dependencies for the family include:
+
+- `public.vw_customer_address_location_status`
+- `public.tbl_customer_order_request`
+- `public.tbl_yard_inventory`
+- `public.tbl_yard_location`
+- `public.tbl_customer_address`
+- `public.tbl_customer_address_location`
+- `public.tbl_customer_location_import_inbox`
+- terminal views, redirects and generated GeoJSON responses where no additional persistence dependency exists.
+
+The structured Traceability Explorer preserves the service/DAO/entity/mapper hops and branching database paths rather than flattening them into a final-table list.
 
 ## Framework / Gate State
 
@@ -68,16 +79,16 @@ All **10 lanes are IDLE between worker fires**. The last worker batch closed cle
 | Metric | Current value |
 |---|---:|
 | Caller-visible endpoints | **134** |
-| Examined | **43** |
-| COMPLETE | **41** |
+| Examined | **52** |
+| COMPLETE | **50** |
 | UNRESOLVED | **2** |
 | BLOCKED / FAILED | **0 / 0** |
-| NOT YET EXAMINED | **91** |
+| NOT YET EXAMINED | **82** |
 | Traceability Matrix | **INCREMENTAL_PARTIAL** |
-| Materialized full-chain rows | **16** |
+| Materialized full-chain rows | **25** |
 | Historical accepted rows awaiting evidence backfill | **27** |
 
-Current examination coverage: **32.09%**. Current COMPLETE coverage: **30.60%**.
+Current examination coverage: **38.81%**. Current COMPLETE coverage: **37.31%**.
 
 Open canonical evidence gaps remain:
 
@@ -95,6 +106,6 @@ Open canonical evidence gaps remain:
 
 ## Exact Next Action
 
-Continue the remaining `CustomerAddressLocationController` service-backed routes and then `CustomerConsumptionDashboardController`, while resolving and blob-verifying the **16 outstanding worker source requests** and materializing validated sources into the immutable snapshot. Fire the ten-worker discovery only after staged preflight proves the snapshot advanced. Preserve the two canonical unresolved POST endpoints until every branch dependency is source-proved.
+Continue `CustomerConsumptionDashboardController` and other not-yet-examined endpoint families from exact frozen-source evidence while resolving and blob-verifying the **16 outstanding worker source requests** and materializing the validated `CompleteTripServiceImpl` into the immutable snapshot. Fire the ten-worker discovery only after staged preflight proves the snapshot advanced. Preserve the two canonical unresolved POST endpoints until every branch dependency is source-proved.
 
 BL-001 remains **PARTIAL** and cannot close before 100% endpoint trace-result coverage, final matrix reconciliation/gates, and explicit `QG-TRC-015` user acceptance.
