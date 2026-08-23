@@ -1,9 +1,9 @@
-version: 5
+version: 6
 purpose: >-
   Define the common Backlog pre-planning/pre-execution gates and register the approved
   quality-gate configuration for every Backlog Item. A Backlog Item may be planned only
   after its three Single Source of Truth levels are complete. Execution additionally
-  requires Statement of Work, dependency and item-specific Quality Gate rules to pass.
+  requires Statement of Work, dependency, lifecycle logging and item-specific Quality Gate rules.
 
 three_level_ssot_gate:
   id: QG-SSOT-001
@@ -17,8 +17,6 @@ three_level_ssot_gate:
     SSOT are all COMPLETE and mutually consistent for the selected Backlog Item. Level 2
     includes a valid Statement of Work that passes QG-SOW-001. Level 3 contains every file
     required by backlog/runtime-contract.yaml, including blockers.yaml and lane-status.yaml.
-    lane-status.yaml must contain all ten lanes exactly once and reconcile current lane/task/run
-    state with the rest of the Level 3 runtime.
   on_pass: ITEM_MAY_PROCEED_TO_REQUIRED_ANALYSIS_AND_PLANNING_RULES
   on_fail: BLOCKED_SSOT_INCOMPLETE_NO_PLANNING
 
@@ -31,8 +29,7 @@ statement_of_work_gate:
     The selected Backlog Item declares a non-null Statement of Work file, the file exists,
     its backlog_item id matches the selected item, and objective, problem statement,
     in-scope work, deliverables, execution requirements, acceptance criteria and completion
-    definition contain non-placeholder content. execution_authorization.sow_required must
-    be true, structurally_valid must be true and placeholders_present must be false.
+    definition contain non-placeholder content.
   on_pass: SOW_COMPONENT_OF_SSOT_L2_IS_VALID
   on_fail: BLOCKED_MISSING_OR_INVALID_STATEMENT_OF_WORK
   fail_closed: true
@@ -47,6 +44,23 @@ common_gate:
     or the selected Backlog Item declares no dependencies.
   on_pass: ITEM_MAY_CONTINUE_TO_ITEM_SPECIFIC_QUALITY_GATES
   on_fail: WAITING_FOR_DEPENDENCY
+
+execution_lifecycle_logging_gate:
+  id: QG-LOG-001
+  name: Execution Lifecycle Logging Completeness
+  applies_to: ALL_ORCHESTRATOR_INVOCATIONS_AND_ORCHESTRATION_LANE_RUNS_AFTER_ACTIVATION
+  owner: ORCHESTRATOR
+  governance: governance/execution-lifecycle-logging.yaml
+  fail_closed: true
+  pass_condition: >-
+    Every in-scope Orchestrator invocation contains persisted ORCHESTRATOR_INVOCATION_START
+    and ORCHESTRATOR_INVOCATION_END records. Every lane run contains the applicable ordered
+    lifecycle boundary records: LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START,
+    LANE_SERVICE_END and LANE_CLOSE_END, except that SERVICE events are omitted when init
+    ends BLOCKED_BEFORE_SERVICE. No lane is released before a persisted close/recovery-close
+    record, and run logs reconcile with lane-status/runtime state.
+  on_fail: EXECUTION_RESULT_NOT_ACCEPTED_AND_RECOVERY_LOG_REQUIRED
+  historical_rule: Historical runs before contract activation remain legacy evidence and are not retroactively invalidated.
 
 user_verification:
   required_before_backlog_close: true
@@ -78,9 +92,8 @@ backlog_quality_gates:
   BL-020: {name: Customer Data Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
 
 orchestrator_rule: >-
-  For PLAN or REPLAN, the Orchestrator must first validate QG-SSOT-001. If Level 1, Level 2
-  or Level 3 is incomplete, only framework/definition/runtime initialization or repair work
-  required to make those levels complete is permitted; planning is forbidden. QG-SOW-001 is
-  a mandatory component of Level 2 and remains independently fail-closed. After QG-SSOT-001
-  passes, dependency and item-specific Quality Gate rules still apply. Missing SSOT, SOW or
-  Quality Gate configuration is a governance blocker, not permission to invent requirements.
+  For PLAN or REPLAN, the Orchestrator must first validate QG-SSOT-001. After planning is
+  permitted, dependency and item-specific gates still apply. Every new Orchestrator invocation
+  and lane execution must also comply with QG-LOG-001. A mandatory pre-phase lifecycle log
+  failure blocks that phase; a missing post-phase record prevents the result from being accepted
+  until recovery logging reconciles the lifecycle.
