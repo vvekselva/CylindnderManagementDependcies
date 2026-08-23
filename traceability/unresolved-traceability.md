@@ -10,29 +10,43 @@ This artifact records endpoint paths whose final dependency has not yet been sou
 ## Current checkpoint
 
 - Total source-proved endpoint inventory: 134
-- Explicitly examined for final dependency: 19
+- Explicitly examined for final dependency: 22
 - COMPLETE: 19
-- UNRESOLVED: 0
+- UNRESOLVED: 3
 - BLOCKED: 0
 - FAILED: 0
-- Not yet examined: 115
-
-## Resolved in Attempt 23
-
-Three additional paths are now source-proved COMPLETE:
-
-- `GET /search/vehicle/{searchText}` -> `VehicleSearchService` -> `VehicleJpaDao.findByVehicleNumberContainingIgnoreCase(...)` -> `VehicleDo` -> `public.tbl_vehicle`.
-- `GET /find/Vehicle-by-Id/{vehicleId}` -> `VehicleFetchByIdService` -> `VehicleJpaDao.findById(...)` -> `VehicleDo` -> `public.tbl_vehicle`.
-- `GET /search/supplier/{searchText}` -> `SupplierSearchService` -> `SupplierJpaDao.findBySupplierNameContainingIgnoreCase(...)` -> `SupplierDo` -> `public.tbl_supplier`.
-
-Each promotion to COMPLETE is backed by the active controller mapping, concrete Spring service, invoked Spring Data repository method, and the entity's explicit `@Table` mapping in the frozen source.
+- Not yet examined: 112
 
 ## Current unresolved paths
 
-There are currently no UNRESOLVED, BLOCKED or FAILED paths among the 19 examined endpoints.
+### `GET /search/challantype/{searchText}`
 
-The remaining 115 endpoints are **NOT YET EXAMINED**, not UNRESOLVED.
+Last proven component: injected `challanTypeSearchService` typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, ChallanTypeSearchResponseDto>`.
+
+Missing evidence: concrete Spring implementation selected for this injection, invoked repository/query, entity/view mapping, and final dependency.
+
+Next investigation step: resolve the concrete Challan Type search bean and follow its persistence/query path from the frozen source.
+
+### `GET /search/city/{searchText}`
+
+Last proven component: injected `citySearchService` typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CitySearchResponseDto>`.
+
+Missing evidence: concrete Spring implementation selected for this injection, invoked repository/query, entity/view mapping, and final dependency.
+
+Next investigation step: resolve the concrete City search bean and follow its persistence/query path from the frozen source.
+
+### `GET /search/country/{searchText}`
+
+Last proven component: injected `countrySearchService` typed as `ICylinderManagementApplicationSearchService<CylinderManagementApplicationRequestDto, CountrySearchResponsesDto>`.
+
+Missing evidence: concrete Spring implementation selected for this injection, invoked repository/query, entity/view mapping, and final dependency.
+
+Next investigation step: resolve the concrete Country search bean and follow its persistence/query path from the frozen source.
+
+## Evidence discipline
+
+The active controller mappings and generic search-service calls are proved from the frozen source. These paths are deliberately not marked COMPLETE until the concrete implementation and final dependency are source-proved.
 
 ## Next action
 
-Continue `WU-BL001-001` across the remaining 115 endpoints. Any path whose final dependency cannot be proved must stop at its last proven component and be recorded here. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
+Resolve these three generic search-service implementations, then continue `WU-BL001-001` across the remaining 112 not-yet-examined endpoints. Matrix construction and downstream work units remain locked until the Source Check output is complete, contract-valid, closed, and has 100% endpoint trace-result coverage.
