@@ -3,8 +3,39 @@ blockers:
   level: SSOT-L3
   planning_blocked: false
   execution_blocked: false
+  real_parallel_execution_blocked: true
 
   governance_blockers: []
+
+  platform_blockers:
+    - id: PB-BL001-001
+      state: OPEN
+      affects_gate: QG-LANE-001
+      category: SOURCE_REPOSITORY_ACTIONS_NOT_STARTING
+      summary: >-
+        The real worker backend has been moved into the private CylinderManagement repository on
+        branch automation/lane-matrix, but the source-local push-triggered GitHub Actions workflow
+        has not started or self-reported a run ID.
+      proved_facts:
+        - Control-side matrix run 32638659581 spawned ten matrix worker jobs.
+        - All ten control-side jobs failed before service while cloning private CylinderManagement because the control repository GITHUB_TOKEN has no cross-repository private access.
+        - The control-side auto-trigger was retired to prevent repeated known failures.
+        - CylinderManagement branch automation/lane-matrix was created from the frozen source baseline.
+        - The source-local workflow, worker scripts and ten-task dispatch copy are installed on that branch.
+        - No automation/matrix-execution.yaml has been created by the source workflow after the dispatch push.
+      not_yet_proved: >-
+        Whether source-repository Actions is disabled, restricted by repository/account policy, or another
+        workflow-start policy is preventing the push workflow from starting. The framework does not guess.
+      impact: >-
+        BL-001 source tracing itself still has eligible work, but the newly required real parallel worker
+        backend cannot yet demonstrate or deliver parallel service execution. QG-LANE-001 cannot PASS.
+      next_action: >-
+        Verify that GitHub Actions is enabled/allowed for vvekselva/CylinderManagement and permits GitHub-owned
+        actions (checkout, setup-python, upload/download-artifact). Then re-trigger automation/lane-dispatch.yaml
+        on automation/lane-matrix and wait for automation/matrix-execution.yaml to record the run ID.
+      alternative: >-
+        A cross-repository PAT/GitHub App token secret in the control repository could also grant private source
+        access, but the source-local execution design avoids needing a new secret and is preferred.
 
   active_evidence_gaps:
     - id: EG-BL001-004
@@ -27,41 +58,23 @@ blockers:
       opened_by_run: INVOCATION-20260823-145512
 
   resolved_evidence_gaps:
-    - id: EG-BL001-001
-      state: RESOLVED
-      affects_gate: QG-TRC-002
-      summary: Challan Type search final dependency is proved.
-      resolution: ChallanTypeSearchService -> ChallanTypeJpaDao -> ChallanTypeDo -> public.tbl_challan_type
-      resolved_by_run: RUN-WI0004-20260823-025
-    - id: EG-BL001-002
-      state: RESOLVED
-      affects_gate: QG-TRC-002
-      summary: City search final dependency is proved.
-      resolution: CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city
-      resolved_by_run: RUN-WI0004-20260823-025
-    - id: EG-BL001-003
-      state: RESOLVED
-      affects_gate: QG-TRC-002
-      summary: Country search final dependency is proved.
-      resolution: CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country
-      resolved_by_run: RUN-WI0004-20260823-025
+    - {id: EG-BL001-001, state: RESOLVED, affects_gate: QG-TRC-002, summary: Challan Type search final dependency is proved., resolution: 'ChallanTypeSearchService -> ChallanTypeJpaDao -> ChallanTypeDo -> public.tbl_challan_type', resolved_by_run: RUN-WI0004-20260823-025}
+    - {id: EG-BL001-002, state: RESOLVED, affects_gate: QG-TRC-002, summary: City search final dependency is proved., resolution: 'CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city', resolved_by_run: RUN-WI0004-20260823-025}
+    - {id: EG-BL001-003, state: RESOLVED, affects_gate: QG-TRC-002, summary: Country search final dependency is proved., resolution: 'CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country', resolved_by_run: RUN-WI0004-20260823-025}
 
   remaining_work_constraint:
     state: OPEN
     affects_gate: QG-TRC-002
     summary: 97 of 134 endpoint final-dependency traces remain not yet examined at the Attempt 27 checkpoint.
 
-  latest_attempt:
+  latest_accepted_attempt:
     number: 27
     invocation: INVOCATION-20260823-160000
     new_endpoint_traces_examined: 10
     new_complete: 10
     new_unresolved: 0
-    lane_log_hygiene_preflight: PASS
-    lane_log_hygiene_post_aggregation: PASS
 
   note: >-
-    Two examined complex POST paths remain explicitly unresolved and 97 endpoints are not yet examined.
-    These are evidence gaps/work volume rather than a global execution blocker. Attempt 27 added ten
-    source-proved COMPLETE traces without introducing a new unresolved path. Independent source-check
-    work may continue under QG-LOG-001 lifecycle logging and the approved no-guessing rule.
+    Two complex POST evidence gaps and 97 not-yet-examined endpoints remain. The new platform blocker is
+    specific to real parallel execution and QG-LANE-001. No evidence from the failed control-side matrix
+    run is accepted because workers never reached service.
