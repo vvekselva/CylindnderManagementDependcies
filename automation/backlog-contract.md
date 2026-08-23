@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The automation framework is driven by a **Backlog**. A Backlog Item represents one outcome the automation must complete. The Orchestrator owns selection, analysis, planning, execution coordination, lane assignment, validation and closure; the Generic Worker remains task-agnostic and executes only approved Worker Inputs.
+The automation framework is driven by a **Backlog**. A Backlog Item represents one outcome the automation must complete. The Orchestrator owns selection, analysis, planning, execution coordination, lane assignment, utilization, validation and closure; the Generic Worker remains task-agnostic and executes only approved Worker Inputs.
 
 ## Mandatory three-level Single Source of Truth
 
@@ -86,11 +86,13 @@ The Orchestrator owns:
 - creating/changing an Execution Plan only after the planning gate passes;
 - deciding concrete Work Units;
 - generating Worker Inputs from approved Work Units;
-- assigning eligible independent orchestration work to available lanes;
-- writing the assignment to `lane-status.yaml` before execution starts;
+- partitioning eligible independent work into controller/endpoint-family tasks when the plan permits;
+- filling available safe lanes up to configured capacity during an active invocation;
+- writing assignments to `lane-status.yaml` before execution starts;
 - updating lane state/heartbeat/blocker during execution;
-- releasing the lane in `lane-status.yaml` when the run closes;
-- consuming and validating Worker results;
+- refilling released lanes during the same invocation while safe eligible work remains;
+- releasing lanes in `lane-status.yaml` when runs close;
+- consuming and validating Worker results/evidence;
 - updating Level 3 analysis, gates, blockers, work-unit status, decisions and result;
 - producing required artifacts;
 - closing only after all automatic gates and required user acceptance pass.
@@ -110,6 +112,35 @@ IDLE -> ASSIGNED -> INITIALIZING -> WORKING -> CLOSING -> IDLE
 A non-IDLE lane must identify its current Work Unit/task. A WORKING lane must identify its current run and heartbeat. A BLOCKED lane must explain the blocker in plain English. A CLOSED run releases the lane unless a newer assignment has already replaced it.
 
 The coordinator is not a lane. The separate Generic Worker also does not consume an orchestration lane.
+
+## Lane utilization inside one scheduler invocation
+
+The hourly scheduler creates a finite coordinator invocation, not persistent background lane processes. Therefore all lanes may correctly be IDLE **between** invocations. During an active invocation, however, the coordinator should not leave safe lane capacity unused when independent eligible work remains.
+
+For a lane-parallel Work Unit:
+
+```text
+find eligible independent work
+        |
+        v
+fill safe lanes up to configured capacity
+        |
+        v
+execute / heartbeat / evidence
+        |
+        v
+lane closes
+        |
+        +--> more safe eligible work? YES -> refill lane in same invocation
+        |
+        NO
+        v
+consolidate checkpoint and end invocation
+```
+
+The coordinator must not intentionally stop after a fixed small batch such as three endpoints when more eligible independent work remains in the same invocation. It may stop only when no eligible independent work remains, a hard blocker prevents further safe work, a resource/shared-file lock prevents useful progress, an invocation/tool execution limit is reached, or the Work Unit completion boundary is reached.
+
+Throughput must never weaken evidence quality. Previously proved relationships may be reused only when the frozen source confirms the same path. Dependent Work Units, conflicting shared-file writes and resource-lock conflicts must not be parallelized.
 
 ## Generic Worker responsibility
 
@@ -139,7 +170,7 @@ Every executable Backlog Item must reference a structurally valid SOW under `bac
 
 ## Analysis, planning and execution
 
-Analysis is persisted in Level 3 `analysis.yaml`. After required analysis, the Orchestrator may create or modify `execution-plan.yaml` only when `QG-SSOT-001` is PASS. Independent Work Units may use available lanes only when the Completion Path permits it, and every live assignment must be reflected in `lane-status.yaml`.
+Analysis is persisted in Level 3 `analysis.yaml`. After required analysis, the Orchestrator may create or modify `execution-plan.yaml` only when `QG-SSOT-001` is PASS. Independent Work Units, or independent tasks inside an approved lane-parallel Work Unit, may use available lanes only when the Completion Path permits it, and every live assignment must be reflected in `lane-status.yaml`.
 
 The Orchestrator converts approved Work Units into `worker/inputs/WI-####.yaml`, submits them to the Generic Worker when appropriate, tracks runs/results, validates result contracts and synchronizes Level 3 runtime state.
 
