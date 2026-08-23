@@ -1,0 +1,38 @@
+runtime_ssot_contract:
+  version: 1
+  level: SSOT-L3
+  planning_gate: QG-SSOT-001
+
+  required_files:
+    analysis.yaml:
+      purpose: current analysis, proved facts, progress and next step
+      may_exist_before_analysis_as: INITIALIZED
+    execution-plan.yaml:
+      purpose: current approved execution plan/work units
+      may_exist_before_first_plan_as: INITIALIZED_EMPTY
+    work-unit-status.yaml:
+      purpose: authoritative work-unit lifecycle states
+    gate-status.yaml:
+      purpose: authoritative current quality/pre-execution gate states
+    blockers.yaml:
+      purpose: explicit blockers/evidence gaps and whether they prevent planning or execution
+    decisions.yaml:
+      purpose: orchestrator/user decisions affecting execution
+    worker-input-register.yaml:
+      purpose: worker-input issuance/consumption state
+    result.yaml:
+      purpose: final/current backlog result and closure state
+
+  initialization_rule: >-
+    All required Level 3 files must exist and identify the same Backlog Item before the
+    Orchestrator may create or materially change an Execution Plan. Empty/initialized files
+    are allowed before first planning only where explicitly permitted by this contract.
+
+  consistency_rule: >-
+    Level 3 files must reconcile to the same Level 1 registry item and Level 2 backlog
+    definition. A stale human-readable dashboard never overrides newer canonical runtime
+    state.
+
+  failure_rule: >-
+    Missing or inconsistent Level 3 files fail QG-SSOT-001 and block PLAN/REPLAN. Only
+    runtime initialization/repair work needed to satisfy SSOT-L3 is permitted while failed.
