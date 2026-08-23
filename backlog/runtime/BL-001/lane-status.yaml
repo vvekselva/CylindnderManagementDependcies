@@ -1,5 +1,5 @@
 lane_status:
-  version: 6
+  version: 7
   backlog_item: BL-001
   authoritative: true
   current_backlog_state: PARTIAL
@@ -36,8 +36,8 @@ lane_status:
     generic_worker_consumes_orchestration_lane: false
     valid_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
   lanes:
-    LANE-01: {state: WORKING, work_unit: WU-BL001-001, task: 'Trace LoginController GET /login to its final source-proved dependency or terminal view action', worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-027-L01, attempt: 27, started_at: '2026-08-23T16:08:00+05:30', last_heartbeat: '2026-08-23T16:09:00+05:30', last_lifecycle_event: LANE_SERVICE_START, blocker: null}
-    LANE-02: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-02: {state: INITIALIZING, work_unit: WU-BL001-001, task: 'Trace OfflineMapController endpoint family to file/configuration/SQLite dependencies', worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-027-L02, attempt: 27, started_at: '2026-08-23T16:13:00+05:30', last_heartbeat: '2026-08-23T16:13:00+05:30', last_lifecycle_event: null, blocker: null}
     LANE-03: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
     LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-05: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
@@ -50,13 +50,13 @@ lane_status:
     total_lanes: 10
     idle: 9
     assigned: 0
-    initializing: 0
-    working: 1
+    initializing: 1
+    working: 0
     blocked: 0
     waiting: 0
     closing: 0
     stale: 0
     active_lane_count: 1
   current_interpretation: >-
-    LANE-01 is in logged SERVICE for the LoginController GET /login trace. Additional safe
-    independent scope is being selected by the coordinator without guessing dependencies.
+    LANE-01 completed and was released only after its CLOSE log persisted. LANE-02 is now
+    assigned to the independent OfflineMapController family with source-proved service files available.
