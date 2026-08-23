@@ -1,83 +1,87 @@
 local_execution:
-  version: 3
+  version: 4
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: EXECUTION_HOST_PREFLIGHT_BLOCKED
+  state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
   backend: LOCAL_PROCESS_POOL
+  architecture: architecture/self-reliant-e2e-execution.md
+  self_reliant_governance: governance/self-reliant-execution.yaml
   source_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  source_checkout_mode: TEMPORARY_DETACHED_GIT_WORKTREE_AT_FROZEN_COMMIT
+  source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+  fallback_source_provider: LOCAL_GIT_CHECKOUT
+  preexisting_local_source_checkout_required: false
+  staged_executor: automation/staged-lane-executor-v3.py
+  staged_worker: automation/staged-lane-worker-v3.py
   configured_lanes: 10
   max_parallel_workers: 10
   selected_safe_tasks: 10
-  execution_id: null
-  started_at: null
-  ended_at: null
-  workers: []
+  github_actions_dependency: NONE
+  external_worker_service_dependency: NONE
+
+  latest_execution_journal:
+    execution_id: E2E-STAGED-20260823-151810
+    dispatch_fingerprint: 6c99cd0f51605ea5461169a349c7153cd9da658070f15727ab7d93ac7571522d
+    phase: CLOSED_RESTAGE_REQUIRED
+    started_at: 2026-08-23T15:18:10.982201+00:00
+    ended_at: 2026-08-23T15:18:13.570061+00:00
+    result_fingerprint: bb21672ff08c21f463b8ffb82ebc591205afadca41c0c885bfc4fbd3b58b4b9b
+    sync_state: PENDING_ORCHESTRATOR_VALIDATION
+    source_closure_complete: false
+    workers_started: 10
+    worker_results_received: 10
+    worker_failures: 0
+    individual_lane_logs_remaining: 0
+    trace_evidence_auto_accepted: false
+
+  source_state:
+    gate: QG-SOURCE-001
+    state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    controller_roots_verified: 10
+    missing_source_requests: 21
+    missing_binding_requests: 0
+    next_phase: SOURCE_RESTAGE
+    restage_owner: PRIMARY_ORCHESTRATOR
+    source_layout: repository/source-layout.yaml
+    max_iterations: 8
+    no_progress_state: SOURCE_RESOLUTION_STALLED
+    local_checkout_blocker: RESOLVED_BY_ORCHESTRATOR_STAGED_SNAPSHOT
+
   metrics:
     expected_concurrent_lanes: 10
-    peak_worker_processes_alive: null
-    average_worker_processes_alive: null
-    peak_service_concurrent_lanes: null
-    average_service_concurrent_lanes: null
-    peak_service_capacity_utilization_percentage: null
-  qg_lane_001_state: READY_FOR_MEASUREMENT
-  aggregate_evidence: null
-  individual_lane_logs_remaining: null
-  external_service_dependency: NONE
+    peak_service_concurrent_lanes: 4
+    average_service_concurrent_lanes: 0.26
+    peak_service_capacity_utilization_percentage: 40.0
+    backend_capacity_probe_peak_service_concurrent_lanes: 10
+    qg_lane_001_state: UNDERUTILIZED
+    metric_basis: NATURAL_FULL_SOURCE_DISCOVERY_WORKLOAD
 
-  production_host_contract:
-    orchestrator_config: backlog/orchestrator-run-config.yaml
-    source_checkout_required_on_execution_host: true
-    frozen_commit_required_in_local_git_object_database: true
-    git_required: true
-    python3_required: true
-    control_checkout_required_on_execution_host: true
-    zero_leftover_lane_logs_required: true
-    connector_access_alone_is_not_worker_filesystem_access: true
+  recovery_and_idempotency:
+    gate: QG-RECOVERY-001
+    state: PASS_VALIDATED_STATE_MACHINE
+    execution_journal_required: true
+    pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
+    closed_waiting_validation_behavior: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
+    interrupted_running_behavior: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
+    changed_dispatch_behavior: START_NEW_EXECUTION_GENERATION
+    already_synced_behavior: NOOP_ALREADY_COMMITTED
+    validation_cases_passed: 5
+    validation_cases_total: 5
 
-  latest_production_fire_attempt:
-    attempted: true
-    attempted_at_utc: 2026-08-23T15:25:56Z
-    attempt_type: PRODUCTION_PREFLIGHT
-    result: BLOCKED_BEFORE_LANE_START
-    execution_host: CURRENT_CHATGPT_EXECUTION_RUNTIME
-    git_available: true
-    git_path: /usr/bin/git
-    python3_available: true
-    python3_path: /opt/pyvenv/bin/python3
-    source_checkout_present: false
-    source_checkout_candidates_found:
-      - path: /mnt/data/_local_lane_test/source
-        classification: REJECTED_SMOKE_TEST_REPOSITORY
-        frozen_commit_present: false
-      - path: /mnt/data/_local_lane_smoke2/source
-        classification: REJECTED_SMOKE_TEST_REPOSITORY
-        frozen_commit_present: false
-    control_checkout_present: false
-    control_checkout_candidates_found:
-      - path: /mnt/data/_local_lane_test/control
-        classification: REJECTED_NOT_GIT_CHECKOUT_AND_MISSING_APPROVED_FIRE_SCRIPT
-      - path: /mnt/data/_local_lane_smoke2/control
-        classification: REJECTED_NOT_GIT_CHECKOUT_AND_MISSING_APPROVED_FIRE_SCRIPT
-    frozen_commit_verification: FAILED_NO_VALID_SOURCE_CHECKOUT_CONTAINS_FROZEN_COMMIT
-    approved_executor_worker_dispatch_file_verification: NOT_PROVABLE_NO_VALID_CONTROL_GIT_CHECKOUT
-    zero_leftover_lane_log_verification: NOT_PROVABLE_NO_VALID_CONTROL_GIT_CHECKOUT
-    lanes_started: 0
-    trace_evidence_accepted: false
-    classification: EXECUTION_HOST_PREFLIGHT_BLOCKED
-    exact_missing_prerequisites:
-      - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement_containing_frozen_commit_3ae6e61442132d94a307275b08dd65fcef228d89
-      - local_or_mounted_Git_checkout_of_vvekselva/CylindnderManagementDependcies_with_approved_executor_worker_dispatch_and_fire_script
-      - provable_zero_leftover_individual_lane_logs_in_that_control_checkout
-    not_classified_as: [GITHUB_ACTIONS_BLOCKER, SOURCE_CODE_BLOCKER, QUALITY_GATE_FAILURE]
-    next_action: MATERIALIZE_OR_MOUNT_VALID_SOURCE_AND_CONTROL_GIT_CHECKOUTS_ON_EXECUTION_HOST_THEN_RERUN_PREFLIGHT
+  canary_proof:
+    execution_id: E2E-STAGED-20260823-151800
+    dispatch_fingerprint: a7c73e0742744aeaee9183a72bdda2e1dec2e61d4d3164b3ee502879106caf23
+    phase: CLOSED_READY_FOR_VALIDATION
+    qg_source_001_state: SOURCE_CLOSURE_COMPLETE
+    source_closure_complete: true
+    workers_started: 1
+    worker_failures: 0
+    individual_lane_logs_remaining: 0
+    proved_physical_candidates: [public.tbl_challan_page_photo, public.tbl_challan_page_audit_ledger, public.tbl_challan_book_registry]
+    trace_evidence_auto_accepted: false
 
-  fire_command_windows: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
-  note: >-
-    The latest production preflight passed Git and Python availability but failed closed before any lane start. Two local smoke-test
-    Git repositories were discovered, but neither contains the frozen BL-001 source commit and neither is accepted as the required
-    CylinderManagement checkout. Two control-like smoke-test directories were also discovered, but they are not valid control Git
-    checkouts and do not prove the complete approved fire input set. Therefore frozen-source provenance, approved control-file
-    provenance and zero-leftover lane-log hygiene are not provable on this host. QG-LANE-001 remains READY_FOR_MEASUREMENT,
-    BL-001 remains PARTIAL, and zero production lanes were started.
+  next_action: >-
+    Stage the latest 21 exact source requests using repository/source-layout.yaml at the frozen commit, add verified
+    interface bindings as they become discoverable, rerun the same ten-task discovery batch, and continue only while
+    the request set changes and source closure advances. Do not alter the accepted 37/134 trace checkpoint merely
+    because discovery evidence exists.
