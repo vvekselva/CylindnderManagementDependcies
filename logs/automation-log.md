@@ -140,3 +140,32 @@ Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 The Orchestrator continued only BL-001 / WU-BL001-001 and examined three independent active REST endpoints: `GET /search/challantype/{searchText}`, `GET /search/city/{searchText}`, and `GET /search/country/{searchText}`. The frozen controller source proves each mapping and its injected generic `ICylinderManagementApplicationSearchService` handoff. The concrete Spring implementation, repository/query layer and final dependency for each injection are not yet proved, so all three paths were recorded UNRESOLVED at their last proven service handoff rather than guessing.
 
 Checkpoint advanced to **22 / 134 endpoints examined; 19 COMPLETE; 3 UNRESOLVED; 0 BLOCKED; 0 FAILED; 112 NOT YET EXAMINED**. QG-TRC-002 and QG-TRC-004 remain IN_PROGRESS; QG-TRC-009 remains IN_PROGRESS with positive no-guessing evidence. `worker/results/WI-0004.yaml` remains uncreated/unaccepted, matrix construction and dependent work units remain locked, and BL-001 remains PARTIAL and open.
+
+---
+
+## EVENT EVT-0033 - WI-0004 Twenty-Fifth Attempt Resolved Challan Type, City And Country
+Run: `RUN-WI0004-20260823-025`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The three paths left unresolved by Attempt 24 were proved through concrete Spring services, Spring Data DAOs and explicit JPA entity table mappings. Challan Type resolves to `ChallanTypeSearchService` -> `ChallanTypeJpaDao` -> `ChallanTypeDo` -> `public.tbl_challan_type`; City resolves to `CitySearchService` -> `CityJpaDao` -> `CityDo` -> `public.tbl_city`; Country resolves to `CountrySearchService` -> `CountryJpaDao` -> `CountryDo` -> `public.tbl_country`.
+
+Checkpoint: **22 / 134 endpoints examined; 22 COMPLETE; 0 UNRESOLVED; 0 BLOCKED; 0 FAILED; 112 NOT YET EXAMINED**. Matrix construction remains locked until WU-BL001-001 reaches the canonical 100-percent trace-result contract.
+
+---
+
+## EVENT EVT-0034 - Mandatory Invocation And Lane Lifecycle Logging Applied
+Time: `2026-08-23T14:48:00+05:30`
+Status: `CLOSED`
+
+The framework was updated to make lifecycle logging mandatory and fail-closed for new execution. The new contract is `governance/execution-lifecycle-logging.yaml` and the common logging gate is `QG-LOG-001`.
+
+For every new Orchestrator invocation, `ORCHESTRATOR_INVOCATION_START` must be persisted before analysis/planning/assignment/execution, and `ORCHESTRATOR_INVOCATION_END` must be persisted after all started lanes are closed or recovery-closed and runtime is synchronized.
+
+For every lane execution, the required order is:
+
+`LANE_INIT_START -> init() -> LANE_INIT_END -> LANE_SERVICE_START -> service() -> LANE_SERVICE_END -> close() -> LANE_CLOSE_END`.
+
+When init ends `BLOCKED_BEFORE_SERVICE`, SERVICE events are skipped, but close and `LANE_CLOSE_END` remain mandatory. A lane is not reusable until its close/recovery-close log has been persisted. Missing required pre-phase logging blocks the phase; missing post-phase logging prevents result acceptance until recovery. Dedicated `logs/runs/*.md` files avoid parallel lanes writing the shared audit file concurrently; the coordinator remains the only serialized writer of this shared log.
+
+The active BL-001 execution plan and the enabled Cylinder Orchestrator schedule were updated so the next invocation must follow this contract. Historical runs before activation remain legacy evidence and are not retroactively invalidated.
