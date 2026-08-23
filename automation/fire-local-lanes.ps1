@@ -1,6 +1,7 @@
 param(
     [string]$SourceRoot = "",
-    [string]$ControlRoot = ""
+    [string]$ControlRoot = "",
+    [switch]$PushResults
 )
 
 $ErrorActionPreference = "Stop"
@@ -50,4 +51,24 @@ if ($python.Count -gt 1) { $exe = $python[0]; $argsList += $python[1..($python.C
 $argsList += @($executor, "--control-root", $ControlRoot, "--source-repo", $SourceRoot, "--dispatch", $dispatch, "--max-workers", "10")
 
 & $exe @argsList
+
+if ($LASTEXITCODE -eq 0 -and $PushResults) {
+    Write-Host "Local execution completed. Synchronizing generated evidence to GitHub..."
+    $branch = (& git -C $ControlRoot branch --show-current).Trim()
+    if ($branch -ne "chore/rename-dependency-files") {
+        throw "Refusing automatic push: control repository must be on chore/rename-dependency-files, current branch is '$branch'."
+    }
+    & git -C $ControlRoot add -- "backlog/runtime/BL-001/local-execution.yaml" "backlog/runtime/BL-001/lane-status.yaml" "logs/runs/LOCAL-BL001-*.md" "worker/evidence/LOCAL-BL001-*"
+    $changes = & git -C $ControlRoot status --porcelain -- "backlog/runtime/BL-001/local-execution.yaml" "backlog/runtime/BL-001/lane-status.yaml" "logs/runs" "worker/evidence"
+    if ($changes) {
+        & git -C $ControlRoot commit -m "Record BL-001 local parallel lane execution"
+        if ($LASTEXITCODE -ne 0) { throw "Git commit of local execution evidence failed." }
+        & git -C $ControlRoot push origin HEAD
+        if ($LASTEXITCODE -ne 0) { throw "Git push of local execution evidence failed. Evidence remains committed locally." }
+        Write-Host "Generated execution evidence pushed to GitHub."
+    } else {
+        Write-Host "No generated execution changes needed to be pushed."
+    }
+}
+
 exit $LASTEXITCODE
