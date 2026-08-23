@@ -2,110 +2,112 @@
 
 The Backlog is the top-level work queue for the automation framework.
 
-`backlog/backlog.yaml` is the authoritative Backlog register. A Backlog Item may be registered before it is ready to execute, but every Backlog Item must have a valid Statement of Work before the Orchestrator may analyze, plan or execute it.
+Planning is **fail-closed**. A Backlog Item may be catalogued before it is ready, but the Orchestrator must not PLAN or REPLAN it until Level 1, Level 2 and Level 3 are all complete and `QG-SSOT-001` passes.
 
-## Mandatory Statement of Work
+## Level 1 - Backlog Master SSOT
 
-Every Backlog Item must declare a `statement_of_work` file under `backlog/sow/`.
+Authoritative file: `backlog/backlog.yaml`.
 
-The common gate `QG-SOW-001 Statement of Work Completeness Gate` is fail-closed. It must PASS before dependency evaluation, Orchestrator analysis, execution planning, Worker Input generation or execution.
+Level 1 answers **what work exists**. A plannable Backlog Item must have a complete master entry including ID, name, type, purpose, priority, state, Level 2 definition, Statement of Work, Completion Path, Quality Gate, dependencies, expected outputs and Level 3 runtime reference.
 
-A valid Statement of Work must contain non-placeholder content for at least:
+## Level 2 - Backlog Definition SSOT
 
-- objective;
-- problem statement;
-- in-scope work;
-- deliverables;
-- execution requirements;
+Per-item definition:
+
+```text
+backlog/items/BL-*.yaml
+```
+
+Level 2 answers **what the work means and what must be delivered**. It includes/references:
+
+- Statement of Work under `backlog/sow/`;
+- target and scope;
 - dependencies;
+- deliverables;
 - acceptance criteria;
-- quality-gate requirements;
-- completion definition.
+- Completion Path;
+- item-specific Quality Gate;
+- Level 3 runtime location.
 
-If the SOW is missing, null, malformed, incomplete or still contains placeholders, the Backlog Item is not executable even when `run_enabled: true`.
+`QG-SOW-001` is a mandatory Level 2 component. Missing, malformed, incomplete or placeholder SOW content fails closed.
 
-The standard contract is `backlog/statement-of-work-template.yaml`.
+## Level 3 - Runtime SSOT
 
-## Flow
-
-```text
-BACKLOG
-  |
-  v
-SELECT RUN-ENABLED ITEM
-  |
-  v
-QG-SOW-001: VALID STATEMENT OF WORK?
-  | NO -----------------> BLOCKED / DO NOT EXECUTE
-  |
- YES
-  |
-  v
-QG-DEP-001: DEPENDENCIES SATISFIED?
-  |
-  v
-ITEM QUALITY GATE CONFIGURED / APPROVED?
-  |
-  v
-READ COMPLETION PATH
-  |
-  v
-ORCHESTRATOR ANALYSIS
-  |
-  v
-EXECUTION PLAN / WORK UNITS
-  |
-  v
-GENERATE WORKER INPUT FILES
-  |
-  v
-GENERIC WORKER EXECUTION
-  |
-  v
-WORKER RESULTS
-  |
-  v
-ORCHESTRATOR VALIDATION
-  |
-  v
-USER ACCEPTANCE WHEN REQUIRED
-  |
-  v
-BACKLOG ITEM VERIFIED / CLOSED
-```
-
-## Static files
-
-- `backlog.yaml` - authoritative Backlog register and SOW references.
-- `backlog-item-template.yaml` - standard Backlog Item shape.
-- `statement-of-work-template.yaml` - mandatory SOW contract.
-- `orchestrator-run-config.yaml` - execution switchboard and eligibility rules.
-- `paths/*.yaml` - Completion Paths for registered Backlog Items.
-
-## Per-backlog Statement of Work
-
-```text
-backlog/sow/BL-*.yaml
-```
-
-BL-001 currently has a valid SOW at `backlog/sow/BL-001-controller-traceability.yaml`. Backlog Items whose SOW reference is null are intentionally non-executable.
-
-## Runtime files
-
-The Orchestrator creates runtime state under:
+Runtime location:
 
 ```text
 backlog/runtime/<BL-ID>/
 ```
 
-Typical runtime files are:
+Level 3 answers **what is happening now**. Before PLAN/REPLAN it must contain every file required by `backlog/runtime-contract.yaml`:
 
 - `analysis.yaml`;
 - `execution-plan.yaml`;
 - `work-unit-status.yaml`;
-- `worker-input-register.yaml`;
 - `gate-status.yaml`;
+- `blockers.yaml`;
 - `decisions.yaml`;
+- `worker-input-register.yaml`;
 - `result.yaml`.
 
-The runtime files belong to the Orchestrator. Worker execution files stay under `worker/`.
+The execution-plan file may exist in an initialized/empty state before first planning, but the full Level 3 structure must exist first.
+
+## Three-Level Planning Gate
+
+`QG-SSOT-001 Three-Level SSOT Planning Gate` is defined by `governance/ssot-levels.yaml` and is fail-closed.
+
+```text
+SELECT RUN-ENABLED BACKLOG
+        |
+        v
+LEVEL 1 COMPLETE?
+        | NO -> REPAIR LEVEL 1 ONLY / NO PLAN
+       YES
+        |
+        v
+LEVEL 2 COMPLETE + QG-SOW-001 PASS?
+        | NO -> COMPLETE DEFINITION/SOW ONLY / NO PLAN
+       YES
+        |
+        v
+LEVEL 3 COMPLETE?
+        | NO -> INITIALIZE/REPAIR RUNTIME ONLY / NO PLAN
+       YES
+        |
+        v
+QG-SSOT-001 PASS
+        |
+        v
+REQUIRED ANALYSIS
+        |
+        v
+PLAN / REPLAN MAY BEGIN
+```
+
+Passing QG-SSOT-001 does not authorize execution by itself. Dependency gates, item-specific Quality Gates, Work Unit dependencies, result contracts and user acceptance rules still apply.
+
+## Framework files
+
+- `backlog.yaml` - Level 1 authoritative Backlog Master register.
+- `backlog-item-template.yaml` - standard register entry shape.
+- `item-definition-template.yaml` - Level 2 backlog-definition template.
+- `statement-of-work-template.yaml` - mandatory Level 2 SOW contract.
+- `runtime-contract.yaml` - Level 3 runtime SSOT contract.
+- `orchestrator-run-config.yaml` - run selection and fail-closed eligibility rules.
+- `paths/*.yaml` - per-backlog Completion Paths.
+- `gates/*.yaml` - item-specific Quality Gates.
+- `governance/ssot-levels.yaml` - Level 1/2/3 validation and `QG-SSOT-001`.
+
+## Current BL-001 conformance
+
+BL-001 currently has:
+
+- Level 1 master entry in `backlog/backlog.yaml`;
+- Level 2 definition in `backlog/items/BL-001-controller-traceability.yaml`;
+- valid SOW in `backlog/sow/BL-001-controller-traceability.yaml`;
+- Completion Path and approved Quality Gate;
+- complete Level 3 runtime structure, including `blockers.yaml`.
+
+Therefore BL-001 may retain/revise its plan only while `QG-SSOT-001` remains PASS. BL-002 through BL-020 remain non-plannable while their required Level 1/2/3 planning references are incomplete.
+
+Worker execution files remain under `worker/` and do not replace the Level 3 runtime SSOT.
