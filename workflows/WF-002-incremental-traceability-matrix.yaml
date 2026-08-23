@@ -1,0 +1,84 @@
+version: 1
+id: WF-002
+name: Incremental Traceability Matrix And Matrix-Driven Continuation
+purpose: >-
+  Materialize the BL-001 Traceability Matrix continuously as endpoint source evidence is accepted,
+  then drive final reconciliation, validation, baseline registration and controlled downstream handoff from the matrix.
+
+architecture: architecture/self-reliant-e2e-execution.md
+source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+owner: PRIMARY_ORCHESTRATOR
+
+incremental_matrix_policy:
+  enabled: true
+  begins_during_work_unit: WU-BL001-001
+  matrix_artifact: traceability/controller-traceability.md
+  unresolved_artifact: traceability/unresolved-traceability.md
+  progress_artifact: traceability/matrix-progress.yaml
+  update_trigger: EACH_ORCHESTRATOR_ACCEPTED_ENDPOINT_TRACE
+  write_mode: UPSERT_BY_HTTP_METHOD_AND_PATH
+  accepted_states: [COMPLETE, UNRESOLVED, BLOCKED, FAILED]
+  prohibited_inputs:
+    - raw_worker_candidate_without_orchestrator_validation
+    - guessed_dependency
+    - unpinned_source
+    - incomplete_source_binding_presented_as_complete
+  required_row_fields:
+    - http_method
+    - path
+    - controller
+    - controller_method
+    - trace_state
+    - final_dependency_type
+    - final_dependency
+    - source_baseline
+    - evidence_reference
+    - accepted_invocation
+  rule: >-
+    As soon as the Primary Orchestrator accepts an endpoint trace from frozen-source evidence, its matrix row is
+    created or updated immediately. The matrix is a live derived artifact and may be PARTIAL while Source Check continues.
+
+matrix_status_semantics:
+  INCREMENTAL_PARTIAL: accepted endpoint rows exist but canonical Source Check coverage is below 100 percent
+  READY_FOR_FINAL_RECONCILIATION: canonical Source Check reached 100 percent and every endpoint has exactly one accepted trace state
+  FINAL_VALIDATED: matrix reconciliation and all required traceability gates passed
+
+flow:
+  - source workers collect frozen-source evidence
+  - Primary Orchestrator validates endpoint evidence and assigns COMPLETE UNRESOLVED BLOCKED or FAILED
+  - immediately upsert the accepted endpoint row into traceability/controller-traceability.md
+  - if state is UNRESOLVED BLOCKED or FAILED also synchronize traceability/unresolved-traceability.md
+  - update traceability/matrix-progress.yaml counters and evidence references
+  - continue source analysis/restaging for remaining endpoints
+  - when canonical Source Check coverage reaches 100 percent transition matrix to READY_FOR_FINAL_RECONCILIATION
+  - WU-BL001-002 reconciles inventory source-check output and incremental matrix; it does not recreate already accepted rows
+  - WU-BL001-003 validates uniqueness coverage call-path evidence final-dependency evidence no-guessing and consistency gates
+  - WU-BL001-004 registers the final source/matrix baseline and prepares explicit user acceptance
+
+matrix_driven_downstream_workflow:
+  within_bl001:
+    - matrix COMPLETE rows feed final consistency and artifact-registration checks
+    - matrix UNRESOLVED BLOCKED FAILED rows feed the evidence-resolution queue until resolved or explicitly accepted as unresolved by gate policy
+    - controller and endpoint inventories are reconciled against matrix row keys
+    - final gate validation is computed from the matrix plus immutable evidence references
+  after_bl001:
+    rule: >-
+      A FINAL_VALIDATED matrix may be registered as a governed input for later backlog definitions and SOWs, but it must not
+      automatically enable or plan BL-002 or any later backlog. Each later backlog still requires complete Level 1/2/3 SSOT,
+      its own SOW, dependency gate and user-approved item gate.
+
+finalization_gate:
+  requires:
+    - canonical_source_check_coverage_100_percent
+    - every_caller_visible_endpoint_exactly_once_in_matrix
+    - zero_duplicate_http_method_path_keys
+    - every_matrix_row_has_frozen_source_evidence_reference
+    - unresolved_blocked_failed_accounting_reconciles
+    - QG-TRC-006_PASS
+    - QG-TRC-007_PASS
+    - QG-TRC-008_PASS
+    - QG-TRC-009_PASS
+    - QG-TRC-010_PASS
+    - QG-TRC-011_PASS
+    - QG-TRC-012_PASS
+  final_state: FINAL_VALIDATED
