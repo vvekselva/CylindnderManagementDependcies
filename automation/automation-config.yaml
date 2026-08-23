@@ -1,4 +1,4 @@
-version: 11
+version: 12
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -14,6 +14,7 @@ control_files:
   item_definition_template: backlog/item-definition-template.yaml
   statement_of_work_template: backlog/statement-of-work-template.yaml
   quality_gate_governance: governance/quality-gates.yaml
+  lifecycle_logging_contract: governance/execution-lifecycle-logging.yaml
   backlog_quality_gate_root: backlog/gates/
   backlog_item_template: backlog/backlog-item-template.yaml
   automation_policy: governance/automation-policy.md
@@ -27,6 +28,7 @@ control_files:
   independent_worker_contract: automation/worker-component-contract.md
   independent_worker_input_template: worker/worker-input-template.yaml
   shared_log: logs/automation-log.md
+  invocation_and_lane_run_logs: logs/runs/*.md
   human_story: logs/automation-story.md
   sync_register: sync/source-artifact-sync-register.yaml
 
@@ -47,6 +49,7 @@ backlog_orchestration:
   planning_gate: QG-SSOT-001
   statement_of_work_gate: QG-SOW-001
   common_dependency_gate: QG-DEP-001
+  lifecycle_logging_gate: QG-LOG-001
   require_level_1_complete_before_plan: true
   require_level_2_complete_before_plan: true
   require_level_3_complete_before_plan: true
@@ -56,8 +59,11 @@ backlog_orchestration:
   missing_quality_gate_action: DO_NOT_PLAN_OR_EXECUTE
   missing_statement_of_work_action: DO_NOT_PLAN_OR_EXECUTE
   missing_runtime_file_action: DO_NOT_PLAN_OR_EXECUTE
+  missing_pre_phase_log_action: DO_NOT_START_PHASE
+  missing_post_phase_log_action: RESULT_NOT_ACCEPTED_UNTIL_RECOVERED
   user_acceptance_required_before_close: true
   primary_hierarchy:
+    - ORCHESTRATOR_INVOCATION_START_LOG
     - SSOT_LEVEL_1_BACKLOG_MASTER
     - SSOT_LEVEL_2_BACKLOG_DEFINITION_AND_SOW
     - SSOT_LEVEL_3_RUNTIME
@@ -66,8 +72,9 @@ backlog_orchestration:
     - EXECUTION_PLAN
     - WORK_UNIT
     - LANE_ASSIGNMENT_OR_WORKER_INPUT
-    - EXECUTION
+    - LANE_LIFECYCLE_LOGGED_EXECUTION
     - ORCHESTRATOR_VALIDATION
+    - ORCHESTRATOR_INVOCATION_END_LOG
     - USER_ACCEPTANCE_WHEN_CONFIGURED
     - BACKLOG_CLOSURE
 
@@ -104,6 +111,7 @@ coordinator:
   consumes_worker_slot: false
   owns_analysis_and_execution: true
   responsibilities:
+    - persist_orchestrator_invocation_start_before_any_analysis_or_execution
     - load_control_files
     - read_backlog_run_config_first
     - ignore_run_disabled_backlog_items
@@ -125,7 +133,10 @@ coordinator:
     - validate_worker_input_files
     - assign_orchestration_work_to_lanes
     - maintain_lane_status_ssot
-    - release_lane_after_closed_run
+    - enforce_lane_lifecycle_log_boundaries
+    - refuse_phase_start_when_required_pre_phase_log_is_missing
+    - validate_qg_log_001_before_accepting_execution_results
+    - release_lane_only_after_persisted_close_or_recovery_close
     - submit_worker_input_to_independent_worker
     - consume_only_closed_worker_results
     - validate_worker_result_contracts
@@ -139,6 +150,7 @@ coordinator:
     - close_backlog_item_only_after_all_required_gates_pass
     - serialize_shared_file_updates
     - maintain_human_readable_logs_and_story
+    - persist_orchestrator_invocation_end_after_lanes_closed_and_runtime_synchronized
     - run_source_artifact_sync_decisions
 
 independent_worker:
@@ -177,9 +189,18 @@ orchestration_worker_pool:
   one_active_job_per_lane: true
   lane_status_ssot: backlog/runtime/<BL-ID>/lane-status.yaml
   lane_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
+  lane_run_log_pattern: logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md
+  required_lifecycle_events: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
   assignment_rule: >-
     A lane becomes non-IDLE only after the coordinator records an eligible Work Unit/task assignment
     in lane-status.yaml. A closed run releases the lane unless a newer assignment already replaced it.
+  logging_rule: >-
+    Before init(), persist LANE_INIT_START. After init(), persist LANE_INIT_END. Before service(),
+    persist LANE_SERVICE_START. After service(), persist LANE_SERVICE_END. After close(), persist
+    LANE_CLOSE_END. SERVICE events are omitted only when init ends BLOCKED_BEFORE_SERVICE.
+  release_rule: >-
+    A lane may return to IDLE or receive new work only after LANE_CLOSE_END or coordinator recovery-close
+    evidence is persisted.
   heartbeat_rule: >-
     WORKING lanes must record last_heartbeat; missing heartbeat beyond the configured stale interval
     moves the lane to STALE and returns the Work Unit to coordinator recovery.
@@ -187,9 +208,12 @@ orchestration_worker_pool:
 
 orchestration_worker_service_lifecycle:
   contract: automation/worker-service-contract.md
+  logging_contract: governance/execution-lifecycle-logging.yaml
   mandatory: true
   phases: [INIT, SERVICE, CLOSE]
+  required_event_order: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
   close_mandatory_after_init: true
+  qg_log_001_required_for_result_acceptance: true
   stale_worker_recovery:
     coordinator_closes_unfinished_log: true
     result_state: RESULT_NOT_CONFIRMED
@@ -200,9 +224,14 @@ scheduler:
   primary_coordinator_required: true
   duplicate_cylinder_coordinators_allowed: false
   run_config_source: backlog/orchestrator-run-config.yaml
+  invocation_log_pattern: logs/runs/INV-<invocation-id>-ORCHESTRATOR.md
+  invocation_start_log_required_before_analysis: true
+  invocation_end_log_required_after_runtime_sync: true
   note: >-
-    The actual hourly schedule is maintained by the ChatGPT scheduled automation. Every
-    invocation must re-read Level 1/2/3 SSOT, run-selection and Quality Gate governance.
+    The actual hourly schedule is maintained by the ChatGPT scheduled automation. Each invocation
+    must first persist ORCHESTRATOR_INVOCATION_START, then read and enforce live governance. After
+    all started lanes are closed/recovery-closed and runtime is synchronized, it must persist
+    ORCHESTRATOR_INVOCATION_END even when no eligible work ran or the invocation was blocked.
 
 registered_backlog_items:
   source: backlog/backlog.yaml
@@ -222,6 +251,8 @@ current_backlog_item:
   planning_gate_state: PASS
   statement_of_work_gate: QG-SOW-001
   statement_of_work_gate_state: PASS
+  lifecycle_logging_gate: QG-LOG-001
+  lifecycle_logging_gate_state: ENFORCED_FOR_NEXT_INVOCATION
   item_definition: backlog/items/BL-001-controller-traceability.yaml
   quality_gate: backlog/gates/BL-001-traceability.yaml
   quality_gate_approved: true
@@ -245,6 +276,8 @@ blocker_handling:
   missing_ssot_is_planning_blocker: true
   missing_statement_of_work_is_planning_blocker: true
   missing_quality_gate_is_planning_and_execution_blocker: true
+  missing_required_pre_phase_log_is_execution_blocker: true
+  missing_required_post_phase_log_blocks_result_acceptance: true
   alternatives_may_be_suggested: true
   completion_path_change_requires_approval: true
   workflow_or_architecture_change_requires_approval: true
@@ -262,6 +295,10 @@ shared_file_ownership:
     - repository-catalogue.md
     - governance/ssot-levels.yaml
     - governance/quality-gates.yaml
+  parallel_lane_owned_paths:
+    - logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md
+  coordinator_invocation_owned_paths:
+    - logs/runs/INV-<invocation-id>-ORCHESTRATOR.md
 
 source_artifact_sync:
   enabled: true
@@ -296,8 +333,16 @@ execution:
   backlog_item_requires_approved_quality_gate: true
   backlog_analysis_required_before_material_plan_changes: true
   execution_plan_required_before_worker_input_generation: true
+  orchestrator_invocation_start_log_required_before_analysis: true
   lane_assignment_must_be_recorded_before_execution: true
-  lane_release_must_be_recorded_after_close: true
+  lane_init_start_log_required_before_init: true
+  lane_init_end_log_required_after_init: true
+  lane_service_start_log_required_before_service: true
+  lane_service_end_log_required_after_service: true
+  lane_close_end_log_required_after_close: true
+  lane_release_must_be_recorded_after_close_log: true
+  qg_log_001_required_before_execution_result_acceptance: true
+  orchestrator_invocation_end_log_required_after_runtime_sync: true
   worker_input_generated_by_orchestrator_only: true
   independent_worker_run_must_close_before_result_is_accepted: true
   machine_result_contract_must_validate_before_orchestrator_consumes: true
