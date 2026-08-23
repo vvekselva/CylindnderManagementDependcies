@@ -116,3 +116,15 @@ Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 The Orchestrator continued only BL-001 / WU-BL001-001 and resolved all three paths left UNRESOLVED by Attempt 21. The frozen source proves `ProductCategorySearchService` -> `ProductCategoryJpaDao` -> `ProductCategoryDo` -> `public.tbl_product_category`; `ProductUomSearchService` -> `ProductUomJpaDao` -> `ProductUomDo` -> `public.tbl_product_uom`; and `StateSearchService` -> `StateJpaDao` -> `StateDo` -> `public.tbl_state`.
 
 Checkpoint is now **16 / 134 endpoints examined; 16 COMPLETE; 0 UNRESOLVED; 0 BLOCKED; 0 FAILED; 118 NOT YET EXAMINED**. QG-TRC-002 remains IN_PROGRESS because 118 endpoints remain unexamined and the canonical completed worker result does not yet exist. QG-TRC-004 and QG-TRC-009 remain IN_PROGRESS. Matrix construction and dependent work units remain locked, and BL-001 remains PARTIAL and open.
+
+---
+
+## EVENT EVT-0031 - WI-0004 Twenty-Third Attempt Proved Vehicle And Supplier Dependencies
+Time: `2026-08-23T06:00:00+05:30`
+Run: `RUN-WI0004-20260823-023`
+Status: `PARTIAL / CLOSED`
+Source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The Orchestrator continued only BL-001 / WU-BL001-001 and traced three independent active endpoints to physical database dependencies. `GET /search/vehicle/{searchText}` reaches `VehicleSearchService` and `VehicleJpaDao.findByVehicleNumberContainingIgnoreCase(...)`; `GET /find/Vehicle-by-Id/{vehicleId}` reaches `VehicleFetchByIdService` and `VehicleJpaDao.findById(...)`; both resolve through `VehicleDo` to `public.tbl_vehicle`. `GET /search/supplier/{searchText}` reaches `SupplierSearchService` and `SupplierJpaDao.findBySupplierNameContainingIgnoreCase(...)`, resolving through `SupplierDo` to `public.tbl_supplier`.
+
+Checkpoint advanced to **19 / 134 endpoints examined; 19 COMPLETE; 0 UNRESOLVED; 0 BLOCKED; 0 FAILED; 115 NOT YET EXAMINED**. QG-TRC-002 remains IN_PROGRESS because 115 endpoints remain unexamined and the canonical completed worker result does not yet exist. QG-TRC-004 and QG-TRC-009 remain IN_PROGRESS. `worker/results/WI-0004.yaml` remains uncreated/unaccepted; matrix construction and dependent work units remain locked; BL-001 remains PARTIAL and open.
