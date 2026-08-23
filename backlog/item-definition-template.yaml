@@ -1,0 +1,47 @@
+backlog_definition:
+  id: BL-###
+  version: 1
+  name: <plain-English backlog item name>
+  type: <type>
+
+  purpose: >-
+    <why this backlog item exists and the outcome it must achieve>
+
+  statement_of_work: backlog/sow/<BL-ID>-<slug>.yaml
+
+  target:
+    repository: <owner/repository>
+    baseline_rule: <FROZEN_COMMIT|CURRENT_APPROVED_REF|OTHER>
+
+  scope:
+    in_scope:
+      - <in-scope work>
+    out_of_scope:
+      - <out-of-scope work>
+
+  dependencies:
+    backlog_items: []
+    dependency_rule: ALL_VERIFIED_OR_CLOSED
+
+  deliverables:
+    - <required output>
+
+  acceptance_criteria:
+    - <objective acceptance condition>
+
+  completion_path: backlog/paths/<file>.yaml
+  quality_gate: backlog/gates/<file>.yaml
+  runtime: backlog/runtime/<BL-ID>/
+
+  ssot:
+    level_1_registry: backlog/backlog.yaml
+    level_2_definition: self
+    level_3_runtime: backlog/runtime/<BL-ID>/
+    planning_gate: QG-SSOT-001
+
+  planning_authorization:
+    allowed_only_when:
+      - SSOT-L1 COMPLETE
+      - SSOT-L2 COMPLETE
+      - SSOT-L3 COMPLETE
+      - QG-SSOT-001 PASS
