@@ -1,6 +1,6 @@
-version: 10
+version: 11
 purpose: >-
-  Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete SSOT and SOW. Production execution additionally requires verified source input, lifecycle logging and measured real-lane utilization.
+  Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete SSOT and SOW. Source-reading execution additionally requires verified recursive source/binding closure, lifecycle logging and measured real-lane utilization.
 
 three_level_ssot_gate:
   id: QG-SSOT-001
@@ -34,16 +34,23 @@ execution_source_gate:
   applies_to: ALL_SOURCE_READING_WORKER_EXECUTION
   owner: ORCHESTRATOR
   governance: governance/source-provider.yaml
+  self_reliant_governance: governance/self-reliant-execution.yaml
   fail_closed: true
   preferred_provider: ORCHESTRATOR_STAGED_SNAPSHOT
   fallback_provider: LOCAL_GIT_CHECKOUT
-  pass_for_evidence_collection_condition: >-
-    An approved provider supplies every dispatched controller root at the exact frozen baseline. For an Orchestrator-staged snapshot, each root must be present in the manifest and its recomputed Git blob hash must match the manifest before SERVICE.
+  pass_for_discovery_condition: >-
+    An approved provider supplies every dispatched controller root at the exact frozen baseline. For an
+    Orchestrator-staged snapshot, every root exists in the manifest and its recomputed Git blob SHA matches
+    before SERVICE.
   source_closure_complete_condition: >-
-    Recursive source evidence collection reports zero missing_component_references for the batch.
+    Recursive discovery has zero missing_source_requests and zero missing_binding_requests. Every interface
+    binding followed by a worker has source-validated implementation signature/generic arguments and qualifier/bean identity.
   partial_closure_rule: >-
-    PASS_ROOTS_VERIFIED permits source evidence collection but never automatic endpoint COMPLETE classification. Missing components remain explicit and are restaged at the same frozen commit.
+    PASS_ROOTS_VERIFIED permits discovery collection but never final acceptance of evidence whose path depends
+    on unresolved source or binding. The Orchestrator performs at most eight progressing restage/rebind iterations.
   on_integrity_failure: BLOCK_BEFORE_SERVICE
+  on_resolution_stall: SOURCE_RESOLUTION_STALLED_FAIL_CLOSED
+  on_iteration_limit: SOURCE_RESOLUTION_LIMIT_REACHED_FAIL_CLOSED
 
 execution_lifecycle_logging_gate:
   id: QG-LOG-001
@@ -53,7 +60,9 @@ execution_lifecycle_logging_gate:
   governance: governance/execution-lifecycle-logging.yaml
   fail_closed: true
   pass_condition: >-
-    Zero stale individual lane logs exist before fire; required START/END records with exact task identity exist in order; every started lane closes; transient logs are aggregated verified deleted and rescanned to zero.
+    Zero stale individual lane logs exist before fire; required START/END records and heartbeat evidence exist
+    in order with exact task identity; every started lane closes or is recovery-closed; transient logs are
+    aggregated verified deleted and rescanned to zero.
 
 real_lane_utilization_gate:
   id: QG-LANE-001
@@ -67,15 +76,35 @@ real_lane_utilization_gate:
   expected_concurrency_formula: min(configured_lanes, eligible_independent_tasks)
   current_backend: LOCAL_PROCESS_POOL
   pass_condition: >-
-    When at least two safe independent tasks are dispatched, measured peak overlapping SERVICE intervals reaches expected safe concurrency.
+    For the natural production workload, when at least two safe independent tasks are dispatched, measured
+    peak overlapping SERVICE intervals reaches expected safe concurrency.
   underutilized_condition: >-
-    measured peak SERVICE concurrency is lower than expected safe concurrency.
-  latest_validated_real_source_run:
-    execution_id: PROD-STAGED-BL001-20260823-145139
-    peak_service_concurrent_lanes: 9
+    Natural workload peak SERVICE concurrency is lower than expected safe concurrency. Preserve correct source
+    evidence but record underutilization. Artificial service delays must not be added merely to pass this gate.
+  backend_capacity_probe_rule: >-
+    A separate capacity probe may prove that the executor can host ten concurrent workers, but it does not
+    replace natural production QG-LANE-001 measurement.
+  latest_full_discovery_measurement:
+    execution_id: E2E-STAGED-20260823-151810
+    peak_service_concurrent_lanes: 4
+    average_service_concurrent_lanes: 0.26
     expected_concurrent_lanes: 10
     state: UNDERUTILIZED
     source_evidence_remains_usable: true
+  backend_capacity_probe_peak: 10
+
+execution_recovery_gate:
+  id: QG-RECOVERY-001
+  name: Execution Recovery And Idempotency
+  applies_to: SELF_RELIANT_EXECUTION_ENGINE
+  owner: ORCHESTRATOR
+  governance: governance/self-reliant-execution.yaml
+  fail_closed: true
+  pass_condition: >-
+    Execution journal and dispatch fingerprint exist; repeated invocations do not duplicate worker execution or
+    trace acceptance; interrupted executions reject partial output; PENDING_SYNC retries persistence only; an
+    already synchronized execution becomes a no-op.
+  validated_cases_2026_08_23: 5/5_PASS
 
 user_verification:
   required_before_backlog_close: true
@@ -104,4 +133,7 @@ backlog_quality_gates:
   BL-020: {name: Customer Data Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
 
 orchestrator_rule: >-
-  Validate QG-SSOT-001 before PLAN/REPLAN. Before source-reading workers start, enforce QG-SOURCE-001. Then enforce lifecycle logging and measure actual SERVICE overlap for QG-LANE-001. Source-provider partial closure and lane underutilization preserve valid evidence candidates but do not authorize guessing, automatic endpoint completion, or a claim of full parallel utilization.
+  Validate QG-SSOT-001 before PLAN/REPLAN. Before source-reading workers start enforce QG-SOURCE-001.
+  Enforce QG-RECOVERY-001 on repeated/interrupted/pending-sync invocations, QG-LOG-001 on lifecycle boundaries,
+  and QG-LANE-001 using natural SERVICE overlap. None of these gates authorizes naming inference, automatic trace
+  completion or bypass of BL-001 final user acceptance.
