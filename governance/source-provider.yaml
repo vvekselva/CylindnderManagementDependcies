@@ -1,15 +1,19 @@
-version: 1
+version: 2
 name: Execution Source Provider Governance
+architecture: architecture/self-reliant-e2e-execution.md
+self_reliant_governance: governance/self-reliant-execution.yaml
+source_layout: repository/source-layout.yaml
 purpose: >-
-  Remove the hard dependency on a pre-existing local CylinderManagement checkout by defining
-  how the primary Automation Tool materializes immutable worker-readable source from the
-  private GitHub Version Control System before real lane execution.
+  Materialize immutable worker-readable CylinderManagement source without requiring a pre-existing local
+  checkout, while keeping GitHub as Version Control/durable persistence and keeping GitHub credentials out
+  of lane workers.
 
 architecture_boundary:
   github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE
   automation_tool_role: ORCHESTRATOR_SOURCE_STAGER_EXECUTOR_VALIDATOR
   workers_access_github_directly: false
   github_actions_required: false
+  mandatory_local_source_checkout: false
 
 approved_source_providers:
   - id: ORCHESTRATOR_STAGED_SNAPSHOT
@@ -18,8 +22,9 @@ approved_source_providers:
     requires_preexisting_source_checkout: false
     materialization_owner: PRIMARY_ORCHESTRATOR
     materialization_method: >-
-      Read exact files from vvekselva/CylinderManagement through the connected GitHub control-plane
-      interface at the frozen commit and write them into a worker-readable immutable snapshot.
+      Resolve exact FQCN/source requests through repository/source-layout.yaml, fetch exact files from
+      vvekselva/CylinderManagement through the connected GitHub control-plane interface at the frozen
+      commit, and write them into a worker-readable immutable snapshot.
     integrity_model:
       manifest_required: true
       repository_must_equal: vvekselva/CylinderManagement
@@ -27,12 +32,24 @@ approved_source_providers:
       every_materialized_file_records_git_blob_sha: true
       worker_verifies_blob_before_read: true
       tamper_or_missing_manifest_entry: BLOCK_BEFORE_SERVICE
+    binding_model:
+      interface_binding_manifest_required: true
+      candidate_lookup_may_use_qualifier_or_variable_name: true
+      naming_is_never_binding_acceptance: true
+      implementation_source_must_prove_declared_interface: true
+      generic_signature_must_match_when_present: true
+      qualifier_or_default_bean_identity_must_match_when_present: true
+      invalid_binding_state: SOURCE_BINDING_UNRESOLVED
     closure_model:
-      controller_roots_required_before_first_fire: true
+      controller_roots_required_before_first_discovery_fire: true
       downstream_components_staged_iteratively: true
-      missing_component_references_are_explicit: true
-      missing_components_trigger_orchestrator_restage_cycle: true
-      missing_components_must_never_be_silently_inferred_or_auto_accepted: true
+      missing_source_requests_are_explicit: true
+      missing_binding_requests_are_explicit: true
+      missing_requests_trigger_orchestrator_restage_or_rebind_cycle: true
+      maximum_iterations: 8
+      repeated_identical_request_set: SOURCE_RESOLUTION_STALLED
+      maximum_iterations_reached: SOURCE_RESOLUTION_LIMIT_REACHED
+      missing_source_must_never_be_silently_inferred_or_auto_accepted: true
 
   - id: LOCAL_GIT_CHECKOUT
     priority: 2
@@ -43,36 +60,49 @@ approved_source_providers:
     integrity_model:
       frozen_commit_must_exist_locally: true
       worker_verifies_git_head: true
+      active_user_checkout_must_not_be_switched: true
 
 quality_gate:
   id: QG-SOURCE-001
   name: Execution Source Availability And Integrity
   owner: ORCHESTRATOR
   fail_closed: true
-  pass_for_evidence_collection_condition: >-
+  pass_for_discovery_condition: >-
     At least one approved source provider materializes every dispatched controller root at the exact
-    frozen baseline and the provider-specific integrity checks pass. For a staged snapshot, every
-    controller root must exist in the manifest and its local Git blob hash must match the recorded
-    blob hash before any SERVICE event may start.
+    frozen baseline and provider-specific integrity checks pass.
   source_closure_complete_condition: >-
-    Every source component discovered by the approved recursive evidence-collection policy is staged
-    and integrity-verified, leaving zero missing_component_references for the batch.
+    Every source and source binding requested by the approved recursive evidence-collection policy is
+    materialized and integrity/source-signature verified, leaving zero missing_source_requests and zero
+    missing_binding_requests for the batch.
   partial_closure_rule: >-
-    PASS_ROOTS_VERIFIED permits evidence collection but not automatic endpoint COMPLETE decisions.
-    Missing downstream components remain explicit and the Orchestrator stages them in a subsequent
-    source-materialization iteration before accepting evidence that depends on them.
+    PASS_ROOTS_VERIFIED permits discovery evidence collection but not final acceptance of evidence whose
+    path depends on unresolved source/binding. The Orchestrator performs bounded restage/rebind iterations.
   on_integrity_failure: BLOCK_BEFORE_SERVICE_AND_RECORD_EXACT_FILE_HASH_OR_MANIFEST_FAILURE
+  on_resolution_stall: FAIL_CLOSED_AND_RECORD_EXACT_UNRESOLVED_REQUEST_SET
+
+production_scripts:
+  staged_executor: automation/staged-lane-executor-v3.py
+  staged_worker: automation/staged-lane-worker-v3.py
+  legacy_staged_executor: automation/staged-lane-executor.py
+  legacy_staged_worker: automation/staged-lane-worker.py
+  legacy_status: RETAINED_FOR_HISTORY_NOT_AUTHORITATIVE_FOR_NEW_PRODUCTION_FIRES
 
 validated_behavior_2026_08_23:
+  report: tests/self-reliant-e2e-validation-2026-08-23.md
   frozen_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  dispatch: LOCAL-BL001-DISPATCH-005
   controller_roots_verified: 10
-  tamper_test: PASS_FAIL_CLOSED_BLOB_MISMATCH_BEFORE_SERVICE
-  production_staged_fire_latest: PROD-STAGED-BL001-20260823-145139
-  workers_started: 10
-  worker_results_received: 10
-  worker_failures: 0
-  peak_service_concurrent_lanes: 9
+  controller_tamper_test: PASS_FAIL_CLOSED_BLOB_MISMATCH_BEFORE_SERVICE
+  baseline_mismatch_test: PASS_FAIL_CLOSED
+  duplicate_lane_test: PASS_FAIL_CLOSED
+  stale_lane_log_test: PASS_FAIL_CLOSED
+  jpa_canary_execution: E2E-STAGED-20260823-151800
+  jpa_canary_source_closure: SOURCE_CLOSURE_COMPLETE
+  positive_interface_binding_test: PASS
+  negative_interface_binding_test: PASS_IMPLEMENTATION_SIGNATURE_MISMATCH
+  full_discovery_execution: E2E-STAGED-20260823-151810
+  full_discovery_workers_started: 10
+  full_discovery_worker_failures: 0
+  full_discovery_source_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+  full_discovery_missing_source_requests: 21
   individual_lane_logs_remaining_after_aggregation: 0
-  staged_missing_component_references_after_iteration: 2
   trace_evidence_auto_accepted: false
