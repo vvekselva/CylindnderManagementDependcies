@@ -1,10 +1,8 @@
 # CylinderManagement Automation Task Status
 
-> Human-readable derived dashboard. Canonical truth is Level 1 `backlog/backlog.yaml` + `repository/project-inventory.yaml`, Level 2 per-backlog definition/SOW/Completion Path/Quality Gate, and Level 3 `backlog/runtime/<BL-ID>/`. Lifecycle logging is governed by `governance/execution-lifecycle-logging.yaml`. Run-over-run statistics are sourced from `backlog/runtime/<BL-ID>/execution-statistics.yaml`.
+> Human-readable derived dashboard. Canonical truth is Level 1 `backlog/backlog.yaml` + `repository/project-inventory.yaml`, Level 2 per-backlog definition/SOW/Completion Path/Quality Gate, and Level 3 `backlog/runtime/<BL-ID>/`. Run statistics come from `execution-statistics.yaml`; dispatch truth comes from `lane-dispatch.yaml`; current lane state comes from `lane-status.yaml`.
 
 ## Framework / Gate State
-
-The framework is **Backlog-driven**, uses a mandatory **three-level Single Source of Truth**, and planning/execution are fail-closed.
 
 | Level / Gate | State |
 |---|---|
@@ -14,77 +12,95 @@ The framework is **Backlog-driven**, uses a mandatory **three-level Single Sourc
 | SSOT-L3 Runtime SSOT | **COMPLETE** |
 | QG-SSOT-001 Planning Gate | **PASS** |
 | QG-DEP-001 Dependency Gate | **PASS** |
-| QG-LOG-001 Lifecycle Logging | **PASS - ATTEMPT 27 NATIVE PREFLIGHT + LIFECYCLE + AGGREGATION/CLEANUP VERIFIED** |
+| QG-LOG-001 Lifecycle Logging | **PASS for latest closed invocation** |
+| QG-LANE-001 Real Lane Utilization | **PENDING FIRST CURRENT MATRIX EXECUTION EVIDENCE** |
 
 ## Execution Statistics - Previous Run vs Current / Latest Run
 
 Canonical source: `backlog/runtime/BL-001/execution-statistics.yaml`.
 
-**Percentage basis:** `examined_for_final_dependency / 134 × 100`. This is **BL-001 endpoint trace coverage**, not an overall project-completion percentage.
+**Percentage basis:** `examined_for_final_dependency / 134 × 100`. This is **BL-001 endpoint trace coverage**, not overall project completion.
 
-Because the framework is currently `BETWEEN_INVOCATIONS`, the **Current / Latest Run** column represents the latest closed invocation (Attempt 27). During an active invocation, the same column becomes the live synchronized current-run checkpoint.
-
-| Statistic | Previous Run - Attempt 26 | Current / Latest Run - Attempt 27 | Change / Interpretation |
+| Statistic | Previous Run - Attempt 26 | Current / Latest - Attempt 27 | Interpretation |
 |---|---:|---:|---|
-| Invocation | `INVOCATION-20260823-145512` | `INVOCATION-20260823-160000` | Latest run advanced |
-| Run result | PARTIAL / CLOSED | PARTIAL / CLOSED | BL-001 still active |
-| Endpoint trace coverage | **20.15%** (27/134) | **27.61%** (37/134) | **+7.46 percentage points** |
-| COMPLETE percentage | **18.66%** (25/134) | **26.12%** (35/134) | **+7.46 percentage points** |
-| Endpoints examined during run | **+5** | **+10** | Throughput doubled by endpoint count |
-| COMPLETE traces added during run | **+3 net complete** with 2 new unresolved | **+10** with 0 new unresolved | Current run quality/throughput improved |
-| UNRESOLVED at run end | 2 | 2 | No increase in Attempt 27 |
-| Distinct lanes utilized | **3 / 10** | **3 / 10** | Same lane count |
-| Lane utilization | **30.00%** | **30.00%** | Capacity still available if safe work exists |
-| Endpoints examined per utilized lane | **1.67** | **3.33** | Improved by **+1.66** endpoints/lane |
-| Invocation stop condition | Invocation/tool limit | Invocation/tool limit | Not a global execution blocker |
-| Meaningful progress made? | YES | YES | Progress in both runs |
-| Task stale? | NO | **NO** | Latest run made meaningful progress |
-| Consecutive stale/no-progress cycles | 0 | **0** | No stale cycle currently |
-| Last meaningful-progress attempt | 26 at that checkpoint | **27** | Latest progress is Attempt 27 |
+| Endpoint trace coverage | **20.15%** (27/134) | **27.61%** (37/134) | +7.46 percentage points |
+| COMPLETE percentage | **18.66%** (25/134) | **26.12%** (35/134) | +7.46 percentage points |
+| Endpoints examined during run | +5 | +10 | Improved throughput |
+| Distinct lane IDs used | 3/10 | 3/10 | Participation only; not concurrency |
+| Distinct lane participation | 30% | 30% | Not a parallelism metric |
+| Peak concurrent lanes | Legacy metric unavailable | **1/10** | Attempt 27 was effectively sequential |
+| Peak capacity utilization | Legacy metric unavailable | **10%** | Real concurrency was low |
+| Average concurrent lanes | Legacy metric unavailable | **0.95** | Derived from non-overlapping Attempt 27 lane intervals |
+| Endpoints per participating lane | 1.67 | 3.33 | Better work per lane |
+| Task stale? | NO | **NO** | Meaningful progress made |
+| Consecutive stale cycles | 0 | **0** | No stale cycle |
+| Stop condition | Invocation/tool limit | Invocation/tool limit | Not a global blocker |
 
 ### Staleness Rule
 
-A **stale cycle** is one completed Orchestrator invocation in which no meaningful progress occurs. Meaningful progress includes at least one of: endpoint examination increases, COMPLETE count increases, an existing unresolved/blocked/failed path is resolved with evidence, a required gate or Work Unit advances, or a required artifact is created/validated.
+A stale cycle is one completed Orchestrator invocation with no meaningful progress. Endpoint/COMPLETE progress, evidence-backed resolution, gate/Work Unit advancement, or required artifact creation/validation counts as meaningful progress. Consecutive no-progress cycles increment `stale_cycles`; meaningful progress resets it to zero.
 
-`stale_cycles` is the number of **consecutive completed no-progress invocations**. It resets to `0` whenever a completed invocation makes meaningful progress. Therefore BL-001 / `WU-BL001-001` is currently **NOT STALE; stale_cycles = 0**.
+## Real Lane Dispatch - New Execution Backend
 
-## Invocation-Boundary Lane-Log Hygiene
+Canonical queue: `backlog/runtime/BL-001/lane-dispatch.yaml`.
 
-Individual lane logs under `logs/runs/*-LANE-*.md` are transient invocation-working files.
+The previous logical-lane implementation did not prove true simultaneous execution. The revised backend is:
 
-For Attempt 27:
+```text
+PRIMARY ORCHESTRATOR
+        |
+        v
+lane-dispatch.yaml
+        |
+        v
+GitHub Actions matrix (max-parallel 10)
+        |
+        +-- LANE-01 worker
+        +-- LANE-02 worker
+        +-- ...
+        +-- LANE-10 worker
+        |
+        v
+isolated lifecycle-logged evidence artifacts
+        |
+        v
+aggregate + measure peak/average concurrency
+        |
+        v
+Orchestrator validates final trace states
+```
 
-- preflight individual lane-log count: **0 - PASS**;
-- `ORCHESTRATOR_INVOCATION_START` was persisted before analysis/assignment/execution and identified the exact coordinator task;
-- each started lane logged exact task/task description plus INIT START/END, SERVICE START/END and CLOSE END;
-- all three lane logs were accumulated in full into `logs/runs/INVOCATION-20260823-160000.md`;
-- meaningful execution progress was serialized into `logs/automation-log.md`;
-- all three transient lane logs were verified as represented and deleted;
-- post-aggregation individual lane-log count: **0 - PASS**;
-- `ORCHESTRATOR_LOG_AGGREGATION_END`: **PASS**.
+Current seeded batch:
 
-A future invocation may not begin execution while any previous individual lane log remains. `ORCHESTRATOR_INVOCATION_END` is allowed only after aggregation/cleanup and runtime synchronization pass.
+- **10 safe independent controller-family evidence tasks**;
+- expected safe concurrency: **10**;
+- backend: `.github/workflows/lane-matrix-dispatch.yml`;
+- workers: `automation/lane-worker.py`;
+- concurrency summary: `automation/lane-summary.py`;
+- real-lane governance: `governance/lane-execution.yaml`;
+- QG-LANE-001 remains **PENDING** until an actual matrix summary proves measured concurrency.
+
+Matrix workers are read-only evidence collectors. Their dependency candidates do **not** automatically become COMPLETE traces. The Orchestrator still validates each endpoint path under the no-guessing rules.
+
+## Matrix Worker Lifecycle / Artifact Hygiene
+
+Every matrix worker emits:
+
+```text
+LANE_INIT_START
+LANE_INIT_END
+LANE_SERVICE_START
+LANE_SERVICE_END
+LANE_CLOSE_END
+```
+
+with the exact task and task description. Each worker initially uploads an isolated transient artifact. The summary job downloads all lane artifacts, verifies the expected result count, calculates real concurrency, creates one durable aggregate artifact, and deletes the transient individual lane artifacts. This keeps the post-batch state consistent with the no-leftover-individual-log principle.
 
 ## Current Lane SSOT
 
 Canonical source: `backlog/runtime/BL-001/lane-status.yaml`.
 
-Current state: **BETWEEN_INVOCATIONS**. Attempt 27 execution is closed and all ten lanes are released.
-
-| Lane | State | Last lifecycle evidence |
-|---|---|---|
-| LANE-01 | IDLE | `LANE_CLOSE_END` |
-| LANE-02 | IDLE | `LANE_CLOSE_END` |
-| LANE-03 | IDLE | `LANE_CLOSE_END` |
-| LANE-04 | IDLE | None - not used in Attempt 27 |
-| LANE-05 | IDLE | None - not used in Attempt 27 |
-| LANE-06 | IDLE | None - not used in Attempt 27 |
-| LANE-07 | IDLE | None - not used in Attempt 27 |
-| LANE-08 | IDLE | None - not used in Attempt 27 |
-| LANE-09 | IDLE | None - not used in Attempt 27 |
-| LANE-10 | IDLE | None - not used in Attempt 27 |
-
-Lane summary: **10 total / 10 IDLE / 0 WORKING / 0 BLOCKED / 0 STALE**.
+Current state: **BETWEEN_INVOCATIONS**. Attempt 27 is closed and all ten logical lane slots are IDLE. This does not mean BL-001 has no work; it means no ChatGPT coordinator invocation is currently occupying those logical slots. The new GitHub Actions matrix backend is the mechanism intended to provide real concurrent workers.
 
 ## Current Traceability Runtime
 
@@ -95,71 +111,30 @@ Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 | Production Java component candidates | 62 |
 | Classified | 62 / 62 |
 | Exposed components | 57 |
-| NOT_EXPOSED | 5 |
 | Caller-visible endpoints | 134 |
 | Examined for final dependency | **37 / 134** |
 | COMPLETE | **35** |
 | UNRESOLVED | **2** |
 | BLOCKED / FAILED | 0 / 0 |
 | NOT YET EXAMINED | **97** |
-| Latest attempt | `INVOCATION-20260823-160000` / Attempt 27 - PARTIAL / EXECUTION CLOSED |
+| Latest accepted invocation | Attempt 27 / `INVOCATION-20260823-160000` |
 | Traceability Matrix | **LOCKED** |
 
-## Attempt 27 Progress
-
-Attempt 27 examined **10 additional endpoints and completed all 10** without adding a new unresolved trace.
-
-- `GET /login` -> **COMPLETE** as a terminal login-view action; the controller has no service/DAO/repository/file/API/cache/database call.
-- Four `OfflineMapController` GET endpoints -> **COMPLETE** through explicit MBTiles filesystem, SQLite `tiles` / `metadata`, classpath-resource or configuration-driven JSON dependencies as applicable.
-- Five `PredefinedDeliveryTripController` endpoints -> **COMPLETE** through source-proved services/DAOs/entities/native SQL. Proved objects include `public.tbl_predefined_delivery_trip`, `public.tbl_predefined_delivery_trip_stop`, `public.tbl_delivery_planning_stop`, `public.vw_customer_address_location_status`, and `public.vw_customer_delivery_planning_signal` where applicable.
-
-No dependency name was inferred from naming alone.
-
-## Open Evidence Gaps
-
-Two prior complex POST traces remain explicitly **UNRESOLVED**:
-
-1. `POST /customer-spot-cylinder-check/submit` - complete database-object set across every `submitSpotCheck` branch is not yet proved.
-2. `POST /walkin-sale` - complete database-object set across every conditional `processRequest` branch is not yet proved.
-
-These are evidence gaps, not a global execution blocker.
+Open evidence gaps remain `POST /customer-spot-cylinder-check/submit` and `POST /walkin-sale`; these are evidence gaps, not global execution blockers.
 
 ## Current Work Units
 
 | Work Unit | Purpose | State |
 |---|---|---|
-| `WU-BL001-001` | Complete Source Repository Check using safe independent lanes | **PARTIAL - CONTINUE REQUIRED / LANE-PARALLEL** |
+| `WU-BL001-001` | Complete Source Repository Check | **PARTIAL - CONTINUE REQUIRED / REAL MATRIX EVIDENCE DISPATCH ENABLED** |
 | `WU-BL001-002` | Build Traceability Matrix | WAITING_FOR_DEPENDENCY |
 | `WU-BL001-003` | Validate Traceability Gates | WAITING_FOR_DEPENDENCY |
 | `WU-BL001-004` | Register baseline / prepare acceptance and closure | WAITING_FOR_DEPENDENCY |
 
-## Quality Gate Summary
+## Next Action
 
-- `QG-SSOT-001`: **PASS**
-- `QG-SOW-001`: **PASS**
-- `QG-DEP-001`: **PASS**
-- `QG-LOG-001`: **PASS**
-- `QG-TRC-001`: **PASS**
-- `QG-TRC-002`: **IN PROGRESS**
-- `QG-TRC-003`: **PASS**
-- `QG-TRC-004`: **IN PROGRESS**
-- `QG-TRC-005` through `QG-TRC-008`: WAITING
-- `QG-TRC-009`: **IN PROGRESS**
-- `QG-TRC-010` through `QG-TRC-014`: WAITING
-- `QG-TRC-015`: WAITING - USER OWNED
-
-## Blockers / Next Action
-
-- Governance planning blocker: **NONE**.
-- Global execution blocker: **NONE**.
-- Individual lane-log boundary state: **CLEAN - 0 files**.
-- Active trace evidence gaps: **2**.
-- Remaining not-yet-examined execution volume: **97 endpoints**.
-- Task stale state: **NO; consecutive stale/no-progress cycles = 0**.
-- Matrix construction: **LOCKED** until the canonical Source Check result reaches CLOSED + COMPLETED + contract-valid + 100% endpoint trace-result coverage.
-
-Next eligible action: a later invocation must first prove zero individual lane logs, then resolve the two prior complex POST evidence gaps where source evidence permits and continue lifecycle-logged independent controller/service-family tracing across the remaining 97 endpoints. Closure must again aggregate, verify and remove every transient lane log and prove zero remain before the invocation END. `execution-statistics.yaml` and the separate statistics table must be synchronized at invocation start, meaningful checkpoints and invocation end.
+Run the seeded 10-task matrix batch, obtain `lane-dispatch-aggregate`, measure `peak_concurrent_lanes` and `average_concurrent_lanes`, evaluate QG-LANE-001, then let the Orchestrator validate the collected evidence and update the canonical endpoint trace checkpoint. Matrix construction remains locked until the completed source-check contract reaches 100% trace-result coverage.
 
 ## Branch State
 
-All current control-repository framework/runtime changes remain on `chore/rename-dependency-files`; they have not been merged into `main`.
+All current framework/runtime changes remain on `chore/rename-dependency-files`; they are not merged into `main`.
