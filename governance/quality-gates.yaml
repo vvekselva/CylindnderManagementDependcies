@@ -1,6 +1,6 @@
-version: 9
+version: 10
 purpose: >-
-  Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete SSOT and SOW. Execution additionally requires dependency, lifecycle logging and measured real-lane utilization where parallel dispatch is used.
+  Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete SSOT and SOW. Production execution additionally requires verified source input, lifecycle logging and measured real-lane utilization.
 
 three_level_ssot_gate:
   id: QG-SSOT-001
@@ -10,20 +10,16 @@ three_level_ssot_gate:
   governance: governance/ssot-levels.yaml
   fail_closed: true
   pass_condition: >-
-    SSOT-L1 Backlog Master/Repository Scope, SSOT-L2 Backlog Definition and SSOT-L3 Runtime are COMPLETE and mutually consistent for the selected Backlog Item. Level 2 includes a valid Statement of Work. Level 3 contains every file required by backlog/runtime-contract.yaml, including blockers.yaml, lane-status.yaml, lane-dispatch.yaml, local-execution.yaml when the local backend is selected, and execution-statistics.yaml.
-  on_pass: ITEM_MAY_PROCEED_TO_REQUIRED_ANALYSIS_AND_PLANNING_RULES
-  on_fail: BLOCKED_SSOT_INCOMPLETE_NO_PLANNING
+    SSOT-L1 Backlog Master/Repository Scope, SSOT-L2 Backlog Definition and SSOT-L3 Runtime are COMPLETE and mutually consistent for the selected Backlog Item.
 
 statement_of_work_gate:
   id: QG-SOW-001
   name: Statement of Work Completeness Gate
   applies_to: ALL_BACKLOG_ITEMS
   owner: ORCHESTRATOR
-  pass_condition: >-
-    The selected Backlog Item declares a non-null Statement of Work file, the file exists, its backlog_item id matches the selected item, and objective, problem statement, in-scope work, deliverables, execution requirements, acceptance criteria and completion definition contain non-placeholder content.
-  on_pass: SOW_COMPONENT_OF_SSOT_L2_IS_VALID
-  on_fail: BLOCKED_MISSING_OR_INVALID_STATEMENT_OF_WORK
   fail_closed: true
+  pass_condition: >-
+    The selected Backlog Item has a non-placeholder SOW whose backlog ID, objective, scope, deliverables, execution requirements, acceptance criteria and completion definition are valid.
 
 common_gate:
   id: QG-DEP-001
@@ -31,19 +27,33 @@ common_gate:
   applies_to: ALL_BACKLOG_ITEMS
   owner: ORCHESTRATOR
   pass_condition: Every declared dependency is VERIFIED or CLOSED, or the selected Backlog Item declares no dependencies.
-  on_pass: ITEM_MAY_CONTINUE_TO_ITEM_SPECIFIC_QUALITY_GATES
-  on_fail: WAITING_FOR_DEPENDENCY
+
+execution_source_gate:
+  id: QG-SOURCE-001
+  name: Execution Source Availability And Integrity
+  applies_to: ALL_SOURCE_READING_WORKER_EXECUTION
+  owner: ORCHESTRATOR
+  governance: governance/source-provider.yaml
+  fail_closed: true
+  preferred_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+  fallback_provider: LOCAL_GIT_CHECKOUT
+  pass_for_evidence_collection_condition: >-
+    An approved provider supplies every dispatched controller root at the exact frozen baseline. For an Orchestrator-staged snapshot, each root must be present in the manifest and its recomputed Git blob hash must match the manifest before SERVICE.
+  source_closure_complete_condition: >-
+    Recursive source evidence collection reports zero missing_component_references for the batch.
+  partial_closure_rule: >-
+    PASS_ROOTS_VERIFIED permits source evidence collection but never automatic endpoint COMPLETE classification. Missing components remain explicit and are restaged at the same frozen commit.
+  on_integrity_failure: BLOCK_BEFORE_SERVICE
 
 execution_lifecycle_logging_gate:
   id: QG-LOG-001
   name: Execution Lifecycle Logging Completeness
-  applies_to: ALL_ORCHESTRATOR_INVOCATIONS_AND_ORCHESTRATION_LANE_RUNS_AFTER_ACTIVATION
+  applies_to: ALL_ORCHESTRATOR_INVOCATIONS_AND_LANE_RUNS
   owner: ORCHESTRATOR
   governance: governance/execution-lifecycle-logging.yaml
   fail_closed: true
   pass_condition: >-
-    Pre-invocation lane-log hygiene proves zero leftover individual lane logs; required Orchestrator/lane lifecycle records exist in order with exact task identity; every lane closes or recovery-closes; transient lane logs are accumulated verified and deleted; runtime/log evidence reconciles; and invocation closure proves zero lane logs remain.
-  on_fail: EXECUTION_RESULT_NOT_ACCEPTED_AND_RECOVERY_LOG_REQUIRED
+    Zero stale individual lane logs exist before fire; required START/END records with exact task identity exist in order; every started lane closes; transient logs are aggregated verified deleted and rescanned to zero.
 
 real_lane_utilization_gate:
   id: QG-LANE-001
@@ -57,17 +67,19 @@ real_lane_utilization_gate:
   expected_concurrency_formula: min(configured_lanes, eligible_independent_tasks)
   current_backend: LOCAL_PROCESS_POOL
   pass_condition: >-
-    When at least two safe independent tasks are dispatchable, measured peak overlapping SERVICE intervals reaches expected safe concurrency. Fewer than two independent tasks require no artificial parallelism.
-  ready_before_measurement: >-
-    The local executor/worker/fire scripts exist, lane-dispatch.yaml is valid, local-execution.yaml is READY_FOR_LOCAL_FIRE, zero lane logs remain, and the local source repository contains the frozen commit. This state is READY_FOR_MEASUREMENT, not BLOCKED_PLATFORM.
+    When at least two safe independent tasks are dispatched, measured peak overlapping SERVICE intervals reaches expected safe concurrency.
   underutilized_condition: >-
-    measured peak SERVICE concurrency is lower than expected safe concurrency and no dependency, resource lock, CPU/process capacity or local source constraint explains the shortfall.
-  on_pass: REAL_PARALLELISM_CONFIRMED
-  on_underutilized: LANE_UNDERUTILIZATION_RECORDED_CORRECT_LOCAL_PROCESS_CAPACITY_OR_DISPATCH
+    measured peak SERVICE concurrency is lower than expected safe concurrency.
+  latest_validated_real_source_run:
+    execution_id: PROD-STAGED-BL001-20260823-145139
+    peak_service_concurrent_lanes: 9
+    expected_concurrent_lanes: 10
+    state: UNDERUTILIZED
+    source_evidence_remains_usable: true
 
 user_verification:
   required_before_backlog_close: true
-  rule: Automated gates may prove technical completion, but a Backlog Item must not move to CLOSED until its item-specific User Acceptance gate has been approved by the user.
+  rule: Automated gates may prove technical completion, but a Backlog Item must not move to CLOSED until its User Acceptance gate is approved by the user.
 
 backlog_quality_gates:
   BL-001: {name: Controller Traceability, configured: true, config: backlog/gates/BL-001-traceability.yaml, approved_by_user: true, execution_allowed: true}
@@ -92,4 +104,4 @@ backlog_quality_gates:
   BL-020: {name: Customer Data Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
 
 orchestrator_rule: >-
-  Validate QG-SSOT-001 before PLAN/REPLAN. After planning, enforce dependency, logging and item-specific gates. When lane-dispatch.yaml selects a real parallel backend, measure actual SERVICE overlap and evaluate QG-LANE-001. Distinct lane IDs or process creation alone must never be reported as service concurrency. Under-utilization preserves valid source evidence but blocks a claim that real parallel utilization is solved until the measured concurrency gap is explained or corrected.
+  Validate QG-SSOT-001 before PLAN/REPLAN. Before source-reading workers start, enforce QG-SOURCE-001. Then enforce lifecycle logging and measure actual SERVICE overlap for QG-LANE-001. Source-provider partial closure and lane underutilization preserve valid evidence candidates but do not authorize guessing, automatic endpoint completion, or a claim of full parallel utilization.
