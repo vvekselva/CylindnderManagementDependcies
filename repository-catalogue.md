@@ -29,7 +29,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `backlog/orchestrator-run-config.yaml` | Orchestrator Run Control | Execution switchboard; QG-SSOT-001 and SOW validation are fail-closed. |
 | `backlog/gates/BL-001-traceability.yaml` | Backlog Quality Gate | User-approved Controller Traceability Quality Gate set QG-TRC-001 through QG-TRC-015. |
 | `backlog/paths/BL-001-traceability.yaml` | Completion Path | Controller Traceability route bound to SOW, SSOT/dependency prerequisites and approved Traceability gates. |
-| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route; non-plannable until Level 1/2/3 and Quality Gate requirements are complete. |
+| `backlog/paths/BL-002-unit-test.yaml` | Completion Path | Unit Test completion route; scope is constrained by repository/project-inventory.yaml and remains non-plannable until Level 1/2/3 and Quality Gate requirements are complete. |
 | `backlog/paths/BL-003-integration-test.yaml` | Completion Path | Integration Test completion route; non-plannable until Level 1/2/3 and Quality Gate requirements are complete. |
 | `backlog/paths/BL-004-code-coverage.yaml` | Completion Path | Code Coverage route; non-plannable until Level 1/2/3, dependencies and Quality Gates are complete. |
 | `backlog/paths/BL-005-archunit.yaml` | Completion Path | ArchUnit route; non-plannable until Level 1/2/3 and Quality Gate requirements are complete. |
@@ -43,6 +43,7 @@ The repository controls backlog-driven automation executed against `vvekselva/Cy
 | `governance/worker-operating-guide.md` | Governance | Defines orchestration-lane behaviour and input-driven Generic Worker model. |
 | `logs/automation-log.md` | Audit Log | Coordinator-owned human-readable orchestration history. |
 | `logs/automation-story.md` | Story | Human-readable overall automation story. |
+| `repository/project-inventory.yaml` | Level 1 SSOT | Authoritative CylinderManagement project/module inventory and backlog scope classifications such as unit-test required, excluded, postponed or unclassified. |
 | `repository-catalogue.md` | Governance | Authoritative catalogue of static control files and allowed dynamic paths. |
 | `sync/source-artifact-sync-register.yaml` | Synchronization | Machine-readable source-component to artifact synchronization list. |
 | `traceability/README.md` | Traceability | Explains Controller Traceability output area. |
@@ -97,6 +98,7 @@ governance/source-artifact-sync-policy.md
 governance/worker-operating-guide.md
 logs/automation-log.md
 logs/automation-story.md
+repository/project-inventory.yaml
 repository-catalogue.md
 sync/source-artifact-sync-register.yaml
 traceability/README.md
