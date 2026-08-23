@@ -1,42 +1,54 @@
 lane_dispatch:
-  version: 6
+  version: 7
   dispatch_generation: 5
   dispatch_id: LOCAL-BL001-DISPATCH-005
-  requested_by: USER_APPROVED_LOCAL_PARALLEL_BACKEND
-  trigger_reason: REMOVE_GITHUB_ACTIONS_DEPENDENCY_AND_PREPARE_LOCAL_FIRE
+  requested_by: USER_APPROVED_SELF_RELIANT_SOURCE_STAGING
+  trigger_reason: VALIDATED_ORCHESTRATOR_STAGED_SOURCE_PROVIDER
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: READY_FOR_LOCAL_FIRE
+  state: READY_FOR_STAGED_SOURCE_CONTINUATION
   authoritative_for_dispatch_queue: true
   worker_backend: LOCAL_PROCESS_POOL
-  governance: governance/lane-execution.yaml
-  executor: automation/local-lane-executor.py
-  worker: automation/local-lane-worker.py
-  windows_fire_script: automation/fire-local-lanes.ps1
+  source_provider_governance: governance/source-provider.yaml
+  source_provider_preference: ORCHESTRATOR_STAGED_SNAPSHOT
+  source_provider_fallback: LOCAL_GIT_CHECKOUT
+  source_gate: QG-SOURCE-001
+  staged_executor: automation/staged-lane-executor.py
+  staged_worker: automation/staged-lane-worker.py
+  local_git_executor: automation/local-lane-executor.py
+  local_git_worker: automation/local-lane-worker.py
   local_execution_ssot: backlog/runtime/BL-001/local-execution.yaml
   source_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  source_checkout_mode: TEMPORARY_DETACHED_GIT_WORKTREE_AT_FROZEN_COMMIT
   configured_lane_count: 10
   max_parallel_workers: 10
-  external_service_dependency: NONE
+  github_actions_dependency: NONE
+  preexisting_local_source_checkout_required: false
   result_semantics: EVIDENCE_COLLECTION_ONLY_ORCHESTRATOR_VALIDATES_FINAL_TRACE
 
+  source_provider_validation:
+    staged_provider_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    controller_roots_verified: 10
+    tamper_test: PASS_FAIL_CLOSED_BEFORE_SERVICE
+    latest_real_source_execution: PROD-STAGED-BL001-20260823-145139
+    latest_materialized_verified_files: 25
+    latest_missing_component_references: [TripReturnWorkflowService, CustomerAddressLocationOfflineMapService]
+    missing_reference_behavior: ORCHESTRATOR_STAGE_EXACT_FILE_AT_SAME_FROZEN_COMMIT_AND_RETRY_AFFECTED_EVIDENCE
+    local_checkout_blocker_status: RESOLVED_BY_STAGED_PROVIDER
+
   rules:
-    - every task must be independent and read-only against the frozen source baseline
-    - one task is assigned to one lane for one local execution
-    - executor must prove zero individual lane logs before fire
-    - executor must verify the frozen source commit exists in the local CylinderManagement repository
-    - executor creates a temporary detached Git worktree at the frozen source commit and never changes the active source checkout
+    - every task is independent and read-only against the frozen source baseline
+    - one task is assigned to one lane for one process-pool execution
+    - before SERVICE the selected source provider must pass QG-SOURCE-001 for that controller root
+    - staged files require manifest repository baseline path and exact Git blob SHA
+    - worker recomputes each staged file Git blob hash before reading it
+    - missing downstream components remain explicit and are never guessed
+    - workers never access GitHub directly
     - up to ten local OS worker processes may run concurrently
     - every worker emits INIT SERVICE CLOSE lifecycle evidence with exact task identity
-    - lane-status.yaml is updated from local process PID and heartbeat evidence
     - worker evidence does not automatically classify an endpoint COMPLETE
-    - the Orchestrator validates and consolidates evidence after local execution
-    - no dependency may be inferred from naming alone
-    - QG-LANE-001 uses measured SERVICE overlap, not lane labels or process creation alone
-    - individual worker lane logs are transient and must be aggregated verified deleted and rescanned to zero before closure
-    - durable aggregate is stored under worker/evidence/LOCAL-BL001-<timestamp>/
+    - QG-LANE-001 uses measured SERVICE overlap not lane labels or process creation
+    - individual lane logs are transient and are aggregated verified deleted and rescanned to zero before closure
 
   tasks:
     - {task_id: BL001-D001, lane: LANE-01, status: READY, safe_independent: true, task: Trace AddStopController family evidence, task_description: Collect source-proved endpoint mappings injected downstream components and explicit persistence/file/API evidence reachable from AddStopController for Orchestrator validation., controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java, max_components: 50}
@@ -55,7 +67,7 @@ lane_dispatch:
     ready_tasks: 10
     safe_independent_tasks: 10
     expected_concurrent_lanes: 10
-    local_workers_confirmed_started: 0
-    qg_lane_001_state: READY_FOR_MEASUREMENT
-    fire_command_windows: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
+    latest_real_service_peak: 9
+    qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    qg_lane_001_state: UNDERUTILIZED
     final_trace_decision_owner: ORCHESTRATOR
