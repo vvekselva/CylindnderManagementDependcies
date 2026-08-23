@@ -1,12 +1,12 @@
 lane_dispatch:
-  version: 4
-  dispatch_generation: 3
-  dispatch_id: MATRIX-BL001-DISPATCH-003
-  requested_by: USER_APPROVED_ORCHESTRATOR_CHANGE
-  trigger_reason: VERIFY_REAL_TEN_WAY_CONCURRENCY_WITH_SELF_REPORTED_RUN_ID
+  version: 5
+  dispatch_generation: 4
+  dispatch_id: MATRIX-BL001-DISPATCH-004
+  requested_by: USER_MANUAL_FIRE_REQUEST
+  trigger_reason: FIRE_AND_VERIFY_ALL_REAL_PARALLEL_LANES
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: QUEUED_AWAITING_SOURCE_WORKFLOW_EVIDENCE
+  state: BLOCKED_PLATFORM_NO_WORKFLOW_START_EVIDENCE
   authoritative_for_dispatch_queue: true
   worker_backend: GITHUB_ACTIONS_MATRIX
   workflow: .github/workflows/lane-matrix-dispatch.yml
@@ -19,17 +19,19 @@ lane_dispatch:
   configured_lane_count: 10
   max_parallel_workers: 10
   result_semantics: EVIDENCE_COLLECTION_ONLY_ORCHESTRATOR_VALIDATES_FINAL_TRACE
+
   source_sync:
-    source_dispatch_generation: 3
-    source_dispatch_id: MATRIX-BL001-SOURCE-003
-    control_dispatch_id_verified: MATRIX-BL001-DISPATCH-003
+    source_dispatch_generation: 4
+    source_dispatch_id: MATRIX-BL001-SOURCE-004
+    control_dispatch_id_verified: MATRIX-BL001-DISPATCH-004
     source_copy_verified: true
+    source_copy_commit: 6810c3d19cbc6b5757317c00f627333b6c31eb7a
     source_copy_evidence: vvekselva/CylinderManagement@automation/lane-matrix:automation/lane-dispatch.yaml
     source_workflow_installed: true
     source_workflow_evidence: vvekselva/CylinderManagement@automation/lane-matrix:.github/workflows/lane-matrix-dispatch.yml
     matrix_execution_file_present: false
     source_workflow_run_id: null
-    external_worker_state_evidence: NONE_YET
+    external_worker_state_evidence: NONE_AFTER_GENERATION_4_FIRE
 
   rules:
     - every task must be independent and read-only against the frozen source baseline
@@ -63,4 +65,7 @@ lane_dispatch:
     expected_concurrent_lanes: 10
     workflow_run_id: null
     external_workers_confirmed_started: 0
+    measured_peak_concurrent_lanes: null
+    measured_average_concurrent_lanes: null
+    qg_lane_001_state: BLOCKED_PLATFORM
     final_trace_decision_owner: ORCHESTRATOR
