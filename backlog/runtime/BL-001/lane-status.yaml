@@ -11,16 +11,15 @@ lane_status:
   current_backlog_state: PARTIAL
   current_work_unit: WU-BL001-001
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  last_reconciled_attempt: 25
-  last_reconciled_run: RUN-WI0004-20260823-025
-  invocation_state: ACTIVE
+  last_reconciled_attempt: 26
+  last_reconciled_run: INVOCATION-20260823-145512
+  invocation_state: CLOSING
   current_invocation: INVOCATION-20260823-145512
-  current_idle_reason: SAFE_CAPACITY_NOT_YET_FILLED_DURING_INITIAL_ASSIGNMENT
+  current_idle_reason: ALL_STARTED_LANES_CLOSED_COORDINATOR_SYNCHRONIZING_RUNTIME
 
   lifecycle_logging:
     contract: governance/execution-lifecycle-logging.yaml
     gate: QG-LOG-001
-    effective_for_next_invocation: true
     invocation_start_required_before_analysis_or_execution: true
     required_lane_event_order: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
     blocked_before_service_exception: >-
@@ -46,23 +45,11 @@ lane_status:
     coordinator_is_not_a_lane: true
     generic_worker_consumes_orchestration_lane: false
     valid_states: [IDLE, ASSIGNED, INITIALIZING, WORKING, BLOCKED, WAITING, CLOSING, STALE]
-    assignment_requirements:
-      - non-IDLE lane must identify its work_unit and task
-      - WORKING lane must identify its run_id and last_heartbeat
-      - BLOCKED lane must contain a plain-English blocker
-      - LANE_INIT_START must exist before init executes
-      - LANE_INIT_END must be persisted immediately after init
-      - service may start only after persisted LANE_INIT_END equals INITIALIZED
-      - LANE_SERVICE_START must exist before service executes
-      - LANE_SERVICE_END must be persisted immediately after service
-      - LANE_CLOSE_END or recovery-close must exist before lane release/reuse
-      - summary counts must reconcile exactly to the ten lane records
-      - during an active invocation the coordinator should fill and refill safe independent lanes while eligible work remains
 
   lanes:
-    LANE-01: {state: WORKING, work_unit: WU-BL001-001, task: Trace CustomerSpotCylinderCheckController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L01, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: '2026-08-23T15:03:55+05:30', last_lifecycle_event: LANE_SERVICE_START, blocker: null}
-    LANE-02: {state: WORKING, work_unit: WU-BL001-001, task: Trace YardAuditDashboardController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L02, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: '2026-08-23T15:03:55+05:30', last_lifecycle_event: LANE_SERVICE_START, blocker: null}
-    LANE-03: {state: WORKING, work_unit: WU-BL001-001, task: Trace WalkinSaleIngestionController family, worker_input: worker/inputs/WI-0004.yaml, run_id: RUN-WI0004-20260823-026-L03, attempt: 26, started_at: '2026-08-23T15:01:09+05:30', last_heartbeat: '2026-08-23T15:03:55+05:30', last_lifecycle_event: LANE_SERVICE_START, blocker: null}
+    LANE-01: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-02: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
+    LANE-03: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: LANE_CLOSE_END, blocker: null}
     LANE-04: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-05: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
     LANE-06: {state: IDLE, work_unit: null, task: null, worker_input: null, run_id: null, attempt: null, started_at: null, last_heartbeat: null, last_lifecycle_event: null, blocker: null}
@@ -73,18 +60,16 @@ lane_status:
 
   summary:
     total_lanes: 10
-    idle: 7
+    idle: 10
     assigned: 0
     initializing: 0
-    working: 3
+    working: 0
     blocked: 0
     waiting: 0
     closing: 0
     stale: 0
-    active_lane_count: 3
+    active_lane_count: 0
 
   current_interpretation: >-
-    Invocation INVOCATION-20260823-145512 is active. Three independent controller families
-    are in SERVICE under WU-BL001-001 with persisted lifecycle boundaries and current
-    heartbeats. Remaining idle capacity may be filled only when additional safe independent
-    scope is selected without shared-file conflicts or unproved dependency assumptions.
+    All three Attempt 26 lane runs persisted LANE_CLOSE_END and have been released to IDLE.
+    The coordinator is completing shared runtime synchronization and the invocation close log.
