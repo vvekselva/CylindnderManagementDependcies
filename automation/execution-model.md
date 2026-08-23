@@ -2,9 +2,62 @@
 
 ## Purpose
 
-The framework is Backlog-driven, uses mandatory Level 1/2/3 Single Sources of Truth, one primary Orchestrator, up to ten safe orchestration lanes, and fail-closed lifecycle logging.
+The framework is Backlog-driven, uses mandatory Level 1/2/3 Single Sources of Truth, one primary Orchestrator, up to ten safe execution lanes, fail-closed lifecycle logging and a local real-parallel execution backend.
 
-## 1. Three-Level SSOT
+## 1. Architecture responsibility boundary
+
+GitHub is the Version Control System and durable persistence layer. The Automation Tool is the Orchestrator and Execution Engine.
+
+```text
+                         USER
+                          |
+                          v
+              PRIMARY AUTOMATION TOOL
+                  / ORCHESTRATOR
+                          |
+          read / validate / plan / dispatch
+                          |
+                          v
+             Level 1 / 2 / 3 SSOT
+             persisted/versioned in GitHub
+                          |
+                          v
+                  lane-dispatch.yaml
+                          |
+                          v
+              LOCAL EXECUTION ENGINE
+              LOCAL_PROCESS_POOL <= 10
+                          |
+          +---------------+---------------+
+          |       |       |       |       |
+          v       v       v       v       v
+       LANE-01  LANE-02  LANE-03 ...   LANE-10
+       worker   worker   worker         worker
+          |       |       |              |
+          +-------+-------+--------------+
+                          |
+              logs + source evidence
+                          |
+                          v
+                 LOCAL AGGREGATOR
+                          |
+             QG-LOG-001 + QG-LANE-001
+                          |
+                          v
+               PRIMARY ORCHESTRATOR
+                 validates evidence
+                          |
+                          v
+                  synchronized SSOT
+                          |
+                          v
+                        GitHub
+                 VCS + persistence
+```
+
+GitHub Actions is not required for normal orchestration execution. GitHub participates before execution as the versioned source/SSOT and after execution as durable persistence for synchronized results.
+
+## 2. Three-Level SSOT
 
 ```text
 LEVEL 1 - BACKLOG MASTER / REPOSITORY SCOPE
@@ -17,7 +70,7 @@ item + SOW + Completion Path + Quality Gate
         v
 LEVEL 3 - RUNTIME
 analysis / plan / work units / gates / blockers / decisions
-worker-input register / lane-status / result
+worker-input register / lane-status / lane-dispatch / local-execution / statistics / result
         |
         v
 QG-SSOT-001
@@ -28,177 +81,86 @@ QG-SSOT-001
 ANALYZE -> PLAN -> EXECUTE -> VALIDATE -> ACCEPT -> CLOSE
 ```
 
-## 2. Invocation-level logging comes first
+## 3. Invocation-level logging comes first
 
-Every scheduled/manual coordinator invocation begins with a persisted `ORCHESTRATOR_INVOCATION_START` before repository analysis, planning, lane assignment or application execution.
+Every scheduled/manual coordinator invocation begins with a persisted `ORCHESTRATOR_INVOCATION_START` before analysis, planning, lane assignment or application execution. At the end, after every started lane is CLOSED or recovery-closed and runtime/status is synchronized, the coordinator persists `ORCHESTRATOR_INVOCATION_END`.
 
-```text
-SCHEDULE TRIGGER
-   |
-   v
-WRITE ORCHESTRATOR_INVOCATION_START
-   | fail -> do not start execution
-   v
-READ LIVE CONTROL REPOSITORY
-```
+## 4. Level 1 - Backlog Master and Repository Scope
 
-At the end, after every started lane is CLOSED or recovery-closed and runtime/status is synchronized, the coordinator persists `ORCHESTRATOR_INVOCATION_END`. The END record is mandatory even when no eligible work ran or the invocation failed/blocked.
+Authoritative files are `backlog/backlog.yaml` and `repository/project-inventory.yaml`. Level 1 answers what work exists and which source/module scope may be used. Missing scope is not guessed.
 
-Invocation log pattern:
+## 5. Level 2 - Backlog Definition and Statement of Work
 
-```text
-logs/runs/INV-<invocation-id>-ORCHESTRATOR.md
-```
+A complete Level 2 contains the Backlog Definition, Statement of Work, Completion Path and Item Quality Gate. `QG-SOW-001` is mandatory.
 
-## 3. Level 1 - Backlog Master and Repository Scope
+## 6. Level 3 - Runtime SSOT
 
-Authoritative files:
+Required runtime includes `analysis.yaml`, `execution-plan.yaml`, `work-unit-status.yaml`, `gate-status.yaml`, `blockers.yaml`, `decisions.yaml`, `worker-input-register.yaml`, `lane-status.yaml`, `lane-dispatch.yaml`, `local-execution.yaml`, `execution-statistics.yaml` and `result.yaml`.
 
-```text
-backlog/backlog.yaml
-repository/project-inventory.yaml
-```
+`lane-status.yaml` is the single point of truth for what every lane is doing now. `local-execution.yaml` is the current execution-engine truth for process IDs, measured concurrency, aggregate evidence and closure.
 
-Level 1 answers what work exists and which source/module scope may be used. Missing scope is not guessed.
-
-## 4. Level 2 - Backlog Definition and Statement of Work
-
-A complete Level 2 contains/references:
-
-```text
-Backlog Definition
-  +-- Statement of Work
-  +-- Completion Path
-  +-- Item Quality Gate
-```
-
-`QG-SOW-001` is mandatory.
-
-## 5. Level 3 - Runtime SSOT
-
-Required runtime files:
-
-```text
-analysis.yaml
-execution-plan.yaml
-work-unit-status.yaml
-gate-status.yaml
-blockers.yaml
-decisions.yaml
-worker-input-register.yaml
-lane-status.yaml
-result.yaml
-```
-
-`lane-status.yaml` is the single point of truth for what every lane is doing now.
-
-## 6. Lane lifecycle with mandatory logs
+## 7. Local lane lifecycle with mandatory logs
 
 The lifecycle contract is `governance/execution-lifecycle-logging.yaml` and the acceptance gate is `QG-LOG-001`.
 
 ```text
-LANE_INIT_START     (persist before init)
-   |
-   v
-init()
-   |
-   v
-LANE_INIT_END       (persist after init)
-   |
-   +-- BLOCKED_BEFORE_SERVICE -> close() -> LANE_CLOSE_END
-   |
-   v
-LANE_SERVICE_START  (persist before service)
-   |
-   v
-service()
-   |
-   v
-LANE_SERVICE_END    (persist after service)
-   |
-   v
-close()
-   |
-   v
-LANE_CLOSE_END      (persist after close; Log State CLOSED)
-   |
-   v
-lane may be released/reused
+LANE_INIT_START -> init() -> LANE_INIT_END
+                         |
+                         +-- BLOCKED_BEFORE_SERVICE -> close() -> LANE_CLOSE_END
+                         |
+                         v
+LANE_SERVICE_START -> service() -> LANE_SERVICE_END -> close() -> LANE_CLOSE_END
 ```
 
-Fail-closed rules:
+A lane is not reusable until CLOSE/recovery-close evidence is persisted. Individual lane logs are transient and must be aggregated, verified, deleted and rescanned to zero before execution closure.
 
-1. no INIT_START -> init does not run;
-2. service runs only after persisted INIT_END = INITIALIZED;
-3. no SERVICE_START -> service does not run;
-4. SERVICE_END records actual result/evidence/blocker;
-5. close always runs for a started attempt;
-6. lane is not reusable until CLOSE_END/recovery-close is persisted;
-7. result is not accepted unless QG-LOG-001 reconciles required logs.
+## 8. Safe lane utilization
 
-Lane log pattern:
+The primary coordinator is separate from the ten lane slots. Independent controller/endpoint families may use available workers up to ten. `QG-LANE-001` measures actual overlapping SERVICE intervals; distinct lane IDs or process creation alone do not prove concurrency.
 
-```text
-logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md
-```
+## 9. Orchestrator responsibilities
 
-The shared `logs/automation-log.md` remains coordinator-owned so ten lanes do not edit one file concurrently.
+The Automation Tool / Orchestrator:
 
-## 7. Safe lane utilization
+1. reads versioned SSOT/source state from GitHub or an in-sync local checkout;
+2. validates Level 1/2/3 and required gates;
+3. performs required analysis and planning;
+4. creates the authoritative `lane-dispatch.yaml`;
+5. fires the local execution engine when the execution host is available;
+6. starts up to ten independent OS workers through `LOCAL_PROCESS_POOL`;
+7. enforces lifecycle logging and lane state;
+8. measures concurrency and aggregates results;
+9. validates source evidence and result contracts;
+10. synchronizes canonical runtime/log/evidence changes back to GitHub;
+11. obtains required user acceptance before backlog closure.
 
-The primary coordinator is separate from the ten lane slots. Inside an active invocation, independent controller/endpoint families may use available lanes up to ten.
+## 10. GitHub responsibilities
 
-```text
-Find eligible independent families
-        |
-        v
-Fill safe lanes up to 10
-        |
-        v
-Logged INIT -> SERVICE -> CLOSE
-        |
-        v
-Lane released
-        |
-        v
-More safe eligible work?
-  YES -> refill same invocation
-  NO  -> synchronize checkpoint and end invocation
-```
+GitHub:
 
-Do not stop at a fixed small batch while more safe independent work remains. Dependent Work Units, shared-file conflicts and resource-lock conflicts remain serialized. Reuse only source-confirmed relationships; no guessing.
+1. stores `vvekselva/CylinderManagement` source code and the frozen source commit;
+2. stores `vvekselva/CylindnderManagementDependcies` automation control/SSOT files;
+3. versions changes and provides durable history;
+4. receives synchronized runtime, logs and accepted evidence after execution.
 
-## 8. Orchestrator responsibilities
+GitHub is not required to host workers, start a workflow, provide a runner or generate a workflow run ID for normal Cylinder orchestration.
 
-The Orchestrator:
+## 11. Current BL-001 example
 
-1. persists invocation START;
-2. validates/repairs Level 1/2/3 and required gates;
-3. performs required analysis;
-4. creates/changes plans only when QG-SSOT-001 passes;
-5. assigns eligible independent work;
-6. records lane assignment in lane-status;
-7. enforces lifecycle boundary logging;
-8. refills released lanes while eligible work remains;
-9. validates results/contracts/QG-LOG-001;
-10. synchronizes runtime, blockers, gates, outputs and shared audit log;
-11. persists invocation END;
-12. obtains required user acceptance before closure.
+BL-001 / WU-BL001-001 remains active. Current accepted trace checkpoint: 134 total endpoints; 37 examined; 35 COMPLETE; 2 UNRESOLVED; 97 not yet examined. The Traceability Matrix remains locked until Source Check reaches 100% trace-result coverage and canonical result validation.
 
-## 9. Current BL-001 example
+Current real-parallel state: `LOCAL_PROCESS_POOL`, 10 safe tasks ready, `local-execution.yaml = READY_FOR_LOCAL_FIRE`, and `QG-LANE-001 = READY_FOR_MEASUREMENT`.
 
-BL-001 / WU-BL001-001 remains active. Current trace checkpoint: 134 total endpoints; 22 examined; 22 COMPLETE; 0 UNRESOLVED; 112 not yet examined. The Matrix is locked until 100% trace-result coverage and canonical result validation.
-
-`WU-BL001-001` is lane-parallel for independent controller/endpoint families, and the next invocation must provide execution evidence under the mandatory lifecycle logging contract.
-
-## 10. Source-of-truth precedence
+## 12. Source-of-truth precedence
 
 ```text
 Level 1 -> what work/scope exists
 Level 2 -> what the work means
 Level 3 -> what is happening now
 lane-status.yaml -> current Lane -> Task truth
+local-execution.yaml -> real executor/process/concurrency truth
 logs/runs/*.md -> lifecycle execution evidence
 logs/automation-log.md -> coordinator-consolidated audit history
 TaskStatus/story -> derived human-readable views
+GitHub -> versioning and durable persistence of the above
 ```
