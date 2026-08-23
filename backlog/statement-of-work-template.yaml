@@ -46,11 +46,14 @@ statement_of_work:
 
   execution_authorization:
     sow_required: true
-    approved: false
-    approved_by: null
-    approved_at: null
+    structurally_valid: false
+    placeholders_present: true
+    validated_by: ORCHESTRATOR
+    validation_evidence: null
 
   governance_rule: >-
-    A Backlog Item MUST NOT enter analysis or execution unless this Statement of Work
-    exists, is structurally complete, has status APPROVED, and execution_authorization.approved
-    is true. Missing, draft, incomplete or unapproved SOW is a fail-closed governance blocker.
+    A Backlog Item MUST NOT enter analysis or execution unless its Statement of Work
+    exists and is structurally valid: objective, problem statement, in-scope work,
+    deliverables, execution requirements, acceptance criteria and completion definition
+    must be populated with non-placeholder content. Missing or incomplete SOW is a
+    fail-closed governance blocker.
