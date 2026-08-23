@@ -41,13 +41,19 @@ decisions:
       coverage, not an overall project percentage. Completed no-progress invocations increment stale_cycles;
       meaningful progress resets the count to zero.
   - id: DEC-BL001-007
-    state: APPLIED
+    state: SUPERSEDED
     decision: REPLACE_LOGICAL_ONLY_LANE_PARTICIPATION_WITH_REAL_GITHUB_ACTIONS_MATRIX_WORKERS
     reason: >-
-      Attempt 27 used three lane IDs but the recorded intervals were effectively sequential, so distinct
-      lane participation did not prove concurrency. WU-BL001-001 now uses lane-dispatch.yaml plus the
-      Lane Matrix Dispatch GitHub Actions workflow for up to ten independent read-only evidence workers.
-      Workers produce isolated lifecycle-logged evidence artifacts, a summary job measures peak/average
-      overlapping workers, aggregates the lane artifacts and removes the transient individual artifacts.
-      QG-LANE-001 governs claims of real utilization. The Orchestrator remains the only authority that may
-      classify endpoint traces COMPLETE or UNRESOLVED.
+      This decision proved that logical lane participation was not real concurrency, but its GitHub Actions
+      execution backend was later removed because the user required the framework not to depend on GitHub Actions.
+    superseded_by: DEC-BL001-008
+  - id: DEC-BL001-008
+    state: APPLIED
+    decision: USE_LOCAL_PROCESS_POOL_FOR_REAL_PARALLEL_LANES_WITHOUT_GITHUB_ACTIONS_DEPENDENCY
+    reason: >-
+      Real parallel execution now uses automation/local-lane-executor.py and automation/local-lane-worker.py,
+      fired on Windows through automation/fire-local-lanes.ps1. The executor verifies zero leftover lane logs,
+      creates a temporary detached Git worktree at the frozen source commit without switching the active checkout,
+      starts up to ten local OS worker processes, tracks PID/heartbeat lane state, measures peak and average SERVICE
+      overlap, aggregates evidence, deletes transient lane logs and closes local-execution.yaml. Worker evidence is
+      read-only and never auto-classifies endpoint traces; the primary Orchestrator remains final trace-decision owner.
