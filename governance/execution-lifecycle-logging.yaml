@@ -1,0 +1,113 @@
+version: 1
+name: Execution Lifecycle Logging Contract
+purpose: >-
+  Make every Orchestrator invocation and every orchestration-lane execution auditable at
+  its lifecycle boundaries. Required log records are written before/after invocation and
+  before/after INIT/SERVICE/CLOSE phases. Missing mandatory boundary logs fail closed.
+
+effective_scope:
+  applies_to: ALL_ORCHESTRATOR_INVOCATIONS_AND_ORCHESTRATION_LANE_RUNS_AFTER_ACTIVATION
+  historical_runs_before_activation: LEGACY_EVIDENCE_NOT_RETROACTIVELY_INVALIDATED
+
+log_locations:
+  shared_audit_log: logs/automation-log.md
+  orchestrator_invocation_log_pattern: logs/runs/INV-<invocation-id>-ORCHESTRATOR.md
+  lane_run_log_pattern: logs/runs/INV-<invocation-id>-<lane-id>-<run-id>.md
+  rule: >-
+    The coordinator owns the shared audit log. Each invocation/lane run gets its own run-log
+    artifact so independent lanes do not edit one shared file concurrently. The coordinator
+    may consolidate significant lifecycle records into logs/automation-log.md in serialized order.
+
+orchestrator_required_events:
+  - event: ORCHESTRATOR_INVOCATION_START
+    timing: BEFORE_ANY_ANALYSIS_PLANNING_ASSIGNMENT_OR_EXECUTION
+    required_fields:
+      - timestamp
+      - invocation_id
+      - coordinator
+      - trigger
+      - control_repository
+      - control_branch
+      - intended_backlog_selection_policy
+    fail_closed_if_missing: true
+  - event: ORCHESTRATOR_INVOCATION_END
+    timing: AFTER_ALL_STARTED_LANES_ARE_CLOSED_OR_RECOVERY_CLOSED_AND_RUNTIME_IS_SYNCHRONIZED
+    required_fields:
+      - timestamp
+      - invocation_id
+      - selected_backlog_item
+      - work_units_touched
+      - lanes_used
+      - actions_completed
+      - blockers_or_stop_condition
+      - runtime_sync_result
+      - final_invocation_result
+      - next_action
+    mandatory_even_when_no_work_or_failure: true
+
+lane_required_event_order:
+  - LANE_INIT_START
+  - LANE_INIT_END
+  - LANE_SERVICE_START
+  - LANE_SERVICE_END
+  - LANE_CLOSE_END
+
+lane_event_rules:
+  LANE_INIT_START:
+    timing: BEFORE_INIT_EXECUTES
+    required_fields: [timestamp, invocation_id, backlog_item, work_unit, lane_id, task, run_id, attempt, source_baseline]
+    fail_closed_if_missing: true
+  LANE_INIT_END:
+    timing: IMMEDIATELY_AFTER_INIT_RETURNS
+    required_fields: [timestamp, invocation_id, lane_id, run_id, init_result]
+    allowed_results: [INITIALIZED, BLOCKED_BEFORE_SERVICE]
+    service_may_start_only_if: INITIALIZED
+  LANE_SERVICE_START:
+    timing: BEFORE_SERVICE_EXECUTES
+    required_fields: [timestamp, invocation_id, lane_id, run_id, task, assigned_actions]
+    fail_closed_if_missing: true
+  LANE_SERVICE_END:
+    timing: IMMEDIATELY_AFTER_SERVICE_RETURNS
+    required_fields: [timestamp, invocation_id, lane_id, run_id, service_result, actions_completed, actions_not_completed, evidence_summary, blocker]
+    allowed_results: [COMPLETED, PARTIAL, BLOCKED, FAILED]
+  LANE_CLOSE_END:
+    timing: AFTER_CLOSE_COMPLETES
+    required_fields: [timestamp, invocation_id, lane_id, run_id, final_result, outputs, evidence, next_action, log_state]
+    required_log_state: CLOSED
+    lane_reusable_only_after_persisted: true
+
+conditional_flow:
+  blocked_before_service: >-
+    When LANE_INIT_END is BLOCKED_BEFORE_SERVICE, LANE_SERVICE_START and LANE_SERVICE_END are
+    not emitted. close() still runs and LANE_CLOSE_END remains mandatory.
+  stale_or_disappeared_lane: >-
+    The coordinator creates a recovery close record, marks the final result RESULT_NOT_CONFIRMED,
+    persists LANE_CLOSE_END/recovery evidence, and only then releases the lane.
+  logging_failure_after_service: >-
+    close() must still execute for safety, but the result is not accepted as final until the
+    missing lifecycle log is recovered and QG-LOG-001 can reconcile the event sequence.
+
+optional_events:
+  - LANE_SERVICE_PROGRESS
+  - LANE_HEARTBEAT
+  - LANE_BLOCKER_DETECTED
+  - LANE_WAITING
+  - LANE_STALE
+  - ORCHESTRATOR_CHECKPOINT
+
+quality_gate:
+  id: QG-LOG-001
+  name: Execution Lifecycle Logging Completeness
+  owner: ORCHESTRATOR
+  fail_closed: true
+  pass_condition: >-
+    Every in-scope Orchestrator invocation has ORCHESTRATOR_INVOCATION_START and
+    ORCHESTRATOR_INVOCATION_END; every lane run has the required applicable lifecycle events
+    in order; no lane is released before a persisted close record; shared/runtime status
+    reconciles with run logs; no open/orphan lifecycle event remains.
+  on_fail: EXECUTION_RESULT_NOT_ACCEPTED_AND_RECOVERY_LOG_REQUIRED
+
+plain_english_rule: >-
+  Lifecycle logs must say what is starting/ending, why, what happened, what evidence exists,
+  what blocked progress if anything, and what happens next. Raw tool calls are evidence details,
+  not the main log narrative.
