@@ -34,14 +34,35 @@
 | Consecutive stale cycles | 0 | **0** |
 | Current stop condition | Invocation/tool limit | **Source workflow has not self-reported a run ID** |
 
-Attempt 28 counts as meaningful framework progress because dispatch generation 3 was synchronized and verified on the source execution branch, and lane-state semantics were corrected so queued tasks are no longer presented as external worker activity.
+Attempt 28 counts as meaningful framework progress because the real-matrix dispatch mechanism, evidence semantics and lane-state fail-closed behavior were established. It did not advance endpoint trace coverage.
+
+## Manual Fire Verification - Generation 4
+
+A fresh matrix fire was performed after Attempt 28 by updating the source execution copy on `vvekselva/CylinderManagement` branch `automation/lane-matrix`.
+
+| Fire/check item | Live value |
+|---|---|
+| Control dispatch | `MATRIX-BL001-DISPATCH-004` |
+| Source dispatch | `MATRIX-BL001-SOURCE-004` |
+| Source dispatch commit | `6810c3d19cbc6b5757317c00f627333b6c31eb7a` |
+| Configured lanes | **10** |
+| Safe READY tasks | **10** |
+| Expected concurrent lanes | **10** |
+| Source workflow installed | **YES** |
+| `automation/matrix-execution.yaml` | **NOT PRESENT** |
+| Workflow/job run ID | **NOT PROVED** |
+| External workers confirmed started | **0** |
+| Lanes currently WORKING | **0 / 10** |
+| QG-LANE-001 | **BLOCKED_PLATFORM** |
+
+**Conclusion:** the dispatch itself was fired, but GitHub Actions did not provide evidence that the matrix workflow started. The framework therefore correctly keeps all ten lanes IDLE rather than falsely marking them WORKING.
 
 ## Real Matrix Dispatch Status
 
 Control queue: `backlog/runtime/BL-001/lane-dispatch.yaml`
 
-- Dispatch: `MATRIX-BL001-DISPATCH-003`
-- Source execution copy: `MATRIX-BL001-SOURCE-003`
+- Dispatch: `MATRIX-BL001-DISPATCH-004`
+- Source execution copy: `MATRIX-BL001-SOURCE-004`
 - Source repository: `vvekselva/CylinderManagement`
 - Branch: `automation/lane-matrix`
 - Matrix worker limit: **10**
@@ -52,7 +73,7 @@ Control queue: `backlog/runtime/BL-001/lane-dispatch.yaml`
 - Durable `lane-dispatch-aggregate`: **NOT AVAILABLE**
 - Real concurrency measurement: **NOT AVAILABLE**
 
-The Orchestrator did not duplicate these tasks as in-chat lanes. All ten lanes remain **IDLE** in `lane-status.yaml` because no workflow/job evidence proves an external worker assignment or execution state.
+All ten lanes remain **IDLE** in `lane-status.yaml`. This is not a lack-of-work condition; it is an external source-repository Actions start/trigger blocker.
 
 ## Current BL-001 Traceability Runtime
 
@@ -79,8 +100,8 @@ Open evidence gaps remain `POST /customer-spot-cylinder-check/submit` and `POST 
 
 ## Exact Blocker / Next Action
 
-`QG-LANE-001` is blocked because the source-local GitHub Actions workflow has not produced `automation/matrix-execution.yaml` or a verifiable workflow/job run ID. The current evidence does not establish whether Actions is disabled, restricted, or otherwise prevented from starting.
+`QG-LANE-001` is blocked because the source-local GitHub Actions workflow has not produced `automation/matrix-execution.yaml` or a verifiable workflow/job run ID after the generation-4 fire. Current evidence does not yet distinguish among Actions being disabled/restricted, connector-originated push suppression, workflow startup failure before `record-start`, or another repository policy restriction.
 
-Next action: verify GitHub Actions availability/policy for `vvekselva/CylinderManagement`; re-trigger the source dispatch if needed; then consume only the durable `lane-dispatch-aggregate`, measure peak/average concurrency, validate worker evidence against the frozen source baseline, and continue BL-001 without starting dependent Work Units prematurely.
+Next action: inspect/enable GitHub Actions for `vvekselva/CylinderManagement` and the **Source Local Lane Matrix Dispatch** workflow. Once an actual run starts, require `matrix-execution.yaml`, the durable `lane-dispatch-aggregate`, measured peak/average concurrency and zero transient lane artifacts before QG-LANE-001 can PASS.
 
 BL-001 remains **PARTIAL** and cannot become VERIFIED/CLOSED before all automatic gates pass and QG-TRC-015 explicit user acceptance is obtained.
