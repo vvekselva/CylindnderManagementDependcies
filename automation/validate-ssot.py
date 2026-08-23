@@ -43,6 +43,17 @@ def fail(errors: list[str], msg: str) -> None:
     errors.append(msg)
 
 
+def rounded_pct(numerator: Any, denominator: Any) -> float | None:
+    try:
+        n = float(numerator)
+        d = float(denominator)
+        if d == 0:
+            return None
+        return round(n / d * 100.0, 2)
+    except (TypeError, ValueError):
+        return None
+
+
 def validate_lane_status(backlog_id: str, runtime_path: Path, errors: list[str]) -> None:
     lane_file = runtime_path / 'lane-status.yaml'
     if not lane_file.is_file():
@@ -94,6 +105,75 @@ def validate_lane_status(backlog_id: str, runtime_path: Path, errors: list[str])
     active_expected = 10 - counts['idle']
     if summary.get('active_lane_count') != active_expected:
         fail(errors, f'{backlog_id}: lane-status active_lane_count does not reconcile to lane records')
+
+
+def validate_execution_statistics(backlog_id: str, runtime_path: Path, errors: list[str]) -> None:
+    stats_file = runtime_path / 'execution-statistics.yaml'
+    if not stats_file.is_file():
+        return
+    try:
+        doc = yaml.safe_load(stats_file.read_text(encoding='utf-8')) or {}
+    except Exception as exc:
+        fail(errors, f'{backlog_id}: SSOT-L3 invalid YAML execution-statistics.yaml: {exc}')
+        return
+
+    root = doc.get('execution_statistics', {})
+    if root.get('backlog_item') != backlog_id:
+        fail(errors, f'{backlog_id}: execution-statistics backlog_item mismatch')
+        return
+
+    window = root.get('comparison_window', {})
+    previous = window.get('previous_run') or {}
+    current = window.get('current_or_latest_run') or {}
+    for label, run in [('previous_run', previous), ('current_or_latest_run', current)]:
+        if not run:
+            continue
+        total = run.get('total_endpoints')
+        examined = run.get('end_checkpoint_examined')
+        complete = run.get('complete')
+        expected_progress = rounded_pct(examined, total)
+        expected_complete = rounded_pct(complete, total)
+        if expected_progress is not None and run.get('progress_percentage') != expected_progress:
+            fail(errors, f'{backlog_id}: {label} progress_percentage does not match examined/total')
+        if expected_complete is not None and run.get('complete_percentage') != expected_complete:
+            fail(errors, f'{backlog_id}: {label} complete_percentage does not match complete/total')
+        try:
+            lanes = int(run.get('distinct_lanes_used', 0))
+            lane_pct = round(lanes / 10.0 * 100.0, 2)
+            if run.get('lane_utilization_percentage') != lane_pct:
+                fail(errors, f'{backlog_id}: {label} lane_utilization_percentage does not match lanes/10')
+            if lanes < 0 or lanes > 10:
+                fail(errors, f'{backlog_id}: {label} distinct_lanes_used outside 0..10')
+        except (TypeError, ValueError):
+            fail(errors, f'{backlog_id}: {label} distinct_lanes_used is not an integer')
+
+    staleness = root.get('staleness', {})
+    cycles = staleness.get('consecutive_no_progress_cycles')
+    if isinstance(cycles, int):
+        expected_stale = cycles > 0
+        if staleness.get('stale') is not expected_stale:
+            fail(errors, f'{backlog_id}: stale flag does not reconcile with consecutive_no_progress_cycles')
+    else:
+        fail(errors, f'{backlog_id}: consecutive_no_progress_cycles must be an integer')
+
+    analysis_file = runtime_path / 'analysis.yaml'
+    if analysis_file.is_file() and current:
+        try:
+            analysis = yaml.safe_load(analysis_file.read_text(encoding='utf-8')) or {}
+            checkpoint = analysis.get('analysis', {}).get('endpoint_dependency_trace_checkpoint', {})
+            latest = analysis.get('analysis', {}).get('latest_attempt', {})
+            if current.get('end_checkpoint_examined') != checkpoint.get('examined_for_final_dependency'):
+                fail(errors, f'{backlog_id}: current statistics examined checkpoint does not match analysis.yaml')
+            if current.get('complete') != checkpoint.get('complete'):
+                fail(errors, f'{backlog_id}: current statistics COMPLETE count does not match analysis.yaml')
+            if current.get('unresolved') != checkpoint.get('unresolved'):
+                fail(errors, f'{backlog_id}: current statistics UNRESOLVED count does not match analysis.yaml')
+            if current.get('total_endpoints') != checkpoint.get('total_endpoints'):
+                fail(errors, f'{backlog_id}: current statistics total_endpoints does not match analysis.yaml')
+            if latest and current.get('attempt') != latest.get('number'):
+                fail(errors, f'{backlog_id}: current statistics attempt does not match analysis.yaml latest_attempt')
+        except Exception as exc:
+            fail(errors, f'{backlog_id}: cannot reconcile execution statistics with analysis.yaml: {exc}')
 
 
 def main() -> int:
@@ -192,6 +272,7 @@ def main() -> int:
                     if backlog_id not in str(doc):
                         warnings.append(f'{backlog_id}: {filename} does not visibly contain the Backlog ID')
                 validate_lane_status(backlog_id, runtime_path, errors)
+                validate_execution_statistics(backlog_id, runtime_path, errors)
 
         for field in ['item_definition', 'statement_of_work', 'runtime', 'completion_path', 'quality_gate']:
             if run_item.get(field) != item.get(field):
