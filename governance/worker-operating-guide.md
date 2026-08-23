@@ -6,7 +6,7 @@ This guide defines how the automation uses Workers.
 
 There are two roles:
 
-1. **Orchestration lanes** `LANE-01` through `LANE-10` execute Workflow Jobs.
+1. **Orchestration lanes** `LANE-01` through `LANE-10` execute eligible independent orchestration Jobs/tasks inside an active coordinator invocation.
 2. A separate independent **Generic Worker** executes one task supplied through one Worker Input file.
 
 The Generic Worker is not a source-analysis worker and is not `LANE-11`.
@@ -32,7 +32,43 @@ WORKFLOW
          +-- ACTION
 ```
 
-The coordinator decides which Jobs are READY and assigns them to the ten orchestration lanes.
+The coordinator decides which Jobs/tasks are READY and assigns them to the ten orchestration lanes. `backlog/runtime/<BL-ID>/lane-status.yaml` is the current Lane-to-Task SSOT.
+
+## Orchestration lane utilization
+
+The ten lanes are execution slots inside a coordinator invocation; they are not persistent background workers. `IDLE` between invocations is therefore valid. During an active invocation, the coordinator should use available safe lane capacity while independent eligible work remains.
+
+```text
+Eligible independent tasks
+        |
+        v
+Fill available lanes
+        |
+        v
+INIT -> SERVICE -> CLOSE
+        |
+        v
+Released lane
+        |
+        +--> More eligible independent work? YES -> reassign in same invocation
+        |
+        NO
+        v
+End invocation / checkpoint
+```
+
+Rules:
+
+- do not impose a fixed small batch such as three endpoints when more independent work is eligible;
+- prefer controller/service-family batches where that reduces repeated source discovery;
+- use up to ten lanes only where the Work Unit permits lane parallelism;
+- never parallelize dependent Work Units prematurely;
+- never parallelize conflicting shared-file writes or resource-lock conflicts;
+- update `lane-status.yaml` before execution, while WORKING, on blocker/stale transitions and after close;
+- preserve the same evidence/no-guessing requirements regardless of throughput;
+- refill released lanes within the same invocation while safe eligible work remains.
+
+A coordinator invocation may stop when there is no eligible independent work left, a hard blocker prevents further safe work, resource/shared-file locks prevent useful progress, the invocation/tool execution limit is reached, or the Work Unit completion boundary is reached.
 
 ## Generic Worker input/output flow
 
@@ -175,19 +211,9 @@ That YAML result is validated against:
 workflows/WF-001-controller-traceability/source-check-output-contract.yaml
 ```
 
-and becomes:
+and becomes `SOURCE_CHECK_OUTPUT` for the Traceability Matrix consumer Work Unit.
 
-```text
-SOURCE_CHECK_OUTPUT
-```
-
-for:
-
-```text
-JOB-003 Complete Traceability Matrix
-```
-
-During the initial matrix build, the Orchestrator consumes this accepted output rather than re-reading the source repository.
+For the current BL-001 execution plan, independent controller/endpoint-family traces inside `WU-BL001-001` may use up to ten orchestration lanes during one coordinator invocation. This parallelism does not unlock the Matrix early and does not change the final 134/134 evidence requirement.
 
 Earlier `WI-0001` and `WI-0002` remain historical evidence; `WI-0003` is superseded.
 
