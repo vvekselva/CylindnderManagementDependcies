@@ -11,9 +11,17 @@ decisions:
     state: APPLIED
     decision: MAXIMIZE_SAFE_LANE_UTILIZATION_WITHIN_EACH_COORDINATOR_INVOCATION
     reason: >-
-      The user identified that WU-BL001-001 was under-utilizing the ten-lane execution model by
-      closing small endpoint batches and then leaving capacity idle until the next hourly invocation.
-      WU-BL001-001 may now partition independent controller/endpoint families across up to ten lanes,
+      WU-BL001-001 may partition independent controller/endpoint families across up to ten lanes,
       refill released lanes during the same invocation, and continue until no eligible independent work
       remains or a documented stop condition is reached. Quality gates, frozen-source evidence and
       no-guessing rules remain unchanged.
+  - id: DEC-BL001-004
+    state: APPLIED
+    decision: MANDATORY_ORCHESTRATOR_AND_LANE_LIFECYCLE_BOUNDARY_LOGGING
+    reason: >-
+      The user requires visible audit records before and after every coordinator invocation and at
+      each lane lifecycle boundary. New executions must persist ORCHESTRATOR_INVOCATION_START before
+      analysis/execution and ORCHESTRATOR_INVOCATION_END after all started lanes close and runtime is
+      synchronized. Each lane must log INIT start/end, SERVICE start/end and CLOSE end. A missing
+      mandatory pre-phase log blocks that phase; a lane is not released until its close/recovery-close
+      record is persisted; execution results require QG-LOG-001 compliance before acceptance.
