@@ -38,7 +38,7 @@ local_execution:
 
   latest_production_fire_attempt:
     attempted: true
-    attempted_at_utc: 2026-08-23T14:29:22Z
+    attempted_at_utc: 2026-08-23T15:25:56Z
     attempt_type: PRODUCTION_PREFLIGHT
     result: BLOCKED_BEFORE_LANE_START
     execution_host: CURRENT_CHATGPT_EXECUTION_RUNTIME
@@ -47,24 +47,37 @@ local_execution:
     python3_available: true
     python3_path: /opt/pyvenv/bin/python3
     source_checkout_present: false
-    source_checkout_candidates_found: []
+    source_checkout_candidates_found:
+      - path: /mnt/data/_local_lane_test/source
+        classification: REJECTED_SMOKE_TEST_REPOSITORY
+        frozen_commit_present: false
+      - path: /mnt/data/_local_lane_smoke2/source
+        classification: REJECTED_SMOKE_TEST_REPOSITORY
+        frozen_commit_present: false
     control_checkout_present: false
-    control_checkout_candidates_found: []
-    frozen_commit_verification: NOT_REACHED_SOURCE_CHECKOUT_MISSING
-    approved_executor_worker_dispatch_file_verification: NOT_REACHED_CONTROL_CHECKOUT_MISSING
-    zero_leftover_lane_log_verification: NOT_PROVABLE_CONTROL_CHECKOUT_MISSING
+    control_checkout_candidates_found:
+      - path: /mnt/data/_local_lane_test/control
+        classification: REJECTED_NOT_GIT_CHECKOUT_AND_MISSING_APPROVED_FIRE_SCRIPT
+      - path: /mnt/data/_local_lane_smoke2/control
+        classification: REJECTED_NOT_GIT_CHECKOUT_AND_MISSING_APPROVED_FIRE_SCRIPT
+    frozen_commit_verification: FAILED_NO_VALID_SOURCE_CHECKOUT_CONTAINS_FROZEN_COMMIT
+    approved_executor_worker_dispatch_file_verification: NOT_PROVABLE_NO_VALID_CONTROL_GIT_CHECKOUT
+    zero_leftover_lane_log_verification: NOT_PROVABLE_NO_VALID_CONTROL_GIT_CHECKOUT
     lanes_started: 0
     trace_evidence_accepted: false
     classification: EXECUTION_HOST_PREFLIGHT_BLOCKED
     exact_missing_prerequisites:
-      - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement
-      - local_or_mounted_control_checkout_of_vvekselva/CylindnderManagementDependcies
+      - local_or_mounted_Git_checkout_of_vvekselva/CylinderManagement_containing_frozen_commit_3ae6e61442132d94a307275b08dd65fcef228d89
+      - local_or_mounted_Git_checkout_of_vvekselva/CylindnderManagementDependcies_with_approved_executor_worker_dispatch_and_fire_script
+      - provable_zero_leftover_individual_lane_logs_in_that_control_checkout
     not_classified_as: [GITHUB_ACTIONS_BLOCKER, SOURCE_CODE_BLOCKER, QUALITY_GATE_FAILURE]
-    next_action: MATERIALIZE_OR_MOUNT_SOURCE_AND_CONTROL_CHECKOUTS_ON_EXECUTION_HOST_THEN_RERUN_PREFLIGHT
+    next_action: MATERIALIZE_OR_MOUNT_VALID_SOURCE_AND_CONTROL_GIT_CHECKOUTS_ON_EXECUTION_HOST_THEN_RERUN_PREFLIGHT
 
   fire_command_windows: powershell -ExecutionPolicy Bypass -File automation/fire-local-lanes.ps1 -SourceRoot <path-to-CylinderManagement>
   note: >-
-    The current production preflight passed Git and Python availability but fail-closed before any lane start because this
-    ChatGPT execution host contains neither a worker-readable CylinderManagement Git checkout nor a mounted control checkout.
-    Therefore the frozen commit, approved local executor/worker/dispatch files, and control-repository lane-log hygiene cannot be
-    proved on this host. QG-LANE-001 remains READY_FOR_MEASUREMENT, BL-001 remains PARTIAL, and zero production lanes were started.
+    The latest production preflight passed Git and Python availability but failed closed before any lane start. Two local smoke-test
+    Git repositories were discovered, but neither contains the frozen BL-001 source commit and neither is accepted as the required
+    CylinderManagement checkout. Two control-like smoke-test directories were also discovered, but they are not valid control Git
+    checkouts and do not prove the complete approved fire input set. Therefore frozen-source provenance, approved control-file
+    provenance and zero-leftover lane-log hygiene are not provable on this host. QG-LANE-001 remains READY_FOR_MEASUREMENT,
+    BL-001 remains PARTIAL, and zero production lanes were started.
