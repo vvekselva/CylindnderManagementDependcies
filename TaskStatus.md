@@ -1,20 +1,55 @@
 # CylinderManagement Automation Task Status
 
+> Human-readable derived dashboard. Canonical truth is Level 1 `backlog/backlog.yaml`, Level 2 per-backlog definition/SOW/Completion Path/Quality Gate, and Level 3 `backlog/runtime/<BL-ID>/`.
+
 ## Framework Mode
 
-The framework is **Backlog-driven** and both analysis and execution are controlled by the Orchestrator.
+The framework is **Backlog-driven**, uses a mandatory **three-level Single Source of Truth**, and planning is **fail-closed**.
 
-## Backlog Run Selection
+A Backlog Item may be catalogued, but PLAN/REPLAN is forbidden until:
 
-The authoritative execution switchboard is `backlog/orchestrator-run-config.yaml`.
+1. **SSOT-L1 Backlog Master** is COMPLETE;
+2. **SSOT-L2 Backlog Definition** is COMPLETE and `QG-SOW-001` passes;
+3. **SSOT-L3 Runtime SSOT** is COMPLETE;
+4. `QG-SSOT-001 Three-Level SSOT Planning Gate` passes.
 
-- `BL-001 Controller Traceability`: **RUN ENABLED**, item Quality Gate configured and user approved, ACTIVE.
-- `BL-002` through `BL-020`: **RUN DISABLED** and not eligible for this cycle.
+## Backlog Inventory
+
+- Total registered Backlog Items: **20** (`BL-001` through `BL-020`).
+- `BL-001 Controller Traceability`: **RUN ENABLED / ACTIVE / PARTIAL**.
+- `BL-002` through `BL-020`: **RUN DISABLED / NON-PLANNABLE** until their own Level 1/2/3 planning references and Quality Gates are complete.
+
+## BL-001 Three-Level SSOT Status
+
+| Level / Gate | State | Authoritative source |
+|---|---|---|
+| SSOT-L1 Backlog Master | **COMPLETE** | `backlog/backlog.yaml` |
+| SSOT-L2 Backlog Definition | **COMPLETE** | `backlog/items/BL-001-controller-traceability.yaml` |
+| QG-SOW-001 Statement of Work | **PASS** | `backlog/sow/BL-001-controller-traceability.yaml` |
+| SSOT-L3 Runtime SSOT | **COMPLETE** | `backlog/runtime/BL-001/` |
+| QG-SSOT-001 Three-Level SSOT Planning Gate | **PASS** | `backlog/runtime/BL-001/gate-status.yaml` |
+
+BL-001 may retain or revise its Execution Plan only while these conditions remain valid. Future material PLAN/REPLAN must re-evaluate `QG-SSOT-001`.
+
+## Level 3 Runtime Files
+
+All mandatory BL-001 runtime files exist:
+
+- `analysis.yaml`;
+- `execution-plan.yaml`;
+- `work-unit-status.yaml`;
+- `gate-status.yaml`;
+- `blockers.yaml`;
+- `decisions.yaml`;
+- `worker-input-register.yaml`;
+- `result.yaml`.
 
 ## BL-001 Quality Gate Status
 
 | Gate | State |
 |---|---|
+| QG-SSOT-001 Three-Level SSOT Planning Gate | **PASS** |
+| QG-SOW-001 Statement of Work Completeness | **PASS** |
 | QG-DEP-001 Backlog Dependency Gate | **PASS** |
 | QG-TRC-001 Source Baseline Integrity | **PASS** |
 | QG-TRC-002 Complete Source Check | **IN PROGRESS** |
@@ -28,31 +63,24 @@ The authoritative execution switchboard is `backlog/orchestrator-run-config.yaml
 | QG-TRC-010 through QG-TRC-014 | WAITING |
 | QG-TRC-015 User Acceptance | WAITING - USER OWNED |
 
-BL-001 cannot be CLOSED until QG-TRC-001 through QG-TRC-014 pass and QG-TRC-015 is explicitly approved by the user.
+BL-001 cannot become VERIFIED until QG-TRC-001 through QG-TRC-014 pass and cannot become CLOSED until QG-TRC-015 is explicitly approved by the user.
 
-## Current Source Analysis
+## Current Traceability Runtime
 
 Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
 
-Current proved findings:
+- production Java component candidates: **62**;
+- candidates classified: **62 / 62**;
+- exposed components: **57**;
+- NOT_EXPOSED components: **5**;
+- caller-visible HTTP method/path combinations: **134**;
+- endpoints examined for final dependency: **22 / 134**;
+- COMPLETE traces: **19**;
+- UNRESOLVED traces: **3**;
+- BLOCKED / FAILED traces: **0**;
+- NOT YET EXAMINED: **112**.
 
-- classification scope: **62 Java component candidates**;
-- candidate classification: **62 / 62 complete**;
-- **57 exposed components**;
-- **5 NOT_EXPOSED candidates**;
-- **134 unique caller-visible HTTP method/path combinations**;
-- final-dependency traces explicitly examined: **10 / 134**;
-- COMPLETE final-dependency traces: **6**;
-- UNRESOLVED examined traces: **4**;
-- endpoints not yet examined for final dependency: **124**.
-
-Attempt 16 newly resolved:
-
-- `GET /search/customer/{searchText}` -> `public.tbl_customer`;
-- `GET /search/product/{searchText}` -> `public.tbl_product`;
-- `GET /search/addresstype/{searchText}` -> `public.tbl_address_type`.
-
-The four examined Cylinder paths still requiring complete physical persistence evidence are `/search/cylinder/by-state`, `/search/cylinder/on-vehicle`, `/search/cylinder/by-customer`, and `/search/cylinder/by-supplier`.
+The three current unresolved evidence gaps are the Challan Type, City and Country generic search-service paths. Their controller/service handoffs are proved, but concrete Spring implementations, repository/query layers and final dependencies are not yet proved.
 
 ## Current Work Units
 
@@ -61,29 +89,34 @@ The four examined Cylinder paths still requiring complete physical persistence e
 | `WU-BL001-001` | Complete Source Repository Check | **PARTIAL - CONTINUE REQUIRED** |
 | `WU-BL001-002` | Build Traceability Matrix from accepted Source Check Output | WAITING_FOR_DEPENDENCY |
 | `WU-BL001-003` | Validate approved Traceability Quality Gates | WAITING_FOR_DEPENDENCY |
-| `WU-BL001-004` | Register source-artifact baseline and prepare user acceptance/closure | WAITING_FOR_DEPENDENCY |
+| `WU-BL001-004` | Register baseline and prepare user acceptance/closure | WAITING_FOR_DEPENDENCY |
 
 ## WI-0004 Attempt State
 
 ```text
 Worker Input: WI-0004
-Latest Attempt: 16
-Latest Run: RUN-WI0004-20260822-016
+Latest Attempt: 24
+Latest Run: RUN-WI0004-20260823-024
 Run State: CLOSED
 Attempt Result: PARTIAL
 Canonical Result: NOT CREATED / NOT ACCEPTED
-Proved Exposed Components: 57
-Proved HTTP Method/Path Combinations: 134
-Proved NOT_EXPOSED Candidates: 5
-Candidates Remaining To Classify: 0
-Endpoint Traces Examined For Final Dependency: 10 / 134
-Complete Final-Dependency Traces: 6
-Unresolved Final-Dependency Traces: 4
-Not Yet Examined For Final Dependency: 124
-Next Action: resolve the four remaining examined Cylinder paths, then continue the remaining 124 endpoint traces
+Endpoint Traces Examined: 22 / 134
+Complete Traces: 19
+Unresolved Traces: 3
+Not Yet Examined: 112
+Next Action: resolve Challan Type, City and Country concrete dependency paths, then continue the remaining endpoint traces
 ```
 
-Matrix construction remains locked because the canonical `worker/results/WI-0004.yaml` has not reached `COMPLETED`, contract-valid, 100%-trace-result-coverage status.
+Matrix construction remains locked because `worker/results/WI-0004.yaml` has not reached CLOSED + COMPLETED + contract-valid + 100%-trace-result-coverage status.
+
+## Blocker / Evidence-Gap State
+
+Canonical blocker ledger: `backlog/runtime/BL-001/blockers.yaml`.
+
+- Governance blocker preventing planning: **NONE** - `QG-SSOT-001 PASS`.
+- Global execution blocker: **NONE**.
+- Active evidence gaps affecting `QG-TRC-002`: **3**.
+- Remaining execution volume: **112 endpoint traces not yet examined**.
 
 ## Current Execution State
 
@@ -91,8 +124,12 @@ Matrix construction remains locked because the canonical `worker/results/WI-0004
 Active Backlog Item: BL-001
 Backlog State: PARTIAL
 Run enabled: TRUE
-Quality Gate configured: YES
-Quality Gate approved: YES
+SSOT-L1: COMPLETE
+SSOT-L2: COMPLETE
+SSOT-L3: COMPLETE
+QG-SSOT-001: PASS
+QG-SOW-001: PASS
+QG-DEP-001: PASS
 Current Work Unit: WU-BL001-001
 Worker Input: WI-0004
 Open Worker runs: 0
@@ -101,6 +138,10 @@ User Acceptance: NOT YET REACHED
 BL-001 Closed: NO
 ```
 
+## Coordinator State
+
+Exactly **one primary scheduled Cylinder coordinator** should remain enabled. Its prompt must enforce Level 1/2/3 and `QG-SSOT-001` before PLAN/REPLAN.
+
 ## Branch State
 
-All control-repository changes remain on `chore/rename-dependency-files`. They have not been merged into `main`.
+All current control-repository changes remain on `chore/rename-dependency-files`. They have not been merged into `main`.
