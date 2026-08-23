@@ -1,0 +1,58 @@
+version: 1
+name: Real Lane Dispatch And Utilization Governance
+purpose: >-
+  Convert orchestration lanes from logical labels into measurable independent worker executions.
+  GitHub Actions matrix jobs provide the current real parallel worker backend for source-evidence
+  collection. The Orchestrator remains the only authority that may accept final trace states.
+
+worker_backend:
+  type: GITHUB_ACTIONS_MATRIX
+  workflow: .github/workflows/lane-matrix-dispatch.yml
+  queue_ssot: backlog/runtime/<BL-ID>/lane-dispatch.yaml
+  max_parallel_workers: 10
+  worker_script: automation/lane-worker.py
+  summary_script: automation/lane-summary.py
+  source_evidence_only: true
+  final_trace_decision_owner: ORCHESTRATOR
+
+safety_rules:
+  - workers are read-only against the frozen CylinderManagement source baseline
+  - workers must not modify application source or shared control files
+  - each matrix job owns only its own artifact
+  - source evidence collected by a worker is not automatically a COMPLETE trace
+  - the Orchestrator must validate endpoint-by-endpoint call paths and may preserve UNRESOLVED
+  - no table/view/service dependency may be accepted from naming alone
+
+metrics:
+  configured_lanes: 10
+  expected_concurrent_lanes_formula: min(configured_lanes, eligible_independent_tasks)
+  distinct_lanes_used: number of different lane IDs that actually produced worker results
+  peak_concurrent_lanes: maximum overlapping worker execution intervals
+  average_concurrent_lanes: aggregate worker execution seconds / matrix wall-clock seconds
+  distinct_lane_participation_percentage: distinct_lanes_used / configured_lanes * 100
+  peak_capacity_utilization_percentage: peak_concurrent_lanes / configured_lanes * 100
+
+quality_gate:
+  id: QG-LANE-001
+  name: Real Lane Utilization Gate
+  owner: ORCHESTRATOR
+  category: PERFORMANCE_GOVERNANCE
+  pass_condition: >-
+    When two or more safe independent tasks are dispatchable, the matrix execution reaches the
+    expected safe concurrency, where expected concurrency is min(configured lanes, eligible tasks),
+    OR a concrete platform/runners capacity limit is recorded and achieved. When fewer than two
+    independent tasks exist, the gate passes without requiring artificial parallelism.
+  underutilized_condition: >-
+    peak_concurrent_lanes is below expected safe concurrency and no dependency, resource lock,
+    runner-capacity limit or platform limit explains the shortfall.
+  fail_closed_for_parallelism_claim: true
+  does_not_invalidate_source_evidence: true
+  on_underutilized: >-
+    Preserve valid worker evidence, mark the run LANE_UNDERUTILIZED, record the exact concurrency
+    gap, and correct dispatch/runner capacity before claiming the lane-utilization problem solved.
+
+artifact_contract:
+  worker_artifact_pattern: lane-result-<lane>-<task-id>
+  required_worker_files: [lane-result.yaml, lane-evidence.md]
+  summary_artifact: lane-dispatch-summary
+  summary_files: [lane-dispatch-summary.yaml, lane-dispatch-summary.md]
