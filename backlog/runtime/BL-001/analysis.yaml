@@ -18,20 +18,21 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 37
-    complete: 35
-    unresolved: 2
+    examined_for_final_dependency: 107
+    complete: 107
+    unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 97
+    not_yet_examined: 27
     changed_by_architecture_validation: false
 
   latest_accepted_trace_attempt:
-    number: 27
-    run_id: INVOCATION-20260823-160000
-    state: CLOSED
-    result: PARTIAL
-    trace_additions: {examined: 10, complete: 10, unresolved: 0}
+    run_id: PRODUCTION-FIRE-20260824-230001
+    state: CLOSED_CHECKPOINT
+    result: PARTIAL_ADVANCED
+    trace_additions: {examined: 1, complete: 1, unresolved: 0}
+    accepted_endpoint: POST /stop
+    chain_completeness: FULL_BRANCHING
 
   self_reliant_architecture_validation:
     report: tests/self-reliant-e2e-validation-2026-08-23.md
@@ -66,27 +67,37 @@ analysis:
     trace_evidence_auto_accepted: false
 
   latest_full_source_discovery:
-    execution_id: E2E-STAGED-20260823-151810
+    execution_id: E2E-STAGED-20260823-161214
     phase: CLOSED_RESTAGE_REQUIRED
     workers_started: 10
     worker_results_received: 10
     worker_failures: 0
     qg_source_001: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
-    missing_source_requests: 21
-    missing_binding_requests: 0
-    peak_natural_service_concurrency: 4
-    average_natural_service_concurrency: 0.26
+    missing_source_requests: 16
+    missing_binding_requests: 3
+    binding_identities_unresolved_now: 0
+    peak_natural_service_concurrency: 2
+    average_natural_service_concurrency: 0.0
     qg_lane_001: UNDERUTILIZED
     residual_lane_logs: 0
     trace_evidence_auto_accepted: false
     interpretation: >-
-      Infrastructure self-reliance is proven: source was read from the private VCS through the Orchestrator,
-      staged and executed without GitHub Actions or a mounted source checkout. The batch correctly requested
-      additional source instead of guessing. Recursive source/binding closure remains normal WU-BL001-001 work.
+      Infrastructure self-reliance remains proven. The latest staged discovery closed cleanly but requested additional
+      source/bindings rather than guessing. The exact source-resolution set is now durably resolved for twenty entries;
+      execution-host immutable snapshot materialization is still required before a changed worker generation can fire.
 
-  unresolved_from_prior_attempts:
-    - {endpoint: POST /customer-spot-cylinder-check/submit, proved_database_objects: [public.tbl_customer_spot_cylinder_check], reason: Complete database-object set for every submitSpotCheck branch is not yet source-proved.}
-    - {endpoint: POST /walkin-sale, proved_database_objects: [public.tbl_order, public.tbl_walk_in_sale, public.tbl_walk_in_pickup, public.tbl_walk_in_pickup_line, public.tbl_yard_entries], reason: Complete database-object set across every conditional processRequest branch is not yet source-proved.}
+  source_restage_checkpoint:
+    resolution_artifact: backlog/runtime/BL-001/source-restage-resolution.yaml
+    dispatch_artifact: backlog/runtime/BL-001/source-restage-dispatch.yaml
+    previous_snapshot_materialized_files: 29
+    latest_worker_reported_missing_source_requests: 16
+    resolved_entries_ready_for_materialization: 20
+    unresolved_resolution_entries: 0
+    materialization_generations_ready: 2
+    max_parallel_materialization_slots: 10
+    execution_host_snapshot_advanced: false
+
+  unresolved_from_prior_attempts: []
 
   quality_gate_effect:
     QG-SOW-001: PASS
@@ -104,7 +115,10 @@ analysis:
     QG-TRC-009: IN_PROGRESS
 
   canonical_result_accepted: false
-  matrix_construction_unlocked: false
+  matrix_construction_unlocked: true
+  matrix_state: INCREMENTAL_PARTIAL
+  matrix_materialized_rows: 84
+  historical_accepted_rows_pending_backfill: 23
 
   proved_now:
     - GitHub Actions and a pre-existing local source checkout are not required for normal source-reading execution.
@@ -112,12 +126,12 @@ analysis:
     - Incorrect or tampered source/bindings fail closed before they can support final evidence.
     - Execution journal and dispatch fingerprint support idempotent validation/recovery/PENDING_SYNC decisions.
     - The local process-pool backend can physically reach ten concurrent SERVICE workers in a separate capacity probe.
-    - The latest natural ten-task discovery run used ten workers with zero worker failures and zero residual lane logs, but measured peak SERVICE overlap was four and therefore remains UNDERUTILIZED.
-    - The latest full discovery exposes 21 source requests for the next bounded restaging iteration.
+    - The latest natural staged discovery started ten workers with zero worker failures and zero residual lane logs, but natural SERVICE overlap remains underutilized.
+    - Twenty exact frozen source entries are resolved with no unresolved resolution entries and are ready for immutable snapshot materialization.
+    - POST /stop is source-proved COMPLETE/FULL_BRANCHING through CustomerStopSelectionController and the exact VehicleTripStopIngestionService generic binding, preserving customer, supplier, guard and challan-link branches.
 
   next_step: >-
-    Continue WU-BL001-001 through the self-reliant source-stage loop: resolve the 21 exact source requests through
-    repository/source-layout.yaml at the frozen commit, stage and blob-verify them, resolve any interface bindings that
-    then become visible, rerun discovery, and repeat only while the request set changes and source closure advances.
-    Once SOURCE_CLOSURE_COMPLETE is reached for the batch, validate the existing worker evidence endpoint-by-endpoint;
-    do not start WU-BL001-002 and do not change the accepted 37/134 checkpoint until Orchestrator validation proves it.
+    Continue WU-BL001-001 by materializing the twenty resolved exact source entries into an advanced immutable staged snapshot,
+    verifying every Git blob and binding, recomputing snapshot identity/dispatch fingerprint, and firing a changed up-to-ten-worker
+    generation only after QG-SOURCE-001 permits it. In parallel continue direct frozen-source tracing of the remaining 27
+    caller-visible endpoints. WU-BL001-002 remains blocked until canonical trace-result coverage reaches 134/134.
