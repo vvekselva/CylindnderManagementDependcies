@@ -5,7 +5,8 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-053325.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-191248.md
+  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-200715.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -23,6 +24,11 @@ result:
     exact_source_requests_pending_from_latest_worker_batch: 16
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
+    exact_source_candidates_verified_for_next_snapshot_this_checkpoint: 3
+    latest_verified_candidates:
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPageAuditLedgerDo, blob_sha: 6e2fc468564c64906cbc4d760501f2b170a9f070}
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPagePhotoDo, blob_sha: cd49fe4e62da3d8a2016ec8c813a2e363ee3d1c6}
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanBookRegistryDo, blob_sha: c185c9ef3081d0ce135075ae500b059e790b46ed}
 
   lane_utilization_gate:
     id: QG-LANE-001
@@ -36,25 +42,20 @@ result:
 
   checkpoint:
     total_endpoints: 134
-    examined: 58
-    complete: 56
-    unresolved: 2
+    examined: 102
+    complete: 102
+    unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 76
-    matrix_materialized_rows: 34
-    historical_accepted_rows_pending_backfill: 24
+    not_yet_examined: 32
+    matrix_materialized_rows: 79
+    historical_accepted_rows_pending_backfill: 23
 
   latest_newly_accepted_endpoints:
-    - method: GET
-      path: /challan-page-photo/{challanPagePhotoId}
-      state: COMPLETE
-      chain_completeness: FULL
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-053325.md
+    - {method: GET, path: /ingestSupplier, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md}
+    - {method: POST, path: /ingestSupplier, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md}
 
-  unresolved_items:
-    - {source_endpoint: POST /customer-spot-cylinder-check/submit, evidence_gap: Complete database-object set across all submitSpotCheck branches is not yet source-proved.}
-    - {source_endpoint: POST /walkin-sale, evidence_gap: Complete database-object set across all conditional processRequest branches is not yet source-proved.}
+  unresolved_items: []
 
   execution_backend:
     owner: AUTOMATION_TOOL
@@ -67,11 +68,11 @@ result:
   final_outputs: []
 
   next_action: >-
-    Continue another not-yet-examined controller family from exact frozen-source evidence while resolving and blob-verifying
-    the 16 outstanding recursive source requests and materializing CompleteTripServiceImpl into the immutable worker snapshot.
-    Fire the ten-task discovery only after QG-SOURCE-001 preflight proves an advanced snapshot. Preserve the two unresolved
-    POST endpoints until every branch dependency is source-proved. Do not start WU-BL001-002 until WU-BL001-001 reaches
-    100 percent trace-result coverage.
+    Continue exact-source resolution for the remaining staged-source request set and materialize all verified blobs,
+    including the already binding-validated CompleteTripServiceImpl, into an advanced immutable staged snapshot.
+    Fire a changed up-to-10-worker generation only after QG-SOURCE-001 manifest/blob preflight passes. Continue direct
+    safe source analysis of the remaining 32 not-yet-examined endpoints while the matrix is INCREMENTAL_PARTIAL.
+    Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage.
 
   note: >-
     BL-001 remains PARTIAL. Incremental matrix creation is active during Source Check. VERIFIED/CLOSED remain false and
