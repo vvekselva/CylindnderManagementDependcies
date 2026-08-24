@@ -1,5 +1,5 @@
 local_execution:
-  version: 26
+  version: 27
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T11:39:51+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-113951.md
+    checkpoint_time: 2026-08-24T13:43:42+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-134342.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -59,33 +59,19 @@ local_execution:
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
     latest_direct_source_resolution:
-      endpoint: POST /wizard/vehicle-trip-load/save
-      controller: VehicleTripLoadWizardController.save
-      service_binding: VehicleLoadAndTripIngestionService
+      endpoint: GET /displayCustomer
+      controller: CustomerFetchController.doGet
+      service_binding: CustomerFetchByIdService
       trace_state: COMPLETE_FULL_BRANCHING
       final_dependencies:
-        - public.vw_active_challan_books_for_trip_load
-        - public.tbl_challan_page_audit_ledger
-        - public.tbl_trip_challan_book_assignment
-        - public.tbl_cylinder
-        - public.tbl_yard_inventory_line
-        - public.tbl_cylinder_logistics_execution_line
-        - public.tbl_vehicle
-        - public.tbl_driver
         - public.tbl_customer
         - public.tbl_customer_address
-        - public.tbl_trip_status
-        - public.tbl_vehicle_trip
-        - public.tbl_vehicle_load_purpose
-        - public.tbl_vehicle_load
-        - public.tbl_vehicle_load_line
-        - public.tbl_stop_type
-        - public.tbl_vehicle_trip_stop
-        - public.tbl_cylinder_logistics_execution
-        - public.tbl_cylinder_states
-        - redirect:/vehicle-loads/list
-        - final-version-1/VehicleTripLoadWizard
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-113951.md
+        - public.tbl_address
+        - public.tbl_customer_phone_number
+        - public.tbl_phone_number
+        - DisplayCustomer
+        - redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-134342.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -136,18 +122,18 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 65
-    complete: 65
+    examined: 66
+    complete: 66
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 69
+    not_yet_examined: 68
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 42
+    matrix_materialized_rows: 43
     historical_accepted_rows_pending_backfill: 23
     latest_state_transition:
-      - POST /wizard/vehicle-trip-load/save: NOT_YET_EXAMINED -> COMPLETE_FULL_BRANCHING
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-113951.md
+      - GET /displayCustomer: NOT_YET_EXAMINED -> COMPLETE_FULL_BRANCHING
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-134342.md
 
   next_action: >-
     Continue another not-yet-examined caller-visible endpoint from the frozen source baseline while independently resolving/materializing
