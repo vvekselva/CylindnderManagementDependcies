@@ -1,5 +1,5 @@
 pending_atomic_projection:
-  version: 1
+  version: 2
   backlog_item: BL-001
   work_unit: WU-BL001-001
   checkpoint_started_at: 2026-08-25T01:16:12+05:30
@@ -14,55 +14,38 @@ pending_atomic_projection:
     not_yet_examined: 10
     coverage_percent: 92.54
     matrix_materialized_rows: 101
-  state: SOURCE_PROVED_CANDIDATES_PENDING_ATOMIC_MATRIX_PROJECTION
+  state: PROMOTED_ATOMICALLY
+  promoted_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-020259.md
+  canonical_checkpoint_after:
+    examined: 126
+    complete: 126
+    unresolved: 0
+    blocked: 0
+    failed: 0
+    not_yet_examined: 8
+    coverage_percent: 94.03
+    matrix_materialized_rows: 103
   acceptance_rule: >-
-    These rows are not canonical COMPLETE until controller-traceability.md, matrix-progress.yaml,
-    unresolved accounting, structured/browser delta projection, and Level-3 runtime SSOT are updated
-    in one accepted checkpoint. Counts must not advance from this artifact alone.
+    Candidate rows became canonical only after controller-traceability.md, matrix-progress.yaml, unresolved accounting,
+    structured/browser delta projection, Explorer loader, and Level-3 runtime SSOT were synchronized to the same
+    accepted checkpoint.
   candidates:
     - method: GET
       path: /search/vehicle/{searchText}
       controller: RestfulVehicleServices.getVehicles
       state_candidate: COMPLETE
       chain_completeness_candidate: FULL
-      ordered_chain:
-        - RestfulVehicleServices.getVehicles
-        - VehicleSearchService.searchWithText
-        - VehicleJpaDao.findByVehicleNumberContainingIgnoreCase
-        - VehicleDo
-        - public.tbl_vehicle
-        - VehicleMapper
-        - VehicleSearchResponseDto
-      source_blobs:
-        controller: c96a06b9db27f4cbc3c532592607cc79b5d85f8a
-        service: 8dc3bbfcfcfec85971a7c82c06feacdc13ea80a0
-        dao: 10a6df166df14eba495dbd080f5d0432419505e4
-        entity: a7859a3bfcfb785ed84a0e90f850148ec20d9ae5
-      final_dependency_type: POSTGRES_TABLE_AND_TERMINAL_JSON
-      final_dependency: public.tbl_vehicle; VehicleSearchResponseDto
+      promotion_state: ACCEPTED
+      ordered_chain: [RestfulVehicleServices.getVehicles, VehicleSearchService.searchWithText, VehicleJpaDao.findByVehicleNumberContainingIgnoreCase, VehicleDo, public.tbl_vehicle, VehicleMapper, VehicleSearchResponseDto]
+      source_blobs: {controller: c96a06b9db27f4cbc3c532592607cc79b5d85f8a, service: 8dc3bbfcfcfec85971a7c82c06feacdc13ea80a0, dao: 10a6df166df14eba495dbd080f5d0432419505e4, entity: a7859a3bfcfb785ed84a0e90f850148ec20d9ae5}
     - method: GET
       path: /find/Vehicle-by-Id/{vehicleId}
       controller: RestfulVehicleServices.getVehicleById
       state_candidate: COMPLETE
       chain_completeness_candidate: FULL
-      ordered_chain:
-        - RestfulVehicleServices.getVehicleById
-        - VehicleFetchByIdService.processRequest
-        - VehicleJpaDao.findById
-        - VehicleDo
-        - public.tbl_vehicle
-        - VehicleMapper
-        - VehicleFetchByIdResponseDto
-      source_blobs:
-        controller: c96a06b9db27f4cbc3c532592607cc79b5d85f8a
-        service: 2d7a315f502057bf9d4f2edeebfc32db21902c13
-        dao: 10a6df166df14eba495dbd080f5d0432419505e4
-        entity: a7859a3bfcfb785ed84a0e90f850148ec20d9ae5
-      final_dependency_type: POSTGRES_TABLE_AND_TERMINAL_JSON
-      final_dependency: public.tbl_vehicle; VehicleFetchByIdResponseDto
-  duplicate_key_check:
-    /search/vehicle/{searchText}: NOT_PRESENT_IN_CURRENT_CONTROL_REPOSITORY_SEARCH
-    /find/Vehicle-by-Id/{vehicleId}: NOT_PRESENT_IN_CURRENT_CONTROL_REPOSITORY_SEARCH
+      promotion_state: ACCEPTED
+      ordered_chain: [RestfulVehicleServices.getVehicleById, VehicleFetchByIdService.processRequest, VehicleJpaDao.findById, VehicleDo, public.tbl_vehicle, VehicleMapper, VehicleFetchByIdResponseDto]
+      source_blobs: {controller: c96a06b9db27f4cbc3c532592607cc79b5d85f8a, service: 2d7a315f502057bf9d4f2edeebfc32db21902c13, dao: 10a6df166df14eba495dbd080f5d0432419505e4, entity: a7859a3bfcfb785ed84a0e90f850148ec20d9ae5}
   worker_snapshot:
     materialized_files_before: 29
     materialized_files_after: 29
