@@ -5,11 +5,11 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
-  sync_state: PENDING_SYNC_WORK_UNIT_STATUS
-  pending_sync_artifact: backlog/runtime/BL-001/work-unit-status.yaml
+  sync_state: SYNCHRONIZED
+  pending_sync_artifact: null
   pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-000044.md
-  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-000044.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-001738.md
+  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-001738.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -47,19 +47,20 @@ result:
 
   checkpoint:
     total_endpoints: 134
-    examined: 115
-    complete: 115
+    examined: 119
+    complete: 119
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 19
-    matrix_materialized_rows: 92
+    not_yet_examined: 15
+    matrix_materialized_rows: 96
     historical_accepted_rows_pending_backfill: 23
 
   latest_newly_accepted_endpoints:
-    - {method: GET, path: /search/customer/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
-    - {method: GET, path: /search/driver/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
-    - {method: GET, path: /find/Driver-by-Id/{driverId}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
+    - {method: GET, path: /search/cylinder/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
+    - {method: POST, path: /search/cylinder/by-serial-and-state, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
+    - {method: POST, path: /search/cylinder/by-customer, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
+    - {method: POST, path: /search/cylinder/by-supplier, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
 
   unresolved_items: []
 
@@ -74,14 +75,12 @@ result:
   final_outputs: []
 
   next_action: >-
-    First retry synchronization of `backlog/runtime/BL-001/work-unit-status.yaml` only; do not replay workers or duplicate
-    the three already accepted endpoint traces. After QG-SSOT-001 returns PASS, continue direct safe frozen-source analysis
-    of the remaining 19 endpoints. Materialize the twenty exact resolved source entries only when a verified
-    connector-to-local-filesystem bridge can write them into a worker-readable immutable snapshot. After verified snapshot
-    advancement, recompute snapshot identity/dispatch fingerprint and fire a changed up-to-10-worker generation.
+    Continue direct safe frozen-source analysis of the remaining 15 endpoints. Materialize the twenty exact resolved
+    source entries only when a verified connector-to-local-filesystem bridge can write them into a worker-readable
+    immutable snapshot. After verified snapshot advancement, recompute snapshot identity/dispatch fingerprint and fire
+    a changed up-to-10-worker generation.
 
   note: >-
-    BL-001 remains PARTIAL. Canonical accepted endpoint truth is 115/134, but one Level-3 work-unit projection remains at
-    the prior 112/134 checkpoint because two GitHub contents-API compare-and-swap writes were rejected. This is a PENDING_SYNC
-    condition, not permission to rerun accepted work. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance
-    remains required after all automatic gates pass.
+    BL-001 remains PARTIAL. Canonical accepted endpoint truth is 119/134. Work-unit status and result are synchronized
+    to this checkpoint. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance remains required after all
+    automatic gates pass.
