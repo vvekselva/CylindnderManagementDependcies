@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **100 / 134 examined; 100 COMPLETE; 0 UNRESOLVED; 34 not yet examined.**  
-Rows currently materialized below: **77**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **102 / 134 examined; 102 COMPLETE; 0 UNRESOLVED; 32 not yet examined.**  
+Rows currently materialized below: **79**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -90,12 +90,14 @@ Rows currently materialized below: **77**. The other 23 historically accepted ro
 | GET | `/delivery-planning/stops.geojson` | `DeliveryPlanningApiController.planningStopsGeoJson` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_delivery_planning_stop`; GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
 | POST | `/setCustomerInactive` | `ToggleCustomerActiveStatusController.setCustomerInactive` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_REDIRECT | `public.tbl_customer`; `redirect:/fetchCustomerByPage?...` | `logs/runs/PRODUCTION-FIRE-20260824-190650.md` |
 | POST | `/setCustomerActive` | `ToggleCustomerActiveStatusController.setCustomerActive` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_REDIRECT | `public.tbl_customer`; `redirect:/fetchCustomerByPage?...` | `logs/runs/PRODUCTION-FIRE-20260824-190650.md` |
+| GET | `/ingestSupplier` | `SupplierIngestionController.doGet` | COMPLETE | FULL | TERMINAL_VIEW | `with-menu/SupplierIngestion`; no service/DAO/database dependency | `logs/runs/PRODUCTION-FIRE-20260824-191248.md` |
+| POST | `/ingestSupplier` | `SupplierIngestionController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | city/state/country reads; supplier/address/phone persistence; success redirect or supplier-ingestion error view | `logs/runs/PRODUCTION-FIRE-20260824-191248.md` |
 
 ## Current unresolved paths
 
-**None among the 100 examined endpoints.**
+**None among the 102 examined endpoints.**
 
-This does not close BL-001: **34 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **32 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
