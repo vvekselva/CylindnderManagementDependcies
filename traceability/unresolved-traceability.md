@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **60**
-- COMPLETE: **58**
+- Explicitly examined for final dependency: **61**
+- COMPLETE: **59**
 - UNRESOLVED: **2**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **74**
+- Not yet examined: **73**
 
 ## Current unresolved paths
 
@@ -39,9 +39,9 @@ Missing proof: the complete final dependency set across every conditional `proce
 
 Next investigation step: resolve every branch and any source-bound service/repository implementation at the frozen source baseline without naming inference.
 
-## Resolved this checkpoint
+## Accepted this checkpoint
 
-`POST /cylinderDelivery` is no longer unresolved. Frozen-source evidence now proves `Uc02Phase02CylinderDeliveryMediator` as the exact generic Spring mediator, `OrderIngestionService` as the invoked service, `OrderIngestionRequestValidator`, the typed JPA DAO/entity lookup branches, `OrderJpaDao.save(orderDo)`, cascaded `OrderLineDo`, and the resulting PostgreSQL table set. The canonical row is now `COMPLETE / FULL_BRANCHING`. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-080301.md`.
+`GET /vehicleLoad` is now `COMPLETE / FULL_BRANCHING`. Its cache-hit branch terminates in the existing `LookupDataCache.vehicleLoadPurposes` in-memory list and the `with-menu/Uc02-Phase01-VehicleLoadView` view. Its cache-miss branch is source-proved through `LookupDataCache.refreshVehicleLoadPurpose()` -> `VehicleLoadPurposeFetchAllService.processRequest()` -> `VehicleLoadPurposeJpaDao.findAll()` -> `VehicleLoadPurposeDo` -> `public.tbl_vehicle_load_purpose`, then returns the refreshed list to the same view. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-083401.md`.
 
 ## Incremental matrix synchronization rule
 
