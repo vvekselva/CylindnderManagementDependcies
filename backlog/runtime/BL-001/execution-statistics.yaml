@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 15
+  version: 16
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,20 +18,19 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 70
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-203431
+    latest_accepted_attempt: 71
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-213728
     total_endpoints: 134
-    examined: 104
-    progress_percentage: 77.61
-    complete: 104
-    complete_percentage: 77.61
+    examined: 105
+    progress_percentage: 78.36
+    complete: 105
+    complete_percentage: 78.36
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 30
+    not_yet_examined: 29
     latest_state_transition:
-      - GET /ingestYardStockCheck: NOT_YET_EXAMINED -> COMPLETE
-      - POST /ingestYardStockCheck: NOT_YET_EXAMINED -> COMPLETE
+      - POST /trip-review/{vehicleTripId}/close-review: NOT_YET_EXAMINED -> COMPLETE
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -76,26 +75,27 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-212131-SCHEDULER
+    checkpoint_id: PRODUCTION-FIRE-20260824-221444-SCHEDULER
     worker_fire_started: false
-    reason: FAIL_CLOSED_LEVEL3_SSOT_RECONCILIATION_SOURCE_RESTAGE_PENDING
-    endpoint_trace_checkpoint_before: 104
-    endpoint_trace_checkpoint_after: 104
+    reason: FAIL_CLOSED_ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_YET_PROVED
+    endpoint_trace_checkpoint_before: 105
+    endpoint_trace_checkpoint_after: 105
     endpoints_examined_added: 0
     complete_added: 0
     unresolved_change: 0
-    accepted_family: NONE_RECONCILIATION_ONLY
+    accepted_family: NONE_SOURCE_RESTAGE_AND_RECONCILIATION_ONLY
     accepted_state_transition: NONE
     accepted_chain_state: UNCHANGED
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-212131-SCHEDULER.md
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-221444-SCHEDULER.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
+    exact_source_candidates_verified_for_next_snapshot: 15
     source_resolution_progress: >-
-      No immutable staged-snapshot advancement was proved during this invocation. The production fire therefore reconciled
-      stale Level-3 runtime projections to the already durable canonical 104/134 checkpoint and did not replay the closed
-      worker generation.
+      Fifteen frozen-source candidates were fetched/revalidated and recorded as proofs for the next immutable snapshot.
+      No execution-host snapshot advancement was claimed, so the materialized worker snapshot remains 29 files and the
+      closed worker generation was not replayed.
 
   run_over_run:
     endpoint_progress_percentage_point_change: 0.0
@@ -105,18 +105,18 @@ execution_statistics:
     unresolved_endpoint_change: 0
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
-    source_closure_direction: PARTIAL_RESTAGE_STILL_REQUIRED
-    trace_direction: CHECKPOINT_PRESERVED
+    source_closure_direction: SOURCE_PROOFS_ADVANCED_SNAPSHOT_MATERIALIZATION_STILL_REQUIRED
+    trace_direction: CHECKPOINT_PRESERVED_105_OF_134
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
     backend_capacity_direction: TEN_WORKER_CAPACITY_PREVIOUSLY_PROVED
 
   staleness:
     task: WU-BL001-001 Complete Source Repository Check And Maintain Incremental Matrix
     stale: false
-    consecutive_no_progress_cycles: 1
+    consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      This checkpoint repaired Level-3 SSOT drift so execution statistics now agree with the durable canonical 104/134
-      matrix checkpoint without duplicating worker execution or inventing endpoint evidence.
+      This checkpoint reconciled Level-3 execution statistics to the canonical 105/134 matrix state and source-validated
+      fifteen frozen-source candidates for the next snapshot without duplicating worker execution or inventing materialization.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
