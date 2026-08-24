@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **108**
-- COMPLETE: **108**
+- Explicitly examined for final dependency: **112**
+- COMPLETE: **112**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **26**
+- Not yet examined: **22**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted `GET /search/address/customer-address/{customerId}` in `logs/runs/PRODUCTION-FIRE-20260824-231647.md`. Frozen source proves `RestfulAddressServices.getCustomerAddressByCustomerId` invokes the exact generic `CustomerAddressFetchByIDService` binding for nonblank IDs. The service resolves customer-address rows through `CustomerAddressJpaDao.findByCustomer_CustomerId`, maps `CustomerAddressDo` plus its `AddressDo`, and the derived query traverses the `CustomerDo` relationship. Source mappings prove `public.tbl_customer_address`, `public.tbl_address`, and `public.tbl_customer`. Blank IDs terminate without service invocation, while invalid numeric IDs/service exceptions return an empty `CustomerAddressSearchResponseDto`.
+The Primary Orchestrator accepted four frozen-source REST search routes in `logs/runs/PRODUCTION-FIRE-20260824-233707.md`: `GET /search/addresstype/{searchText}`, `GET /search/challantype/{searchText}`, `GET /search/city/{searchText}`, and `GET /search/country/{searchText}`. Each controller invokes an exact generic `ICylinderManagementApplicationSearchService` implementation, then the shared pure `SearchRequestValidator`, a source-proved Spring Data JPA DAO, its typed JPA entity, and one directly mapped PostgreSQL table (`public.tbl_address_type`, `public.tbl_challan_type`, `public.tbl_city`, or `public.tbl_country`) before returning its JSON response DTO. Inverse entity associations were not included because none of these search paths dereferences them.
 
-There are zero canonical unresolved endpoints among the 108 examined endpoints. This does not close BL-001 because 26 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 112 examined endpoints. This does not close BL-001 because 22 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
