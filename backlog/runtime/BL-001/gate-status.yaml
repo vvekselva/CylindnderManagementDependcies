@@ -7,15 +7,17 @@ quality_gate_status:
 
   three_level_ssot_gate:
     id: QG-SSOT-001
-    state: PASS
+    state: PENDING_SYNC_WORK_UNIT_STATUS
     evidence:
       level_1: {state: COMPLETE, evidence: [backlog/backlog.yaml, repository/project-inventory.yaml]}
       level_2: {state: COMPLETE, evidence: [backlog/items/BL-001-controller-traceability.yaml, backlog/sow/BL-001-controller-traceability.yaml, backlog/paths/BL-001-traceability.yaml, backlog/gates/BL-001-traceability.yaml]}
       level_3:
-        state: COMPLETE_SELF_RELIANT_RUNTIME_RECONCILED
-        evidence: [backlog/runtime/BL-001/analysis.yaml, backlog/runtime/BL-001/execution-plan.yaml, backlog/runtime/BL-001/work-unit-status.yaml, backlog/runtime/BL-001/gate-status.yaml, backlog/runtime/BL-001/blockers.yaml, backlog/runtime/BL-001/decisions.yaml, backlog/runtime/BL-001/worker-input-register.yaml, backlog/runtime/BL-001/lane-status.yaml, backlog/runtime/BL-001/lane-dispatch.yaml, backlog/runtime/BL-001/local-execution.yaml, backlog/runtime/BL-001/execution-statistics.yaml, backlog/runtime/BL-001/result.yaml]
-    planning_allowed: true
-    replanning_allowed: true
+        state: PARTIAL_SYNC_RETRY_REQUIRED
+        evidence: [backlog/runtime/BL-001/analysis.yaml, backlog/runtime/BL-001/work-unit-status.yaml, backlog/runtime/BL-001/gate-status.yaml, backlog/runtime/BL-001/local-execution.yaml, backlog/runtime/BL-001/execution-statistics.yaml, backlog/runtime/BL-001/result.yaml]
+        pending_projection: backlog/runtime/BL-001/work-unit-status.yaml
+        pending_reason: CONTENTS_API_CAS_CONFLICT_RETRY_REQUIRED
+    planning_allowed: false
+    replanning_allowed: false
 
   statement_of_work_gate: {id: QG-SOW-001, state: PASS}
   common_dependency_gate: {id: QG-DEP-001, state: PASS, evidence: BL-001 declares no Backlog dependencies}
@@ -79,9 +81,6 @@ quality_gate_status:
     governance: governance/lane-execution.yaml
     dispatch_id: LOCAL-BL001-DISPATCH-005
     worker_backend: LOCAL_PROCESS_POOL
-    executor: automation/staged-lane-executor-v3.py
-    worker: automation/staged-lane-worker-v3.py
-    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
     configured_lanes: 10
     safe_ready_tasks: 10
     expected_concurrent_lanes: 10
@@ -92,8 +91,6 @@ quality_gate_status:
     backend_capacity_probe_peak_service_concurrent_lanes: 10
     worker_failures: 0
     individual_lane_logs_remaining: 0
-    source_evidence_validity_effect: Correct source evidence remains usable; underutilization only blocks a claim of full natural production utilization.
-    artificial_delay_to_pass_gate_prohibited: true
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
@@ -115,11 +112,9 @@ quality_gate_status:
   endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 115, complete: 115, unresolved: 0, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 19, matrix_materialized_rows: 92, historical_accepted_rows_pending_backfill: 23}
   close_allowed: false
   reason: >-
-    Source closure remains partial. Sixteen exact source requests remain recorded from the latest worker batch and one
-    already validated binding implementation still awaits execution-host snapshot materialization. Twenty exact frozen-source
-    entries are resolved with no unresolved resolution entries and queued as two ten-slot materialization generations,
-    but the current execution environment has no verified connector-to-local-filesystem bridge for writing those source
-    bytes into the worker-readable immutable source root. Therefore snapshot advancement is not claimed. Nineteen endpoint
-    traces remain unexamined, the incremental matrix has 92 materialized rows with 23 durable accepted historical rows still
-    pending backfill, QG-LANE-001 remains underutilized for the latest natural workload, and QG-TRC-015 user acceptance is
-    not yet available.
+    Canonical endpoint evidence advanced to 115/134, but one Level-3 projection (`work-unit-status.yaml`) could not be
+    updated because GitHub contents-API compare-and-swap rejected two write attempts. The accepted matrix, unresolved ledger,
+    matrix progress, local execution, execution statistics, result and analysis are synchronized at 115/134. Before any new
+    PLAN/REPLAN, retry only this pending synchronization; do not rerun workers or duplicate accepted endpoint traces. Source
+    closure also remains partial: the worker snapshot is 29 files, 20 exact source entries are resolved for materialization,
+    and the connector-to-execution-host file bridge remains unavailable.
