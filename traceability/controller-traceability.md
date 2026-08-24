@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **107 / 134 examined; 107 COMPLETE; 0 UNRESOLVED; 27 not yet examined.**  
-Rows currently materialized below: **84**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **108 / 134 examined; 108 COMPLETE; 0 UNRESOLVED; 26 not yet examined.**  
+Rows currently materialized below: **85**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -97,12 +97,13 @@ Rows currently materialized below: **84**. The other 23 historically accepted ro
 | POST | `/ingestYardStockCheck` | `YardStockCheckIngestionController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | validator/state read `public.tbl_cylinder_states`; header `public.tbl_yard_stock_check`; lines `public.tbl_yard_stock_check_line`; success redirect or yard-stock-check error view/cache refresh | `logs/runs/PRODUCTION-FIRE-20260824-203431.md` |
 | POST | `/trip-review/{vehicleTripId}/close-review` | `TripReviewController.closeReview` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT | `public.tbl_vehicle_trip`; `public.tbl_vehicle_review_status`; `redirect:/trip-review/{vehicleTripId}` | `logs/runs/PRODUCTION-FIRE-20260824-213728.md` |
 | POST | `/stop` | `CustomerStopSelectionController.processStopIngestion` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT | customer delivery, customer empty-pickup, supplier empty-dropoff, supplier refill-pickup, logistics/trip-stop and optional challan ledger/link branches; challan-photo guard or vehicle-load redirect | `logs/runs/PRODUCTION-FIRE-20260824-230001.md` |
+| GET | `/search/address/customer-address/{customerId}` | `RestfulAddressServices.getCustomerAddressByCustomerId` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_JSON | `public.tbl_customer_address`; `public.tbl_customer`; `public.tbl_address`; `CustomerAddressSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260824-231647.md` |
 
 ## Current unresolved paths
 
-**None among the 107 examined endpoints.**
+**None among the 108 examined endpoints.**
 
-This does not close BL-001: **27 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **26 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
