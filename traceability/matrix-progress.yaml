@@ -1,4 +1,4 @@
-version: 36
+version: 37
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -40,6 +40,7 @@ structured_delta_artifacts:
   - traceability/explorer/traceability-matrix-delta-20260824-231647.json
   - traceability/explorer/traceability-matrix-delta-20260824-233707.json
   - traceability/explorer/traceability-matrix-delta-20260825-000044.json
+  - traceability/explorer/traceability-matrix-delta-20260825-001738.json
 browser_delta_artifacts:
   - traceability/explorer/matrix-delta-20260824-003111.js
   - traceability/explorer/matrix-delta-20260824-005711.js
@@ -76,30 +77,32 @@ browser_delta_artifacts:
   - traceability/explorer/matrix-delta-20260824-231647.js
   - traceability/explorer/matrix-delta-20260824-233707.js
   - traceability/explorer/matrix-delta-20260825-000044.js
+  - traceability/explorer/matrix-delta-20260825-001738.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 state: INCREMENTAL_PARTIAL
 projection_state: BASE_PLUS_ORDERED_DELTAS_CURRENT
 canonical_endpoint_inventory: 134
-canonical_accepted_examined: 115
-canonical_complete: 115
+canonical_accepted_examined: 119
+canonical_complete: 119
 canonical_unresolved: 0
 canonical_blocked: 0
 canonical_failed: 0
-canonical_not_yet_examined: 19
-materialized_matrix_rows: 92
+canonical_not_yet_examined: 15
+materialized_matrix_rows: 96
 historical_accepted_rows_pending_backfill: 23
-latest_materialized_from_invocation: PRODUCTION-FIRE-20260825-000044
+latest_materialized_from_invocation: PRODUCTION-FIRE-20260825-001738
 latest_state_transition:
-  - {method: GET, path: /search/customer/{searchText}, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
-  - {method: GET, path: /search/driver/{searchText}, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
-  - {method: GET, path: /find/Driver-by-Id/{driverId}, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
+  - {method: GET, path: /search/cylinder/{searchText}, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
+  - {method: POST, path: /search/cylinder/by-serial-and-state, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
+  - {method: POST, path: /search/cylinder/by-customer, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
+  - {method: POST, path: /search/cylinder/by-supplier, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
 latest_historical_backfill:
   - {method: GET, path: /customer-spot-cylinder-check/fetch, state: COMPLETE, chain_completeness: PARTIAL_INTERMEDIATE_HOPS, evidence: logs/runs/INVOCATION-20260823-145512.md#LANE-01}
   - {method: GET, path: /yard-audit-dashboard, state: COMPLETE, chain_completeness: PARTIAL_INTERMEDIATE_HOPS, evidence: logs/runs/INVOCATION-20260823-145512.md#LANE-02}
 projection_note: >-
   The immutable/base Explorer files represent the earlier accepted snapshot. Ordered checked-in delta artifacts reconcile
-  the browser-visible and structured incremental projection to the canonical 115/115/0/19 checkpoint without inventing
+  the browser-visible and structured incremental projection to the canonical 119/119/0/15 checkpoint without inventing
   historical rows. index.html loads browser deltas in checkpoint order. A later consolidation may fold deltas into the
   base files only if semantic identity is preserved.
 update_rule: >-
