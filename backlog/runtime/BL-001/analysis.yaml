@@ -18,23 +18,25 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 115
-    complete: 115
+    examined_for_final_dependency: 124
+    complete: 124
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 19
+    not_yet_examined: 10
     changed_by_architecture_validation: false
 
   latest_accepted_trace_attempt:
-    run_id: PRODUCTION-FIRE-20260825-000044
+    run_id: PRODUCTION-FIRE-20260825-003910
     state: CLOSED_CHECKPOINT
     result: PARTIAL_ADVANCED
-    trace_additions: {examined: 3, complete: 3, unresolved: 0}
+    trace_additions: {examined: 5, complete: 5, unresolved: 0}
     accepted_endpoints:
-      - GET /search/customer/{searchText}
-      - GET /search/driver/{searchText}
-      - GET /find/Driver-by-Id/{driverId}
+      - GET /search/product-category/{searchText}
+      - GET /search/product/{searchText}
+      - GET /search/product-uom/{searchText}
+      - GET /search/state/{searchText}
+      - GET /search/supplier/{searchText}
     chain_completeness: FULL
 
   self_reliant_architecture_validation:
@@ -53,7 +55,7 @@ analysis:
       stale_lane_log_fail_closed: PASS
       jpa_canary_source_closure_complete: PASS
       positive_interface_binding: PASS
-      negative_interface_binding_rejected: PASS
+      negative_interface_binding_rejected: PASS_IMPLEMENTATION_SIGNATURE_MISMATCH
       recovery_idempotency: 5/5_PASS
       backend_capacity_probe_peak_service: 10
 
@@ -107,7 +109,7 @@ analysis:
 
   quality_gate_effect:
     QG-SOW-001: PASS
-    QG-SSOT-001: PASS_AFTER_SELF_RELIANT_RUNTIME_RECONCILIATION
+    QG-SSOT-001: PASS_AFTER_RUNTIME_RECONCILIATION
     QG-DEP-001: PASS
     QG-SOURCE-001: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
     QG-LOG-001: PASS_LATEST_TESTED_EXECUTION_BOUNDARY
@@ -123,7 +125,7 @@ analysis:
   canonical_result_accepted: false
   matrix_construction_unlocked: true
   matrix_state: INCREMENTAL_PARTIAL
-  matrix_materialized_rows: 92
+  matrix_materialized_rows: 101
   historical_accepted_rows_pending_backfill: 23
 
   proved_now:
@@ -134,11 +136,10 @@ analysis:
     - The local process-pool backend can physically reach ten concurrent SERVICE workers in a separate capacity probe.
     - Twenty exact frozen source entries remain resolved with no unresolved resolution entries and are ready for immutable snapshot materialization.
     - The current execution host cannot write connector-returned source bytes into a worker-readable local snapshot through an available connector-to-filesystem bridge, so no snapshot-file growth is claimed.
-    - GET /search/customer/{searchText} is source-proved COMPLETE/FULL through RestfulCustomerServices, CustomerSearchService, SearchRequestValidator, CustomerJpaDao, CustomerDo, public.tbl_customer and CustomerMapper.
-    - GET /search/driver/{searchText} and GET /find/Driver-by-Id/{driverId} are source-proved COMPLETE/FULL through RestfulDriverServices, their exact generic Driver service implementations, DriverJpaDao, DriverDo, public.tbl_driver and DriverMapper.
+    - Five additional REST search endpoints were source-proved COMPLETE/FULL at PRODUCTION-FIRE-20260825-003910, advancing canonical trace coverage to 124/134.
 
   next_step: >-
-    Continue WU-BL001-001 with direct frozen-source tracing of the remaining 19 caller-visible endpoints while preserving
+    Continue WU-BL001-001 with direct frozen-source tracing of the remaining 10 caller-visible endpoints while preserving
     QG-SOURCE-001 fail-closed for trace-worker fire. Materialize the twenty resolved exact source entries only when the
     Orchestrator execution host has a verified connector-to-local-file source-provider bridge, then recompute snapshot
     identity/dispatch fingerprint and fire a changed up-to-ten-worker generation. WU-BL001-002 remains blocked until
