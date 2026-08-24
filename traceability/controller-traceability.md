@@ -6,8 +6,8 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **60 / 134 examined; 58 COMPLETE; 2 UNRESOLVED; 74 not yet examined.**  
-Rows currently materialized below: **36**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **61 / 134 examined; 59 COMPLETE; 2 UNRESOLVED; 73 not yet examined.**  
+Rows currently materialized below: **37**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -47,6 +47,11 @@ Rows currently materialized below: **36**. The other 24 historically accepted ro
 | GET | `/yard-audit-dashboard` | `YardAuditDashboardController` dashboard handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_TABLES | `YardAuditDashboardFetchService.processRequest` -> `YardQualityGateJpaDao` -> `public.tbl_yard_stock_check`; `public.tbl_yard_stock_check_line`; `public.tbl_yard_quality_gate`; `public.tbl_cylinder_states`; `public.tbl_yard_check_event` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-02 |
 | GET | `/cylinderDelivery` | `Uc02Phase02CylinderDeliveryController.doGet` | COMPLETE | FULL | TERMINAL_VIEW | `Uc02-Phase02-CylinderDeliveryView`; no mediator/service/DAO/database call | `logs/runs/PRODUCTION-FIRE-20260824-070036.md` |
 | POST | `/cylinderDelivery` | `Uc02Phase02CylinderDeliveryController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_challan_type`; `public.tbl_customer`; `public.tbl_customer_address`; `public.tbl_driver`; `public.tbl_vehicle`; `public.tbl_cylinder`; `public.tbl_product`; `public.tbl_order`; `public.tbl_order_line`; success redirect `/orderList?pageNumber=1&itemsPerPage=10`; validation-error re-render `Uc02-Phase02-CylinderDeliveryView` | `logs/runs/PRODUCTION-FIRE-20260824-080301.md` |
+| GET | `/vehicleLoad` | `Uc02Phase01VehicleLoadController.doGet` | COMPLETE | FULL_BRANCHING | IN_MEMORY_CACHE_POSTGRES_TABLE_AND_TERMINAL_VIEW | Cache-hit: in-memory `vehicleLoadPurposes`; cache-miss: `VehicleLoadPurposeFetchAllService` -> `VehicleLoadPurposeJpaDao` -> `VehicleLoadPurposeDo` -> `public.tbl_vehicle_load_purpose`; terminal `with-menu/Uc02-Phase01-VehicleLoadView` | `logs/runs/PRODUCTION-FIRE-20260824-083401.md` |
+
+## `Uc02Phase01VehicleLoadController` GET chain summary
+
+`GET /vehicleLoad` always constructs the form model and calls `LookupDataCache.getVehicleLoadPurposes()`. If the cache is populated, the path terminates at the existing in-memory list before rendering `with-menu/Uc02-Phase01-VehicleLoadView`. If the list is empty, `LookupDataCache.refreshVehicleLoadPurpose()` calls the exact generic `VehicleLoadPurposeFetchAllService`, whose generic interface matches the injected service type; that service calls `VehicleLoadPurposeJpaDao.findAll()`. The DAO is typed to `VehicleLoadPurposeDo`, whose `@Table` mapping proves `public.tbl_vehicle_load_purpose`. The refreshed list is returned to the same view. Redirect flash attributes only populate model values; they do not add a database lookup.
 
 ## `Uc02Phase02CylinderDeliveryController` chain summary
 
