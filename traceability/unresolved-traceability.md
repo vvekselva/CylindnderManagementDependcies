@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **126**
-- COMPLETE: **126**
+- Explicitly examined for final dependency: **129**
+- COMPLETE: **129**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **8**
+- Not yet examined: **5**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted two frozen-source vehicle REST routes in `logs/runs/PRODUCTION-FIRE-20260825-020259.md`: `GET /search/vehicle/{searchText}` and `GET /find/Vehicle-by-Id/{vehicleId}`. Each route has a source-proved controller -> exact Spring service implementation -> `VehicleJpaDao` -> `VehicleDo` -> `public.tbl_vehicle` -> mapper -> terminal JSON chain.
+The Primary Orchestrator promoted three frozen-source cylinder REST routes from the durable projection queue: `POST /search/cylinder/ownership/by-state`, `POST /search/cylinder/by-state`, and `POST /search/cylinder/on-vehicle`. Their full source-proved chains were established in `logs/runs/PRODUCTION-FIRE-20260825-031101.md` and projected through `traceability/explorer/traceability-matrix-delta-20260825-035743.json`.
 
-There are zero canonical unresolved endpoints among the 126 examined endpoints. This does not close BL-001 because 8 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 129 examined endpoints. This does not close BL-001 because 5 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
