@@ -1,5 +1,5 @@
 local_execution:
-  version: 31
+  version: 32
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,10 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T17:29:00+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-172900.md
+    checkpoint_time: 2026-08-24T18:07:50+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-180750.md
+    invocation_trigger: MANUAL_UPDATED_ORCHESTRATOR
+    invocation_mode: BACKLOG_DRAIN_WINDOW
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -59,16 +61,22 @@ local_execution:
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
     latest_direct_source_resolution:
-      endpoint: POST /add-stop/challan-page-photo/delete-ajax
-      controller: AddStopController.deleteChallanPagePhotoAjax
-      service_binding: direct concrete ChallanPagePhotoUploadService -> deactivatePhoto
-      trace_state: COMPLETE_FULL
+      endpoints:
+        - POST /add-stop/challan-page-photo/upload
+        - POST /add-stop/challan-page-photo/upload-ajax
+      controller: AddStopController
+      service_binding: '@Qualifier("challanPagePhotoUploadService") -> ChallanPagePhotoUploadService'
+      service_binding_state: SIGNATURE_AND_QUALIFIER_VERIFIED
+      trace_state: COMPLETE_FULL_BRANCHING
       final_dependencies:
+        - public.tbl_challan_page_audit_ledger
+        - public.tbl_challan_book_registry
         - public.tbl_challan_page_photo
+        - redirect:/add-stop
         - HTTP 200 JSON
         - HTTP 400 JSON
         - HTTP 500 JSON
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-172900.md
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-180750.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -113,27 +121,29 @@ local_execution:
     closed_waiting_validation_behavior: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
     interrupted_running_behavior: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
     changed_dispatch_behavior: START_NEW_EXECUTION_GENERATION
-    already_closed_synced: NOOP_ALREADY_COMMITTED
+    already_closed_synced: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
     validation_cases_passed: 5
     validation_cases_total: 5
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 70
-    complete: 70
+    examined: 72
+    complete: 72
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 64
+    not_yet_examined: 62
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 47
+    matrix_materialized_rows: 49
     historical_accepted_rows_pending_backfill: 23
     latest_state_transition:
-      - POST /add-stop/challan-page-photo/delete-ajax: NOT_YET_EXAMINED -> COMPLETE_FULL
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-172900.md
+      - POST /add-stop/challan-page-photo/upload: NOT_YET_EXAMINED -> COMPLETE_FULL_BRANCHING
+      - POST /add-stop/challan-page-photo/upload-ajax: NOT_YET_EXAMINED -> COMPLETE_FULL_BRANCHING
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-180750.md
 
   next_action: >-
-    Continue another not-yet-examined caller-visible endpoint from the frozen source baseline while independently resolving/materializing
-    the 16 outstanding source requests and pending CompleteTripServiceImpl worker-snapshot file. Fire the same ten-task discovery only
-    after staged-executor preflight proves an advanced immutable snapshot. Historical accepted traces may be backfilled only from durable
-    accepted evidence. WU-BL001-002 remains blocked until canonical endpoint trace-result coverage reaches 100 percent.
+    Continue the manual backlog-drain invocation semantics by resolving/materializing the 16 outstanding source requests and pending
+    CompleteTripServiceImpl worker-snapshot file while tracing additional not-yet-examined caller-visible endpoints from the frozen
+    source baseline. Fire the next up-to-10-worker generation only after staged-executor preflight proves an advanced immutable snapshot.
+    Historical accepted traces may be backfilled only from durable accepted evidence. WU-BL001-002 remains blocked until canonical
+    endpoint trace-result coverage reaches 100 percent.
