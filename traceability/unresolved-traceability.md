@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **112**
-- COMPLETE: **112**
+- Explicitly examined for final dependency: **115**
+- COMPLETE: **115**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **22**
+- Not yet examined: **19**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted four frozen-source REST search routes in `logs/runs/PRODUCTION-FIRE-20260824-233707.md`: `GET /search/addresstype/{searchText}`, `GET /search/challantype/{searchText}`, `GET /search/city/{searchText}`, and `GET /search/country/{searchText}`. Each controller invokes an exact generic `ICylinderManagementApplicationSearchService` implementation, then the shared pure `SearchRequestValidator`, a source-proved Spring Data JPA DAO, its typed JPA entity, and one directly mapped PostgreSQL table (`public.tbl_address_type`, `public.tbl_challan_type`, `public.tbl_city`, or `public.tbl_country`) before returning its JSON response DTO. Inverse entity associations were not included because none of these search paths dereferences them.
+The Primary Orchestrator accepted three frozen-source REST routes in `logs/runs/PRODUCTION-FIRE-20260825-000044.md`: `GET /search/customer/{searchText}`, `GET /search/driver/{searchText}`, and `GET /find/Driver-by-Id/{driverId}`. The customer route is source-proved through `RestfulCustomerServices -> CustomerSearchService -> SearchRequestValidator -> CustomerJpaDao -> CustomerDo -> public.tbl_customer -> CustomerMapper -> CustomerSearchResponseDto`. The two driver routes are source-proved through `RestfulDriverServices`, the exact generic `DriverSearchService` or `DriverFetchByIdService` binding, `DriverJpaDao`, `DriverDo -> public.tbl_driver`, and `DriverMapper` to the terminal JSON response DTO. The mappers read scalar fields only, so inverse entity associations were not added as dependencies.
 
-There are zero canonical unresolved endpoints among the 112 examined endpoints. This does not close BL-001 because 22 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 115 examined endpoints. This does not close BL-001 because 19 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
