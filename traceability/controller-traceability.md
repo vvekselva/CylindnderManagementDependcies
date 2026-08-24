@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **70 / 134 examined; 70 COMPLETE; 0 UNRESOLVED; 64 not yet examined.**  
-Rows currently materialized below: **47**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **72 / 134 examined; 72 COMPLETE; 0 UNRESOLVED; 62 not yet examined.**  
+Rows currently materialized below: **49**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -60,12 +60,14 @@ Rows currently materialized below: **47**. The other 23 historically accepted ro
 | GET | `/fetchCustomerByPage` | `CustomerFetchByPageController.doGet` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW_REDIRECT | `public.tbl_customer`; `public.tbl_customer_phone_number`; `public.tbl_phone_number`; `public.tbl_customer_address`; `public.tbl_address`; `public.tbl_city`; `final-version-1/CustomerListPage`; handled redirect | `logs/runs/PRODUCTION-FIRE-20260824-143220.md` |
 | POST | `/updateCustomer` | `CustomerUpdateController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_customer`; `public.tbl_phone_number`; `public.tbl_customer_phone_number`; `public.tbl_customer_address`; `public.tbl_address`; success redirect; validation/error terminal views | `logs/runs/PRODUCTION-FIRE-20260824-171009.md` |
 | POST | `/add-stop/challan-page-photo/delete-ajax` | `AddStopController.deleteChallanPagePhotoAjax` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_challan_page_photo`; HTTP 200/400/500 JSON terminal responses | `logs/runs/PRODUCTION-FIRE-20260824-172900.md` |
+| POST | `/add-stop/challan-page-photo/upload` | `AddStopController.uploadChallanPagePhoto` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT | `public.tbl_challan_page_audit_ledger`; `public.tbl_challan_book_registry`; `public.tbl_challan_page_photo`; redirect to Add Stop with flash success/error | `logs/runs/PRODUCTION-FIRE-20260824-180750.md` |
+| POST | `/add-stop/challan-page-photo/upload-ajax` | `AddStopController.uploadChallanPagePhotoAjax` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_JSON | `public.tbl_challan_page_audit_ledger`; `public.tbl_challan_book_registry`; `public.tbl_challan_page_photo`; HTTP 200/400/500 JSON | `logs/runs/PRODUCTION-FIRE-20260824-180750.md` |
 
 ## Current unresolved paths
 
-**None among the 70 examined endpoints.**
+**None among the 72 examined endpoints.**
 
-This does not close BL-001: **64 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **62 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
