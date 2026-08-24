@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **70**
-- COMPLETE: **70**
+- Explicitly examined for final dependency: **72**
+- COMPLETE: **72**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **64**
+- Not yet examined: **62**
 
 ## Current unresolved paths
 
@@ -23,11 +23,11 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-`POST /add-stop/challan-page-photo/delete-ajax` is now **COMPLETE / FULL**. Frozen source proves `AddStopController.deleteChallanPagePhotoAjax` -> direct concrete Spring dependency `ChallanPagePhotoUploadService.deactivatePhoto` -> `ChallanPagePhotoJpaDao.findById/save` -> `ChallanPagePhotoDo` -> `public.tbl_challan_page_photo`. The endpoint returns source-proved JSON terminal responses: HTTP 200 on successful deactivation, HTTP 400 for application/user errors, and HTTP 500 for unexpected errors.
+`POST /add-stop/challan-page-photo/upload` and `POST /add-stop/challan-page-photo/upload-ajax` are now **COMPLETE / FULL_BRANCHING**. Frozen source proves `AddStopController` -> private `uploadChallanPhotoInternal` -> qualified `ChallanPagePhotoUploadService.processRequest` -> `ChallanPageAuditLedgerJpaDao.findPageByFullNumber` -> `public.tbl_challan_page_audit_ledger` + `public.tbl_challan_book_registry`, plus `ChallanPagePhotoJpaDao.deactivateActivePhotosForPage/save` -> `ChallanPagePhotoDo` -> `public.tbl_challan_page_photo`. The non-AJAX endpoint terminates at the source-proved Add Stop redirect with success/error flash state; the AJAX endpoint terminates at HTTP 200/400/500 JSON branches.
 
-The delete method only reads and updates the challan-photo entity. It does not dereference the page-audit relationship, so `tbl_challan_page_audit_ledger` is deliberately not inferred into this endpoint trace. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and `logs/runs/PRODUCTION-FIRE-20260824-172900.md`.
+The controller does not set `bookId`, so the accepted request-time lookup is the full-number DAO branch rather than the alternative book-id lookup. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and `logs/runs/PRODUCTION-FIRE-20260824-180750.md`.
 
-There are zero canonical unresolved endpoints among the 70 examined endpoints. This does not close BL-001 because 64 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 72 examined endpoints. This does not close BL-001 because 62 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
