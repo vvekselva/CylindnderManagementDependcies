@@ -1,4 +1,4 @@
-version: 26
+version: 27
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -30,6 +30,7 @@ structured_delta_artifacts:
   - traceability/explorer/traceability-matrix-delta-20260824-171009.json
   - traceability/explorer/traceability-matrix-delta-20260824-172900.json
   - traceability/explorer/traceability-matrix-delta-20260824-180750.json
+  - traceability/explorer/traceability-matrix-delta-20260824-181810.json
 browser_delta_artifacts:
   - traceability/explorer/matrix-delta-20260824-003111.js
   - traceability/explorer/matrix-delta-20260824-005711.js
@@ -56,29 +57,54 @@ browser_delta_artifacts:
   - traceability/explorer/matrix-delta-20260824-171009.js
   - traceability/explorer/matrix-delta-20260824-172900.js
   - traceability/explorer/matrix-delta-20260824-180750.js
+  - traceability/explorer/matrix-delta-20260824-181810.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 state: INCREMENTAL_PARTIAL
 projection_state: BASE_PLUS_ORDERED_DELTAS_CURRENT
 canonical_endpoint_inventory: 134
-canonical_accepted_examined: 72
-canonical_complete: 72
+canonical_accepted_examined: 98
+canonical_complete: 98
 canonical_unresolved: 0
 canonical_blocked: 0
 canonical_failed: 0
-canonical_not_yet_examined: 62
-materialized_matrix_rows: 49
+canonical_not_yet_examined: 36
+materialized_matrix_rows: 75
 historical_accepted_rows_pending_backfill: 23
-latest_materialized_from_invocation: PRODUCTION-FIRE-20260824-180750
+latest_materialized_from_invocation: PRODUCTION-FIRE-20260824-181810
 latest_state_transition:
-  - {method: POST, path: /add-stop/challan-page-photo/upload, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-180750.md}
-  - {method: POST, path: /add-stop/challan-page-photo/upload-ajax, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-180750.md}
+  - {method: GET, path: /add-stop, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /trip-return, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: POST, path: /trip-return, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /customer-demands, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: POST, path: /customer-demands, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: POST, path: '/customer-demands/{requestId}/mark-delivered', from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /trip-review, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /fetchSupplierByPage, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /vehicle-loads/list, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /vehicle-loads/all-list, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /vehicle-trips/list, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /party-custody-traceability, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /reconciliation-command-center, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /reconciliation-command-center/details, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /ownership-dashboard, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /ownership-dashboard/yard, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /ownership-dashboard/customer, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /ownership-dashboard/supplier, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /ownership-dashboard/logistics, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /delivery-planning/demand-points.geojson, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /delivery-planning/demand-bubbles.geojson, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /delivery-planning/customer-density-bubbles.geojson, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /delivery-planning/stops, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: '/delivery-planning/stops/{stopId}/nearby-customers', from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /delivery-planning/customer-coverage.geojson, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
+  - {method: GET, path: /delivery-planning/stops.geojson, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md}
 latest_historical_backfill:
   - {method: GET, path: /customer-spot-cylinder-check/fetch, state: COMPLETE, chain_completeness: PARTIAL_INTERMEDIATE_HOPS, evidence: logs/runs/INVOCATION-20260823-145512.md#LANE-01}
   - {method: GET, path: /yard-audit-dashboard, state: COMPLETE, chain_completeness: PARTIAL_INTERMEDIATE_HOPS, evidence: logs/runs/INVOCATION-20260823-145512.md#LANE-02}
 projection_note: >-
   The immutable/base Explorer files represent the earlier accepted snapshot. Ordered checked-in delta artifacts reconcile
-  the browser-visible and structured incremental projection to the canonical 72/72/0/62 checkpoint without inventing
+  the browser-visible and structured incremental projection to the canonical 98/98/0/36 checkpoint without inventing
   historical rows. index.html loads browser deltas in checkpoint order. A later consolidation may fold deltas into the
   base files only if semantic identity is preserved.
 update_rule: >-
