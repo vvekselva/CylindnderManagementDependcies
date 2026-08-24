@@ -1,5 +1,5 @@
 local_execution:
-  version: 43
+  version: 44
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: DIRECT_SOURCE_TRACE_ADVANCED_SOURCE_RESTAGE_REQUIRED
@@ -42,28 +42,24 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
 
-  active_manual_backlog_drain_invocation:
+  active_backlog_drain_invocation:
     trigger: SCHEDULED_PRIMARY_ORCHESTRATOR
     mode: DIRECT_SAFE_TRACE_WHILE_RESTAGE_PENDING
-    started_at: 2026-08-24T23:58:34+05:30
     status: CHECKPOINT_SYNCHRONIZED_CONTINUE_ELIGIBLE_WORK
-    completed_generations_this_window: 0
+    completed_worker_generations_this_window: 0
     old_generation_idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    current_checkpoint_time: 2026-08-25T00:00:44+05:30
-    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-000044.md
+    current_checkpoint_time: 2026-08-25T00:39:10+05:30
+    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-003910.md
     worker_fire_started_at_checkpoint: false
     reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_PROVED_CONNECTOR_TO_HOST_FILE_BRIDGE_UNAVAILABLE
     direct_source_analysis_continued: true
-    newly_accepted_endpoint_traces_this_checkpoint: 3
-    accepted_endpoint_traces_this_invocation: 3
+    newly_accepted_endpoint_traces_this_checkpoint: 5
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-25T00:00:44+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-000044.md
-    invocation_trigger: SCHEDULED_PRIMARY_ORCHESTRATOR
-    invocation_mode: DIRECT_SAFE_TRACE_WHILE_RESTAGE_PENDING
+    checkpoint_time: 2026-08-25T00:39:10+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-003910.md
     worker_fire_started: false
     reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_PROVED_CONNECTOR_TO_HOST_FILE_BRIDGE_UNAVAILABLE
     source_snapshot_materialized_files: 29
@@ -85,13 +81,15 @@ local_execution:
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
       frozen_source_reverification: PASS_BLOB_SHA_MATCH
     latest_direct_source_resolution:
-      accepted_trace_count: 3
+      accepted_trace_count: 5
       accepted_trace_state: COMPLETE_SOURCE_PROVED
       endpoint_families:
-        - RestfulCustomerServices GET /search/customer/{searchText}
-        - RestfulDriverServices GET /search/driver/{searchText}
-        - RestfulDriverServices GET /find/Driver-by-Id/{driverId}
-      evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md
+        - RestfulProductCategoryServices GET /search/product-category/{searchText}
+        - RestfulProductServices GET /search/product/{searchText}
+        - RestfulProductUomServices GET /search/product-uom/{searchText}
+        - RestfulStateServices GET /search/state/{searchText}
+        - RestfulSupplierSearchService GET /search/supplier/{searchText}
+      evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -112,74 +110,6 @@ local_execution:
     no_progress_state: SOURCE_RESOLUTION_STALLED
     local_checkout_blocker: RESOLVED_BY_ORCHESTRATOR_STAGED_SNAPSHOT
 
-  binding_resolution:
-    state: PASS_IDENTITIES_VALIDATED_SNAPSHOT_MATERIALIZATION_PARTIAL
-    resolved:
-      - source: AddStopController
-        variable: challanHeatmapFetchService
-        implementation: com.sreyas.datamatics.cylinder.management.services.ChallanHeatmapFetchService
-        implementation_blob_sha: 8c3f34b990bb9ca95b61c471047f9986023d9db2
-        worker_snapshot_state: STAGED
-      - source: AddStopController
-        variable: challanPagePhotoUploadService
-        implementation: com.sreyas.datamatics.cylinder.management.services.ChallanPagePhotoUploadService
-        implementation_blob_sha: 83ac81e5d5f0333602c4a90b2e444cfdeee75787
-        worker_snapshot_state: STAGED
-      - source: CompleteTripController
-        variable: completeTripService
-        implementation: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
-        implementation_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
-        worker_snapshot_state: MATERIALIZATION_PENDING
-        orchestrator_endpoint_trace_state: COMPLETE_FULL_BRANCHING
-      - source: RestfulAddressServices
-        variable: customerAddressFetchByIDService
-        implementation: com.sreyas.datamatics.cylinder.management.search.services.CustomerAddressFetchByIDService
-        implementation_blob_sha: dc5419f6d6d3490ddd0cb009e82bc012215cffc6
-        implementation_source_validation: PASS_EXACT_GENERIC_INTERFACE_IMPLEMENTATION
-        orchestrator_endpoint_trace_state: COMPLETE_FULL_BRANCHING
-      - source: RestfulAddressTypeServices
-        variable: addressTypeSearchService
-        implementation: com.sreyas.datamatics.cylinder.management.search.services.AddressTypeSearchService
-        implementation_blob_sha: b670ca3abc7a5ee2dee6409c98efdb7f38d6dc60
-        implementation_source_validation: PASS_EXACT_GENERIC_INTERFACE_IMPLEMENTATION
-        orchestrator_endpoint_trace_state: COMPLETE_FULL
-      - source: RestfulChallanTypeServices
-        variable: challanTypeSearchService
-        implementation: com.sreyas.datamatics.cylinder.management.search.services.ChallanTypeSearchService
-        implementation_blob_sha: ed25effed9518c89560ceb6002a8e6f081afc7cf
-        implementation_source_validation: PASS_EXACT_GENERIC_INTERFACE_IMPLEMENTATION
-        orchestrator_endpoint_trace_state: COMPLETE_FULL
-      - source: RestfulCityServices
-        variable: citySearchService
-        implementation: com.sreyas.datamatics.cylinder.management.search.services.CitySearchService
-        implementation_blob_sha: 3c28422ada444309d82c1ac8066b1535e368c877
-        implementation_source_validation: PASS_EXACT_GENERIC_INTERFACE_IMPLEMENTATION
-        orchestrator_endpoint_trace_state: COMPLETE_FULL
-      - source: RestfulCountryServices
-        variable: countrySearchService
-        implementation: com.sreyas.datamatics.cylinder.management.search.services.CountrySearchService
-        implementation_blob_sha: 7195ef4565a8ce7e5aa26f889c7169e9c9e55621
-        implementation_source_validation: PASS_EXACT_GENERIC_INTERFACE_IMPLEMENTATION
-        orchestrator_endpoint_trace_state: COMPLETE_FULL
-      - source: RestfulCustomerServices
-        variable: customerSearchService
-        implementation: com.sreyas.datamatics.cylinder.management.search.services.CustomerSearchService
-        implementation_blob_sha: 78bbb909b2f0fca34ad18f21074053a02ab5e213
-        implementation_source_validation: PASS_EXACT_GENERIC_INTERFACE_IMPLEMENTATION
-        orchestrator_endpoint_trace_state: COMPLETE_FULL
-      - source: RestfulDriverServices
-        variable: driverSearchService
-        implementation: com.sreyas.datamatics.cylinder.management.search.services.DriverSearchService
-        implementation_blob_sha: 8c7c4d3e78456c810733f2c940fd70e306ad48c8
-        implementation_source_validation: PASS_EXACT_GENERIC_INTERFACE_IMPLEMENTATION
-        orchestrator_endpoint_trace_state: COMPLETE_FULL
-      - source: RestfulDriverServices
-        variable: driverFetchByIdService
-        implementation: com.sreyas.datamatics.cylinder.management.search.services.DriverFetchByIdService
-        implementation_blob_sha: dd004171cd75afe76d72e9626e966702fa0da476
-        implementation_source_validation: PASS_EXACT_GENERIC_INTERFACE_IMPLEMENTATION
-        orchestrator_endpoint_trace_state: COMPLETE_FULL
-
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
@@ -192,23 +122,23 @@ local_execution:
     validation_cases_passed: 5
     validation_cases_total: 5
     latest_runtime_recovery: PASS_CLOSED_GENERATION_NOOP_REPLAN_DIRECT_SOURCE_ADVANCE
-    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md
+    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 115
-    complete: 115
+    examined: 124
+    complete: 124
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 19
+    not_yet_examined: 10
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 92
+    matrix_materialized_rows: 101
     historical_accepted_rows_pending_backfill: 23
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md
 
   next_action: >-
-    Continue tracing the remaining 19 not-yet-examined caller-visible endpoints from the exact frozen source. Preserve
+    Continue tracing the remaining 10 not-yet-examined caller-visible endpoints from the exact frozen source. Preserve
     QG-SOURCE-001 fail-closed for worker fire until a verified connector-to-local-filesystem source-provider bridge can
     materialize the twenty resolved entries into a new immutable staged snapshot. After verified snapshot advancement,
     recompute dispatch fingerprint and fire the next up-to-10-worker generation. WU-BL001-002 remains blocked until
