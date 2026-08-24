@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **115 / 134 examined; 115 COMPLETE; 0 UNRESOLVED; 19 not yet examined.**  
-Rows currently materialized below: **92**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **119 / 134 examined; 119 COMPLETE; 0 UNRESOLVED; 15 not yet examined.**  
+Rows currently materialized below: **96**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -105,12 +105,16 @@ Rows currently materialized below: **92**. The other 23 historically accepted ro
 | GET | `/search/customer/{searchText}` | `RestfulCustomerServices.getCustomers` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_customer`; `CustomerSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-000044.md` |
 | GET | `/search/driver/{searchText}` | `RestfulDriverServices.getDrivers` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_driver`; `DriverSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-000044.md` |
 | GET | `/find/Driver-by-Id/{driverId}` | `RestfulDriverServices.getDriverById` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_driver`; `DriverFetchByIdResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-000044.md` |
+| GET | `/search/cylinder/{searchText}` | `RestfulCylinderServices.getCylinders` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_JSON | `public.vw_cylinder_global_search`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-001738.md` |
+| POST | `/search/cylinder/by-serial-and-state` | `RestfulCylinderServices.getCylinderBySerialAndState` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_VIEW_AND_TERMINAL_JSON | `public.tbl_cylinder_states`; `public.vw_cylinder_global_search`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-001738.md` |
+| POST | `/search/cylinder/by-customer` | `RestfulCylinderServices.getCylindersByCustomer` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_TABLES_AND_TERMINAL_JSON | `public.vw_cylinder_party_custody_with_identifiers`; `public.tbl_cylinder`; `public.tbl_product`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-001738.md` |
+| POST | `/search/cylinder/by-supplier` | `RestfulCylinderServices.getCylindersBySupplier` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_TABLES_AND_TERMINAL_JSON | `public.vw_cylinder_party_custody_with_identifiers`; `public.tbl_cylinder`; `public.tbl_product`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-001738.md` |
 
 ## Current unresolved paths
 
-**None among the 115 examined endpoints.**
+**None among the 119 examined endpoints.**
 
-This does not close BL-001: **19 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **15 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
