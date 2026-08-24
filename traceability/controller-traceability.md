@@ -6,8 +6,8 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **57 / 134 examined; 55 COMPLETE; 2 UNRESOLVED; 77 not yet examined.**  
-Rows currently materialized below: **33**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **58 / 134 examined; 56 COMPLETE; 2 UNRESOLVED; 76 not yet examined.**  
+Rows currently materialized below: **34**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -26,6 +26,7 @@ Rows currently materialized below: **33**. The other 24 historically accepted ro
 | POST | `/logistics/challan-books/save` | `ChallanBookWebController.processBookIngestion` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEWS | `public.tbl_challan_book_registry`; conditional `public.tbl_challan_page_audit_ledger`; error-branch `public.tbl_summary_metric_lookup`; success redirect; error re-render view | `logs/runs/PRODUCTION-FIRE-20260824-003111.md` |
 | GET | `/challan-entry-aging-dashboard` | `ChallanEntryAgingDashboardController.showChallanEntryAgingDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | `public.tbl_trip_challan_entry_tracker`; `public.tbl_trip_challan_entry_tracker_audit`; `final-version-1/ChallanEntryAgingDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-005711.md` |
 | GET | `/challan-heatmap` | `ChallanHeatmapController.showHeatmap` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_challan_heatmap_metrics`; `final-version-1/ChallanHeatmapDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-013336.md` |
+| GET | `/challan-page-photo/{challanPagePhotoId}` | `ChallanPagePhotoController.retrieveChallanPagePhoto` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_HTTP_RESPONSE | `public.tbl_challan_page_photo`; HTTP 404 when missing/inactive; otherwise inline binary response | `logs/runs/PRODUCTION-FIRE-20260824-053325.md` |
 | GET | `/customer-address-location/planning-map` | `CustomerAddressLocationController.showPlanningMap` | COMPLETE | FULL | TERMINAL_VIEW | `with-menu/CustomerAddressPlanningMap`; no service/DAO/database dependency | `logs/runs/PRODUCTION-FIRE-20260824-013546.md` |
 | GET | `/customer-address-location/missing` | `CustomerAddressLocationController.showMissingLocations` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_address_location_status`; `with-menu/CustomerAddressLocationMissing` | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
 | GET | `/customer-address-location/points.geojson` | `CustomerAddressLocationController.customerAddressPointsGeoJson` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_TABLE_AND_TERMINAL_JSON | `public.vw_customer_address_location_status`; `public.tbl_customer_order_request`; generated GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-020143.md` |
@@ -45,9 +46,13 @@ Rows currently materialized below: **33**. The other 24 historically accepted ro
 | GET | `/customer-spot-cylinder-check/fetch` | `CustomerSpotCylinderCheckController` fetch handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_VIEW | `CustomerSpotCylinderCheckService.findActiveSpotCheckBooksForLoad` -> `TripChallanBookAssignmentViewJpaDao` -> `public.vw_trip_challan_book_assignments` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-01 |
 | GET | `/yard-audit-dashboard` | `YardAuditDashboardController` dashboard handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_TABLES | `YardAuditDashboardFetchService.processRequest` -> `YardQualityGateJpaDao` -> `public.tbl_yard_stock_check`; `public.tbl_yard_stock_check_line`; `public.tbl_yard_quality_gate`; `public.tbl_cylinder_states`; `public.tbl_yard_check_event` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-02 |
 
+## `ChallanPagePhotoController` full-chain summary
+
+`GET /challan-page-photo/{challanPagePhotoId}` calls `ChallanPagePhotoJpaDao.findById` directly from the controller; there is no service layer in this path. `ChallanPagePhotoJpaDao` is a `JpaRepository<ChallanPagePhotoDo, Long>`, and `ChallanPagePhotoDo` explicitly maps with `@Table(name = "tbl_challan_page_photo", schema = "public")`. Missing or inactive rows terminate with HTTP 404; an active row terminates with an inline binary `ResponseEntity<byte[]>`. The controller, DAO and entity Git blobs are recorded in `PRODUCTION-FIRE-20260824-053325.md`.
+
 ## Historical backfill: Attempt 26 accepted traces
 
-The durable Attempt 26 invocation already accepted three COMPLETE GET traces at the frozen source baseline: `GET /walkin-sale`, `GET /customer-spot-cylinder-check/fetch`, and `GET /yard-audit-dashboard`. These rows are materializations of previously accepted evidence, not new endpoint acceptances; therefore canonical Source Check counts remain 57/55/2/77. The historical evidence does not preserve every intermediate class name for the latter two paths, so their Explorer chains are explicitly marked `PARTIAL_INTERMEDIATE_HOPS` rather than inventing missing hops. The distinct `POST /walkin-sale` and `POST /customer-spot-cylinder-check/submit` paths remain UNRESOLVED.
+The durable Attempt 26 invocation already accepted three COMPLETE GET traces at the frozen source baseline: `GET /walkin-sale`, `GET /customer-spot-cylinder-check/fetch`, and `GET /yard-audit-dashboard`. These rows are materializations of previously accepted evidence, not new endpoint acceptances; therefore canonical Source Check counts are not advanced by those backfill operations. The historical evidence does not preserve every intermediate class name for the latter two paths, so their Explorer chains are explicitly marked `PARTIAL_INTERMEDIATE_HOPS` rather than inventing missing hops. The distinct `POST /walkin-sale` and `POST /customer-spot-cylinder-check/submit` paths remain UNRESOLVED.
 
 ## `OwnershipObligationDashboardController` full-chain summary
 
