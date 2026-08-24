@@ -3,83 +3,60 @@ result:
   state: PARTIAL
   verified: false
   closed: false
-  canonical_source_check_result_accepted: false
-  matrix_state: INCREMENTAL_PARTIAL
+  canonical_source_check_result_accepted: true
+  matrix_state: READY_FOR_FINAL_RECONCILIATION
   sync_state: SYNCHRONIZED
   pending_sync_artifact: null
   pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-035743.md
-  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-031101.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-051115.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-
   lifecycle_gate:
     id: QG-LOG-001
     state: PASS
-    preflight_individual_repo_lane_logs: 0
-    post_invocation_individual_repo_lane_logs: 0
-
+    residual_lane_logs: 0
   source_gate:
     id: QG-SOURCE-001
-    state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    state: PASS_CANONICAL_ENDPOINT_TRACE_COVERAGE_100_PERCENT_OLD_WORKER_SNAPSHOT_PARTIAL
     source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
     latest_worker_execution: E2E-STAGED-20260823-161214
     worker_snapshot_materialized_files: 29
-    exact_source_requests_pending_from_latest_worker_batch: 16
+    old_generation_missing_source_requests: 16
     binding_identities_unresolved: 0
-    binding_implementation_materializations_pending: 1
-    exact_source_candidates_verified_for_next_snapshot_this_checkpoint: 20
-    unresolved_source_resolution_entries: 0
-    restage_generations_ready: 2
-    max_parallel_materialization_slots: 10
-    source_materialization_slots_completed_this_checkpoint: 0
-    source_materialization_transport_blocker: CONNECTOR_TO_EXECUTION_HOST_FILE_BRIDGE_UNAVAILABLE
-
+    old_generation_replay_required: false
+    canonical_completion_method: PRIMARY_ORCHESTRATOR_VALIDATED_DIRECT_FROZEN_SOURCE
   lane_utilization_gate:
     id: QG-LANE-001
     state: UNDERUTILIZED
     latest_worker_execution: E2E-STAGED-20260823-161214
-    expected_concurrent_lanes: 10
     measured_peak_concurrent_lanes: 2
+    configured_lanes: 10
     backend_capacity_probe_peak: 10
     worker_failures: 0
     residual_lane_logs: 0
-    trace_lanes_used_this_checkpoint: 0
-
   checkpoint:
     total_endpoints: 134
-    examined: 129
-    complete: 129
+    examined: 134
+    complete: 134
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 5
-    matrix_materialized_rows: 106
-    historical_accepted_rows_pending_backfill: 23
-
-  latest_newly_accepted_endpoints:
-    - {method: POST, path: /search/cylinder/ownership/by-state, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
-    - {method: POST, path: /search/cylinder/by-state, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
-    - {method: POST, path: /search/cylinder/on-vehicle, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
-
+    not_yet_examined: 0
+    matrix_materialized_rows: 113
+    historical_accepted_rows_pending_backfill: 21
+  current_work_unit:
+    id: WU-BL001-002
+    state: IN_PROGRESS
+    name: Final Matrix Reconciliation
   unresolved_items: []
-
   execution_backend:
     owner: AUTOMATION_TOOL
     type: LOCAL_PROCESS_POOL
     max_workers: 10
     github_actions_required: false
-    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
-    fallback_source_provider: LOCAL_GIT_CHECKOUT
-
   final_outputs: []
-
   next_action: >-
-    Continue direct safe frozen-source analysis of the remaining 5 endpoints. Materialize the twenty exact resolved
-    source entries only when a verified connector-to-local-filesystem bridge can write them into a worker-readable
-    immutable snapshot. After verified snapshot advancement, recompute snapshot identity/dispatch fingerprint and fire
-    a changed up-to-10-worker generation.
-
+    Backfill the remaining 21 historical accepted endpoint rows only from durable accepted evidence, reconcile exactly one
+    unique HTTP-method/path row for each of all 134 endpoints across Markdown and Explorer projections, then hand off to WU-BL001-003.
   note: >-
-    BL-001 remains PARTIAL. Canonical accepted endpoint truth is 129/134. Work-unit status, matrix, Explorer projection,
-    unresolved ledger, analysis, gate state, local execution, execution statistics and result are synchronized to this
-    checkpoint. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance remains required after all automatic gates pass.
+    Source check is complete at 134/134. BL-001 remains open because final matrix reconciliation, downstream gate validation,
+    source artifact registration, execution closure, and explicit QG-TRC-015 user acceptance are still outstanding.
