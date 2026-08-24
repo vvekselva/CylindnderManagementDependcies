@@ -40,11 +40,9 @@ No unchanged discovery batch was rerun because the immutable snapshot still requ
 
 ## Latest Orchestrator Checkpoint
 
-Checkpoint: **`PRODUCTION-FIRE-20260824-080301`**
+Checkpoint: **`PRODUCTION-FIRE-20260824-083401`**
 
-`POST /cylinderDelivery` advanced from **UNRESOLVED** to **COMPLETE / FULL_BRANCHING**. Frozen source now proves the exact `Uc02Phase02CylinderDeliveryMediator` generic binding, `OrderIngestionService`, `OrderIngestionRequestValidator`, typed JPA lookup branches, `OrderJpaDao.save(orderDo)`, cascaded `OrderLineDo`, and the mapped PostgreSQL dependency set. Commented future transition-service code was not treated as active dependency.
-
-The active persistence set is `public.tbl_challan_type`, `public.tbl_customer`, `public.tbl_customer_address`, `public.tbl_driver`, `public.tbl_vehicle`, `public.tbl_cylinder`, `public.tbl_product`, `public.tbl_order`, and `public.tbl_order_line`. Success redirects to `/orderList?pageNumber=1&itemsPerPage=10`; validation failure re-renders `Uc02-Phase02-CylinderDeliveryView`.
+`GET /vehicleLoad` advanced from **NOT YET EXAMINED** to **COMPLETE / FULL_BRANCHING**. The cache-hit path is `Uc02Phase01VehicleLoadController.doGet -> LookupDataCache.getVehicleLoadPurposes() -> in-memory vehicleLoadPurposes -> with-menu/Uc02-Phase01-VehicleLoadView`. The cache-miss path is source-proved through `LookupDataCache.refreshVehicleLoadPurpose() -> VehicleLoadPurposeFetchAllService.processRequest() -> VehicleLoadPurposeJpaDao.findAll() -> VehicleLoadPurposeDo -> public.tbl_vehicle_load_purpose`, then returns the refreshed list to the same view. Redirect flash attributes only populate model values and do not add a database lookup.
 
 ## Framework / Gate State
 
@@ -68,16 +66,16 @@ All **10 lanes are IDLE between worker fires**. The last worker batch closed cle
 | Metric | Current value |
 |---|---:|
 | Caller-visible endpoints | **134** |
-| Examined | **60** |
-| COMPLETE | **58** |
+| Examined | **61** |
+| COMPLETE | **59** |
 | UNRESOLVED | **2** |
 | BLOCKED / FAILED | **0 / 0** |
-| NOT YET EXAMINED | **74** |
+| NOT YET EXAMINED | **73** |
 | Traceability Matrix | **INCREMENTAL_PARTIAL** |
-| Materialized full-chain rows | **36** |
+| Materialized full-chain rows | **37** |
 | Historical accepted rows awaiting evidence backfill | **24** |
 
-Current examination coverage: **44.78%**. Current COMPLETE coverage: **43.28%**.
+Current examination coverage: **45.52%**. Current COMPLETE coverage: **44.03%**.
 
 Open canonical evidence gaps remain:
 
