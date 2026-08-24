@@ -1,5 +1,5 @@
 local_execution:
-  version: 38
+  version: 39
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: DIRECT_SOURCE_TRACE_ADVANCED_SOURCE_RESTAGE_REQUIRED
@@ -43,14 +43,14 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   active_manual_backlog_drain_invocation:
-    trigger: MANUAL_UPDATED_ORCHESTRATOR
+    trigger: MANUAL_PRIMARY_ORCHESTRATOR
     mode: DIRECT_SAFE_TRACE_WHILE_RESTAGE_PENDING
-    started_at: 2026-08-24T21:37:28+05:30
+    started_at: 2026-08-24T17:00:49Z
     status: CHECKPOINT_SYNCHRONIZED_CONTINUE_ELIGIBLE_WORK
     completed_generations_this_window: 0
     old_generation_idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    current_checkpoint_time: 2026-08-24T21:37:28+05:30
-    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-213728.md
+    current_checkpoint_time: 2026-08-24T17:00:49Z
+    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-170049.md
     worker_fire_started_at_checkpoint: false
     reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_YET_PROVED
     direct_source_analysis_continued: true
@@ -60,9 +60,9 @@ local_execution:
     residual_transient_lane_logs: 0
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T21:37:28+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-213728.md
-    invocation_trigger: MANUAL_UPDATED_ORCHESTRATOR
+    checkpoint_time: 2026-08-24T17:00:49Z
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-170049.md
+    invocation_trigger: MANUAL_PRIMARY_ORCHESTRATOR
     invocation_mode: DIRECT_SAFE_TRACE_WHILE_RESTAGE_PENDING
     worker_fire_started: false
     reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_YET_PROVED
@@ -82,8 +82,8 @@ local_execution:
       accepted_trace_count: 1
       accepted_trace_state: COMPLETE_SOURCE_PROVED
       endpoint_families:
-        - TripReviewController POST /trip-review/{vehicleTripId}/close-review
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-213728.md
+        - TripReviewController GET /trip-review/{vehicleTripId}
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-170049.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -136,19 +136,19 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 105
-    complete: 105
+    examined: 106
+    complete: 106
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 29
+    not_yet_examined: 28
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 82
+    matrix_materialized_rows: 83
     historical_accepted_rows_pending_backfill: 23
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-213728.md
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-170049.md
 
   next_action: >-
-    Continue tracing the remaining 29 not-yet-examined caller-visible endpoints from the exact frozen source while
+    Continue tracing the remaining 28 not-yet-examined caller-visible endpoints from the exact frozen source while
     resolving/materializing the 16 outstanding worker source requests and the CompleteTripServiceImpl snapshot file.
     Fire the next up-to-10-worker generation only after staged-executor preflight proves an advanced immutable snapshot.
     WU-BL001-002 remains blocked until canonical endpoint trace-result coverage is 100 percent.
