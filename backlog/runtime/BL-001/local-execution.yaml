@@ -1,8 +1,8 @@
 local_execution:
-  version: 46
+  version: 47
   backlog_item: BL-001
-  work_unit: WU-BL001-001
-  state: DIRECT_SOURCE_TRACE_ADVANCED_SOURCE_RESTAGE_REQUIRED
+  work_unit: WU-BL001-002
+  state: SOURCE_CHECK_COMPLETE_MATRIX_RECONCILIATION_READY
   backend: LOCAL_PROCESS_POOL
   architecture: architecture/self-reliant-e2e-execution.md
   self_reliant_governance: governance/self-reliant-execution.yaml
@@ -43,70 +43,54 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   active_backlog_drain_invocation:
-    trigger: SCHEDULED_PRIMARY_ORCHESTRATOR
-    mode: DIRECT_SAFE_TRACE_WHILE_RESTAGE_PENDING
-    status: CHECKPOINT_SYNCHRONIZED_CONTINUE_ELIGIBLE_WORK
+    trigger: PRIMARY_ORCHESTRATOR
+    mode: DIRECT_FROZEN_SOURCE_TRACE_AND_RECONCILIATION_HANDOFF
+    status: SOURCE_CHECK_100_PERCENT_SYNCHRONIZED
     completed_worker_generations_this_window: 0
     old_generation_idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    current_checkpoint_time: 2026-08-25T03:57:43+05:30
-    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-035743.md
+    current_checkpoint_time: 2026-08-25T05:11:15+05:30
+    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-051115.md
     worker_fire_started_at_checkpoint: false
-    reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_PROVED_CONNECTOR_TO_HOST_FILE_BRIDGE_UNAVAILABLE
+    reason_worker_fire_not_started: PRIOR_GENERATION_CLOSED_SYNCHRONIZED_AND_ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_PROVED
     direct_source_analysis_continued: true
-    newly_accepted_endpoint_traces_this_checkpoint: 3
+    newly_accepted_endpoint_traces_this_checkpoint: 5
+    historical_rows_backfilled_this_checkpoint: 2
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-25T03:57:43+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-035743.md
+    checkpoint_time: 2026-08-25T05:11:15+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-051115.md
     worker_fire_started: false
-    reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_PROVED_CONNECTOR_TO_HOST_FILE_BRIDGE_UNAVAILABLE
+    reason_worker_fire_not_started: SOURCE_CHECK_ALREADY_REACHED_100_PERCENT_VIA_PRIMARY_ORCHESTRATOR_VALIDATED_FROZEN_SOURCE
     source_snapshot_materialized_files: 29
     exact_source_requests_pending_from_last_worker_batch: 16
     source_resolution_entries_ready_for_materialization: 20
     source_resolution_entries_unresolved: 0
-    source_materialization_generations_ready: 2
-    source_materialization_slots_per_generation: 10
-    source_materialization_slots_completed_this_checkpoint: 0
     source_materialization_transport_blocker: CONNECTOR_TO_EXECUTION_HOST_FILE_BRIDGE_UNAVAILABLE
     binding_requests_emitted_by_workers: 3
     binding_identities_source_validated: 3
     binding_identities_unresolved: 0
     binding_implementations_already_worker_staged: 2
     binding_implementations_pending_snapshot_materialization: 1
-    pending_binding_implementation_source:
-      fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
-      path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
-      git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
-      frozen_source_reverification: PASS_BLOB_SHA_MATCH
-    latest_direct_source_resolution:
-      accepted_trace_count: 3
-      accepted_trace_state: COMPLETE_SOURCE_PROVED
-      endpoint_families:
-        - RestfulCylinderServices POST /search/cylinder/ownership/by-state
-        - RestfulCylinderServices POST /search/cylinder/by-state
-        - RestfulCylinderServices POST /search/cylinder/on-vehicle
-      evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md
+    note: >-
+      These old-generation restage facts are retained for audit. They no longer block canonical endpoint source-check coverage,
+      which was completed by Primary-Orchestrator validation directly against the frozen Git source. Do not replay the old
+      worker generation merely to reproduce already accepted source evidence.
 
   source_state:
     gate: QG-SOURCE-001
-    state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+    state: CANONICAL_ENDPOINT_SOURCE_CHECK_100_PERCENT_DIRECT_FROZEN_SOURCE_VALIDATED
     controller_roots_verified: 10
-    source_snapshot_materialized_files: 29
-    exact_source_requests_pending: 16
-    source_resolution_entries_ready_for_materialization: 20
-    source_resolution_entries_unresolved: 0
+    canonical_endpoint_trace_coverage_percent: 100
+    exact_source_requests_pending_from_old_worker_generation: 16
     binding_identities_unresolved: 0
-    binding_implementation_materializations_pending: 1
-    next_phase: SOURCE_RESTAGE_AND_IMPLEMENTATION_MATERIALIZATION_PLUS_DIRECT_SAFE_TRACE
+    next_phase: FINAL_MATRIX_RECONCILIATION
     restage_owner: PRIMARY_ORCHESTRATOR
     source_layout: repository/source-layout.yaml
     source_restage_resolution: backlog/runtime/BL-001/source-restage-resolution.yaml
     source_restage_dispatch: backlog/runtime/BL-001/source-restage-dispatch.yaml
-    max_iterations: 8
-    no_progress_state: SOURCE_RESOLUTION_STALLED
-    local_checkout_blocker: RESOLVED_BY_ORCHESTRATOR_STAGED_SNAPSHOT
+    old_generation_replay_required: false
 
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
@@ -119,25 +103,33 @@ local_execution:
     already_closed_synced: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
     validation_cases_passed: 5
     validation_cases_total: 5
-    latest_runtime_recovery: PASS_CLOSED_GENERATION_NOOP_REPLAN_DIRECT_SOURCE_ADVANCE
-    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-035743.md
+    latest_runtime_recovery: PASS_CLOSED_GENERATION_NOOP_DIRECT_SOURCE_COMPLETION
+    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 129
-    complete: 129
+    examined: 134
+    complete: 134
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 5
-    matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 106
-    historical_accepted_rows_pending_backfill: 23
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260825-035743.md
+    not_yet_examined: 0
+    matrix_state: READY_FOR_FINAL_RECONCILIATION
+    matrix_materialized_rows: 113
+    historical_accepted_rows_pending_backfill: 21
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
+
+  work_unit_handoff:
+    completed: WU-BL001-001
+    ready: WU-BL001-002
+    waiting: WU-BL001-003
+    closure_work_unit: WU-BL001-004
+    rule: >-
+      WU-BL001-002 must reconcile the remaining 21 historical accepted rows from durable evidence and consolidate the
+      base-plus-delta structured/browser projection without inventing chains. WU-BL001-003 may run only after that
+      reconciliation passes. BL-001 cannot close without all required gates and explicit user acceptance.
 
   next_action: >-
-    Continue tracing the remaining 5 not-yet-examined caller-visible endpoints from the exact frozen source. Preserve
-    QG-SOURCE-001 fail-closed for worker fire until a verified connector-to-local-filesystem source-provider bridge can
-    materialize the twenty resolved entries into a new immutable staged snapshot. After verified snapshot advancement,
-    recompute dispatch fingerprint and fire the next up-to-10-worker generation. WU-BL001-002 remains blocked until
-    canonical endpoint trace-result coverage is 100 percent.
+    Begin WU-BL001-002 final matrix reconciliation. Backfill the remaining 21 historical accepted endpoint rows only from
+    durable accepted evidence, verify one unique HTTP-method/path row for each of the 134 endpoints, reconcile Markdown,
+    structured JSON, browser projection and zero-unresolved accounting, then hand the reconciled matrix to WU-BL001-003.
