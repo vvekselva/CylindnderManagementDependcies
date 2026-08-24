@@ -1,6 +1,6 @@
 # BL-001 Incremental Unresolved Traceability
 
-Status: **OPEN / INCREMENTAL**  
+Status: **OPEN / INCREMENTAL — ZERO CURRENT UNRESOLVED ROWS**  
 Backlog Item: BL-001 Controller Traceability  
 Work Unit: WU-BL001-001 Complete Source Repository Check And Maintain Incremental Matrix  
 Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -11,29 +11,31 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 - Total caller-visible endpoints: **134**
 - Explicitly examined for final dependency: **63**
-- COMPLETE: **62**
-- UNRESOLVED: **1**
+- COMPLETE: **63**
+- UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
 - Not yet examined: **71**
 
 ## Current unresolved paths
 
-### `POST /walkin-sale`
-
-State: **UNRESOLVED**
-
-Proved dependency evidence so far: `public.tbl_order`, `public.tbl_walk_in_sale`, `public.tbl_walk_in_pickup`, `public.tbl_walk_in_pickup_line`, and `public.tbl_yard_entries`.
-
-Missing proof: the complete final dependency set across every conditional `processRequest` branch is not yet source-proved.
-
-Next investigation step: resolve every branch and any source-bound service/repository implementation at the frozen source baseline without naming inference.
+**None.**
 
 ## Resolved this checkpoint
 
-`POST /customer-spot-cylinder-check/submit` is now **COMPLETE / FULL_BRANCHING**. Frozen source proves the controller/service path through `CustomerSpotCylinderCheckService` and its exact persistence branches to `public.vw_trip_challan_book_assignments`, `public.tbl_customer`, `public.tbl_challan_page_audit_ledger`, `public.tbl_cylinder`, `public.vw_cylinders_at_customers`, `public.tbl_customer_spot_cylinder_check`, cascaded `public.tbl_customer_spot_cylinder_check_line`, and native-insert `public.tbl_challan_transaction_link`, with terminal view `final-version-1/CustomerSpotCylinderCheck`. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-100135.md`.
+`POST /walkin-sale` is now **COMPLETE / FULL_BRANCHING**. Frozen source proves `WalkinSaleIngestionController.doPost` -> `ICylinderManagementApplicationService<WalkinSaleRequestDto, WalkinSaleResponseDto>` -> `WalkinSaleServiceImpl.processRequest`, with the implementation source itself proving the exact generic service contract.
 
-The sole canonical unresolved endpoint is now `POST /walkin-sale`.
+The source-proved ordered/branching persistence dependencies are:
+
+- common lookup branch: `CustomerJpaDao` -> `CustomerDo` -> `public.tbl_customer`; `CustomerAddressJpaDao` -> `CustomerAddressDo` -> `public.tbl_customer_address`;
+- full-cylinder delivery branch: `OrderJpaDao` -> `OrderDo` -> `public.tbl_order`, with `OrderDo.orderLines` cascade -> `OrderLineDo` -> `public.tbl_order_line`; `WalkInSaleJpaDao` -> `WalkInSaleDo` -> `public.tbl_walk_in_sale`; `CylinderJpaDao` -> `CylinderDo` -> `public.tbl_cylinder`; `ChallanTypeJpaDao` -> `ChallanTypeDo` -> `public.tbl_challan_type`;
+- empty-cylinder return branch: `WalkInPickupJpaDao` -> `WalkInPickupDo` -> `public.tbl_walk_in_pickup`; `WalkInPickupLineJpaDao` -> `WalkInPickupLineDo` -> `public.tbl_walk_in_pickup_line`; `CylinderJpaDao` -> `CylinderDo` -> `public.tbl_cylinder`; `YardEntriesJpaDao` -> `YardEntryDo` -> `public.tbl_yard_entries`;
+- delivery-challan journal branch: `ChallanPageAuditLedgerJpaDao` -> `ChallanPageAuditLedgerDo` -> `public.tbl_challan_page_audit_ledger`; `ChallanTransactionLinkJpaDao` -> `ChallanTransactionLinkDo` -> `public.tbl_challan_transaction_link`;
+- terminal controller outcomes: redirect to the configured home link on success, or `final-version-1/WalkinSaleIngestion` on validation/application error.
+
+No database object was added from naming alone. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and the durable production checkpoint for this resolution.
+
+`POST /customer-spot-cylinder-check/submit` remains **COMPLETE / FULL_BRANCHING** from the prior checkpoint. There are now zero canonical unresolved endpoints among the 63 examined endpoints.
 
 ## Incremental matrix synchronization rule
 
