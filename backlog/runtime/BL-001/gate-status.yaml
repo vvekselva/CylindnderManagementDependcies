@@ -35,8 +35,8 @@ quality_gate_status:
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
     source_closure_complete: false
-    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260824-191248.md
-    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260824-193732.md
+    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260824-203431.md
+    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260824-212131-SCHEDULER.md
     canary_source_closure_execution: E2E-STAGED-20260823-151800
     canary_source_closure_complete: true
     tamper_test: PASS_BLOCK_BEFORE_SERVICE
@@ -63,8 +63,8 @@ quality_gate_status:
     total_cases: 5
     pending_sync_restarts_workers: false
     interrupted_partial_output_accepted: false
-    latest_runtime_recovery: FAIL_CLOSED_EXPIRED_INVOCATION_RECOVERED
-    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260824-193732.md
+    latest_runtime_recovery: FAIL_CLOSED_LEVEL3_SSOT_RECONCILED
+    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260824-212131-SCHEDULER.md
 
   real_lane_utilization_gate:
     id: QG-LANE-001
@@ -91,7 +91,7 @@ quality_gate_status:
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
-    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS, evidence: [102 of 134 endpoints examined, 102 COMPLETE, 0 UNRESOLVED, 32 not yet examined]}
+    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS, evidence: [104 of 134 endpoints examined, 104 COMPLETE, 0 UNRESOLVED, 30 not yet examined]}
     QG-TRC-003: {name: Controller Inventory Completeness, state: PASS}
     QG-TRC-004: {name: Endpoint Inventory Completeness, state: IN_PROGRESS}
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
@@ -106,11 +106,11 @@ quality_gate_status:
     QG-TRC-014: {name: Execution Closure, state: WAITING}
     QG-TRC-015: {name: User Acceptance, state: WAITING, owner: USER, automatic: false}
 
-  endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 102, complete: 102, unresolved: 0, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 32, matrix_materialized_rows: 79, historical_accepted_rows_pending_backfill: 23}
+  endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 104, complete: 104, unresolved: 0, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 30, matrix_materialized_rows: 81, historical_accepted_rows_pending_backfill: 23}
   close_allowed: false
   reason: >-
     Source closure remains partial. Sixteen exact source requests from the latest worker batch and one already validated
-    binding implementation materialization remain before the staged discovery snapshot can be declared closed. Thirty-two
-    endpoint traces remain unexamined, the incremental matrix has 79 materialized rows with 23 durable accepted historical
+    binding implementation materialization remain before the staged discovery snapshot can be declared closed. Thirty
+    endpoint traces remain unexamined, the incremental matrix has 81 materialized rows with 23 durable accepted historical
     rows still pending backfill, QG-LANE-001 remains underutilized for the latest natural workload, and QG-TRC-015 user
     acceptance is not yet available.
