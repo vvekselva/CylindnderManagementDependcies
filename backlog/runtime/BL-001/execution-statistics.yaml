@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 18
+  version: 19
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,20 +18,23 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 72
+    latest_accepted_attempt: 76
     latest_accepted_attempt_sequence_note: LEGACY_COUNTER_NOT_USED_AS_CANONICAL_COVERAGE
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-231647
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-233707
     total_endpoints: 134
-    examined: 108
-    progress_percentage: 80.60
-    complete: 108
-    complete_percentage: 80.60
+    examined: 112
+    progress_percentage: 83.58
+    complete: 112
+    complete_percentage: 83.58
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 26
+    not_yet_examined: 22
     latest_state_transition:
-      - GET /search/address/customer-address/{customerId}: NOT_YET_EXAMINED -> COMPLETE
+      - GET /search/addresstype/{searchText}: NOT_YET_EXAMINED -> COMPLETE
+      - GET /search/challantype/{searchText}: NOT_YET_EXAMINED -> COMPLETE
+      - GET /search/city/{searchText}: NOT_YET_EXAMINED -> COMPLETE
+      - GET /search/country/{searchText}: NOT_YET_EXAMINED -> COMPLETE
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -76,18 +79,18 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-231647
+    checkpoint_id: PRODUCTION-FIRE-20260824-233707
     worker_fire_started: false
     reason: DIRECT_SAFE_SOURCE_TRACE_ADVANCED_WHILE_EXECUTION_HOST_SNAPSHOT_MATERIALIZATION_TRANSPORT_UNAVAILABLE
-    endpoint_trace_checkpoint_before: 107
-    endpoint_trace_checkpoint_after: 108
-    endpoints_examined_added: 1
-    complete_added: 1
+    endpoint_trace_checkpoint_before: 108
+    endpoint_trace_checkpoint_after: 112
+    endpoints_examined_added: 4
+    complete_added: 4
     unresolved_change: 0
-    accepted_family: RestfulAddressServices
-    accepted_state_transition: GET /search/address/customer-address/{customerId} NOT_YET_EXAMINED_TO_COMPLETE
-    accepted_chain_state: FULL_BRANCHING
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-231647.md
+    accepted_family: REST_SEARCH_ADDRESS_TYPE_CHALLAN_TYPE_CITY_COUNTRY
+    accepted_state_transition: FOUR_GET_SEARCH_ENDPOINTS_NOT_YET_EXAMINED_TO_COMPLETE
+    accepted_chain_state: FULL
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
@@ -97,23 +100,22 @@ execution_statistics:
     trace_lanes_used: 0
     source_resolution_progress: >-
       Twenty exact frozen-source path/blob entries remain durably resolved with no unresolved resolution entries and are
-      queued as two ten-slot source-materialization generations. This execution verified that the connected source control
-      plane can return exact frozen source bytes, but the available execution host has no connector-to-local-filesystem
-      bridge that can write those bytes into the worker-readable immutable source root. Therefore the worker snapshot remains
-      29 files and no changed worker generation is claimed.
+      queued for execution-host materialization. The current execution environment still has no verified connector-to-local-filesystem
+      bridge into the worker-readable immutable source root, so the worker snapshot remains 29 files and no changed worker
+      generation is claimed. Direct frozen-source tracing safely advanced four independent REST search endpoints instead.
 
   run_over_run:
-    endpoint_progress_percentage_point_change: 0.75
-    complete_percentage_point_change: 0.75
-    endpoint_relative_progress_change_percentage: 0.93
-    endpoint_examined_change: 1
-    complete_endpoint_change: 1
+    endpoint_progress_percentage_point_change: 2.98
+    complete_percentage_point_change: 2.98
+    endpoint_relative_progress_change_percentage: 3.70
+    endpoint_examined_change: 4
+    complete_endpoint_change: 4
     unresolved_endpoint_change: 0
-    remaining_endpoint_change: -1
+    remaining_endpoint_change: -4
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
     source_closure_direction: SOURCE_RESOLUTION_SET_READY_EXECUTION_HOST_MATERIALIZATION_TRANSPORT_BLOCKED
-    trace_direction: CHECKPOINT_ADVANCED_107_TO_108_OF_134
+    trace_direction: CHECKPOINT_ADVANCED_108_TO_112_OF_134
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
     backend_capacity_direction: TEN_WORKER_CAPACITY_PREVIOUSLY_PROVED
 
@@ -122,10 +124,10 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      The Primary Orchestrator source-proved and accepted GET /search/address/customer-address/{customerId} through the
-      exact generic CustomerAddressFetchByIDService binding, CustomerAddressJpaDao, CustomerAddressDo/CustomerDo/AddressDo
-      and public.tbl_customer_address/public.tbl_customer/public.tbl_address, then synchronized the canonical checkpoint
-      from 107/134 to 108/134 without replaying the closed worker generation.
+      The Primary Orchestrator source-proved and accepted four independent REST search endpoints through exact generic
+      search-service implementations, SearchRequestValidator, typed Spring Data JPA DAOs, mapped JPA entities and their
+      direct PostgreSQL tables, then synchronized the canonical checkpoint from 108/134 to 112/134 without replaying the
+      already-closed worker generation.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
