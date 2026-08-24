@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **62**
-- COMPLETE: **60**
+- Explicitly examined for final dependency: **63**
+- COMPLETE: **61**
 - UNRESOLVED: **2**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **72**
+- Not yet examined: **71**
 
 ## Current unresolved paths
 
@@ -41,7 +41,7 @@ Next investigation step: resolve every branch and any source-bound service/repos
 
 ## Accepted this checkpoint
 
-`POST /vehicleLoad` is now `COMPLETE / FULL_BRANCHING`. Its source-proved chain is `Uc02Phase01VehicleLoadController.doPost()` -> `Uc02Phase01VehicleLoadMediator.invokeServices()` -> `VehicleLoadIngestionService.processRequest()` -> `VehicleLoadIngestionValidator` -> `CylinderLocationExclusivityValidator` and typed JPA persistence branches. The proved DB objects are `public.tbl_cylinder`, `public.tbl_yard_inventory_line`, `public.tbl_cylinder_logistics_execution_line`, `public.tbl_vehicle_trip`, `public.tbl_vehicle_load_purpose`, `public.tbl_stop_type`, `public.tbl_vehicle_trip_stop`, `public.tbl_trip_status`, `public.tbl_vehicle_load`, `public.tbl_vehicle_load_line`, `public.tbl_cylinder_logistics_execution`, and `public.tbl_cylinder_states`. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-085811.md`.
+`GET /registerCustomer` is now `COMPLETE / FULL_BRANCHING`. Source proves the cache-hit path `UC01RegisterCustomerController.doGet()` -> `LookupDataCache.getAddressTypes()` -> in-memory `addressTypes` -> `final-version-1/UC01RegisterCustomer`, and the cache-miss path `LookupDataCache.refreshAddressTypes()` -> `AddressTypeFetchByPageService.processRequest()` -> `AddressTypeJpaDao.findAll(pageable)` -> `AddressTypeDo` -> `public.tbl_address_type` -> refreshed cache -> the same terminal view. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-093200.md`.
 
 The two canonical unresolved endpoints are unchanged.
 
