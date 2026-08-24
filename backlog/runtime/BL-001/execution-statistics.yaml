@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 10
+  version: 11
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,19 +18,20 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 34
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-033550
+    latest_accepted_attempt: 36
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-070036
     total_endpoints: 134
-    examined: 57
-    progress_percentage: 42.54
-    complete: 55
-    complete_percentage: 41.04
-    unresolved: 2
+    examined: 60
+    progress_percentage: 44.78
+    complete: 57
+    complete_percentage: 42.54
+    unresolved: 3
     blocked: 0
     failed: 0
-    not_yet_examined: 77
+    not_yet_examined: 74
     latest_newly_accepted_endpoints:
-      - GET /ownership-obligation-dashboard
+      - GET /cylinderDelivery
+      - POST /cylinderDelivery
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -75,33 +76,35 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-033550
+    checkpoint_id: PRODUCTION-FIRE-20260824-070036
     worker_fire_started: false
-    reason: OWNERSHIP_OBLIGATION_DASHBOARD_SOURCE_CLOSED_DIRECTLY_WITHOUT_DUPLICATE_WORKER_RERUN
-    endpoint_trace_checkpoint_before: 56
-    endpoint_trace_checkpoint_after: 57
-    endpoints_examined_added: 1
+    reason: CYLINDER_DELIVERY_GET_ACCEPTED_POST_FAIL_CLOSED_AT_UNPROVED_MEDIATOR_BINDING
+    endpoint_trace_checkpoint_before: 58
+    endpoint_trace_checkpoint_after: 60
+    endpoints_examined_added: 2
     complete_added: 1
-    accepted_family: OwnershipObligationDashboardController
-    accepted_chain_states: [FULL_BRANCHING]
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-033550.md
+    unresolved_added: 1
+    accepted_family: Uc02Phase02CylinderDeliveryController
+    accepted_chain_states: [FULL, INCOMPLETE_AT_MEDIATOR_BINDING]
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-070036.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
     source_resolution_progress: >-
-      The Primary Orchestrator source-closed GET /ownership-obligation-dashboard from exact frozen controller/service/DAO/entity
-      sources. Explicit @Subselect and native SQL prove custody/cylinder/customer/supplier table dependencies. The unchanged
-      ten-task worker discovery was not rerun.
+      The Primary Orchestrator accepted GET /cylinderDelivery as a controller-terminal view path and registered
+      POST /cylinderDelivery as UNRESOLVED at the exact generic mediator boundary because no concrete Spring implementation
+      is source-proved. No database dependency was inferred and the unchanged worker generation was not rerun.
 
   run_over_run:
-    endpoint_progress_percentage_point_change: 0.75
-    complete_percentage_point_change: 0.74
-    endpoint_examined_change: 1
+    endpoint_progress_percentage_point_change: 1.49
+    complete_percentage_point_change: 0.75
+    endpoint_examined_change: 2
     complete_endpoint_change: 1
+    unresolved_endpoint_change: 1
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
     source_closure_direction: PARTIAL_RESTAGE_STILL_REQUIRED
-    trace_direction: PROGRESSED_ONE_ENDPOINT_OWNERSHIP_OBLIGATION_DASHBOARD
+    trace_direction: PROGRESSED_TWO_CYLINDER_DELIVERY_ENDPOINT_STATES
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
     backend_capacity_direction: TEN_WORKER_CAPACITY_PROVED
 
@@ -110,8 +113,8 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      GET /ownership-obligation-dashboard advanced to COMPLETE from source-proved branching chains and the canonical checkpoint
-      increased from 56 to 57 examined endpoints. Source-restage work remains active for the 16-source queue.
+      GET /cylinderDelivery advanced to COMPLETE and POST /cylinderDelivery was explicitly examined and fail-closed as
+      UNRESOLVED at the unproved mediator implementation boundary. The canonical checkpoint increased from 58 to 60 examined.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
