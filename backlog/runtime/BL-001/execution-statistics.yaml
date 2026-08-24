@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 14
+  version: 15
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,20 +18,20 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 69
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-191248
+    latest_accepted_attempt: 70
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-203431
     total_endpoints: 134
-    examined: 102
-    progress_percentage: 76.12
-    complete: 102
-    complete_percentage: 76.12
+    examined: 104
+    progress_percentage: 77.61
+    complete: 104
+    complete_percentage: 77.61
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 32
+    not_yet_examined: 30
     latest_state_transition:
-      - GET /ingestSupplier: NOT_YET_EXAMINED -> COMPLETE
-      - POST /ingestSupplier: NOT_YET_EXAMINED -> COMPLETE
+      - GET /ingestYardStockCheck: NOT_YET_EXAMINED -> COMPLETE
+      - POST /ingestYardStockCheck: NOT_YET_EXAMINED -> COMPLETE
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -76,25 +76,26 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-193732
+    checkpoint_id: PRODUCTION-FIRE-20260824-212131-SCHEDULER
     worker_fire_started: false
-    reason: FAIL_CLOSED_RECOVERY_AND_LEVEL3_SSOT_RECONCILIATION
-    endpoint_trace_checkpoint_before: 102
-    endpoint_trace_checkpoint_after: 102
+    reason: FAIL_CLOSED_LEVEL3_SSOT_RECONCILIATION_SOURCE_RESTAGE_PENDING
+    endpoint_trace_checkpoint_before: 104
+    endpoint_trace_checkpoint_after: 104
     endpoints_examined_added: 0
     complete_added: 0
     unresolved_change: 0
-    accepted_family: NONE_RECOVERY_ONLY
+    accepted_family: NONE_RECONCILIATION_ONLY
     accepted_state_transition: NONE
     accepted_chain_state: UNCHANGED
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-193732.md
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-212131-SCHEDULER.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
     source_resolution_progress: >-
-      CompleteTripServiceImpl was re-read at the frozen source commit and its Git blob SHA matched the validated runtime
-      binding request. The immutable staged worker snapshot is not yet advanced, so no unchanged worker generation was fired.
+      No immutable staged-snapshot advancement was proved during this invocation. The production fire therefore reconciled
+      stale Level-3 runtime projections to the already durable canonical 104/134 checkpoint and did not replay the closed
+      worker generation.
 
   run_over_run:
     endpoint_progress_percentage_point_change: 0.0
@@ -114,8 +115,8 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 1
     meaningful_progress_basis: >-
-      This checkpoint recovered an expired invocation fail-closed and reconciled Level-3 SSOT drift to the durable
-      102/134 accepted checkpoint without duplicating worker execution or inventing matrix rows.
+      This checkpoint repaired Level-3 SSOT drift so execution statistics now agree with the durable canonical 104/134
+      matrix checkpoint without duplicating worker execution or inventing endpoint evidence.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
