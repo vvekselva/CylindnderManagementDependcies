@@ -1,4 +1,4 @@
-version: 40
+version: 41
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -44,6 +44,7 @@ structured_delta_artifacts:
   - traceability/explorer/traceability-matrix-delta-20260825-003910.json
   - traceability/explorer/traceability-matrix-delta-20260825-020259.json
   - traceability/explorer/traceability-matrix-delta-20260825-035743.json
+  - traceability/explorer/traceability-matrix-delta-20260825-051115.json
 browser_delta_artifacts:
   - traceability/explorer/matrix-delta-20260824-003111.js
   - traceability/explorer/matrix-delta-20260824-005711.js
@@ -84,32 +85,35 @@ browser_delta_artifacts:
   - traceability/explorer/matrix-delta-20260825-003910.js
   - traceability/explorer/matrix-delta-20260825-020259.js
   - traceability/explorer/matrix-delta-20260825-035743.js
+  - traceability/explorer/matrix-delta-20260825-051115.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-state: INCREMENTAL_PARTIAL
+state: READY_FOR_FINAL_RECONCILIATION
 projection_state: BASE_PLUS_ORDERED_DELTAS_CURRENT
 canonical_endpoint_inventory: 134
-canonical_accepted_examined: 129
-canonical_complete: 129
+canonical_accepted_examined: 134
+canonical_complete: 134
 canonical_unresolved: 0
 canonical_blocked: 0
 canonical_failed: 0
-canonical_not_yet_examined: 5
-materialized_matrix_rows: 106
-historical_accepted_rows_pending_backfill: 23
-latest_materialized_from_invocation: PRODUCTION-FIRE-20260825-035743
+canonical_not_yet_examined: 0
+materialized_matrix_rows: 113
+historical_accepted_rows_pending_backfill: 21
+latest_materialized_from_invocation: PRODUCTION-FIRE-20260825-051115
 latest_state_transition:
-  - {method: POST, path: /search/cylinder/ownership/by-state, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
-  - {method: POST, path: /search/cylinder/by-state, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
-  - {method: POST, path: /search/cylinder/on-vehicle, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
+  - {method: POST, path: /domainLookup/productUom/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
+  - {method: POST, path: /domainLookup/product/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
+  - {method: POST, path: /domainLookup/cylinder/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
+  - {method: POST, path: /domainLookup/vehicle/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
+  - {method: POST, path: /domainLookup/driver/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
 latest_historical_backfill:
-  - {method: GET, path: /customer-spot-cylinder-check/fetch, state: COMPLETE, chain_completeness: PARTIAL_INTERMEDIATE_HOPS, evidence: logs/runs/INVOCATION-20260823-145512.md#LANE-01}
-  - {method: GET, path: /yard-audit-dashboard, state: COMPLETE, chain_completeness: PARTIAL_INTERMEDIATE_HOPS, evidence: logs/runs/INVOCATION-20260823-145512.md#LANE-02}
+  - {method: GET, path: /domainLookup, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
+  - {method: POST, path: /domainLookup/productCategory/save, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
 projection_note: >-
-  The immutable/base Explorer files represent the earlier accepted snapshot. Ordered checked-in delta artifacts reconcile
-  the browser-visible and structured incremental projection to the canonical 129/129/0/5 checkpoint without inventing
-  historical rows. index.html loads browser deltas in checkpoint order. A later consolidation may fold deltas into the
-  base files only if semantic identity is preserved.
+  Canonical source-check coverage has reached 134/134. The base-plus-ordered-delta Explorer projection is current through
+  PRODUCTION-FIRE-20260825-051115. Seven Domain Lookup rows were materialized: five new source-check acceptances and two
+  historical accepted-key backfills. Twenty-one historical accepted rows still require durable-evidence reconciliation
+  before the matrix can become FINAL_VALIDATED.
 update_rule: >-
   Every newly accepted endpoint trace or accepted state transition is immediately upserted into the Markdown matrix and
   structured full-chain projection. Historical accepted traces may be backfilled only from durable accepted evidence;
