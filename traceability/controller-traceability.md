@@ -1,14 +1,14 @@
 # BL-001 Incremental Controller Traceability Matrix
 
-Status: **INCREMENTAL_PARTIAL**  
+Status: **READY_FOR_FINAL_RECONCILIATION**  
 Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`  
 Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`  
 Structured full-chain projection: `traceability/explorer/traceability-matrix.json` plus ordered delta artifacts listed in `traceability/matrix-progress.yaml`.
 
-This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
+This matrix was built while source analysis was in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **129 / 134 examined; 129 COMPLETE; 0 UNRESOLVED; 5 not yet examined.**  
-Rows currently materialized below: **106**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **134 / 134 examined; 134 COMPLETE; 0 UNRESOLVED; 0 not yet examined.**  
+Rows currently materialized below: **113**. The other 21 historically accepted rows must still be backfilled from durable accepted evidence during WU-BL001-002 and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -119,12 +119,19 @@ Rows currently materialized below: **106**. The other 23 historically accepted r
 | POST | `/search/cylinder/ownership/by-state` | `RestfulCylinderServices.getCylindersByStateUsingOwnershipModel` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_JSON | `public.vw_cylinder_global_search`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-031101.md` |
 | POST | `/search/cylinder/by-state` | `RestfulCylinderServices.getCylindersByState` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_JSON | `public.tbl_yard_inventory_line`; `public.tbl_cylinder`; `public.tbl_cylinder_identifier`; `YardCylinderStockResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-031101.md` |
 | POST | `/search/cylinder/on-vehicle` | `RestfulCylinderServices.getCylindersOnVehicle` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_JSON | `public.tbl_cylinder_logistics_execution_line`; `public.tbl_cylinder`; `public.tbl_cylinder_identifier`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-031101.md` |
+| GET | `/domainLookup` | `DomainLookupController.showDomainLookupPage` | COMPLETE | FULL_BRANCHING | IN_MEMORY_CACHE_POSTGRES_TABLES_AND_TERMINAL_VIEW | cache hit or lazy refresh of product-category/UOM/product/cylinder/ownership/vehicle/driver tables; `final-version-1/DomainLookup` | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
+| POST | `/domainLookup/productCategory/save` | `DomainLookupController.saveProductCategory` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_CACHE_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_product_category`; targeted cache refresh; validation-error full model rebuild; redirect/view | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
+| POST | `/domainLookup/productUom/save` | `DomainLookupController.saveProductUom` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_CACHE_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_product_uom`; targeted cache refresh; validation-error full model rebuild; redirect/view | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
+| POST | `/domainLookup/product/save` | `DomainLookupController.saveProduct` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_CACHE_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_product`; `public.tbl_product_category`; `public.tbl_product_uom`; targeted cache refresh; validation-error full model rebuild | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
+| POST | `/domainLookup/cylinder/save` | `DomainLookupController.saveCylinder` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_CACHE_AND_TERMINAL_REDIRECT_VIEW | cylinder/identifier/ownership/product/UOM/yard inventory/source type/state/yard line tables; targeted cache refresh; validation-error model rebuild | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
+| POST | `/domainLookup/vehicle/save` | `DomainLookupController.saveVehicle` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_CACHE_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_vehicle`; targeted cache refresh; validation-error full model rebuild | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
+| POST | `/domainLookup/driver/save` | `DomainLookupController.saveDriver` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_CACHE_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_driver`; targeted cache refresh; validation-error full model rebuild | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
 
 ## Current unresolved paths
 
-**None among the 129 examined endpoints.**
+**None among all 134 examined endpoints.**
 
-This does not close BL-001: **5 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+Canonical source-check coverage is now **100 percent**. The matrix is `READY_FOR_FINAL_RECONCILIATION`; WU-BL001-002 must reconcile the remaining 21 historical accepted rows and the base-plus-delta structured/browser projection before WU-BL001-003 traceability-gate validation can run.
 
 ## Incremental update rule
 
@@ -133,5 +140,5 @@ This does not close BL-001: **5 caller-visible endpoints remain not yet examined
 3. Immediately upsert the `(HTTP method, path)` row here.
 4. Preserve complete ordered/branching component chains in the Explorer structured projection.
 5. Synchronize unresolved/blocked/failed accounting and `matrix-progress.yaml`.
-6. Continue source analysis without waiting for 100% coverage.
-7. At 100% coverage, WU-BL001-002 performs final reconciliation rather than recreating the matrix.
+6. At 100% coverage, WU-BL001-002 performs final reconciliation rather than recreating the matrix.
+7. BL-001 remains open until final gates and explicit user acceptance pass.
