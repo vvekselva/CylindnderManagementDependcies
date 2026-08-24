@@ -1,5 +1,5 @@
 local_execution:
-  version: 30
+  version: 31
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T17:10:09+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-171009.md
+    checkpoint_time: 2026-08-24T17:29:00+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-172900.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -59,21 +59,16 @@ local_execution:
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
     latest_direct_source_resolution:
-      endpoint: POST /updateCustomer
-      controller: CustomerUpdateController.doPost
-      service_binding: ICylinderManagementApplicationService<CustomerUpdateRequestDto,CustomerUpdateResponseDto> -> CustomerUpdateService
-      validator_binding: ICylinderManagementApplicationValidator<CustomerUpdateRequestDto> -> CustomerUpdateRequestValidator
-      trace_state: COMPLETE_FULL_BRANCHING
+      endpoint: POST /add-stop/challan-page-photo/delete-ajax
+      controller: AddStopController.deleteChallanPagePhotoAjax
+      service_binding: direct concrete ChallanPagePhotoUploadService -> deactivatePhoto
+      trace_state: COMPLETE_FULL
       final_dependencies:
-        - public.tbl_customer
-        - public.tbl_phone_number
-        - public.tbl_customer_phone_number
-        - public.tbl_customer_address
-        - public.tbl_address
-        - redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10
-        - UC01RegisterCustomer
-        - /fetchCustomerByPage?pageNumber=1&itemsPerPage=10
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-171009.md
+        - public.tbl_challan_page_photo
+        - HTTP 200 JSON
+        - HTTP 400 JSON
+        - HTTP 500 JSON
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-172900.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -124,18 +119,18 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 69
-    complete: 69
+    examined: 70
+    complete: 70
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 65
+    not_yet_examined: 64
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 46
+    matrix_materialized_rows: 47
     historical_accepted_rows_pending_backfill: 23
     latest_state_transition:
-      - POST /updateCustomer: NOT_YET_EXAMINED -> COMPLETE_FULL_BRANCHING
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-171009.md
+      - POST /add-stop/challan-page-photo/delete-ajax: NOT_YET_EXAMINED -> COMPLETE_FULL
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-172900.md
 
   next_action: >-
     Continue another not-yet-examined caller-visible endpoint from the frozen source baseline while independently resolving/materializing
