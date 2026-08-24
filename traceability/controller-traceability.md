@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **63 / 134 examined; 62 COMPLETE; 1 UNRESOLVED; 71 not yet examined.**  
-Rows currently materialized below: **39**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **63 / 134 examined; 63 COMPLETE; 0 UNRESOLVED; 71 not yet examined.**  
+Rows currently materialized below: **40**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -43,7 +43,8 @@ Rows currently materialized below: **39**. The other 24 historically accepted ro
 | GET | `/customer-consumption/dashboard` | `CustomerConsumptionDashboardController.dashboard` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | consumption projection view; dashboard view | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
 | GET | `/customer-consumption/api/dashboard` | `CustomerConsumptionDashboardController.dashboardData` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_JSON | consumption projection view; JSON DTO | `logs/runs/PRODUCTION-FIRE-20260824-023321.md` |
 | GET | `/ownership-obligation-dashboard` | `OwnershipObligationDashboardController.showOwnershipObligationDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | custody/cylinder/customer/supplier tables; dashboard view | `logs/runs/PRODUCTION-FIRE-20260824-033550.md` |
-| GET | `/walkin-sale` | `WalkinSaleIngestionController` GET handler | COMPLETE | FULL | TERMINAL_VIEW | `final-version-1/WalkinSaleIngestion`; no persistence service call | `logs/runs/INVOCATION-20260823-145512.md` / LANE-03 |
+| GET | `/walkin-sale` | `WalkinSaleIngestionController.doGet` | COMPLETE | FULL | TERMINAL_VIEW | `final-version-1/WalkinSaleIngestion`; no persistence service call | `logs/runs/INVOCATION-20260823-145512.md` / LANE-03 |
+| POST | `/walkin-sale` | `WalkinSaleIngestionController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | customer/address/cylinder/challan-type/order/order-line/walk-in sale/pickup/yard/challan-page/link tables; success redirect or error view | `logs/runs/PRODUCTION-FIRE-20260824-103703.md` |
 | POST | `/customer-spot-cylinder-check/submit` | `CustomerSpotCylinderCheckController.submit` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_VIEWS_AND_TERMINAL_VIEW | assigned-book view; customer; challan-page ledger; cylinder; custody view; spot-check header/line; challan transaction link; `final-version-1/CustomerSpotCylinderCheck` | `logs/runs/PRODUCTION-FIRE-20260824-100135.md` |
 | GET | `/customer-spot-cylinder-check/fetch` | `CustomerSpotCylinderCheckController` fetch handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_VIEW | assigned-book view | `logs/runs/INVOCATION-20260823-145512.md` / LANE-01 |
 | GET | `/yard-audit-dashboard` | `YardAuditDashboardController` dashboard handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_TABLES | yard stock check/line, quality gate, cylinder states, yard check event | `logs/runs/INVOCATION-20260823-145512.md` / LANE-02 |
@@ -53,9 +54,11 @@ Rows currently materialized below: **39**. The other 24 historically accepted ro
 | POST | `/vehicleLoad` | `Uc02Phase01VehicleLoadController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | cylinder, yard, trip/load/stop, logistics/state tables + terminal paths | `logs/runs/PRODUCTION-FIRE-20260824-085811.md` |
 | GET | `/registerCustomer` | `UC01RegisterCustomerController.doGet` | COMPLETE | FULL_BRANCHING | IN_MEMORY_CACHE_POSTGRES_TABLE_AND_TERMINAL_VIEW | cache or `public.tbl_address_type`; registration view | `logs/runs/PRODUCTION-FIRE-20260824-093200.md` |
 
-## Current unresolved path
+## Current unresolved paths
 
-`POST /walkin-sale` remains **UNRESOLVED**. Source-proved dependencies currently include `public.tbl_order`, `public.tbl_walk_in_sale`, `public.tbl_walk_in_pickup`, `public.tbl_walk_in_pickup_line`, and `public.tbl_yard_entries`, but every conditional `processRequest` branch has not yet been closed to a complete final-dependency set. No additional dependency is inferred from naming.
+**None among the 63 examined endpoints.**
+
+This does not close BL-001: **71 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
