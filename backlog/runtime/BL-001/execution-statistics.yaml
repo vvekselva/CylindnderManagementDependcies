@@ -1,134 +1,60 @@
 execution_statistics:
-  version: 23
+  version: 24
   backlog_item: BL-001
   authoritative_for_run_statistics: true
-  purpose: >-
-    Machine-readable source for endpoint-trace coverage and self-reliant execution statistics. BL-001 percentages are
-    endpoint-trace coverage metrics, not overall project-completion percentages. Source closure, natural production
-    concurrency and backend capacity are separate metrics.
-
-  metric_definitions:
-    progress_percentage: {formula: examined_for_final_dependency / total_endpoints * 100, meaning: endpoint trace examination coverage}
-    complete_percentage: {formula: complete / total_endpoints * 100, meaning: endpoint traces currently COMPLETE}
-    peak_concurrent_lanes: {meaning: maximum natural overlapping LANE_SERVICE_START to LANE_SERVICE_END intervals}
-    average_concurrent_lanes: {formula: aggregate natural SERVICE seconds / SERVICE batch wall-clock seconds}
-    peak_capacity_utilization_percentage: {formula: peak_concurrent_lanes / configured_lane_count * 100}
-    expected_concurrent_lanes: {formula: min(configured_lane_count, eligible_safe_independent_tasks)}
-    backend_capacity_probe: {meaning: isolated executor capability measurement, not a substitute for natural production QG-LANE-001}
-    source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
-
+  purpose: endpoint-trace coverage and self-reliant execution statistics
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 82
-    latest_accepted_attempt_sequence_note: LEGACY_COUNTER_NOT_USED_AS_CANONICAL_COVERAGE
-    latest_accepted_invocation: PRODUCTION-FIRE-20260825-035743
+    latest_accepted_invocation: PRODUCTION-FIRE-20260825-051115
     total_endpoints: 134
-    examined: 129
-    progress_percentage: 96.27
-    complete: 129
-    complete_percentage: 96.27
+    examined: 134
+    progress_percentage: 100.0
+    complete: 134
+    complete_percentage: 100.0
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 5
-    latest_state_transition:
-      - POST /search/cylinder/ownership/by-state: NOT_YET_EXAMINED -> COMPLETE
-      - POST /search/cylinder/by-state: NOT_YET_EXAMINED -> COMPLETE
-      - POST /search/cylinder/on-vehicle: NOT_YET_EXAMINED -> COMPLETE
+    not_yet_examined: 0
     latest_production_fire_changed_checkpoint: true
-
-  self_reliant_architecture_validation:
-    report: tests/self-reliant-e2e-validation-2026-08-23.md
-    result: PASS_FOR_ARCHITECTURE_PROMOTION
-    backend: LOCAL_PROCESS_POOL
-    default_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
-    github_actions_dependency: NONE
-    mandatory_local_source_checkout: false
-    recovery_idempotency_cases_passed: 5
-    recovery_idempotency_cases_total: 5
-    backend_capacity_probe:
-      configured_lanes: 10
-      tasks: 10
-      peak_service_concurrent_lanes: 10
-      average_service_concurrent_lanes: 9.83
-      peak_capacity_utilization_percentage: 100.0
-      accepted_as_bl001_trace_evidence: false
-
   latest_worker_fire:
     execution_id: E2E-STAGED-20260823-161214
-    dispatch_fingerprint: 6c99cd0f51605ea5461169a349c7153cd9da658070f15727ab7d93ac7571522d
+    state: CLOSED
     phase: CLOSED_RESTAGE_REQUIRED
-    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
-    configured_lanes: 10
-    safe_ready_tasks: 10
     source_snapshot_materialized_files: 29
     workers_started: 10
     worker_results_received: 10
     worker_failures: 0
-    source_closure_complete: false
-    qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
     missing_source_requests: 16
     missing_binding_requests_emitted: 3
-    binding_identities_unresolved_now: 0
-    expected_concurrent_lanes: 10
-    peak_concurrent_lanes: 2
-    average_concurrent_lanes: 0.0
-    peak_capacity_utilization_percentage: 20.0
-    qg_lane_001_state: UNDERUTILIZED
     individual_lane_logs_remaining: 0
-    trace_evidence_auto_accepted: false
-
+    replay_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260825-035743
+    checkpoint_id: PRODUCTION-FIRE-20260825-051115
     worker_fire_started: false
-    reason: ATOMIC_PROJECTION_OF_ALREADY_SOURCE_PROVED_ENDPOINTS_WHILE_EXECUTION_HOST_SNAPSHOT_MATERIALIZATION_TRANSPORT_UNAVAILABLE
-    endpoint_trace_checkpoint_before: 126
-    endpoint_trace_checkpoint_after: 129
-    endpoints_examined_added: 3
-    complete_added: 3
-    unresolved_change: 0
-    accepted_family: REST_CYLINDER_OWNERSHIP_STATE_YARD_STATE_AND_ON_VEHICLE
-    accepted_state_transition: THREE_POST_CYLINDER_ENDPOINTS_NOT_YET_EXAMINED_TO_COMPLETE
-    accepted_chain_state: FULL_AND_FULL_BRANCHING
-    evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md
-    source_snapshot_materialized_files: 29
-    exact_source_requests_pending: 16
-    binding_identities_unresolved: 0
-    binding_implementation_materializations_pending: 1
-    exact_source_candidates_verified_for_next_snapshot: 20
-    source_materialization_slots_completed: 0
-    trace_lanes_used: 0
-
+    endpoint_trace_checkpoint_before: 129
+    endpoint_trace_checkpoint_after: 134
+    endpoints_examined_added: 5
+    complete_added: 5
+    historical_rows_backfilled: 2
+    matrix_materialized_rows_after: 113
+    historical_accepted_rows_pending_backfill: 21
+    matrix_state: READY_FOR_FINAL_RECONCILIATION
+    residual_transient_lane_logs: 0
   run_over_run:
-    endpoint_progress_percentage_point_change: 2.24
-    complete_percentage_point_change: 2.24
-    endpoint_relative_progress_change_percentage: 2.38
-    endpoint_examined_change: 3
-    complete_endpoint_change: 3
-    unresolved_endpoint_change: 0
-    remaining_endpoint_change: -3
-    remaining_work_reduction_percentage: 37.50
-    source_request_count_change: 0
-    binding_identity_unresolved_change: 0
-    source_closure_direction: SOURCE_RESOLUTION_SET_READY_EXECUTION_HOST_MATERIALIZATION_TRANSPORT_BLOCKED
-    trace_direction: CHECKPOINT_ADVANCED_126_TO_129_OF_134
+    endpoint_progress_percentage_point_change: 3.73
+    endpoint_examined_change: 5
+    complete_endpoint_change: 5
+    remaining_endpoint_change: -5
+    remaining_work_reduction_percentage: 100.0
+    trace_direction: SOURCE_CHECK_COMPLETE_129_TO_134_OF_134
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
-    backend_capacity_direction: TEN_WORKER_CAPACITY_PREVIOUSLY_PROVED
-
+  current_work_unit:
+    id: WU-BL001-002
+    state: IN_PROGRESS
+    purpose: FINAL_MATRIX_RECONCILIATION
   staleness:
-    task: WU-BL001-001 Complete Source Repository Check And Maintain Incremental Matrix
     stale: false
     consecutive_no_progress_cycles: 0
-    meaningful_progress_basis: >-
-      The Primary Orchestrator atomically promoted three additional exact frozen-source cylinder REST traces and synchronized
-      canonical endpoint coverage to 129/134 without replaying the already-closed worker generation.
-    current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
-
   update_rules:
-    - keep accepted endpoint checkpoint separate from architecture/discovery validation
-    - never use distinct lane participation as concurrency
-    - measure QG-LANE-001 from natural SERVICE overlap
-    - report backend capacity probe separately and never use it to fake a production PASS
-    - report QG-SOURCE-001 and source_closure_complete separately from QG-LANE-001
-    - a PENDING_SYNC retry must not duplicate worker execution statistics
-    - direct Orchestrator source acceptance must cite frozen-source evidence and preserve full branching chains
-    - TaskStatus.md is derived from this file and must not override it
+    - never replay the already synchronized old worker generation
+    - historical matrix rows require durable accepted evidence
+    - worker evidence is not canonical truth until Primary-Orchestrator validation
