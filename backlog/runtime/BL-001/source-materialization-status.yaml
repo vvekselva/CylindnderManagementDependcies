@@ -1,0 +1,66 @@
+source_materialization_status:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-001
+  checkpoint: 2026-08-24T22:23:20+05:30
+  authoritative_branch: chore/rename-dependency-files
+  source_repository: vvekselva/CylinderManagement
+  frozen_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  state: FAIL_CLOSED_EXECUTION_HOST_SOURCE_ROOT_UNAVAILABLE
+  idempotency:
+    prior_generation: E2E-STAGED-20260823-161214
+    prior_generation_state: CLOSED
+    prior_generation_decision: NOOP_ALREADY_COMMITTED_DO_NOT_REPLAY
+  canonical_before:
+    worker_snapshot_materialized_files: 29
+    exact_source_requests_pending: 16
+    binding_materializations_pending: 1
+    endpoints_examined: 105
+    endpoints_complete: 105
+    endpoints_remaining: 29
+    coverage_percent: 78.36
+  restage_inputs:
+    resolution_artifact: backlog/runtime/BL-001/source-restage-resolution.yaml
+    dispatch_artifact: backlog/runtime/BL-001/source-restage-dispatch.yaml
+    resolved_entries: 20
+    unresolved_resolution_entries: 0
+    max_parallel_materializations: 10
+    resolution_gate: PASS
+  execution_host_probe:
+    local_git_probe_command: git ls-remote https://github.com/vvekselva/CylinderManagement.git
+    local_git_probe_result: FAIL_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+    connected_github_blob_probe: PASS
+    connected_github_blob_probe_sha: 11440b5fbda793234ecae70bfb6068bef98ab5e7
+    prior_29_file_snapshot_present_on_current_execution_host: false
+  materialization_result:
+    source_materialization_slots_actually_used: 0
+    execution_host_files_written: 0
+    canonical_worker_snapshot_materialized_files_after: 29
+    exact_source_requests_pending_after: 16
+    binding_materializations_pending_after: 1
+    advanced_snapshot_identity_proved: false
+    changed_trace_dispatch_fingerprint_proved: false
+    qg_source_001: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
+  trace_execution:
+    trace_lanes_started: 0
+    worker_generation_started: false
+    reason: ADVANCED_COMPLETE_WORKER_READABLE_SOURCE_ROOT_NOT_PROVED
+    endpoints_examined_after: 105
+    endpoints_complete_after: 105
+    endpoints_remaining_after: 29
+    coverage_percent_after: 78.36
+  cleanup:
+    transient_lane_logs_created: 0
+    residual_transient_lane_logs: 0
+  blocker:
+    code: EXECUTION_HOST_SOURCE_PROVIDER_HANDOFF_BLOCKED
+    detail: >-
+      Exact frozen source resolution is complete for the 20-file restage set, but the current execution host does not
+      contain the prior 29-file staged source root and its local process environment cannot reach github.com. The
+      connected GitHub control plane can verify/fetch blobs, but this run did not obtain a complete reusable local
+      filesystem source root for staged-lane-executor-v3.py. Starting trace workers would therefore violate QG-SOURCE-001.
+  next_action: >-
+    Provide a source-provider handoff that can write connected-GitHub blob bytes into the execution-host filesystem, or
+    reconstruct the complete staged source root (prior roots plus resolved restage entries) through an approved mounted
+    connector artifact. Then regenerate the manifest, prove snapshot identity advancement, compute a changed dispatch
+    fingerprint, and fire the next up-to-10 trace generation.
