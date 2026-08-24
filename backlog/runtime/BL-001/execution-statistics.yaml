@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 16
+  version: 17
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -19,18 +19,19 @@ execution_statistics:
 
   accepted_trace_checkpoint:
     latest_accepted_attempt: 71
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-213728
+    latest_accepted_attempt_sequence_note: LEGACY_COUNTER_NOT_USED_AS_CANONICAL_COVERAGE
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-230001
     total_endpoints: 134
-    examined: 105
-    progress_percentage: 78.36
-    complete: 105
-    complete_percentage: 78.36
+    examined: 107
+    progress_percentage: 79.85
+    complete: 107
+    complete_percentage: 79.85
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 29
+    not_yet_examined: 27
     latest_state_transition:
-      - POST /trip-review/{vehicleTripId}/close-review: NOT_YET_EXAMINED -> COMPLETE
+      - POST /stop: NOT_YET_EXAMINED -> COMPLETE
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -75,38 +76,40 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-221444-SCHEDULER
+    checkpoint_id: PRODUCTION-FIRE-20260824-230001
     worker_fire_started: false
-    reason: FAIL_CLOSED_ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_YET_PROVED
-    endpoint_trace_checkpoint_before: 105
-    endpoint_trace_checkpoint_after: 105
-    endpoints_examined_added: 0
-    complete_added: 0
+    reason: DIRECT_SAFE_SOURCE_TRACE_ADVANCED_WHILE_IMMUTABLE_SNAPSHOT_RESTAGE_PENDING
+    endpoint_trace_checkpoint_before: 106
+    endpoint_trace_checkpoint_after: 107
+    endpoints_examined_added: 1
+    complete_added: 1
     unresolved_change: 0
-    accepted_family: NONE_SOURCE_RESTAGE_AND_RECONCILIATION_ONLY
-    accepted_state_transition: NONE
-    accepted_chain_state: UNCHANGED
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-221444-SCHEDULER.md
+    accepted_family: CustomerStopSelectionController
+    accepted_state_transition: POST /stop NOT_YET_EXAMINED_TO_COMPLETE
+    accepted_chain_state: FULL_BRANCHING
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-230001.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
-    exact_source_candidates_verified_for_next_snapshot: 15
+    exact_source_candidates_verified_for_next_snapshot: 20
     source_resolution_progress: >-
-      Fifteen frozen-source candidates were fetched/revalidated and recorded as proofs for the next immutable snapshot.
-      No execution-host snapshot advancement was claimed, so the materialized worker snapshot remains 29 files and the
-      closed worker generation was not replayed.
+      Twenty exact frozen-source path/blob entries are durably resolved with no unresolved resolution entries and are
+      queued as two ten-slot source-materialization generations. No execution-host snapshot advancement is claimed, so
+      the materialized worker snapshot remains 29 files and the closed worker generation was not replayed.
 
   run_over_run:
-    endpoint_progress_percentage_point_change: 0.0
-    complete_percentage_point_change: 0.0
-    endpoint_examined_change: 0
-    complete_endpoint_change: 0
+    endpoint_progress_percentage_point_change: 0.75
+    complete_percentage_point_change: 0.75
+    endpoint_relative_progress_change_percentage: 0.94
+    endpoint_examined_change: 1
+    complete_endpoint_change: 1
     unresolved_endpoint_change: 0
+    remaining_endpoint_change: -1
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
-    source_closure_direction: SOURCE_PROOFS_ADVANCED_SNAPSHOT_MATERIALIZATION_STILL_REQUIRED
-    trace_direction: CHECKPOINT_PRESERVED_105_OF_134
+    source_closure_direction: SOURCE_RESOLUTION_SET_READY_SNAPSHOT_MATERIALIZATION_STILL_REQUIRED
+    trace_direction: CHECKPOINT_ADVANCED_106_TO_107_OF_134
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
     backend_capacity_direction: TEN_WORKER_CAPACITY_PREVIOUSLY_PROVED
 
@@ -115,8 +118,9 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      This checkpoint reconciled Level-3 execution statistics to the canonical 105/134 matrix state and source-validated
-      fifteen frozen-source candidates for the next snapshot without duplicating worker execution or inventing materialization.
+      The Primary Orchestrator source-proved and accepted POST /stop with separate customer delivery, customer empty-pickup,
+      supplier empty-dropoff, supplier full-pickup and challan-photo guard branches, then synchronized the canonical
+      endpoint checkpoint from 106/134 to 107/134 without replaying the closed worker generation.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
