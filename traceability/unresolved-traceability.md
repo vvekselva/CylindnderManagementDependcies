@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **68**
-- COMPLETE: **68**
+- Explicitly examined for final dependency: **69**
+- COMPLETE: **69**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **66**
+- Not yet examined: **65**
 
 ## Current unresolved paths
 
@@ -23,11 +23,11 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-`POST /registerCustomer` is now **COMPLETE / FULL_BRANCHING**. Frozen source proves `UC01RegisterCustomerController.doPost` -> exact generic Spring binding `UC01RegisterCustomerMediator.invokeServices` -> `CustomerIngestionService.processRequest` -> `CustomerIngestionRequstValidator`, reference DAOs, and `CustomerJpaDao.save`. Source-proved database branches are `public.tbl_address_type` on cache miss, GST/phone uniqueness reads through `public.tbl_customer` and `public.tbl_phone_number`, city/state/country reference reads through `public.tbl_city`, `public.tbl_state`, and `public.tbl_country`, and the customer save cascades through `public.tbl_customer`, `public.tbl_customer_address`, `public.tbl_address`, `public.tbl_customer_phone_number`, and `public.tbl_phone_number`. Success redirects to `/ownership-dashboard`; validation failure returns `final-version-1/UC01RegisterCustomer`.
+`POST /updateCustomer` is now **COMPLETE / FULL_BRANCHING**. Frozen source proves `CustomerUpdateController.doPost` -> exact generic Spring binding `CustomerUpdateService.processRequest` -> exact generic `CustomerUpdateRequestValidator.validate`, followed by the source-proved customer read, GST/phone ownership checks and customer cascade save branches. Persistence reaches `public.tbl_customer`, `public.tbl_phone_number`, `public.tbl_customer_phone_number`, `public.tbl_customer_address`, and `public.tbl_address`. Success redirects to `/fetchCustomerByPage?pageNumber=1&itemsPerPage=10`; validation failure returns `UC01RegisterCustomer`; the general application-exception branch constructs `/fetchCustomerByPage?pageNumber=1&itemsPerPage=10` as its ModelAndView view name.
 
-No database object was added from naming alone. The validator's injected `AddressTypeJpaDao` is not invoked on this request path and was not promoted. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and `logs/runs/PRODUCTION-FIRE-20260824-150939.md`.
+The validator checks city/state/country DTO identifiers but performs no DAO access. `AddressMapper.mapDtoToDo` does not assign CityDo/StateDo/CountryDo, so those database tables were deliberately not inferred into the update trace. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and `logs/runs/PRODUCTION-FIRE-20260824-171009.md`.
 
-There are zero canonical unresolved endpoints among the 68 examined endpoints. This does not close BL-001 because 66 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 69 examined endpoints. This does not close BL-001 because 65 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
