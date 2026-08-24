@@ -5,8 +5,8 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-191248.md
-  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-200715.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-203431.md
+  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-212131-SCHEDULER.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -24,11 +24,8 @@ result:
     exact_source_requests_pending_from_latest_worker_batch: 16
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
-    exact_source_candidates_verified_for_next_snapshot_this_checkpoint: 3
-    latest_verified_candidates:
-      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPageAuditLedgerDo, blob_sha: 6e2fc468564c64906cbc4d760501f2b170a9f070}
-      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPagePhotoDo, blob_sha: cd49fe4e62da3d8a2016ec8c813a2e363ee3d1c6}
-      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanBookRegistryDo, blob_sha: c185c9ef3081d0ce135075ae500b059e790b46ed}
+    exact_source_candidates_verified_for_next_snapshot_this_checkpoint: 0
+    latest_verified_candidates: []
 
   lane_utilization_gate:
     id: QG-LANE-001
@@ -42,18 +39,18 @@ result:
 
   checkpoint:
     total_endpoints: 134
-    examined: 102
-    complete: 102
+    examined: 104
+    complete: 104
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 32
-    matrix_materialized_rows: 79
+    not_yet_examined: 30
+    matrix_materialized_rows: 81
     historical_accepted_rows_pending_backfill: 23
 
   latest_newly_accepted_endpoints:
-    - {method: GET, path: /ingestSupplier, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md}
-    - {method: POST, path: /ingestSupplier, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md}
+    - {method: GET, path: /ingestYardStockCheck, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-203431.md}
+    - {method: POST, path: /ingestYardStockCheck, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-203431.md}
 
   unresolved_items: []
 
@@ -71,9 +68,10 @@ result:
     Continue exact-source resolution for the remaining staged-source request set and materialize all verified blobs,
     including the already binding-validated CompleteTripServiceImpl, into an advanced immutable staged snapshot.
     Fire a changed up-to-10-worker generation only after QG-SOURCE-001 manifest/blob preflight passes. Continue direct
-    safe source analysis of the remaining 32 not-yet-examined endpoints while the matrix is INCREMENTAL_PARTIAL.
+    safe source analysis of the remaining 30 not-yet-examined endpoints while the matrix is INCREMENTAL_PARTIAL.
     Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage.
 
   note: >-
-    BL-001 remains PARTIAL. Incremental matrix creation is active during Source Check. VERIFIED/CLOSED remain false and
-    QG-TRC-015 explicit user acceptance is still required after all automatic gates pass.
+    BL-001 remains PARTIAL. This invocation repaired stale Level-3 runtime projections to the already accepted 104/134
+    canonical matrix checkpoint. No worker generation was replayed, no endpoint evidence was invented, and VERIFIED/CLOSED
+    remain false. QG-TRC-015 explicit user acceptance is still required after all automatic gates pass.
