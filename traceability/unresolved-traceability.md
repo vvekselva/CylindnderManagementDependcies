@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **57**
-- COMPLETE: **55**
+- Explicitly examined for final dependency: **58**
+- COMPLETE: **56**
 - UNRESOLVED: **2**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **77**
+- Not yet examined: **76**
 
 ## Current unresolved paths
 
