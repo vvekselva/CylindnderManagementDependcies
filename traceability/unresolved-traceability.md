@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **61**
-- COMPLETE: **59**
+- Explicitly examined for final dependency: **62**
+- COMPLETE: **60**
 - UNRESOLVED: **2**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **73**
+- Not yet examined: **72**
 
 ## Current unresolved paths
 
@@ -41,7 +41,9 @@ Next investigation step: resolve every branch and any source-bound service/repos
 
 ## Accepted this checkpoint
 
-`GET /vehicleLoad` is now `COMPLETE / FULL_BRANCHING`. Its cache-hit branch terminates in the existing `LookupDataCache.vehicleLoadPurposes` in-memory list and the `with-menu/Uc02-Phase01-VehicleLoadView` view. Its cache-miss branch is source-proved through `LookupDataCache.refreshVehicleLoadPurpose()` -> `VehicleLoadPurposeFetchAllService.processRequest()` -> `VehicleLoadPurposeJpaDao.findAll()` -> `VehicleLoadPurposeDo` -> `public.tbl_vehicle_load_purpose`, then returns the refreshed list to the same view. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-083401.md`.
+`POST /vehicleLoad` is now `COMPLETE / FULL_BRANCHING`. Its source-proved chain is `Uc02Phase01VehicleLoadController.doPost()` -> `Uc02Phase01VehicleLoadMediator.invokeServices()` -> `VehicleLoadIngestionService.processRequest()` -> `VehicleLoadIngestionValidator` -> `CylinderLocationExclusivityValidator` and typed JPA persistence branches. The proved DB objects are `public.tbl_cylinder`, `public.tbl_yard_inventory_line`, `public.tbl_cylinder_logistics_execution_line`, `public.tbl_vehicle_trip`, `public.tbl_vehicle_load_purpose`, `public.tbl_stop_type`, `public.tbl_vehicle_trip_stop`, `public.tbl_trip_status`, `public.tbl_vehicle_load`, `public.tbl_vehicle_load_line`, `public.tbl_cylinder_logistics_execution`, and `public.tbl_cylinder_states`. Evidence: `logs/runs/PRODUCTION-FIRE-20260824-085811.md`.
+
+The two canonical unresolved endpoints are unchanged.
 
 ## Incremental matrix synchronization rule
 
