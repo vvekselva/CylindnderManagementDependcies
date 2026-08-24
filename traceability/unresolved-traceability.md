@@ -10,32 +10,24 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **63**
-- COMPLETE: **63**
+- Explicitly examined for final dependency: **65**
+- COMPLETE: **65**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **71**
+- Not yet examined: **69**
 
 ## Current unresolved paths
 
 **None.**
 
-## Resolved this checkpoint
+## Latest accepted state
 
-`POST /walkin-sale` is now **COMPLETE / FULL_BRANCHING**. Frozen source proves `WalkinSaleIngestionController.doPost` -> `ICylinderManagementApplicationService<WalkinSaleRequestDto, WalkinSaleResponseDto>` -> `WalkinSaleServiceImpl.processRequest`, with the implementation source itself proving the exact generic service contract.
+`POST /wizard/vehicle-trip-load/save` is now **COMPLETE / FULL_BRANCHING**. Frozen source proves `VehicleTripLoadWizardController.save` -> exact generic Spring service binding `VehicleLoadAndTripIngestionService.processRequest`, including validation, trip/load persistence, YARD_START stop creation, four trip challan-book assignments, yard-to-logistics transfer, and success/error terminal paths.
 
-The source-proved ordered/branching persistence dependencies are:
+No database object was added from naming alone. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and `logs/runs/PRODUCTION-FIRE-20260824-113951.md`.
 
-- common lookup branch: `CustomerJpaDao` -> `CustomerDo` -> `public.tbl_customer`; `CustomerAddressJpaDao` -> `CustomerAddressDo` -> `public.tbl_customer_address`;
-- full-cylinder delivery branch: `OrderJpaDao` -> `OrderDo` -> `public.tbl_order`, with `OrderDo.orderLines` cascade -> `OrderLineDo` -> `public.tbl_order_line`; `WalkInSaleJpaDao` -> `WalkInSaleDo` -> `public.tbl_walk_in_sale`; `CylinderJpaDao` -> `CylinderDo` -> `public.tbl_cylinder`; `ChallanTypeJpaDao` -> `ChallanTypeDo` -> `public.tbl_challan_type`;
-- empty-cylinder return branch: `WalkInPickupJpaDao` -> `WalkInPickupDo` -> `public.tbl_walk_in_pickup`; `WalkInPickupLineJpaDao` -> `WalkInPickupLineDo` -> `public.tbl_walk_in_pickup_line`; `CylinderJpaDao` -> `CylinderDo` -> `public.tbl_cylinder`; `YardEntriesJpaDao` -> `YardEntryDo` -> `public.tbl_yard_entries`;
-- delivery-challan journal branch: `ChallanPageAuditLedgerJpaDao` -> `ChallanPageAuditLedgerDo` -> `public.tbl_challan_page_audit_ledger`; `ChallanTransactionLinkJpaDao` -> `ChallanTransactionLinkDo` -> `public.tbl_challan_transaction_link`;
-- terminal controller outcomes: redirect to the configured home link on success, or `final-version-1/WalkinSaleIngestion` on validation/application error.
-
-No database object was added from naming alone. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and the durable production checkpoint for this resolution.
-
-`POST /customer-spot-cylinder-check/submit` remains **COMPLETE / FULL_BRANCHING** from the prior checkpoint. There are now zero canonical unresolved endpoints among the 63 examined endpoints.
+There are zero canonical unresolved endpoints among the 65 examined endpoints. This does not close BL-001 because 69 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
