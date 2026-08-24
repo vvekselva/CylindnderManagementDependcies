@@ -1,45 +1,35 @@
 work_units:
   WU-BL001-001:
-    state: PARTIAL
-    execution_mode: SELF_RELIANT_STAGED_SOURCE_PLUS_LOCAL_PROCESS_POOL
-    architecture: architecture/self-reliant-e2e-execution.md
-    dispatch_queue: backlog/runtime/BL-001/lane-dispatch.yaml
-    dispatch_id: LOCAL-BL001-DISPATCH-005
-    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
-    staged_executor: automation/staged-lane-executor-v3.py
-    staged_worker: automation/staged-lane-worker-v3.py
-    safe_ready_tasks: 10
-    expected_concurrent_lanes: 10
-    latest_execution: E2E-STAGED-20260823-161214
-    latest_workers_started: 10
-    latest_worker_failures: 0
-    qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
-    source_closure_complete: false
-    source_snapshot_materialized_files: 29
-    missing_source_requests: 16
-    source_resolution_entries_ready_for_materialization: 20
-    source_resolution_entries_unresolved: 0
-    source_restage_generations_ready: 2
-    source_restage_slots_per_generation: 10
-    source_materialization_slots_completed_latest_checkpoint: 0
-    source_materialization_blocker_latest_checkpoint: CONNECTOR_TO_EXECUTION_HOST_FILE_BRIDGE_UNAVAILABLE
-    binding_identities_unresolved: 0
-    binding_implementation_materializations_pending: 1
-    qg_lane_001_state: UNDERUTILIZED
-    latest_peak_service_concurrent_lanes: 2
-    backend_capacity_probe_peak_service_concurrent_lanes: 10
-    qg_recovery_001_state: PASS
-    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260825-031101.md
-    checkpoint: {examined: 129, total: 134, complete: 129, unresolved: 0, blocked: 0, failed: 0, not_yet_examined: 5, matrix_materialized_rows: 106, historical_accepted_rows_pending_backfill: 23}
-    latest_accepted_endpoints:
-      - {method: POST, path: /search/cylinder/ownership/by-state, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
-      - {method: POST, path: /search/cylinder/by-state, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
-      - {method: POST, path: /search/cylinder/on-vehicle, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
+    state: COMPLETE
+    execution_mode: PRIMARY_ORCHESTRATOR_DIRECT_FROZEN_SOURCE_PLUS_SELF_RELIANT_STAGED_SOURCE
+    source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+    canonical_checkpoint:
+      total_endpoints: 134
+      examined: 134
+      complete: 134
+      unresolved: 0
+      blocked: 0
+      failed: 0
+      not_yet_examined: 0
+    completion_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
+    worker_generation_replay_required: false
+    residual_transient_lane_logs: 0
+  WU-BL001-002:
+    state: IN_PROGRESS
+    name: Final Matrix Reconciliation
+    dependency: WU-BL001-001
+    dependency_state: PASS
+    matrix_state: READY_FOR_FINAL_RECONCILIATION
+    materialized_matrix_rows: 113
+    historical_accepted_rows_pending_backfill: 21
+    canonical_endpoint_inventory: 134
+    reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_INVENTED_CHAINS
     next_action: >-
-      Continue direct frozen-source analysis of the remaining 5 endpoints. Preserve fail-closed worker idempotency and
-      only claim staged-snapshot growth after a verified connector-to-local-file materialization bridge writes the twenty
-      resolved entries into a worker-readable immutable source root. Then recompute snapshot identity/dispatch fingerprint
-      and fire up to ten safe-independent workers when QG-SOURCE-001 permits the changed generation.
-  WU-BL001-002: WAITING_FOR_DEPENDENCY
-  WU-BL001-003: WAITING_FOR_DEPENDENCY
-  WU-BL001-004: WAITING_FOR_DEPENDENCY
+      Backfill the remaining 21 historical accepted endpoint rows only from durable accepted evidence; verify one unique
+      HTTP-method/path row for each of 134 endpoints; reconcile Markdown, structured JSON, browser projection and zero-unresolved accounting.
+  WU-BL001-003:
+    state: WAITING_FOR_DEPENDENCY
+    dependency: WU-BL001-002
+  WU-BL001-004:
+    state: WAITING_FOR_DEPENDENCY
+    dependency: WU-BL001-003
