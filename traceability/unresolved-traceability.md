@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **98**
-- COMPLETE: **98**
+- Explicitly examined for final dependency: **100**
+- COMPLETE: **100**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **36**
+- Not yet examined: **34**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The manual updated Orchestrator backlog-drain invocation accepted 26 additional frozen-source traces in `logs/runs/PRODUCTION-FIRE-20260824-181810.md`: Add Stop GET; Trip Return GET/POST; Customer Demand GET/POST/mark-delivered; Trip Review queue; supplier page fetch; vehicle-load list/all-list; vehicle-trip list; party-custody traceability; reconciliation command-center/list-detail; five ownership-dashboard routes; and seven delivery-planning read-only API routes.
+The Primary Orchestrator accepted two additional frozen-source traces in `logs/runs/PRODUCTION-FIRE-20260824-190650.md`: `POST /setCustomerInactive` and `POST /setCustomerActive`. Both preserve the complete source-proved chain `ToggleCustomerActiveStatusController -> CustomerActiveStateUpdateService -> CustomerJpaDao.updateActiveStatus -> CustomerDo -> public.tbl_customer -> redirect:/fetchCustomerByPage...`.
 
-Every accepted persistence dependency preserves its source-proved controller/service/DAO-or-repository/entity-or-view/database chain. There are zero canonical unresolved endpoints among the 98 examined endpoints. This does not close BL-001 because 36 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 100 examined endpoints. This does not close BL-001 because 34 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
