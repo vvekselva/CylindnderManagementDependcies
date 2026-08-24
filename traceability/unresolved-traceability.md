@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **69**
-- COMPLETE: **69**
+- Explicitly examined for final dependency: **70**
+- COMPLETE: **70**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **65**
+- Not yet examined: **64**
 
 ## Current unresolved paths
 
@@ -23,11 +23,11 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-`POST /updateCustomer` is now **COMPLETE / FULL_BRANCHING**. Frozen source proves `CustomerUpdateController.doPost` -> exact generic Spring binding `CustomerUpdateService.processRequest` -> exact generic `CustomerUpdateRequestValidator.validate`, followed by the source-proved customer read, GST/phone ownership checks and customer cascade save branches. Persistence reaches `public.tbl_customer`, `public.tbl_phone_number`, `public.tbl_customer_phone_number`, `public.tbl_customer_address`, and `public.tbl_address`. Success redirects to `/fetchCustomerByPage?pageNumber=1&itemsPerPage=10`; validation failure returns `UC01RegisterCustomer`; the general application-exception branch constructs `/fetchCustomerByPage?pageNumber=1&itemsPerPage=10` as its ModelAndView view name.
+`POST /add-stop/challan-page-photo/delete-ajax` is now **COMPLETE / FULL**. Frozen source proves `AddStopController.deleteChallanPagePhotoAjax` -> direct concrete Spring dependency `ChallanPagePhotoUploadService.deactivatePhoto` -> `ChallanPagePhotoJpaDao.findById/save` -> `ChallanPagePhotoDo` -> `public.tbl_challan_page_photo`. The endpoint returns source-proved JSON terminal responses: HTTP 200 on successful deactivation, HTTP 400 for application/user errors, and HTTP 500 for unexpected errors.
 
-The validator checks city/state/country DTO identifiers but performs no DAO access. `AddressMapper.mapDtoToDo` does not assign CityDo/StateDo/CountryDo, so those database tables were deliberately not inferred into the update trace. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and `logs/runs/PRODUCTION-FIRE-20260824-171009.md`.
+The delete method only reads and updates the challan-photo entity. It does not dereference the page-audit relationship, so `tbl_challan_page_audit_ledger` is deliberately not inferred into this endpoint trace. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and `logs/runs/PRODUCTION-FIRE-20260824-172900.md`.
 
-There are zero canonical unresolved endpoints among the 69 examined endpoints. This does not close BL-001 because 65 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 70 examined endpoints. This does not close BL-001 because 64 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
