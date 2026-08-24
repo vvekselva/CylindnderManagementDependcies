@@ -1,5 +1,5 @@
 local_execution:
-  version: 34
+  version: 35
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: MANUAL_BACKLOG_DRAIN_IN_PROGRESS_SOURCE_RESTAGE_REQUIRED
@@ -53,19 +53,19 @@ local_execution:
     status: IN_PROGRESS
     completed_generations_this_window: 0
     old_generation_idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    current_checkpoint_time: 2026-08-24T19:06:50+05:30
-    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-190650.md
+    current_checkpoint_time: 2026-08-24T19:12:48+05:30
+    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-191248.md
     worker_fire_started_at_checkpoint: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     direct_source_analysis_continued: true
     newly_accepted_endpoint_traces_this_checkpoint: 2
-    accepted_endpoint_traces_this_invocation: 28
+    accepted_endpoint_traces_this_invocation: 30
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T19:06:50+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-190650.md
+    checkpoint_time: 2026-08-24T19:12:48+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-191248.md
     invocation_trigger: MANUAL_UPDATED_ORCHESTRATOR
     invocation_mode: BACKLOG_DRAIN_WINDOW
     worker_fire_started: false
@@ -85,9 +85,9 @@ local_execution:
       accepted_trace_count: 2
       accepted_trace_state: COMPLETE_SOURCE_PROVED
       endpoint_families:
-        - ToggleCustomerActiveStatusController POST /setCustomerInactive
-        - ToggleCustomerActiveStatusController POST /setCustomerActive
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-190650.md
+        - SupplierIngestionController GET /ingestSupplier
+        - SupplierIngestionController POST /ingestSupplier
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -138,16 +138,16 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 100
-    complete: 100
+    examined: 102
+    complete: 102
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 34
+    not_yet_examined: 32
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 77
+    matrix_materialized_rows: 79
     historical_accepted_rows_pending_backfill: 23
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-190650.md
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md
 
   next_action: >-
     Continue tracing remaining not-yet-examined endpoints from the exact frozen source while resolving/materializing the
