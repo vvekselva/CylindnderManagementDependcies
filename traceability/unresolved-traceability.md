@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **100**
-- COMPLETE: **100**
+- Explicitly examined for final dependency: **102**
+- COMPLETE: **102**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **34**
+- Not yet examined: **32**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted two additional frozen-source traces in `logs/runs/PRODUCTION-FIRE-20260824-190650.md`: `POST /setCustomerInactive` and `POST /setCustomerActive`. Both preserve the complete source-proved chain `ToggleCustomerActiveStatusController -> CustomerActiveStateUpdateService -> CustomerJpaDao.updateActiveStatus -> CustomerDo -> public.tbl_customer -> redirect:/fetchCustomerByPage...`.
+The Primary Orchestrator accepted two additional frozen-source traces in `logs/runs/PRODUCTION-FIRE-20260824-191248.md`: `GET /ingestSupplier` and `POST /ingestSupplier`. The GET path terminates at the supplier-ingestion form with no persistence call. The POST path preserves the exact generic Spring binding to `SupplierIngestionService`, reference reads for City/State/Country, supplier persistence, and cascaded Address/Phone persistence.
 
-There are zero canonical unresolved endpoints among the 100 examined endpoints. This does not close BL-001 because 34 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 102 examined endpoints. This does not close BL-001 because 32 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
