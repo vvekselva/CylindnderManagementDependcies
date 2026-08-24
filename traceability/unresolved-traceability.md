@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **115**
-- COMPLETE: **115**
+- Explicitly examined for final dependency: **124**
+- COMPLETE: **124**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **19**
+- Not yet examined: **10**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted three frozen-source REST routes in `logs/runs/PRODUCTION-FIRE-20260825-000044.md`: `GET /search/customer/{searchText}`, `GET /search/driver/{searchText}`, and `GET /find/Driver-by-Id/{driverId}`. The customer route is source-proved through `RestfulCustomerServices -> CustomerSearchService -> SearchRequestValidator -> CustomerJpaDao -> CustomerDo -> public.tbl_customer -> CustomerMapper -> CustomerSearchResponseDto`. The two driver routes are source-proved through `RestfulDriverServices`, the exact generic `DriverSearchService` or `DriverFetchByIdService` binding, `DriverJpaDao`, `DriverDo -> public.tbl_driver`, and `DriverMapper` to the terminal JSON response DTO. The mappers read scalar fields only, so inverse entity associations were not added as dependencies.
+The Primary Orchestrator accepted five frozen-source REST search routes in `logs/runs/PRODUCTION-FIRE-20260825-003910.md`: `GET /search/product-category/{searchText}`, `GET /search/product/{searchText}`, `GET /search/product-uom/{searchText}`, `GET /search/state/{searchText}`, and `GET /search/supplier/{searchText}`. Each route has a source-proved controller -> exact Spring search-service implementation -> JPA DAO -> mapped entity/table -> mapper -> terminal JSON chain. Mapper inspection confirmed that related entity associations not dereferenced by these routes were not added as guessed dependencies.
 
-There are zero canonical unresolved endpoints among the 115 examined endpoints. This does not close BL-001 because 19 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 124 examined endpoints. This does not close BL-001 because 10 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
