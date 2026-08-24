@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **102**
-- COMPLETE: **102**
+- Explicitly examined for final dependency: **104**
+- COMPLETE: **104**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **32**
+- Not yet examined: **30**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted two additional frozen-source traces in `logs/runs/PRODUCTION-FIRE-20260824-191248.md`: `GET /ingestSupplier` and `POST /ingestSupplier`. The GET path terminates at the supplier-ingestion form with no persistence call. The POST path preserves the exact generic Spring binding to `SupplierIngestionService`, reference reads for City/State/Country, supplier persistence, and cascaded Address/Phone persistence.
+The Primary Orchestrator accepted two additional frozen-source traces in `logs/runs/PRODUCTION-FIRE-20260824-203431.md`: `GET /ingestYardStockCheck` and `POST /ingestYardStockCheck`. The GET path preserves both the in-memory cache-hit path and the cache-miss refresh through `CylinderStateFetchByPageService -> CylinderStateJpaDao -> CylinderStateDo -> public.tbl_cylinder_states`. The POST path preserves validator cylinder-state reads, stock-check header persistence, stock-check line persistence, error-form cache refresh, and terminal success/error paths.
 
-There are zero canonical unresolved endpoints among the 102 examined endpoints. This does not close BL-001 because 32 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 104 examined endpoints. This does not close BL-001 because 30 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
