@@ -6,8 +6,8 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **62 / 134 examined; 60 COMPLETE; 2 UNRESOLVED; 72 not yet examined.**  
-Rows currently materialized below: **38**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **63 / 134 examined; 61 COMPLETE; 2 UNRESOLVED; 71 not yet examined.**  
+Rows currently materialized below: **39**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -49,6 +49,11 @@ Rows currently materialized below: **38**. The other 24 historically accepted ro
 | POST | `/cylinderDelivery` | `Uc02Phase02CylinderDeliveryController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_challan_type`; `public.tbl_customer`; `public.tbl_customer_address`; `public.tbl_driver`; `public.tbl_vehicle`; `public.tbl_cylinder`; `public.tbl_product`; `public.tbl_order`; `public.tbl_order_line`; success redirect `/orderList?pageNumber=1&itemsPerPage=10`; validation-error re-render `Uc02-Phase02-CylinderDeliveryView` | `logs/runs/PRODUCTION-FIRE-20260824-080301.md` |
 | GET | `/vehicleLoad` | `Uc02Phase01VehicleLoadController.doGet` | COMPLETE | FULL_BRANCHING | IN_MEMORY_CACHE_POSTGRES_TABLE_AND_TERMINAL_VIEW | Cache-hit: in-memory `vehicleLoadPurposes`; cache-miss: `VehicleLoadPurposeFetchAllService` -> `VehicleLoadPurposeJpaDao` -> `VehicleLoadPurposeDo` -> `public.tbl_vehicle_load_purpose`; terminal `with-menu/Uc02-Phase01-VehicleLoadView` | `logs/runs/PRODUCTION-FIRE-20260824-083401.md` |
 | POST | `/vehicleLoad` | `Uc02Phase01VehicleLoadController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_cylinder`; `public.tbl_yard_inventory_line`; `public.tbl_cylinder_logistics_execution_line`; `public.tbl_vehicle_trip`; `public.tbl_vehicle_load_purpose`; `public.tbl_stop_type`; `public.tbl_vehicle_trip_stop`; `public.tbl_trip_status`; `public.tbl_vehicle_load`; `public.tbl_vehicle_load_line`; `public.tbl_cylinder_logistics_execution`; `public.tbl_cylinder_states`; success redirect `/vehicle-loads/list`; validation-error re-render `with-menu/Uc02-Phase01-VehicleLoadView` | `logs/runs/PRODUCTION-FIRE-20260824-085811.md` |
+| GET | `/registerCustomer` | `UC01RegisterCustomerController.doGet` | COMPLETE | FULL_BRANCHING | IN_MEMORY_CACHE_POSTGRES_TABLE_AND_TERMINAL_VIEW | Cache-hit: in-memory `addressTypes`; cache-miss: `LookupDataCache.refreshAddressTypes` -> `AddressTypeFetchByPageService.processRequest` -> `AddressTypeJpaDao.findAll(pageable)` -> `AddressTypeDo` -> `public.tbl_address_type`; terminal `final-version-1/UC01RegisterCustomer` | `logs/runs/PRODUCTION-FIRE-20260824-093200.md` |
+
+## `UC01RegisterCustomerController` chain summary
+
+`GET /registerCustomer` creates the blank registration model and always calls `LookupDataCache.getAddressTypes()`. When the cache already contains address types, the endpoint uses the in-memory list and renders `final-version-1/UC01RegisterCustomer`. When the cache is empty, `LookupDataCache.refreshAddressTypes()` builds an all-items request with blank search text and invokes the source-proved generic `AddressTypeFetchByPageService`. The blank-search branch calls `AddressTypeJpaDao.findAll(pageable)`; that DAO is typed to `AddressTypeDo`, whose `@Table` mapping proves `public.tbl_address_type`. The refreshed list is stored in memory and returned to the same terminal view. `POST /registerCustomer` remains outside this checkpoint because its mediator/persistence branches were not fully traced here.
 
 ## `Uc02Phase01VehicleLoadController` chain summary
 
