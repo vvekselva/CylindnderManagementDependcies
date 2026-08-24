@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 12
+  version: 13
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,19 +18,19 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 37
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-080301
+    latest_accepted_attempt: 39
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-085811
     total_endpoints: 134
-    examined: 60
-    progress_percentage: 44.78
-    complete: 58
-    complete_percentage: 43.28
+    examined: 62
+    progress_percentage: 46.27
+    complete: 60
+    complete_percentage: 44.78
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 74
+    not_yet_examined: 72
     latest_state_transition:
-      - POST /cylinderDelivery: UNRESOLVED -> COMPLETE
+      - POST /vehicleLoad: NOT_YET_EXAMINED -> COMPLETE
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -75,37 +75,37 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-080301
+    checkpoint_id: PRODUCTION-FIRE-20260824-085811
     worker_fire_started: false
-    reason: CYLINDER_DELIVERY_MEDIATOR_AND_FULL_PERSISTENCE_CHAIN_SOURCE_PROVED
-    endpoint_trace_checkpoint_before: 60
-    endpoint_trace_checkpoint_after: 60
-    endpoints_examined_added: 0
+    reason: VEHICLE_LOAD_POST_MEDIATOR_VALIDATOR_AND_PERSISTENCE_BRANCHES_SOURCE_PROVED
+    endpoint_trace_checkpoint_before: 61
+    endpoint_trace_checkpoint_after: 62
+    endpoints_examined_added: 1
     complete_added: 1
-    unresolved_change: -1
-    accepted_family: Uc02Phase02CylinderDeliveryController
-    accepted_state_transition: POST /cylinderDelivery UNRESOLVED_TO_COMPLETE
+    unresolved_change: 0
+    accepted_family: Uc02Phase01VehicleLoadController
+    accepted_state_transition: POST /vehicleLoad NOT_YET_EXAMINED_TO_COMPLETE
     accepted_chain_state: FULL_BRANCHING
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-080301.md
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-085811.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
     source_resolution_progress: >-
-      Frozen source proves Uc02Phase02CylinderDeliveryMediator as the exact generic Spring mediator, OrderIngestionService
-      as the invoked service, OrderIngestionRequestValidator and typed JPA DAO/entity branches through the complete active
-      PostgreSQL dependency set. The previously unresolved POST row therefore advanced to COMPLETE without increasing
-      examined coverage. The unchanged ten-worker generation was not rerun.
+      Frozen source proves Uc02Phase01VehicleLoadMediator as the exact generic Spring mediator, VehicleLoadIngestionService
+      as the invoked service, VehicleLoadIngestionValidator and CylinderLocationExclusivityValidator, plus typed DAO/entity
+      branches through the active PostgreSQL dependency set and both controller terminal branches. The endpoint therefore
+      advanced directly from NOT_YET_EXAMINED to COMPLETE. The unchanged ten-worker generation was not rerun.
 
   run_over_run:
-    endpoint_progress_percentage_point_change: 0.0
-    complete_percentage_point_change: 0.74
-    endpoint_examined_change: 0
+    endpoint_progress_percentage_point_change: 0.75
+    complete_percentage_point_change: 0.75
+    endpoint_examined_change: 1
     complete_endpoint_change: 1
-    unresolved_endpoint_change: -1
+    unresolved_endpoint_change: 0
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
     source_closure_direction: PARTIAL_RESTAGE_STILL_REQUIRED
-    trace_direction: RESOLVED_ONE_EXISTING_UNRESOLVED_ENDPOINT
+    trace_direction: ONE_NEW_ENDPOINT_SOURCE_CLOSED
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
     backend_capacity_direction: TEN_WORKER_CAPACITY_PROVED
 
@@ -114,8 +114,8 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      POST /cylinderDelivery advanced from UNRESOLVED to COMPLETE after the concrete mediator and every active persistence
-      branch were source-proved at the frozen commit. COMPLETE increased from 57 to 58 and UNRESOLVED decreased from 3 to 2.
+      POST /vehicleLoad advanced from NOT_YET_EXAMINED to COMPLETE after the controller, concrete mediator, service,
+      validator, nested location validator and active persistence branches were source-proved at the frozen commit.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
