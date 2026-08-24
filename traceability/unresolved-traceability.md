@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **58**
-- COMPLETE: **56**
-- UNRESOLVED: **2**
+- Explicitly examined for final dependency: **60**
+- COMPLETE: **57**
+- UNRESOLVED: **3**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **76**
+- Not yet examined: **74**
 
 ## Current unresolved paths
 
@@ -38,6 +38,20 @@ Proved dependency evidence so far: `public.tbl_order`, `public.tbl_walk_in_sale`
 Missing proof: the complete final dependency set across every conditional `processRequest` branch is not yet source-proved.
 
 Next investigation step: resolve every branch and any source-bound service/repository implementation at the frozen source baseline without naming inference.
+
+### `POST /cylinderDelivery`
+
+State: **UNRESOLVED**
+
+Proved chain so far: `Uc02Phase02CylinderDeliveryController.doPost()` -> injected `ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>` -> `invokeServices(requestDto)`.
+
+Proved controller terminal branches: success redirects to `/orderList?pageNumber=1&itemsPerPage=10`; `InvalidInputParameterException` re-renders `Uc02-Phase02-CylinderDeliveryView` with an error message.
+
+Missing proof: the concrete Spring mediator implementation/binding and every downstream service/DAO/repository/entity/database branch reached by `invokeServices(requestDto)`.
+
+Evidence: `logs/runs/PRODUCTION-FIRE-20260824-070036.md`; controller Git blob `ccb1a980de6002d45585bd8c8f56fc19867e3299` at frozen baseline.
+
+Next investigation step: source-prove the concrete mediator bean at the frozen commit, then recursively trace every participating downstream persistence or terminal branch. Do not infer a database dependency from the injection field name.
 
 ## Incremental matrix synchronization rule
 
