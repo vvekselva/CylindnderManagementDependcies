@@ -1,0 +1,51 @@
+source_restage_resolution:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-001
+  authoritative_branch: chore/rename-dependency-files
+  source_repository: vvekselva/CylinderManagement
+  frozen_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  owner: PRIMARY_ORCHESTRATOR
+  purpose: >-
+    Durable exact-path/blob resolution input for the next ORCHESTRATOR_STAGED_SNAPSHOT build.
+    These entries are source-resolved and blob-verified at the frozen baseline. They do not by themselves
+    claim that execution-host source bytes have already been materialized or that QG-SOURCE-001 is complete.
+  previous_worker_snapshot_materialized_files: 29
+  previous_worker_reported_exact_source_requests: 16
+  source_resolution_state: RESOLVED_SET_READY_FOR_PARALLEL_MATERIALIZATION
+  resolved_entries:
+    - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPageAuditLedgerDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/ChallanPageAuditLedgerDo.java, git_blob_sha: 6e2fc468564c64906cbc4d760501f2b170a9f070, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPagePhotoDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/ChallanPagePhotoDo.java, git_blob_sha: cd49fe4e62da3d8a2016ec8c813a2e363ee3d1c6, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.service.ICylinderManagementApplicationService, path: framework/src/main/java/com/sreyas/datamatics/application/service/ICylinderManagementApplicationService.java, git_blob_sha: c26b060fc37b7195e1e1e1c600ab7b4bf2e49cda, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylinder.management.services.TripReturnWorkflowService, path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/TripReturnWorkflowService.java, git_blob_sha: 11440b5fbda793234ecae70bfb6068bef98ab5e7, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanBookRegistryDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/ChallanBookRegistryDo.java, git_blob_sha: c185c9ef3081d0ce135075ae500b059e790b46ed, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.jpa.entity.SummaryMetricLookupDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/SummaryMetricLookupDo.java, git_blob_sha: e8310d4a0ce9917c8cd97b11e799fda9179cfe8c, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanBookRegistryMapper, path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mapper/ChallanBookRegistryMapper.java, git_blob_sha: 7b7d7bfe7914c19e387b095bc762f22efde2faae, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.SummaryMetricLookupMapper, path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mapper/SummaryMetricLookupMapper.java, git_blob_sha: 2810d214f63cd44d940b7e997a1c143231acb552, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.jpa.entity.TripChallanEntryTrackerAuditDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/TripChallanEntryTrackerAuditDo.java, git_blob_sha: ee61245bcbf84fcfafff4a77786ca41bd7eb9b82, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.jpa.entity.TripChallanEntryTrackerDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/TripChallanEntryTrackerDo.java, git_blob_sha: 9978de1f2ac0808df8a959f63f62114ac4d8546d, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanEntryAgingDashboardMapper, path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mapper/ChallanEntryAgingDashboardMapper.java, git_blob_sha: 622f4bc4c8e0cc73c3823248a14b0d36f00d9c74, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.jpa.view.entity.ChallanHeatmapMetricsViewDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/view/entity/ChallanHeatmapMetricsViewDo.java, git_blob_sha: 5b7683fe88a20ffec341a4518018c1e5b3965053, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.jpa.view.entity.TripChallanBookAssignmentViewDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/view/entity/TripChallanBookAssignmentViewDo.java, git_blob_sha: b186b047f82d5d4ec07d7c6986e198a5e867fafb, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanHeatmapMetricsViewMapper, path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mapper/ChallanHeatmapMetricsViewMapper.java, git_blob_sha: 502d529487b35cd3a453399f4a4a19f397714807, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanPageAuditLedgerMapper, path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mapper/ChallanPageAuditLedgerMapper.java, git_blob_sha: 3e857c18ca20a2e41a3589ef73b1cb2a36f3bb77, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylindermanagement.offlinemap.service.CustomerAddressLocationOfflineMapService, path: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/CustomerAddressLocationOfflineMapService.java, git_blob_sha: 69e0fa0b8bcab75073d6b0ab59d2773be0593241, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.jpa.entity.CustomerProductConsumptionProjectionViewDo, path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CustomerProductConsumptionProjectionViewDo.java, git_blob_sha: 15a8d9469a2783e210fc0f3ae66c62430a18d48a, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.CustomerConsumptionProjectionMapper, path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mapper/CustomerConsumptionProjectionMapper.java, git_blob_sha: b52dae79737d388a6aaf39ed4a93118a18800e19, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.application.service.ICylinderManagementApplicationMediator, path: framework/src/main/java/com/sreyas/datamatics/application/service/ICylinderManagementApplicationMediator.java, git_blob_sha: c9b7c72576ab42249d389890df9683ca0ad054e2, package_validation: PASS}
+    - {fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl, path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java, git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee, package_validation: PASS, binding_validation: PASS_EXACT_GENERIC_SERVICE_IMPLEMENTATION}
+  unresolved_resolution_entries: []
+  next_snapshot_build:
+    mode: PARALLEL_ORCHESTRATOR_MATERIALIZATION
+    max_parallel_fetches: 10
+    require_exact_ref: true
+    verify_git_blob_before_manifest_commit: true
+    materialize_complete_trip_service_impl: true
+    recompute_snapshot_identity: true
+    recompute_dispatch_fingerprint: true
+    fire_trace_workers_when_preflight_passes: true
+  fail_closed_rules:
+    - do not decrement historical worker missing-source count merely from this resolution artifact
+    - do not claim snapshot file-count growth until execution-host materialization is verified
+    - do not fire unchanged dispatch fingerprint
+    - workers never access GitHub directly
