@@ -1,0 +1,41 @@
+version: 1
+backlog_item: BL-001
+work_unit: WU-BL001-001
+source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+state: READY_FOR_ATOMIC_PROJECTION
+canonical_checkpoint_before_projection:
+  total_endpoints: 134
+  examined: 126
+  complete: 126
+  unresolved: 0
+  not_yet_examined: 8
+  matrix_materialized_rows: 103
+pending_endpoints:
+  - method: POST
+    path: /search/cylinder/ownership/by-state
+    controller: RestfulCylinderServices
+    controller_method: getCylindersByStateUsingOwnershipModel
+    accepted_candidate_state: COMPLETE
+    chain_completeness: FULL
+    final_dependency_type: POSTGRES_VIEW_AND_TERMINAL_JSON
+    final_dependencies:
+      - public.vw_cylinder_global_search
+      - CylinderSearchResponseDto
+    ordered_chain:
+      - RestfulCylinderServices.getCylindersByStateUsingOwnershipModel
+      - CylinderCurrentOwnershipByStateSearchService.searchWithText
+      - CylinderGlobalSearchViewJpaDao.searchByStateNames
+      - CylinderGlobalSearchViewDo
+      - public.vw_cylinder_global_search
+      - CylinderDtoIdentifierMappingUtil.fromGlobalSearchRow
+      - CylinderSearchResponseDto
+    evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md
+projection_requirements:
+  - traceability/controller-traceability.md
+  - traceability/unresolved-traceability.md
+  - traceability/matrix-progress.yaml
+  - traceability/explorer/traceability-matrix-delta-20260825-031101.json
+  - traceability/explorer/matrix-delta-20260825-031101.js
+  - runtime Level-3 SSOT counters
+fail_closed_rule: >-
+  Do not increment canonical accepted counts until every projection artifact above is synchronized to the same checkpoint.
