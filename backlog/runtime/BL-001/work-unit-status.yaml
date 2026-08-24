@@ -15,19 +15,25 @@ work_units:
     latest_worker_failures: 0
     qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
     source_closure_complete: false
+    source_snapshot_materialized_files: 29
     missing_source_requests: 16
+    source_resolution_entries_ready_for_materialization: 20
+    source_resolution_entries_unresolved: 0
+    source_restage_generations_ready: 2
+    source_restage_slots_per_generation: 10
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
     qg_lane_001_state: UNDERUTILIZED
     latest_peak_service_concurrent_lanes: 2
     backend_capacity_probe_peak_service_concurrent_lanes: 10
     qg_recovery_001_state: PASS
-    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260824-005711.md
-    checkpoint: {examined: 41, total: 134, complete: 39, unresolved: 2, not_yet_examined: 93, matrix_materialized_rows: 14}
+    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260824-230001.md
+    checkpoint: {examined: 107, total: 134, complete: 107, unresolved: 0, blocked: 0, failed: 0, not_yet_examined: 27, matrix_materialized_rows: 84, historical_accepted_rows_pending_backfill: 23}
+    latest_accepted_endpoint: {method: POST, path: /stop, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-230001.md}
     next_action: >-
-      Continue direct source closure for ChallanHeatmapController, CustomerAddressLocationController and
-      CustomerConsumptionDashboardController while resolving and blob-verifying the 16 outstanding source requests.
-      Materialize validated source into the immutable snapshot and rerun the ten-task discovery only when source closure advances.
+      Continue direct frozen-source analysis of the remaining 27 endpoints while materializing the twenty resolved exact
+      source entries into the next immutable snapshot. Recompute snapshot identity and dispatch fingerprint after verified
+      materialization, then fire up to ten safe-independent workers only when QG-SOURCE-001 permits the changed generation.
   WU-BL001-002: WAITING_FOR_DEPENDENCY
   WU-BL001-003: WAITING_FOR_DEPENDENCY
   WU-BL001-004: WAITING_FOR_DEPENDENCY
