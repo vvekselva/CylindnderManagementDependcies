@@ -1,4 +1,4 @@
-version: 29
+version: 30
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -33,6 +33,7 @@ structured_delta_artifacts:
   - traceability/explorer/traceability-matrix-delta-20260824-181810.json
   - traceability/explorer/traceability-matrix-delta-20260824-190650.json
   - traceability/explorer/traceability-matrix-delta-20260824-191248.json
+  - traceability/explorer/traceability-matrix-delta-20260824-203431.json
 browser_delta_artifacts:
   - traceability/explorer/matrix-delta-20260824-003111.js
   - traceability/explorer/matrix-delta-20260824-005711.js
@@ -62,29 +63,30 @@ browser_delta_artifacts:
   - traceability/explorer/matrix-delta-20260824-181810.js
   - traceability/explorer/matrix-delta-20260824-190650.js
   - traceability/explorer/matrix-delta-20260824-191248.js
+  - traceability/explorer/matrix-delta-20260824-203431.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 state: INCREMENTAL_PARTIAL
 projection_state: BASE_PLUS_ORDERED_DELTAS_CURRENT
 canonical_endpoint_inventory: 134
-canonical_accepted_examined: 102
-canonical_complete: 102
+canonical_accepted_examined: 104
+canonical_complete: 104
 canonical_unresolved: 0
 canonical_blocked: 0
 canonical_failed: 0
-canonical_not_yet_examined: 32
-materialized_matrix_rows: 79
+canonical_not_yet_examined: 30
+materialized_matrix_rows: 81
 historical_accepted_rows_pending_backfill: 23
-latest_materialized_from_invocation: PRODUCTION-FIRE-20260824-191248
+latest_materialized_from_invocation: PRODUCTION-FIRE-20260824-203431
 latest_state_transition:
-  - {method: GET, path: /ingestSupplier, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md}
-  - {method: POST, path: /ingestSupplier, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md}
+  - {method: GET, path: /ingestYardStockCheck, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-203431.md}
+  - {method: POST, path: /ingestYardStockCheck, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-203431.md}
 latest_historical_backfill:
   - {method: GET, path: /customer-spot-cylinder-check/fetch, state: COMPLETE, chain_completeness: PARTIAL_INTERMEDIATE_HOPS, evidence: logs/runs/INVOCATION-20260823-145512.md#LANE-01}
   - {method: GET, path: /yard-audit-dashboard, state: COMPLETE, chain_completeness: PARTIAL_INTERMEDIATE_HOPS, evidence: logs/runs/INVOCATION-20260823-145512.md#LANE-02}
 projection_note: >-
   The immutable/base Explorer files represent the earlier accepted snapshot. Ordered checked-in delta artifacts reconcile
-  the browser-visible and structured incremental projection to the canonical 102/102/0/32 checkpoint without inventing
+  the browser-visible and structured incremental projection to the canonical 104/104/0/30 checkpoint without inventing
   historical rows. index.html loads browser deltas in checkpoint order. A later consolidation may fold deltas into the
   base files only if semantic identity is preserved.
 update_rule: >-
