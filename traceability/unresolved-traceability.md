@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **107**
-- COMPLETE: **107**
+- Explicitly examined for final dependency: **108**
+- COMPLETE: **108**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **27**
+- Not yet examined: **26**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted `POST /stop` in `logs/runs/PRODUCTION-FIRE-20260824-230001.md`. Frozen source proves `CustomerStopSelectionController.processStopIngestion` either terminates at the challan-photo guard redirect or invokes the exact generic `VehicleTripStopIngestionService` binding. The service branches separately through customer delivery, customer empty pickup, supplier empty drop-off and supplier full pickup persistence paths before trip/stop persistence, optional challan-page consumption/linking and the terminal vehicle-load redirect.
+The Primary Orchestrator accepted `GET /search/address/customer-address/{customerId}` in `logs/runs/PRODUCTION-FIRE-20260824-231647.md`. Frozen source proves `RestfulAddressServices.getCustomerAddressByCustomerId` invokes the exact generic `CustomerAddressFetchByIDService` binding for nonblank IDs. The service resolves customer-address rows through `CustomerAddressJpaDao.findByCustomer_CustomerId`, maps `CustomerAddressDo` plus its `AddressDo`, and the derived query traverses the `CustomerDo` relationship. Source mappings prove `public.tbl_customer_address`, `public.tbl_address`, and `public.tbl_customer`. Blank IDs terminate without service invocation, while invalid numeric IDs/service exceptions return an empty `CustomerAddressSearchResponseDto`.
 
-There are zero canonical unresolved endpoints among the 107 examined endpoints. This does not close BL-001 because 27 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 108 examined endpoints. This does not close BL-001 because 26 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
