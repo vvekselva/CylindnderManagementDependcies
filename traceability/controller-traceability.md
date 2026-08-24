@@ -6,8 +6,8 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **58 / 134 examined; 56 COMPLETE; 2 UNRESOLVED; 76 not yet examined.**  
-Rows currently materialized below: **34**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **60 / 134 examined; 57 COMPLETE; 3 UNRESOLVED; 74 not yet examined.**  
+Rows currently materialized below: **36**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -45,6 +45,14 @@ Rows currently materialized below: **34**. The other 24 historically accepted ro
 | GET | `/walkin-sale` | `WalkinSaleIngestionController` GET handler | COMPLETE | FULL | TERMINAL_VIEW | `final-version-1/WalkinSaleIngestion`; durable accepted source evidence records no persistence service call | `logs/runs/INVOCATION-20260823-145512.md` / LANE-03 |
 | GET | `/customer-spot-cylinder-check/fetch` | `CustomerSpotCylinderCheckController` fetch handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_VIEW | `CustomerSpotCylinderCheckService.findActiveSpotCheckBooksForLoad` -> `TripChallanBookAssignmentViewJpaDao` -> `public.vw_trip_challan_book_assignments` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-01 |
 | GET | `/yard-audit-dashboard` | `YardAuditDashboardController` dashboard handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_TABLES | `YardAuditDashboardFetchService.processRequest` -> `YardQualityGateJpaDao` -> `public.tbl_yard_stock_check`; `public.tbl_yard_stock_check_line`; `public.tbl_yard_quality_gate`; `public.tbl_cylinder_states`; `public.tbl_yard_check_event` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-02 |
+| GET | `/cylinderDelivery` | `Uc02Phase02CylinderDeliveryController.doGet` | COMPLETE | FULL | TERMINAL_VIEW | `Uc02-Phase02-CylinderDeliveryView`; no mediator/service/DAO/database call | `logs/runs/PRODUCTION-FIRE-20260824-070036.md` |
+| POST | `/cylinderDelivery` | `Uc02Phase02CylinderDeliveryController.doPost` | UNRESOLVED | INCOMPLETE_AT_MEDIATOR_BINDING | UNRESOLVED_MEDIATOR_BINDING | Proved through `ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>.invokeServices(requestDto)`; concrete Spring mediator and downstream dependency chain not source-proved | `logs/runs/PRODUCTION-FIRE-20260824-070036.md` |
+
+## `Uc02Phase02CylinderDeliveryController` chain summary
+
+`GET /cylinderDelivery` terminates entirely in the controller: `doGet()` constructs `UC02Phase02CylinderDeliveryRequestDto`, attaches a new `OrderDto`, and returns `Uc02-Phase02-CylinderDeliveryView`. The method has no mediator/service/DAO/repository/database access.
+
+`POST /cylinderDelivery` calls the injected generic `ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>.invokeServices(requestDto)`. The controller source proves the interface/generic boundary and its success/error terminal branches, but the concrete Spring mediator implementation is not yet source-proved. The row therefore remains UNRESOLVED at that exact intermediate hop and no database object is inferred.
 
 ## `ChallanPagePhotoController` full-chain summary
 
