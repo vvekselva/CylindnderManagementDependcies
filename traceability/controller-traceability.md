@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **102 / 134 examined; 102 COMPLETE; 0 UNRESOLVED; 32 not yet examined.**  
-Rows currently materialized below: **79**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **104 / 134 examined; 104 COMPLETE; 0 UNRESOLVED; 30 not yet examined.**  
+Rows currently materialized below: **81**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -92,12 +92,14 @@ Rows currently materialized below: **79**. The other 23 historically accepted ro
 | POST | `/setCustomerActive` | `ToggleCustomerActiveStatusController.setCustomerActive` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_REDIRECT | `public.tbl_customer`; `redirect:/fetchCustomerByPage?...` | `logs/runs/PRODUCTION-FIRE-20260824-190650.md` |
 | GET | `/ingestSupplier` | `SupplierIngestionController.doGet` | COMPLETE | FULL | TERMINAL_VIEW | `with-menu/SupplierIngestion`; no service/DAO/database dependency | `logs/runs/PRODUCTION-FIRE-20260824-191248.md` |
 | POST | `/ingestSupplier` | `SupplierIngestionController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | city/state/country reads; supplier/address/phone persistence; success redirect or supplier-ingestion error view | `logs/runs/PRODUCTION-FIRE-20260824-191248.md` |
+| GET | `/ingestYardStockCheck` | `YardStockCheckIngestionController.doGet` | COMPLETE | FULL_BRANCHING | IN_MEMORY_CACHE_POSTGRES_TABLE_AND_TERMINAL_VIEW | cache hit or `CylinderStateFetchByPageService -> CylinderStateJpaDao -> CylinderStateDo -> public.tbl_cylinder_states`; `final-version-1/YardStockCheckIngestion` | `logs/runs/PRODUCTION-FIRE-20260824-203431.md` |
+| POST | `/ingestYardStockCheck` | `YardStockCheckIngestionController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | validator/state read `public.tbl_cylinder_states`; header `public.tbl_yard_stock_check`; lines `public.tbl_yard_stock_check_line`; success redirect or yard-stock-check error view/cache refresh | `logs/runs/PRODUCTION-FIRE-20260824-203431.md` |
 
 ## Current unresolved paths
 
-**None among the 102 examined endpoints.**
+**None among the 104 examined endpoints.**
 
-This does not close BL-001: **32 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **30 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
