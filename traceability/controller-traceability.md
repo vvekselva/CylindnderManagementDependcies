@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **105 / 134 examined; 105 COMPLETE; 0 UNRESOLVED; 29 not yet examined.**  
-Rows currently materialized below: **82**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **106 / 134 examined; 106 COMPLETE; 0 UNRESOLVED; 28 not yet examined.**  
+Rows currently materialized below: **83**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -69,6 +69,7 @@ Rows currently materialized below: **82**. The other 23 historically accepted ro
 | POST | `/customer-demands` | `CustomerDemandController.create` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_REDIRECT | customer/product/address/order-request tables; redirect | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
 | POST | `/customer-demands/{requestId}/mark-delivered` | `CustomerDemandController.markDelivered` | COMPLETE | FULL | POSTGRES_TABLE_AND_REDIRECT | `public.tbl_customer_order_request`; redirect | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
 | GET | `/trip-review` | `TripReviewController.showReviewQueue` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_trip_review_header`; TripReviewList | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/trip-review/{vehicleTripId}` | `TripReviewController.showTripReview` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_VIEWS_FUNCTION_AND_TERMINAL_VIEW | trip-review header/customer-stop views; stop/challan/photo, load/logistics, transaction, custody, yard tables; `fn_trip_load_accountability`; `with-menu/TripReviewDashboard` | `logs/runs/PRODUCTION-FIRE-20260824-170049.md` |
 | GET | `/fetchSupplierByPage` | `SupplierFetchByPageController.doGet` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW_REDIRECT | supplier/address/phone/city/state/country; SupplierListPage or handled redirect | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
 | GET | `/vehicle-loads/list` | `VehicleLoadByPageController.listVehicleLoads` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_TABLES_AND_TERMINAL_VIEW | active-trips view; trip/load/driver/vehicle/status tables; VehicleLoad list view | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
 | GET | `/vehicle-loads/all-list` | `VehicleLoadByPageController.listAllVehicleLoads` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | load/trip/driver/vehicle/status tables; VehicleLoad list view | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
@@ -98,9 +99,9 @@ Rows currently materialized below: **82**. The other 23 historically accepted ro
 
 ## Current unresolved paths
 
-**None among the 105 examined endpoints.**
+**None among the 106 examined endpoints.**
 
-This does not close BL-001: **29 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **28 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
