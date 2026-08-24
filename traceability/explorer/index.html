@@ -22,90 +22,21 @@
       </label>
     </div>
   </header>
-
   <main>
     <section id="summary" class="summary-grid" aria-label="Traceability summary"></section>
-
     <section class="toolbar">
       <input id="search" type="search" placeholder="Search endpoint, controller, service, DAO, entity, table/view..." />
-      <select id="stateFilter" aria-label="Filter by state">
-        <option value="ALL">All states</option>
-        <option value="COMPLETE">COMPLETE</option>
-        <option value="UNRESOLVED">UNRESOLVED</option>
-        <option value="BLOCKED">BLOCKED</option>
-        <option value="FAILED">FAILED</option>
-      </select>
+      <select id="stateFilter" aria-label="Filter by state"><option value="ALL">All states</option><option value="COMPLETE">COMPLETE</option><option value="UNRESOLVED">UNRESOLVED</option><option value="BLOCKED">BLOCKED</option><option value="FAILED">FAILED</option></select>
       <select id="methodFilter" aria-label="Filter by HTTP method"><option value="ALL">All methods</option></select>
-      <select id="sortBy" aria-label="Sort endpoints">
-        <option value="controller">Sort: Controller</option>
-        <option value="path">Sort: Path</option>
-        <option value="method">Sort: HTTP method</option>
-        <option value="state">Sort: State</option>
-        <option value="hops">Sort: Chain hops</option>
-      </select>
+      <select id="sortBy" aria-label="Sort endpoints"><option value="controller">Sort: Controller</option><option value="path">Sort: Path</option><option value="method">Sort: HTTP method</option><option value="state">Sort: State</option><option value="hops">Sort: Chain hops</option></select>
       <button id="resetBtn" type="button">Reset</button>
     </section>
-
-    <nav class="tabs" aria-label="Explorer views">
-      <button class="tab active" data-tab="endpoints">Endpoints</button>
-      <button class="tab" data-tab="components">Components</button>
-      <button class="tab" data-tab="dependencies">DB / Final Dependencies</button>
-      <button class="tab" data-tab="unresolved">Unresolved</button>
-      <button class="tab" data-tab="logs">Execution Logs</button>
-    </nav>
-
-    <section id="endpoints" class="tab-panel active"></section>
-    <section id="components" class="tab-panel"></section>
-    <section id="dependencies" class="tab-panel"></section>
-    <section id="unresolved" class="tab-panel"></section>
-    <section id="logs" class="tab-panel"></section>
+    <nav class="tabs" aria-label="Explorer views"><button class="tab active" data-tab="endpoints">Endpoints</button><button class="tab" data-tab="components">Components</button><button class="tab" data-tab="dependencies">DB / Final Dependencies</button><button class="tab" data-tab="unresolved">Unresolved</button><button class="tab" data-tab="logs">Execution Logs</button></nav>
+    <section id="endpoints" class="tab-panel active"></section><section id="components" class="tab-panel"></section><section id="dependencies" class="tab-panel"></section><section id="unresolved" class="tab-panel"></section><section id="logs" class="tab-panel"></section>
   </main>
-
-  <footer>
-    <strong>Viewer only.</strong> Canonical truth remains the GitHub SSOT and Orchestrator-accepted evidence. This page never promotes worker output or edits trace state.
-  </footer>
-
+  <footer><strong>Viewer only.</strong> Canonical truth remains the GitHub SSOT and Orchestrator-accepted evidence. This page never promotes worker output or edits trace state.</footer>
   <script src="matrix-data.js"></script>
-  <script src="matrix-delta-20260824-003111.js"></script>
-  <script src="matrix-delta-20260824-005711.js"></script>
-  <script src="matrix-delta-20260824-013336.js"></script>
-  <script src="matrix-delta-20260824-013546.js"></script>
-  <script src="matrix-delta-20260824-020143.js"></script>
-  <script src="matrix-delta-20260824-023321.js"></script>
-  <script src="matrix-delta-20260824-033550.js"></script>
-  <script src="matrix-delta-20260824-042714.js"></script>
-  <script src="matrix-delta-20260824-045742.js"></script>
-  <script src="matrix-delta-20260824-053325.js"></script>
-  <script src="matrix-delta-20260824-070036.js"></script>
-  <script src="matrix-delta-20260824-080301.js"></script>
-  <script src="matrix-delta-20260824-083401.js"></script>
-  <script src="matrix-delta-20260824-085811.js"></script>
-  <script src="matrix-delta-20260824-093200.js"></script>
-  <script src="matrix-delta-20260824-100135.js"></script>
-  <script src="matrix-delta-20260824-103703.js"></script>
-  <script src="matrix-delta-20260824-110011.js"></script>
-  <script src="matrix-delta-20260824-113951.js"></script>
-  <script src="matrix-delta-20260824-134342.js"></script>
-  <script src="matrix-delta-20260824-143220.js"></script>
-  <script src="matrix-delta-20260824-150939.js"></script>
-  <script src="matrix-delta-20260824-171009.js"></script>
-  <script src="matrix-delta-20260824-172900.js"></script>
-  <script src="matrix-delta-20260824-180750.js"></script>
-  <script src="matrix-delta-20260824-181810.js"></script>
-  <script src="matrix-delta-20260824-190650.js"></script>
-  <script src="matrix-delta-20260824-191248.js"></script>
-  <script src="matrix-delta-20260824-203431.js"></script>
-  <script src="matrix-delta-20260824-213728.js"></script>
-  <script src="matrix-delta-20260824-170049.js"></script>
-  <script src="matrix-delta-20260824-230001.js"></script>
-  <script src="matrix-delta-20260824-231647.js"></script>
-  <script src="matrix-delta-20260824-233707.js"></script>
-  <script src="matrix-delta-20260825-000044.js"></script>
-  <script src="matrix-delta-20260825-001738.js"></script>
-  <script src="matrix-delta-20260825-003910.js"></script>
-  <script src="matrix-delta-20260825-020259.js"></script>
-  <script src="matrix-delta-20260825-035743.js"></script>
-  <script src="apply-deltas.js"></script>
-  <script src="app.js"></script>
+  <script src="matrix-delta-20260824-003111.js"></script><script src="matrix-delta-20260824-005711.js"></script><script src="matrix-delta-20260824-013336.js"></script><script src="matrix-delta-20260824-013546.js"></script><script src="matrix-delta-20260824-020143.js"></script><script src="matrix-delta-20260824-023321.js"></script><script src="matrix-delta-20260824-033550.js"></script><script src="matrix-delta-20260824-042714.js"></script><script src="matrix-delta-20260824-045742.js"></script><script src="matrix-delta-20260824-053325.js"></script><script src="matrix-delta-20260824-070036.js"></script><script src="matrix-delta-20260824-080301.js"></script><script src="matrix-delta-20260824-083401.js"></script><script src="matrix-delta-20260824-085811.js"></script><script src="matrix-delta-20260824-093200.js"></script><script src="matrix-delta-20260824-100135.js"></script><script src="matrix-delta-20260824-103703.js"></script><script src="matrix-delta-20260824-110011.js"></script><script src="matrix-delta-20260824-113951.js"></script><script src="matrix-delta-20260824-134342.js"></script><script src="matrix-delta-20260824-143220.js"></script><script src="matrix-delta-20260824-150939.js"></script><script src="matrix-delta-20260824-171009.js"></script><script src="matrix-delta-20260824-172900.js"></script><script src="matrix-delta-20260824-180750.js"></script><script src="matrix-delta-20260824-181810.js"></script><script src="matrix-delta-20260824-190650.js"></script><script src="matrix-delta-20260824-191248.js"></script><script src="matrix-delta-20260824-203431.js"></script><script src="matrix-delta-20260824-213728.js"></script><script src="matrix-delta-20260824-170049.js"></script><script src="matrix-delta-20260824-230001.js"></script><script src="matrix-delta-20260824-231647.js"></script><script src="matrix-delta-20260824-233707.js"></script><script src="matrix-delta-20260825-000044.js"></script><script src="matrix-delta-20260825-001738.js"></script><script src="matrix-delta-20260825-003910.js"></script><script src="matrix-delta-20260825-020259.js"></script><script src="matrix-delta-20260825-035743.js"></script><script src="matrix-delta-20260825-051115.js"></script>
+  <script src="apply-deltas.js"></script><script src="app.js"></script>
 </body>
 </html>
