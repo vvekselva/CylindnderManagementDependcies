@@ -23,7 +23,7 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 State: **UNRESOLVED**
 
-Proved dependency evidence so far: `public.tbl_customer_spot-cylinder-check` is not asserted; the accepted evidence proves `public.tbl_customer_spot_cylinder_check`.
+Proved dependency evidence so far: `public.tbl_customer_spot_cylinder_check`.
 
 Missing proof: the complete database-object set for every `submitSpotCheck` branch is not yet source-proved.
 
