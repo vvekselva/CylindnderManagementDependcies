@@ -21,19 +21,22 @@ work_units:
     source_resolution_entries_unresolved: 0
     source_restage_generations_ready: 2
     source_restage_slots_per_generation: 10
+    source_materialization_slots_completed_latest_checkpoint: 0
+    source_materialization_blocker_latest_checkpoint: CONNECTOR_TO_EXECUTION_HOST_FILE_BRIDGE_UNAVAILABLE
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
     qg_lane_001_state: UNDERUTILIZED
     latest_peak_service_concurrent_lanes: 2
     backend_capacity_probe_peak_service_concurrent_lanes: 10
     qg_recovery_001_state: PASS
-    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260824-230001.md
-    checkpoint: {examined: 107, total: 134, complete: 107, unresolved: 0, blocked: 0, failed: 0, not_yet_examined: 27, matrix_materialized_rows: 84, historical_accepted_rows_pending_backfill: 23}
-    latest_accepted_endpoint: {method: POST, path: /stop, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-230001.md}
+    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260824-231647.md
+    checkpoint: {examined: 108, total: 134, complete: 108, unresolved: 0, blocked: 0, failed: 0, not_yet_examined: 26, matrix_materialized_rows: 85, historical_accepted_rows_pending_backfill: 23}
+    latest_accepted_endpoint: {method: GET, path: /search/address/customer-address/{customerId}, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-231647.md}
     next_action: >-
-      Continue direct frozen-source analysis of the remaining 27 endpoints while materializing the twenty resolved exact
-      source entries into the next immutable snapshot. Recompute snapshot identity and dispatch fingerprint after verified
-      materialization, then fire up to ten safe-independent workers only when QG-SOURCE-001 permits the changed generation.
+      Continue direct frozen-source analysis of the remaining 26 endpoints. Preserve fail-closed worker idempotency and
+      only claim staged-snapshot growth after a verified connector-to-local-file materialization bridge writes the twenty
+      resolved entries into a worker-readable immutable source root. Then recompute snapshot identity/dispatch fingerprint
+      and fire up to ten safe-independent workers when QG-SOURCE-001 permits the changed generation.
   WU-BL001-002: WAITING_FOR_DEPENDENCY
   WU-BL001-003: WAITING_FOR_DEPENDENCY
   WU-BL001-004: WAITING_FOR_DEPENDENCY
