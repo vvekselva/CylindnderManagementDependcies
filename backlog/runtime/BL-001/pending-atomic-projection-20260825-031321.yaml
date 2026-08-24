@@ -1,0 +1,63 @@
+pending_atomic_projection:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-001
+  created_at: 2026-08-25T03:19:25+05:30
+  source_repository: vvekselva/CylinderManagement
+  frozen_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  state: SOURCE_PROVED_CANDIDATES_PENDING_CANONICAL_DUPLICATE_AND_ATOMIC_PROJECTION_CHECK
+  canonical_checkpoint_before: {total: 134, examined: 126, complete: 126, unresolved: 0, remaining: 8, matrix_rows: 103}
+  rule: >-
+    These entries are exact frozen-source proofs only. They are not canonical endpoint promotions until the Primary
+    Orchestrator proves each key is one of the eight not-yet-examined endpoints and synchronizes the Markdown matrix,
+    structured/browser projection, unresolved ledger, matrix progress and Level-3 runtime in one accepted checkpoint.
+  candidates:
+    - method: GET
+      path: /delivery-planning/stops/manage
+      controller: DeliveryPlanningStopManagementController.showStopManagementPage
+      chain_state: FULL_BRANCHING
+      chain: DeliveryPlanningStopManagementController -> DeliveryPlanningStopService.listWithCustomerCounts/coverageKpis -> DeliveryPlanningStopJpaDao -> DeliveryPlanningStopDo/public.tbl_delivery_planning_stop + native public.vw_customer_address_location_status -> with-menu/DeliveryPlanningStopManagement
+      source_blobs: [4f4cdfe29c348dac3cfdff1edde019b3865f84cf, 2245acfad29d7280c99713a0a31dc3f70f2bb456, 2697753f380a69b9bd822c0e5d1c107c74b7db50, 504bd11519dfd73c428635cdddaf733e119c41b5]
+    - method: GET
+      path: /delivery-planning/stops/manage/
+      controller: DeliveryPlanningStopManagementController.showStopManagementPage
+      chain_state: FULL_BRANCHING
+      chain: DeliveryPlanningStopManagementController -> DeliveryPlanningStopService.listWithCustomerCounts/coverageKpis -> DeliveryPlanningStopJpaDao -> DeliveryPlanningStopDo/public.tbl_delivery_planning_stop + native public.vw_customer_address_location_status -> with-menu/DeliveryPlanningStopManagement
+      source_blobs: [4f4cdfe29c348dac3cfdff1edde019b3865f84cf, 2245acfad29d7280c99713a0a31dc3f70f2bb456, 2697753f380a69b9bd822c0e5d1c107c74b7db50, 504bd11519dfd73c428635cdddaf733e119c41b5]
+    - method: POST
+      path: /delivery-planning/stops/manage/save
+      controller: DeliveryPlanningStopManagementController.saveStop
+      chain_state: FULL_BRANCHING
+      chain: validation terminal redirects OR DeliveryPlanningStopService.add/update -> DeliveryPlanningStopJpaDao.save/findById -> DeliveryPlanningStopDo -> public.tbl_delivery_planning_stop -> redirect:/delivery-planning/stops/manage
+      source_blobs: [4f4cdfe29c348dac3cfdff1edde019b3865f84cf, 2245acfad29d7280c99713a0a31dc3f70f2bb456, 2697753f380a69b9bd822c0e5d1c107c74b7db50, 504bd11519dfd73c428635cdddaf733e119c41b5]
+    - method: POST
+      path: /delivery-planning/stops/manage/save-selected
+      controller: DeliveryPlanningStopManagementController.saveSelectedPoints
+      chain_state: FULL_BRANCHING
+      chain: DeliveryPlanningStopManagementController -> DeliveryPlanningStopMediator -> DeliveryPlanningStopBatchSaveRequestValidator (duplicate check via DeliveryPlanningStopJpaDao) -> DeliveryPlanningStopService.addBatch -> DeliveryPlanningStopJpaDao.saveAllAndFlush -> DeliveryPlanningStopDo -> public.tbl_delivery_planning_stop -> redirect:/delivery-planning/stops/manage
+      source_blobs: [4f4cdfe29c348dac3cfdff1edde019b3865f84cf, 97ecd949e3294f0187a455b3afa98341529017db, 3df67b9bbfa395e79d0f836c39eef6f6a04b74ae, 2245acfad29d7280c99713a0a31dc3f70f2bb456, 2697753f380a69b9bd822c0e5d1c107c74b7db50, 504bd11519dfd73c428635cdddaf733e119c41b5]
+    - method: POST
+      path: /delivery-planning/stops/manage/remove
+      controller: DeliveryPlanningStopManagementController.removeStop
+      chain_state: FULL
+      chain: DeliveryPlanningStopManagementController -> DeliveryPlanningStopService.deactivate -> DeliveryPlanningStopJpaDao.findById/save -> DeliveryPlanningStopDo -> public.tbl_delivery_planning_stop -> redirect:/delivery-planning/stops/manage
+      source_blobs: [4f4cdfe29c348dac3cfdff1edde019b3865f84cf, 2245acfad29d7280c99713a0a31dc3f70f2bb456, 2697753f380a69b9bd822c0e5d1c107c74b7db50, 504bd11519dfd73c428635cdddaf733e119c41b5]
+    - method: GET
+      path: /delivery-planning/customer-density-bubble-map
+      controller: DeliveryPlanningController.showCustomerDensityBubbleMap
+      chain_state: FULL
+      chain: DeliveryPlanningController.showCustomerDensityBubbleMap -> terminal view with-menu/CustomerDensityBubbleMap; no service/DAO/database call
+      source_blobs: [0153f8d100e3cafa54beb844ff25273c9a3796c5]
+  source_snapshot:
+    materialized_files_before: 29
+    materialized_files_after: 29
+    historical_worker_source_requests_before: 16
+    historical_worker_source_requests_after: 16
+    resolved_entries_ready_for_materialization: 20
+    source_materialization_slots_used: 0
+    blocker: CONNECTOR_TO_EXECUTION_HOST_FILE_BRIDGE_UNAVAILABLE
+  worker_dispatch:
+    configured_lanes: 10
+    trace_lanes_used: 0
+    old_generation_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN
+    changed_snapshot_proved: false
