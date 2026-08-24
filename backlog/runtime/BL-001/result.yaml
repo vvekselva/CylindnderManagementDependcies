@@ -5,8 +5,8 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-231647.md
-  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-231647.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-233707.md
+  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-233707.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -44,17 +44,20 @@ result:
 
   checkpoint:
     total_endpoints: 134
-    examined: 108
-    complete: 108
+    examined: 112
+    complete: 112
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 26
-    matrix_materialized_rows: 85
+    not_yet_examined: 22
+    matrix_materialized_rows: 89
     historical_accepted_rows_pending_backfill: 23
 
   latest_newly_accepted_endpoints:
-    - {method: GET, path: /search/address/customer-address/{customerId}, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-231647.md}
+    - {method: GET, path: /search/addresstype/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md}
+    - {method: GET, path: /search/challantype/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md}
+    - {method: GET, path: /search/city/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md}
+    - {method: GET, path: /search/country/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md}
 
   unresolved_items: []
 
@@ -69,14 +72,14 @@ result:
   final_outputs: []
 
   next_action: >-
-    Continue direct safe frozen-source analysis of the remaining 26 endpoints. Materialize the twenty exact resolved source
+    Continue direct safe frozen-source analysis of the remaining 22 endpoints. Materialize the twenty exact resolved source
     entries only when a verified connector-to-local-filesystem source-provider bridge is available to write them into a
     worker-readable immutable snapshot. After verified snapshot advancement, recompute snapshot identity/dispatch fingerprint
     and fire a changed up-to-10-worker generation. Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent coverage.
 
   note: >-
-    BL-001 remains PARTIAL. The canonical matrix checkpoint is 108/134. This production fire source-proved and accepted
-    GET /search/address/customer-address/{customerId} through the exact generic CustomerAddressFetchByIDService binding,
-    CustomerAddressJpaDao and public.tbl_customer_address/public.tbl_customer/public.tbl_address. It does not claim worker
-    snapshot materialization or lane execution that did not occur. VERIFIED/CLOSED remain false and QG-TRC-015 explicit
-    user acceptance remains required after all automatic gates pass.
+    BL-001 remains PARTIAL. The canonical matrix checkpoint is 112/134. This production checkpoint source-proved and accepted
+    four REST search endpoints through their exact generic Spring search-service implementations, shared pure validator,
+    typed Spring Data JPA DAOs and directly mapped PostgreSQL tables. It does not claim worker snapshot materialization or
+    lane execution that did not occur. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance remains required
+    after all automatic gates pass.
