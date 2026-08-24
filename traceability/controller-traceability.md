@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **119 / 134 examined; 119 COMPLETE; 0 UNRESOLVED; 15 not yet examined.**  
-Rows currently materialized below: **96**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **124 / 134 examined; 124 COMPLETE; 0 UNRESOLVED; 10 not yet examined.**  
+Rows currently materialized below: **101**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -109,12 +109,17 @@ Rows currently materialized below: **96**. The other 23 historically accepted ro
 | POST | `/search/cylinder/by-serial-and-state` | `RestfulCylinderServices.getCylinderBySerialAndState` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_VIEW_AND_TERMINAL_JSON | `public.tbl_cylinder_states`; `public.vw_cylinder_global_search`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-001738.md` |
 | POST | `/search/cylinder/by-customer` | `RestfulCylinderServices.getCylindersByCustomer` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_TABLES_AND_TERMINAL_JSON | `public.vw_cylinder_party_custody_with_identifiers`; `public.tbl_cylinder`; `public.tbl_product`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-001738.md` |
 | POST | `/search/cylinder/by-supplier` | `RestfulCylinderServices.getCylindersBySupplier` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_TABLES_AND_TERMINAL_JSON | `public.vw_cylinder_party_custody_with_identifiers`; `public.tbl_cylinder`; `public.tbl_product`; `CylinderSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-001738.md` |
+| GET | `/search/product-category/{searchText}` | `RestfulProductCategoryServices.getProductCategories` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_product_category`; `ProductCategorySearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-003910.md` |
+| GET | `/search/product/{searchText}` | `RestfulProductServices.getProducts` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_product`; `ProductSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-003910.md` |
+| GET | `/search/product-uom/{searchText}` | `RestfulProductUomServices.getProductUoms` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_product_uom`; `ProductUomSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-003910.md` |
+| GET | `/search/state/{searchText}` | `RestfulStateServices.getStates` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_state`; `StateSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-003910.md` |
+| GET | `/search/supplier/{searchText}` | `RestfulSupplierSearchService.getSuppliers` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_supplier`; `SupplierSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-003910.md` |
 
 ## Current unresolved paths
 
-**None among the 119 examined endpoints.**
+**None among the 124 examined endpoints.**
 
-This does not close BL-001: **15 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **10 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
