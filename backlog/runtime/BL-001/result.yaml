@@ -5,8 +5,8 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-230001.md
-  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-230001.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-231647.md
+  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-231647.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -28,27 +28,8 @@ result:
     unresolved_source_resolution_entries: 0
     restage_generations_ready: 2
     max_parallel_materialization_slots: 10
-    latest_verified_candidates:
-      - ChallanPageAuditLedgerDo
-      - ChallanPagePhotoDo
-      - ICylinderManagementApplicationService
-      - TripReturnWorkflowService
-      - ChallanBookRegistryDo
-      - SummaryMetricLookupDo
-      - ChallanBookRegistryMapper
-      - SummaryMetricLookupMapper
-      - TripChallanEntryTrackerAuditDo
-      - TripChallanEntryTrackerDo
-      - ChallanEntryAgingDashboardMapper
-      - ChallanHeatmapMetricsViewDo
-      - TripChallanBookAssignmentViewDo
-      - ChallanHeatmapMetricsViewMapper
-      - ChallanPageAuditLedgerMapper
-      - CustomerAddressLocationOfflineMapService
-      - CustomerProductConsumptionProjectionViewDo
-      - CustomerConsumptionProjectionMapper
-      - ICylinderManagementApplicationMediator
-      - CompleteTripServiceImpl
+    source_materialization_slots_completed_this_checkpoint: 0
+    source_materialization_transport_blocker: CONNECTOR_TO_EXECUTION_HOST_FILE_BRIDGE_UNAVAILABLE
 
   lane_utilization_gate:
     id: QG-LANE-001
@@ -59,20 +40,21 @@ result:
     backend_capacity_probe_peak: 10
     worker_failures: 0
     residual_lane_logs: 0
+    trace_lanes_used_this_checkpoint: 0
 
   checkpoint:
     total_endpoints: 134
-    examined: 107
-    complete: 107
+    examined: 108
+    complete: 108
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 27
-    matrix_materialized_rows: 84
+    not_yet_examined: 26
+    matrix_materialized_rows: 85
     historical_accepted_rows_pending_backfill: 23
 
   latest_newly_accepted_endpoints:
-    - {method: POST, path: /stop, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-230001.md}
+    - {method: GET, path: /search/address/customer-address/{customerId}, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-231647.md}
 
   unresolved_items: []
 
@@ -87,13 +69,14 @@ result:
   final_outputs: []
 
   next_action: >-
-    Materialize the twenty exact resolved source entries into an advanced immutable staged snapshot and verify every
-    manifest/blob identity before worker SERVICE. Fire a changed up-to-10-worker generation only after QG-SOURCE-001 proves
-    snapshot advancement. Continue direct safe source analysis of the remaining 27 not-yet-examined endpoints while the
-    matrix is INCREMENTAL_PARTIAL. Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage.
+    Continue direct safe frozen-source analysis of the remaining 26 endpoints. Materialize the twenty exact resolved source
+    entries only when a verified connector-to-local-filesystem source-provider bridge is available to write them into a
+    worker-readable immutable snapshot. After verified snapshot advancement, recompute snapshot identity/dispatch fingerprint
+    and fire a changed up-to-10-worker generation. Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent coverage.
 
   note: >-
-    BL-001 remains PARTIAL. The canonical matrix checkpoint is 107/134. This production fire source-proved and accepted
-    POST /stop with separate customer, supplier, guard and challan-link branches, while preserving fail-closed worker
-    idempotency. It does not claim worker-snapshot materialization or lane execution that did not occur. VERIFIED/CLOSED
-    remain false and QG-TRC-015 explicit user acceptance remains required after all automatic gates pass.
+    BL-001 remains PARTIAL. The canonical matrix checkpoint is 108/134. This production fire source-proved and accepted
+    GET /search/address/customer-address/{customerId} through the exact generic CustomerAddressFetchByIDService binding,
+    CustomerAddressJpaDao and public.tbl_customer_address/public.tbl_customer/public.tbl_address. It does not claim worker
+    snapshot materialization or lane execution that did not occur. VERIFIED/CLOSED remain false and QG-TRC-015 explicit
+    user acceptance remains required after all automatic gates pass.
