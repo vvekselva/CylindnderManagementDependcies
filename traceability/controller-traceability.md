@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **72 / 134 examined; 72 COMPLETE; 0 UNRESOLVED; 62 not yet examined.**  
-Rows currently materialized below: **49**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **98 / 134 examined; 98 COMPLETE; 0 UNRESOLVED; 36 not yet examined.**  
+Rows currently materialized below: **75**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -62,12 +62,38 @@ Rows currently materialized below: **49**. The other 23 historically accepted ro
 | POST | `/add-stop/challan-page-photo/delete-ajax` | `AddStopController.deleteChallanPagePhotoAjax` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_challan_page_photo`; HTTP 200/400/500 JSON terminal responses | `logs/runs/PRODUCTION-FIRE-20260824-172900.md` |
 | POST | `/add-stop/challan-page-photo/upload` | `AddStopController.uploadChallanPagePhoto` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT | `public.tbl_challan_page_audit_ledger`; `public.tbl_challan_book_registry`; `public.tbl_challan_page_photo`; redirect to Add Stop with flash success/error | `logs/runs/PRODUCTION-FIRE-20260824-180750.md` |
 | POST | `/add-stop/challan-page-photo/upload-ajax` | `AddStopController.uploadChallanPagePhotoAjax` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_JSON | `public.tbl_challan_page_audit_ledger`; `public.tbl_challan_book_registry`; `public.tbl_challan_page_photo`; HTTP 200/400/500 JSON | `logs/runs/PRODUCTION-FIRE-20260824-180750.md` |
+| GET | `/add-stop` | `AddStopController.showStopPage` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_VIEW_AND_TERMINAL_VIEWS | load/trip/status; challan assignment view; page ledger/photo; customer/supplier stop views or guard redirect | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/trip-return` | `TripReturnController.showReturnPage` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_VIEW_AND_TERMINAL_VIEW | load/trip/status/vehicle/driver; challan assignment/ledger/photo; TripReturnChallanBookReview | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| POST | `/trip-return` | `TripReturnController.returnTripAndBooks` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | page ledger; book assignment/registry; trip/status; redirect or review view | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/customer-demands` | `CustomerDemandController.dashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_VIEWS_AND_TERMINAL_VIEW | demand dashboard/daily metrics views; order request/customer/address/product; dashboard view | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| POST | `/customer-demands` | `CustomerDemandController.create` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_REDIRECT | customer/product/address/order-request tables; redirect | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| POST | `/customer-demands/{requestId}/mark-delivered` | `CustomerDemandController.markDelivered` | COMPLETE | FULL | POSTGRES_TABLE_AND_REDIRECT | `public.tbl_customer_order_request`; redirect | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/trip-review` | `TripReviewController.showReviewQueue` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_trip_review_header`; TripReviewList | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/fetchSupplierByPage` | `SupplierFetchByPageController.doGet` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW_REDIRECT | supplier/address/phone/city/state/country; SupplierListPage or handled redirect | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/vehicle-loads/list` | `VehicleLoadByPageController.listVehicleLoads` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_TABLES_AND_TERMINAL_VIEW | active-trips view; trip/load/driver/vehicle/status tables; VehicleLoad list view | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/vehicle-loads/all-list` | `VehicleLoadByPageController.listAllVehicleLoads` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | load/trip/driver/vehicle/status tables; VehicleLoad list view | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/vehicle-trips/list` | `VehicleTripController.listVehicleTrips` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | trip/vehicle/driver tables; `tst/trip-list` | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/party-custody-traceability` | `PartyCustodyTraceabilityController.showTraceability` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | custody/cylinder/customer/supplier tables; traceability dashboard | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/reconciliation-command-center` | `ReconciliationCommandCenterController.showCommandCenter` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | reconciliation header/tracker plus conditional event/audit tables; command-center view | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/reconciliation-command-center/details` | `ReconciliationCommandCenterController.showTripDetails` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW | reconciliation header/tracker/event/audit tables; details view | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/ownership-dashboard` | `OwnershipDashboardController.showOwnershipDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEWS_AND_TERMINAL_VIEW | ownership summary/current/party views; premium dashboard | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/ownership-dashboard/yard` | `OwnershipDashboardController.showYardOwnership` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_ownership_current_cylinder_location`; OwnershipLocationDetail | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/ownership-dashboard/customer` | `OwnershipDashboardController.showCustomerOwnership` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_ownership_current_cylinder_location`; OwnershipLocationDetail | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/ownership-dashboard/supplier` | `OwnershipDashboardController.showSupplierOwnership` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_ownership_current_cylinder_location`; OwnershipLocationDetail | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/ownership-dashboard/logistics` | `OwnershipDashboardController.showLogisticsOwnership` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_ownership_current_cylinder_location`; OwnershipLocationDetail | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/delivery-planning/demand-points.geojson` | `DeliveryPlanningApiController.demandPointsGeoJson` | COMPLETE | FULL | POSTGRES_VIEW_AND_TERMINAL_JSON | `public.vw_customer_delivery_planning_signal`; GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/delivery-planning/demand-bubbles.geojson` | `DeliveryPlanningApiController.demandBubblesGeoJson` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_VIEW_AND_TERMINAL_JSON | yard/location/customer-address tables + planning-signal view; GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/delivery-planning/customer-density-bubbles.geojson` | `DeliveryPlanningApiController.customerDensityBubblesGeoJson` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_VIEW_AND_TERMINAL_JSON | yard/location/customer-address tables + planning-signal view; GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/delivery-planning/stops` | `DeliveryPlanningApiController.listStops` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_delivery_planning_stop`; JSON | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/delivery-planning/stops/{stopId}/nearby-customers` | `DeliveryPlanningApiController.nearbyCustomers` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_VIEWS_AND_TERMINAL_JSON | planning-stop table; planning-signal/address-location views; JSON | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/delivery-planning/customer-coverage.geojson` | `DeliveryPlanningApiController.customerCoverageGeoJson` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_VIEW_AND_TERMINAL_JSON | address-location-status view + planning-stop table; GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
+| GET | `/delivery-planning/stops.geojson` | `DeliveryPlanningApiController.planningStopsGeoJson` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_delivery_planning_stop`; GeoJSON | `logs/runs/PRODUCTION-FIRE-20260824-181810.md` |
 
 ## Current unresolved paths
 
-**None among the 72 examined endpoints.**
+**None among the 98 examined endpoints.**
 
-This does not close BL-001: **62 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **36 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
