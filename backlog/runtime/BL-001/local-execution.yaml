@@ -1,5 +1,5 @@
 local_execution:
-  version: 18
+  version: 19
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T05:33:25+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-053325.md
+    checkpoint_time: 2026-08-24T08:03:01+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-080301.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -58,6 +58,18 @@ local_execution:
       fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
+    direct_source_binding_resolutions:
+      - endpoint: POST /cylinderDelivery
+        controller: Uc02Phase02CylinderDeliveryController
+        interface: ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>
+        implementation: com.sreyas.datamatics.cylinder.management.mediator.Uc02Phase02CylinderDeliveryMediator
+        implementation_blob_sha: bb4796913edc0399fc076c3a8123139b04620f3c
+        invoked_service: com.sreyas.datamatics.cylinder.management.services.OrderIngestionService
+        service_blob_sha: 282f41ab73163ea07d074b53dc4370405dd2722b
+        validator: com.sreyas.datamatics.cylinder.management.validator.OrderIngestionRequestValidator
+        validator_blob_sha: 67d9a5a686fd7bcd20965f5200108a438a87abf1
+        trace_state: COMPLETE_FULL_BRANCHING
+        evidence: logs/runs/PRODUCTION-FIRE-20260824-080301.md
     directly_source_closed_families:
       - controller: ChallanBookWebController
         evidence: logs/runs/PRODUCTION-FIRE-20260824-003111.md
@@ -73,47 +85,29 @@ local_execution:
         endpoints:
           - {method: GET, path: /challan-heatmap, state: COMPLETE, chain_completeness: FULL_BRANCHING}
       - controller: ChallanPagePhotoController
-        controller_blob_sha: 734bf079a5c8227573e2c7f47a984cace9cfd75f
-        dao_blob_sha: 91786a6147be2d695eae1be5d8d066606cb41633
-        entity_blob_sha: cd49fe4e62da3d8a2016ec8c813a2e363ee3d1c6
         evidence: logs/runs/PRODUCTION-FIRE-20260824-053325.md
-        family_state: SOURCE_CLOSED_CALLER_VISIBLE_ENDPOINT
         endpoints:
           - {method: GET, path: /challan-page-photo/{challanPagePhotoId}, state: COMPLETE, chain_completeness: FULL}
-        final_dependencies:
-          - public.tbl_challan_page_photo
-          - HTTP 404 / inline binary response
       - controller: CustomerAddressLocationController
-        controller_blob_sha: 4d27c763dcec67022cd986c79fb73d32d502ad02
-        service_blob_sha: d84ff5be5dc5a0767b5604e0edce76fc708aa73a
         evidence:
           - logs/runs/PRODUCTION-FIRE-20260824-013546.md
           - logs/runs/PRODUCTION-FIRE-20260824-020143.md
         family_state: SOURCE_CLOSED_ALL_10_ENDPOINTS
       - controller: CustomerConsumptionDashboardController
-        controller_blob_sha: 371961430eca7dfd7ac7dc62244377ed0a718a12
-        service_blob_sha: f50182735f51ef168861a3df1d84eef1bf62040c
-        dao_blob_sha: 754dec885b74dd52c77e224da74d29873911e149
-        entity_blob_sha: 15a8d9469a2783e210fc0f3ae66c62430a18d48a
         evidence: logs/runs/PRODUCTION-FIRE-20260824-023321.md
         family_state: SOURCE_CLOSED_ALL_4_CALLER_VISIBLE_PATHS
       - controller: OwnershipObligationDashboardController
-        controller_blob_sha: 5bdd9577823c9ae1d15b87f8002382e54e17d025
-        service_blob_sha: ce1a0e238260fc7567b16b46214ca654787a6a53
-        detail_dao_blob_sha: 8530e73ac22c3f88012f71e2f64422a0f9521dbb
-        summary_dao_blob_sha: 44782e2b5fa842de61cf9b9c5e29eb465cc16229
-        detail_entity_blob_sha: 1b41b11601b446e1f85895330869c8c468f603f3
-        summary_entity_blob_sha: 3c35cb6f89b11f338a4c25519e0c38351f24ac39
         evidence: logs/runs/PRODUCTION-FIRE-20260824-033550.md
-        family_state: SOURCE_CLOSED_CALLER_VISIBLE_ENDPOINT
         endpoints:
           - {method: GET, path: /ownership-obligation-dashboard, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-        final_dependencies:
-          - public.tbl_cylinder_party_custody
-          - public.tbl_cylinder
-          - public.tbl_customer
-          - public.tbl_supplier
-          - final-version-1/OwnershipObligationDashboard
+      - controller: Uc02Phase02CylinderDeliveryController
+        evidence:
+          - logs/runs/PRODUCTION-FIRE-20260824-070036.md
+          - logs/runs/PRODUCTION-FIRE-20260824-080301.md
+        family_state: SOURCE_CLOSED_BOTH_ENDPOINTS
+        endpoints:
+          - {method: GET, path: /cylinderDelivery, state: COMPLETE, chain_completeness: FULL}
+          - {method: POST, path: /cylinderDelivery, state: COMPLETE, chain_completeness: FULL_BRANCHING}
 
   source_state:
     gate: QG-SOURCE-001
@@ -158,30 +152,28 @@ local_execution:
     closed_waiting_validation_behavior: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
     interrupted_running_behavior: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
     changed_dispatch_behavior: START_NEW_EXECUTION_GENERATION
-    already_synced_behavior: NOOP_ALREADY_COMMITTED
+    already_closed_synced: NOOP_ALREADY_COMMITTED
     validation_cases_passed: 5
     validation_cases_total: 5
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 58
-    complete: 56
+    examined: 60
+    complete: 58
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 76
+    not_yet_examined: 74
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 34
+    matrix_materialized_rows: 36
     historical_accepted_rows_pending_backfill: 24
-    latest_newly_accepted_endpoints:
-      - GET /challan-page-photo/{challanPagePhotoId}
-    latest_historical_backfill:
-      - GET /customer-spot-cylinder-check/fetch
-      - GET /yard-audit-dashboard
+    latest_state_transition:
+      - POST /cylinderDelivery: UNRESOLVED -> COMPLETE
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-080301.md
 
   next_action: >-
     Continue other not-yet-examined endpoint families from exact frozen-source evidence while resolving/materializing the 16
     outstanding source requests and the pending CompleteTripServiceImpl worker-snapshot file. Historical accepted traces may
     be backfilled only from durable accepted evidence. Fire the same ten-task discovery only after staged-executor preflight
-    proves an advanced immutable snapshot. Preserve the two canonical unresolved POST endpoints until every branch dependency
-    is source-proved.
+    proves an advanced immutable snapshot. Preserve POST /customer-spot-cylinder-check/submit and POST /walkin-sale as the
+    two remaining canonical unresolved endpoints until every conditional branch dependency is source-proved.
