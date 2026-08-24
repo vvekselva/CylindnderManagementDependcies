@@ -5,6 +5,9 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
+  sync_state: PENDING_SYNC_WORK_UNIT_STATUS
+  pending_sync_artifact: backlog/runtime/BL-001/work-unit-status.yaml
+  pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
   latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-000044.md
   latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-000044.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -71,14 +74,14 @@ result:
   final_outputs: []
 
   next_action: >-
-    Continue direct safe frozen-source analysis of the remaining 19 endpoints. Materialize the twenty exact resolved source
-    entries only when a verified connector-to-local-filesystem source-provider bridge is available to write them into a
-    worker-readable immutable snapshot. After verified snapshot advancement, recompute snapshot identity/dispatch fingerprint
-    and fire a changed up-to-10-worker generation. Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent coverage.
+    First retry synchronization of `backlog/runtime/BL-001/work-unit-status.yaml` only; do not replay workers or duplicate
+    the three already accepted endpoint traces. After QG-SSOT-001 returns PASS, continue direct safe frozen-source analysis
+    of the remaining 19 endpoints. Materialize the twenty exact resolved source entries only when a verified
+    connector-to-local-filesystem bridge can write them into a worker-readable immutable snapshot. After verified snapshot
+    advancement, recompute snapshot identity/dispatch fingerprint and fire a changed up-to-10-worker generation.
 
   note: >-
-    BL-001 remains PARTIAL. The canonical matrix checkpoint is 115/134. This production checkpoint source-proved and accepted
-    three REST customer/driver endpoints through exact generic Spring service implementations, typed Spring Data JPA DAOs,
-    directly mapped PostgreSQL tables and scalar-only mappers. It does not claim worker snapshot materialization or lane
-    execution that did not occur. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance remains required
-    after all automatic gates pass.
+    BL-001 remains PARTIAL. Canonical accepted endpoint truth is 115/134, but one Level-3 work-unit projection remains at
+    the prior 112/134 checkpoint because two GitHub contents-API compare-and-swap writes were rejected. This is a PENDING_SYNC
+    condition, not permission to rerun accepted work. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance
+    remains required after all automatic gates pass.
