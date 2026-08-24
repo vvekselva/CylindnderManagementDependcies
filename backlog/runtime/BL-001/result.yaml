@@ -8,8 +8,8 @@ result:
   sync_state: SYNCHRONIZED
   pending_sync_artifact: null
   pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-020259.md
-  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-001738.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-035743.md
+  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-031101.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -47,18 +47,19 @@ result:
 
   checkpoint:
     total_endpoints: 134
-    examined: 126
-    complete: 126
+    examined: 129
+    complete: 129
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 8
-    matrix_materialized_rows: 103
+    not_yet_examined: 5
+    matrix_materialized_rows: 106
     historical_accepted_rows_pending_backfill: 23
 
   latest_newly_accepted_endpoints:
-    - {method: GET, path: /search/vehicle/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-020259.md}
-    - {method: GET, path: /find/Vehicle-by-Id/{vehicleId}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-020259.md}
+    - {method: POST, path: /search/cylinder/ownership/by-state, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
+    - {method: POST, path: /search/cylinder/by-state, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
+    - {method: POST, path: /search/cylinder/on-vehicle, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md}
 
   unresolved_items: []
 
@@ -73,12 +74,12 @@ result:
   final_outputs: []
 
   next_action: >-
-    Continue direct safe frozen-source analysis of the remaining 8 endpoints. Materialize the twenty exact resolved
+    Continue direct safe frozen-source analysis of the remaining 5 endpoints. Materialize the twenty exact resolved
     source entries only when a verified connector-to-local-filesystem bridge can write them into a worker-readable
     immutable snapshot. After verified snapshot advancement, recompute snapshot identity/dispatch fingerprint and fire
     a changed up-to-10-worker generation.
 
   note: >-
-    BL-001 remains PARTIAL. Canonical accepted endpoint truth is 126/134. Work-unit status, matrix, Explorer projection,
-    unresolved ledger and result are synchronized to this checkpoint. VERIFIED/CLOSED remain false and QG-TRC-015 explicit
-    user acceptance remains required after all automatic gates pass.
+    BL-001 remains PARTIAL. Canonical accepted endpoint truth is 129/134. Work-unit status, matrix, Explorer projection,
+    unresolved ledger, analysis, gate state, local execution, execution statistics and result are synchronized to this
+    checkpoint. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance remains required after all automatic gates pass.
