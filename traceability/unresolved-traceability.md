@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **105**
-- COMPLETE: **105**
+- Explicitly examined for final dependency: **106**
+- COMPLETE: **106**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **29**
+- Not yet examined: **28**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted `POST /trip-review/{vehicleTripId}/close-review` in `logs/runs/PRODUCTION-FIRE-20260824-213728.md`. The full source-proved chain is `TripReviewController.closeReview -> TripReviewUpdateService.closeReview -> VehicleTripReviewJpaDao.markTripReviewed -> VehicleTripDo`, with the DAO's native SQL updating `public.tbl_vehicle_trip` and resolving REVIEWED/NOT_REVIEWED IDs from `public.tbl_vehicle_review_status`, followed by `redirect:/trip-review/{vehicleTripId}` with success or error flash state.
+The Primary Orchestrator accepted `GET /trip-review/{vehicleTripId}` in `logs/runs/PRODUCTION-FIRE-20260824-170049.md`. The source-proved detail path starts at `TripReviewController.showTripReview`, calls `TripReviewFetchService.fetchTripReview`, reads the trip-review header view, direct stop/movement/custody/challan sources through `TripReviewDirectDetailJpaDao`, optionally builds the trip-review map through `CustomerAddressLocationOfflineMapService`, and renders `with-menu/TripReviewDashboard`.
 
-There are zero canonical unresolved endpoints among the 105 examined endpoints. This does not close BL-001 because 29 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 106 examined endpoints. This does not close BL-001 because 28 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
