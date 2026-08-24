@@ -1,9 +1,9 @@
-version: 8
+version: 9
 purpose: >-
   Tell the Orchestrator which Backlog Items may run and enforce the self-reliant production execution loop,
-  including continuous Traceability Matrix projection from each accepted endpoint trace.
-  GitHub is VCS/persistence; the Automation Tool owns source staging, local execution, recovery, validation,
-  matrix projection and synchronization.
+  including continuous Traceability Matrix projection from each accepted endpoint trace and sustained backlog-drain
+  utilization during each scheduler invocation. GitHub is VCS/persistence; the Automation Tool owns source staging,
+  local execution, recovery, validation, matrix projection and synchronization.
 
 selection:
   mode: ENABLED_BACKLOG_ITEMS_ONLY
@@ -34,6 +34,46 @@ execution_engine:
   fallback_source_provider: LOCAL_GIT_CHECKOUT
   staged_executor: automation/staged-lane-executor-v3.py
   staged_worker: automation/staged-lane-worker-v3.py
+
+invocation_utilization_contract:
+  mode: BACKLOG_DRAIN_WINDOW
+  scheduler_trigger_starts: ONE_ORCHESTRATOR_INVOCATION
+  scheduler_trigger_is_not: ONE_WORKER_BATCH
+  singleton_invocation_required: true
+  target_invocation_window_minutes: 45
+  minimum_productive_window_minutes: 30
+  hard_stop_window_minutes: 45
+  early_exit_before_minimum_allowed_only_when: ELIGIBLE_RUNNABLE_BACKLOG_TASK_COUNT_ZERO
+  normal_exit_conditions:
+    - ELIGIBLE_RUNNABLE_BACKLOG_TASK_COUNT_ZERO
+    - INVOCATION_HARD_STOP_WINDOW_REACHED
+  batch_loop:
+    enabled: true
+    replan_after_every_validated_checkpoint: true
+    refill_worker_pool_from_backlog: true
+    max_workers_per_generation: 10
+    continue_generations_while_time_remains_and_work_exists: true
+    one_generation_success_does_not_close_invocation: true
+  empty_dispatch_with_remaining_backlog:
+    behavior: CONTINUE_RESOLUTION_REPLAN_WITHIN_WINDOW
+    artificial_work_for_utilization_forbidden: true
+    allowed_actions:
+      - resolve exact missing source requests
+      - resolve exact Spring binding requests
+      - validate already closed evidence
+      - retry PENDING_SYNC only
+      - perform fail-closed interrupted-execution recovery
+      - rebuild next safe-independent dispatch
+    stop_early_only_if_runnable_task_pool_is_zero: true
+  window_expiry:
+    behavior: CHECKPOINT_SYNC_AND_EXIT_WINDOW_EXPIRED
+    remaining_backlog_stays_open: true
+    next_scheduler_invocation_resumes_idempotently: true
+  utilization_goal: >-
+    A scheduler invocation must consume the available execution window by repeatedly draining eligible safe-independent
+    backlog work. It must not stop merely because one <=10-worker generation completed successfully. When runnable work
+    remains, continue generation -> aggregate -> validate -> synchronize -> replan -> refill until the 45-minute hard
+    stop. It may terminate earlier only when the eligible runnable task pool is zero.
 
 production_source_contract:
   gate: QG-SOURCE-001
@@ -97,8 +137,12 @@ execution_recovery_contract:
   same_fingerprint_closed_waiting_validation: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
   interrupted_running_without_live_workers: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
   changed_fingerprint: START_NEW_EXECUTION_GENERATION
-  already_closed_synced: NOOP_ALREADY_COMMITTED
+  already_closed_synced: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
   github_sync_failure: PRESERVE_VALIDATED_RESULT_AND_MATRIX_CHANGES_AS_PENDING_SYNC_AND_RETRY_SYNC_ONLY
+  invocation_rule: >-
+    Idempotency is evaluated before every generation inside the same scheduler invocation. NOOP for a closed generation
+    means do not duplicate that generation; it does not mean terminate the scheduler invocation when other eligible
+    backlog work exists.
 
 backlog_items:
   BL-001:
@@ -134,14 +178,17 @@ backlog_items:
 
 scheduled_run_rules:
   - read this file first
+  - acquire a singleton invocation lease; never overlap two scheduler invocations
+  - treat the scheduler trigger as a 45-minute backlog-drain invocation, not as one <=10-worker batch
   - ignore Backlog Items with run_enabled false
   - enforce QG-SOW-001 and QG-SSOT-001 before PLAN or REPLAN
   - apply QG-DEP-001 after the SSOT gate passes
-  - inspect execution journal before deciding whether to fire new workers
+  - inspect execution journal before deciding whether to fire each new worker generation
   - if the same dispatch is PENDING_SYNC retry synchronization only
   - if closed evidence awaits validation validate it without rerunning workers
+  - NOOP an already synchronized generation but immediately replan for other eligible backlog work
   - create Worker Inputs only from approved in-scope Work Units
-  - before worker fire enforce QG-SOURCE-001 using the highest-priority available source provider
+  - before each worker fire enforce QG-SOURCE-001 using the highest-priority available source provider
   - prefer ORCHESTRATOR_STAGED_SNAPSHOT and do not require a local source checkout when it is available
   - resolve source requests using repository/source-layout.yaml at the exact frozen commit
   - never give local workers GitHub credentials
@@ -152,10 +199,16 @@ scheduled_run_rules:
   - after each Orchestrator-accepted endpoint trace immediately upsert the traceability matrix row by HTTP method plus path
   - synchronize unresolved blocked failed matrix rows and matrix-progress counters in the same checkpoint
   - do not wait for 100 percent coverage before creating or updating matrix rows
+  - after every validated/synchronized generation re-read runtime and rebuild the next safe-independent task set
+  - refill up to 10 lanes repeatedly while invocation time remains and eligible runnable backlog work exists
+  - do not terminate merely because one worker generation completed successfully
+  - if dispatch is temporarily empty but backlog remains perform source resolution validation recovery or replan work within the same invocation
+  - early termination before 30 minutes is allowed only when the eligible runnable backlog task count is zero
+  - when runnable backlog remains continue until the 45-minute hard stop then checkpoint synchronize and exit WINDOW_EXPIRED
   - WU-BL001-002 finalizes/reconciles the incremental matrix only after WU-BL001-001 reaches 100 percent trace-result coverage
   - WU-BL001-003 validates traceability gates from the reconciled matrix
   - later backlog work may consume only a FINAL_VALIDATED matrix and must still pass its own SSOT/SOW/gates
-  - enforce zero transient lane logs at invocation boundaries
+  - enforce zero transient lane logs at every worker-generation boundary and final invocation boundary
   - evaluate QG-LANE-001 using measured natural SERVICE overlap; never add artificial delay merely to pass the gate
   - synchronize only validated durable runtime/log/evidence/matrix changes back to GitHub
   - on GitHub sync failure preserve PENDING_SYNC and do not rerun the same worker batch
