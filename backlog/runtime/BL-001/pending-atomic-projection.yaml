@@ -1,4 +1,4 @@
-version: 1
+version: 2
 backlog_item: BL-001
 work_unit: WU-BL001-001
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -18,9 +18,7 @@ pending_endpoints:
     accepted_candidate_state: COMPLETE
     chain_completeness: FULL
     final_dependency_type: POSTGRES_VIEW_AND_TERMINAL_JSON
-    final_dependencies:
-      - public.vw_cylinder_global_search
-      - CylinderSearchResponseDto
+    final_dependencies: [public.vw_cylinder_global_search, CylinderSearchResponseDto]
     ordered_chain:
       - RestfulCylinderServices.getCylindersByStateUsingOwnershipModel
       - CylinderCurrentOwnershipByStateSearchService.searchWithText
@@ -30,6 +28,64 @@ pending_endpoints:
       - CylinderDtoIdentifierMappingUtil.fromGlobalSearchRow
       - CylinderSearchResponseDto
     evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md
+  - method: POST
+    path: /search/cylinder/by-state
+    controller: RestfulCylinderServices
+    controller_method: getCylindersByState
+    accepted_candidate_state: COMPLETE
+    chain_completeness: FULL_BRANCHING
+    final_dependency_type: POSTGRES_TABLES_AND_TERMINAL_JSON
+    final_dependencies:
+      - public.tbl_yard_inventory_line
+      - public.tbl_cylinder
+      - public.tbl_cylinder_identifier
+      - cylinder-state/product relations reached by the yard inventory query
+      - YardCylinderStockResponseDto
+    ordered_chain:
+      - RestfulCylinderServices.getCylindersByState
+      - AvailableYardCylinderByStateSearchService.searchWithText
+      - YardInventoryLineJpaDao.findYardProductWiseEmptyFullCounts / findActiveYardCylindersByStateNames*
+      - YardInventoryLineDo
+      - public.tbl_yard_inventory_line
+      - CylinderDo / public.tbl_cylinder
+      - CylinderIdentifierJpaDao / CylinderIdentifierDo / public.tbl_cylinder_identifier
+      - YardCylinderStockResponseDto
+    source_blobs:
+      service: 68bdadb3240e901277ed80922a216464f416ac6c
+      yard_inventory_dao: 93ac8870c9329d45eaa8b07bb3441c3d2c442527
+      yard_inventory_entity: 177507033ac72f7dcd1b468443fd9b237f79bd1b
+      cylinder_entity: 1ace2298cd8ec2be756ef517e84058da1399eea7
+      cylinder_identifier_entity: 9862b89fa452b99ccb6066b3c817fac42e0b5ecf
+    evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md
+  - method: POST
+    path: /search/cylinder/on-vehicle
+    controller: RestfulCylinderServices
+    controller_method: getCylindersOnVehicle
+    accepted_candidate_state: COMPLETE
+    chain_completeness: FULL_BRANCHING
+    final_dependency_type: POSTGRES_TABLES_AND_TERMINAL_JSON
+    final_dependencies:
+      - public.tbl_cylinder_logistics_execution_line
+      - public.tbl_cylinder
+      - public.tbl_cylinder_identifier
+      - logistics execution / vehicle-load / cylinder-state relations reached by the active-vehicle query
+      - CylinderSearchResponseDto
+    ordered_chain:
+      - RestfulCylinderServices.getCylindersOnVehicle
+      - CylindersOnVehicleSearchServiceWithOwnershipModel.searchWithText
+      - CylinderLogisticsExecutionLineJpaDao.findActiveVehicleContents
+      - CylinderLogisticsExecutionLineDo
+      - public.tbl_cylinder_logistics_execution_line
+      - CylinderDo / public.tbl_cylinder
+      - CylinderIdentifierJpaDao / CylinderIdentifierDo / public.tbl_cylinder_identifier
+      - CylinderSearchResponseDto
+    source_blobs:
+      service: 38e8b8c305971c73d121366c7809ed8a2d2d1746
+      logistics_line_dao: e0f66295adc79873c64b4fa42db05eb7850d115a
+      logistics_line_entity: 56d8fbb16b787975c3574185ed932baa904bcbc9
+      cylinder_entity: 1ace2298cd8ec2be756ef517e84058da1399eea7
+      cylinder_identifier_entity: 9862b89fa452b99ccb6066b3c817fac42e0b5ecf
+    evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md
 projection_requirements:
   - traceability/controller-traceability.md
   - traceability/unresolved-traceability.md
@@ -37,5 +93,11 @@ projection_requirements:
   - traceability/explorer/traceability-matrix-delta-20260825-031101.json
   - traceability/explorer/matrix-delta-20260825-031101.js
   - runtime Level-3 SSOT counters
+expected_checkpoint_after_successful_projection:
+  examined: 129
+  complete: 129
+  unresolved: 0
+  not_yet_examined: 5
+  matrix_materialized_rows: 106
 fail_closed_rule: >-
   Do not increment canonical accepted counts until every projection artifact above is synchronized to the same checkpoint.
