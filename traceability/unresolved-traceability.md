@@ -1,6 +1,6 @@
 # BL-001 Incremental Unresolved Traceability
 
-Status: **OPEN / INCREMENTAL — ZERO CURRENT UNRESOLVED ROWS**  
+Status: **READY FOR FINAL RECONCILIATION — ZERO CURRENT UNRESOLVED ROWS**  
 Backlog Item: BL-001 Controller Traceability  
 Work Unit: WU-BL001-001 Complete Source Repository Check And Maintain Incremental Matrix  
 Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **129**
-- COMPLETE: **129**
+- Explicitly examined for final dependency: **134**
+- COMPLETE: **134**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **5**
+- Not yet examined: **0**
 
 ## Current unresolved paths
 
@@ -23,17 +23,16 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator promoted three frozen-source cylinder REST routes from the durable projection queue: `POST /search/cylinder/ownership/by-state`, `POST /search/cylinder/by-state`, and `POST /search/cylinder/on-vehicle`. Their full source-proved chains were established in `logs/runs/PRODUCTION-FIRE-20260825-031101.md` and projected through `traceability/explorer/traceability-matrix-delta-20260825-035743.json`.
+The Primary Orchestrator source-proved the complete `DomainLookupController` family at the frozen baseline in `logs/runs/PRODUCTION-FIRE-20260825-051115.md`. Five previously unexamined POST routes moved to COMPLETE and two historical accepted endpoint keys were revalidated/backfilled. Canonical source-check coverage is now **134/134**.
 
-There are zero canonical unresolved endpoints among the 129 examined endpoints. This does not close BL-001 because 5 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints. This does not close BL-001: `WU-BL001-002` must still reconcile the base-plus-delta Traceability Matrix and materialize the remaining **21 historical accepted rows** from durable accepted evidence before final traceability-gate validation.
 
-## Incremental matrix synchronization rule
+## Reconciliation rule
 
-When the Primary Orchestrator proves an unresolved path:
+1. Keep every `(HTTP method, path)` unique.
+2. Backfill historical rows only from durable accepted evidence.
+3. Preserve the complete ordered/branching component chain for every COMPLETE row.
+4. Keep this ledger synchronized if reconciliation discovers an evidence gap.
+5. Do not mark the matrix `FINAL_VALIDATED` until WU-BL001-002 and WU-BL001-003 pass their required gates.
 
-1. update the corresponding `(HTTP method, path)` row in `traceability/controller-traceability.md`;
-2. update or close the matching entry here in the same synchronization checkpoint;
-3. update `traceability/matrix-progress.yaml` counters and Explorer structured/browser projection;
-4. continue source analysis without waiting for the entire Source Check to finish.
-
-The final matrix is not declared `FINAL_VALIDATED` until 100 percent endpoint trace-result coverage and all required traceability gates pass.
+BL-001 remains open and explicit user acceptance is still required before closure.
