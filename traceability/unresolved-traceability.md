@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **124**
-- COMPLETE: **124**
+- Explicitly examined for final dependency: **126**
+- COMPLETE: **126**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **10**
+- Not yet examined: **8**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted five frozen-source REST search routes in `logs/runs/PRODUCTION-FIRE-20260825-003910.md`: `GET /search/product-category/{searchText}`, `GET /search/product/{searchText}`, `GET /search/product-uom/{searchText}`, `GET /search/state/{searchText}`, and `GET /search/supplier/{searchText}`. Each route has a source-proved controller -> exact Spring search-service implementation -> JPA DAO -> mapped entity/table -> mapper -> terminal JSON chain. Mapper inspection confirmed that related entity associations not dereferenced by these routes were not added as guessed dependencies.
+The Primary Orchestrator accepted two frozen-source vehicle REST routes in `logs/runs/PRODUCTION-FIRE-20260825-020259.md`: `GET /search/vehicle/{searchText}` and `GET /find/Vehicle-by-Id/{vehicleId}`. Each route has a source-proved controller -> exact Spring service implementation -> `VehicleJpaDao` -> `VehicleDo` -> `public.tbl_vehicle` -> mapper -> terminal JSON chain.
 
-There are zero canonical unresolved endpoints among the 124 examined endpoints. This does not close BL-001 because 10 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 126 examined endpoints. This does not close BL-001 because 8 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
