@@ -6,7 +6,7 @@ Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically.
 
-Current canonical checkpoint: **60 / 134 examined; 57 COMPLETE; 3 UNRESOLVED; 74 not yet examined.**  
+Current canonical checkpoint: **60 / 134 examined; 58 COMPLETE; 2 UNRESOLVED; 74 not yet examined.**  
 Rows currently materialized below: **36**. The other 24 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
@@ -46,42 +46,17 @@ Rows currently materialized below: **36**. The other 24 historically accepted ro
 | GET | `/customer-spot-cylinder-check/fetch` | `CustomerSpotCylinderCheckController` fetch handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_VIEW | `CustomerSpotCylinderCheckService.findActiveSpotCheckBooksForLoad` -> `TripChallanBookAssignmentViewJpaDao` -> `public.vw_trip_challan_book_assignments` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-01 |
 | GET | `/yard-audit-dashboard` | `YardAuditDashboardController` dashboard handler | COMPLETE | PARTIAL_INTERMEDIATE_HOPS | POSTGRES_TABLES | `YardAuditDashboardFetchService.processRequest` -> `YardQualityGateJpaDao` -> `public.tbl_yard_stock_check`; `public.tbl_yard_stock_check_line`; `public.tbl_yard_quality_gate`; `public.tbl_cylinder_states`; `public.tbl_yard_check_event` | `logs/runs/INVOCATION-20260823-145512.md` / LANE-02 |
 | GET | `/cylinderDelivery` | `Uc02Phase02CylinderDeliveryController.doGet` | COMPLETE | FULL | TERMINAL_VIEW | `Uc02-Phase02-CylinderDeliveryView`; no mediator/service/DAO/database call | `logs/runs/PRODUCTION-FIRE-20260824-070036.md` |
-| POST | `/cylinderDelivery` | `Uc02Phase02CylinderDeliveryController.doPost` | UNRESOLVED | INCOMPLETE_AT_MEDIATOR_BINDING | UNRESOLVED_MEDIATOR_BINDING | Proved through `ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>.invokeServices(requestDto)`; concrete Spring mediator and downstream dependency chain not source-proved | `logs/runs/PRODUCTION-FIRE-20260824-070036.md` |
+| POST | `/cylinderDelivery` | `Uc02Phase02CylinderDeliveryController.doPost` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_challan_type`; `public.tbl_customer`; `public.tbl_customer_address`; `public.tbl_driver`; `public.tbl_vehicle`; `public.tbl_cylinder`; `public.tbl_product`; `public.tbl_order`; `public.tbl_order_line`; success redirect `/orderList?pageNumber=1&itemsPerPage=10`; validation-error re-render `Uc02-Phase02-CylinderDeliveryView` | `logs/runs/PRODUCTION-FIRE-20260824-080301.md` |
 
 ## `Uc02Phase02CylinderDeliveryController` chain summary
 
 `GET /cylinderDelivery` terminates entirely in the controller: `doGet()` constructs `UC02Phase02CylinderDeliveryRequestDto`, attaches a new `OrderDto`, and returns `Uc02-Phase02-CylinderDeliveryView`. The method has no mediator/service/DAO/repository/database access.
 
-`POST /cylinderDelivery` calls the injected generic `ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>.invokeServices(requestDto)`. The controller source proves the interface/generic boundary and its success/error terminal branches, but the concrete Spring mediator implementation is not yet source-proved. The row therefore remains UNRESOLVED at that exact intermediate hop and no database object is inferred.
-
-## `ChallanPagePhotoController` full-chain summary
-
-`GET /challan-page-photo/{challanPagePhotoId}` calls `ChallanPagePhotoJpaDao.findById` directly from the controller; there is no service layer in this path. `ChallanPagePhotoJpaDao` is a `JpaRepository<ChallanPagePhotoDo, Long>`, and `ChallanPagePhotoDo` explicitly maps with `@Table(name = "tbl_challan_page_photo", schema = "public")`. Missing or inactive rows terminate with HTTP 404; an active row terminates with an inline binary `ResponseEntity<byte[]>`. The controller, DAO and entity Git blobs are recorded in `PRODUCTION-FIRE-20260824-053325.md`.
+`POST /cylinderDelivery` is now source-closed. `doPost()` invokes the exact `@Component` `Uc02Phase02CylinderDeliveryMediator`, which implements `ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>` and calls `OrderIngestionService.processRequest`. The service invokes `OrderIngestionRequestValidator`; service and validator use the typed JPA repositories for Challan Type, Customer, Customer Address, Driver, Vehicle and Cylinder. Their mapped entities prove `public.tbl_challan_type`, `public.tbl_customer`, `public.tbl_customer_address`, `public.tbl_driver`, `public.tbl_vehicle`, and `public.tbl_cylinder`. The persistence branch executes `OrderJpaDao.save(orderDo)` -> `OrderDo` -> `public.tbl_order`; `OrderDo.orderLines` cascades `OrderLineDo` -> `public.tbl_order_line`, and each line's product association uses `ProductDo` -> `public.tbl_product`. The active controller terminal branches are the success redirect and validation-error re-render. Commented future transition-service code in the mediator is not treated as a dependency.
 
 ## Historical backfill: Attempt 26 accepted traces
 
 The durable Attempt 26 invocation already accepted three COMPLETE GET traces at the frozen source baseline: `GET /walkin-sale`, `GET /customer-spot-cylinder-check/fetch`, and `GET /yard-audit-dashboard`. These rows are materializations of previously accepted evidence, not new endpoint acceptances; therefore canonical Source Check counts are not advanced by those backfill operations. The historical evidence does not preserve every intermediate class name for the latter two paths, so their Explorer chains are explicitly marked `PARTIAL_INTERMEDIATE_HOPS` rather than inventing missing hops. The distinct `POST /walkin-sale` and `POST /customer-spot-cylinder-check/submit` paths remain UNRESOLVED.
-
-## `OwnershipObligationDashboardController` full-chain summary
-
-The controller calls `OwnershipObligationDashboardService.fetchDashboard`. The detail branch uses `OwnershipObligationDetailJpaDao` and `OwnershipObligationDetailViewDo`; its explicit `@Subselect` reads `public.tbl_cylinder_party_custody`, `public.tbl_cylinder`, `public.tbl_customer`, and `public.tbl_supplier`. The party-summary branch uses `OwnershipObligationPartySummaryJpaDao` and `OwnershipObligationPartySummaryViewDo`; its explicit `@Subselect` reads `public.tbl_cylinder_party_custody`, `public.tbl_customer`, and `public.tbl_supplier`. A separate closed-today metric executes native SQL directly against `public.tbl_cylinder_party_custody`. Both mapped result branches terminate in `final-version-1/OwnershipObligationDashboard`.
-
-## `CustomerConsumptionDashboardController` full-chain summary
-
-The controller exposes four caller-visible GET paths: three URL variants mapped to `dashboard` and one JSON API mapped to `dashboardData`. All four call `CustomerConsumptionDashboardService.fetchDashboard`, which builds a Spring Data specification/page request, reads `CustomerProductConsumptionProjectionViewJpaDao`, and executes summary count/sum/status/average queries through the same repository. `CustomerProductConsumptionProjectionViewDo` uses an explicit `@Subselect` from `public.vw_customer_product_consumption_projection`; therefore the projection view is the source-proved database dependency for this family. The view handler terminates at `with-menu/CustomerConsumptionDashboard`; the API handler returns `CustomerConsumptionDashboardDto` as JSON. The entity's `@Synchronize` table names are retained as Hibernate synchronization metadata and are not promoted to direct final dependencies without view-definition proof.
-
-## `CustomerAddressLocationController` full-chain summary
-
-The controller exposes ten caller-visible endpoints. All ten are now source-closed, including the previously accepted planning-map route. The service-backed routes are proved through `CustomerAddressLocationOfflineMapService` and the exact Spring Data/native-query components: `CustomerAddressLocationJpaDao`, `CustomerAddressJpaDao`, `YardInventoryJpaDao`, `YardLocationJpaDao`, and `CustomerLocationImportInboxJpaDao`. Their source proves dependencies on `public.vw_customer_address_location_status`, `public.tbl_customer_order_request`, `public.tbl_yard_inventory`, `public.tbl_yard_location`, `public.tbl_customer_address`, `public.tbl_customer_address_location`, and `public.tbl_customer_location_import_inbox`. Mapping components are explicit source-proved mapper calls and contain no persistence access. Branching query/persistence paths are preserved separately in the structured Explorer delta `traceability-matrix-delta-20260824-020143.json`.
-
-## Prior accepted full-chain summaries
-
-- `/challan-heatmap`: `ChallanHeatmapController.showHeatmap -> ChallanHeatmapFetchService.processRequest -> ChallanHeatmapMetricsViewJpaDao -> ChallanHeatmapMetricsViewDo -> public.vw_challan_heatmap_metrics -> mapper -> final-version-1/ChallanHeatmapDashboard`.
-- `/challan-entry-aging-dashboard`: tracker and audit branches flow through `ChallanEntryAgingDashboardService`, their respective JPA DAOs/entities/tables, mapper, then `final-version-1/ChallanEntryAgingDashboard`.
-- `/complete-trip`: `CompleteTripController.completeTrip -> CompleteTripServiceImpl.processRequest`, validator/service DAO branches, entity mappings, PostgreSQL objects and terminal redirect are preserved in the Explorer.
-- `ChallanBookWebController`: add-form follows summary-metric lookup to its table and view; save follows ingestion/registry persistence with optional audit ledger and error lookup branches.
-
-No intermediate dependency was inferred from naming; participating source components and explicit native SQL/entity mappings were fetched from the frozen baseline.
 
 ## Incremental update rule
 
