@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 21
+  version: 22
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,24 +18,21 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 78
+    latest_accepted_attempt: 79
     latest_accepted_attempt_sequence_note: LEGACY_COUNTER_NOT_USED_AS_CANONICAL_COVERAGE
-    latest_accepted_invocation: PRODUCTION-FIRE-20260825-003910
+    latest_accepted_invocation: PRODUCTION-FIRE-20260825-020259
     total_endpoints: 134
-    examined: 124
-    progress_percentage: 92.54
-    complete: 124
-    complete_percentage: 92.54
+    examined: 126
+    progress_percentage: 94.03
+    complete: 126
+    complete_percentage: 94.03
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 10
+    not_yet_examined: 8
     latest_state_transition:
-      - GET /search/product-category/{searchText}: NOT_YET_EXAMINED -> COMPLETE
-      - GET /search/product/{searchText}: NOT_YET_EXAMINED -> COMPLETE
-      - GET /search/product-uom/{searchText}: NOT_YET_EXAMINED -> COMPLETE
-      - GET /search/state/{searchText}: NOT_YET_EXAMINED -> COMPLETE
-      - GET /search/supplier/{searchText}: NOT_YET_EXAMINED -> COMPLETE
+      - GET /search/vehicle/{searchText}: NOT_YET_EXAMINED -> COMPLETE
+      - GET /find/Vehicle-by-Id/{vehicleId}: NOT_YET_EXAMINED -> COMPLETE
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -80,18 +77,18 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260825-003910
+    checkpoint_id: PRODUCTION-FIRE-20260825-020259
     worker_fire_started: false
     reason: DIRECT_SAFE_SOURCE_TRACE_ADVANCED_WHILE_EXECUTION_HOST_SNAPSHOT_MATERIALIZATION_TRANSPORT_UNAVAILABLE
-    endpoint_trace_checkpoint_before: 119
-    endpoint_trace_checkpoint_after: 124
-    endpoints_examined_added: 5
-    complete_added: 5
+    endpoint_trace_checkpoint_before: 124
+    endpoint_trace_checkpoint_after: 126
+    endpoints_examined_added: 2
+    complete_added: 2
     unresolved_change: 0
-    accepted_family: REST_SEARCH_PRODUCT_STATE_SUPPLIER
-    accepted_state_transition: FIVE_GET_SEARCH_ENDPOINTS_NOT_YET_EXAMINED_TO_COMPLETE
+    accepted_family: REST_VEHICLE_SEARCH_AND_FETCH_BY_ID
+    accepted_state_transition: TWO_GET_VEHICLE_ENDPOINTS_NOT_YET_EXAMINED_TO_COMPLETE
     accepted_chain_state: FULL
-    evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md
+    evidence: logs/runs/PRODUCTION-FIRE-20260825-020259.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
@@ -101,18 +98,18 @@ execution_statistics:
     trace_lanes_used: 0
 
   run_over_run:
-    endpoint_progress_percentage_point_change: 3.73
-    complete_percentage_point_change: 3.73
-    endpoint_relative_progress_change_percentage: 4.20
-    endpoint_examined_change: 5
-    complete_endpoint_change: 5
+    endpoint_progress_percentage_point_change: 1.49
+    complete_percentage_point_change: 1.49
+    endpoint_relative_progress_change_percentage: 1.61
+    endpoint_examined_change: 2
+    complete_endpoint_change: 2
     unresolved_endpoint_change: 0
-    remaining_endpoint_change: -5
-    remaining_work_reduction_percentage: 33.33
+    remaining_endpoint_change: -2
+    remaining_work_reduction_percentage: 20.00
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
     source_closure_direction: SOURCE_RESOLUTION_SET_READY_EXECUTION_HOST_MATERIALIZATION_TRANSPORT_BLOCKED
-    trace_direction: CHECKPOINT_ADVANCED_119_TO_124_OF_134
+    trace_direction: CHECKPOINT_ADVANCED_124_TO_126_OF_134
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
     backend_capacity_direction: TEN_WORKER_CAPACITY_PREVIOUSLY_PROVED
 
@@ -121,8 +118,8 @@ execution_statistics:
     stale: false
     consecutive_no_progress_cycles: 0
     meaningful_progress_basis: >-
-      The Primary Orchestrator accepted five additional exact frozen-source REST search traces and synchronized canonical
-      endpoint coverage to 124/134 without replaying the already-closed worker generation.
+      The Primary Orchestrator accepted two additional exact frozen-source vehicle REST traces and synchronized canonical
+      endpoint coverage to 126/134 without replaying the already-closed worker generation.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
