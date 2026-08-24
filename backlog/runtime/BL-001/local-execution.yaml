@@ -1,8 +1,8 @@
 local_execution:
-  version: 36
+  version: 37
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: MANUAL_BACKLOG_DRAIN_RECOVERED_SOURCE_RESTAGE_REQUIRED
+  state: DIRECT_SOURCE_TRACE_ADVANCED_SOURCE_RESTAGE_REQUIRED
   backend: LOCAL_PROCESS_POOL
   architecture: architecture/self-reliant-e2e-execution.md
   self_reliant_governance: governance/self-reliant-execution.yaml
@@ -44,32 +44,26 @@ local_execution:
 
   active_manual_backlog_drain_invocation:
     trigger: MANUAL_UPDATED_ORCHESTRATOR
-    mode: BACKLOG_DRAIN_WINDOW
-    started_at: 2026-08-24T18:07:50+05:30
-    target_window_minutes: 45
-    minimum_productive_window_minutes: 30
-    hard_stop_minutes: 45
-    early_exit_only_when_eligible_runnable_pool_zero: true
-    status: INTERRUPTED_RECOVERED_WINDOW_EXPIRED
-    recovered_at: 2026-08-24T19:37:32+05:30
-    recovery_behavior: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
+    mode: DIRECT_SAFE_TRACE_WHILE_RESTAGE_PENDING
+    started_at: 2026-08-24T20:34:31+05:30
+    status: CHECKPOINT_SYNCHRONIZED_CONTINUE_ELIGIBLE_WORK
     completed_generations_this_window: 0
     old_generation_idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    current_checkpoint_time: 2026-08-24T19:37:32+05:30
-    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-193732.md
+    current_checkpoint_time: 2026-08-24T20:34:31+05:30
+    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-203431.md
     worker_fire_started_at_checkpoint: false
     reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_YET_PROVED
-    direct_source_analysis_continued: false
-    newly_accepted_endpoint_traces_this_checkpoint: 0
-    accepted_endpoint_traces_this_invocation: 30
+    direct_source_analysis_continued: true
+    newly_accepted_endpoint_traces_this_checkpoint: 2
+    accepted_endpoint_traces_this_invocation: 2
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T19:37:32+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-193732.md
-    invocation_trigger: RECOVERY_RECONCILIATION
-    invocation_mode: FAIL_CLOSED_RECOVERY
+    checkpoint_time: 2026-08-24T20:34:31+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-203431.md
+    invocation_trigger: MANUAL_UPDATED_ORCHESTRATOR
+    invocation_mode: DIRECT_SAFE_TRACE_WHILE_RESTAGE_PENDING
     worker_fire_started: false
     reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_YET_PROVED
     source_snapshot_materialized_files: 29
@@ -83,15 +77,14 @@ local_execution:
       fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
-      frozen_source_reverified_at: 2026-08-24T19:37:32+05:30
       frozen_source_reverification: PASS_BLOB_SHA_MATCH
     latest_direct_source_resolution:
       accepted_trace_count: 2
       accepted_trace_state: COMPLETE_SOURCE_PROVED
       endpoint_families:
-        - SupplierIngestionController GET /ingestSupplier
-        - SupplierIngestionController POST /ingestSupplier
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md
+        - YardStockCheckIngestionController GET /ingestYardStockCheck
+        - YardStockCheckIngestionController POST /ingestYardStockCheck
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-203431.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -144,19 +137,19 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 102
-    complete: 102
+    examined: 104
+    complete: 104
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 32
+    not_yet_examined: 30
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 79
+    matrix_materialized_rows: 81
     historical_accepted_rows_pending_backfill: 23
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-191248.md
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-203431.md
 
   next_action: >-
-    Continue tracing remaining not-yet-examined endpoints from the exact frozen source while resolving/materializing the
-    16 outstanding worker source requests and CompleteTripServiceImpl snapshot file. Fire the next up-to-10-worker
-    generation only after staged-executor preflight proves an advanced immutable snapshot. WU-BL001-002 remains blocked
-    until canonical endpoint trace-result coverage is 100 percent.
+    Continue tracing the remaining 30 not-yet-examined caller-visible endpoints from the exact frozen source while
+    resolving/materializing the 16 outstanding worker source requests and the CompleteTripServiceImpl snapshot file.
+    Fire the next up-to-10-worker generation only after staged-executor preflight proves an advanced immutable snapshot.
+    WU-BL001-002 remains blocked until canonical endpoint trace-result coverage is 100 percent.
