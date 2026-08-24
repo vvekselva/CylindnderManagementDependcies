@@ -31,41 +31,42 @@ blockers:
       category: RECURSIVE_SOURCE_STAGE_CONTINUATION
       affects: WU-BL001-001_SOURCE_CLOSURE
       qg_source_001_effect: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
-      latest_execution: E2E-STAGED-20260823-151810
-      latest_missing_source_request_count: 21
-      latest_missing_binding_request_count: 0
+      latest_execution: E2E-STAGED-20260823-161214
+      latest_missing_source_request_count: 16
+      latest_missing_binding_request_count: 3
       planning_blocked: false
       worker_backend_blocked: false
       summary: >-
-        The latest ten-worker discovery proved controller-root integrity and returned exact additional source requests.
-        This is normal bounded source-staging work, not an external infrastructure blocker.
+        The latest closed ten-worker discovery proved controller-root integrity and returned exact additional source requests.
+        Three interface binding identities have since been source-validated; one implementation remains pending immutable
+        snapshot materialization. This is bounded source-staging work, not an external infrastructure blocker.
       resolution_condition: >-
         Resolve exact requests through repository/source-layout.yaml at the same frozen commit; stage/blob-verify them;
-        validate interface bindings as interface source becomes available; rerun discovery until both missing request
-        sets are zero. Fail closed if the unresolved request set repeats without progress or eight iterations are reached.
+        materialize the remaining validated binding implementation; rerun discovery only after the immutable source snapshot
+        and dispatch fingerprint advance. Fail closed on a repeated unchanged request set or the governed iteration limit.
 
   performance_observation:
     - id: PERF-BL001-001
       state: OPEN_UNDERUTILIZATION
       category: QG_LANE_001_PERFORMANCE_GOVERNANCE
-      latest_execution: E2E-STAGED-20260823-151810
+      latest_execution: E2E-STAGED-20260823-161214
       expected_concurrent_lanes: 10
-      measured_peak_service_concurrent_lanes: 4
-      measured_average_service_concurrent_lanes: 0.26
+      measured_peak_service_concurrent_lanes: 2
+      measured_average_service_concurrent_lanes: 0.0
       backend_capacity_probe_peak_service_concurrent_lanes: 10
       source_evidence_invalidated: false
       summary: >-
         Natural discovery work measured below ten-way SERVICE overlap even though the process-pool capacity probe reached 10/10.
         Do not add artificial delay to manufacture a PASS. Continue to measure natural workloads and optimize real scheduling only.
 
-  active_evidence_gaps:
-    - {id: EG-BL001-004, state: OPEN, affects_gate: QG-TRC-002, source_endpoint: POST /customer-spot-cylinder-check/submit, summary: Complete final database-object set for all submitSpotCheck branches is not yet proved.}
-    - {id: EG-BL001-005, state: OPEN, affects_gate: QG-TRC-002, source_endpoint: POST /walkin-sale, summary: Complete final database-object set across every conditional processRequest branch is not yet proved.}
+  active_evidence_gaps: []
 
   resolved_evidence_gaps:
     - {id: EG-BL001-001, state: RESOLVED, resolution: ChallanTypeSearchService -> ChallanTypeJpaDao -> ChallanTypeDo -> public.tbl_challan_type}
     - {id: EG-BL001-002, state: RESOLVED, resolution: CitySearchService -> CityJpaDao -> CityDo -> public.tbl_city}
     - {id: EG-BL001-003, state: RESOLVED, resolution: CountrySearchService -> CountryJpaDao -> CountryDo -> public.tbl_country}
+    - {id: EG-BL001-004, state: RESOLVED, source_endpoint: POST /customer-spot-cylinder-check/submit, resolution: Primary-Orchestrator accepted FULL_BRANCHING trace already materialized in controller-traceability.md; frozen-source revalidation confirms CustomerSpotCylinderCheckController -> CustomerSpotCylinderCheckService -> assignment/customer/page/cylinder/custody checks plus spot-check header-line save, page-status update and challan transaction link. Evidence logs/runs/PRODUCTION-FIRE-20260824-100135.md and frozen source baseline 3ae6e61442132d94a307275b08dd65fcef228d89.}
+    - {id: EG-BL001-005, state: RESOLVED, source_endpoint: POST /walkin-sale, resolution: Primary-Orchestrator accepted FULL_BRANCHING trace already materialized in controller-traceability.md from durable accepted evidence logs/runs/PRODUCTION-FIRE-20260824-103703.md; no worker replay required.}
 
   recovery_validation:
     gate: QG-RECOVERY-001
@@ -78,7 +79,7 @@ blockers:
   remaining_work_constraint:
     state: OPEN
     affects_gate: QG-TRC-002
-    summary: 97 of 134 endpoint final-dependency traces remain not yet examined.
+    summary: 29 of 134 caller-visible endpoints remain not yet examined at the canonical 105/134 checkpoint.
 
-  latest_accepted_attempt: {number: 27, invocation: INVOCATION-20260823-160000, new_endpoint_traces_examined: 10, new_complete: 10, new_unresolved: 0}
+  latest_accepted_attempt: {number: 27, invocation: PRODUCTION-FIRE-20260824-213728, new_endpoint_traces_examined: 1, new_complete: 1, new_unresolved: 0}
   self_reliant_backend_transition: {state: COMPLETE_ARCHITECTURE_PROMOTED, dispatch: LOCAL-BL001-DISPATCH-005, configured_lanes: 10, source_provider: ORCHESTRATOR_STAGED_SNAPSHOT}
