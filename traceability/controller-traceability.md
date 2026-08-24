@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **124 / 134 examined; 124 COMPLETE; 0 UNRESOLVED; 10 not yet examined.**  
-Rows currently materialized below: **101**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **126 / 134 examined; 126 COMPLETE; 0 UNRESOLVED; 8 not yet examined.**  
+Rows currently materialized below: **103**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -114,12 +114,14 @@ Rows currently materialized below: **101**. The other 23 historically accepted r
 | GET | `/search/product-uom/{searchText}` | `RestfulProductUomServices.getProductUoms` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_product_uom`; `ProductUomSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-003910.md` |
 | GET | `/search/state/{searchText}` | `RestfulStateServices.getStates` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_state`; `StateSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-003910.md` |
 | GET | `/search/supplier/{searchText}` | `RestfulSupplierSearchService.getSuppliers` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_supplier`; `SupplierSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-003910.md` |
+| GET | `/search/vehicle/{searchText}` | `RestfulVehicleServices.getVehicles` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_vehicle`; `VehicleSearchResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-020259.md` |
+| GET | `/find/Vehicle-by-Id/{vehicleId}` | `RestfulVehicleServices.getVehicleById` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_JSON | `public.tbl_vehicle`; `VehicleFetchByIdResponseDto` | `logs/runs/PRODUCTION-FIRE-20260825-020259.md` |
 
 ## Current unresolved paths
 
-**None among the 124 examined endpoints.**
+**None among the 126 examined endpoints.**
 
-This does not close BL-001: **10 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **8 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
