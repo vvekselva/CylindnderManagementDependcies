@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **72**
-- COMPLETE: **72**
+- Explicitly examined for final dependency: **98**
+- COMPLETE: **98**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **62**
+- Not yet examined: **36**
 
 ## Current unresolved paths
 
@@ -23,11 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-`POST /add-stop/challan-page-photo/upload` and `POST /add-stop/challan-page-photo/upload-ajax` are now **COMPLETE / FULL_BRANCHING**. Frozen source proves `AddStopController` -> private `uploadChallanPhotoInternal` -> qualified `ChallanPagePhotoUploadService.processRequest` -> `ChallanPageAuditLedgerJpaDao.findPageByFullNumber` -> `public.tbl_challan_page_audit_ledger` + `public.tbl_challan_book_registry`, plus `ChallanPagePhotoJpaDao.deactivateActivePhotosForPage/save` -> `ChallanPagePhotoDo` -> `public.tbl_challan_page_photo`. The non-AJAX endpoint terminates at the source-proved Add Stop redirect with success/error flash state; the AJAX endpoint terminates at HTTP 200/400/500 JSON branches.
+The manual updated Orchestrator backlog-drain invocation accepted 26 additional frozen-source traces in `logs/runs/PRODUCTION-FIRE-20260824-181810.md`: Add Stop GET; Trip Return GET/POST; Customer Demand GET/POST/mark-delivered; Trip Review queue; supplier page fetch; vehicle-load list/all-list; vehicle-trip list; party-custody traceability; reconciliation command-center/list-detail; five ownership-dashboard routes; and seven delivery-planning read-only API routes.
 
-The controller does not set `bookId`, so the accepted request-time lookup is the full-number DAO branch rather than the alternative book-id lookup. Evidence is pinned to frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89` and `logs/runs/PRODUCTION-FIRE-20260824-180750.md`.
-
-There are zero canonical unresolved endpoints among the 72 examined endpoints. This does not close BL-001 because 62 caller-visible endpoints remain not yet examined.
+Every accepted persistence dependency preserves its source-proved controller/service/DAO-or-repository/entity-or-view/database chain. There are zero canonical unresolved endpoints among the 98 examined endpoints. This does not close BL-001 because 36 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
