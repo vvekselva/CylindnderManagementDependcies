@@ -18,21 +18,24 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 108
-    complete: 108
+    examined_for_final_dependency: 115
+    complete: 115
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 26
+    not_yet_examined: 19
     changed_by_architecture_validation: false
 
   latest_accepted_trace_attempt:
-    run_id: PRODUCTION-FIRE-20260824-231647
+    run_id: PRODUCTION-FIRE-20260825-000044
     state: CLOSED_CHECKPOINT
     result: PARTIAL_ADVANCED
-    trace_additions: {examined: 1, complete: 1, unresolved: 0}
-    accepted_endpoint: GET /search/address/customer-address/{customerId}
-    chain_completeness: FULL_BRANCHING
+    trace_additions: {examined: 3, complete: 3, unresolved: 0}
+    accepted_endpoints:
+      - GET /search/customer/{searchText}
+      - GET /search/driver/{searchText}
+      - GET /find/Driver-by-Id/{driverId}
+    chain_completeness: FULL
 
   self_reliant_architecture_validation:
     report: tests/self-reliant-e2e-validation-2026-08-23.md
@@ -96,7 +99,7 @@ analysis:
     materialization_generations_ready: 2
     max_parallel_materialization_slots: 10
     execution_host_snapshot_advanced: false
-    latest_execution_host_attempt: PRODUCTION-FIRE-20260824-231647
+    latest_execution_host_attempt: PRODUCTION-FIRE-20260825-000044
     latest_execution_host_attempt_result: CONNECTOR_SOURCE_BYTES_VERIFIED_BUT_NO_CONNECTOR_TO_LOCAL_SNAPSHOT_FILE_BRIDGE
     source_materialization_slots_completed_this_checkpoint: 0
 
@@ -120,7 +123,7 @@ analysis:
   canonical_result_accepted: false
   matrix_construction_unlocked: true
   matrix_state: INCREMENTAL_PARTIAL
-  matrix_materialized_rows: 85
+  matrix_materialized_rows: 92
   historical_accepted_rows_pending_backfill: 23
 
   proved_now:
@@ -131,10 +134,11 @@ analysis:
     - The local process-pool backend can physically reach ten concurrent SERVICE workers in a separate capacity probe.
     - Twenty exact frozen source entries remain resolved with no unresolved resolution entries and are ready for immutable snapshot materialization.
     - The current execution host cannot write connector-returned source bytes into a worker-readable local snapshot through an available connector-to-filesystem bridge, so no snapshot-file growth is claimed.
-    - GET /search/address/customer-address/{customerId} is source-proved COMPLETE/FULL_BRANCHING through RestfulAddressServices, the exact CustomerAddressFetchByIDService generic binding, CustomerAddressJpaDao, CustomerAddressDo/CustomerDo/AddressDo and public.tbl_customer_address/public.tbl_customer/public.tbl_address.
+    - GET /search/customer/{searchText} is source-proved COMPLETE/FULL through RestfulCustomerServices, CustomerSearchService, SearchRequestValidator, CustomerJpaDao, CustomerDo, public.tbl_customer and CustomerMapper.
+    - GET /search/driver/{searchText} and GET /find/Driver-by-Id/{driverId} are source-proved COMPLETE/FULL through RestfulDriverServices, their exact generic Driver service implementations, DriverJpaDao, DriverDo, public.tbl_driver and DriverMapper.
 
   next_step: >-
-    Continue WU-BL001-001 with direct frozen-source tracing of the remaining 26 caller-visible endpoints while preserving
+    Continue WU-BL001-001 with direct frozen-source tracing of the remaining 19 caller-visible endpoints while preserving
     QG-SOURCE-001 fail-closed for trace-worker fire. Materialize the twenty resolved exact source entries only when the
     Orchestrator execution host has a verified connector-to-local-file source-provider bridge, then recompute snapshot
     identity/dispatch fingerprint and fire a changed up-to-ten-worker generation. WU-BL001-002 remains blocked until
