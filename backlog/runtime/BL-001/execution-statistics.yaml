@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 13
+  version: 14
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: >-
@@ -18,19 +18,20 @@ execution_statistics:
     source_closure_complete: {meaning: zero missing_source_requests and zero missing_binding_requests for the batch}
 
   accepted_trace_checkpoint:
-    latest_accepted_attempt: 39
-    latest_accepted_invocation: PRODUCTION-FIRE-20260824-085811
+    latest_accepted_attempt: 69
+    latest_accepted_invocation: PRODUCTION-FIRE-20260824-191248
     total_endpoints: 134
-    examined: 62
-    progress_percentage: 46.27
-    complete: 60
-    complete_percentage: 44.78
-    unresolved: 2
+    examined: 102
+    progress_percentage: 76.12
+    complete: 102
+    complete_percentage: 76.12
+    unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 72
+    not_yet_examined: 32
     latest_state_transition:
-      - POST /vehicleLoad: NOT_YET_EXAMINED -> COMPLETE
+      - GET /ingestSupplier: NOT_YET_EXAMINED -> COMPLETE
+      - POST /ingestSupplier: NOT_YET_EXAMINED -> COMPLETE
     latest_production_fire_changed_checkpoint: true
 
   self_reliant_architecture_validation:
@@ -75,47 +76,46 @@ execution_statistics:
     trace_evidence_auto_accepted: false
 
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260824-085811
+    checkpoint_id: PRODUCTION-FIRE-20260824-193732
     worker_fire_started: false
-    reason: VEHICLE_LOAD_POST_MEDIATOR_VALIDATOR_AND_PERSISTENCE_BRANCHES_SOURCE_PROVED
-    endpoint_trace_checkpoint_before: 61
-    endpoint_trace_checkpoint_after: 62
-    endpoints_examined_added: 1
-    complete_added: 1
+    reason: FAIL_CLOSED_RECOVERY_AND_LEVEL3_SSOT_RECONCILIATION
+    endpoint_trace_checkpoint_before: 102
+    endpoint_trace_checkpoint_after: 102
+    endpoints_examined_added: 0
+    complete_added: 0
     unresolved_change: 0
-    accepted_family: Uc02Phase01VehicleLoadController
-    accepted_state_transition: POST /vehicleLoad NOT_YET_EXAMINED_TO_COMPLETE
-    accepted_chain_state: FULL_BRANCHING
-    evidence: logs/runs/PRODUCTION-FIRE-20260824-085811.md
+    accepted_family: NONE_RECOVERY_ONLY
+    accepted_state_transition: NONE
+    accepted_chain_state: UNCHANGED
+    evidence: logs/runs/PRODUCTION-FIRE-20260824-193732.md
     source_snapshot_materialized_files: 29
     exact_source_requests_pending: 16
     binding_identities_unresolved: 0
+    binding_implementation_materializations_pending: 1
     source_resolution_progress: >-
-      Frozen source proves Uc02Phase01VehicleLoadMediator as the exact generic Spring mediator, VehicleLoadIngestionService
-      as the invoked service, VehicleLoadIngestionValidator and CylinderLocationExclusivityValidator, plus typed DAO/entity
-      branches through the active PostgreSQL dependency set and both controller terminal branches. The endpoint therefore
-      advanced directly from NOT_YET_EXAMINED to COMPLETE. The unchanged ten-worker generation was not rerun.
+      CompleteTripServiceImpl was re-read at the frozen source commit and its Git blob SHA matched the validated runtime
+      binding request. The immutable staged worker snapshot is not yet advanced, so no unchanged worker generation was fired.
 
   run_over_run:
-    endpoint_progress_percentage_point_change: 0.75
-    complete_percentage_point_change: 0.75
-    endpoint_examined_change: 1
-    complete_endpoint_change: 1
+    endpoint_progress_percentage_point_change: 0.0
+    complete_percentage_point_change: 0.0
+    endpoint_examined_change: 0
+    complete_endpoint_change: 0
     unresolved_endpoint_change: 0
     source_request_count_change: 0
     binding_identity_unresolved_change: 0
     source_closure_direction: PARTIAL_RESTAGE_STILL_REQUIRED
-    trace_direction: ONE_NEW_ENDPOINT_SOURCE_CLOSED
+    trace_direction: CHECKPOINT_PRESERVED
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
-    backend_capacity_direction: TEN_WORKER_CAPACITY_PROVED
+    backend_capacity_direction: TEN_WORKER_CAPACITY_PREVIOUSLY_PROVED
 
   staleness:
     task: WU-BL001-001 Complete Source Repository Check And Maintain Incremental Matrix
     stale: false
-    consecutive_no_progress_cycles: 0
+    consecutive_no_progress_cycles: 1
     meaningful_progress_basis: >-
-      POST /vehicleLoad advanced from NOT_YET_EXAMINED to COMPLETE after the controller, concrete mediator, service,
-      validator, nested location validator and active persistence branches were source-proved at the frozen commit.
+      This checkpoint recovered an expired invocation fail-closed and reconciled Level-3 SSOT drift to the durable
+      102/134 accepted checkpoint without duplicating worker execution or inventing matrix rows.
     current_status: ACTIVE_BACKLOG_SOURCE_RESTAGE_AND_INCREMENTAL_MATRIX
 
   update_rules:
