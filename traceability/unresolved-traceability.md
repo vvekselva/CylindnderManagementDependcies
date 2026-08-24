@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **104**
-- COMPLETE: **104**
+- Explicitly examined for final dependency: **105**
+- COMPLETE: **105**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **30**
+- Not yet examined: **29**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted two additional frozen-source traces in `logs/runs/PRODUCTION-FIRE-20260824-203431.md`: `GET /ingestYardStockCheck` and `POST /ingestYardStockCheck`. The GET path preserves both the in-memory cache-hit path and the cache-miss refresh through `CylinderStateFetchByPageService -> CylinderStateJpaDao -> CylinderStateDo -> public.tbl_cylinder_states`. The POST path preserves validator cylinder-state reads, stock-check header persistence, stock-check line persistence, error-form cache refresh, and terminal success/error paths.
+The Primary Orchestrator accepted `POST /trip-review/{vehicleTripId}/close-review` in `logs/runs/PRODUCTION-FIRE-20260824-213728.md`. The full source-proved chain is `TripReviewController.closeReview -> TripReviewUpdateService.closeReview -> VehicleTripReviewJpaDao.markTripReviewed -> VehicleTripDo`, with the DAO's native SQL updating `public.tbl_vehicle_trip` and resolving REVIEWED/NOT_REVIEWED IDs from `public.tbl_vehicle_review_status`, followed by `redirect:/trip-review/{vehicleTripId}` with success or error flash state.
 
-There are zero canonical unresolved endpoints among the 104 examined endpoints. This does not close BL-001 because 30 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 105 examined endpoints. This does not close BL-001 because 29 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
