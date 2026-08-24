@@ -1,5 +1,5 @@
 local_execution:
-  version: 33
+  version: 34
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: MANUAL_BACKLOG_DRAIN_IN_PROGRESS_SOURCE_RESTAGE_REQUIRED
@@ -53,18 +53,19 @@ local_execution:
     status: IN_PROGRESS
     completed_generations_this_window: 0
     old_generation_idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    current_checkpoint_time: 2026-08-24T18:18:10+05:30
-    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-181810.md
+    current_checkpoint_time: 2026-08-24T19:06:50+05:30
+    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-190650.md
     worker_fire_started_at_checkpoint: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     direct_source_analysis_continued: true
-    newly_accepted_endpoint_traces_this_checkpoint: 26
+    newly_accepted_endpoint_traces_this_checkpoint: 2
+    accepted_endpoint_traces_this_invocation: 28
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T18:18:10+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-181810.md
+    checkpoint_time: 2026-08-24T19:06:50+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-190650.md
     invocation_trigger: MANUAL_UPDATED_ORCHESTRATOR
     invocation_mode: BACKLOG_DRAIN_WINDOW
     worker_fire_started: false
@@ -81,21 +82,12 @@ local_execution:
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
     latest_direct_source_resolution:
-      accepted_trace_count: 26
+      accepted_trace_count: 2
       accepted_trace_state: COMPLETE_SOURCE_PROVED
       endpoint_families:
-        - AddStopController GET page path
-        - TripReturnController GET/POST
-        - CustomerDemandController GET/POST/mark-delivered
-        - TripReviewController review queue
-        - SupplierFetchByPageController
-        - VehicleLoadByPageController list/all-list
-        - VehicleTripController list
-        - PartyCustodyTraceabilityController
-        - ReconciliationCommandCenterController list/details
-        - OwnershipDashboardController five GET routes
-        - DeliveryPlanningApiController seven GET routes
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md
+        - ToggleCustomerActiveStatusController POST /setCustomerInactive
+        - ToggleCustomerActiveStatusController POST /setCustomerActive
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-190650.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -146,20 +138,19 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 98
-    complete: 98
+    examined: 100
+    complete: 100
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 36
+    not_yet_examined: 34
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 75
+    matrix_materialized_rows: 77
     historical_accepted_rows_pending_backfill: 23
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-190650.md
 
   next_action: >-
-    Keep this same MANUAL_UPDATED_ORCHESTRATOR backlog-drain invocation productive through its governed time window.
     Continue tracing remaining not-yet-examined endpoints from the exact frozen source while resolving/materializing the
     16 outstanding worker source requests and CompleteTripServiceImpl snapshot file. Fire the next up-to-10-worker
-    generation only after staged-executor preflight proves an advanced immutable snapshot. Do not exit merely because
-    the old generation is a NOOP. WU-BL001-002 remains blocked until canonical endpoint trace-result coverage is 100 percent.
+    generation only after staged-executor preflight proves an advanced immutable snapshot. WU-BL001-002 remains blocked
+    until canonical endpoint trace-result coverage is 100 percent.
