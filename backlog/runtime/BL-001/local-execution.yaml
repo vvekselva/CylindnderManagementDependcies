@@ -1,5 +1,5 @@
 local_execution:
-  version: 21
+  version: 22
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T08:58:11+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-085811.md
+    checkpoint_time: 2026-08-24T09:32:00+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-093200.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -58,91 +58,22 @@ local_execution:
       fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
-    direct_source_binding_resolutions:
-      - endpoint: POST /cylinderDelivery
-        controller: Uc02Phase02CylinderDeliveryController
-        interface: ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>
-        implementation: com.sreyas.datamatics.cylinder.management.mediator.Uc02Phase02CylinderDeliveryMediator
-        implementation_blob_sha: bb4796913edc0399fc076c3a8123139b04620f3c
-        invoked_service: com.sreyas.datamatics.cylinder.management.services.OrderIngestionService
-        service_blob_sha: 282f41ab73163ea07d074b53dc4370405dd2722b
-        validator: com.sreyas.datamatics.cylinder.management.validator.OrderIngestionRequestValidator
-        validator_blob_sha: 67d9a5a686fd7bcd20965f5200108a438a87abf1
-        trace_state: COMPLETE_FULL_BRANCHING
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-080301.md
-      - endpoint: GET /vehicleLoad
-        controller: Uc02Phase01VehicleLoadController
-        cache: com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache
-        cache_blob_sha: 56227add0bb0283955cc9e7cde1404d0d989a541
-        interface: ICylinderManagementApplicationService<VehicleLoadPurposeFetchAllRequestDto, VehicleLoadPurposeFetchAllResponseDto>
-        implementation: com.sreyas.datamatics.cylinder.management.services.VehicleLoadPurposeFetchAllService
-        implementation_blob_sha: 81fc790101076f1d82437a8c896953faf37d9afb
-        dao: VehicleLoadPurposeJpaDao
-        dao_blob_sha: 83057e45e5319d25abbed6b05f513d6b404c577f
-        entity: VehicleLoadPurposeDo
-        entity_blob_sha: 4eaead4af0f619f1a8c3a9496a443fed3158ced7
-        database_object: public.tbl_vehicle_load_purpose
-        trace_state: COMPLETE_FULL_BRANCHING
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-083401.md
-      - endpoint: POST /vehicleLoad
-        controller: Uc02Phase01VehicleLoadController
-        controller_blob_sha: 510a1caa72c2fca7d7bad14355b0fe108ec2c0f5
-        mediator: com.sreyas.datamatics.cylinder.management.mediator.Uc02Phase01VehicleLoadMediator
-        mediator_blob_sha: 9d261956e7dd78b37290dd4d38d40534341d6894
-        invoked_service: com.sreyas.datamatics.cylinder.management.services.VehicleLoadIngestionService
-        service_blob_sha: 6d63ff49a466490d8bcbc9aaeca8659c6dea3d99
-        validator: com.sreyas.datamatics.cylinder.management.validator.VehicleLoadIngestionValidator
-        validator_blob_sha: 120900d87b98ff8f5d59a564b9544b505bcd2bed
-        nested_validator: com.sreyas.datamatics.cylinder.management.validator.CylinderLocationExclusivityValidator
-        nested_validator_blob_sha: b05df158efa3b134ff1e73361c72c323bafc0021
-        trace_state: COMPLETE_FULL_BRANCHING
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-085811.md
-    directly_source_closed_families:
-      - controller: ChallanBookWebController
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-003111.md
-        endpoints:
-          - {method: GET, path: /logistics/challan-books/add-form, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-          - {method: POST, path: /logistics/challan-books/save, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-      - controller: ChallanEntryAgingDashboardController
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-005711.md
-        endpoints:
-          - {method: GET, path: /challan-entry-aging-dashboard, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-      - controller: ChallanHeatmapController
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-013336.md
-        endpoints:
-          - {method: GET, path: /challan-heatmap, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-      - controller: ChallanPagePhotoController
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-053325.md
-        endpoints:
-          - {method: GET, path: /challan-page-photo/{challanPagePhotoId}, state: COMPLETE, chain_completeness: FULL}
-      - controller: CustomerAddressLocationController
-        evidence:
-          - logs/runs/PRODUCTION-FIRE-20260824-013546.md
-          - logs/runs/PRODUCTION-FIRE-20260824-020143.md
-        family_state: SOURCE_CLOSED_ALL_10_ENDPOINTS
-      - controller: CustomerConsumptionDashboardController
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-023321.md
-        family_state: SOURCE_CLOSED_ALL_4_CALLER_VISIBLE_PATHS
-      - controller: OwnershipObligationDashboardController
-        evidence: logs/runs/PRODUCTION-FIRE-20260824-033550.md
-        endpoints:
-          - {method: GET, path: /ownership-obligation-dashboard, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-      - controller: Uc02Phase02CylinderDeliveryController
-        evidence:
-          - logs/runs/PRODUCTION-FIRE-20260824-070036.md
-          - logs/runs/PRODUCTION-FIRE-20260824-080301.md
-        family_state: SOURCE_CLOSED_BOTH_ENDPOINTS
-        endpoints:
-          - {method: GET, path: /cylinderDelivery, state: COMPLETE, chain_completeness: FULL}
-          - {method: POST, path: /cylinderDelivery, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-      - controller: Uc02Phase01VehicleLoadController
-        evidence:
-          - logs/runs/PRODUCTION-FIRE-20260824-083401.md
-          - logs/runs/PRODUCTION-FIRE-20260824-085811.md
-        family_state: SOURCE_CLOSED_BOTH_ENDPOINTS
-        endpoints:
-          - {method: GET, path: /vehicleLoad, state: COMPLETE, chain_completeness: FULL_BRANCHING}
-          - {method: POST, path: /vehicleLoad, state: COMPLETE, chain_completeness: FULL_BRANCHING}
+    latest_direct_source_resolution:
+      endpoint: GET /registerCustomer
+      controller: UC01RegisterCustomerController
+      controller_blob_sha: 40b460220111a17283c9c27294b7b026642c4630
+      cache: com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache
+      cache_blob_sha: 56227add0bb0283955cc9e7cde1404d0d989a541
+      service: com.sreyas.datamatics.cylinder.management.services.AddressTypeFetchByPageService
+      service_blob_sha: f886ff1f55a4367a9435cb37cc992320abb9f08a
+      dao: AddressTypeJpaDao
+      dao_blob_sha: aeca6fbefbfbab15f342c9e9b250d33d749c2170
+      entity: AddressTypeDo
+      entity_blob_sha: 4e516ae03de1fabb7730c5e50659f512ef12003f
+      database_object: public.tbl_address_type
+      terminal_view: final-version-1/UC01RegisterCustomer
+      trace_state: COMPLETE_FULL_BRANCHING
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-093200.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -193,18 +124,18 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 62
-    complete: 60
+    examined: 63
+    complete: 61
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 72
+    not_yet_examined: 71
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 38
+    matrix_materialized_rows: 39
     historical_accepted_rows_pending_backfill: 24
     latest_state_transition:
-      - POST /vehicleLoad: NOT_YET_EXAMINED -> COMPLETE
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-085811.md
+      - GET /registerCustomer: NOT_YET_EXAMINED -> COMPLETE
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-093200.md
 
   next_action: >-
     Continue other not-yet-examined endpoint families from exact frozen-source evidence while resolving/materializing the 16
