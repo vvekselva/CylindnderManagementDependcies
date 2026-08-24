@@ -10,12 +10,12 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 ## Current canonical checkpoint
 
 - Total caller-visible endpoints: **134**
-- Explicitly examined for final dependency: **106**
-- COMPLETE: **106**
+- Explicitly examined for final dependency: **107**
+- COMPLETE: **107**
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Not yet examined: **28**
+- Not yet examined: **27**
 
 ## Current unresolved paths
 
@@ -23,9 +23,9 @@ This artifact is updated whenever an Orchestrator-accepted matrix row is `UNRESO
 
 ## Latest accepted state
 
-The Primary Orchestrator accepted `GET /trip-review/{vehicleTripId}` in `logs/runs/PRODUCTION-FIRE-20260824-170049.md`. The source-proved detail path starts at `TripReviewController.showTripReview`, calls `TripReviewFetchService.fetchTripReview`, reads the trip-review header view, direct stop/movement/custody/challan sources through `TripReviewDirectDetailJpaDao`, optionally builds the trip-review map through `CustomerAddressLocationOfflineMapService`, and renders `with-menu/TripReviewDashboard`.
+The Primary Orchestrator accepted `POST /stop` in `logs/runs/PRODUCTION-FIRE-20260824-230001.md`. Frozen source proves `CustomerStopSelectionController.processStopIngestion` either terminates at the challan-photo guard redirect or invokes the exact generic `VehicleTripStopIngestionService` binding. The service branches separately through customer delivery, customer empty pickup, supplier empty drop-off and supplier full pickup persistence paths before trip/stop persistence, optional challan-page consumption/linking and the terminal vehicle-load redirect.
 
-There are zero canonical unresolved endpoints among the 106 examined endpoints. This does not close BL-001 because 28 caller-visible endpoints remain not yet examined.
+There are zero canonical unresolved endpoints among the 107 examined endpoints. This does not close BL-001 because 27 caller-visible endpoints remain not yet examined.
 
 ## Incremental matrix synchronization rule
 
