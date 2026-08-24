@@ -5,8 +5,8 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-203431.md
-  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-212131-SCHEDULER.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-213728.md
+  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-221444-SCHEDULER.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -24,8 +24,23 @@ result:
     exact_source_requests_pending_from_latest_worker_batch: 16
     binding_identities_unresolved: 0
     binding_implementation_materializations_pending: 1
-    exact_source_candidates_verified_for_next_snapshot_this_checkpoint: 0
-    latest_verified_candidates: []
+    exact_source_candidates_verified_for_next_snapshot_this_checkpoint: 15
+    latest_verified_candidates:
+      - ChallanPageAuditLedgerDo
+      - ChallanPagePhotoDo
+      - ChallanBookRegistryDo
+      - ICylinderManagementApplicationService
+      - SummaryMetricLookupDo
+      - ChallanBookRegistryMapper
+      - SummaryMetricLookupMapper
+      - TripChallanEntryTrackerAuditDo
+      - TripChallanEntryTrackerDo
+      - ChallanEntryAgingDashboardMapper
+      - ChallanHeatmapMetricsViewDo
+      - TripChallanBookAssignmentViewDo
+      - ChallanHeatmapMetricsViewMapper
+      - ChallanPageAuditLedgerMapper
+      - CompleteTripServiceImpl
 
   lane_utilization_gate:
     id: QG-LANE-001
@@ -39,18 +54,17 @@ result:
 
   checkpoint:
     total_endpoints: 134
-    examined: 104
-    complete: 104
+    examined: 105
+    complete: 105
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 30
-    matrix_materialized_rows: 81
+    not_yet_examined: 29
+    matrix_materialized_rows: 82
     historical_accepted_rows_pending_backfill: 23
 
   latest_newly_accepted_endpoints:
-    - {method: GET, path: /ingestYardStockCheck, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-203431.md}
-    - {method: POST, path: /ingestYardStockCheck, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-203431.md}
+    - {method: POST, path: /trip-review/{vehicleTripId}/close-review, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260824-213728.md}
 
   unresolved_items: []
 
@@ -65,13 +79,14 @@ result:
   final_outputs: []
 
   next_action: >-
-    Continue exact-source resolution for the remaining staged-source request set and materialize all verified blobs,
-    including the already binding-validated CompleteTripServiceImpl, into an advanced immutable staged snapshot.
-    Fire a changed up-to-10-worker generation only after QG-SOURCE-001 manifest/blob preflight passes. Continue direct
-    safe source analysis of the remaining 30 not-yet-examined endpoints while the matrix is INCREMENTAL_PARTIAL.
-    Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage.
+    Build an advanced immutable staged snapshot from the frozen-source candidates already validated by the Primary
+    Orchestrator, including CompleteTripServiceImpl, and verify the new manifest/blob identities before worker SERVICE.
+    Fire a changed up-to-10-worker generation only after QG-SOURCE-001 proves snapshot advancement. Continue direct safe
+    source analysis of the remaining 29 not-yet-examined endpoints while the matrix is INCREMENTAL_PARTIAL. Do not start
+    WU-BL001-002 until WU-BL001-001 reaches 100 percent trace-result coverage.
 
   note: >-
-    BL-001 remains PARTIAL. This invocation repaired stale Level-3 runtime projections to the already accepted 104/134
-    canonical matrix checkpoint. No worker generation was replayed, no endpoint evidence was invented, and VERIFIED/CLOSED
-    remain false. QG-TRC-015 explicit user acceptance is still required after all automatic gates pass.
+    BL-001 remains PARTIAL. The canonical matrix checkpoint is 105/134. This production fire source-validated fifteen
+    frozen-source candidates for the next snapshot and reconciles Level-3 result truth to 105/134, but does not claim
+    worker-snapshot materialization or lane execution that did not occur. VERIFIED/CLOSED remain false and QG-TRC-015
+    explicit user acceptance remains required after all automatic gates pass.
