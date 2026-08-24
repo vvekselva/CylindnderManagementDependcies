@@ -1,5 +1,5 @@
 local_execution:
-  version: 29
+  version: 30
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T15:09:39+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-150939.md
+    checkpoint_time: 2026-08-24T17:10:09+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-171009.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -59,24 +59,21 @@ local_execution:
       path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CompleteTripServiceImpl.java
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
     latest_direct_source_resolution:
-      endpoint: POST /registerCustomer
-      controller: UC01RegisterCustomerController.doPost
-      service_binding: UC01RegisterCustomerMediator -> CustomerIngestionService
+      endpoint: POST /updateCustomer
+      controller: CustomerUpdateController.doPost
+      service_binding: ICylinderManagementApplicationService<CustomerUpdateRequestDto,CustomerUpdateResponseDto> -> CustomerUpdateService
+      validator_binding: ICylinderManagementApplicationValidator<CustomerUpdateRequestDto> -> CustomerUpdateRequestValidator
       trace_state: COMPLETE_FULL_BRANCHING
       final_dependencies:
-        - LookupDataCache.addressTypes
-        - public.tbl_address_type
         - public.tbl_customer
         - public.tbl_phone_number
-        - public.tbl_city
-        - public.tbl_state
-        - public.tbl_country
+        - public.tbl_customer_phone_number
         - public.tbl_customer_address
         - public.tbl_address
-        - public.tbl_customer_phone_number
-        - redirect:/ownership-dashboard
-        - final-version-1/UC01RegisterCustomer
-      evidence: logs/runs/PRODUCTION-FIRE-20260824-150939.md
+        - redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10
+        - UC01RegisterCustomer
+        - /fetchCustomerByPage?pageNumber=1&itemsPerPage=10
+      evidence: logs/runs/PRODUCTION-FIRE-20260824-171009.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -127,18 +124,18 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 68
-    complete: 68
+    examined: 69
+    complete: 69
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 66
+    not_yet_examined: 65
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 45
+    matrix_materialized_rows: 46
     historical_accepted_rows_pending_backfill: 23
     latest_state_transition:
-      - POST /registerCustomer: NOT_YET_EXAMINED -> COMPLETE_FULL_BRANCHING
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-150939.md
+      - POST /updateCustomer: NOT_YET_EXAMINED -> COMPLETE_FULL_BRANCHING
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-171009.md
 
   next_action: >-
     Continue another not-yet-examined caller-visible endpoint from the frozen source baseline while independently resolving/materializing
