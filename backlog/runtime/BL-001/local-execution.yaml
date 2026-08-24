@@ -1,5 +1,5 @@
 local_execution:
-  version: 45
+  version: 46
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: DIRECT_SOURCE_TRACE_ADVANCED_SOURCE_RESTAGE_REQUIRED
@@ -48,18 +48,18 @@ local_execution:
     status: CHECKPOINT_SYNCHRONIZED_CONTINUE_ELIGIBLE_WORK
     completed_worker_generations_this_window: 0
     old_generation_idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    current_checkpoint_time: 2026-08-25T02:02:59+05:30
-    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-020259.md
+    current_checkpoint_time: 2026-08-25T03:57:43+05:30
+    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-035743.md
     worker_fire_started_at_checkpoint: false
     reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_PROVED_CONNECTOR_TO_HOST_FILE_BRIDGE_UNAVAILABLE
     direct_source_analysis_continued: true
-    newly_accepted_endpoint_traces_this_checkpoint: 2
+    newly_accepted_endpoint_traces_this_checkpoint: 3
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-25T02:02:59+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-020259.md
+    checkpoint_time: 2026-08-25T03:57:43+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-035743.md
     worker_fire_started: false
     reason_worker_fire_not_started: ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_PROVED_CONNECTOR_TO_HOST_FILE_BRIDGE_UNAVAILABLE
     source_snapshot_materialized_files: 29
@@ -81,12 +81,13 @@ local_execution:
       git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee
       frozen_source_reverification: PASS_BLOB_SHA_MATCH
     latest_direct_source_resolution:
-      accepted_trace_count: 2
+      accepted_trace_count: 3
       accepted_trace_state: COMPLETE_SOURCE_PROVED
       endpoint_families:
-        - RestfulVehicleServices GET /search/vehicle/{searchText}
-        - RestfulVehicleServices GET /find/Vehicle-by-Id/{vehicleId}
-      evidence: logs/runs/PRODUCTION-FIRE-20260825-020259.md
+        - RestfulCylinderServices POST /search/cylinder/ownership/by-state
+        - RestfulCylinderServices POST /search/cylinder/by-state
+        - RestfulCylinderServices POST /search/cylinder/on-vehicle
+      evidence: logs/runs/PRODUCTION-FIRE-20260825-031101.md
 
   source_state:
     gate: QG-SOURCE-001
@@ -119,23 +120,23 @@ local_execution:
     validation_cases_passed: 5
     validation_cases_total: 5
     latest_runtime_recovery: PASS_CLOSED_GENERATION_NOOP_REPLAN_DIRECT_SOURCE_ADVANCE
-    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-020259.md
+    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-035743.md
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 126
-    complete: 126
+    examined: 129
+    complete: 129
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 8
+    not_yet_examined: 5
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 103
+    matrix_materialized_rows: 106
     historical_accepted_rows_pending_backfill: 23
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260825-020259.md
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260825-035743.md
 
   next_action: >-
-    Continue tracing the remaining 8 not-yet-examined caller-visible endpoints from the exact frozen source. Preserve
+    Continue tracing the remaining 5 not-yet-examined caller-visible endpoints from the exact frozen source. Preserve
     QG-SOURCE-001 fail-closed for worker fire until a verified connector-to-local-filesystem source-provider bridge can
     materialize the twenty resolved entries into a new immutable staged snapshot. After verified snapshot advancement,
     recompute dispatch fingerprint and fire the next up-to-10-worker generation. WU-BL001-002 remains blocked until
