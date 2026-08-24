@@ -1,5 +1,5 @@
 local_execution:
-  version: 19
+  version: 20
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: BETWEEN_EXECUTIONS_SOURCE_RESTAGE_REQUIRED
@@ -43,8 +43,8 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-24T08:03:01+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-080301.md
+    checkpoint_time: 2026-08-24T08:34:01+05:30
+    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-083401.md
     worker_fire_started: false
     reason_worker_fire_not_started: UNCHANGED_DISCOVERY_DISPATCH_STILL_REQUIRES_SOURCE_RESTAGE
     source_snapshot_materialized_files: 29
@@ -70,6 +70,20 @@ local_execution:
         validator_blob_sha: 67d9a5a686fd7bcd20965f5200108a438a87abf1
         trace_state: COMPLETE_FULL_BRANCHING
         evidence: logs/runs/PRODUCTION-FIRE-20260824-080301.md
+      - endpoint: GET /vehicleLoad
+        controller: Uc02Phase01VehicleLoadController
+        cache: com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache
+        cache_blob_sha: 56227add0bb0283955cc9e7cde1404d0d989a541
+        interface: ICylinderManagementApplicationService<VehicleLoadPurposeFetchAllRequestDto, VehicleLoadPurposeFetchAllResponseDto>
+        implementation: com.sreyas.datamatics.cylinder.management.services.VehicleLoadPurposeFetchAllService
+        implementation_blob_sha: 81fc790101076f1d82437a8c896953faf37d9afb
+        dao: VehicleLoadPurposeJpaDao
+        dao_blob_sha: 83057e45e5319d25abbed6b05f513d6b404c577f
+        entity: VehicleLoadPurposeDo
+        entity_blob_sha: 4eaead4af0f619f1a8c3a9496a443fed3158ced7
+        database_object: public.tbl_vehicle_load_purpose
+        trace_state: COMPLETE_FULL_BRANCHING
+        evidence: logs/runs/PRODUCTION-FIRE-20260824-083401.md
     directly_source_closed_families:
       - controller: ChallanBookWebController
         evidence: logs/runs/PRODUCTION-FIRE-20260824-003111.md
@@ -108,6 +122,11 @@ local_execution:
         endpoints:
           - {method: GET, path: /cylinderDelivery, state: COMPLETE, chain_completeness: FULL}
           - {method: POST, path: /cylinderDelivery, state: COMPLETE, chain_completeness: FULL_BRANCHING}
+      - controller: Uc02Phase01VehicleLoadController
+        evidence: logs/runs/PRODUCTION-FIRE-20260824-083401.md
+        family_state: GET_SOURCE_CLOSED_POST_PENDING
+        endpoints:
+          - {method: GET, path: /vehicleLoad, state: COMPLETE, chain_completeness: FULL_BRANCHING}
 
   source_state:
     gate: QG-SOURCE-001
@@ -158,18 +177,18 @@ local_execution:
 
   accepted_trace_checkpoint:
     total_endpoints: 134
-    examined: 60
-    complete: 58
+    examined: 61
+    complete: 59
     unresolved: 2
     blocked: 0
     failed: 0
-    not_yet_examined: 74
+    not_yet_examined: 73
     matrix_state: INCREMENTAL_PARTIAL
-    matrix_materialized_rows: 36
+    matrix_materialized_rows: 37
     historical_accepted_rows_pending_backfill: 24
     latest_state_transition:
-      - POST /cylinderDelivery: UNRESOLVED -> COMPLETE
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-080301.md
+      - GET /vehicleLoad: NOT_YET_EXAMINED -> COMPLETE
+    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260824-083401.md
 
   next_action: >-
     Continue other not-yet-examined endpoint families from exact frozen-source evidence while resolving/materializing the 16
