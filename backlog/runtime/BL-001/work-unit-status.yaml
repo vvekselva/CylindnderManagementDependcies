@@ -29,15 +29,16 @@ work_units:
     latest_peak_service_concurrent_lanes: 2
     backend_capacity_probe_peak_service_concurrent_lanes: 10
     qg_recovery_001_state: PASS
-    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260825-001738.md
-    checkpoint: {examined: 119, total: 134, complete: 119, unresolved: 0, blocked: 0, failed: 0, not_yet_examined: 15, matrix_materialized_rows: 96, historical_accepted_rows_pending_backfill: 23}
+    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260825-003910.md
+    checkpoint: {examined: 124, total: 134, complete: 124, unresolved: 0, blocked: 0, failed: 0, not_yet_examined: 10, matrix_materialized_rows: 101, historical_accepted_rows_pending_backfill: 23}
     latest_accepted_endpoints:
-      - {method: GET, path: /search/cylinder/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
-      - {method: POST, path: /search/cylinder/by-serial-and-state, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
-      - {method: POST, path: /search/cylinder/by-customer, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
-      - {method: POST, path: /search/cylinder/by-supplier, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-001738.md}
+      - {method: GET, path: /search/product-category/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md}
+      - {method: GET, path: /search/product/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md}
+      - {method: GET, path: /search/product-uom/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md}
+      - {method: GET, path: /search/state/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md}
+      - {method: GET, path: /search/supplier/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md}
     next_action: >-
-      Continue direct frozen-source analysis of the remaining 15 endpoints. Preserve fail-closed worker idempotency and
+      Continue direct frozen-source analysis of the remaining 10 endpoints. Preserve fail-closed worker idempotency and
       only claim staged-snapshot growth after a verified connector-to-local-file materialization bridge writes the twenty
       resolved entries into a worker-readable immutable source root. Then recompute snapshot identity/dispatch fingerprint
       and fire up to ten safe-independent workers when QG-SOURCE-001 permits the changed generation.
