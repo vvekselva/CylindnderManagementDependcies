@@ -5,8 +5,8 @@ result:
   closed: false
   canonical_source_check_result_accepted: false
   matrix_state: INCREMENTAL_PARTIAL
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-233707.md
-  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260824-233707.md
+  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-000044.md
+  latest_source_restage_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-000044.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -44,20 +44,19 @@ result:
 
   checkpoint:
     total_endpoints: 134
-    examined: 112
-    complete: 112
+    examined: 115
+    complete: 115
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 22
-    matrix_materialized_rows: 89
+    not_yet_examined: 19
+    matrix_materialized_rows: 92
     historical_accepted_rows_pending_backfill: 23
 
   latest_newly_accepted_endpoints:
-    - {method: GET, path: /search/addresstype/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md}
-    - {method: GET, path: /search/challantype/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md}
-    - {method: GET, path: /search/city/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md}
-    - {method: GET, path: /search/country/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260824-233707.md}
+    - {method: GET, path: /search/customer/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
+    - {method: GET, path: /search/driver/{searchText}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
+    - {method: GET, path: /find/Driver-by-Id/{driverId}, state: COMPLETE, chain_completeness: FULL, evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md}
 
   unresolved_items: []
 
@@ -72,14 +71,14 @@ result:
   final_outputs: []
 
   next_action: >-
-    Continue direct safe frozen-source analysis of the remaining 22 endpoints. Materialize the twenty exact resolved source
+    Continue direct safe frozen-source analysis of the remaining 19 endpoints. Materialize the twenty exact resolved source
     entries only when a verified connector-to-local-filesystem source-provider bridge is available to write them into a
     worker-readable immutable snapshot. After verified snapshot advancement, recompute snapshot identity/dispatch fingerprint
     and fire a changed up-to-10-worker generation. Do not start WU-BL001-002 until WU-BL001-001 reaches 100 percent coverage.
 
   note: >-
-    BL-001 remains PARTIAL. The canonical matrix checkpoint is 112/134. This production checkpoint source-proved and accepted
-    four REST search endpoints through their exact generic Spring search-service implementations, shared pure validator,
-    typed Spring Data JPA DAOs and directly mapped PostgreSQL tables. It does not claim worker snapshot materialization or
-    lane execution that did not occur. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance remains required
+    BL-001 remains PARTIAL. The canonical matrix checkpoint is 115/134. This production checkpoint source-proved and accepted
+    three REST customer/driver endpoints through exact generic Spring service implementations, typed Spring Data JPA DAOs,
+    directly mapped PostgreSQL tables and scalar-only mappers. It does not claim worker snapshot materialization or lane
+    execution that did not occur. VERIFIED/CLOSED remain false and QG-TRC-015 explicit user acceptance remains required
     after all automatic gates pass.
