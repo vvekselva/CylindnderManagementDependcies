@@ -7,17 +7,18 @@ quality_gate_status:
 
   three_level_ssot_gate:
     id: QG-SSOT-001
-    state: PENDING_SYNC_WORK_UNIT_STATUS
+    state: PASS
     evidence:
       level_1: {state: COMPLETE, evidence: [backlog/backlog.yaml, repository/project-inventory.yaml]}
       level_2: {state: COMPLETE, evidence: [backlog/items/BL-001-controller-traceability.yaml, backlog/sow/BL-001-controller-traceability.yaml, backlog/paths/BL-001-traceability.yaml, backlog/gates/BL-001-traceability.yaml]}
       level_3:
-        state: PARTIAL_SYNC_RETRY_REQUIRED
+        state: SYNCHRONIZED
         evidence: [backlog/runtime/BL-001/analysis.yaml, backlog/runtime/BL-001/work-unit-status.yaml, backlog/runtime/BL-001/gate-status.yaml, backlog/runtime/BL-001/local-execution.yaml, backlog/runtime/BL-001/execution-statistics.yaml, backlog/runtime/BL-001/result.yaml]
-        pending_projection: backlog/runtime/BL-001/work-unit-status.yaml
-        pending_reason: CONTENTS_API_CAS_CONFLICT_RETRY_REQUIRED
-    planning_allowed: false
-    replanning_allowed: false
+        canonical_checkpoint: 124/134
+        pending_projection: null
+        pending_reason: null
+    planning_allowed: true
+    replanning_allowed: true
 
   statement_of_work_gate: {id: QG-SOW-001, state: PASS}
   common_dependency_gate: {id: QG-DEP-001, state: PASS, evidence: BL-001 declares no Backlog dependencies}
@@ -43,8 +44,7 @@ quality_gate_status:
     source_materialization_slots_completed_latest_checkpoint: 0
     source_materialization_transport_blocker: CONNECTOR_TO_EXECUTION_HOST_FILE_BRIDGE_UNAVAILABLE
     source_closure_complete: false
-    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260825-000044.md
-    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-000044.md
+    latest_direct_source_closure: logs/runs/PRODUCTION-FIRE-20260825-003910.md
     canary_source_closure_execution: E2E-STAGED-20260823-151800
     canary_source_closure_complete: true
     tamper_test: PASS_BLOCK_BEFORE_SERVICE
@@ -61,7 +61,6 @@ quality_gate_status:
     worker_failures: 0
     post_aggregate_individual_lane_logs: 0
     latest_direct_checkpoint_created_lane_logs: 0
-    latest_recovery_checkpoint_created_lane_logs: 0
 
   execution_recovery_gate:
     id: QG-RECOVERY-001
@@ -72,7 +71,7 @@ quality_gate_status:
     pending_sync_restarts_workers: false
     interrupted_partial_output_accepted: false
     latest_runtime_recovery: PASS_CLOSED_GENERATION_NOOP_REPLAN_DIRECT_SOURCE_ADVANCE
-    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-000044.md
+    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-003910.md
 
   real_lane_utilization_gate:
     id: QG-LANE-001
@@ -94,7 +93,7 @@ quality_gate_status:
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
-    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS, evidence: [115 of 134 endpoints examined, 115 COMPLETE, 0 UNRESOLVED, 19 not yet examined]}
+    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS, evidence: [124 of 134 endpoints examined, 124 COMPLETE, 0 UNRESOLVED, 10 not yet examined]}
     QG-TRC-003: {name: Controller Inventory Completeness, state: PASS}
     QG-TRC-004: {name: Endpoint Inventory Completeness, state: IN_PROGRESS}
     QG-TRC-005: {name: Source Check Output Validity, state: WAITING}
@@ -109,12 +108,10 @@ quality_gate_status:
     QG-TRC-014: {name: Execution Closure, state: WAITING}
     QG-TRC-015: {name: User Acceptance, state: WAITING, owner: USER, automatic: false}
 
-  endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 115, complete: 115, unresolved: 0, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 19, matrix_materialized_rows: 92, historical_accepted_rows_pending_backfill: 23}
+  endpoint_trace_checkpoint: {total_endpoints: 134, explicitly_examined_for_final_dependency: 124, complete: 124, unresolved: 0, blocked: 0, failed: 0, not_yet_examined_for_final_dependency: 10, matrix_materialized_rows: 101, historical_accepted_rows_pending_backfill: 23}
   close_allowed: false
   reason: >-
-    Canonical endpoint evidence advanced to 115/134, but one Level-3 projection (`work-unit-status.yaml`) could not be
-    updated because GitHub contents-API compare-and-swap rejected two write attempts. The accepted matrix, unresolved ledger,
-    matrix progress, local execution, execution statistics, result and analysis are synchronized at 115/134. Before any new
-    PLAN/REPLAN, retry only this pending synchronization; do not rerun workers or duplicate accepted endpoint traces. Source
-    closure also remains partial: the worker snapshot is 29 files, 20 exact source entries are resolved for materialization,
-    and the connector-to-execution-host file bridge remains unavailable.
+    Level-3 runtime projections are reconciled to the canonical 124/134 checkpoint and QG-SSOT-001 is PASS. BL-001
+    remains open because 10 caller-visible endpoints are not yet examined and QG-SOURCE-001 remains partial: the worker
+    snapshot is 29 files, 20 exact source entries are resolved for materialization, and the connector-to-execution-host
+    file bridge remains unavailable. Direct frozen-source tracing may continue; unchanged worker generation replay remains forbidden.
