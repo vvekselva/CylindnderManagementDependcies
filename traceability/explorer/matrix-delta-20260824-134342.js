@@ -1,0 +1,15 @@
+window.TRACEABILITY_DELTAS = window.TRACEABILITY_DELTAS || [];
+window.TRACEABILITY_DELTAS.push({
+  checkpoint: { invocation: "PRODUCTION-FIRE-20260824-134342", canonicalAcceptedExamined: 66, canonicalComplete: 66, canonicalUnresolved: 0, canonicalNotYetExamined: 68, materializedMatrixRows: 43 },
+  endpoints: [{
+    method: "GET", path: "/displayCustomer", controller: "CustomerFetchController", controllerMethod: "doGet", state: "COMPLETE", chainCompleteness: "FULL_BRANCHING",
+    paths: [
+      {label:"Customer root and success view",nodes:[{type:"CONTROLLER",name:"CustomerFetchController",method:"doGet"},{type:"SERVICE",name:"CustomerFetchByIdService",method:"processRequest"},{type:"DAO",name:"CustomerJpaDao",method:"findById"},{type:"ENTITY",name:"CustomerDo"},{type:"POSTGRES_TABLE",name:"public.tbl_customer"},{type:"TERMINAL_VIEW",name:"DisplayCustomer"}]},
+      {label:"Address expansion",nodes:[{type:"CONTROLLER",name:"CustomerFetchController",method:"doGet"},{type:"SERVICE",name:"CustomerFetchByIdService",method:"processRequest"},{type:"DAO",name:"CustomerJpaDao",method:"findById"},{type:"ENTITY",name:"CustomerDo"},{type:"ENTITY",name:"CustomerAddressDo",method:"getCustomerAddresses"},{type:"POSTGRES_TABLE",name:"public.tbl_customer_address"},{type:"ENTITY",name:"AddressDo",method:"getAddress"},{type:"POSTGRES_TABLE",name:"public.tbl_address"},{type:"MAPPER",name:"AddressMapper",method:"mapDoToDto"},{type:"TERMINAL_VIEW",name:"DisplayCustomer"}]},
+      {label:"Phone-number expansion",nodes:[{type:"CONTROLLER",name:"CustomerFetchController",method:"doGet"},{type:"SERVICE",name:"CustomerFetchByIdService",method:"processRequest"},{type:"DAO",name:"CustomerJpaDao",method:"findById"},{type:"ENTITY",name:"CustomerDo"},{type:"ENTITY",name:"CustomerPhoneNumberDo",method:"getCustomerPhoneNumbers"},{type:"POSTGRES_TABLE",name:"public.tbl_customer_phone_number"},{type:"ENTITY",name:"PhoneNumberDo",method:"getPhoneNumber"},{type:"POSTGRES_TABLE",name:"public.tbl_phone_number"},{type:"MAPPER",name:"PhoneNumberMapper",method:"mapDoToDto"},{type:"TERMINAL_VIEW",name:"DisplayCustomer"}]},
+      {label:"Handled error redirect",nodes:[{type:"CONTROLLER",name:"CustomerFetchController",method:"doGet"},{type:"SERVICE",name:"CustomerFetchByIdService",method:"processRequest"},{type:"TERMINAL_REDIRECT",name:"redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10"}]}
+    ],
+    finalDependencies: ["public.tbl_customer","public.tbl_customer_address","public.tbl_address","public.tbl_customer_phone_number","public.tbl_phone_number","DisplayCustomer","redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10"],
+    evidence: ["logs/runs/PRODUCTION-FIRE-20260824-134342.md"]
+  }]
+});
