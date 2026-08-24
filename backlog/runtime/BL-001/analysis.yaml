@@ -18,20 +18,20 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 107
-    complete: 107
+    examined_for_final_dependency: 108
+    complete: 108
     unresolved: 0
     blocked: 0
     failed: 0
-    not_yet_examined: 27
+    not_yet_examined: 26
     changed_by_architecture_validation: false
 
   latest_accepted_trace_attempt:
-    run_id: PRODUCTION-FIRE-20260824-230001
+    run_id: PRODUCTION-FIRE-20260824-231647
     state: CLOSED_CHECKPOINT
     result: PARTIAL_ADVANCED
     trace_additions: {examined: 1, complete: 1, unresolved: 0}
-    accepted_endpoint: POST /stop
+    accepted_endpoint: GET /search/address/customer-address/{customerId}
     chain_completeness: FULL_BRANCHING
 
   self_reliant_architecture_validation:
@@ -83,7 +83,7 @@ analysis:
     trace_evidence_auto_accepted: false
     interpretation: >-
       Infrastructure self-reliance remains proven. The latest staged discovery closed cleanly but requested additional
-      source/bindings rather than guessing. The exact source-resolution set is now durably resolved for twenty entries;
+      source/bindings rather than guessing. The exact source-resolution set is durably resolved for twenty entries;
       execution-host immutable snapshot materialization is still required before a changed worker generation can fire.
 
   source_restage_checkpoint:
@@ -96,6 +96,9 @@ analysis:
     materialization_generations_ready: 2
     max_parallel_materialization_slots: 10
     execution_host_snapshot_advanced: false
+    latest_execution_host_attempt: PRODUCTION-FIRE-20260824-231647
+    latest_execution_host_attempt_result: CONNECTOR_SOURCE_BYTES_VERIFIED_BUT_NO_CONNECTOR_TO_LOCAL_SNAPSHOT_FILE_BRIDGE
+    source_materialization_slots_completed_this_checkpoint: 0
 
   unresolved_from_prior_attempts: []
 
@@ -117,21 +120,22 @@ analysis:
   canonical_result_accepted: false
   matrix_construction_unlocked: true
   matrix_state: INCREMENTAL_PARTIAL
-  matrix_materialized_rows: 84
+  matrix_materialized_rows: 85
   historical_accepted_rows_pending_backfill: 23
 
   proved_now:
     - GitHub Actions and a pre-existing local source checkout are not required for normal source-reading execution.
-    - Private source can be staged at the exact frozen commit with Git blob integrity verification.
+    - Private source can be read at the exact frozen commit with Git blob integrity verification through the Orchestrator control plane.
     - Incorrect or tampered source/bindings fail closed before they can support final evidence.
     - Execution journal and dispatch fingerprint support idempotent validation/recovery/PENDING_SYNC decisions.
     - The local process-pool backend can physically reach ten concurrent SERVICE workers in a separate capacity probe.
-    - The latest natural staged discovery started ten workers with zero worker failures and zero residual lane logs, but natural SERVICE overlap remains underutilized.
-    - Twenty exact frozen source entries are resolved with no unresolved resolution entries and are ready for immutable snapshot materialization.
-    - POST /stop is source-proved COMPLETE/FULL_BRANCHING through CustomerStopSelectionController and the exact VehicleTripStopIngestionService generic binding, preserving customer, supplier, guard and challan-link branches.
+    - Twenty exact frozen source entries remain resolved with no unresolved resolution entries and are ready for immutable snapshot materialization.
+    - The current execution host cannot write connector-returned source bytes into a worker-readable local snapshot through an available connector-to-filesystem bridge, so no snapshot-file growth is claimed.
+    - GET /search/address/customer-address/{customerId} is source-proved COMPLETE/FULL_BRANCHING through RestfulAddressServices, the exact CustomerAddressFetchByIDService generic binding, CustomerAddressJpaDao, CustomerAddressDo/CustomerDo/AddressDo and public.tbl_customer_address/public.tbl_customer/public.tbl_address.
 
   next_step: >-
-    Continue WU-BL001-001 by materializing the twenty resolved exact source entries into an advanced immutable staged snapshot,
-    verifying every Git blob and binding, recomputing snapshot identity/dispatch fingerprint, and firing a changed up-to-ten-worker
-    generation only after QG-SOURCE-001 permits it. In parallel continue direct frozen-source tracing of the remaining 27
-    caller-visible endpoints. WU-BL001-002 remains blocked until canonical trace-result coverage reaches 134/134.
+    Continue WU-BL001-001 with direct frozen-source tracing of the remaining 26 caller-visible endpoints while preserving
+    QG-SOURCE-001 fail-closed for trace-worker fire. Materialize the twenty resolved exact source entries only when the
+    Orchestrator execution host has a verified connector-to-local-file source-provider bridge, then recompute snapshot
+    identity/dispatch fingerprint and fire a changed up-to-ten-worker generation. WU-BL001-002 remains blocked until
+    canonical trace-result coverage reaches 134/134.
