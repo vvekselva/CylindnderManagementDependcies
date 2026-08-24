@@ -1,0 +1,51 @@
+source_restage_dispatch:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-001
+  owner: PRIMARY_ORCHESTRATOR_SOURCE_PROVIDER_MANAGER
+  source: backlog/runtime/BL-001/source-restage-resolution.yaml
+  source_repository: vvekselva/CylinderManagement
+  frozen_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  state: READY
+  execution_semantics: >-
+    Run these as Orchestrator-controlled parallel source materialization slots. They are not trace-evidence workers and
+    never auto-accept endpoint truth. GitHub access remains in the Primary Orchestrator/Source Provider Manager; trace
+    lane workers remain credential-free.
+  max_parallel_materializations: 10
+  generations:
+    - generation: RESTAGE-001
+      slots:
+        - {slot: 1, fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPageAuditLedgerDo}
+        - {slot: 2, fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPagePhotoDo}
+        - {slot: 3, fqcn: com.sreyas.datamatics.application.service.ICylinderManagementApplicationService}
+        - {slot: 4, fqcn: com.sreyas.datamatics.cylinder.management.services.TripReturnWorkflowService}
+        - {slot: 5, fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanBookRegistryDo}
+        - {slot: 6, fqcn: com.sreyas.datamatics.application.jpa.entity.SummaryMetricLookupDo}
+        - {slot: 7, fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanBookRegistryMapper}
+        - {slot: 8, fqcn: com.sreyas.datamatics.cylinder.management.mapper.SummaryMetricLookupMapper}
+        - {slot: 9, fqcn: com.sreyas.datamatics.application.jpa.entity.TripChallanEntryTrackerAuditDo}
+        - {slot: 10, fqcn: com.sreyas.datamatics.application.jpa.entity.TripChallanEntryTrackerDo}
+    - generation: RESTAGE-002
+      slots:
+        - {slot: 1, fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanEntryAgingDashboardMapper}
+        - {slot: 2, fqcn: com.sreyas.datamatics.application.jpa.view.entity.ChallanHeatmapMetricsViewDo}
+        - {slot: 3, fqcn: com.sreyas.datamatics.application.jpa.view.entity.TripChallanBookAssignmentViewDo}
+        - {slot: 4, fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanHeatmapMetricsViewMapper}
+        - {slot: 5, fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanPageAuditLedgerMapper}
+        - {slot: 6, fqcn: com.sreyas.datamatics.cylindermanagement.offlinemap.service.CustomerAddressLocationOfflineMapService}
+        - {slot: 7, fqcn: com.sreyas.datamatics.application.jpa.entity.CustomerProductConsumptionProjectionViewDo}
+        - {slot: 8, fqcn: com.sreyas.datamatics.cylinder.management.mapper.CustomerConsumptionProjectionMapper}
+        - {slot: 9, fqcn: com.sreyas.datamatics.application.service.ICylinderManagementApplicationMediator}
+        - {slot: 10, fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl}
+  generation_boundary:
+    - fetch exact frozen-ref bytes for every slot
+    - compute and verify Git blob SHA against source-restage-resolution.yaml
+    - write exact repository-relative path into a new execution-host source root
+    - update snapshot manifest atomically
+    - verify materialized file count and snapshot identity
+    - if snapshot identity changed recompute trace dispatch fingerprint
+    - once QG-SOURCE-001 permits fire the next safe-independent trace-worker generation immediately
+  failure_policy:
+    - a failed source slot is explicit and does not allow guessed replacement source
+    - complete successful slots and continue independent slots
+    - identical unresolved request across two restage generations becomes SOURCE_RESOLUTION_STALLED
