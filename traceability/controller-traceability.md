@@ -7,8 +7,8 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 
 This matrix is created while source analysis is in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **66 / 134 examined; 66 COMPLETE; 0 UNRESOLVED; 68 not yet examined.**  
-Rows currently materialized below: **43**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
+Current canonical checkpoint: **67 / 134 examined; 67 COMPLETE; 0 UNRESOLVED; 67 not yet examined.**  
+Rows currently materialized below: **44**. The other 23 historically accepted rows must be backfilled from durable accepted evidence and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -56,12 +56,13 @@ Rows currently materialized below: **43**. The other 23 historically accepted ro
 | GET | `/wizard/vehicle-trip-load` | `VehicleTripLoadWizardController.showWizard` | COMPLETE | FULL_BRANCHING | IN_MEMORY_CACHE_POSTGRES_VIEW_AND_TERMINAL_VIEW | `LookupDataCache`; `public.vw_active_challan_books_for_trip_load`; `final-version-1/VehicleTripLoadWizard` | `logs/runs/PRODUCTION-FIRE-20260824-110011.md` |
 | POST | `/wizard/vehicle-trip-load/save` | `VehicleTripLoadWizardController.save` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_VIEW_AND_TERMINAL_REDIRECT_VIEW | trip/load/load-line, stop, challan assignment/ledger/view, cylinder/yard/logistics/state and master tables; `redirect:/vehicle-loads/list` or wizard error view | `logs/runs/PRODUCTION-FIRE-20260824-113951.md` |
 | GET | `/displayCustomer` | `CustomerFetchController.doGet` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW_REDIRECT | `public.tbl_customer`; `public.tbl_customer_address`; `public.tbl_address`; `public.tbl_customer_phone_number`; `public.tbl_phone_number`; `DisplayCustomer`; handled redirect | `logs/runs/PRODUCTION-FIRE-20260824-134342.md` |
+| GET | `/fetchCustomerByPage` | `CustomerFetchByPageController.doGet` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_AND_TERMINAL_VIEW_REDIRECT | `public.tbl_customer`; `public.tbl_customer_phone_number`; `public.tbl_phone_number`; `public.tbl_customer_address`; `public.tbl_address`; `public.tbl_city`; `final-version-1/CustomerListPage`; handled redirect | `logs/runs/PRODUCTION-FIRE-20260824-143220.md` |
 
 ## Current unresolved paths
 
-**None among the 66 examined endpoints.**
+**None among the 67 examined endpoints.**
 
-This does not close BL-001: **68 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
+This does not close BL-001: **67 caller-visible endpoints remain not yet examined**. The matrix therefore remains `INCREMENTAL_PARTIAL` and WU-BL001-002 remains dependency-blocked until canonical source-check coverage reaches 100 percent.
 
 ## Incremental update rule
 
