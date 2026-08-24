@@ -1,0 +1,13 @@
+window.TRACEABILITY_DELTAS = window.TRACEABILITY_DELTAS || [];
+window.TRACEABILITY_DELTAS.push({
+  checkpoint: { invocation: "PRODUCTION-FIRE-20260824-110011", canonicalAcceptedExamined: 64, canonicalComplete: 64, canonicalUnresolved: 0, canonicalNotYetExamined: 70, materializedMatrixRows: 41 },
+  endpoints: [{
+    method: "GET", path: "/wizard/vehicle-trip-load", controller: "VehicleTripLoadWizardController", controllerMethod: "showWizard", state: "COMPLETE", chainCompleteness: "FULL_BRANCHING",
+    paths: [
+      {label:"Lookup cache and terminal view",nodes:[{type:"CONTROLLER",name:"VehicleTripLoadWizardController",method:"showWizard"},{type:"IN_MEMORY_CACHE",name:"LookupDataCache",method:"getVehicleLoadPurposes / getTotalProducts / getProduct"},{type:"TERMINAL_VIEW",name:"final-version-1/VehicleTripLoadWizard"}]},
+      {label:"Active challan books and terminal view",nodes:[{type:"CONTROLLER",name:"VehicleTripLoadWizardController",method:"showWizard / populateActiveChallanBooks"},{type:"DAO",name:"ActiveChallanBookForTripLoadViewJpaDao",method:"findByBookType"},{type:"VIEW_ENTITY",name:"ActiveChallanBookForTripLoadViewDo"},{type:"POSTGRES_VIEW",name:"public.vw_active_challan_books_for_trip_load"},{type:"TERMINAL_VIEW",name:"final-version-1/VehicleTripLoadWizard"}]}
+    ],
+    finalDependencies: ["LookupDataCache","public.vw_active_challan_books_for_trip_load","final-version-1/VehicleTripLoadWizard"],
+    evidence: ["logs/runs/PRODUCTION-FIRE-20260824-110011.md"]
+  }]
+});
