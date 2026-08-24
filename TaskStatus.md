@@ -13,7 +13,7 @@ Traceability Explorer architecture: `architecture/traceability-explorer.md`
 | GitHub - `vvekselva/CylindnderManagementDependcies` | Durable SSOT, runtime, evidence, matrix and Explorer persistence |
 | Primary Automation Tool / Orchestrator | Source staging, execution control, evidence validation, matrix projection, recovery and synchronization |
 | Local Execution Engine | `LOCAL_PROCESS_POOL`, up to 10 real OS workers |
-| Traceability Explorer | Read-only browser view of full Controller -> Service/Validator -> DAO/Entity -> DB/File/API chains and durable logs |
+| Traceability Explorer | Read-only browser view of full Controller -> Service/Validator/Mediator -> DAO/Entity -> DB/File/API chains and durable logs |
 
 ## Latest Worker Fire
 
@@ -40,9 +40,11 @@ No unchanged discovery batch was rerun because the immutable snapshot still requ
 
 ## Latest Orchestrator Checkpoint
 
-Checkpoint: **`PRODUCTION-FIRE-20260824-033550`**
+Checkpoint: **`PRODUCTION-FIRE-20260824-080301`**
 
-`GET /ownership-obligation-dashboard` is now source-closed as **COMPLETE / FULL_BRANCHING**. The controller calls `OwnershipObligationDashboardService.fetchDashboard`. The detail path uses `OwnershipObligationDetailJpaDao` and `OwnershipObligationDetailViewDo`; the explicit `@Subselect` reads `public.tbl_cylinder_party_custody`, `public.tbl_cylinder`, `public.tbl_customer`, and `public.tbl_supplier`. The party-summary path uses `OwnershipObligationPartySummaryJpaDao` and `OwnershipObligationPartySummaryViewDo` and reads the custody/customer/supplier tables. The closed-today metric executes native SQL directly on `public.tbl_cylinder_party_custody`. The route terminates at `final-version-1/OwnershipObligationDashboard`.
+`POST /cylinderDelivery` advanced from **UNRESOLVED** to **COMPLETE / FULL_BRANCHING**. Frozen source now proves the exact `Uc02Phase02CylinderDeliveryMediator` generic binding, `OrderIngestionService`, `OrderIngestionRequestValidator`, typed JPA lookup branches, `OrderJpaDao.save(orderDo)`, cascaded `OrderLineDo`, and the mapped PostgreSQL dependency set. Commented future transition-service code was not treated as active dependency.
+
+The active persistence set is `public.tbl_challan_type`, `public.tbl_customer`, `public.tbl_customer_address`, `public.tbl_driver`, `public.tbl_vehicle`, `public.tbl_cylinder`, `public.tbl_product`, `public.tbl_order`, and `public.tbl_order_line`. Success redirects to `/orderList?pageNumber=1&itemsPerPage=10`; validation failure re-renders `Uc02-Phase02-CylinderDeliveryView`.
 
 ## Framework / Gate State
 
@@ -66,16 +68,16 @@ All **10 lanes are IDLE between worker fires**. The last worker batch closed cle
 | Metric | Current value |
 |---|---:|
 | Caller-visible endpoints | **134** |
-| Examined | **57** |
-| COMPLETE | **55** |
+| Examined | **60** |
+| COMPLETE | **58** |
 | UNRESOLVED | **2** |
 | BLOCKED / FAILED | **0 / 0** |
-| NOT YET EXAMINED | **77** |
+| NOT YET EXAMINED | **74** |
 | Traceability Matrix | **INCREMENTAL_PARTIAL** |
-| Materialized full-chain rows | **30** |
-| Historical accepted rows awaiting evidence backfill | **27** |
+| Materialized full-chain rows | **36** |
+| Historical accepted rows awaiting evidence backfill | **24** |
 
-Current examination coverage: **42.54%**. Current COMPLETE coverage: **41.04%**.
+Current examination coverage: **44.78%**. Current COMPLETE coverage: **43.28%**.
 
 Open canonical evidence gaps remain:
 
