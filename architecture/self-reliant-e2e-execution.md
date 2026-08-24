@@ -6,6 +6,8 @@ The Cylinder Automation Tool must be able to plan, stage source, execute indepen
 
 GitHub remains the Version Control System and durable persistence layer. The Automation Tool remains the Orchestrator and execution owner.
 
+A scheduler trigger is an **execution window**, not a request to run one worker batch. When runnable backlog work exists, the Primary Orchestrator repeatedly dispatches, aggregates, validates, synchronizes and replans during the same invocation so that the 10-lane process pool is productively reused across multiple generations.
+
 ## Definition of self-reliant
 
 A production invocation is self-reliant when all of the following are true:
@@ -23,6 +25,7 @@ A production invocation is self-reliant when all of the following are true:
 - worker evidence is never automatically promoted to a final endpoint trace;
 - each endpoint trace accepted by the Primary Orchestrator is immediately projected into the live Traceability Matrix;
 - the live matrix can remain `INCREMENTAL_PARTIAL` while Source Check continues and becomes final only after 100 percent coverage and gate validation;
+- a successful worker generation does not terminate a scheduler invocation while additional eligible runnable backlog tasks exist;
 - final Orchestrator validation and explicit user acceptance remain authoritative.
 
 ## Responsibility boundary
@@ -31,15 +34,93 @@ A production invocation is self-reliant when all of the following are true:
 |---|---|
 | GitHub `vvekselva/CylinderManagement` | Version-controlled application source and frozen source baseline |
 | GitHub `vvekselva/CylindnderManagementDependcies` | Version-controlled backlog, SOW, gates, runtime SSOT, traceability matrix, durable logs/evidence and history |
-| Primary Automation Tool / Orchestrator | Planning, source staging, binding resolution, dispatch, execution control, evidence validation, matrix projection, recovery and synchronization |
+| Primary Automation Tool / Orchestrator | Planning, source staging, binding resolution, dispatch, execution control, evidence validation, matrix projection, recovery, utilization-window control and synchronization |
 | Source Provider Manager | Produce a verified worker-readable source root from an approved provider |
-| Local Execution Engine | Start and measure up to 10 independent OS workers |
+| Local Execution Engine | Start and measure up to 10 independent OS workers for each generation |
 | Lane Worker | Read one immutable source scope, emit lifecycle/heartbeat/evidence, never update shared SSOT or the matrix directly |
 | Aggregator | Consolidate worker evidence and lifecycle logs, verify cleanup and calculate measured concurrency |
 | Evidence Validator | Decide source-proved COMPLETE/UNRESOLVED/BLOCKED/FAILED endpoint states; worker candidates are not final decisions |
 | Matrix Projector | Upsert each accepted endpoint into the incremental Traceability Matrix and keep unresolved accounting synchronized |
 | Matrix-Driven Workflow | Reconcile, validate and register the matrix; provide governed downstream handoff only after final validation |
 | Persistence Synchronizer | Persist validated runtime/evidence/matrix changes to GitHub; preserve PENDING_SYNC locally on transient write failure |
+| Scheduler | Starts one governed backlog-drain invocation; it does not directly own a worker generation |
+
+## Scheduler invocation and backlog-drain utilization window
+
+### Problem corrected
+
+The previous lifecycle allowed a scheduler invocation to run one `LOCAL_PROCESS_POOL <= 10` generation and then close after only a few minutes. With an hourly scheduler this could limit throughput to roughly ten worker tasks per hour even when a large task pool remained. That behavior is not acceptable utilization.
+
+### Governing rule
+
+A scheduler invocation operates as a **45-minute backlog-drain window**.
+
+- `target_invocation_window_minutes = 45`
+- `minimum_productive_window_minutes = 30`
+- `hard_stop_window_minutes = 45`
+- early termination before 30 minutes is allowed only when the **eligible runnable backlog task count is zero**;
+- a completed worker generation is only a checkpoint inside the invocation, not the invocation terminal state;
+- when runnable work remains, the Orchestrator continues until the 45-minute hard stop;
+- at the hard stop it synchronizes a clean checkpoint and exits with remaining backlog still open for the next scheduler invocation;
+- only one scheduler invocation may hold the singleton execution lease at a time.
+
+`eligible runnable backlog task count` means tasks from backlog items that are enabled and have passed their governing SSOT/SOW/dependency/item gates. Disabled or non-plannable later backlog items are never pulled merely to keep workers busy.
+
+### Backlog-drain loop
+
+```text
+SCHEDULER TRIGGER
+      |
+      v
+ACQUIRE SINGLETON INVOCATION LEASE
+      |
+      v
+START 45-MINUTE WINDOW
+      |
+      v
++--------------------------------------------------------------+
+| 1. Apply execution-journal idempotency                       |
+| 2. Re-read Level 1 / 2 / 3 SSOT                              |
+| 3. Replan eligible safe-independent backlog tasks            |
+| 4. Resolve exact missing source / Spring bindings as needed  |
+| 5. QG-SOURCE-001                                             |
+| 6. Dispatch up to 10 workers                                 |
+| 7. Aggregate + QG-LOG-001 + QG-LANE-001                     |
+| 8. Primary Orchestrator validates evidence                   |
+| 9. Project accepted trace/matrix changes                     |
+|10. Synchronize validated durable state                       |
+|11. Rescan transient lane logs to zero                        |
+|12. Re-read backlog and immediately refill next generation    |
++--------------------------------------------------------------+
+      |
+      +--> runnable task pool = 0 ? ---- YES ---> CLEAN EXIT
+      |                                  (may be before 30 min)
+      |
+      NO
+      |
+      +--> elapsed < 45 min ? ----------- YES ---> LOOP
+      |
+      NO
+      |
+      v
+CHECKPOINT + SYNC + WINDOW_EXPIRED
+      |
+      v
+NEXT HOURLY INVOCATION RESUMES IDEMPOTENTLY
+```
+
+### Empty dispatch while backlog remains
+
+An empty worker dispatch does not automatically mean the invocation is complete. If backlog work remains but no lane is currently fireable, the Orchestrator uses the remaining window for legitimate prerequisite work only:
+
+- exact missing-source staging;
+- exact Spring binding resolution;
+- validation of already closed evidence;
+- `PENDING_SYNC` retry only;
+- fail-closed interrupted-execution recovery;
+- rebuilding the next safe-independent dispatch.
+
+Artificial sleep, fake tasks, duplicate worker generations or invented parallel work are forbidden. If the runnable task pool truly reaches zero, early clean exit is allowed.
 
 ## End-to-end architecture
 
@@ -49,6 +130,9 @@ A production invocation is self-reliant when all of the following are true:
                               v
                   PRIMARY AUTOMATION TOOL
                       / ORCHESTRATOR
+                              |
+                    invocation lease
+                    + 45-min window
                               |
                   read Level 1/2/3 SSOT
                               |
@@ -87,13 +171,7 @@ A production invocation is self-reliant when all of the following are true:
      RESTAGE / REBIND LOOP              LOCAL_PROCESS_POOL
      bounded + no-progress check              <= 10
                                                |
-                          +--------------------+--------------------+
-                          |      |      |      |      |            |
-                         L01    L02    L03    ...    L09          L10
-                          |      |      |             |            |
-                          +--------------------+--------------------+
-                                               |
-                                lifecycle + heartbeat + evidence
+                         L01 ... L10 evidence/lifecycle
                                                |
                                                v
                                          AGGREGATOR
@@ -103,37 +181,28 @@ A production invocation is self-reliant when all of the following are true:
                                                v
                                    ORCHESTRATOR VALIDATION
                                                |
-                               accepted endpoint trace state
-                                               |
-                                               v
                                       MATRIX PROJECTOR
                                                |
-                        +----------------------+---------------------+
-                        |                                            |
-       traceability/controller-traceability.md      unresolved-traceability.md
-                        |                                            |
-                        +----------------------+---------------------+
+                                    PERSISTENCE SYNC
                                                |
-                                  matrix-progress.yaml
+                                     CLEAN CHECKPOINT
                                                |
-                                               v
-                                  MATRIX-DRIVEN CONTINUATION
-                                /              |              \
-                     continue source      final reconcile     gate validation
-                        analysis            at 100%             + registration
+                                      REPLAN / REFILL
                                                |
-                                               v
-                                    PERSISTENCE SYNCHRONIZER
-                                               |
-                                  +------------+------------+
-                                  |                         |
-                               SYNCED                  PENDING_SYNC
-                                  |                         |
-                                  v                         v
-                                GitHub              retry next invocation
-                                  |
-                                  v
-                           invocation CLOSED
+                        +----------------------+----------------+
+                        |                                       |
+              runnable tasks remain                     task pool zero
+              and elapsed < 45 min                            |
+                        |                                     v
+                        +------------ LOOP             INVOCATION EXIT
+                        |
+                  elapsed >= 45 min
+                        |
+                        v
+              WINDOW_EXPIRED CHECKPOINT
+                        |
+                        v
+                 INVOCATION EXIT
 ```
 
 Workers never write the Traceability Matrix directly. Only Orchestrator-accepted evidence can update it.
@@ -173,105 +242,79 @@ STAGE ROOTS
    -> if maximum iterations reached: SOURCE_RESOLUTION_LIMIT_REACHED, fail closed
 ```
 
-Default maximum staging iterations: 8.
-
-A discovery fire can produce useful evidence, but evidence depending on unstaged or unbound source cannot be accepted as final.
+Default maximum staging iterations: 8 per bounded source-closure sequence. A new generation is permitted only when its dispatch/source fingerprint materially changes or idempotency rules specifically permit recovery/synchronization work.
 
 ## Incremental Traceability Matrix creation
 
-The Traceability Matrix is no longer postponed until the end of Source Check.
-
-Authoritative workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`.
+The Traceability Matrix is created continuously during Source Check under `workflows/WF-002-incremental-traceability-matrix.yaml`.
 
 Artifacts:
 
 - `traceability/controller-traceability.md` - live endpoint matrix;
 - `traceability/unresolved-traceability.md` - synchronized unresolved/blocked/failed ledger;
-- `traceability/matrix-progress.yaml` - matrix materialization and coverage status.
+- `traceability/matrix-progress.yaml` - matrix materialization and coverage status;
+- `traceability/explorer/traceability-matrix.json` - structured viewer data;
+- `traceability/explorer/matrix-data.js` - browser-friendly generated copy.
 
-### Update rule
+For every endpoint whose evidence is accepted by the Primary Orchestrator, the Orchestrator assigns the canonical state, upserts the `(HTTP method,path)` row, preserves every proved intermediate hop and branching path, synchronizes unresolved accounting, updates progress and regenerates viewer data from the same accepted structured model.
 
-For every endpoint whose evidence is accepted by the Primary Orchestrator:
+Raw worker evidence never writes matrix truth.
 
-1. assign the canonical state `COMPLETE`, `UNRESOLVED`, `BLOCKED`, or `FAILED`;
-2. immediately upsert one row keyed by `(HTTP method, path)` into `controller-traceability.md`;
-3. attach the frozen baseline and durable evidence reference;
-4. synchronize unresolved/blocked/failed rows into `unresolved-traceability.md`;
-5. update `matrix-progress.yaml` counts and materialization state;
-6. continue source analysis for remaining endpoints.
+Matrix states remain:
 
-Raw worker evidence never writes matrix truth. A row is created only after Orchestrator validation.
-
-### Matrix states
-
-- `INCREMENTAL_PARTIAL`: validated rows are being accumulated while Source Check coverage is below 100 percent.
-- `READY_FOR_FINAL_RECONCILIATION`: every caller-visible endpoint has one accepted trace-result state.
-- `FINAL_VALIDATED`: matrix reconciliation and all required traceability gates pass.
-
-The accepted canonical checkpoint may be ahead of rows physically materialized when historical evidence has not yet been backfilled. Such rows must be backfilled only from durable accepted evidence, never reconstructed from counts or naming.
+- `INCREMENTAL_PARTIAL`
+- `READY_FOR_FINAL_RECONCILIATION`
+- `FINAL_VALIDATED`
 
 ## Matrix-driven downstream workflow
 
-Matrix creation and downstream workflow are separated into two responsibilities:
+During `WU-BL001-001`, accepted traces are continuously projected while source analysis continues. At 100 percent trace-result coverage, `WU-BL001-002` reconciles the existing matrix rather than rebuilding it from nothing. `WU-BL001-003` validates traceability gates from the reconciled structured model. `WU-BL001-004` registers the final validated matrix and source baseline. Explicit user acceptance is still required before BL-001 closes.
 
-### During WU-BL001-001
-
-The Orchestrator continuously projects accepted traces into the incremental matrix. COMPLETE rows become stable validated trace facts; UNRESOLVED/BLOCKED/FAILED rows feed the evidence-resolution queue. Source analysis continues in parallel with matrix growth.
-
-### WU-BL001-002 - Finalize/Reconcile Traceability Matrix
-
-WU-BL001-002 no longer creates the matrix from nothing. Once Source Check reaches 100 percent it:
-
-- reconciles matrix keys against controller and endpoint inventories;
-- reconciles the incremental matrix against canonical Source Check output;
-- verifies exactly one row per caller-visible `(HTTP method, path)`;
-- verifies all evidence references and unresolved accounting;
-- produces the final matrix artifact set.
-
-### WU-BL001-003 - Validate Traceability Gates
-
-The final/reconciled matrix becomes the principal structured input for coverage, call-path evidence, final-dependency evidence, no-guessing, resolution-accounting and artifact-consistency gates.
-
-### WU-BL001-004 - Register Baseline and Prepare Closure
-
-The final validated matrix and source baseline are registered together. Explicit user acceptance remains required before BL-001 closes.
-
-### Handoff to later backlogs
-
-A `FINAL_VALIDATED` BL-001 matrix may be registered as a governed input to later backlog definitions and SOWs. It does **not** automatically enable BL-002 or later work. Each later backlog still requires complete Level 1/2/3 SSOT, its own SOW, dependency gates and approved item gate.
+A `FINAL_VALIDATED` BL-001 matrix may become a governed dependency for later backlog items, but it never automatically enables them.
 
 ## Execution journal and idempotency
 
-Every local execution has a durable journal containing at least execution ID, dispatch fingerprint, source baseline, source snapshot identity, phase, worker PIDs/state, aggregate path/fingerprint, source-closure state, validation state and GitHub synchronization state.
+Every scheduler invocation and every worker generation within it is journaled. The journal records invocation ID, generation ID, dispatch fingerprint, source baseline, source snapshot identity, phase, worker PIDs/state, aggregate path/fingerprint, source-closure state, validation state, synchronization state, invocation elapsed time and exit reason.
 
-Recovery rules:
+Recovery rules are evaluated **before every generation**:
 
 - same fingerprint + `PENDING_SYNC` -> retry synchronization only; do not rerun workers;
 - same fingerprint + closed evidence awaiting validation -> validate existing evidence; do not rerun workers;
-- `RUNNING` journal with no live worker processes -> enter recovery, reject partial output, then rerun only after cleanup;
+- `RUNNING` journal with no live workers -> recover fail-closed, reject partial output and clean the generation boundary;
 - changed fingerprint -> start a new execution generation;
-- already synchronized closed execution -> NOOP rather than duplicate execution.
+- already synchronized closed generation -> no-op that generation and immediately replan for different eligible work;
+- no-op of one generation never terminates the containing invocation while runnable backlog work remains.
 
-Matrix idempotency follows the same dispatch/evidence discipline: an already accepted `(method,path,evidence fingerprint)` row is an upsert/no-op, never a duplicate row.
+Matrix idempotency remains an upsert/no-op on an already accepted `(method,path,evidence fingerprint)` record.
+
+## Worker-generation lifecycle
+
+Each generation may contain up to ten safe-independent worker tasks. Workers remain ephemeral; the **scheduler invocation** is the longer-lived unit.
+
+```text
+GENERATION_N
+  INIT -> SERVICE -> CLOSE
+  aggregate
+  validate
+  sync
+  transient logs -> 0
+  replan
+GENERATION_N+1
+```
+
+The same lane number may be reused in a later generation only after the previous lane lifecycle has closed, its evidence has been aggregated, and transient logs have been deleted and rescanned to zero.
 
 ## Worker failure policy
 
-- integrity/baseline/binding failure: no automatic retry; fix source input first;
+- integrity/baseline/binding failure: no blind retry; fix source input first;
 - transient worker-process failure: at most one isolated retry for that lane after lifecycle recovery;
-- shared-state or duplicate-lane failure: abort the batch before SERVICE;
-- no partial worker result can auto-advance canonical trace or matrix state.
+- shared-state or duplicate-lane failure: abort that generation before SERVICE;
+- no partial worker result can auto-advance canonical trace or matrix state;
+- a failed generation does not permit guessed replacement work simply to occupy the remaining invocation window.
 
 ## GitHub synchronization failure policy
 
-Execution and validation do not depend on GitHub Actions, but durable persistence still uses the GitHub connector.
-
-If a post-validation GitHub write fails:
-
-1. preserve the closed aggregate, accepted trace updates and matrix changes locally;
-2. set synchronization state to `PENDING_SYNC`;
-3. do not rerun workers for the same dispatch fingerprint;
-4. retry only missing GitHub synchronization during the next invocation;
-5. close execution as `CLOSED_SYNCED` only after persisted runtime/evidence/matrix state is verified.
+If a post-validation GitHub write fails, preserve the validated result as `PENDING_SYNC`. Within the same invocation, retry only synchronization according to idempotency policy; never rerun the same worker generation. A clean synchronized checkpoint is required before the generation becomes `CLOSED_SYNCED`.
 
 ## Quality gates
 
@@ -279,23 +322,26 @@ If a post-validation GitHub write fails:
 - `QG-SOW-001`: valid Statement of Work.
 - `QG-DEP-001`: backlog dependency gate.
 - `QG-SOURCE-001`: source root integrity and recursive source/binding closure.
-- `QG-LOG-001`: lifecycle ordering, aggregation and zero transient logs.
+- `QG-LOG-001`: lifecycle ordering, aggregation and zero transient logs at every generation boundary.
 - `QG-LANE-001`: measured natural workload SERVICE concurrency; performance governance only.
 - `QG-TRC-*`: incremental/final matrix and BL-001 trace correctness/completeness.
 - `QG-TRC-015`: explicit user acceptance before backlog close.
 
-## Validation performed on 23 August 2026
+## Invocation exit states
 
-The architecture was tested against the real private `CylinderManagement` frozen baseline `3ae6e61442132d94a307275b08dd65fcef228d89`.
+| Exit state | Meaning |
+|---|---|
+| `BACKLOG_DRAINED` | Eligible runnable backlog task count reached zero. Clean early exit is allowed. |
+| `WINDOW_EXPIRED` | 45-minute hard stop reached while backlog remains. Clean checkpoint is synchronized for the next invocation. |
+| `PENDING_SYNC` | Durable write incomplete; no worker replay for the same generation. |
+| `FAIL_CLOSED_BLOCKED` | Truth/source/recovery gate prevents safe progress. Evidence and blocker are persisted; no fabricated work. |
 
-Validated behaviors include private source staging without a local checkout, Git blob verification, fail-closed tamper/baseline/duplicate-lane/stale-log handling, recursive JPA source closure, positive and negative Spring binding validation, ten-worker process execution, log aggregation to zero residual lane logs, and recovery/idempotency handling.
+`SUCCESS` is a generation result, not by itself an invocation exit reason.
 
-The separate process-pool capacity test demonstrated 10/10 worker overlap. Natural source-discovery workloads may measure lower and remain an operational performance metric rather than a correctness shortcut.
+## Validation history and production conclusion
 
-The incremental matrix policy is now production governance: accepted endpoint evidence is materialized immediately, while final matrix validation still waits for complete source-check coverage.
+The self-reliant source-staging, Git-blob integrity, Spring binding, local-process-pool, log hygiene and execution-journal behaviors validated on 23 August 2026 remain in force.
 
-## Current production conclusion
+The 24 August 2026 utilization revision changes scheduler semantics: the hourly scheduler starts a sustained backlog-drain invocation, not a single ten-worker batch. The Primary Orchestrator should normally reuse the worker pool across successive validated generations for up to 45 minutes and may terminate earlier only when no eligible runnable backlog tasks remain.
 
-The architecture no longer requires GitHub Actions or a user-mounted source checkout. The remaining BL-001 work is normal recursive source staging/binding, endpoint evidence validation, incremental matrix projection and final matrix reconciliation.
-
-The system remains fail-closed: self-reliant means it can make progress and recover without manual infrastructure intervention; it does not mean it may guess missing source, skip quality gates, auto-accept traces, create matrix rows from raw worker candidates, or bypass final user acceptance.
+The system remains fail-closed. Better utilization does not permit bypassing SSOT/SOW/dependency gates, guessing missing source, opening disabled later backlog items, duplicating synchronized work, auto-accepting worker candidates or closing BL-001 without explicit user acceptance.
