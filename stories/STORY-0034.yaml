@@ -1,0 +1,55 @@
+story:
+  story_id: STORY-0034
+  title: Return a trip and its challan books
+  state: READY_FOR_USER_REVIEW
+  fingerprint: bd7b92c5b62ff888ee6e701053e6d8d8d4c287d620bb03d0eee23dcf93b2fcf3
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /trip-return"]
+  controller: TripReturnController.returnTripAndBooks
+  endpoint: "POST /trip-return"
+  business_purpose: Persist the source-proved trip-return updates for challan pages, challan-book assignments/registry and vehicle-trip status, then return the caller to the vehicle-load list.
+  trigger_and_context: A caller submits POST /trip-return.
+  inputs:
+    - The request carries trip/load/challan context consumed by the return workflow; exact field names, normalization and defaults are not enumerated.
+  normalization_and_defaults: []
+  validations:
+    - The accepted trace proves the workflow operates on existing trip/challan return state before updates; exact field-level rejection rules are not enumerated.
+  invalid_value_paths:
+    - Handled errors reload the trip-return review view; exact messages/status codes are not asserted.
+  main_flow:
+    - TripReturnController.returnTripAndBooks receives POST /trip-return.
+    - The workflow updates challan page-ledger state.
+    - It updates trip challan-book assignment and challan-book registry state.
+    - It updates vehicle trip/status.
+    - On success the controller redirects to /vehicle-loads/list.
+  component_flow:
+    - TripReturnController.returnTripAndBooks
+    - TripReturnWorkflowService
+    - challan page ledger persistence
+    - trip challan-book assignment persistence
+    - challan book registry persistence
+    - VehicleTripDo / public.tbl_vehicle_trip
+    - VehicleTripStatusDo / public.tbl_trip_status
+    - redirect:/vehicle-loads/list
+  data_reads_and_writes:
+    - READ existing trip/challan return state.
+    - UPDATE challan page ledger.
+    - UPDATE trip challan-book assignment.
+    - UPDATE challan-book registry.
+    - UPDATE vehicle trip/status.
+  side_effects_and_state_changes:
+    - Persisted challan-book and trip state changes.
+  alternate_and_error_flows:
+    - Handled errors reload the trip-return review view; unproved error text/status is not invented.
+  output_and_postconditions:
+    - Success redirects to /vehicle-loads/list after the proved persistence updates.
+  evidence:
+    - traceability/controller-traceability.md row "POST /trip-return"
+    - logs/runs/PRODUCTION-FIRE-20260824-181810.md
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: Successful POST /trip-return persists the proved challan/trip updates and redirects to /vehicle-loads/list.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: bd7b92c5b62ff888ee6e701053e6d8d8d4c287d620bb03d0eee23dcf93b2fcf3
