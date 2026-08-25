@@ -1,0 +1,52 @@
+story:
+  story_id: STORY-0029
+  title: Display customer consumption dashboard via dashboard mapping
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 8369674424acd257c82a9fb0ef54da08e15d1eb78de471c6d1d46bf4597f2e39
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-consumption/dashboard"]
+  controller: CustomerConsumptionDashboardController.dashboard
+  endpoint: "GET /customer-consumption/dashboard"
+  business_purpose: Display the source-proved customer consumption dashboard through the explicit dashboard mapping.
+  trigger_and_context: A caller requests GET /customer-consumption/dashboard.
+  inputs:
+    - Dashboard filter/paging values consumed by fetchDashboard when supplied; exact field-level contract is not asserted from this accepted trace.
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No field-level invalid-value behavior is asserted because it is not proved in the accepted trace.
+  main_flow:
+    - The request reaches CustomerConsumptionDashboardController.dashboard.
+    - The controller invokes CustomerConsumptionDashboardService.fetchDashboard.
+    - The service reads filtered/paged projection data and summary values through CustomerProductConsumptionProjectionViewJpaDao.
+    - CustomerProductConsumptionProjectionViewDo maps public.vw_customer_product_consumption_projection.
+    - CustomerConsumptionProjectionMapper maps the result.
+    - The controller returns with-menu/CustomerConsumptionDashboard.
+  component_flow:
+    - CustomerConsumptionDashboardController.dashboard
+    - CustomerConsumptionDashboardService.fetchDashboard
+    - CustomerProductConsumptionProjectionViewJpaDao
+    - CustomerProductConsumptionProjectionViewDo
+    - public.vw_customer_product_consumption_projection
+    - CustomerConsumptionProjectionMapper
+    - with-menu/CustomerConsumptionDashboard
+  business_rules:
+    - This explicit dashboard route uses the same source-proved handler and persistence read path as the other customer-consumption dashboard mappings.
+  data_reads_and_writes:
+    - Reads public.vw_customer_product_consumption_projection.
+    - No persistence write is proved.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate/error branch is asserted from the accepted trace.
+  output_and_postconditions:
+    - Returns with-menu/CustomerConsumptionDashboard with mapped data and no proved database mutation.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-consumption/dashboard"
+    - logs/runs/PRODUCTION-FIRE-20260824-023321.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The explicit dashboard route must execute the proved fetchDashboard data path and return the dashboard view.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 8369674424acd257c82a9fb0ef54da08e15d1eb78de471c6d1d46bf4597f2e39
