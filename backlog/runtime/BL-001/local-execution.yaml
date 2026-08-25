@@ -1,8 +1,8 @@
 local_execution:
-  version: 51
+  version: 52
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: TARGETED_UNIQUE_KEY_RECOVERY_SOURCE_PROOF_COMPLETE_ATOMIC_PROJECTION_PENDING
+  state: TARGETED_UNIQUE_KEY_RECOVERY_CONSOLIDATION_EXECUTOR_READY
   backend: LOCAL_PROCESS_POOL
   architecture: architecture/self-reliant-e2e-execution.md
   source_repository: vvekselva/CylinderManagement
@@ -20,7 +20,7 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
   current_invocation:
-    invocation_id: UNIQUE-KEY-RECOVERY-20260825-0811Z
+    invocation_id: UNIQUE-KEY-CONSOLIDATION-20260825
     owner: PRIMARY_ORCHESTRATOR
     work_unit: WU-BL001-001
     idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_TARGETED_RECOVERY
@@ -31,11 +31,13 @@ local_execution:
     source_reads_allowed: true
     source_reads_frozen_baseline_only: true
     recovered_key_source_proofs_completed: 11
+    corrected_projection_rows: 4
+    consolidation_executor_added: automation/consolidate-traceability-explorer.py
+    projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
     canonical_rows_added: 0
     materialized_rows_after: 123
     pending_unique_keys_after: 11
-    outcome: ALL_11_RECOVERY_KEYS_FULL_SOURCE_PROVED_ATOMIC_CANONICAL_PROJECTION_PENDING
-    evidence: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+    outcome: CONSOLIDATION_EXECUTOR_AND_STRUCTURALLY_COMPLETE_RECOVERY_INPUT_READY_EXECUTION_PENDING
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
@@ -51,6 +53,8 @@ local_execution:
     fully_source_proved_pending_atomic_projection: 11
     unique_method_path_coverage_proved: false
     projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+    projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
+    consolidation_executor: automation/consolidate-traceability-explorer.py
   work_unit_handoff:
     WU-BL001-001: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_PENDING
     WU-BL001-002: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
@@ -58,5 +62,8 @@ local_execution:
     WU-BL001-004: WAITING_FOR_DEPENDENCY
     close_allowed: false
   next_action: >-
-    Consolidate the accepted base-plus-ordered-delta Traceability Explorer model, then atomically project all eleven
-    source-proved recovery rows into Markdown, unresolved, matrix-progress, canonical JSON, matrix-data.js and Level-3 runtime.
+    Execute automation/consolidate-traceability-explorer.py on an authoritative control-repository filesystem checkout.
+    The utility reconstructs the accepted base-plus-ordered-delta Explorer model in index.html order, requires exactly
+    123 unique pre-projection keys, overlays the four corrected Lookup Management records, merges all eleven recovery
+    keys, requires exactly 134 unique keys with zero duplicates, regenerates traceability-matrix.json and matrix-data.js,
+    removes obsolete delta loaders, and updates Markdown/progress/runtime together. Fail closed on any mismatch.
