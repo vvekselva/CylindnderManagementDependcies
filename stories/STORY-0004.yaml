@@ -1,0 +1,38 @@
+story:
+  story_id: STORY-0004
+  title: Display the walk-in sale page
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 9d3ea0526fd00ed34ae346a87aa384c6864be62819db08e9873eb4f3f193da5c
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /walkin-sale"]
+  controller: WalkinSaleIngestionController.doGet
+  endpoint: "GET /walkin-sale"
+  business_purpose: Display the walk-in sale ingestion view; no additional business meaning is asserted.
+  trigger_and_context: A caller requests GET /walkin-sale.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths: []
+  main_flow:
+    - The request reaches WalkinSaleIngestionController.doGet.
+    - The controller returns the walk-in sale view.
+  component_flow:
+    - WalkinSaleIngestionController.doGet
+    - TERMINAL_VIEW final-version-1/WalkinSaleIngestion
+  business_rules: []
+  data_reads_and_writes: []
+  side_effects_and_state_changes: []
+  alternate_and_error_flows: []
+  output_and_postconditions:
+    - The final-version-1/WalkinSaleIngestion view is returned.
+    - No persistence service, DAO, repository, database, file or external API dependency is proved for this GET endpoint.
+  evidence:
+    - traceability/controller-traceability.md row "GET /walkin-sale"
+    - logs/runs/INVOCATION-20260823-145512.md / LANE-03
+  downstream_test_assertions:
+    - classification: UNIT_CANDIDATE
+      assertion: GET /walkin-sale resolves to the walk-in sale view without a proved persistence dependency.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 9d3ea0526fd00ed34ae346a87aa384c6864be62819db08e9873eb4f3f193da5c
