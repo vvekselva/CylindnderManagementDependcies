@@ -1,14 +1,16 @@
 # Automation Backlog
 
-The Backlog is the top-level work queue for the automation framework.
+The Backlog is the top-level work queue for the CylinderManagement automation framework. `backlog/backlog.yaml` is the authoritative master register. Scheduler invocations read the register and `backlog/orchestrator-run-config.yaml`, then select the highest-priority **eligible run-enabled** Backlog Item. The scheduler is not permanently tied to BL-001.
 
-Planning is **fail-closed**. A Backlog Item may be catalogued before it is ready, but the Orchestrator must not PLAN or REPLAN it until Level 1, Level 2 and Level 3 are all complete and `QG-SSOT-001` passes.
+Planning is **fail-closed**. A Backlog Item may be catalogued before it is ready, but the Orchestrator must not PLAN or REPLAN it until Level 1, Level 2 and Level 3 are complete and `QG-SSOT-001` passes. Execution additionally requires the SOW, dependency and item-specific gates.
 
 ## Level 1 - Backlog Master SSOT
 
 Authoritative files: `backlog/backlog.yaml` and `repository/project-inventory.yaml`.
 
-Level 1 answers **what work exists and what repository/module scope is authoritative**. A plannable Backlog Item must have a complete master entry including ID, name, type, purpose, priority, state, Level 2 definition, Statement of Work, Completion Path, Quality Gate, dependencies, expected outputs and Level 3 runtime reference. Any project/module classification required by the selected backlog must also be explicit.
+Level 1 answers **what work exists and what repository/module scope is authoritative**. A plannable Backlog Item must have a complete master entry including ID, name, type, purpose, priority, state, Level 2 definition, Statement of Work, Completion Path, Quality Gate, dependencies, expected outputs and Level 3 runtime reference.
+
+The current register contains **21 Backlog Items**. BL-002 was inserted as the Controller Dependency Matrix to Human-Readable Stories item; the former BL-002 through BL-020 were shifted to BL-003 through BL-021.
 
 ## Level 2 - Backlog Definition SSOT
 
@@ -18,7 +20,7 @@ Per-item definition:
 backlog/items/BL-*.yaml
 ```
 
-Level 2 answers **what the work means and what must be delivered**. It includes/references Statement of Work, target/scope, dependencies, deliverables, acceptance criteria, Completion Path, item-specific Quality Gate and Level 3 runtime location.
+Level 2 answers **what the work means and what must be delivered**. It includes/references the Statement of Work, target/scope, dependencies, deliverables, acceptance criteria, Completion Path, item-specific Quality Gate and Level 3 runtime location.
 
 `QG-SOW-001` is mandatory. Missing, malformed, incomplete or placeholder SOW content fails closed.
 
@@ -39,19 +41,18 @@ Level 3 answers **what is happening now**. Before PLAN/REPLAN it must contain ev
 - `blockers.yaml`;
 - `decisions.yaml`;
 - `worker-input-register.yaml`;
-- `lane-status.yaml` - single point of truth for current lane-to-task assignments;
+- `lane-status.yaml`;
+- `lane-dispatch.yaml`;
+- `local-execution.yaml`;
+- `execution-statistics.yaml`;
 - `result.yaml`.
 
-`lane-status.yaml` must contain LANE-01 through LANE-10 exactly once. It records each lane's current state, Work Unit/task, Worker Input/run, heartbeat, blocker and release state. A non-IDLE lane must reconcile with current execution. A CLOSED run releases its lane unless a newer assignment replaced it.
-
-The execution-plan file may exist in an initialized/empty state before first planning, and lane-status may initialize with all ten lanes IDLE, but the full Level 3 structure must exist first.
+`lane-status.yaml` contains LANE-01 through LANE-10 exactly once. The execution plan and lane dispatch may initialize empty before first planning/execution, but the full Level 3 structure must exist first.
 
 ## Three-Level Planning Gate
 
-`QG-SSOT-001 Three-Level SSOT Planning Gate` is fail-closed.
-
 ```text
-SELECT RUN-ENABLED BACKLOG
+SELECT HIGHEST-PRIORITY ELIGIBLE RUN-ENABLED BACKLOG ITEM
         |
         v
 LEVEL 1 COMPLETE?
@@ -64,7 +65,7 @@ LEVEL 2 COMPLETE + QG-SOW-001 PASS?
        YES
         |
         v
-LEVEL 3 COMPLETE INCLUDING LANE STATUS?
+LEVEL 3 COMPLETE?
         | NO -> INITIALIZE/REPAIR RUNTIME ONLY / NO PLAN
        YES
         |
@@ -72,31 +73,51 @@ LEVEL 3 COMPLETE INCLUDING LANE STATUS?
 QG-SSOT-001 PASS
         |
         v
-REQUIRED ANALYSIS
+QG-DEP-001 + ITEM GATES
         |
         v
-PLAN / REPLAN MAY BEGIN
+ANALYZE / PLAN / EXECUTE AS AUTHORIZED
 ```
 
-Passing QG-SSOT-001 does not authorize execution by itself. Dependency gates, item-specific Quality Gates, Work Unit dependencies, result contracts and user acceptance rules still apply.
+## BL-001 -> BL-002 -> testing chain
 
-## Framework files
+The critical functional-quality chain is now:
 
-- `backlog.yaml` - Level 1 authoritative Backlog Master register.
-- `repository/project-inventory.yaml` - Level 1 project/module inventory and backlog scope classifications.
-- `backlog-item-template.yaml` - standard register entry shape.
-- `item-definition-template.yaml` - Level 2 backlog-definition template.
-- `statement-of-work-template.yaml` - mandatory Level 2 SOW contract.
-- `runtime-contract.yaml` - Level 3 runtime SSOT contract, including lane-status.
-- `orchestrator-run-config.yaml` - run selection and fail-closed eligibility rules.
-- `paths/*.yaml` - per-backlog Completion Paths.
-- `gates/*.yaml` - item-specific Quality Gates.
-- `governance/ssot-levels.yaml` - Level 1/2/3 validation and `QG-SSOT-001`.
+```text
+BL-001 Controller Traceability
+        |
+        | FINAL_VALIDATED matrix + BL-001 VERIFIED/CLOSED
+        v
+BL-002 Human-Readable Stories
+        |
+        | technical validation
+        v
+User-approved Stories
+        |
+        +--------------------------+
+        |                          |
+        v                          v
+BL-003 Unit Testing        Approved Use Cases
+                                   |
+                                   | user approval for testing
+                                   v
+                         BL-004 Integration + Use Case Testing
+                                   |
+                                   v
+                         BL-005 Code Coverage Report
+```
 
-## Current BL-001 conformance
+BL-002 converts each final Controller Dependency Matrix flow into a detailed Story that explains, where source evidence proves it, the request/trigger, input values, validations, business rules, ordered component calls, database/file/API reads and writes, state/audit side effects, success output and alternate/error paths. The Orchestrator may technically validate a Story, but **only the user may approve it**.
 
-BL-001 currently has complete Level 1, Level 2 and Level 3 structures. Its Level 3 runtime includes `blockers.yaml` and the new authoritative `lane-status.yaml`. At the current checkpoint all ten lanes are IDLE because WI-0004 Attempt 25 is CLOSED/PARTIAL; WU-BL001-001 remains the active Work Unit for the next scheduled assignment cycle.
+One or more approved Stories may then be combined into a candidate Use Case. Only a user-approved `APPROVED_FOR_TESTING` Use Case may become authoritative input for Use Case/integration testing. Matrix -> Story -> Use Case -> Test Scenario traceability is maintained in `traceability/controller-story-usecase-map.yaml`.
 
-Therefore BL-001 may retain/revise its plan only while `QG-SSOT-001` remains PASS. BL-002 through BL-020 remain non-plannable while their required Level 1/2/3 planning references are incomplete.
+## Current eligibility
 
-Worker execution files remain under `worker/` and do not replace the Level 3 runtime SSOT.
+- **BL-001 Controller Traceability** - current execution item, still PARTIAL until final traceability reconciliation/validation and closure gates complete.
+- **BL-002 Controller Dependency Matrix to Human-Readable Stories** - run-enabled with complete Level 1/2/3 framework, but `WAITING_FOR_DEPENDENCY`; it cannot execute until BL-001 is VERIFIED or CLOSED and the final matrix is validated.
+- **BL-003 Unit Test Completion** - waits for approved BL-002 Stories and its own future Level 2/3/gates.
+- **BL-004 Integration Test Completion** - waits for approved BL-002 Use Cases/scenarios and its own future Level 2/3/gates; it owns Use Case test execution.
+- **BL-005 Code Coverage Report** - waits for BL-003 and BL-004.
+- **BL-006 through BL-021** - remain registered but are not run-enabled/plannable until their required SSOT/SOW/gates are completed.
+
+Passing `QG-SSOT-001` never bypasses dependency, source, recovery, lifecycle, item-specific or user-approval gates.
