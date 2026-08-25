@@ -1,0 +1,64 @@
+story:
+  story_id: STORY-0024
+  title: Save a customer address location
+  state: READY_FOR_USER_REVIEW
+  fingerprint: d2234c7ea5d926179521e7b18438ed80c31974dc5636b7b80a007ef1ef494f3e
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /customer-address-location/upload"]
+  controller: CustomerAddressLocationController.saveLocation
+  endpoint: "POST /customer-address-location/upload"
+  business_purpose: Persist a customer address location using the source-proved address and location persistence paths.
+  trigger_and_context: A caller submits POST /customer-address-location/upload.
+  inputs:
+    - Customer-address/location request values consumed by the controller/service; exact field names, requiredness and formatting are not asserted because the accepted trace does not prove the field-level contract.
+  normalization_and_defaults: []
+  validations:
+    - The service proves a customer-address lookup by identifier through CustomerAddressJpaDao.findById before location persistence.
+  invalid_value_paths:
+    - The accepted trace proves success and error redirects, but not field-level invalid-value rules; no additional validation semantics are inferred.
+  main_flow:
+    - The request reaches CustomerAddressLocationController.saveLocation.
+    - The controller invokes CustomerAddressLocationOfflineMapService.saveCustomerAddressLocation.
+    - The service reads the customer address through CustomerAddressJpaDao.findById.
+    - CustomerAddressDo maps the row to public.tbl_customer_address.
+    - The service reads an active existing location through CustomerAddressLocationJpaDao.findByCustomerAddressCustomerAddressIdAndActiveTrue.
+    - The service persists through CustomerAddressLocationJpaDao.save and CustomerAddressLocationDo mapped to public.tbl_customer_address_location.
+    - CustomerAddressLocationMapper.toDto maps the persisted/result data.
+    - The proved success path redirects to /customer-address-location/missing; the proved error path redirects back to the upload page.
+  component_flow:
+    - CustomerAddressLocationController.saveLocation
+    - CustomerAddressLocationOfflineMapService.saveCustomerAddressLocation
+    - CustomerAddressJpaDao.findById
+    - CustomerAddressDo
+    - public.tbl_customer_address
+    - CustomerAddressLocationJpaDao.findByCustomerAddressCustomerAddressIdAndActiveTrue
+    - CustomerAddressLocationJpaDao.save
+    - CustomerAddressLocationDo
+    - public.tbl_customer_address_location
+    - CustomerAddressLocationMapper.toDto
+    - success/error redirects
+  business_rules:
+    - The source-proved flow looks up the referenced customer address before persisting its location.
+    - No additional geographic, uniqueness or ownership rule is inferred.
+  data_reads_and_writes:
+    - Reads public.tbl_customer_address.
+    - Reads existing active location state from public.tbl_customer_address_location.
+    - Writes public.tbl_customer_address_location.
+  side_effects_and_state_changes:
+    - Persists the source-proved customer-address location state.
+    - Redirects to the missing-locations page on the proved success path or back to upload on the proved error path.
+  alternate_and_error_flows:
+    - Error terminal path redirects back to the customer-address-location upload page.
+    - Exact exception types, validation messages and field-level failure conditions are not asserted because they are not proved in the accepted trace.
+  output_and_postconditions:
+    - On the proved successful save path, the customer-address location is persisted and the caller is redirected to /customer-address-location/missing.
+  evidence:
+    - traceability/controller-traceability.md row "POST /customer-address-location/upload"
+    - logs/runs/PRODUCTION-FIRE-20260824-020143.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint must look up the customer address, follow the proved active-location repository path, persist through CustomerAddressLocationJpaDao.save, map the result, and follow the proved success/error redirects.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: d2234c7ea5d926179521e7b18438ed80c31974dc5636b7b80a007ef1ef494f3e
