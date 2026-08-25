@@ -1,0 +1,48 @@
+story:
+  story_id: STORY-0035
+  title: View the customer-demand dashboard
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 806fdc490be60e31f7abddf4ffb12d06c3698ea7789f71db7ec04a2a099af029
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-demands"]
+  controller: CustomerDemandController.dashboard
+  endpoint: "GET /customer-demands"
+  business_purpose: Display the source-proved customer-demand dashboard using demand dashboard/daily metrics plus customer, address and product data.
+  trigger_and_context: A caller opens GET /customer-demands.
+  inputs:
+    - Filtering/query inputs are not enumerated in the accepted trace, so no required parameters or defaults are asserted.
+  normalization_and_defaults: []
+  validations:
+    - No caller-input validation rule is explicitly proved for this GET path.
+  invalid_value_paths:
+    - Unproved validation/error behaviour is not invented.
+  main_flow:
+    - CustomerDemandController.dashboard receives GET /customer-demands.
+    - CustomerDemandService.fetchPage and fetchMetrics execute.
+    - The service reads demand dashboard/daily metrics views and related customer/address/product data.
+    - The controller renders final-version-1/CustomerDemandDashboard.
+  component_flow:
+    - CustomerDemandController.dashboard
+    - CustomerDemandService.fetchPage / fetchMetrics
+    - demand dashboard/daily metrics views
+    - customer/address/product reads
+    - final-version-1/CustomerDemandDashboard
+  data_reads_and_writes:
+    - READ demand dashboard and daily metrics views.
+    - READ customer, address and product data used by the dashboard.
+  side_effects_and_state_changes:
+    - No persistence write is asserted for this GET path.
+  alternate_and_error_flows:
+    - No alternate/error behaviour is enumerated in the accepted trace.
+  output_and_postconditions:
+    - Returns final-version-1/CustomerDemandDashboard populated from the proved reads.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-demands"
+    - logs/runs/PRODUCTION-FIRE-20260824-181810.md
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: GET /customer-demands reads the proved metrics and related customer/address/product data and renders the demand dashboard.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 806fdc490be60e31f7abddf4ffb12d06c3698ea7789f71db7ec04a2a099af029
