@@ -1,0 +1,29 @@
+story:
+  story_id: STORY-0038
+  title: View trips waiting for review
+  state: READY_FOR_USER_REVIEW
+  fingerprint: ef94b8a0e77a2f3f330f361d37634fb4b47ae55c316cbc26b83159a17633e0f6
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /trip-review"]
+  controller: TripReviewController.showReviewQueue
+  endpoint: "GET /trip-review"
+  business_purpose: Display the source-proved queue of vehicle trips that have not yet been reviewed.
+  trigger_and_context: A caller opens GET /trip-review.
+  inputs: [No required request input is asserted by the accepted trace.]
+  normalization_and_defaults: []
+  validations: [No caller-input validation is proved for this GET flow.]
+  invalid_value_paths: [Unproved error behavior is not invented.]
+  main_flow:
+    - TripReviewController.showReviewQueue invokes TripReviewFetchService.fetchNotReviewedTrips.
+    - TripReviewHeaderViewJpaDao reads TripReviewHeaderViewDo from public.vw_trip_review_header.
+    - The controller renders with-menu/TripReviewList.
+  component_flow: [TripReviewController.showReviewQueue, TripReviewFetchService.fetchNotReviewedTrips, TripReviewHeaderViewJpaDao, TripReviewHeaderViewDo, public.vw_trip_review_header, with-menu/TripReviewList]
+  data_reads_and_writes: [READ not-reviewed trip summaries from public.vw_trip_review_header.]
+  side_effects_and_state_changes: [No persistence write is asserted.]
+  alternate_and_error_flows: [No alternate/error branch is enumerated in the accepted trace.]
+  output_and_postconditions: [Returns with-menu/TripReviewList populated from the proved review-header view.]
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: GET /trip-review reads public.vw_trip_review_header through the proved service/DAO chain and renders TripReviewList.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: ef94b8a0e77a2f3f330f361d37634fb4b47ae55c316cbc26b83159a17633e0f6}
