@@ -1,6 +1,6 @@
 analysis:
   backlog_item: BL-001
-  state: SOURCE_ANALYSIS_COMPLETE_MATRIX_RECONCILIATION_READY
+  state: SOURCE_ANALYSIS_COMPLETE_MATRIX_RECONCILIATION_IN_PROGRESS
   target_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   architecture: architecture/self-reliant-e2e-execution.md
@@ -18,18 +18,19 @@ analysis:
 
   endpoint_dependency_trace_checkpoint:
     total_endpoints: 134
-    examined_for_final_dependency: 134
-    complete: 134
+    accumulated_examined_for_final_dependency: 134
+    accumulated_complete: 134
     unresolved: 0
     blocked: 0
     failed: 0
     not_yet_examined: 0
-    canonical_source_check_coverage_percent: 100
+    accumulated_source_check_coverage_percent: 100
+    unique_key_coverage_final_proof: RECONCILIATION_REQUIRED
 
   latest_accepted_trace_attempt:
     run_id: PRODUCTION-FIRE-20260825-051115
     state: CLOSED_CHECKPOINT
-    result: SOURCE_CHECK_100_PERCENT
+    result: SOURCE_CHECK_100_PERCENT_ACCUMULATED
     trace_additions: {examined: 5, complete: 5, unresolved: 0}
     historical_backfills: 2
     accepted_endpoints:
@@ -44,6 +45,21 @@ analysis:
     chain_completeness: FULL_BRANCHING
     source_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
 
+  reconciliation_checkpoint:
+    work_unit: WU-BL001-002
+    latest_checkpoint: PRODUCTION-FIRE-20260825-070408
+    governing_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ
+    corrected_pre_backfill_physical_markdown_rows: 114
+    historical_rows_promoted_this_checkpoint: 4
+    matrix_materialized_rows: 118
+    confirmed_missing_canonical_keys: 16
+    unresolved_rows: 0
+    structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
+    browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
+    evidence_index: backlog/runtime/BL-001/reconciliation-evidence-index-20260825-065123.yaml
+    next_evidence_ready_rows: 5
+    next_evidence_ready_family: DeliveryPlanningStopManagementController
+
   self_reliant_architecture_validation:
     report: tests/self-reliant-e2e-validation-2026-08-23.md
     result: PASS_FOR_ARCHITECTURE_PROMOTION
@@ -53,16 +69,8 @@ analysis:
     source_layout: repository/source-layout.yaml
     production_staged_executor: automation/staged-lane-executor-v3.py
     production_staged_worker: automation/staged-lane-worker-v3.py
-    tests:
-      controller_tamper_fail_closed: PASS
-      baseline_mismatch_fail_closed: PASS
-      duplicate_lane_fail_closed: PASS
-      stale_lane_log_fail_closed: PASS
-      jpa_canary_source_closure_complete: PASS
-      positive_interface_binding: PASS
-      negative_interface_binding_rejected: PASS_IMPLEMENTATION_SIGNATURE_MISMATCH
-      recovery_idempotency: 5/5_PASS
-      backend_capacity_probe_peak_service: 10
+    recovery_idempotency: 5/5_PASS
+    backend_capacity_probe_peak_service: 10
 
   latest_full_source_discovery:
     execution_id: E2E-STAGED-20260823-161214
@@ -88,45 +96,45 @@ analysis:
     resolved_entries_ready_for_materialization: 20
     unresolved_resolution_entries: 0
     execution_host_snapshot_advanced: false
-    latest_execution_host_attempt_result: NO_VERIFIED_CONNECTOR_TO_LOCAL_SNAPSHOT_FILE_BRIDGE
     interpretation: >-
-      These restage facts belong to the already-closed worker generation. They are retained for audit but do not require a replay:
-      canonical endpoint source-check coverage was completed by Primary-Orchestrator validation directly against the exact
-      frozen Git source.
+      Restage facts belong to the already-closed worker generation and remain audit-only while WU-BL001-002 performs
+      matrix reconciliation. No worker replay or new application-source read is eligible in this work unit.
 
   unresolved_from_prior_attempts: []
 
   quality_gate_effect:
     QG-SOW-001: PASS
-    QG-SSOT-001: PASS
+    QG-SSOT-001: PASS_WITH_RECONCILIATION_BLOCKER
     QG-DEP-001: PASS
-    QG-SOURCE-001: PASS_CANONICAL_ENDPOINT_SOURCE_CHECK_100_PERCENT
+    QG-SOURCE-001: PASS_FROZEN_BASELINE_INTEGRITY_OLD_WORKER_GENERATION_CLOSED
     QG-LOG-001: PASS_LATEST_EXECUTION_BOUNDARY_ZERO_TRANSIENT_LANE_LOGS
     QG-LANE-001: UNDERUTILIZED_LATEST_FULL_DISCOVERY
     QG-RECOVERY-001: PASS_VALIDATION_5_OF_5
     QG-TRC-001: PASS
-    QG-TRC-002: PASS_SOURCE_CHECK_100_PERCENT
-    QG-TRC-003: PASS
-    QG-TRC-004: IN_PROGRESS_MATRIX_RECONCILIATION
-    QG-TRC-005: WAITING_FOR_RECONCILED_MATRIX
-    QG-TRC-009: IN_PROGRESS_MATRIX_RECONCILIATION
+    QG-TRC-002: RECONCILIATION_REQUIRED_UNIQUE_COVERAGE_NOT_PROVED
+    QG-TRC-003: RECONCILIATION_REQUIRED_CANONICAL_INVENTORY_ARTIFACT_MISSING
+    QG-TRC-004: RECONCILIATION_REQUIRED_CANONICAL_ENDPOINT_ARTIFACT_MISSING
+    QG-TRC-005: BLOCKED_MISSING_WORKER_RESULTS_WI0004
+    QG-TRC-006: BLOCKED_UNTIL_134_UNIQUE_ROWS_RECONCILE
+    QG-TRC-009: PASS_FAIL_CLOSED_DURABLE_EVIDENCE_ONLY
+    QG-TRC-010: BLOCKED_PHYSICAL_ROWS_118_TARGET_134_CONFIRMED_MISSING_16
+    QG-TRC-012: BLOCKED_BASE_PLUS_DELTAS_NOT_FINAL_RECONCILED
 
-  canonical_result_accepted: true
+  canonical_result_accepted: false
   matrix_construction_unlocked: true
-  matrix_state: READY_FOR_FINAL_RECONCILIATION
-  matrix_materialized_rows: 113
-  historical_accepted_rows_pending_backfill: 21
+  matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
+  matrix_materialized_rows: 118
+  historical_accepted_rows_pending_backfill: 16
 
   proved_now:
-    - All 134 caller-visible HTTP method/path combinations have a Primary-Orchestrator-accepted final-dependency trace state.
-    - All 134 are COMPLETE; there are zero UNRESOLVED, BLOCKED, FAILED, or NOT_YET_EXAMINED endpoints.
-    - The seven Domain Lookup routes are source-proved with cache-hit, lazy-refresh, persistence, validation-error and terminal branches preserved.
-    - Five Domain Lookup POST routes close the final five canonical source-check gaps.
-    - GET /domainLookup and POST /domainLookup/productCategory/save were revalidated as historical accepted keys and materialized without double-counting source coverage.
+    - The raw accumulated source-check counters are 134 examined and 134 COMPLETE with zero unresolved, but duplicate historical acceptance means unique-key proof still requires reconciliation.
+    - The corrected pre-backfill Markdown row count was 114 rather than the stale 113 SSOT value.
+    - Four durable historical DeliveryPlanningController rows were atomically promoted, advancing the matrix to 118 rows.
+    - Five DeliveryPlanningStopManagementController keys have located durable full-chain evidence for the next reconciliation batch.
     - The latest checkpoint created zero transient lane logs and did not replay the already-closed worker generation.
 
   next_step: >-
-    Execute WU-BL001-002 final matrix reconciliation. Backfill the remaining 21 historical accepted rows only from durable
-    accepted evidence, verify exactly one unique matrix row per HTTP method/path across all 134 endpoints, reconcile the
-    Markdown matrix with the structured base-plus-delta Explorer projection, and leave any unproved historical chain
-    fail-closed rather than inventing it. WU-BL001-003 remains waiting until reconciliation passes.
+    Continue WU-BL001-002 final reconciliation from durable accepted evidence only. Promote the five evidence-ready
+    DeliveryPlanningStopManagementController rows in a synchronized Markdown/Explorer/progress checkpoint, then locate
+    accepted full-chain evidence for the remaining eleven keys. Do not read application source or guess missing hops.
+    WU-BL001-003 remains blocked until exactly 134 unique matrix rows reconcile.
