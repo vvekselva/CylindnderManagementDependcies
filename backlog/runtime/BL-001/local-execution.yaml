@@ -1,5 +1,5 @@
 local_execution:
-  version: 57
+  version: 58
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED_ON_CONTROL_PLANE_PROCESS_FILESYSTEM_BRIDGE
@@ -20,7 +20,7 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
   current_invocation:
-    invocation_id: UNIQUE-KEY-ATOMIC-PROJECTION-EXECUTION-20260825-1514Z
+    invocation_id: UNIQUE-KEY-ATOMIC-PROJECTION-EXECUTION-20260825-1600Z
     owner: PRIMARY_ORCHESTRATOR
     work_unit: WU-BL001-001
     idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_TARGETED_RECOVERY
@@ -51,7 +51,7 @@ local_execution:
     canonical_rows_added: 0
     materialized_rows_after: 123
     pending_unique_keys_after: 11
-    durable_log: logs/runs/UNIQUE-KEY-ATOMIC-PROJECTION-EXECUTION-20260825-1514Z.md
+    durable_log: logs/runs/UNIQUE-KEY-ATOMIC-PROJECTION-EXECUTION-BLOCKED-20260825-1600Z.md
     outcome: ATOMIC_PROJECTION_NOT_EXECUTED_CONTROL_PLANE_TO_PROCESS_FILESYSTEM_BRIDGE_UNAVAILABLE
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
