@@ -1,5 +1,5 @@
 matrix_execution:
-  version: 5
+  version: 6
   backlog_item: BL-001
   work_unit: WU-BL001-002
   authoritative_for_external_executor_tracking: true
@@ -14,16 +14,13 @@ matrix_execution:
     canonical_endpoint_inventory_target: 134
     prior_reported_complete: 134
     canonical_unresolved: 0
-    physically_observed_markdown_endpoint_rows: 114
-    confirmed_missing_canonical_keys: 20
-    prior_ssot_materialized_matrix_rows: 113
-    prior_ssot_historical_rows_pending_backfill: 21
-    counter_reconciliation_state: STALE_AND_UNIQUENESS_NOT_PROVED
+    corrected_pre_backfill_physical_markdown_rows: 114
+    physically_materialized_markdown_endpoint_rows: 123
+    confirmed_missing_canonical_keys: 11
+    historical_rows_promoted_total: 9
     reconciliation_integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
     gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-    pending_atomic_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
-    pending_atomic_projection_rows: 4
-    pending_atomic_projection_accepted: false
+    latest_accepted_projection: traceability/explorer/traceability-matrix-delta-20260825-020007.json
     reconciliation_owner: PRIMARY_ORCHESTRATOR
     reconciliation_mode: DURABLE_ACCEPTED_EVIDENCE_ONLY
     source_read_allowed: false
@@ -57,11 +54,13 @@ matrix_execution:
 
   accepted_changes_this_checkpoint:
     new_endpoint_rows: 0
-    historical_rows_promoted: 0
-    matrix_counter_increment: 0
+    historical_rows_promoted: 5
+    matrix_counter_increment: 5
+    resulting_materialized_rows: 123
+    resulting_missing_keys: 11
 
   next_action: >-
-    Reconstruct the canonical 134-key endpoint inventory only from durable control-repository evidence; reconcile it
-    against the 114 physical Markdown rows and 20 confirmed missing keys. For each missing key, promote only a full chain
-    already present in durable accepted evidence. If durable accepted evidence is insufficient, keep WU-BL001-002 blocked;
-    do not read source under WU-BL001-002 and do not guess. WU-BL001-003 remains blocked.
+    Continue WU-BL001-002 from durable control-repository evidence only. Locate complete accepted chains for the remaining
+    eleven canonical keys: reconciliation-dashboard GET/POST, vehicle-load/fetch GET, six lookup-management routes, and
+    addVechileTrip GET/POST. Promote only already-accepted full chains. If durable evidence is insufficient, remain blocked;
+    do not read application source and do not guess. WU-BL001-003 remains blocked.
