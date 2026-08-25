@@ -1,0 +1,68 @@
+pending_atomic_projection:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-002
+  checkpoint: 2026-08-25T06:11:10+05:30
+  state: SOURCE_PROVED_READY_FOR_ATOMIC_PROJECTION
+  source_repository: vvekselva/CylinderManagement
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  controller_source:
+    path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/DeliveryPlanningController.java
+    git_blob_sha: 0153f8d100e3cafa54beb844ff25273c9a3796c5
+  dao_source:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/DeliveryPlanningDemandJpaDao.java
+    git_blob_sha: 0bfef3405342c7ee5fdc788ab555ee13d151a049
+  rows:
+    - method: GET
+      path: /delivery-planning
+      controller: DeliveryPlanningController
+      controller_method: showDeliveryPlanningDashboard
+      state: COMPLETE
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - DeliveryPlanningController.showDeliveryPlanningDashboard -> DeliveryPlanningDemandJpaDao.findSignalMatches -> public.vw_customer_product_consumption_projection -> with-menu/DeliveryPlanningDashboard
+        - DeliveryPlanningController.showDeliveryPlanningDashboard -> DeliveryPlanningDemandJpaDao.findSignalMatchKpi -> public.vw_customer_product_consumption_projection -> with-menu/DeliveryPlanningDashboard
+      final_dependencies:
+        - public.vw_customer_product_consumption_projection
+        - with-menu/DeliveryPlanningDashboard
+    - method: GET
+      path: /delivery-planning/dashboard
+      controller: DeliveryPlanningController
+      controller_method: showDeliveryPlanningDashboard
+      state: COMPLETE
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - DeliveryPlanningController.showDeliveryPlanningDashboard -> DeliveryPlanningDemandJpaDao.findSignalMatches -> public.vw_customer_product_consumption_projection -> with-menu/DeliveryPlanningDashboard
+        - DeliveryPlanningController.showDeliveryPlanningDashboard -> DeliveryPlanningDemandJpaDao.findSignalMatchKpi -> public.vw_customer_product_consumption_projection -> with-menu/DeliveryPlanningDashboard
+      final_dependencies:
+        - public.vw_customer_product_consumption_projection
+        - with-menu/DeliveryPlanningDashboard
+    - method: GET
+      path: /delivery-planning/customer-density-bubble-map
+      controller: DeliveryPlanningController
+      controller_method: showCustomerDensityBubbleMap
+      state: COMPLETE
+      chain_completeness: FULL
+      paths:
+        - DeliveryPlanningController.showCustomerDensityBubbleMap -> with-menu/CustomerDensityBubbleMap
+      final_dependencies:
+        - with-menu/CustomerDensityBubbleMap
+    - method: GET
+      path: /delivery-planning/weekly-forecast
+      controller: DeliveryPlanningController
+      controller_method: showWeeklyForecastReview
+      state: COMPLETE
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - DeliveryPlanningController.showWeeklyForecastReview -> DeliveryPlanningDemandJpaDao.findForecastConfirmationQueue -> public.vw_delivery_planning_forecast_confirmation_worklist -> with-menu/DeliveryPlanningWeeklyForecast
+        - DeliveryPlanningController.showWeeklyForecastReview -> DeliveryPlanningDemandJpaDao.findSignalMatchKpi -> public.vw_customer_product_consumption_projection -> with-menu/DeliveryPlanningWeeklyForecast
+        - DeliveryPlanningController.showWeeklyForecastReview -> DeliveryPlanningDemandJpaDao.findForecastAddressActivity -> public.vw_customer_delivery_planning_signal -> with-menu/DeliveryPlanningWeeklyForecast
+      final_dependencies:
+        - public.vw_delivery_planning_forecast_confirmation_worklist
+        - public.vw_customer_product_consumption_projection
+        - public.vw_customer_delivery_planning_signal
+        - with-menu/DeliveryPlanningWeeklyForecast
+  acceptance_rule: >-
+    These four rows are source-proved but are not canonical matrix truth until the Primary Orchestrator performs
+    one atomic projection updating controller-traceability.md, structured Explorer JSON, browser data,
+    unresolved accounting and matrix-progress. Do not increment materialized rows from this pending artifact alone.
