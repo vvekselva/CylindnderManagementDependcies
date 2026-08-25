@@ -1,0 +1,54 @@
+story:
+  story_id: STORY-0027
+  title: Display customer consumption dashboard
+  state: READY_FOR_USER_REVIEW
+  fingerprint: ba71ec7e0805612b5adf91c461594f93ec5dc7073d7acded71e783ade7311c50
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-consumption"]
+  controller: CustomerConsumptionDashboardController.dashboard
+  endpoint: "GET /customer-consumption"
+  business_purpose: Display the source-proved customer consumption dashboard.
+  trigger_and_context: A caller requests GET /customer-consumption.
+  inputs:
+    - Dashboard filter/paging values consumed by CustomerConsumptionDashboardService.fetchDashboard when supplied; the accepted trace proves filtered/paged repository use but does not enumerate the field-level request contract here.
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No field-level invalid-value behavior is asserted because it is not proved in the accepted trace.
+  main_flow:
+    - The request reaches CustomerConsumptionDashboardController.dashboard.
+    - The controller invokes CustomerConsumptionDashboardService.fetchDashboard.
+    - The service reads a filtered/paged result through CustomerProductConsumptionProjectionViewJpaDao.findAll(specification,pageable) and executes source-proved summary queries.
+    - CustomerProductConsumptionProjectionViewDo maps the projection rows from public.vw_customer_product_consumption_projection.
+    - CustomerConsumptionProjectionMapper maps repository results.
+    - The controller returns with-menu/CustomerConsumptionDashboard.
+  component_flow:
+    - CustomerConsumptionDashboardController.dashboard
+    - CustomerConsumptionDashboardService.fetchDashboard
+    - CustomerProductConsumptionProjectionViewJpaDao.findAll(specification,pageable) and summary queries
+    - CustomerProductConsumptionProjectionViewDo
+    - public.vw_customer_product_consumption_projection
+    - CustomerConsumptionProjectionMapper
+    - with-menu/CustomerConsumptionDashboard
+  business_rules:
+    - Only the source-proved filtered/paged projection read and summary-query behavior are asserted.
+    - Hibernate @Synchronize table names are not treated as direct endpoint dependencies because the accepted query target is the projection view.
+  data_reads_and_writes:
+    - Reads public.vw_customer_product_consumption_projection.
+    - No persistence write is proved for this GET endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional error branch is asserted because none is proved in the accepted trace.
+  output_and_postconditions:
+    - Returns with-menu/CustomerConsumptionDashboard with source-proved mapped dashboard data.
+    - No database mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-consumption"
+    - logs/runs/PRODUCTION-FIRE-20260824-023321.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint must call fetchDashboard, read the consumption projection view through the proved repository paths, map the result, and return the dashboard view without a proved persistence mutation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: ba71ec7e0805612b5adf91c461594f93ec5dc7073d7acded71e783ade7311c50
