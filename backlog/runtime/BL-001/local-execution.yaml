@@ -1,8 +1,8 @@
 local_execution:
-  version: 56
+  version: 57
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: TARGETED_UNIQUE_KEY_RECOVERY_CONNECTOR_NATIVE_CONTENT_RECONSTRUCTION_COMPLETE_ASSEMBLY_PENDING
+  state: TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED_ON_CONTROL_PLANE_PROCESS_FILESYSTEM_BRIDGE
   backend: LOCAL_PROCESS_POOL
   architecture: architecture/self-reliant-e2e-execution.md
   source_repository: vvekselva/CylinderManagement
@@ -20,7 +20,7 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
   current_invocation:
-    invocation_id: UNIQUE-KEY-CONNECTOR-MATERIALIZATION-20260825-1402Z
+    invocation_id: UNIQUE-KEY-ATOMIC-PROJECTION-EXECUTION-20260825-1514Z
     owner: PRIMARY_ORCHESTRATOR
     work_unit: WU-BL001-001
     idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_TARGETED_RECOVERY
@@ -31,35 +31,28 @@ local_execution:
     source_reads_allowed: true
     source_reads_frozen_baseline_only: true
     authoritative_control_branch: chore/rename-dependency-files
-    authoritative_control_commit_at_start: c9903589def89b1ebe38a0f02625014fbf0eba01
-    recovered_key_source_proofs_completed: 11
-    corrected_projection_rows: 4
-    consolidation_executor_added: automation/consolidate-traceability-explorer.py
-    projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
-    canonical_rows_added: 0
-    materialized_rows_after: 123
-    pending_unique_keys_after: 11
-    connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
-    connector_materialization:
+    connector_materialization_reverified:
       base_matrix_blob_full_read: PASS
-      base_matrix_blob_sha: 3934eea5c72a9996aa555ad9b020ac683c01c827
-      base_endpoint_rows: 11
       ordered_delta_files_total: 42
       ordered_delta_files_full_read: 42
       ordered_delta_files_remaining: 0
       exact_order_verified_from_index: true
       apply_delta_upsert_semantics_verified: true
       large_delta_blob_fallback: PASS
-    execution_host_checks:
+    consolidation_executor: automation/consolidate-traceability-explorer.py
+    consolidation_executor_validation: PASS_FAIL_CLOSED_123_PLUS_11_EQUALS_134_ZERO_DUPLICATES
+    local_process_runtime:
+      node_available: true
+      python_available: true
+      connector_content_mount_to_process_filesystem: NOT_EXPOSED
       direct_git_materialization: BLOCKED_DNS_GITHUB_UNRESOLVABLE
-      alternate_container_download: BLOCKED_BY_NETWORK_AND_URL_TRUST_BOUNDARY
-      connector_full_filesystem_checkout: NOT_EXPOSED
-      connector_pinned_file_reads: PASS
-      connector_large_minified_matrix_materialization: PASS_VIA_DIRECT_GIT_BLOB_READ
-      connector_ordered_delta_materialization: PASS_ALL_42
-      remaining_execution_constraint: CONNECTOR_NATIVE_MODEL_ASSEMBLY_SERIALIZATION_ATOMIC_WRITE
-    durable_log: logs/runs/UNIQUE-KEY-CONNECTOR-MATERIALIZATION-20260825-1402Z.md
-    outcome: CONNECTOR_NATIVE_CONTENT_RECONSTRUCTION_COMPLETE_CANONICAL_PROJECTION_NOT_YET_COMMITTED
+      authoritative_full_tree_available_to_consolidator: false
+      partial_scratch_reconstruction_accepted_as_authoritative: false
+    canonical_rows_added: 0
+    materialized_rows_after: 123
+    pending_unique_keys_after: 11
+    durable_log: logs/runs/UNIQUE-KEY-ATOMIC-PROJECTION-EXECUTION-20260825-1514Z.md
+    outcome: ATOMIC_PROJECTION_NOT_EXECUTED_CONTROL_PLANE_TO_PROCESS_FILESYSTEM_BRIDGE_UNAVAILABLE
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
@@ -79,13 +72,14 @@ local_execution:
     consolidation_executor: automation/consolidate-traceability-explorer.py
     connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
   work_unit_handoff:
-    WU-BL001-001: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_MODEL_ASSEMBLY_AND_ATOMIC_SERIALIZATION
+    WU-BL001-001: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED
     WU-BL001-002: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
     WU-BL001-003: BLOCKED_WAITING_FOR_RECONCILIATION
     WU-BL001-004: WAITING_FOR_DEPENDENCY
     close_allowed: false
   next_action: >-
-    Assemble the connector-materialized base and all 42 ordered deltas under the exact HTTP_METHOD_PLUS_PATH upsert rule,
-    prove exactly 123 unique pre-recovery keys, merge the eleven corrected source-proved recovery rows, require exactly 134
-    unique keys with zero duplicates, atomically regenerate every Markdown/JSON/browser/progress/runtime artifact, and only
-    then advance WU-BL001-001 to complete and hand off to WU-BL001-002.
+    Present the authoritative control repository contents to the checked-in consolidator as one process-readable filesystem
+    tree, run the exact 123-key precondition and 11-row merge, require exactly 134 unique keys with zero duplicates, then
+    atomically regenerate controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml,
+    traceability-matrix.json, matrix-data.js, index.html and Level-3 runtime. Do not replay the closed worker generation and
+    do not hand off to WU-BL001-002 before the atomic projection passes.
