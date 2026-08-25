@@ -1,5 +1,5 @@
 story_register:
-  version: 14
+  version: 15
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -32,7 +32,7 @@ story_register:
     - {story_id: STORY-0002, matrix_row_keys: ["GET /customer-address-location/planning-map"], state: READY_FOR_USER_REVIEW, fingerprint: a92084eb69e026bf18431514c19bed9472bae66254eeff4bc0c3772b2f2a3276, structured: stories/STORY-0002.yaml, human_readable: stories/STORY-0002.md}
     - {story_id: STORY-0003, matrix_row_keys: ["GET /cylinderDelivery"], state: READY_FOR_USER_REVIEW, fingerprint: 03ebb235a749d5867ad38b79849d738124e7ab283afaceb2db9dce2cdac18d3d, structured: stories/STORY-0003.yaml, human_readable: stories/STORY-0003.md}
     - {story_id: STORY-0004, matrix_row_keys: ["GET /walkin-sale"], state: READY_FOR_USER_REVIEW, fingerprint: 9d3ea0526fd00ed34ae346a87aa384c6864be62819db08e9873eb4f3f193da5c, structured: stories/STORY-0004.yaml, human_readable: stories/STORY-0004.md}
-    - {story_id: STORY-0005, matrix_row_keys: ["GET /customer-address-location/upload"], state: READY_FOR_USER_REVIEW, fingerprint: b7fc11260c26bf18431514c19bed9472bae66254eeff4bc0c3772b2f2a3276, structured: stories/STORY-0005.yaml, human_readable: stories/STORY-0005.md}
+    - {story_id: STORY-0005, matrix_row_keys: ["GET /customer-address-location/upload"], state: READY_FOR_USER_REVIEW, fingerprint: b7fc11260c26f85a28abbc33f5540674cd05084e92f9dd0de58f4b2e535a2b0d, structured: stories/STORY-0005.yaml, human_readable: stories/STORY-0005.md}
     - {story_id: STORY-0006, matrix_row_keys: ["GET /offline-map/style.json"], state: READY_FOR_USER_REVIEW, fingerprint: 8de2952b18665432b67386fa6de5da875ebdc5297e35d9141090aae03cb21fa5, structured: stories/STORY-0006.yaml, human_readable: stories/STORY-0006.md}
     - {story_id: STORY-0007, matrix_row_keys: ["GET /offline-map/status-json"], state: READY_FOR_USER_REVIEW, fingerprint: 6861a33eef06f56360008bca455a5aa78bd38718cacc6567fb12868e9f4d9a5f, structured: stories/STORY-0007.yaml, human_readable: stories/STORY-0007.md}
     - {story_id: STORY-0008, matrix_row_keys: ["GET /challan-page-photo/{challanPagePhotoId}"], state: READY_FOR_USER_REVIEW, fingerprint: 4f33f3f68b8797e03962b8775008ee72f6848e98784f5de754d86fec344f550a, structured: stories/STORY-0008.yaml, human_readable: stories/STORY-0008.md}
