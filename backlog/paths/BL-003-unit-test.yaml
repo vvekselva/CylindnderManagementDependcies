@@ -1,0 +1,104 @@
+completion_path:
+  id: CP-BL-003-v3
+  backlog_item: BL-003
+  type: UNIT_TEST
+  name: Unit Test Completion Path
+
+  purpose: >-
+    Analyse and complete unit testing using the approved project/module test scope plus the approved BL-002 Story layer.
+    Unit tests must verify source-proved controller/service rules, validations and component-level outcomes represented by
+    approved Stories; they must not derive expected behaviour from unapproved or stale narratives.
+
+  prerequisites:
+    - QG-SSOT-001 must PASS before PLAN or REPLAN
+    - QG-SOW-001 must PASS
+    - BL-002 must be VERIFIED or CLOSED
+    - stories/story-register.yaml must contain the approved Story baseline consumed by this run
+    - traceability/controller-story-usecase-map.yaml must reconcile approved Stories to BL-001 matrix rows
+    - repository/project-inventory.yaml must exist
+    - every top-level CylinderManagement project must have an explicit unit_test_scope classification
+    - only UNIT_TEST_REQUIRED projects may enter the execution scope
+    - NO_UNIT_TEST_REQUIRED projects must be excluded
+    - UNIT_TEST_POSTPONED projects must remain explicitly postponed
+    - UNIT_TEST_SCOPE_UNCLASSIFIED projects prevent planning
+
+  approved_story_input_contract:
+    story_state_required: APPROVED
+    stale_story_allowed: false
+    test_mapping_required: true
+    rule: >-
+      Each approved Story validation/business-rule/component assertion that is unit-testable must map to at least one
+      unit-test assertion or an explicit NOT_APPLICABLE/INTEGRATION_ONLY rationale.
+
+  phases:
+    - id: ANALYZE
+      owner: ORCHESTRATOR
+      actions:
+        - establish the approved source baseline
+        - read repository/project-inventory.yaml before determining project test scope
+        - load only APPROVED non-stale BL-002 Stories
+        - map Story validations/business rules/controller-service outcomes to candidate unit-test targets
+        - inventory existing unit tests and test framework/tooling
+        - identify missing, obsolete, failing or duplicate unit-test areas
+        - identify dependencies that must be mocked/stubbed for isolated tests
+        - classify each approved Story assertion as COVERED, GAP, NOT_APPLICABLE, INTEGRATION_ONLY or UNRESOLVED
+      outputs:
+        - backlog/runtime/BL-003/analysis.yaml
+        - quality/unit-test/unit-test-inventory.md
+      gate: every in-scope approved Story assertion has a unit-test disposition
+
+    - id: PLAN
+      owner: ORCHESTRATOR
+      actions:
+        - create independent unit-test Work Units only from approved Story assertions and approved UNIT_TEST_REQUIRED scope
+        - define source/test paths, permissions, expected assertions and test command
+        - preserve Story ID and matrix row references in each Work Unit
+        - generate Worker Inputs
+      outputs:
+        - backlog/runtime/BL-003/execution-plan.yaml
+        - worker/inputs/WI-*.yaml
+      gate: every mandatory GAP has a Work Unit or explicit blocker
+
+    - id: EXECUTE
+      owner: ORCHESTRATOR
+      actions:
+        - schedule eligible Worker Inputs
+        - create/update tests only on approved automation branches/paths
+        - run declared unit-test commands
+        - collect results and Story-to-test evidence
+      outputs:
+        - worker/runs/WI-*.md
+        - worker/results/WI-*.yaml
+        - backlog/runtime/BL-003/work-unit-status.yaml
+
+    - id: VALIDATE
+      owner: ORCHESTRATOR
+      checks:
+        - every mandatory approved Story assertion has an accepted unit-test result or explicit non-unit rationale
+        - required tests execute successfully
+        - NO_UNIT_TEST_REQUIRED and UNIT_TEST_POSTPONED scope is not falsely counted as completed testing
+        - failures and unresolved testability blockers remain visible
+        - Story fingerprints used by the tests are still current and approved
+      outputs:
+        - quality/unit-test/unit-test-results.md
+        - quality/unit-test/unresolved-unit-tests.md
+      gate: no mandatory current-cycle approved Story assertion remains unprocessed
+
+    - id: CLOSE
+      owner: ORCHESTRATOR
+      actions:
+        - persist final results/evidence
+        - close required runs
+        - mark BL-003 VERIFIED then CLOSED only after configured gates and required user acceptance pass
+
+  parallelism:
+    max_parallel_work_units: 10
+    rule: only independent test-file/component Work Units may run concurrently
+
+  completion_conditions:
+    - BL-002 approved Story dependency satisfied
+    - project unit-test scope explicitly classified
+    - every applicable approved Story assertion mapped to tests/results
+    - required unit-test suite passes
+    - required outputs exist
+    - all required runs closed
