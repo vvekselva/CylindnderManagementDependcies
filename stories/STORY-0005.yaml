@@ -1,0 +1,38 @@
+story:
+  story_id: STORY-0005
+  title: Display customer address location upload page
+  state: READY_FOR_USER_REVIEW
+  fingerprint: b7fc11260c26f85a28abbc33f5540674cd05084e92f9dd0de58f4b2e535a2b0d
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-address-location/upload"]
+  controller: CustomerAddressLocationController.showUpload
+  endpoint: "GET /customer-address-location/upload"
+  business_purpose: Display the customer-address location upload view; no additional business meaning is asserted.
+  trigger_and_context: A caller requests GET /customer-address-location/upload.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths: []
+  main_flow:
+    - The request reaches CustomerAddressLocationController.showUpload.
+    - The controller returns the upload view.
+  component_flow:
+    - CustomerAddressLocationController.showUpload
+    - TERMINAL_VIEW upload view
+  business_rules: []
+  data_reads_and_writes: []
+  side_effects_and_state_changes: []
+  alternate_and_error_flows: []
+  output_and_postconditions:
+    - The customer-address location upload view is returned.
+    - No database dependency is proved for this endpoint.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-address-location/upload"
+    - logs/runs/PRODUCTION-FIRE-20260824-020143.md
+  downstream_test_assertions:
+    - classification: UNIT_CANDIDATE
+      assertion: GET /customer-address-location/upload returns the upload view without a proved database dependency.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: b7fc11260c26f85a28abbc33f5540674cd05084e92f9dd0de58f4b2e535a2b0d
