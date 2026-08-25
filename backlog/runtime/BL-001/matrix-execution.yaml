@@ -1,5 +1,5 @@
 matrix_execution:
-  version: 3
+  version: 4
   backlog_item: BL-001
   work_unit: WU-BL001-002
   authoritative_for_external_executor_tracking: true
@@ -17,13 +17,25 @@ matrix_execution:
     canonical_endpoint_inventory: 134
     canonical_complete: 134
     canonical_unresolved: 0
-    materialized_matrix_rows: 113
-    historical_accepted_rows_pending_backfill: 21
+    prior_ssot_materialized_matrix_rows: 113
+    prior_ssot_historical_rows_pending_backfill: 21
+    observed_markdown_physical_endpoint_rows: 114
+    confirmed_missing_canonical_keys: 20
+    counter_reconciliation_state: PROVED_STALE_BY_ONE_PENDING_ATOMIC_COUNTER_SYNC
+    gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
+    source_proved_rows_ready_for_atomic_projection: 4
+    pending_atomic_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
     reconciliation_owner: PRIMARY_ORCHESTRATOR
     reconciliation_mode: DURABLE_ACCEPTED_EVIDENCE_ONLY
     worker_generation_required: false
     old_worker_generation_replay_allowed: false
     residual_transient_lane_logs: 0
+  idempotency_decision:
+    prior_worker_generation: E2E-STAGED-20260823-161214
+    state: CLOSED_SYNCHRONIZED_NOOP
+    replayed: false
   next_action: >-
-    Reconcile the remaining 21 historical accepted rows from durable accepted evidence, prove exactly one HTTP-method/path
-    row for each canonical endpoint, synchronize Markdown and Explorer projections, then permit WU-BL001-003 gate validation.
+    Atomically project the four source-proved DeliveryPlanningController historical rows into the Markdown matrix,
+    structured Explorer, browser data, unresolved accounting and matrix-progress; at that same checkpoint synchronize
+    the corrected 114/20 pre-backfill accounting. Then continue frozen-source chain recovery for the remaining 16
+    confirmed missing keys. WU-BL001-003 remains blocked until exactly 134 unique canonical endpoint rows reconcile.
