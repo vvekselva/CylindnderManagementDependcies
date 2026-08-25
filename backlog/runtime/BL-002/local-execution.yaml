@@ -1,29 +1,30 @@
 local_execution:
   backlog_item: BL-002
   state: WAITING_FOR_USER_STORY_APPROVAL_AND_STORY_0014_TO_0017_CLARIFICATION
-  execution_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-011606IST
+  execution_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-022855IST
   dispatch_fingerprint: null
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: CANONICAL_BL001_MATRIX_ONLY
   phase: USER_STORY_APPROVAL_AND_CLARIFICATION_BOUNDARY
-  worker_state: NO_WORKER_REPLAY_THIS_INVOCATION
+  worker_state: SAFE_INDEPENDENT_STORY_BATCH_EXECUTED_WITH_SHARED_SSOT_SINGLE_WRITER
   workers_started_this_invocation: 0
   transient_lane_logs_created: 0
   residual_transient_lane_logs: 0
-  validation_state: PASS_13_STORIES_READY_FOR_USER_REVIEW_AND_4_NEED_CLARIFICATION
+  validation_state: PASS_22_STORIES_READY_FOR_USER_REVIEW_AND_4_NEED_CLARIFICATION
   sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR_CHECKPOINT
-  recovery_state: RUNTIME_RECONCILED_TO_STORY_REGISTER_VERSION_7
+  recovery_state: RUNTIME_RECONCILED_TO_STORY_REGISTER_VERSION_9
   incremental_scope:
     canonical_bl001_rows_eligible: 123
     pending_bl001_atomic_projection_rows_excluded: 11
-    story_dispositions: 17
-    story_candidates_ready_for_review: 13
+    story_dispositions: 26
+    story_candidates_ready_for_review: 22
     story_candidates_needs_clarification: 4
     story_candidates_approved: 0
+    newly_generated_this_invocation: [STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026]
   approval_boundary:
     owner: USER
     state: WAITING_FOR_USER
-    story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013]
+    story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026]
     exact_story_ids_and_fingerprints_required: true
     usecase_generation_allowed: false
   clarification_boundary:
