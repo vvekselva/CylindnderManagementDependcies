@@ -1,0 +1,52 @@
+story:
+  story_id: STORY-0018
+  title: Display the challan-book add form with summary metrics
+  state: READY_FOR_USER_REVIEW
+  fingerprint: bd08d06f1e9ed1b6589fe755869a8f70065acfb4ad6d5f5ba505cbc2e7d8221e
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /logistics/challan-books/add-form"]
+  controller: ChallanBookWebController.showAddBookForm
+  endpoint: "GET /logistics/challan-books/add-form"
+  business_purpose: Display the challan-book add form together with source-proved summary metrics.
+  trigger_and_context: A caller requests GET /logistics/challan-books/add-form.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No caller-supplied request-value validation is asserted because none is proved in the accepted endpoint trace.
+  main_flow:
+    - The request reaches ChallanBookWebController.showAddBookForm.
+    - The controller invokes SummaryMetricLookupFetchService to fetch challan-book total, active and unused-page metrics.
+    - SummaryMetricLookupFetchService reads the required lookup rows through SummaryMetricLookupJpaDao.findByLookUpKeyIn.
+    - SummaryMetricLookupDo maps the persistence rows from public.tbl_summary_metric_lookup.
+    - SummaryMetricLookupMapper maps the persisted rows to DTO values.
+    - The controller returns final-version-1/add-challan-book.html.
+  component_flow:
+    - ChallanBookWebController.showAddBookForm
+    - SummaryMetricLookupFetchService.fetchChallanBookTotalMetrics / fetchChallanBookActiveMetrics / fetchChallanBookUnusedPageMetrics
+    - SummaryMetricLookupJpaDao.findByLookUpKeyIn
+    - SummaryMetricLookupDo
+    - public.tbl_summary_metric_lookup
+    - SummaryMetricLookupMapper.mapDoToDto
+    - final-version-1/add-challan-book.html
+  business_rules:
+    - Only the source-proved lookup retrieval used to populate the form metrics is asserted; no additional business meaning is inferred.
+  data_reads_and_writes:
+    - Reads public.tbl_summary_metric_lookup.
+    - No persistence write is proved for this GET endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate or error branch is asserted beyond framework/runtime handling not proved in the accepted trace.
+  output_and_postconditions:
+    - Returns final-version-1/add-challan-book.html with source-proved summary metric data available to the page.
+    - No database mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /logistics/challan-books/add-form"
+    - logs/runs/PRODUCTION-FIRE-20260824-003111.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint must read the configured summary metrics through SummaryMetricLookupJpaDao and return the add-challan-book view without a proved persistence mutation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: bd08d06f1e9ed1b6589fe755869a8f70065acfb4ad6d5f5ba505cbc2e7d8221e
