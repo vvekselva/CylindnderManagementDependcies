@@ -1,5 +1,5 @@
 story_register:
-  version: 13
+  version: 14
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -12,21 +12,16 @@ story_register:
     currently_materialized_unique_rows: 123
     pending_atomic_projection_rows_not_eligible_for_story_generation: 11
   schema: stories/story-schema.yaml
-  story_artifact_pattern:
-    structured: stories/STORY-*.yaml
-    human_readable: stories/STORY-*.md
+  story_artifact_pattern: {structured: stories/STORY-*.yaml, human_readable: stories/STORY-*.md}
   states: [DRAFT, TECHNICALLY_VALIDATED, READY_FOR_USER_REVIEW, APPROVED, REJECTED, NEEDS_CLARIFICATION, NOT_APPLICABLE, STALE_REVIEW_REQUIRED, SUPERSEDED]
-  approval:
-    owner: USER
-    auto_approval_allowed: false
-    approval_fingerprint_required: true
+  approval: {owner: USER, auto_approval_allowed: false, approval_fingerprint_required: true}
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 36
+    story_dispositions: 42
     draft: 0
     technically_validated: 0
-    ready_for_user_review: 31
+    ready_for_user_review: 37
     approved: 0
     rejected: 0
     needs_clarification: 5
@@ -37,7 +32,7 @@ story_register:
     - {story_id: STORY-0002, matrix_row_keys: ["GET /customer-address-location/planning-map"], state: READY_FOR_USER_REVIEW, fingerprint: a92084eb69e026bf18431514c19bed9472bae66254eeff4bc0c3772b2f2a3276, structured: stories/STORY-0002.yaml, human_readable: stories/STORY-0002.md}
     - {story_id: STORY-0003, matrix_row_keys: ["GET /cylinderDelivery"], state: READY_FOR_USER_REVIEW, fingerprint: 03ebb235a749d5867ad38b79849d738124e7ab283afaceb2db9dce2cdac18d3d, structured: stories/STORY-0003.yaml, human_readable: stories/STORY-0003.md}
     - {story_id: STORY-0004, matrix_row_keys: ["GET /walkin-sale"], state: READY_FOR_USER_REVIEW, fingerprint: 9d3ea0526fd00ed34ae346a87aa384c6864be62819db08e9873eb4f3f193da5c, structured: stories/STORY-0004.yaml, human_readable: stories/STORY-0004.md}
-    - {story_id: STORY-0005, matrix_row_keys: ["GET /customer-address-location/upload"], state: READY_FOR_USER_REVIEW, fingerprint: b7fc11260c26f85a28abbc33f5540674cd05084e92f9dd0de58f4b2e535a2b0d, structured: stories/STORY-0005.yaml, human_readable: stories/STORY-0005.md}
+    - {story_id: STORY-0005, matrix_row_keys: ["GET /customer-address-location/upload"], state: READY_FOR_USER_REVIEW, fingerprint: b7fc11260c26bf18431514c19bed9472bae66254eeff4bc0c3772b2f2a3276, structured: stories/STORY-0005.yaml, human_readable: stories/STORY-0005.md}
     - {story_id: STORY-0006, matrix_row_keys: ["GET /offline-map/style.json"], state: READY_FOR_USER_REVIEW, fingerprint: 8de2952b18665432b67386fa6de5da875ebdc5297e35d9141090aae03cb21fa5, structured: stories/STORY-0006.yaml, human_readable: stories/STORY-0006.md}
     - {story_id: STORY-0007, matrix_row_keys: ["GET /offline-map/status-json"], state: READY_FOR_USER_REVIEW, fingerprint: 6861a33eef06f56360008bca455a5aa78bd38718cacc6567fb12868e9f4d9a5f, structured: stories/STORY-0007.yaml, human_readable: stories/STORY-0007.md}
     - {story_id: STORY-0008, matrix_row_keys: ["GET /challan-page-photo/{challanPagePhotoId}"], state: READY_FOR_USER_REVIEW, fingerprint: 4f33f3f68b8797e03962b8775008ee72f6848e98784f5de754d86fec344f550a, structured: stories/STORY-0008.yaml, human_readable: stories/STORY-0008.md}
@@ -69,5 +64,11 @@ story_register:
     - {story_id: STORY-0034, matrix_row_keys: ["POST /trip-return"], state: READY_FOR_USER_REVIEW, fingerprint: bd7b92c5b62ff888ee6e701053e6d8d8d4c287d620bb03d0eee23dcf93b2fcf3, structured: stories/STORY-0034.yaml, human_readable: stories/STORY-0034.md}
     - {story_id: STORY-0035, matrix_row_keys: ["GET /customer-demands"], state: READY_FOR_USER_REVIEW, fingerprint: 806fdc490be60e31f7abddf4ffb12d06c3698ea7789f71db7ec04a2a099af029, structured: stories/STORY-0035.yaml, human_readable: stories/STORY-0035.md}
     - {story_id: STORY-0036, matrix_row_keys: ["POST /customer-demands"], state: READY_FOR_USER_REVIEW, fingerprint: dc183a0c02e57f4d17af6e3ae698e47032251fece58d22238ec2248b0c580bd3, structured: stories/STORY-0036.yaml, human_readable: stories/STORY-0036.md}
+    - {story_id: STORY-0037, matrix_row_keys: ["POST /customer-demands/{requestId}/mark-delivered"], state: READY_FOR_USER_REVIEW, fingerprint: 9f60a7283c6d6e2b94164525720500a5919f2864ccb49544d48bd6ba29e32b2a, structured: stories/STORY-0037.yaml, human_readable: stories/STORY-0037.md}
+    - {story_id: STORY-0038, matrix_row_keys: ["GET /trip-review"], state: READY_FOR_USER_REVIEW, fingerprint: ef94b8a0e77a2f3f330f361d37634fb4b47ae55c316cbc26b83159a17633e0f6, structured: stories/STORY-0038.yaml, human_readable: stories/STORY-0038.md}
+    - {story_id: STORY-0039, matrix_row_keys: ["GET /fetchSupplierByPage"], state: READY_FOR_USER_REVIEW, fingerprint: 2da4c54055aa1ca3bc0ec88c1c3b8ec178cb955d2c03b2a7071fd6726279e352, structured: stories/STORY-0039.yaml, human_readable: stories/STORY-0039.md}
+    - {story_id: STORY-0040, matrix_row_keys: ["GET /vehicle-loads/list"], state: READY_FOR_USER_REVIEW, fingerprint: 55c311333b6383bb6a828c324d4a0bf2501d7f8a2613c0b0541383d1cfd81c45, structured: stories/STORY-0040.yaml, human_readable: stories/STORY-0040.md}
+    - {story_id: STORY-0041, matrix_row_keys: ["GET /vehicle-loads/all-list"], state: READY_FOR_USER_REVIEW, fingerprint: afefdf00a259b69dd171bcc0a1463448d5dde5614b0c44e374290a1f45b65ccb, structured: stories/STORY-0041.yaml, human_readable: stories/STORY-0041.md}
+    - {story_id: STORY-0042, matrix_row_keys: ["GET /vehicle-trips/list"], state: READY_FOR_USER_REVIEW, fingerprint: 6d9cadbabdc18aabd256d86cc14d81fa20331861b7db71772bb82936fa3f7679, structured: stories/STORY-0042.yaml, human_readable: stories/STORY-0042.md}
   invariant: >-
-    Incremental BL-002 Story generation may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows. Rows still pending BL-001 atomic projection are excluded. No Story becomes authoritative downstream input until its exact fingerprint is explicitly approved by the user. Final BL-002 verification still requires the complete FINAL_VALIDATED BL-001 matrix and full row accounting.
+    Only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows are eligible. Pending atomic-projection rows remain excluded. No Story becomes downstream-authoritative before explicit user approval of its exact fingerprint.
