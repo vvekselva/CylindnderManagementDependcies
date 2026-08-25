@@ -1,5 +1,5 @@
 controller_story_usecase_traceability:
-  version: 2
+  version: 3
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_MAPPING
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -22,6 +22,8 @@ controller_story_usecase_traceability:
     - {matrix_row_key: "GET /offline-map/style.json", story_id: STORY-0006, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "GET /offline-map/status-json", story_id: STORY-0007, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "GET /challan-page-photo/{challanPagePhotoId}", story_id: STORY-0008, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /offline-map/status", story_id: STORY-0009, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf", story_id: STORY-0010, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
   invariants:
     - every canonical final matrix row has one Story disposition before final BL-002 verification
     - every APPROVED Story references at least one canonical matrix row
