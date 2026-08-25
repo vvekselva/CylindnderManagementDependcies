@@ -1,6 +1,6 @@
 work_units:
   WU-BL001-001:
-    state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_PENDING
+    state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_BLOCKED
     execution_mode: PRIMARY_ORCHESTRATOR_DIRECT_FROZEN_SOURCE_PLUS_SELF_RELIANT_STAGED_SOURCE
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
     reported_checkpoint: {total_endpoints: 134, examined_counter: 134, complete_counter: 134, unresolved: 0, blocked: 0, failed: 0}
@@ -10,21 +10,23 @@ work_units:
       pending_unique_keys: 11
       fully_source_proved_pending_atomic_projection: 11
       unique_method_path_coverage_proved: false
-    uniqueness_status: ALL_MISSING_KEYS_SOURCE_PROVED_ATOMIC_PROJECTION_PENDING
+    uniqueness_status: ALL_MISSING_KEYS_SOURCE_PROVED_ATOMIC_PROJECTION_CONSOLIDATION_BLOCKED
     recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
     projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
-    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-0811Z-RECOVERY.md
+    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-140218-SCHEDULER.md
+    active_blocker: GB-BL001-UNIQUE-PROJECTION-001
     worker_generation_replay_required: false
     direct_frozen_source_revalidation_allowed: true
     residual_transient_lane_logs: 0
     next_action: >-
-      Consolidate the accepted base-plus-ordered-delta structured Explorer model and atomically project all eleven
-      source-proved recovery keys. Do not increment canonical coverage before every required projection moves together.
+      Consolidate the accepted Explorer base plus ordered deltas, append the eleven source-proved recovery keys,
+      regenerate traceability-matrix.json and matrix-data.js from the same accepted model, then atomically synchronize
+      Markdown, unresolved ledger, matrix-progress and Level-3 runtime. Do not promote partial projections.
   WU-BL001-002:
     state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
     name: Final Matrix Reconciliation
     dependency: WU-BL001-001
-    dependency_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_PENDING
+    dependency_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_BLOCKED
     matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
     materialized_matrix_rows: 123
     confirmed_missing_canonical_keys: 11
