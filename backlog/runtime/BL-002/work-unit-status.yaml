@@ -1,11 +1,30 @@
 work_unit_status:
   backlog_item: BL-002
-  state: INITIALIZED
-  current_work_unit: null
-  work_units: []
+  state: EXECUTING_INCREMENTAL_STORY_GENERATION
+  current_work_unit: WU-BL002-001
+  work_units:
+    - id: WU-BL002-001
+      state: EXECUTING
+      name: Generate evidence-backed Stories from accepted canonical BL-001 rows
+      progress:
+        eligible_rows: 123
+        accounted_rows: 3
+        ready_for_user_review: 3
+        approved: 0
+      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003]
+    - id: WU-BL002-002
+      state: WAITING_FOR_USER_DECISION
+      name: Story approval
+    - id: WU-BL002-003
+      state: BLOCKED_BY_STORY_APPROVAL
+      name: Compose candidate Use Cases
+    - id: WU-BL002-004
+      state: BLOCKED_BY_USECASE_APPROVAL
+      name: Approve Use Cases and derive scenarios
   summary:
-    total: 0
+    total: 4
     ready: 0
-    executing: 0
-    blocked: 0
+    executing: 1
+    blocked: 2
+    waiting_for_user: 1
     closed: 0
