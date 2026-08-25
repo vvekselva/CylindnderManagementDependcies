@@ -1,4 +1,4 @@
-version: 46
+version: 47
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -7,7 +7,7 @@ browser_data_artifact: traceability/explorer/matrix-data.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
-projection_state: SOURCE_PROOF_COMPLETE_FOR_11_RECOVERY_KEYS_ATOMIC_CANONICAL_PROJECTION_PENDING
+projection_state: CONSOLIDATION_EXECUTOR_AND_CORRECTED_11_ROW_INPUT_READY_EXECUTION_PENDING
 reported_source_check:
   canonical_endpoint_inventory_target: 134
   accumulated_examined_counter: 134
@@ -20,15 +20,18 @@ reported_source_check:
   pending_unique_method_path_keys: 11
   fully_source_proved_pending_atomic_projection: 11
   reason: >-
-    The accumulated 134 counters are audit history and include proven duplicate acceptance events. Exact frozen-source
-    recovery has now proved the full chains for all 11 missing exact HTTP method/path keys, but canonical unique coverage
-    remains 123 until Markdown, unresolved ledger, matrix progress, consolidated Explorer JSON/browser data and Level-3
-    runtime are regenerated atomically from one consistent accepted model.
+    The accumulated 134 counters remain audit history because duplicate acceptance events were proven. All eleven exact
+    recovery keys have source-proved chains. Four Lookup Management POST records that were previously abbreviated have
+    now been corrected with explicit Controller -> Service -> DAO -> Entity -> DB -> cache-refresh -> terminal paths.
+    Canonical unique coverage remains 123 until the deterministic consolidation utility executes successfully and all
+    Markdown/JSON/browser/runtime artifacts move together.
 unique_key_recovery:
-  state: SOURCE_PROOF_COMPLETE_ATOMIC_PROJECTION_PENDING
+  state: CONSOLIDATION_EXECUTOR_READY
   work_unit: WU-BL001-001
   recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
   projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+  projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
+  consolidation_executor: automation/consolidate-traceability-explorer.py
   target_unique_keys: 134
   materialized_unique_keys: 123
   pending_unique_keys: 11
@@ -37,6 +40,8 @@ unique_key_recovery:
   frozen_source_only: true
   worker_generation_replay_required: false
   atomic_projection_required: true
+  pre_projection_assertion: EXACTLY_123_UNIQUE_KEYS
+  post_projection_assertion: EXACTLY_134_UNIQUE_KEYS_ZERO_DUPLICATES
 matrix_reconciliation_history:
   corrected_pre_backfill_physical_markdown_rows: 114
   materialized_matrix_rows: 123
@@ -52,16 +57,19 @@ accepted_changes_this_checkpoint:
   new_endpoint_rows: 0
   historical_rows_promoted: 0
   recovery_keys_source_proved: 11
+  corrected_full_chain_records: 4
+  consolidation_executor_added: true
   unresolved_changes: 0
   worker_generation_started: false
   transient_lane_logs_created: 0
 update_rule: >-
-  A recovered key is not canonical until the Primary Orchestrator can regenerate and synchronize every required matrix
-  and Explorer projection together. Full source proof alone does not increment the canonical unique-row counter.
+  A recovered key is not canonical until the Primary Orchestrator regenerates and synchronizes every required matrix and
+  Explorer projection together. The consolidation utility must fail closed on a pre-count other than 123, a candidate
+  without ordered paths, any overlap with existing keys, any duplicate key, or a post-count other than 134.
 next_action: >-
-  Consolidate the current base-plus-ordered-delta Explorer model into one complete accepted 123-row structured model,
-  append the 11 source-proved recovery records from pending-atomic-projection-20260825-0811Z.yaml, regenerate the canonical
-  JSON and matrix-data.js, update the Markdown matrix/unresolved/progress/runtime together, and only then assert 134/134.
+  Run automation/consolidate-traceability-explorer.py against an authoritative control-repository filesystem checkout.
+  On PASS, atomically synchronize controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml,
+  traceability-matrix.json, matrix-data.js, index.html and Level-3 runtime and then hand off to WU-BL001-002.
 finalization_condition: >-
   Exactly 134 unique caller-visible HTTP method/path keys are represented once with accepted full-chain frozen-source
   evidence and all Markdown/JSON/browser/runtime artifacts reconcile before WU-BL001-002 may resume.
