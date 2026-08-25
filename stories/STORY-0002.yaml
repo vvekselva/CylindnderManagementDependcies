@@ -1,0 +1,35 @@
+story:
+  story_id: STORY-0002
+  title: Display the customer address planning map
+  state: READY_FOR_USER_REVIEW
+  fingerprint: a92084eb69e026bf18431514c19bed9472bae66254eeff4bc0c3772b2f2a3276
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-address-location/planning-map"]
+  controller: CustomerAddressLocationController.showPlanningMap
+  endpoint: "GET /customer-address-location/planning-map"
+  business_purpose: Display the customer-address planning map view. No additional business meaning is asserted beyond the accepted trace.
+  trigger_and_context: A caller requests GET /customer-address-location/planning-map.
+  inputs: []
+  validations: []
+  main_flow:
+    - The request reaches CustomerAddressLocationController.showPlanningMap.
+    - The controller returns with-menu/CustomerAddressPlanningMap.
+  component_flow:
+    - CustomerAddressLocationController.showPlanningMap
+    - TERMINAL_VIEW with-menu/CustomerAddressPlanningMap
+  data_reads_and_writes: []
+  side_effects_and_state_changes: []
+  alternate_and_error_flows: []
+  output_and_postconditions:
+    - The customer address planning map view is returned.
+    - No database dependency is proved for this endpoint.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-address-location/planning-map"
+    - logs/runs/PRODUCTION-FIRE-20260824-013546.md
+  downstream_test_assertions:
+    - classification: UNIT_CANDIDATE
+      assertion: The planning-map endpoint resolves to with-menu/CustomerAddressPlanningMap without a proved persistence call.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: a92084eb69e026bf18431514c19bed9472bae66254eeff4bc0c3772b2f2a3276
