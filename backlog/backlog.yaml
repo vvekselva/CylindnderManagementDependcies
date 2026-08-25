@@ -1,5 +1,5 @@
 backlog:
-  version: 6
+  version: 7
   target_repository: vvekselva/CylinderManagement
   run_config: backlog/orchestrator-run-config.yaml
   quality_gate_governance: governance/quality-gates.yaml
@@ -12,11 +12,10 @@ backlog:
   selection_policy: HIGHEST_PRIORITY_ELIGIBLE_ITEM
   max_parallel_backlog_items: 1
   note: >-
-    backlog.yaml is the authoritative Level 1 Backlog Master SSOT. A Backlog Item may be
-    catalogued before it is ready, but PLAN/REPLAN is fail-closed until its Level 1 master
-    entry, Level 2 definition/SOW/Completion Path/Quality Gate, and Level 3 runtime SSOT are
-    complete and QG-SSOT-001 passes. Execution remains subject to QG-SOW-001, QG-DEP-001,
-    item-specific Quality Gates, Work Unit dependencies and required user acceptance.
+    backlog.yaml is the authoritative Level 1 Backlog Master SSOT. A Backlog Item may be catalogued before it is ready,
+    but PLAN/REPLAN is fail-closed until its Level 1 master entry, Level 2 definition/SOW/Completion Path/Quality Gate,
+    and Level 3 runtime SSOT are complete and QG-SSOT-001 passes. Scheduler invocations select from run-enabled eligible
+    backlog items rather than being permanently hard-coded to BL-001.
 
   states:
     - YET_TO_DO
@@ -58,61 +57,95 @@ backlog:
         - worker/results/WI-0004.yaml
 
     - id: BL-002
+      name: Controller Dependency Matrix to Human-Readable Stories
+      type: CONTROLLER_STORY_AND_USECASE
+      purpose: >-
+        Convert the validated Controller Dependency Matrix into elaborate evidence-backed human-readable Stories that
+        explain inputs, validations, processing, component calls, persistence/read effects, side effects, outcomes and
+        alternate/error paths; obtain user Story approval; combine approved Stories into approved Use Cases; and derive
+        Use Case test scenarios for downstream unit and integration testing.
+      priority: P2_CRITICAL_PATH
+      state: WAITING_FOR_DEPENDENCY
+      item_definition: backlog/items/BL-002-controller-story-usecase.yaml
+      statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml
+      completion_path: backlog/paths/BL-002-controller-story-usecase.yaml
+      quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml
+      implementation_workflow: workflows/WF-003-controller-story-usecase.yaml
+      runtime: backlog/runtime/BL-002/
+      dependencies: [BL-001]
+      dependency_rule: ALL_VERIFIED_OR_CLOSED
+      expected_outputs:
+        - stories/story-register.yaml
+        - stories/STORY-*.yaml
+        - stories/STORY-*.md
+        - usecases/usecase-register.yaml
+        - usecases/UC-*.yaml
+        - usecases/UC-*.md
+        - traceability/controller-story-usecase-map.yaml
+        - usecases/usecase-test-scenarios.yaml
+
+    - id: BL-003
       name: Unit Test Completion
       type: UNIT_TEST
+      purpose: Complete unit testing from the approved BL-002 Story assertions and approved project unit-test scope.
       priority: P2_CRITICAL_PATH
-      state: YET_TO_DO
+      state: WAITING_FOR_DEPENDENCY
       item_definition: null
       statement_of_work: null
-      completion_path: backlog/paths/BL-002-unit-test.yaml
+      completion_path: backlog/paths/BL-003-unit-test.yaml
       quality_gate: null
       runtime: null
-      dependencies: []
+      dependencies: [BL-002]
+      dependency_rule: ALL_VERIFIED_OR_CLOSED
       expected_outputs:
         - quality/unit-test/unit-test-inventory.md
         - quality/unit-test/unit-test-results.md
         - quality/unit-test/unresolved-unit-tests.md
 
-    - id: BL-003
+    - id: BL-004
       name: Integration Test Completion
       type: INTEGRATION_TEST
+      purpose: Execute integration and Use Case tests from BL-002 approved Use Cases and authoritative scenarios.
       priority: P2_CRITICAL_PATH
-      state: YET_TO_DO
+      state: WAITING_FOR_DEPENDENCY
       item_definition: null
       statement_of_work: null
-      completion_path: backlog/paths/BL-003-integration-test.yaml
+      completion_path: backlog/paths/BL-004-integration-test.yaml
       quality_gate: null
       runtime: null
-      dependencies: []
+      dependencies: [BL-002]
+      dependency_rule: ALL_VERIFIED_OR_CLOSED
       expected_outputs:
         - quality/integration-test/integration-test-inventory.md
+        - quality/integration-test/usecase-test-inventory.md
         - quality/integration-test/integration-test-results.md
+        - quality/integration-test/usecase-test-results.md
         - quality/integration-test/unresolved-integration-tests.md
 
-    - id: BL-004
+    - id: BL-005
       name: Code Coverage Report
       type: CODE_COVERAGE
       priority: P2_CRITICAL_PATH
       state: WAITING_FOR_DEPENDENCY
       item_definition: null
       statement_of_work: null
-      completion_path: backlog/paths/BL-004-code-coverage.yaml
+      completion_path: backlog/paths/BL-005-code-coverage.yaml
       quality_gate: null
       runtime: null
-      dependencies: [BL-002, BL-003]
+      dependencies: [BL-003, BL-004]
       dependency_rule: ALL_VERIFIED_OR_CLOSED
       expected_outputs:
         - quality/code-coverage/coverage-report.md
         - quality/code-coverage/coverage-summary.yaml
 
-    - id: BL-005
+    - id: BL-006
       name: ArchUnit Architecture Test
       type: ARCHUNIT
       priority: P3_NORMAL
       state: YET_TO_DO
       item_definition: null
       statement_of_work: null
-      completion_path: backlog/paths/BL-005-archunit.yaml
+      completion_path: backlog/paths/BL-006-archunit.yaml
       quality_gate: null
       runtime: null
       dependencies: []
@@ -121,14 +154,14 @@ backlog:
         - quality/archunit/archunit-results.md
         - quality/archunit/unresolved-architecture-rules.md
 
-    - id: BL-006
+    - id: BL-007
       name: Requirements Traceability and Gap Analysis
       type: REQUIREMENTS
       priority: P2_CRITICAL_PATH
       state: YET_TO_DO
       item_definition: null
       statement_of_work: null
-      completion_path: backlog/paths/BL-006-requirements.yaml
+      completion_path: backlog/paths/BL-007-requirements.yaml
       quality_gate: null
       runtime: null
       dependencies: []
@@ -137,7 +170,7 @@ backlog:
         - requirements/requirements-traceability.md
         - requirements/requirements-gaps.md
 
-    - id: BL-007
+    - id: BL-008
       name: Migration of the Database to the Ownership Model
       type: DATABASE_MIGRATION
       priority: P3_NORMAL
@@ -150,7 +183,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-008
+    - id: BL-009
       name: Supplier Owned, Customer Owned and Company Owned Cylinder Model
       type: OWNERSHIP_MODEL
       priority: P3_NORMAL
@@ -163,7 +196,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-009
+    - id: BL-010
       name: Physical Challan Book Location
       type: CHALLAN_MANAGEMENT
       priority: P3_NORMAL
@@ -176,7 +209,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-010
+    - id: BL-011
       name: Ownership Dashboard Changes
       type: DASHBOARD
       priority: P3_NORMAL
@@ -189,7 +222,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-011
+    - id: BL-012
       name: CRUD Services for All Tables
       type: CRUD_SERVICES
       priority: P3_NORMAL
@@ -202,7 +235,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-012
+    - id: BL-013
       name: On Spot Cylinder Checks
       type: CYLINDER_CHECK
       priority: P3_NORMAL
@@ -215,7 +248,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-013
+    - id: BL-014
       name: Correction Management
       type: CORRECTION_MANAGEMENT
       priority: P3_NORMAL
@@ -228,7 +261,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-014
+    - id: BL-015
       name: Invoice Generation and Check in Tally
       type: INVOICE_INTEGRATION
       priority: P3_NORMAL
@@ -241,7 +274,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-015
+    - id: BL-016
       name: Attendance Management
       type: ATTENDANCE_MANAGEMENT
       priority: P3_NORMAL
@@ -254,7 +287,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-016
+    - id: BL-017
       name: Trip Planning for the Customers
       type: TRIP_PLANNING
       priority: P3_NORMAL
@@ -267,7 +300,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-017
+    - id: BL-018
       name: CEO Dashboard
       type: DASHBOARD
       priority: P3_NORMAL
@@ -280,7 +313,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-018
+    - id: BL-019
       name: Restoring the Logical Backup
       type: DATABASE_RESTORE
       priority: P3_NORMAL
@@ -293,7 +326,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-019
+    - id: BL-020
       name: Task Management
       type: TASK_MANAGEMENT
       priority: P3_NORMAL
@@ -306,7 +339,7 @@ backlog:
       dependencies: []
       expected_outputs: []
 
-    - id: BL-020
+    - id: BL-021
       name: Customer Data Dashboard
       type: DASHBOARD
       priority: P3_NORMAL
@@ -341,4 +374,4 @@ backlog:
     current_work_unit: WU-BL001-001
     worker_input: worker/inputs/WI-0004.yaml
     last_attempt_result: PARTIAL
-    next_action: RETRY_OR_CONTINUE_SOURCE_CHECK
+    next_action: RETRY_OR_CONTINUE_SOURCE_CHECK_THEN_AUTO_SELECT_BL002_WHEN_ELIGIBLE
