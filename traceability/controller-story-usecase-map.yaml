@@ -1,5 +1,5 @@
 controller_story_usecase_traceability:
-  version: 8
+  version: 9
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_MAPPING
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -40,6 +40,10 @@ controller_story_usecase_traceability:
     - {matrix_row_key: "POST /customer-address-location/upload", story_id: STORY-0024, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "GET /customer-address-location/import-whatsapp-export", story_id: STORY-0025, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "POST /customer-address-location/import-whatsapp-export", story_id: STORY-0026, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /customer-consumption", story_id: STORY-0027, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /customer-consumption/", story_id: STORY-0028, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /customer-consumption/dashboard", story_id: STORY-0029, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /customer-consumption/api/dashboard", story_id: STORY-0030, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
   invariants:
     - every canonical final matrix row has one Story disposition before final BL-002 verification
     - every APPROVED Story references at least one canonical matrix row
