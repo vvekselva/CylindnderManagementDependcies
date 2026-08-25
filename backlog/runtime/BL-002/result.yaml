@@ -11,13 +11,15 @@ result:
     pending_atomic_projection_rows: 11
     eligible_rows_for_incremental_story_generation: 123
   story_result:
-    story_dispositions: 12
-    ready_for_user_review: 12
+    story_dispositions: 17
+    ready_for_user_review: 13
+    needs_clarification: 4
     approved: 0
-    story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012]
+    story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0017]
     newest_fingerprints:
-      STORY-0011: c34ea04e99af64319cb6d9bcee30860a8cd0a056e47bb49e8a41d8a6faefa3c4
-      STORY-0012: 9a2ad04609d2ab03387f065289116814f23b4260328afe551e7fa94fe100fa1d
+      STORY-0015: f3257c0ceb6efe789c963ab21bafee297ca9f728c76c3e4fda671ad1ef286860
+      STORY-0016: 89c281cd0521fa14a683cd68c35d4cee8230a31de50555deb7f45bfd700c77df
+      STORY-0017: 4b3a60fa24615938fa4b1161b274a8c4266f6113840d7e4950c5a962aad9e29e
   usecase_result:
     candidate_usecases: 0
     approved_for_testing: 0
@@ -29,8 +31,9 @@ result:
     - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED
     - ALL_CANONICAL_ROWS_REQUIRE_STORY_DISPOSITION
     - STORY_USER_APPROVAL_REQUIRED
+    - STORY_0014_TO_0017_CLARIFICATION_OR_ACCEPTED_EVIDENCE_REQUIRED
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    BL-002 continues incrementally from accepted canonical BL-001 rows. Twelve Stories are technically constrained and READY_FOR_USER_REVIEW. No pending BL-001 atomic-projection row was consumed and no Story or Use Case was auto-approved.
+    BL-002 continues incrementally from accepted canonical BL-001 rows. Thirteen Stories remain READY_FOR_USER_REVIEW and four persistence-chain Stories are NEEDS_CLARIFICATION because field-level request validation, exact mutation and response semantics are not preserved in accepted evidence. No pending BL-001 atomic-projection row was consumed and no Story or Use Case was auto-approved.
   next_action: >-
-    Continue safe-independent Story generation from remaining eligible canonical rows on later invocations and await explicit user approval for exact Story IDs/fingerprints before forming approved Use Cases. Do not use the 11 pending BL-001 rows until they are atomically canonical.
+    Continue safe-independent Story generation from remaining eligible canonical rows on later invocations while awaiting explicit user approval for exact Story IDs/fingerprints and clarification or additional accepted evidence for STORY-0014 through STORY-0017. Do not use the 11 pending BL-001 rows until atomically canonical and do not form authoritative Use Cases before Story approval.
