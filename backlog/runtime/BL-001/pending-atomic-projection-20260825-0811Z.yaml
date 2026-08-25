@@ -1,0 +1,169 @@
+projection_candidate:
+  id: BL001-UNIQUE-KEY-ATOMIC-PROJECTION-20260825-0811Z
+  backlog_item: BL-001
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  owner: PRIMARY_ORCHESTRATOR
+  state: FULL_SOURCE_PROOF_COMPLETE_AWAITING_ATOMIC_CANONICAL_PROJECTION
+  canonical_count_before_projection: 123
+  target_count_after_projection: 134
+  row_key: HTTP_METHOD_PLUS_PATH
+  rows:
+    - method: GET
+      path: /reconciliation-dashboard
+      controller: ReconciliationDashboardController
+      controller_method: viewDashboard
+      chain_completeness: FULL
+      paths:
+        - label: dashboard fetch
+          nodes:
+            - {type: CONTROLLER, name: ReconciliationDashboardController, method: viewDashboard}
+            - {type: SERVICE, name: ReconciliationDashboardService, method: processRequest}
+            - {type: DAO, name: ReconciliationCheckpointJpaDao, method: findByCheckpointDate}
+            - {type: ENTITY, name: ReconciliationCheckpointDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_reconciliation_checkpoint}
+            - {type: TERMINAL_VIEW, name: final-version-1/reconciliation_checkpoint_dashboard}
+      evidence_blobs: [fec84449c72e5240ea5f9f53db79e55760c742e3, c0817301fa57492da946b23674c28a0af1642c2a, 824f29c1b66f7c58de28a9cbf9962262e1c63e4e, c9855d934dfa12b01f7ed2787d660cc978092b6c]
+    - method: POST
+      path: /reconciliation-dashboard/search
+      controller: ReconciliationDashboardController
+      controller_method: searchDashboard
+      chain_completeness: FULL
+      paths:
+        - label: dashboard search
+          nodes:
+            - {type: CONTROLLER, name: ReconciliationDashboardController, method: searchDashboard}
+            - {type: SERVICE, name: ReconciliationDashboardService, method: processRequest}
+            - {type: DAO, name: ReconciliationCheckpointJpaDao, method: findByCheckpointDate}
+            - {type: ENTITY, name: ReconciliationCheckpointDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_reconciliation_checkpoint}
+            - {type: TERMINAL_VIEW, name: final-version-1/reconciliation_checkpoint_dashboard}
+      evidence_blobs: [fec84449c72e5240ea5f9f53db79e55760c742e3, c0817301fa57492da946b23674c28a0af1642c2a, 824f29c1b66f7c58de28a9cbf9962262e1c63e4e, c9855d934dfa12b01f7ed2787d660cc978092b6c]
+    - method: GET
+      path: /vehicle-load/fetch
+      controller: VehicleLoadFetchByIdController
+      controller_method: doGet
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - label: vehicle load fetch
+          nodes:
+            - {type: CONTROLLER, name: VehicleLoadFetchByIdController, method: doGet}
+            - {type: SERVICE, name: VehicleLoadFetchByIdService, method: processRequest}
+            - {type: DAO, name: VehicleLoadJpaDao, method: findById}
+            - {type: ENTITY, name: VehicleLoadDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_vehicle_load}
+            - {type: ENTITY, name: VehicleTripDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_vehicle_trip}
+            - {type: ENTITY_GROUP, name: DriverDo; VehicleDo; VehicleTripStopDo; VehicleTripStopTypeDo}
+            - {type: POSTGRES_TABLE_GROUP, name: public.tbl_driver; public.tbl_vehicle; public.tbl_vehicle_trip_stop; public.tbl_stop_type}
+        - label: trip status
+          nodes:
+            - {type: CONTROLLER, name: VehicleLoadFetchByIdController, method: doGet}
+            - {type: SERVICE, name: TripReturnWorkflowService, method: getTripStatusByVehicleLoadId}
+            - {type: ENTITY, name: VehicleTripStatusDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_trip_status}
+            - {type: TERMINAL_VIEW, name: with-menu/Displayvehicleload.html}
+      evidence: logs/runs/PRODUCTION-FIRE-20260825-005948-SCHEDULER.md
+      controller_blob: 7ac5d84933d4841be17b2ff8110797051085f3f7
+    - method: GET
+      path: /lookup
+      controller: LookupManagementController
+      controller_method: legacyRedirect
+      chain_completeness: FULL
+      paths:
+        - label: legacy redirect
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: legacyRedirect}
+            - {type: TERMINAL_REDIRECT, name: redirect:/lookupManagement}
+      controller_blob: a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+    - method: GET
+      path: /lookupManagement
+      controller: LookupManagementController
+      controller_method: showLookupPage
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - {label: cache hit, nodes: [{type: CONTROLLER, name: LookupManagementController, method: showLookupPage}, {type: CACHE, name: LookupDataCache}, {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}]}
+        - {label: address type lazy refresh, nodes: [{type: CONTROLLER, name: LookupManagementController, method: showLookupPage}, {type: CACHE, name: LookupDataCache, method: getAddressTypes/refreshAddressTypes}, {type: SERVICE, name: AddressTypeFetchByPageService, method: processRequest}, {type: DAO, name: AddressTypeJpaDao}, {type: ENTITY, name: AddressTypeDo}, {type: POSTGRES_TABLE, name: public.tbl_address_type}, {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}]}
+        - {label: country lazy refresh, nodes: [{type: CONTROLLER, name: LookupManagementController, method: showLookupPage}, {type: CACHE, name: LookupDataCache, method: getCountries/refreshCountries}, {type: SERVICE, name: CountryFetchByPageService, method: processRequest}, {type: DAO, name: CountryJpaDao}, {type: ENTITY, name: CountryDo}, {type: POSTGRES_TABLE, name: public.tbl_country}, {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}]}
+        - {label: state lazy refresh, nodes: [{type: CONTROLLER, name: LookupManagementController, method: showLookupPage}, {type: CACHE, name: LookupDataCache, method: getStates/refreshStates}, {type: SERVICE, name: StateFetchByPageService, method: processRequest}, {type: DAO, name: StateJpaDao}, {type: ENTITY, name: StateDo}, {type: POSTGRES_TABLE, name: public.tbl_state}, {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}]}
+        - {label: city lazy refresh, nodes: [{type: CONTROLLER, name: LookupManagementController, method: showLookupPage}, {type: CACHE, name: LookupDataCache, method: getCities/refreshCities}, {type: SERVICE, name: CityFetchByPageService, method: processRequest}, {type: DAO, name: CityJpaDao}, {type: ENTITY, name: CityDo}, {type: POSTGRES_TABLE, name: public.tbl_city}, {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}]}
+      evidence_blobs: [a23814eb9c1f155779a3d51e67e16ac0ee9d2436, 56227add0bb0283955cc9e7cde1404d0d989a541, f886ff1f55a4367a9435cb37cc992320abb9f08a, 3df1dcf7e8112ca4aeb91c4c4515c42c65031247, dd377adb2b5d7be9ebab783de2ec99013c89a0b8, 3e8f8d0ce7e368814e995249a62697e426eb283b]
+    - method: POST
+      path: /lookupManagement/addressType/save
+      controller: LookupManagementController
+      controller_method: saveAddressType
+      chain_completeness: FULL_BRANCHING
+      persistence_table: public.tbl_address_type
+      ingestion_service: AddressTypeIngestionService
+      refresh_service: AddressTypeFetchByPageService
+      validation_error_cache_tables: [public.tbl_address_type, public.tbl_country, public.tbl_state, public.tbl_city]
+      terminal_paths: [redirect:/lookupManagement?tab=addressType, final-version-1/LookupManagement]
+      evidence_blobs: [a23814eb9c1f155779a3d51e67e16ac0ee9d2436, 9352596300343106963ed364ff21c3d2cfe70b6f, f886ff1f55a4367a9435cb37cc992320abb9f08a, aeca6fbefbfbab15f342c9e9b250d33d749c2170, 4e516ae03de1fabb7730c5e50659f512ef12003f]
+    - method: POST
+      path: /lookupManagement/country/save
+      controller: LookupManagementController
+      controller_method: saveCountry
+      chain_completeness: FULL_BRANCHING
+      persistence_table: public.tbl_country
+      ingestion_service: CountryIngestionService
+      refresh_service: CountryFetchByPageService
+      validation_error_cache_tables: [public.tbl_address_type, public.tbl_country, public.tbl_state, public.tbl_city]
+      terminal_paths: [redirect:/lookupManagement?tab=country, final-version-1/LookupManagement]
+      evidence_blobs: [a23814eb9c1f155779a3d51e67e16ac0ee9d2436, ef34fbfba3737ac40bdbd8b4b2a83b256af222aa, 3df1dcf7e8112ca4aeb91c4c4515c42c65031247, 7a3b718f4af15ff7c0d2ce01626b00fc1887ec88, 00ad32588d030566a937349b5415de562957f23c]
+    - method: POST
+      path: /lookupManagement/state/save
+      controller: LookupManagementController
+      controller_method: saveState
+      chain_completeness: FULL_BRANCHING
+      persistence_table: public.tbl_state
+      ingestion_service: StateIngestionService
+      refresh_service: StateFetchByPageService
+      validation_error_cache_tables: [public.tbl_address_type, public.tbl_country, public.tbl_state, public.tbl_city]
+      terminal_paths: [redirect:/lookupManagement?tab=state, final-version-1/LookupManagement]
+      evidence_blobs: [a23814eb9c1f155779a3d51e67e16ac0ee9d2436, ef7225a42f729bc1b6c69e5b83e96b57f4f7cc3d, dd377adb2b5d7be9ebab783de2ec99013c89a0b8, ccb59cfed50c9aff73dacbbb6216f7a28d96e508, 78d0c715b1d6eb7b5ebeb481922c4d3899b47587]
+    - method: POST
+      path: /lookupManagement/city/save
+      controller: LookupManagementController
+      controller_method: saveCity
+      chain_completeness: FULL_BRANCHING
+      persistence_table: public.tbl_city
+      ingestion_service: CityIngestionService
+      refresh_service: CityFetchByPageService
+      validation_error_cache_tables: [public.tbl_address_type, public.tbl_country, public.tbl_state, public.tbl_city]
+      terminal_paths: [redirect:/lookupManagement?tab=city, final-version-1/LookupManagement]
+      evidence_blobs: [a23814eb9c1f155779a3d51e67e16ac0ee9d2436, fa3c5d972c509a1ab482e9d995ceaa5d3f50ec74, 3e8f8d0ce7e368814e995249a62697e426eb283b, f52598daf80d94f8bbaab8762e7f3330eff71f69, 525fa532fc7ea22e74679cd1ddb8fc55dd558cf6]
+    - method: GET
+      path: /addVechileTrip
+      controller: VehicleTripIngestionController
+      controller_method: doGet
+      chain_completeness: FULL
+      paths:
+        - label: terminal view
+          nodes:
+            - {type: CONTROLLER, name: VehicleTripIngestionController, method: doGet}
+            - {type: TERMINAL_VIEW, name: with-menu/VehicleTripIngestion}
+      controller_blob: 26f887d731fd58a28c2a76240bd3d2b7ee02fb69
+    - method: POST
+      path: /addVechileTrip
+      controller: VehicleTripIngestionController
+      controller_method: doPost
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - label: validation vehicle
+          nodes: [{type: CONTROLLER, name: VehicleTripIngestionController, method: doPost}, {type: SERVICE, name: VehicleTripIngestionServiceImpl, method: processRequest}, {type: VALIDATOR, name: VehicleTripIngestionRequestValidator, method: validate}, {type: DAO, name: VehicleJpaDao, method: findById}, {type: ENTITY, name: VehicleDo}, {type: POSTGRES_TABLE, name: public.tbl_vehicle}]
+        - label: validation driver
+          nodes: [{type: CONTROLLER, name: VehicleTripIngestionController, method: doPost}, {type: SERVICE, name: VehicleTripIngestionServiceImpl, method: processRequest}, {type: VALIDATOR, name: VehicleTripIngestionRequestValidator, method: validate}, {type: DAO, name: DriverJpaDao, method: findById}, {type: ENTITY, name: DriverDo}, {type: POSTGRES_TABLE, name: public.tbl_driver}]
+        - label: validation customer address
+          nodes: [{type: CONTROLLER, name: VehicleTripIngestionController, method: doPost}, {type: SERVICE, name: VehicleTripIngestionServiceImpl, method: processRequest}, {type: VALIDATOR, name: VehicleTripIngestionRequestValidator, method: validate}, {type: DAO, name: CustomerAddressJpaDao, method: findById}, {type: ENTITY, name: CustomerAddressDo}, {type: POSTGRES_TABLE, name: public.tbl_customer_address}]
+        - label: validation customer
+          nodes: [{type: CONTROLLER, name: VehicleTripIngestionController, method: doPost}, {type: SERVICE, name: VehicleTripIngestionServiceImpl, method: processRequest}, {type: VALIDATOR, name: VehicleTripIngestionRequestValidator, method: validate}, {type: DAO, name: CustomerJpaDao, method: findById}, {type: ENTITY, name: CustomerDo}, {type: POSTGRES_TABLE, name: public.tbl_customer}]
+        - label: started status
+          nodes: [{type: CONTROLLER, name: VehicleTripIngestionController, method: doPost}, {type: SERVICE, name: VehicleTripIngestionServiceImpl, method: processRequest}, {type: DAO, name: VehicleTripStatusJpaDao, method: findByStatusName}, {type: ENTITY, name: VehicleTripStatusDo}, {type: POSTGRES_TABLE, name: public.tbl_trip_status}]
+        - label: persist trip
+          nodes: [{type: CONTROLLER, name: VehicleTripIngestionController, method: doPost}, {type: SERVICE, name: VehicleTripIngestionServiceImpl, method: processRequest}, {type: DAO, name: VehicleTripJpaDao, method: save}, {type: ENTITY, name: VehicleTripDo}, {type: POSTGRES_TABLE, name: public.tbl_vehicle_trip}, {type: TERMINAL_REDIRECT, name: redirect:/vehicleLoad}]
+        - label: validation or service error
+          nodes: [{type: CONTROLLER, name: VehicleTripIngestionController, method: doPost}, {type: TERMINAL_VIEW, name: with-menu/VehicleTripIngestion}]
+      evidence_blobs: [26f887d731fd58a28c2a76240bd3d2b7ee02fb69, 34683207750da12cd72d0c6c76e7ceade792e9a8, 709670a3eee9caafeecfea20d061a4a8888138a7, 10a6df166df14eba495dbd080f5d0432419505e4, 0cc496212659b0e5c0fdb2c43c60600f4b126845, 2d067dd8f0863615fae22e91f7b090364b8b9423, bf8099e63b5b4c9f4e9caa24cb8df063380b9359, cf66d0e3c531733f5e780b2b9737e797aacc615e, 338f2d2b63d7c77203a008ffb44a1b60c0ae2981]
+  atomic_projection_rule: >-
+    These 11 rows are source-proved candidates only. Do not change canonical unique coverage from 123 to 134 until
+    controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml, the consolidated structured Explorer
+    JSON, browser matrix-data.js, and Level-3 runtime projections are regenerated from one consistent accepted model.

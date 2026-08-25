@@ -1,18 +1,16 @@
 local_execution:
-  version: 50
+  version: 51
   backlog_item: BL-001
-  work_unit: WU-BL001-002
-  state: MATRIX_RECONCILIATION_IN_PROGRESS
+  work_unit: WU-BL001-001
+  state: TARGETED_UNIQUE_KEY_RECOVERY_SOURCE_PROOF_COMPLETE_ATOMIC_PROJECTION_PENDING
   backend: LOCAL_PROCESS_POOL
   architecture: architecture/self-reliant-e2e-execution.md
-  self_reliant_governance: governance/self-reliant-execution.yaml
   source_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+  source_provider: PRIMARY_ORCHESTRATOR_EXACT_FROZEN_SOURCE
   configured_lanes: 10
   max_parallel_workers: 10
   github_actions_dependency: NONE
-
   latest_worker_generation:
     execution_id: E2E-STAGED-20260823-161214
     state: CLOSED_SYNCHRONIZED
@@ -20,27 +18,24 @@ local_execution:
     worker_results_received: 10
     worker_failures: 0
     individual_lane_logs_remaining: 0
-    old_snapshot_source_closure_complete: false
-    old_snapshot_missing_source_requests: 16
     trace_evidence_auto_accepted: false
-
   current_invocation:
-    invocation_id: RECONCILIATION-FIRE-20260825-020007Z
+    invocation_id: UNIQUE-KEY-RECOVERY-20260825-0811Z
     owner: PRIMARY_ORCHESTRATOR
-    work_unit: WU-BL001-002
-    idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_ELIGIBLE_RECONCILIATION
+    work_unit: WU-BL001-001
+    idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_TARGETED_RECOVERY
     worker_generation_started: false
     workers_started: 0
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
-    source_reads_allowed: false
-    new_endpoint_rows_accepted: 0
-    historical_rows_promoted: 5
+    source_reads_allowed: true
+    source_reads_frozen_baseline_only: true
+    recovered_key_source_proofs_completed: 11
+    canonical_rows_added: 0
     materialized_rows_after: 123
-    historical_rows_pending_after: 11
-    outcome: RECONCILIATION_BACKFILL_ADVANCED_FAIL_CLOSED_REMAINDER
-    evidence: traceability/explorer/traceability-matrix-delta-20260825-020007.json
-
+    pending_unique_keys_after: 11
+    outcome: ALL_11_RECOVERY_KEYS_FULL_SOURCE_PROVED_ATOMIC_CANONICAL_PROJECTION_PENDING
+    evidence: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
@@ -49,34 +44,19 @@ local_execution:
     interrupted_running_behavior: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
     changed_dispatch_behavior: START_NEW_EXECUTION_GENERATION
     already_closed_synced: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-
-  reconciliation_state:
+  unique_recovery_state:
     canonical_endpoint_inventory_target: 134
-    raw_accumulated_examined_counter: 134
-    raw_accumulated_complete_counter: 134
+    materialized_unique_method_path_keys: 123
+    pending_unique_keys: 11
+    fully_source_proved_pending_atomic_projection: 11
     unique_method_path_coverage_proved: false
-    corrected_pre_backfill_physical_markdown_rows: 114
-    physically_materialized_markdown_rows: 123
-    confirmed_missing_canonical_keys: 11
-    historical_rows_promoted_this_invocation: 5
-    minimum_proven_duplicate_acceptance_events: 4
-    required_worker_result_state: MISSING
-    required_endpoint_inventory_state: MISSING
-    required_controller_inventory_state: MISSING
-    gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-    evidence_index: backlog/runtime/BL-001/reconciliation-evidence-index-20260825-065123.yaml
-    accepted_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-031321.yaml
-    accepted_projection_rows: 5
-    accepted_projection_state: PROMOTED_FROM_DURABLE_ACCEPTED_EVIDENCE
-
+    projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
   work_unit_handoff:
-    WU-BL001-001: COMPLETE_REPORTED_PENDING_UNIQUE_KEY_RECONCILIATION
-    WU-BL001-002: IN_PROGRESS_RECONCILIATION_BACKFILL
+    WU-BL001-001: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_PENDING
+    WU-BL001-002: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
     WU-BL001-003: BLOCKED_WAITING_FOR_RECONCILIATION
     WU-BL001-004: WAITING_FOR_DEPENDENCY
     close_allowed: false
-
   next_action: >-
-    Locate durable accepted full-chain evidence for the remaining 11 canonical method/path keys from control-repository
-    history only: reconciliation-dashboard GET/POST, vehicle-load/fetch GET, six lookup-management routes, and addVechileTrip
-    GET/POST. Do not perform new application-source reads under WU-BL001-002 and do not guess missing hops.
+    Consolidate the accepted base-plus-ordered-delta Traceability Explorer model, then atomically project all eleven
+    source-proved recovery rows into Markdown, unresolved, matrix-progress, canonical JSON, matrix-data.js and Level-3 runtime.

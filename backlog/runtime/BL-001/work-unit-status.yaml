@@ -1,66 +1,40 @@
 work_units:
   WU-BL001-001:
-    state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
+    state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_PENDING
     execution_mode: PRIMARY_ORCHESTRATOR_DIRECT_FROZEN_SOURCE_PLUS_SELF_RELIANT_STAGED_SOURCE
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-    reported_checkpoint:
-      total_endpoints: 134
-      examined_counter: 134
-      complete_counter: 134
-      unresolved: 0
-      blocked: 0
-      failed: 0
+    reported_checkpoint: {total_endpoints: 134, examined_counter: 134, complete_counter: 134, unresolved: 0, blocked: 0, failed: 0}
     canonical_unique_checkpoint:
       target_method_path_keys: 134
       materialized_unique_keys: 123
       pending_unique_keys: 11
+      fully_source_proved_pending_atomic_projection: 11
       unique_method_path_coverage_proved: false
-    uniqueness_status: RECOVERY_ACTIVE_CORRECTED_KEY_INVENTORY
-    reason: >-
-      The raw accumulated 134 counter contains proven duplicate acceptance/recount events and does not prove the BL-001
-      SOW requirement of 134 unique HTTP-method/path keys. WU-BL001-001 is reopened only for the 11 exact missing keys.
-      Frozen-source revalidation on 25 Aug 2026 also found stale route names in the recovery plan; the 11-key inventory
-      has been rederived from exact controller mappings without changing its cardinality.
+    uniqueness_status: ALL_MISSING_KEYS_SOURCE_PROVED_ATOMIC_PROJECTION_PENDING
     recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
-    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-1048-RECOVERY.md
-    corrected_route_families: 2
-    fully_source_proved_recovery_keys_ready_for_atomic_projection: 4
-    fully_source_proved_recovery_key_families:
-      - ReconciliationDashboardController
-      - LookupManagementController_legacy_redirect
-      - VehicleTripIngestionController_GET
+    projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-0811Z-RECOVERY.md
     worker_generation_replay_required: false
     direct_frozen_source_revalidation_allowed: true
     residual_transient_lane_logs: 0
     next_action: >-
-      Continue Primary-Orchestrator frozen-source validation of the corrected 11 exact missing canonical keys. Atomically
-      project the four fully proved routes only together with Markdown, unresolved, matrix-progress, Explorer JSON/browser
-      data and runtime projections. Complete the remaining lookup, vehicle-load and vehicle-trip chains. Resume WU-BL001-002
-      only after 134/134 unique keys are materialized exactly once.
-
+      Consolidate the accepted base-plus-ordered-delta structured Explorer model and atomically project all eleven
+      source-proved recovery keys. Do not increment canonical coverage before every required projection moves together.
   WU-BL001-002:
     state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
     name: Final Matrix Reconciliation
     dependency: WU-BL001-001
-    dependency_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
+    dependency_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_PENDING
     matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
-    corrected_pre_backfill_markdown_rows: 114
     materialized_matrix_rows: 123
     confirmed_missing_canonical_keys: 11
-    historical_accepted_rows_promoted_total: 9
+    fully_source_proved_missing_keys: 11
     canonical_endpoint_inventory_target: 134
     reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ_NO_INVENTED_CHAINS
-    integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
-    gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-    recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
-    next_action: >-
-      Wait for reopened WU-BL001-001 to establish true 134/134 unique method/path coverage. Do not perform source reads
-      inside WU-BL001-002 and do not promote unaccepted historical proof while the prerequisite remains false.
-
+    next_action: Wait until reopened WU-BL001-001 atomically materializes exactly 134 unique keys.
   WU-BL001-003:
     state: BLOCKED_WAITING_FOR_RECONCILIATION
     dependency: WU-BL001-002
-
   WU-BL001-004:
     state: WAITING_FOR_DEPENDENCY
     dependency: WU-BL001-003

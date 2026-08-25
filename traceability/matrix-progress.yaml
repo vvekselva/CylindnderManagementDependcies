@@ -1,4 +1,4 @@
-version: 45
+version: 46
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -6,10 +6,8 @@ structured_matrix_artifact: traceability/explorer/traceability-matrix.json
 browser_data_artifact: traceability/explorer/matrix-data.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-
 state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
-projection_state: BASE_PLUS_ORDERED_DELTAS_UNDER_TARGETED_SOURCE_CHECK_RECOVERY
-
+projection_state: SOURCE_PROOF_COMPLETE_FOR_11_RECOVERY_KEYS_ATOMIC_CANONICAL_PROJECTION_PENDING
 reported_source_check:
   canonical_endpoint_inventory_target: 134
   accumulated_examined_counter: 134
@@ -20,62 +18,50 @@ reported_source_check:
   unique_method_path_coverage_proved: false
   materialized_unique_method_path_keys: 123
   pending_unique_method_path_keys: 11
+  fully_source_proved_pending_atomic_projection: 11
   reason: >-
-    Durable history proves duplicate acceptance/recount events. The accumulated counters are audit history only and do
-    not satisfy the BL-001 unique HTTP-method/path completion requirement. WU-BL001-001 is reopened for targeted recovery.
-
+    The accumulated 134 counters are audit history and include proven duplicate acceptance events. Exact frozen-source
+    recovery has now proved the full chains for all 11 missing exact HTTP method/path keys, but canonical unique coverage
+    remains 123 until Markdown, unresolved ledger, matrix progress, consolidated Explorer JSON/browser data and Level-3
+    runtime are regenerated atomically from one consistent accepted model.
 unique_key_recovery:
-  state: ACTIVE
+  state: SOURCE_PROOF_COMPLETE_ATOMIC_PROJECTION_PENDING
   work_unit: WU-BL001-001
   recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
+  projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
   target_unique_keys: 134
   materialized_unique_keys: 123
   pending_unique_keys: 11
+  fully_source_proved_keys: 11
   source_reads_allowed: true
   frozen_source_only: true
   worker_generation_replay_required: false
   atomic_projection_required: true
-
 matrix_reconciliation_history:
   corrected_pre_backfill_physical_markdown_rows: 114
   materialized_matrix_rows: 123
   historical_rows_promoted_total: 9
   confirmed_missing_canonical_keys: 11
-  integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
-  gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
   reconciliation_work_unit_state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
-
-required_canonical_inputs:
-  worker_result: {path: worker/results/WI-0004.yaml, state: MISSING_HISTORICAL_INPUT_NOT_USED_TO_INVENT_ROWS}
-  endpoint_inventory: {path: traceability/endpoint-inventory.md, state: MISSING_HISTORICAL_INPUT_RECOVERY_USES_CONFIRMED_11_KEY_GAP_SET}
-  controller_inventory: {path: traceability/controller-inventory.md, state: MISSING_HISTORICAL_INPUT_RECOVERY_USES_CONFIRMED_CONTROLLER_GAP_FAMILIES}
-
 proven_duplicate_acceptance_keys:
   - {method: GET, path: /search/product-category/{searchText}}
   - {method: GET, path: /search/product-uom/{searchText}}
   - {method: GET, path: /search/state/{searchText}}
   - {method: GET, path: /search/supplier/{searchText}}
-
 accepted_changes_this_checkpoint:
   new_endpoint_rows: 0
   historical_rows_promoted: 0
-  unique_key_recovery_activated: true
+  recovery_keys_source_proved: 11
   unresolved_changes: 0
   worker_generation_started: false
   transient_lane_logs_created: 0
-
 update_rule: >-
-  Every accepted endpoint trace is keyed by HTTP method plus path and must preserve a complete source-proved ordered or
-  branching chain. During targeted WU-BL001-001 recovery, a missing canonical key may be accepted only after exact frozen
-  source revalidation by the Primary Orchestrator and atomic synchronization of Markdown, unresolved ledger, progress,
-  structured Explorer JSON, browser data and Level-3 runtime. WU-BL001-002 remains source-read forbidden.
-
+  A recovered key is not canonical until the Primary Orchestrator can regenerate and synchronize every required matrix
+  and Explorer projection together. Full source proof alone does not increment the canonical unique-row counter.
 next_action: >-
-  Recover the 11 missing canonical method/path keys under reopened WU-BL001-001. Start with GET /vehicle-load/fetch using
-  its durable full source proof as revalidation input, then source-trace the remaining ten keys at the exact frozen commit.
-  Resume final reconciliation only after exactly 134 unique rows are materially represented once.
-
+  Consolidate the current base-plus-ordered-delta Explorer model into one complete accepted 123-row structured model,
+  append the 11 source-proved recovery records from pending-atomic-projection-20260825-0811Z.yaml, regenerate the canonical
+  JSON and matrix-data.js, update the Markdown matrix/unresolved/progress/runtime together, and only then assert 134/134.
 finalization_condition: >-
-  Exactly 134 unique caller-visible HTTP method/path keys are represented once, every COMPLETE row has Primary-Orchestrator
-  accepted full-chain frozen-source evidence, Markdown/structured JSON/browser data reconcile, zero unresolved accounting
-  reconciles, QG-TRC-006 through QG-TRC-012 pass, and only then may WU-BL001-002 resume/finalize and WU-BL001-003 run.
+  Exactly 134 unique caller-visible HTTP method/path keys are represented once with accepted full-chain frozen-source
+  evidence and all Markdown/JSON/browser/runtime artifacts reconcile before WU-BL001-002 may resume.
