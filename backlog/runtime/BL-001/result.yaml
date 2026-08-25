@@ -4,8 +4,8 @@ result:
   verified: false
   closed: false
   canonical_source_check_result_accepted: false
-  canonical_source_check_result_state: REOPENED_FOR_UNIQUE_KEY_RECONCILIATION
-  matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
+  canonical_source_check_result_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
+  matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
   sync_state: SYNCHRONIZED
   pending_sync_artifact: null
   pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
@@ -18,68 +18,63 @@ result:
 
   source_gate:
     id: QG-SOURCE-001
-    state: PASS_FROZEN_BASELINE_INTEGRITY_OLD_WORKER_GENERATION_CLOSED
-    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    state: PASS_FROZEN_BASELINE_TARGETED_RECOVERY_ALLOWED
+    source_provider: PRIMARY_ORCHESTRATOR_EXACT_FROZEN_SOURCE
     latest_worker_execution: E2E-STAGED-20260823-161214
     old_generation_replay_required: false
 
   lane_utilization_gate:
     id: QG-LANE-001
-    state: UNDERUTILIZED
-    latest_worker_execution: E2E-STAGED-20260823-161214
-    measured_peak_concurrent_lanes: 2
+    state: NOT_APPLICABLE_THIS_RECOVERY_CHECKPOINT_NO_WORKER_FIRE
     configured_lanes: 10
-    backend_capacity_probe_peak: 10
-    worker_failures: 0
+    worker_generation_started_this_checkpoint: false
     residual_lane_logs: 0
 
-  reconciliation_checkpoint:
+  unique_key_recovery_checkpoint:
     canonical_endpoint_inventory_target: 134
     raw_accumulated_examined_counter: 134
     raw_accumulated_complete_counter: 134
     unique_method_path_coverage_proved: false
-    corrected_pre_backfill_physical_markdown_rows: 114
-    physically_materialized_markdown_rows: 123
+    materialized_unique_method_path_rows: 123
     confirmed_missing_canonical_keys: 11
-    historical_rows_promoted_total: 9
-    historical_rows_promoted_this_checkpoint: 5
-    minimum_proven_duplicate_acceptance_events: 4
-    reconciliation_integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
-    gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-    evidence_index: backlog/runtime/BL-001/reconciliation-evidence-index-20260825-065123.yaml
-    latest_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
-    latest_browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
-    latest_durable_log: logs/runs/RECONCILIATION-FIRE-20260825-020007Z.md
+    unresolved: 0
+    recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
+    prior_reconciliation_integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
+    prior_gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
 
   current_work_unit:
+    id: WU-BL001-001
+    state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
+    name: Controller Source Check Unique-Key Recovery
+    source_read_allowed: true
+    frozen_source_only: true
+
+  blocked_work_unit:
     id: WU-BL001-002
-    state: IN_PROGRESS_RECONCILIATION_BACKFILL
-    name: Final Matrix Reconciliation
+    state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
     source_read_allowed: false
 
   unresolved_items:
-    - id: BL001-RECON-UNIQUE-KEYS
-      state: BLOCKING
-      description: Accumulated endpoint acceptance counter contains proven duplicate HTTP-method/path acceptance events.
-    - id: BL001-RECON-CANONICAL-INPUTS
-      state: BLOCKING
-      description: worker/results/WI-0004.yaml, traceability/endpoint-inventory.md and traceability/controller-inventory.md are missing.
-    - id: BL001-RECON-MATRIX-BACKFILL
-      state: BLOCKING
-      description: 123 unique Markdown rows are materialized; 11 confirmed canonical keys remain to be backfilled from durable accepted evidence.
+    - id: BL001-UNIQUE-KEY-RECOVERY
+      state: IN_PROGRESS
+      description: 11 exact canonical HTTP-method/path keys remain to be source-revalidated and atomically projected.
+    - id: BL001-RAW-COUNTER-INTEGRITY
+      state: BLOCKING_FINAL_RECONCILIATION
+      description: Accumulated 134 counters include proven duplicate acceptance/recount events and are retained for audit only.
 
   execution_backend:
     owner: AUTOMATION_TOOL
-    type: LOCAL_PROCESS_POOL
+    type: PRIMARY_ORCHESTRATOR_DIRECT_FROZEN_SOURCE_WITH_OPTIONAL_LOCAL_PROCESS_POOL
     max_workers: 10
     github_actions_required: false
 
   final_outputs: []
   close_allowed: false
   next_action: >-
-    Reconcile the remaining 11 canonical method/path keys only from durable accepted control-repository evidence. Promote
-    complete historical chains in synchronized Markdown, structured/browser Explorer, unresolved and progress checkpoints.
-    Do not perform source reads in WU-BL001-002 and do not guess missing hops. WU-BL001-003 remains blocked.
+    Revalidate the 11 exact missing canonical method/path keys in reopened WU-BL001-001 at frozen commit
+    3ae6e61442132d94a307275b08dd65fcef228d89. Promote a key only when its complete chain is proved and Markdown,
+    unresolved ledger, matrix progress, structured Explorer JSON, browser data and runtime move atomically. Resume
+    WU-BL001-002 only at true 134/134 unique-key coverage.
   note: >-
-    BL-001 remains open. Nine durable historical rows have now been promoted across two reconciliation checkpoints,
-    advancing the corrected physical matrix from 114 rows to 123 while preserving zero unresolved traces.
+    Reconciliation exposed a prerequisite integrity failure rather than a source failure. The matrix remains at 123
+    unique rows; no endpoint was invented, no old worker generation was replayed, and transient lane logs remain zero.
