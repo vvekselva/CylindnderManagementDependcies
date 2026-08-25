@@ -1,0 +1,49 @@
+story:
+  story_id: STORY-0008
+  title: Retrieve a challan page photo
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 4f33f3f68b8797e03962b8775008ee72f6848e98784f5de754d86fec344f550a
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /challan-page-photo/{challanPagePhotoId}"]
+  controller: ChallanPagePhotoController.retrieveChallanPagePhoto
+  endpoint: "GET /challan-page-photo/{challanPagePhotoId}"
+  business_purpose: Retrieve the source-proved stored challan page photo by the path identifier and return either the binary HTTP response or the proved not-found outcome.
+  trigger_and_context: A caller requests GET /challan-page-photo/{challanPagePhotoId}.
+  inputs:
+    - name: challanPagePhotoId
+      source: path
+      meaning: Identifier used by the endpoint to locate the challan page photo record.
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - The accepted canonical trace proves a 404 terminal outcome when a photo is not found; no additional invalid-input rule is asserted.
+  main_flow:
+    - The request reaches ChallanPagePhotoController.retrieveChallanPagePhoto.
+    - The accepted chain reads public.tbl_challan_page_photo.
+    - When the photo is available, the endpoint returns the binary HTTP response.
+  component_flow:
+    - ChallanPagePhotoController.retrieveChallanPagePhoto
+    - persistence access proved by the accepted trace
+    - public.tbl_challan_page_photo
+    - TERMINAL_HTTP_RESPONSE binary or 404
+  business_rules: []
+  data_reads_and_writes:
+    - Reads the challan page photo persistence record from public.tbl_challan_page_photo.
+    - No write is proved for this endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - If the requested persisted photo is not available, the accepted trace permits an HTTP 404 response.
+  output_and_postconditions:
+    - Success returns the stored photo as a binary HTTP response.
+    - The proved alternate terminal response is HTTP 404.
+    - No persistence mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /challan-page-photo/{challanPagePhotoId}"
+    - logs/runs/PRODUCTION-FIRE-20260824-053325.md
+  downstream_test_assertions:
+    - classification: UNIT_INTEGRATION_CANDIDATE
+      assertion: A present challan-page-photo record can produce the binary response; an absent record can produce the proved HTTP 404 path; no write is expected.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 4f33f3f68b8797e03962b8775008ee72f6848e98784f5de754d86fec344f550a
