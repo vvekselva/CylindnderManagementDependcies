@@ -1,5 +1,5 @@
 story_register:
-  version: 7
+  version: 8
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -23,10 +23,10 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 17
+    story_dispositions: 20
     draft: 0
     technically_validated: 0
-    ready_for_user_review: 13
+    ready_for_user_review: 16
     approved: 0
     rejected: 0
     needs_clarification: 4
@@ -50,5 +50,8 @@ story_register:
     - {story_id: STORY-0015, matrix_row_keys: ["POST /delivery-planning/predefined-trips/add-stop"], state: NEEDS_CLARIFICATION, fingerprint: f3257c0ceb6efe789c963ab21bafee297ca9f728c76c3e4fda671ad1ef286860, structured: stories/STORY-0015.yaml, human_readable: stories/STORY-0015.md}
     - {story_id: STORY-0016, matrix_row_keys: ["POST /delivery-planning/predefined-trips/remove-stop"], state: NEEDS_CLARIFICATION, fingerprint: 89c281cd0521fa14a683cd68c35d4cee8230a31de50555deb7f45bfd700c77df, structured: stories/STORY-0016.yaml, human_readable: stories/STORY-0016.md}
     - {story_id: STORY-0017, matrix_row_keys: ["POST /delivery-planning/predefined-trips/remove"], state: NEEDS_CLARIFICATION, fingerprint: 4b3a60fa24615938fa4b1161b274a8c4266f6113840d7e4950c5a962aad9e29e, structured: stories/STORY-0017.yaml, human_readable: stories/STORY-0017.md}
+    - {story_id: STORY-0018, matrix_row_keys: ["GET /logistics/challan-books/add-form"], state: READY_FOR_USER_REVIEW, fingerprint: bd08d06f1e9ed1b6589fe755869a8f70065acfb4ad6d5f5ba505cbc2e7d8221e, structured: stories/STORY-0018.yaml, human_readable: stories/STORY-0018.md}
+    - {story_id: STORY-0019, matrix_row_keys: ["GET /challan-entry-aging-dashboard"], state: READY_FOR_USER_REVIEW, fingerprint: e5cc9367faaa515747f750c99184ebcaae0d11e7e4acaa7d7dca65bafce9a2ac, structured: stories/STORY-0019.yaml, human_readable: stories/STORY-0019.md}
+    - {story_id: STORY-0020, matrix_row_keys: ["GET /challan-heatmap"], state: READY_FOR_USER_REVIEW, fingerprint: 02e05d7aed62a5be46bd270674b5671b434ca0ebdc35391452b9f661edbc2d57, structured: stories/STORY-0020.yaml, human_readable: stories/STORY-0020.md}
   invariant: >-
     Incremental BL-002 Story generation may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows. Rows still pending BL-001 atomic projection are excluded. No Story becomes authoritative downstream input until its exact fingerprint is explicitly approved by the user. Final BL-002 verification still requires the complete FINAL_VALIDATED BL-001 matrix and full row accounting.
