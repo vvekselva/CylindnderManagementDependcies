@@ -1,22 +1,25 @@
 quality_gate:
   backlog_item: BL-002
-  version: 1
+  version: 2
   name: Controller Story and Use Case Quality Gates
   approved_by_user: true
-  approval_basis: USER_DIRECTIVE_2026-08-25_BL002_STORY_USECASE_MODEL
+  approval_basis: USER_DIRECTIVE_2026-08-25_PARALLEL_BL001_BL002_INCREMENTAL_CANONICAL_ROWS
   execution_allowed_only_after_dependency_gate: true
 
   gates:
     - id: QG-STORY-001
-      name: Final Matrix Dependency Gate
+      name: Canonical Matrix Input Gate
       owner: ORCHESTRATOR
-      pass_condition: BL-001 is VERIFIED or CLOSED and the controller matrix is FINAL_VALIDATED.
+      pass_condition: >-
+        Incremental Story generation may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical
+        BL-001 matrix rows. Rows pending atomic projection, raw worker candidates and unaccepted evidence are forbidden.
+        Final BL-002 verification still requires BL-001 to reach FINAL_VALIDATED for the complete baseline.
       fail_closed: true
 
     - id: QG-STORY-002
       name: Canonical Matrix Row Accounting
       owner: ORCHESTRATOR
-      pass_condition: Every canonical HTTP method plus path row has exactly one Story disposition and no duplicate row ownership.
+      pass_condition: Every canonical HTTP method plus path row consumed by BL-002 has exactly one Story disposition and no duplicate row ownership; final verification requires complete baseline accounting.
       fail_closed: true
 
     - id: QG-STORY-003
@@ -67,11 +70,15 @@ quality_gate:
       pass_condition: BL-003 can consume only approved Story assertions and BL-004 can consume only APPROVED_FOR_TESTING Use Cases/scenarios; no orphan or stale approval reference exists.
       fail_closed: true
 
+  incremental_parallel_rule: >-
+    BL-001 and BL-002 may execute concurrently. BL-002 may advance only from canonical BL-001 rows already accepted and
+    materialized by the Primary Orchestrator. BL-001 rows not yet atomically projected remain ineligible for BL-002.
+
   status_rule: >-
     Automated Story generation never implies approval. A worker may produce a candidate, the Primary Orchestrator may
     validate technical evidence, and only the user may approve the Story/Use Case for downstream testing. If the source
     fingerprint changes, affected approvals become STALE_REVIEW_REQUIRED until re-approved.
 
   close_rule: >-
-    BL-002 may become VERIFIED only when QG-STORY-001 through QG-STORY-010 pass for the final baseline. CLOSED additionally
-    requires the framework-wide explicit user acceptance gate.
+    BL-002 may become VERIFIED only when QG-STORY-001 through QG-STORY-010 pass for the final baseline and BL-001 is
+    FINAL_VALIDATED. CLOSED additionally requires the framework-wide explicit user acceptance gate.
