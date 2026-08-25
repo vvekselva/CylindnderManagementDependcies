@@ -1,0 +1,81 @@
+reconciliation_integrity_audit:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-002
+  state: FAIL_CLOSED_RECONCILIATION_REQUIRED
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  authoritative_branch: chore/rename-dependency-files
+
+  idempotency:
+    prior_worker_generation: E2E-STAGED-20260823-161214
+    prior_state: CLOSED_SYNCHRONIZED
+    decision: NOOP_ALREADY_COMMITTED
+    replayed: false
+    workers_started: 0
+    transient_lane_logs_created: 0
+
+  governing_constraints:
+    source_read_allowed_in_wu_bl001_002: false
+    historical_backfill_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY
+    row_key: HTTP_METHOD_PLUS_PATH
+    required_final_uniqueness: EXACTLY_ONE_ROW_PER_CANONICAL_KEY
+    no_guessing: true
+
+  required_input_integrity:
+    worker_result_expected: worker/results/WI-0004.yaml
+    worker_result_observed: MISSING
+    endpoint_inventory_expected: traceability/endpoint-inventory.md
+    endpoint_inventory_observed: MISSING
+    controller_inventory_expected: traceability/controller-inventory.md
+    controller_inventory_observed: MISSING
+    effect: >-
+      WU-BL001-002 cannot prove final 134-key reconciliation from the specified canonical inputs alone.
+      Missing inputs must not be substituted with invented rows or a raw accumulated counter.
+
+  physical_matrix_reconciliation:
+    prior_ssot_materialized_rows: 113
+    physically_observed_markdown_rows: 114
+    confirmed_missing_canonical_keys: 20
+    gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
+    pending_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+    pending_projection_rows: 4
+    pending_projection_accepted_as_canonical: false
+
+  duplicate_acceptance_accounting_evidence:
+    early_accepted_history: worker/runs/WI-0004.md
+    early_automation_history: logs/automation-log.md
+    later_recount_log: logs/runs/PRODUCTION-FIRE-20260825-003910.md
+    proven_recounted_keys:
+      - {method: GET, path: /search/product-category/{searchText}, early_acceptance: RUN-WI0004-20260823-022, later_counted_new_again: PRODUCTION-FIRE-20260825-003910}
+      - {method: GET, path: /search/product-uom/{searchText}, early_acceptance: RUN-WI0004-20260823-022, later_counted_new_again: PRODUCTION-FIRE-20260825-003910}
+      - {method: GET, path: /search/state/{searchText}, early_acceptance: RUN-WI0004-20260823-022, later_counted_new_again: PRODUCTION-FIRE-20260825-003910}
+      - {method: GET, path: /search/supplier/{searchText}, early_acceptance: RUN-WI0004-20260823-023, later_counted_new_again: PRODUCTION-FIRE-20260825-003910}
+    conclusion: >-
+      The accumulated examined/complete counter cannot by itself prove 134 unique endpoint keys. At least four
+      HTTP-method/path keys were already COMPLETE in durable early history and were later counted again as newly examined.
+      This invalidates using the raw 134 counter as the uniqueness proof required by WF-002.
+
+  accepted_checkpoint_decision:
+    new_endpoint_rows_accepted: 0
+    historical_rows_promoted: 0
+    matrix_counter_increment: 0
+    reason: >-
+      No row may be promoted until WU-BL001-002 can reconcile the canonical key set and durable accepted evidence
+      without source reads or guessing. The four-row pending projection remains pending, not canonical.
+
+  gate_effects:
+    QG-TRC-002: RECONCILIATION_REQUIRED_UNIQUE_COVERAGE_NOT_YET_PROVED
+    QG-TRC-004: RECONCILIATION_REQUIRED_CANONICAL_ENDPOINT_INPUT_MISSING
+    QG-TRC-005: BLOCKED_MISSING_CANONICAL_WI0004_RESULT_AND_INVENTORIES
+    QG-TRC-006: BLOCKED_UNTIL_134_UNIQUE_ROWS_RECONCILE
+    QG-TRC-010: BLOCKED_UNTIL_PHYSICAL_ROW_AND_KEY_COUNTS_RECONCILE
+    QG-TRC-012: BLOCKED_UNTIL_MARKDOWN_JSON_BROWSER_RECONCILE
+    WU-BL001-003: BLOCKED
+    close_allowed: false
+
+  next_action: >-
+    Reconstruct the canonical 134-key endpoint inventory only from durable classification/accepted evidence already
+    present in the control repository, reconcile it against the 114 physical Markdown rows and the 20 confirmed missing
+    keys, and identify for each missing key whether a full accepted chain already exists. Promote only those rows whose
+    complete chain is already durably accepted. If any key lacks durable accepted full-chain evidence, keep WU-BL001-002
+    blocked; do not perform new source reads under this work unit and do not invent the chain.
