@@ -1,0 +1,31 @@
+story:
+  story_id: STORY-0041
+  title: List all vehicle loads
+  state: READY_FOR_USER_REVIEW
+  fingerprint: afefdf00a259b69dd171bcc0a1463448d5dde5614b0c44e374290a1f45b65ccb
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /vehicle-loads/all-list"]
+  controller: VehicleLoadByPageController.listAllVehicleLoads
+  endpoint: "GET /vehicle-loads/all-list"
+  business_purpose: Display the source-proved list of vehicle loads with related trip, driver, vehicle and trip-status information.
+  trigger_and_context: A caller opens GET /vehicle-loads/all-list.
+  inputs: [Pagination/filter inputs are not enumerated in the accepted trace.]
+  normalization_and_defaults: []
+  validations: [No caller-input validation is explicitly proved for this GET path.]
+  invalid_value_paths: [Unproved error behavior is not invented.]
+  main_flow:
+    - VehicleLoadByPageController.listAllVehicleLoads invokes VehicleLoadFetchByPageService.
+    - VehicleLoadJpaDao reads VehicleLoadDo from public.tbl_vehicle_load.
+    - Mapping reads related trip, driver and vehicle data.
+    - The trip-status helper resolves status information.
+    - The controller renders the VehicleLoad list view.
+  component_flow: [VehicleLoadByPageController.listAllVehicleLoads, VehicleLoadFetchByPageService, VehicleLoadJpaDao, VehicleLoadDo, public.tbl_vehicle_load, trip/driver/vehicle relations, trip-status helper, VehicleLoad list view]
+  data_reads_and_writes: [READ public.tbl_vehicle_load and source-proved related trip/driver/vehicle/status data.]
+  side_effects_and_state_changes: [No persistence write is asserted.]
+  alternate_and_error_flows: [No alternate/error path is enumerated in the accepted trace.]
+  output_and_postconditions: [Returns the VehicleLoad list view populated from the proved reads.]
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: GET /vehicle-loads/all-list loads vehicle-load rows and proved related trip/driver/vehicle/status data and renders the list.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: afefdf00a259b69dd171bcc0a1463448d5dde5614b0c44e374290a1f45b65ccb}
