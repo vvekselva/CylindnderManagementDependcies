@@ -1,26 +1,27 @@
-version: 10
+version: 11
 purpose: >-
   Tell the Orchestrator which Backlog Items may run and enforce the self-reliant production execution loop. Scheduler
-  invocations are backlog-driven, not permanently bound to BL-001. BL-001 remains the current eligible item; BL-002 is
-  run-enabled now but fail-closed behind BL-001 verification/closure and then converts the final Controller Dependency
-  Matrix into user-approved human-readable Stories, approved Use Cases and downstream test scenarios.
+  invocations are backlog-driven. BL-001 and BL-002 may run as parallel coordinated workstreams whenever each has
+  independently eligible work. BL-002 may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical
+  BL-001 matrix rows; it must not consume pending atomic-projection rows or raw/unaccepted evidence.
 
 selection:
-  mode: ENABLED_BACKLOG_ITEMS_ONLY
-  max_active_backlog_items: 1
-  choose_from_enabled_items_by: HIGHEST_PRIORITY_ELIGIBLE_ITEM
+  mode: ENABLED_ELIGIBLE_BACKLOG_ITEMS_WITH_SAFE_PARALLELISM
+  max_active_backlog_items: 2
+  choose_from_enabled_items_by: HIGHEST_PRIORITY_ELIGIBLE_ITEMS
   require_three_level_ssot_gate: true
   require_statement_of_work_gate: true
   require_common_dependency_gate: true
   require_item_specific_quality_gate: true
   require_item_quality_gate_approved_by_user: true
-  eligibility_order:
-    - run_enabled
-    - QG-SSOT-001
-    - QG-SOW-001
-    - QG-DEP-001
-    - item_specific_quality_gate
-    - work_unit_dependencies
+  eligibility_order: [run_enabled, QG-SSOT-001, QG-SOW-001, QG-DEP-001, item_specific_quality_gate, work_unit_dependencies]
+  parallel_pair_rules:
+    BL-001_BL-002:
+      allowed: true
+      shared_worker_pool: true
+      shared_ssot_single_writer: true
+      BL-002_incremental_input: ACCEPTED_MATERIALIZED_NON_STALE_CANONICAL_BL001_ROWS_ONLY
+      forbidden_BL-002_input: [PENDING_ATOMIC_PROJECTION_ROWS, RAW_WORKER_EVIDENCE, UNACCEPTED_CANDIDATES, STALE_FINGERPRINTS]
 
 execution_engine:
   owner: AUTOMATION_TOOL
@@ -28,6 +29,8 @@ execution_engine:
   self_reliant_governance: governance/self-reliant-execution.yaml
   backend: LOCAL_PROCESS_POOL
   max_parallel_workers: 10
+  worker_pool_allocation: DYNAMIC_ACROSS_ELIGIBLE_BACKLOG_ITEMS
+  starvation_forbidden: true
   github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
   github_actions_required: false
   external_worker_service_required: false
@@ -48,10 +51,8 @@ invocation_utilization_contract:
   target_invocation_window_minutes: 45
   minimum_productive_window_minutes: 30
   hard_stop_window_minutes: 45
-  early_exit_before_minimum_allowed_only_when: ELIGIBLE_RUNNABLE_BACKLOG_TASK_COUNT_ZERO
-  normal_exit_conditions:
-    - ELIGIBLE_RUNNABLE_BACKLOG_TASK_COUNT_ZERO
-    - INVOCATION_HARD_STOP_WINDOW_REACHED
+  early_exit_before_minimum_allowed_only_when: ELIGIBLE_RUNNABLE_BACKLOG_TASK_COUNT_ZERO_OR_USER_DECISION_GATE
+  normal_exit_conditions: [ELIGIBLE_RUNNABLE_BACKLOG_TASK_COUNT_ZERO, USER_DECISION_GATE_WITH_NO_OTHER_ELIGIBLE_WORK, INVOCATION_HARD_STOP_WINDOW_REACHED]
   batch_loop:
     enabled: true
     replan_after_every_validated_checkpoint: true
@@ -89,8 +90,8 @@ production_source_contract:
     active_checkout_is_not_switched: true
     executor_uses_detached_worktree: true
   common_preflight:
-    - selected backlog item and Work Unit are eligible
-    - approved dispatch exists and contains only READY safe-independent tasks
+    - selected backlog items and Work Units are eligible
+    - approved dispatch contains only READY safe-independent tasks
     - duplicate lane and task IDs are rejected
     - required source/SSOT inputs are available
     - zero leftover individual lane logs before fire
@@ -108,16 +109,19 @@ bl001_traceability_contract:
   finalization_owner: WU-BL001-002
   downstream_validation_owner: WU-BL001-003
   baseline_registration_owner: WU-BL001-004
-  final_state_required_for_bl002: FINAL_VALIDATED
+  final_unique_row_requirement: 134
   rule: >-
-    BL-001 continues incremental source-proved tracing and reconciliation. BL-002 must not consume raw counters or worker
-    candidates; it consumes only the final validated canonical matrix after BL-001 is VERIFIED or CLOSED.
+    BL-001 continues targeted source-proved recovery and atomic canonical matrix/explorer projection. Final reconciliation
+    requires exactly 134 distinct HTTP method plus path keys and synchronized Markdown, unresolved ledger, progress,
+    structured Explorer representations and Level-3 runtime.
 
 bl002_story_usecase_contract:
   workflow: workflows/WF-003-controller-story-usecase.yaml
   dependency: BL-001
-  dependency_rule: ALL_VERIFIED_OR_CLOSED
+  dependency_rule: INCREMENTAL_ACCEPTED_CANONICAL_ROWS
   structured_matrix: traceability/explorer/traceability-matrix.json
+  accepted_row_requirement: PRIMARY_ORCHESTRATOR_ACCEPTED_MATERIALIZED_NON_STALE
+  forbidden_inputs: [PENDING_ATOMIC_PROJECTION_ROWS, RAW_WORKER_EVIDENCE, UNACCEPTED_CANDIDATES, STALE_FINGERPRINTS]
   story_schema: stories/story-schema.yaml
   story_register: stories/story-register.yaml
   story_template: stories/story-template.md
@@ -132,26 +136,13 @@ bl002_story_usecase_contract:
   usecase_user_approval_required: true
   auto_approval_forbidden: true
   source_change_invalidates_affected_approval: true
-  narrative_required_content:
-    - inputs
-    - validations
-    - main flow
-    - ordered component flow
-    - data reads and writes
-    - side effects/state changes
-    - alternate/error flows
-    - output/postconditions
-    - evidence
-    - downstream test assertions
+  narrative_required_content: [inputs, validations, main flow, ordered component flow, data reads and writes, side effects/state changes, alternate/error flows, output/postconditions, evidence, downstream test assertions]
   no_invention_rule: >-
     Human-readable wording may simplify source behaviour but must never invent a validation, business rule, persistence
     operation, side effect, actor or expected outcome. Unproved business meaning is NEEDS_CLARIFICATION.
   downstream:
-    BL-003:
-      consumes: APPROVED_STORY_ASSERTIONS_ONLY
-    BL-004:
-      consumes: APPROVED_FOR_TESTING_USECASES_AND_SCENARIOS_ONLY
-      owns_usecase_test_execution: true
+    BL-003: {consumes: APPROVED_STORY_ASSERTIONS_ONLY}
+    BL-004: {consumes: APPROVED_FOR_TESTING_USECASES_AND_SCENARIOS_ONLY, owns_usecase_test_execution: true}
 
 execution_recovery_contract:
   execution_journal_required: true
@@ -164,72 +155,49 @@ execution_recovery_contract:
   github_sync_failure: PRESERVE_VALIDATED_RESULT_AS_PENDING_SYNC_AND_RETRY_SYNC_ONLY
 
 backlog_items:
-  BL-001:
-    name: Controller Traceability
-    run_enabled: true
-    item_definition: backlog/items/BL-001-controller-traceability.yaml
-    statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
-    statement_of_work_configured: true
-    runtime: backlog/runtime/BL-001/
-    completion_path: backlog/paths/BL-001-traceability.yaml
-    quality_gate: backlog/gates/BL-001-traceability.yaml
-    quality_gate_configured: true
-    quality_gate_approved: true
-  BL-002:
-    name: Controller Dependency Matrix to Human-Readable Stories
-    run_enabled: true
-    item_definition: backlog/items/BL-002-controller-story-usecase.yaml
-    statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml
-    statement_of_work_configured: true
-    runtime: backlog/runtime/BL-002/
-    completion_path: backlog/paths/BL-002-controller-story-usecase.yaml
-    quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml
-    quality_gate_configured: true
-    quality_gate_approved: true
+  BL-001: {name: Controller Traceability, run_enabled: true, item_definition: backlog/items/BL-001-controller-traceability.yaml, statement_of_work: backlog/sow/BL-001-controller-traceability.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-001/, completion_path: backlog/paths/BL-001-traceability.yaml, quality_gate: backlog/gates/BL-001-traceability.yaml, quality_gate_configured: true, quality_gate_approved: true}
+  BL-002: {name: Controller Dependency Matrix to Human-Readable Stories, run_enabled: true, item_definition: backlog/items/BL-002-controller-story-usecase.yaml, statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-002/, completion_path: backlog/paths/BL-002-controller-story-usecase.yaml, quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml, quality_gate_configured: true, quality_gate_approved: true}
   BL-003: {name: Unit Test Completion, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: backlog/paths/BL-003-unit-test.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
   BL-004: {name: Integration Test Completion, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: backlog/paths/BL-004-integration-test.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
   BL-005: {name: Code Coverage Report, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: backlog/paths/BL-005-code-coverage.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-006: {name: ArchUnit Architecture Test, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: backlog/paths/BL-006-archunit.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-007: {name: Requirements Traceability and Gap Analysis, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: backlog/paths/BL-007-requirements.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-008: {name: Migration of the Database to the Ownership Model, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-009: {name: Supplier Owned, Customer Owned and Company Owned Cylinder Model, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-010: {name: Physical Challan Book Location, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-011: {name: Ownership Dashboard Changes, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-012: {name: CRUD Services for All Tables, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-013: {name: On Spot Cylinder Checks, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-014: {name: Correction Management, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-015: {name: Invoice Generation and Check in Tally, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-016: {name: Attendance Management, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-017: {name: Trip Planning for the Customers, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-018: {name: CEO Dashboard, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-019: {name: Restoring the Logical Backup, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-020: {name: Task Management, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-021: {name: Customer Data Dashboard, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: null, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-006: {name: ArchUnit Architecture Test, run_enabled: false}
+  BL-007: {name: Requirements Traceability and Gap Analysis, run_enabled: false}
+  BL-008: {name: Migration of the Database to the Ownership Model, run_enabled: false}
+  BL-009: {name: Supplier Owned Customer Owned and Company Owned Cylinder Model, run_enabled: false}
+  BL-010: {name: Physical Challan Book Location, run_enabled: false}
+  BL-011: {name: Ownership Dashboard Changes, run_enabled: false}
+  BL-012: {name: CRUD Services for All Tables, run_enabled: false}
+  BL-013: {name: On Spot Cylinder Checks, run_enabled: false}
+  BL-014: {name: Correction Management, run_enabled: false}
+  BL-015: {name: Invoice Generation and Check in Tally, run_enabled: false}
+  BL-016: {name: Attendance Management, run_enabled: false}
+  BL-017: {name: Trip Planning for the Customers, run_enabled: false}
+  BL-018: {name: CEO Dashboard, run_enabled: false}
+  BL-019: {name: Restoring the Logical Backup, run_enabled: false}
+  BL-020: {name: Task Management, run_enabled: false}
+  BL-021: {name: Customer Data Dashboard, run_enabled: false}
 
 scheduled_run_rules:
   - read backlog/backlog.yaml and this run-config first on every scheduler invocation
   - acquire a singleton invocation lease; never overlap two Cylinder coordinator invocations
-  - select the highest-priority eligible run-enabled Backlog Item; do not hard-code BL-001
+  - select all independently eligible run-enabled Backlog Items up to max_active_backlog_items
+  - execute BL-001 and BL-002 as parallel coordinated workstreams whenever both have independently eligible work
   - enforce QG-SSOT-001 and QG-SOW-001 before PLAN or REPLAN
-  - enforce QG-DEP-001 before execution; BL-002 must wait until BL-001 is VERIFIED or CLOSED
-  - apply item-specific execution logic only after selection
-  - for BL-001 continue source checking, canonical matrix projection, reconciliation and final validation
-  - for BL-002 import only the FINAL_VALIDATED BL-001 matrix and generate evidence-backed Story candidates
+  - enforce QG-DEP-001 per consumed evidence; BL-002 incremental execution is allowed only for accepted materialized non-stale canonical BL-001 rows
+  - BL-002 must never consume pending atomic-projection rows or raw/unaccepted worker evidence
+  - for BL-001 continue source checking, canonical matrix projection, reconciliation and final validation to exactly 134 unique keys
+  - for BL-002 generate evidence-backed Story candidates incrementally from eligible canonical rows
   - BL-002 Stories may be technically validated by the Orchestrator but never auto-approved
-  - stop BL-002 at READY_FOR_USER_REVIEW when Story approval is required; persist exact Story IDs/fingerprints for review
-  - after approved Stories exist, build candidate Use Cases without guessing business grouping
-  - stop at Use Case user approval; only APPROVED_FOR_TESTING Use Cases may produce authoritative test scenarios
+  - stop each Story at READY_FOR_USER_REVIEW or NEEDS_CLARIFICATION and persist exact Story IDs/fingerprints
+  - after approved Stories exist, build candidate Use Cases only from evidence-supported groupings and stop for user Use Case approval
+  - only APPROVED_FOR_TESTING Use Cases may produce authoritative test scenarios
   - persist Matrix -> Story -> Use Case -> Test Scenario traceability continuously
-  - BL-003 unit testing may later consume only APPROVED Story assertions
-  - BL-004 integration testing may later consume only APPROVED_FOR_TESTING Use Cases/scenarios and owns Use Case test execution
   - inspect execution journal before firing each worker generation
   - retry PENDING_SYNC synchronization only without worker restart
   - validate closed evidence without rerunning workers
-  - after every validated/synchronized generation re-read backlog/runtime and reselect eligible work
-  - refill up to 10 safe-independent lanes while invocation time remains and work exists
-  - do not terminate merely because one worker generation completed
-  - early termination before 30 minutes is allowed only when eligible runnable work is zero or the selected item is waiting for an explicit user decision
-  - at the 45-minute hard stop checkpoint, synchronize durable state and exit WINDOW_EXPIRED
+  - after every validated/synchronized checkpoint re-read both BL-001 and BL-002 runtime and reselect eligible work
+  - refill up to 10 safe-independent lanes dynamically across eligible streams without starvation
+  - shared SSOT remains single-writer
   - enforce zero transient lane logs at worker-generation and invocation boundaries
   - synchronize only validated durable runtime/log/evidence/Story/Use Case/matrix changes back to GitHub
   - never mark any Backlog Item CLOSED without required explicit user acceptance
