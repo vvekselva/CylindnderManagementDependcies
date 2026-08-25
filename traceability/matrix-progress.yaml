@@ -1,4 +1,4 @@
-version: 43
+version: 44
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -25,17 +25,20 @@ reported_source_check:
 
 matrix_reconciliation:
   corrected_pre_backfill_physical_markdown_rows: 114
-  materialized_matrix_rows: 118
-  historical_accepted_rows_pending_backfill: 16
-  confirmed_missing_canonical_keys: 16
-  corrected_counter_state: SYNCHRONIZED_AFTER_FIRST_RECONCILIATION_BACKFILL
+  materialized_matrix_rows: 123
+  historical_accepted_rows_pending_backfill: 11
+  confirmed_missing_canonical_keys: 11
+  corrected_counter_state: SYNCHRONIZED_AFTER_SECOND_RECONCILIATION_BACKFILL
   integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
   gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-  accepted_atomic_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
-  accepted_atomic_projection_rows: 4
-  accepted_atomic_projection_state: PROMOTED_ATOMICALLY
-  structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
-  browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
+  first_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+  first_reconciliation_projection_state: PROMOTED_ATOMICALLY
+  first_reconciliation_rows_promoted: 4
+  second_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-031321.yaml
+  second_reconciliation_projection_state: FIVE_STOP_MANAGEMENT_ROWS_PROMOTED_FROM_DURABLE_ACCEPTED_EVIDENCE
+  second_reconciliation_rows_promoted: 5
+  structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
+  browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
 
 required_canonical_inputs:
   worker_result: {path: worker/results/WI-0004.yaml, state: MISSING}
@@ -48,13 +51,13 @@ proven_duplicate_acceptance_keys:
   - {method: GET, path: /search/state/{searchText}, early_evidence: RUN-WI0004-20260823-022, later_recount: PRODUCTION-FIRE-20260825-003910}
   - {method: GET, path: /search/supplier/{searchText}, early_evidence: RUN-WI0004-20260823-023, later_recount: PRODUCTION-FIRE-20260825-003910}
 
-latest_materialized_from_invocation: PRODUCTION-FIRE-20260825-070408
-latest_reconciliation_checkpoint: reconciliation-first-backfill-20260825-070408
+latest_materialized_from_invocation: RECONCILIATION-FIRE-20260825-020007Z
+latest_reconciliation_checkpoint: reconciliation-second-backfill-20260825-020007Z
 
 accepted_changes_this_checkpoint:
   new_endpoint_rows: 0
-  historical_rows_promoted: 4
-  materialized_counter_increment_from_corrected_physical_count: 4
+  historical_rows_promoted: 5
+  materialized_counter_increment_from_corrected_physical_count: 5
   unresolved_changes: 0
   worker_generation_started: false
   transient_lane_logs_created: 0
@@ -63,8 +66,8 @@ historical_projection_registry:
   note: >-
     Existing base and ordered delta artifacts remain durable. WU-BL001-002 is progressively reconciling them against
     the canonical unique-key inventory using durable accepted evidence only. No source read is performed by this work unit.
-  latest_existing_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
-  latest_existing_browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
+  latest_existing_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
+  latest_existing_browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
 
 update_rule: >-
   Every accepted endpoint trace is keyed by HTTP method plus path and must preserve a complete source-proved ordered or
@@ -72,7 +75,8 @@ update_rule: >-
   invented rows, and WU-BL001-002 may not perform new source reads.
 
 next_action: >-
-  Reconcile the remaining 16 confirmed missing canonical keys against durable accepted control-repository evidence.
+  Locate durable accepted full-chain evidence for the remaining 11 confirmed missing canonical keys:
+  reconciliation-dashboard GET/POST, vehicle-load/fetch GET, six lookup-management routes, and addVechileTrip GET/POST.
   Promote only complete chains already durably accepted. If any chain is absent, keep WU-BL001-002 blocked rather than
   reading source or guessing. WU-BL001-003 remains blocked until exactly 134 unique rows reconcile.
 
