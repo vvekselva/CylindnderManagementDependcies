@@ -1,0 +1,54 @@
+story:
+  story_id: STORY-0036
+  title: Create a customer demand request
+  state: READY_FOR_USER_REVIEW
+  fingerprint: dc183a0c02e57f4d17af6e3ae698e47032251fece58d22238ec2248b0c580bd3
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /customer-demands"]
+  controller: CustomerDemandController.create
+  endpoint: "POST /customer-demands"
+  business_purpose: Create a customer demand/order-request record after source-proved customer, product and address validation reads, then redirect.
+  trigger_and_context: A caller submits POST /customer-demands.
+  inputs:
+    - The request supplies customer/product/address values consumed by CustomerDemandService.create; exact field names, normalization and defaults are not enumerated.
+  normalization_and_defaults: []
+  validations:
+    - Source-proved customer lookup/validation read.
+    - Source-proved product lookup/validation read.
+    - Source-proved address lookup/validation read.
+  invalid_value_paths:
+    - Exact invalid-value messages and response behavior are not enumerated and are not invented.
+  main_flow:
+    - CustomerDemandController.create receives POST /customer-demands.
+    - CustomerDemandService.create performs customer, product and address validation reads.
+    - CustomerDemandJpaDao.save persists CustomerDemandDo to public.tbl_customer_order_request.
+    - The controller follows the proved redirect path.
+  component_flow:
+    - CustomerDemandController.create
+    - CustomerDemandService.create
+    - customer/product/address validation reads
+    - CustomerDemandJpaDao.save
+    - CustomerDemandDo
+    - public.tbl_customer_order_request
+    - terminal redirect
+  data_reads_and_writes:
+    - READ customer, product and address data for validation.
+    - INSERT public.tbl_customer_order_request through CustomerDemandJpaDao.save.
+  side_effects_and_state_changes:
+    - A new customer-order-request row is persisted.
+  alternate_and_error_flows:
+    - Unproved invalid-value response messages or exact redirect/view behavior remain unspecified.
+  output_and_postconditions:
+    - On the proved success path, a demand row exists in public.tbl_customer_order_request and the controller redirects.
+  evidence:
+    - traceability/controller-traceability.md row "POST /customer-demands"
+    - logs/runs/PRODUCTION-FIRE-20260824-181810.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: Customer/product/address validation reads occur before successful persistence.
+    - classification: INTEGRATION_REQUIRED
+      assertion: Valid POST /customer-demands persists public.tbl_customer_order_request and follows the proved redirect path.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: dc183a0c02e57f4d17af6e3ae698e47032251fece58d22238ec2248b0c580bd3
