@@ -1,0 +1,52 @@
+story:
+  story_id: STORY-0028
+  title: Display customer consumption dashboard via trailing-slash mapping
+  state: READY_FOR_USER_REVIEW
+  fingerprint: af8aeb62ca47f17ac42af9bf3920456b2cbe1171cccc1293a599f90e5ea5cf2c
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-consumption/"]
+  controller: CustomerConsumptionDashboardController.dashboard
+  endpoint: "GET /customer-consumption/"
+  business_purpose: Display the same source-proved customer consumption dashboard through the distinct trailing-slash mapping.
+  trigger_and_context: A caller requests GET /customer-consumption/.
+  inputs:
+    - Dashboard filter/paging values consumed by fetchDashboard when supplied; exact field-level contract is not asserted from this accepted trace.
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No field-level invalid-value behavior is asserted because it is not proved in the accepted trace.
+  main_flow:
+    - The request reaches CustomerConsumptionDashboardController.dashboard through the distinct trailing-slash mapping.
+    - The controller invokes CustomerConsumptionDashboardService.fetchDashboard.
+    - The service reads filtered/paged projection data and summary values through CustomerProductConsumptionProjectionViewJpaDao.
+    - CustomerProductConsumptionProjectionViewDo maps public.vw_customer_product_consumption_projection.
+    - CustomerConsumptionProjectionMapper maps results.
+    - The controller returns with-menu/CustomerConsumptionDashboard.
+  component_flow:
+    - CustomerConsumptionDashboardController.dashboard
+    - CustomerConsumptionDashboardService.fetchDashboard
+    - CustomerProductConsumptionProjectionViewJpaDao
+    - CustomerProductConsumptionProjectionViewDo
+    - public.vw_customer_product_consumption_projection
+    - CustomerConsumptionProjectionMapper
+    - with-menu/CustomerConsumptionDashboard
+  business_rules:
+    - This is a distinct caller-visible route using the same proved handler and data path as GET /customer-consumption.
+  data_reads_and_writes:
+    - Reads public.vw_customer_product_consumption_projection.
+    - No persistence write is proved.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate/error branch is asserted from the accepted trace.
+  output_and_postconditions:
+    - Returns the customer consumption dashboard view with mapped data and no proved database mutation.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-consumption/"
+    - logs/runs/PRODUCTION-FIRE-20260824-023321.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The trailing-slash route must resolve to the same proved dashboard handler/data path and return the dashboard view.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: af8aeb62ca47f17ac42af9bf3920456b2cbe1171cccc1293a599f90e5ea5cf2c
