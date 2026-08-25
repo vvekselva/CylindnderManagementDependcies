@@ -1,0 +1,54 @@
+story:
+  story_id: STORY-0017
+  title: Deactivate a predefined delivery trip
+  state: NEEDS_CLARIFICATION
+  fingerprint: 4b3a60fa24615938fa4b1161b274a8c4266f6113840d7e4950c5a962aad9e29e
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /delivery-planning/predefined-trips/remove"]
+  controller: PredefinedDeliveryTripController.remove
+  endpoint: "POST /delivery-planning/predefined-trips/remove"
+  business_purpose: Deactivate a predefined delivery trip through the source-proved service and repository chain.
+  trigger_and_context: A caller submits POST /delivery-planning/predefined-trips/remove.
+  inputs:
+    - "NEEDS_CLARIFICATION: the accepted canonical trace does not preserve the concrete request identifier field, type, required/optional semantics or any other submitted values."
+  normalization_and_defaults:
+    - "NEEDS_CLARIFICATION: no normalization/default behavior is proved by the accepted row."
+  validations:
+    - "NEEDS_CLARIFICATION: no identifier validation, record-existence validation or state eligibility rule is proved by the accepted row."
+  invalid_value_paths:
+    - "NEEDS_CLARIFICATION: invalid identifiers, missing records and exception behavior are not asserted."
+  main_flow:
+    - The request reaches PredefinedDeliveryTripController.remove.
+    - The controller invokes PredefinedDeliveryTripService.deactivate.
+    - The service persists through PredefinedDeliveryTripJpaDao.
+    - PredefinedDeliveryTripDo maps to public.tbl_predefined_delivery_trip.
+  component_flow:
+    - PredefinedDeliveryTripController.remove
+    - PredefinedDeliveryTripService.deactivate
+    - PredefinedDeliveryTripJpaDao
+    - PredefinedDeliveryTripDo
+    - public.tbl_predefined_delivery_trip
+  business_rules:
+    - The accepted trace explicitly identifies the service operation as deactivate rather than proving physical deletion.
+    - "NEEDS_CLARIFICATION: the exact active/inactive field, state transition rule, eligibility conditions and cascading behavior are not preserved in the accepted evidence."
+  data_reads_and_writes:
+    - The persistence chain writes or otherwise persists deactivation through public.tbl_predefined_delivery_trip.
+    - "NEEDS_CLARIFICATION: exact columns, predicates and repository operations are not preserved in the accepted row."
+  side_effects_and_state_changes:
+    - A predefined-delivery-trip deactivation state change is proved at service intent level.
+    - No additional cascade, audit or related-row mutation is asserted.
+  alternate_and_error_flows:
+    - "NEEDS_CLARIFICATION: already-inactive, not-found, invalid-input and exception branches are not proved in the accepted trace."
+  output_and_postconditions:
+    - The deactivation persistence chain reaches public.tbl_predefined_delivery_trip.
+    - "NEEDS_CLARIFICATION: exact redirect, view, HTTP status, response body and final field values are not proved."
+  evidence:
+    - traceability/explorer/traceability-matrix.json row "POST /delivery-planning/predefined-trips/remove"
+    - logs/runs/INVOCATION-20260823-160000.md LANE-03
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: The accepted flow must traverse PredefinedDeliveryTripService.deactivate and PredefinedDeliveryTripJpaDao to public.tbl_predefined_delivery_trip, without assuming physical deletion or unproved cascade behavior.
+  approval:
+    owner: USER
+    state: NOT_ELIGIBLE_UNTIL_CLARIFIED
+    fingerprint: 4b3a60fa24615938fa4b1161b274a8c4266f6113840d7e4950c5a962aad9e29e
