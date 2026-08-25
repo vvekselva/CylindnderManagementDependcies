@@ -2,29 +2,28 @@ local_execution:
   backlog_item: BL-002
   state: WAITING_FOR_USER_STORY_APPROVAL_AND_CLARIFICATION
   execution_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-033341IST
-  dispatch_fingerprint: null
+  dispatch_fingerprint: STORY_BATCH_0033_0042_FROM_CANONICAL_181810_CHECKPOINT
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: CANONICAL_BL001_MATRIX_ONLY
   phase: USER_STORY_APPROVAL_AND_INCREMENTAL_STORY_GENERATION
-  worker_state: FOUR_SAFE_INDEPENDENT_LOCAL_PROCESS_WORKERS_COMPLETED_WITH_SHARED_SSOT_SINGLE_WRITER
-  workers_started_this_invocation: 4
+  worker_state: TEN_SAFE_INDEPENDENT_LOCAL_PROCESS_WORKERS_COMPLETED_WITH_SHARED_SSOT_SINGLE_WRITER
+  workers_started_this_invocation: 10
   transient_lane_logs_created: 0
   residual_transient_lane_logs: 0
-  validation_state: PASS_31_STORIES_READY_FOR_USER_REVIEW_AND_5_NEED_CLARIFICATION
+  validation_state: PASS_37_STORIES_READY_FOR_USER_REVIEW_AND_5_NEED_CLARIFICATION
   sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR_CHECKPOINT
-  recovery_state: RUNTIME_RECONCILED_TO_STORY_REGISTER_VERSION_13
+  recovery_state: RUNTIME_RECONCILED_TO_STORY_REGISTER_VERSION_14
   incremental_scope:
     canonical_bl001_rows_eligible: 123
     pending_bl001_atomic_projection_rows_excluded: 11
-    story_dispositions: 36
-    story_candidates_ready_for_review: 31
+    story_dispositions: 42
+    story_candidates_ready_for_review: 37
     story_candidates_needs_clarification: 5
     story_candidates_approved: 0
-    newly_generated_this_invocation: [STORY-0033, STORY-0034, STORY-0035, STORY-0036]
+    newly_generated_this_invocation: [STORY-0033, STORY-0034, STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042]
   approval_boundary:
     owner: USER
     state: WAITING_FOR_USER
-    story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026, STORY-0027, STORY-0028, STORY-0029, STORY-0030, STORY-0031, STORY-0033, STORY-0034, STORY-0035, STORY-0036]
     exact_story_ids_and_fingerprints_required: true
     usecase_generation_allowed: false
   clarification_boundary:
