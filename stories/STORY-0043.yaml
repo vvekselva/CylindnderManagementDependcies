@@ -1,0 +1,50 @@
+story:
+  story_id: STORY-0043
+  title: View ownership obligation dashboard
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 71574dca5f86ec55b27f094ed8fd3981ee555efdccf413f99302a1fbdb1b2e07
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /ownership-obligation-dashboard"]
+  controller: OwnershipObligationDashboardController.showOwnershipObligationDashboard
+  endpoint: "GET /ownership-obligation-dashboard"
+  business_purpose: Display ownership-obligation detail, party summary, and closed-today metrics from the source-proved custody and party data.
+  trigger_and_context: A caller opens GET /ownership-obligation-dashboard.
+  inputs: [No required caller input is enumerated in the accepted trace.]
+  normalization_and_defaults: []
+  validations: [No caller-input validation is explicitly proved for this GET path.]
+  invalid_value_paths: [Unproved error behavior is not invented.]
+  main_flow:
+    - OwnershipObligationDashboardController.showOwnershipObligationDashboard invokes OwnershipObligationDashboardService.fetchDashboard.
+    - Detail branch reads OwnershipObligationDetailViewDo through OwnershipObligationDetailJpaDao from an explicit subselect over custody, cylinder, customer and supplier tables.
+    - Party-summary branch invokes OwnershipObligationPartySummaryJpaDao.findTopPartySummaries and reads OwnershipObligationPartySummaryViewDo from an explicit subselect over custody, customer and supplier tables.
+    - Closed-today branch invokes OwnershipObligationDetailJpaDao.countClosedTodayObligations using native SQL against public.tbl_cylinder_party_custody.
+    - OwnershipObligationDashboardMapper maps detail and summary persistence objects to DTOs.
+    - The controller renders final-version-1/OwnershipObligationDashboard.
+  component_flow:
+    - OwnershipObligationDashboardController.showOwnershipObligationDashboard
+    - OwnershipObligationDashboardService.fetchDashboard
+    - OwnershipObligationDetailJpaDao / OwnershipObligationPartySummaryJpaDao
+    - OwnershipObligationDetailViewDo / OwnershipObligationPartySummaryViewDo
+    - public.tbl_cylinder_party_custody
+    - public.tbl_cylinder
+    - public.tbl_customer
+    - public.tbl_supplier
+    - OwnershipObligationDashboardMapper
+    - final-version-1/OwnershipObligationDashboard
+  data_reads_and_writes:
+    - READ public.tbl_cylinder_party_custody.
+    - READ public.tbl_cylinder for detail rows.
+    - READ public.tbl_customer and public.tbl_supplier for party identity data.
+    - READ a native closed-today count from public.tbl_cylinder_party_custody.
+    - No persistence write is asserted by the accepted trace.
+  side_effects_and_state_changes: [No persistence write or state mutation is asserted for this GET flow.]
+  alternate_and_error_flows: [No alternate or caller-visible error branch is enumerated in the accepted trace.]
+  output_and_postconditions:
+    - Returns final-version-1/OwnershipObligationDashboard populated from proved obligation detail, party-summary and closed-today metric branches.
+  evidence:
+    - traceability/controller-traceability.md
+    - logs/runs/PRODUCTION-FIRE-20260824-033550.md
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: GET /ownership-obligation-dashboard reads the proved custody/cylinder/customer/supplier dependencies through both dashboard DAO branches, computes the proved closed-today count, maps the data and renders final-version-1/OwnershipObligationDashboard.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 71574dca5f86ec55b27f094ed8fd3981ee555efdccf413f99302a1fbdb1b2e07}
