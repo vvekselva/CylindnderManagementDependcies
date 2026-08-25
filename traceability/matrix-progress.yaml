@@ -1,4 +1,4 @@
-version: 42
+version: 43
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -24,16 +24,18 @@ reported_source_check:
     newly examined. Therefore the accumulated 134 counter cannot serve as the WF-002 unique-key coverage proof.
 
 matrix_reconciliation:
-  prior_ssot_materialized_matrix_rows: 113
-  physically_observed_markdown_endpoint_rows: 114
-  prior_ssot_historical_accepted_rows_pending_backfill: 21
-  confirmed_missing_canonical_keys: 20
-  counter_state: STALE_BY_ONE_AND_PENDING_ATOMIC_RECONCILIATION
+  corrected_pre_backfill_physical_markdown_rows: 114
+  materialized_matrix_rows: 118
+  historical_accepted_rows_pending_backfill: 16
+  confirmed_missing_canonical_keys: 16
+  corrected_counter_state: SYNCHRONIZED_AFTER_FIRST_RECONCILIATION_BACKFILL
   integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
   gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-  pending_atomic_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
-  pending_atomic_projection_rows: 4
-  pending_atomic_projection_accepted: false
+  accepted_atomic_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+  accepted_atomic_projection_rows: 4
+  accepted_atomic_projection_state: PROMOTED_ATOMICALLY
+  structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
+  browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
 
 required_canonical_inputs:
   worker_result: {path: worker/results/WI-0004.yaml, state: MISSING}
@@ -46,24 +48,23 @@ proven_duplicate_acceptance_keys:
   - {method: GET, path: /search/state/{searchText}, early_evidence: RUN-WI0004-20260823-022, later_recount: PRODUCTION-FIRE-20260825-003910}
   - {method: GET, path: /search/supplier/{searchText}, early_evidence: RUN-WI0004-20260823-023, later_recount: PRODUCTION-FIRE-20260825-003910}
 
-latest_materialized_from_invocation: PRODUCTION-FIRE-20260825-051115
-latest_reconciliation_checkpoint: reconciliation-integrity-audit-20260825
+latest_materialized_from_invocation: PRODUCTION-FIRE-20260825-070408
+latest_reconciliation_checkpoint: reconciliation-first-backfill-20260825-070408
 
 accepted_changes_this_checkpoint:
   new_endpoint_rows: 0
-  historical_rows_promoted: 0
-  materialized_counter_increment: 0
+  historical_rows_promoted: 4
+  materialized_counter_increment_from_corrected_physical_count: 4
   unresolved_changes: 0
   worker_generation_started: false
   transient_lane_logs_created: 0
 
 historical_projection_registry:
   note: >-
-    Existing base and ordered delta artifacts remain durable and are not deleted by this fail-closed checkpoint.
-    Their registry is preserved by Git history/version 41 and the Explorer loader. No new delta is accepted until
-    the canonical key/evidence reconciliation is safe.
-  latest_existing_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-051115.json
-  latest_existing_browser_delta: traceability/explorer/matrix-delta-20260825-051115.js
+    Existing base and ordered delta artifacts remain durable. WU-BL001-002 is progressively reconciling them against
+    the canonical unique-key inventory using durable accepted evidence only. No source read is performed by this work unit.
+  latest_existing_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
+  latest_existing_browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
 
 update_rule: >-
   Every accepted endpoint trace is keyed by HTTP method plus path and must preserve a complete source-proved ordered or
@@ -71,10 +72,9 @@ update_rule: >-
   invented rows, and WU-BL001-002 may not perform new source reads.
 
 next_action: >-
-  Reconstruct the canonical 134-key endpoint inventory only from durable control-repository classification/accepted evidence;
-  reconcile it against the 114 physical Markdown rows and the 20 confirmed missing keys. For each missing key, promote only
-  a complete chain already durably accepted. If any chain is not present in durable accepted evidence, keep reconciliation
-  blocked rather than reading source or guessing. WU-BL001-003 remains blocked until exactly 134 unique rows reconcile.
+  Reconcile the remaining 16 confirmed missing canonical keys against durable accepted control-repository evidence.
+  Promote only complete chains already durably accepted. If any chain is absent, keep WU-BL001-002 blocked rather than
+  reading source or guessing. WU-BL001-003 remains blocked until exactly 134 unique rows reconcile.
 
 finalization_condition: >-
   Exactly 134 unique caller-visible HTTP method/path keys are represented once, every COMPLETE row has durable accepted
