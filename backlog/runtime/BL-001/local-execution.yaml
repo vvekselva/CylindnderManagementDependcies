@@ -1,8 +1,8 @@
 local_execution:
-  version: 58
+  version: 59
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED_ON_CONTROL_PLANE_PROCESS_FILESYSTEM_BRIDGE
+  state: TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED_ON_CONNECTOR_NATIVE_MODEL_ASSEMBLY_AND_ATOMIC_SERIALIZATION
   backend: LOCAL_PROCESS_POOL
   architecture: architecture/self-reliant-e2e-execution.md
   source_repository: vvekselva/CylinderManagement
@@ -20,10 +20,10 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
   current_invocation:
-    invocation_id: UNIQUE-KEY-ATOMIC-PROJECTION-EXECUTION-20260825-1600Z
+    invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-011606IST
     owner: PRIMARY_ORCHESTRATOR
     work_unit: WU-BL001-001
-    idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_TARGETED_RECOVERY
+    idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_REPLAN_INVOCATION
     worker_generation_started: false
     workers_started: 0
     transient_lane_logs_created: 0
@@ -32,7 +32,7 @@ local_execution:
     source_reads_frozen_baseline_only: true
     authoritative_control_branch: chore/rename-dependency-files
     connector_materialization_reverified:
-      base_matrix_blob_full_read: PASS
+      base_matrix_blob_full_read: PASS_PREVIOUS_ACCEPTED_CHECKPOINT
       ordered_delta_files_total: 42
       ordered_delta_files_full_read: 42
       ordered_delta_files_remaining: 0
@@ -41,18 +41,10 @@ local_execution:
       large_delta_blob_fallback: PASS
     consolidation_executor: automation/consolidate-traceability-explorer.py
     consolidation_executor_validation: PASS_FAIL_CLOSED_123_PLUS_11_EQUALS_134_ZERO_DUPLICATES
-    local_process_runtime:
-      node_available: true
-      python_available: true
-      connector_content_mount_to_process_filesystem: NOT_EXPOSED
-      direct_git_materialization: BLOCKED_DNS_GITHUB_UNRESOLVABLE
-      authoritative_full_tree_available_to_consolidator: false
-      partial_scratch_reconstruction_accepted_as_authoritative: false
     canonical_rows_added: 0
     materialized_rows_after: 123
     pending_unique_keys_after: 11
-    durable_log: logs/runs/UNIQUE-KEY-ATOMIC-PROJECTION-EXECUTION-BLOCKED-20260825-1600Z.md
-    outcome: ATOMIC_PROJECTION_NOT_EXECUTED_CONTROL_PLANE_TO_PROCESS_FILESYSTEM_BRIDGE_UNAVAILABLE
+    outcome: ATOMIC_PROJECTION_NOT_EXECUTED_CONNECTOR_NATIVE_MODEL_ASSEMBLY_AND_MULTI_ARTIFACT_ATOMIC_SERIALIZATION_STILL_REQUIRED
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
@@ -78,8 +70,4 @@ local_execution:
     WU-BL001-004: WAITING_FOR_DEPENDENCY
     close_allowed: false
   next_action: >-
-    Present the authoritative control repository contents to the checked-in consolidator as one process-readable filesystem
-    tree, run the exact 123-key precondition and 11-row merge, require exactly 134 unique keys with zero duplicates, then
-    atomically regenerate controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml,
-    traceability-matrix.json, matrix-data.js, index.html and Level-3 runtime. Do not replay the closed worker generation and
-    do not hand off to WU-BL001-002 before the atomic projection passes.
+    Assemble the connector-materialized authoritative base plus all 42 ordered deltas using exact HTTP_METHOD_PLUS_PATH upsert semantics, require exactly 123 unique pre-recovery keys, merge the eleven source-proved corrected recovery rows, require exactly 134 unique keys with zero duplicates, then atomically regenerate controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml, traceability-matrix.json, matrix-data.js, index.html and Level-3 runtime together. Do not replay the closed worker generation.
