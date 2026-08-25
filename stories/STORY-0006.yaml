@@ -1,0 +1,43 @@
+story:
+  story_id: STORY-0006
+  title: Return the offline map style JSON
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 8de2952b18665432b67386fa6de5da875ebdc5297e35d9141090aae03cb21fa5
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /offline-map/style.json"]
+  controller: OfflineMapController.style path
+  endpoint: "GET /offline-map/style.json"
+  business_purpose: Return the configured offline-map style JSON; no business meaning beyond the source-proved configuration response is asserted.
+  trigger_and_context: A caller requests GET /offline-map/style.json.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths: []
+  main_flow:
+    - The request reaches the OfflineMapController style path.
+    - The response is built from OfflineMapProperties and the request base URL.
+    - The controller returns terminal JSON.
+  component_flow:
+    - OfflineMapController style path
+    - OfflineMapProperties
+    - request base URL
+    - TERMINAL_JSON
+  business_rules: []
+  data_reads_and_writes:
+    - Configuration is read from OfflineMapProperties.
+    - No database write is proved.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows: []
+  output_and_postconditions:
+    - Style JSON is returned to the caller.
+    - No persistence side effect is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /offline-map/style.json"
+    - logs/runs/INVOCATION-20260823-160000.md / LANE-02
+  downstream_test_assertions:
+    - classification: UNIT_CANDIDATE
+      assertion: GET /offline-map/style.json produces terminal JSON from OfflineMapProperties and request-base-URL evidence without a proved persistence write.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 8de2952b18665432b67386fa6de5da875ebdc5297e35d9141090aae03cb21fa5
