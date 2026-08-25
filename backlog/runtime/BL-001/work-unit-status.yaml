@@ -25,9 +25,9 @@ work_units:
     dependency_state: REPORTED_COMPLETE_UNIQUE_KEY_RECONCILIATION_REQUIRED
     matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
     corrected_pre_backfill_markdown_rows: 114
-    materialized_matrix_rows: 118
-    confirmed_missing_canonical_keys: 16
-    historical_accepted_rows_pending_backfill: 16
+    materialized_matrix_rows: 123
+    confirmed_missing_canonical_keys: 11
+    historical_accepted_rows_pending_backfill: 11
     canonical_endpoint_inventory_target: 134
     reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ_NO_INVENTED_CHAINS
     integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
@@ -35,11 +35,15 @@ work_units:
     first_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
     first_reconciliation_projection_state: PROMOTED_ATOMICALLY
     first_reconciliation_rows_promoted: 4
-    structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
-    browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
+    second_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-031321.yaml
+    second_reconciliation_projection_state: FIVE_STOP_MANAGEMENT_ROWS_PROMOTED_FROM_DURABLE_ACCEPTED_EVIDENCE
+    second_reconciliation_rows_promoted: 5
+    structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
+    browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
     next_action: >-
-      Reconstruct the remaining 16 canonical method/path keys only from durable accepted evidence already present in the
-      control repository. Promote complete historical chains in synchronized Markdown/Explorer/progress checkpoints.
+      Locate already-durable accepted full-chain evidence for the remaining 11 canonical method/path keys in the control
+      repository: reconciliation-dashboard GET/POST, vehicle-load/fetch GET, lookup/lookupManagement and four lookup saves,
+      and addVechileTrip GET/POST. Promote complete historical chains in synchronized Markdown/Explorer/progress checkpoints.
       If any key lacks durable accepted full-chain evidence, keep WU-BL001-002 blocked; do not perform new source reads
       and do not guess missing hops.
 
