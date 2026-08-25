@@ -1,35 +1,48 @@
 work_units:
   WU-BL001-001:
-    state: COMPLETE
+    state: COMPLETE_REPORTED_PENDING_UNIQUE_KEY_RECONCILIATION
     execution_mode: PRIMARY_ORCHESTRATOR_DIRECT_FROZEN_SOURCE_PLUS_SELF_RELIANT_STAGED_SOURCE
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-    canonical_checkpoint:
+    reported_checkpoint:
       total_endpoints: 134
-      examined: 134
-      complete: 134
+      examined_counter: 134
+      complete_counter: 134
       unresolved: 0
       blocked: 0
       failed: 0
-      not_yet_examined: 0
+    uniqueness_status: RECONCILIATION_REQUIRED
+    reason: >-
+      Durable history proves at least four HTTP-method/path keys were accepted COMPLETE earlier and later counted again
+      as newly examined. The raw 134 counter therefore cannot by itself prove 134 unique examined keys.
     completion_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
     worker_generation_replay_required: false
     residual_transient_lane_logs: 0
+
   WU-BL001-002:
-    state: IN_PROGRESS
+    state: BLOCKED_RECONCILIATION_INTEGRITY
     name: Final Matrix Reconciliation
     dependency: WU-BL001-001
-    dependency_state: PASS
-    matrix_state: READY_FOR_FINAL_RECONCILIATION
-    materialized_matrix_rows: 113
-    historical_accepted_rows_pending_backfill: 21
-    canonical_endpoint_inventory: 134
-    reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_INVENTED_CHAINS
+    dependency_state: REPORTED_COMPLETE_UNIQUE_KEY_RECONCILIATION_REQUIRED
+    matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
+    prior_materialized_matrix_rows: 113
+    physically_observed_markdown_rows: 114
+    confirmed_missing_canonical_keys: 20
+    prior_historical_accepted_rows_pending_backfill: 21
+    canonical_endpoint_inventory_target: 134
+    reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ_NO_INVENTED_CHAINS
+    integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
+    gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
+    pending_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+    pending_projection_accepted: false
     next_action: >-
-      Backfill the remaining 21 historical accepted endpoint rows only from durable accepted evidence; verify one unique
-      HTTP-method/path row for each of 134 endpoints; reconcile Markdown, structured JSON, browser projection and zero-unresolved accounting.
+      Reconstruct the canonical 134 unique method/path keys from durable control-repository evidence and reconcile them
+      against the physical Markdown matrix. Promote only missing rows whose complete chain is already durably accepted.
+      Do not perform new source reads under WU-BL001-002 and do not guess missing hops.
+
   WU-BL001-003:
-    state: WAITING_FOR_DEPENDENCY
+    state: BLOCKED_WAITING_FOR_RECONCILIATION
     dependency: WU-BL001-002
+
   WU-BL001-004:
     state: WAITING_FOR_DEPENDENCY
     dependency: WU-BL001-003
