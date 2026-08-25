@@ -1,5 +1,5 @@
 local_execution:
-  version: 49
+  version: 50
   backlog_item: BL-001
   work_unit: WU-BL001-002
   state: MATRIX_RECONCILIATION_IN_PROGRESS
@@ -25,18 +25,21 @@ local_execution:
     trace_evidence_auto_accepted: false
 
   current_invocation:
+    invocation_id: RECONCILIATION-FIRE-20260825-020007Z
     owner: PRIMARY_ORCHESTRATOR
     work_unit: WU-BL001-002
-    idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION
+    idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_ELIGIBLE_RECONCILIATION
     worker_generation_started: false
     workers_started: 0
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
     source_reads_allowed: false
     new_endpoint_rows_accepted: 0
-    historical_rows_promoted: 4
+    historical_rows_promoted: 5
+    materialized_rows_after: 123
+    historical_rows_pending_after: 11
     outcome: RECONCILIATION_BACKFILL_ADVANCED_FAIL_CLOSED_REMAINDER
-    evidence: traceability/explorer/traceability-matrix-delta-20260825-070408.json
+    evidence: traceability/explorer/traceability-matrix-delta-20260825-020007.json
 
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
@@ -53,18 +56,18 @@ local_execution:
     raw_accumulated_complete_counter: 134
     unique_method_path_coverage_proved: false
     corrected_pre_backfill_physical_markdown_rows: 114
-    physically_materialized_markdown_rows: 118
-    confirmed_missing_canonical_keys: 16
-    historical_rows_promoted_this_invocation: 4
+    physically_materialized_markdown_rows: 123
+    confirmed_missing_canonical_keys: 11
+    historical_rows_promoted_this_invocation: 5
     minimum_proven_duplicate_acceptance_events: 4
     required_worker_result_state: MISSING
     required_endpoint_inventory_state: MISSING
     required_controller_inventory_state: MISSING
     gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
     evidence_index: backlog/runtime/BL-001/reconciliation-evidence-index-20260825-065123.yaml
-    accepted_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
-    accepted_projection_rows: 4
-    accepted_projection_state: PROMOTED_ATOMICALLY
+    accepted_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-031321.yaml
+    accepted_projection_rows: 5
+    accepted_projection_state: PROMOTED_FROM_DURABLE_ACCEPTED_EVIDENCE
 
   work_unit_handoff:
     WU-BL001-001: COMPLETE_REPORTED_PENDING_UNIQUE_KEY_RECONCILIATION
@@ -74,6 +77,6 @@ local_execution:
     close_allowed: false
 
   next_action: >-
-    Reconcile the remaining 16 canonical method/path keys from durable control-repository evidence only. Five additional
-    stop-management keys have located durable full-chain evidence and are candidates for the next synchronized historical
-    backfill. Do not perform new application-source reads under WU-BL001-002 and do not guess missing hops.
+    Locate durable accepted full-chain evidence for the remaining 11 canonical method/path keys from control-repository
+    history only: reconciliation-dashboard GET/POST, vehicle-load/fetch GET, six lookup-management routes, and addVechileTrip
+    GET/POST. Do not perform new application-source reads under WU-BL001-002 and do not guess missing hops.
