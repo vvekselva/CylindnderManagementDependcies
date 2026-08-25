@@ -1,0 +1,38 @@
+story:
+  story_id: STORY-0037
+  title: Mark a customer demand as delivered
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 9f60a7283c6d6e2b94164525720500a5919f2864ccb49544d48bd6ba29e32b2a
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /customer-demands/{requestId}/mark-delivered"]
+  controller: CustomerDemandController.markDelivered
+  endpoint: "POST /customer-demands/{requestId}/mark-delivered"
+  business_purpose: Update the identified customer demand/order request to the source-proved delivered state and redirect.
+  trigger_and_context: A caller submits the mark-delivered endpoint for a requestId.
+  inputs:
+    - Path variable requestId identifies the customer demand/order request.
+  normalization_and_defaults: []
+  validations:
+    - The accepted trace proves the service/DAO uses the identified request row; exact missing-ID error behavior is not enumerated.
+  invalid_value_paths:
+    - Missing-ID caller-visible behavior is not invented.
+  main_flow:
+    - CustomerDemandController.markDelivered receives requestId.
+    - CustomerDemandService.markDelivered calls CustomerDemandJpaDao for the identified CustomerDemandDo.
+    - public.tbl_customer_order_request is updated.
+    - The controller redirects.
+  component_flow: [CustomerDemandController.markDelivered, CustomerDemandService.markDelivered, CustomerDemandJpaDao, CustomerDemandDo, public.tbl_customer_order_request, terminal redirect]
+  data_reads_and_writes:
+    - READ the identified customer demand/order-request row.
+    - UPDATE public.tbl_customer_order_request.
+  side_effects_and_state_changes:
+    - The identified demand record changes to the source-proved delivered state.
+  alternate_and_error_flows:
+    - Exact behavior for a nonexistent requestId is not enumerated.
+  output_and_postconditions:
+    - The demand row is updated and the caller follows the proved redirect.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: The endpoint updates the identified demand row and redirects.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 9f60a7283c6d6e2b94164525720500a5919f2864ccb49544d48bd6ba29e32b2a}
