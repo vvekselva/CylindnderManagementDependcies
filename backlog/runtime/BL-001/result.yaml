@@ -3,27 +3,26 @@ result:
   state: PARTIAL
   verified: false
   closed: false
-  canonical_source_check_result_accepted: true
-  matrix_state: READY_FOR_FINAL_RECONCILIATION
+  canonical_source_check_result_accepted: false
+  canonical_source_check_result_state: REOPENED_FOR_UNIQUE_KEY_RECONCILIATION
+  matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
   sync_state: SYNCHRONIZED
   pending_sync_artifact: null
   pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
-  latest_accepted_trace_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-051115.md
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+
   lifecycle_gate:
     id: QG-LOG-001
     state: PASS
     residual_lane_logs: 0
+
   source_gate:
     id: QG-SOURCE-001
-    state: PASS_CANONICAL_ENDPOINT_TRACE_COVERAGE_100_PERCENT_OLD_WORKER_SNAPSHOT_PARTIAL
+    state: PASS_FROZEN_BASELINE_INTEGRITY_OLD_WORKER_GENERATION_CLOSED
     source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
     latest_worker_execution: E2E-STAGED-20260823-161214
-    worker_snapshot_materialized_files: 29
-    old_generation_missing_source_requests: 16
-    binding_identities_unresolved: 0
     old_generation_replay_required: false
-    canonical_completion_method: PRIMARY_ORCHESTRATOR_VALIDATED_DIRECT_FROZEN_SOURCE
+
   lane_utilization_gate:
     id: QG-LANE-001
     state: UNDERUTILIZED
@@ -33,30 +32,49 @@ result:
     backend_capacity_probe_peak: 10
     worker_failures: 0
     residual_lane_logs: 0
-  checkpoint:
-    total_endpoints: 134
-    examined: 134
-    complete: 134
-    unresolved: 0
-    blocked: 0
-    failed: 0
-    not_yet_examined: 0
-    matrix_materialized_rows: 113
-    historical_accepted_rows_pending_backfill: 21
+
+  reconciliation_checkpoint:
+    canonical_endpoint_inventory_target: 134
+    raw_accumulated_examined_counter: 134
+    raw_accumulated_complete_counter: 134
+    unique_method_path_coverage_proved: false
+    physically_observed_markdown_rows: 114
+    confirmed_missing_canonical_keys: 20
+    prior_ssot_materialized_rows: 113
+    prior_ssot_historical_pending: 21
+    minimum_proven_duplicate_acceptance_events: 4
+    reconciliation_integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
+    gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
+
   current_work_unit:
     id: WU-BL001-002
-    state: IN_PROGRESS
+    state: BLOCKED_RECONCILIATION_INTEGRITY
     name: Final Matrix Reconciliation
-  unresolved_items: []
+    source_read_allowed: false
+
+  unresolved_items:
+    - id: BL001-RECON-UNIQUE-KEYS
+      state: BLOCKING
+      description: Accumulated endpoint acceptance counter contains proven duplicate HTTP-method/path acceptance events.
+    - id: BL001-RECON-CANONICAL-INPUTS
+      state: BLOCKING
+      description: worker/results/WI-0004.yaml, traceability/endpoint-inventory.md and traceability/controller-inventory.md are missing.
+    - id: BL001-RECON-MATRIX-PHYSICAL-COUNT
+      state: BLOCKING
+      description: Physical Markdown matrix has 114 endpoint rows while prior progress SSOT reported 113; 20 canonical keys are confirmed absent.
+
   execution_backend:
     owner: AUTOMATION_TOOL
     type: LOCAL_PROCESS_POOL
     max_workers: 10
     github_actions_required: false
+
   final_outputs: []
+  close_allowed: false
   next_action: >-
-    Backfill the remaining 21 historical accepted endpoint rows only from durable accepted evidence, reconcile exactly one
-    unique HTTP-method/path row for each of all 134 endpoints across Markdown and Explorer projections, then hand off to WU-BL001-003.
+    Reconstruct and reconcile the canonical 134 unique method/path keys only from durable control-repository evidence.
+    Compare against the 114 physical Markdown rows and the 20 confirmed missing keys. Promote only rows whose full chain
+    is already durably accepted; do not perform source reads in WU-BL001-002 and do not guess. WU-BL001-003 remains blocked.
   note: >-
-    Source check is complete at 134/134. BL-001 remains open because final matrix reconciliation, downstream gate validation,
-    source artifact registration, execution closure, and explicit QG-TRC-015 user acceptance are still outstanding.
+    BL-001 remains open. The previously reported 134/134 accumulated counter cannot be used as final unique coverage proof
+    because durable history demonstrates duplicate acceptance events. No new workers or endpoint rows were accepted in this checkpoint.
