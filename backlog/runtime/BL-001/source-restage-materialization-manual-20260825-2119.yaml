@@ -1,0 +1,73 @@
+manual_source_restage_materialization:
+  version: 1
+  backlog_item: BL-001
+  invocation_id: MANUAL-PRODUCTION-FIRE-20260825-211929-IST
+  owner: PRIMARY_ORCHESTRATOR
+  control_branch: chore/rename-dependency-files
+  source_repository: vvekselva/CylinderManagement
+  frozen_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  idempotency:
+    prior_worker_generation: E2E-STAGED-20260823-161214
+    prior_worker_state: CLOSED_SYNCHRONIZED
+    replayed: false
+    decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_TARGETED_RECOVERY
+  historical_worker_snapshot:
+    materialized_files_before: 29
+    materialized_files_after_claimed: 29
+    merge_into_historical_snapshot_verified: false
+    reason: historical_29_file_snapshot_bytes_or_manifest_not_process_mounted
+  manual_execution_host_restage_root:
+    files_before: 0
+    files_after_verified: 17
+    validation: PASS_PARTIAL_RESTAGE_SET
+    local_manifest_sha256: 89a457c8b35a605eec6b87d29ef5a32818da7c5172a89e2ac5ff59b28f4c3460
+  source_requests:
+    historical_before: 16
+    historical_after: 16
+    decrement_claimed: false
+  source_materialization:
+    configured_max_parallel_slots: 10
+    successful_slots_total: 17
+    restage_001: {successful: 9, total: 10}
+    restage_002: {successful: 8, total: 10}
+    actual_parallel_overlap_claimed: false
+    verified_entries:
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPageAuditLedgerDo, git_blob_sha: 6e2fc468564c64906cbc4d760501f2b170a9f070}
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanPagePhotoDo, git_blob_sha: cd49fe4e62da3d8a2016ec8c813a2e363ee3d1c6}
+      - {fqcn: com.sreyas.datamatics.application.service.ICylinderManagementApplicationService, git_blob_sha: c26b060fc37b7195e1e1e1c600ab7b4bf2e49cda}
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.ChallanBookRegistryDo, git_blob_sha: c185c9ef3081d0ce135075ae500b059e790b46ed}
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.SummaryMetricLookupDo, git_blob_sha: e8310d4a0ce9917c8cd97b11e799fda9179cfe8c}
+      - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanBookRegistryMapper, git_blob_sha: 7b7d7bfe7914c19e387b095bc762f22efde2faae}
+      - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.SummaryMetricLookupMapper, git_blob_sha: 2810d214f63cd44d940b7e997a1c143231acb552}
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.TripChallanEntryTrackerAuditDo, git_blob_sha: ee61245bcbf84fcfafff4a77786ca41bd7eb9b82}
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.TripChallanEntryTrackerDo, git_blob_sha: 9978de1f2ac0808df8a959f63f62114ac4d8546d}
+      - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanEntryAgingDashboardMapper, git_blob_sha: 622f4bc4c8e0cc73c3823248a14b0d36f00d9c74}
+      - {fqcn: com.sreyas.datamatics.application.jpa.view.entity.ChallanHeatmapMetricsViewDo, git_blob_sha: 5b7683fe88a20ffec341a4518018c1e5b3965053}
+      - {fqcn: com.sreyas.datamatics.application.jpa.view.entity.TripChallanBookAssignmentViewDo, git_blob_sha: b186b047f82d5d4ec07d7c6986e198a5e867fafb}
+      - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanHeatmapMetricsViewMapper, git_blob_sha: 502d529487b35cd3a453399f4a4a19f397714807}
+      - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.ChallanPageAuditLedgerMapper, git_blob_sha: 3e857c18ca20a2e41a3589ef73b1cb2a36f3bb77}
+      - {fqcn: com.sreyas.datamatics.application.jpa.entity.CustomerProductConsumptionProjectionViewDo, git_blob_sha: 15a8d9469a2783e210fc0f3ae66c62430a18d48a}
+      - {fqcn: com.sreyas.datamatics.cylinder.management.mapper.CustomerConsumptionProjectionMapper, git_blob_sha: b52dae79737d388a6aaf39ed4a93118a18800e19}
+      - {fqcn: com.sreyas.datamatics.application.service.ICylinderManagementApplicationMediator, git_blob_sha: c9b7c72576ab42249d389890df9683ca0ad054e2}
+    pending_process_materialization:
+      - {fqcn: com.sreyas.datamatics.cylinder.management.services.TripReturnWorkflowService, git_blob_sha: 11440b5fbda793234ecae70bfb6068bef98ab5e7}
+      - {fqcn: com.sreyas.datamatics.cylindermanagement.offlinemap.service.CustomerAddressLocationOfflineMapService, git_blob_sha: d84ff5be5dc5a0767b5604e0edce76fc708aa73a}
+      - {fqcn: com.sreyas.datamatics.cylinder.management.services.CompleteTripServiceImpl, git_blob_sha: ea504190c4f21c9a4d45e7b34850b6f16a4e1dee}
+  qg_source_001:
+    state: PARTIAL
+    full_worker_snapshot_identity_advanced: false
+    dispatch_fingerprint_recomputed: false
+    trace_workers_eligible_from_this_partial_root: false
+  trace_execution:
+    configured_lanes: 10
+    actual_trace_lanes_used: 0
+    transient_lane_logs_created: 0
+    residual_transient_lane_logs: 0
+  endpoint_state:
+    unique_materialized_keys_before: 123
+    unique_materialized_keys_after: 123
+    target: 134
+    remaining_before: 11
+    remaining_after: 11
+    endpoint_acceptances_this_invocation: 0
+  outcome: PARTIAL_SOURCE_MATERIALIZATION_VERIFIED_FULL_SNAPSHOT_ASSEMBLY_NOT_VERIFIED
