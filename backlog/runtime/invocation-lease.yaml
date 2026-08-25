@@ -1,11 +1,11 @@
 invocation_lease:
-  version: 2
-  state: ACQUIRED
+  version: 3
+  state: RELEASED
   owner: PRIMARY_ORCHESTRATOR
   invocation_id: CYLINDER-PRODUCTION-FIRE-20260825-170349Z
   acquired_at: 2026-08-25T17:03:49Z
-  released_at: null
+  released_at: 2026-08-25T17:05:29Z
   authoritative_branch: chore/rename-dependency-files
   purpose: singleton CylinderManagement production coordinator lease for coordinated BL-001 and BL-002 execution
   duplicate_action: NOOP
-  outcome: IN_PROGRESS
+  outcome: WAITING_FOR_USER_STORY_APPROVAL_AND_BL001_ATOMIC_PROJECTION
