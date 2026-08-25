@@ -11,27 +11,26 @@ result:
     pending_atomic_projection_rows: 11
     eligible_rows_for_incremental_story_generation: 123
   story_result:
-    story_dispositions: 3
-    ready_for_user_review: 3
+    story_dispositions: 12
+    ready_for_user_review: 12
     approved: 0
-    story_ids: [STORY-0001, STORY-0002, STORY-0003]
-    fingerprints:
-      STORY-0001: 86f9d1e462553f6d69f78afef2770737931a267253ccef8d0c0d4075489cf624
-      STORY-0002: a92084eb69e026bf18431514c19bed9472bae66254eeff4bc0c3772b2f2a3276
-      STORY-0003: 03ebb235a749d5867ad38b79849d738124e7ab283afaceb2db9dce2cdac18d3d
+    story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012]
+    newest_fingerprints:
+      STORY-0011: c34ea04e99af64319cb6d9bcee30860a8cd0a056e47bb49e8a41d8a6faefa3c4
+      STORY-0012: 9a2ad04609d2ab03387f065289116814f23b4260328afe551e7fa94fe100fa1d
   usecase_result:
     candidate_usecases: 0
     approved_for_testing: 0
     blocker: STORY_USER_APPROVAL_REQUIRED
+  test_scenario_result:
+    authoritative_scenarios: 0
+    blocker: APPROVED_FOR_TESTING_USECASE_REQUIRED
   final_verification_blockers:
     - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED
     - ALL_CANONICAL_ROWS_REQUIRE_STORY_DISPOSITION
     - STORY_USER_APPROVAL_REQUIRED
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    BL-002 execution has started incrementally from accepted canonical BL-001 rows. Three Stories are technically
-    constrained and READY_FOR_USER_REVIEW. No pending BL-001 atomic-projection row was consumed and no Story or Use Case
-    was auto-approved.
+    BL-002 continues incrementally from accepted canonical BL-001 rows. Twelve Stories are technically constrained and READY_FOR_USER_REVIEW. No pending BL-001 atomic-projection row was consumed and no Story or Use Case was auto-approved.
   next_action: >-
-    Continue safe-independent Story generation from the remaining eligible canonical rows and present exact Story IDs and
-    fingerprints for user approval. Do not use the 11 pending BL-001 rows until they are atomically canonical.
+    Continue safe-independent Story generation from remaining eligible canonical rows on later invocations and await explicit user approval for exact Story IDs/fingerprints before forming approved Use Cases. Do not use the 11 pending BL-001 rows until they are atomically canonical.
