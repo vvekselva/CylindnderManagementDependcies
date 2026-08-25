@@ -39,15 +39,17 @@ result:
     raw_accumulated_complete_counter: 134
     unique_method_path_coverage_proved: false
     corrected_pre_backfill_physical_markdown_rows: 114
-    physically_materialized_markdown_rows: 118
-    confirmed_missing_canonical_keys: 16
-    historical_rows_promoted_this_checkpoint: 4
+    physically_materialized_markdown_rows: 123
+    confirmed_missing_canonical_keys: 11
+    historical_rows_promoted_total: 9
+    historical_rows_promoted_this_checkpoint: 5
     minimum_proven_duplicate_acceptance_events: 4
     reconciliation_integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
     gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
     evidence_index: backlog/runtime/BL-001/reconciliation-evidence-index-20260825-065123.yaml
-    latest_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
-    latest_browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
+    latest_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
+    latest_browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
+    latest_durable_log: logs/runs/RECONCILIATION-FIRE-20260825-020007Z.md
 
   current_work_unit:
     id: WU-BL001-002
@@ -64,7 +66,7 @@ result:
       description: worker/results/WI-0004.yaml, traceability/endpoint-inventory.md and traceability/controller-inventory.md are missing.
     - id: BL001-RECON-MATRIX-BACKFILL
       state: BLOCKING
-      description: 118 unique Markdown rows are materialized; 16 confirmed canonical keys remain to be backfilled from durable accepted evidence.
+      description: 123 unique Markdown rows are materialized; 11 confirmed canonical keys remain to be backfilled from durable accepted evidence.
 
   execution_backend:
     owner: AUTOMATION_TOOL
@@ -75,9 +77,9 @@ result:
   final_outputs: []
   close_allowed: false
   next_action: >-
-    Reconcile the remaining 16 canonical method/path keys only from durable accepted control-repository evidence. Promote
+    Reconcile the remaining 11 canonical method/path keys only from durable accepted control-repository evidence. Promote
     complete historical chains in synchronized Markdown, structured/browser Explorer, unresolved and progress checkpoints.
     Do not perform source reads in WU-BL001-002 and do not guess missing hops. WU-BL001-003 remains blocked.
   note: >-
-    BL-001 remains open. Four durable historical DeliveryPlanningController rows were atomically promoted in the current
-    reconciliation checkpoint, advancing the physical matrix from the corrected 114 rows to 118 while preserving zero unresolved traces.
+    BL-001 remains open. Nine durable historical rows have now been promoted across two reconciliation checkpoints,
+    advancing the corrected physical matrix from 114 rows to 123 while preserving zero unresolved traces.
