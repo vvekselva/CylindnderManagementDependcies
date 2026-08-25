@@ -55,10 +55,10 @@ quality_gate_status:
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: BLOCKED_UNTIL_134_UNIQUE_ROWS_RECONCILE}
     QG-TRC-007: {name: Call Path Evidence, state: BLOCKED_HISTORICAL_DURABLE_EVIDENCE_RECONCILIATION}
     QG-TRC-008: {name: Final Dependency Evidence, state: BLOCKED_HISTORICAL_DURABLE_EVIDENCE_RECONCILIATION}
-    QG-TRC-009: {name: No Guessing And Unresolved Quality, state: PASS_FAIL_CLOSED_NO_NEW_ROWS_PROMOTED}
-    QG-TRC-010: {name: Matrix Coverage, state: BLOCKED_PHYSICAL_ROWS_114_TARGET_134_CONFIRMED_MISSING_20}
+    QG-TRC-009: {name: No Guessing And Unresolved Quality, state: PASS_FAIL_CLOSED_DURABLE_EVIDENCE_ONLY}
+    QG-TRC-010: {name: Matrix Coverage, state: BLOCKED_PHYSICAL_ROWS_118_TARGET_134_CONFIRMED_MISSING_16}
     QG-TRC-011: {name: Resolution Accounting, state: PASS_ZERO_UNRESOLVED_REPORTED}
-    QG-TRC-012: {name: Artifact Consistency, state: BLOCKED_MARKDOWN_JSON_BROWSER_AND_COUNTER_RECONCILIATION}
+    QG-TRC-012: {name: Artifact Consistency, state: BLOCKED_BASE_PLUS_DELTAS_NOT_FINAL_RECONCILED}
     QG-TRC-013: {name: Source Artifact Registration, state: WAITING}
     QG-TRC-014: {name: Execution Closure, state: WAITING}
     QG-TRC-015: {name: User Acceptance, state: WAITING, owner: USER, automatic: false}
@@ -66,10 +66,10 @@ quality_gate_status:
   reconciliation_integrity:
     raw_reported_endpoint_counter: 134
     unique_endpoint_coverage_proved: false
-    physically_observed_markdown_rows: 114
-    confirmed_missing_canonical_keys: 20
-    prior_ssot_materialized_rows: 113
-    prior_ssot_historical_pending: 21
+    corrected_pre_backfill_physical_markdown_rows: 114
+    physically_materialized_markdown_rows: 118
+    confirmed_missing_canonical_keys: 16
+    historical_rows_promoted_this_checkpoint: 4
     minimum_proven_duplicate_acceptance_keys: 4
     duplicate_keys:
       - GET /search/product-category/{searchText}
@@ -85,7 +85,6 @@ quality_gate_status:
 
   close_allowed: false
   reason: >-
-    Final reconciliation found that the accumulated 134 examined/complete counter includes at least four duplicate
-    HTTP-method/path acceptance events and the WU-BL001-002 canonical result/inventory inputs are absent. The physical
-    Markdown matrix contains 114 rows with 20 confirmed canonical keys absent. WU-BL001-002 is fail-closed until unique
-    key coverage and durable full-chain evidence reconcile; WU-BL001-003 and BL-001 closure are blocked.
+    WU-BL001-002 has atomically promoted four durable historical DeliveryPlanningController rows, advancing the physical
+    matrix from the corrected 114 rows to 118. Sixteen canonical keys remain absent and require durable accepted full-chain
+    evidence reconciliation. WU-BL001-003 and BL-001 closure remain blocked until exactly 134 unique keys reconcile.
