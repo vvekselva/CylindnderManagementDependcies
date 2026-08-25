@@ -16,14 +16,12 @@ analysis:
     ineligible_until_atomic_projection: 11
   story_progress:
     eligible_matrix_rows: 123
-    accounted_rows: 3
-    ready_for_user_review: 3
+    accounted_rows: 8
+    ready_for_user_review: 8
     approved_stories: 0
-    story_ids: [STORY-0001, STORY-0002, STORY-0003]
+    story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008]
   usecase_progress:
     approved_for_testing: 0
     blocked_by_story_approval: true
   next_action: >-
-    Continue safe-independent Story generation from remaining accepted canonical BL-001 rows while BL-001 atomic
-    consolidation proceeds. Do not consume the 11 pending projection rows. Stop each technically validated Story at
-    READY_FOR_USER_REVIEW and require explicit user approval before Use Case composition or downstream test use.
+    Continue safe-independent Story generation from remaining accepted canonical BL-001 rows while BL-001 atomic consolidation proceeds. Do not consume the 11 pending projection rows. Stop each technically validated Story at READY_FOR_USER_REVIEW and require explicit user approval before Use Case composition or downstream test use.
