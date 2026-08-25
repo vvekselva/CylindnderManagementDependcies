@@ -33,32 +33,23 @@ analysis:
     result: SOURCE_CHECK_100_PERCENT_ACCUMULATED
     trace_additions: {examined: 5, complete: 5, unresolved: 0}
     historical_backfills: 2
-    accepted_endpoints:
-      - POST /domainLookup/productUom/save
-      - POST /domainLookup/product/save
-      - POST /domainLookup/cylinder/save
-      - POST /domainLookup/vehicle/save
-      - POST /domainLookup/driver/save
-    backfilled_endpoint_keys:
-      - GET /domainLookup
-      - POST /domainLookup/productCategory/save
     chain_completeness: FULL_BRANCHING
     source_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
 
   reconciliation_checkpoint:
     work_unit: WU-BL001-002
-    latest_checkpoint: PRODUCTION-FIRE-20260825-070408
+    latest_checkpoint: RECONCILIATION-FIRE-20260825-020007Z
     governing_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ
     corrected_pre_backfill_physical_markdown_rows: 114
-    historical_rows_promoted_this_checkpoint: 4
-    matrix_materialized_rows: 118
-    confirmed_missing_canonical_keys: 16
+    historical_rows_promoted_total: 9
+    historical_rows_promoted_this_checkpoint: 5
+    matrix_materialized_rows: 123
+    confirmed_missing_canonical_keys: 11
     unresolved_rows: 0
-    structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
-    browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
+    structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
+    browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
     evidence_index: backlog/runtime/BL-001/reconciliation-evidence-index-20260825-065123.yaml
-    next_evidence_ready_rows: 5
-    next_evidence_ready_family: DeliveryPlanningStopManagementController
+    remaining_evidence_location_pending_rows: 11
 
   self_reliant_architecture_validation:
     report: tests/self-reliant-e2e-validation-2026-08-23.md
@@ -117,24 +108,25 @@ analysis:
     QG-TRC-005: BLOCKED_MISSING_WORKER_RESULTS_WI0004
     QG-TRC-006: BLOCKED_UNTIL_134_UNIQUE_ROWS_RECONCILE
     QG-TRC-009: PASS_FAIL_CLOSED_DURABLE_EVIDENCE_ONLY
-    QG-TRC-010: BLOCKED_PHYSICAL_ROWS_118_TARGET_134_CONFIRMED_MISSING_16
+    QG-TRC-010: BLOCKED_PHYSICAL_ROWS_123_TARGET_134_CONFIRMED_MISSING_11
     QG-TRC-012: BLOCKED_BASE_PLUS_DELTAS_NOT_FINAL_RECONCILED
 
   canonical_result_accepted: false
   matrix_construction_unlocked: true
   matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
-  matrix_materialized_rows: 118
-  historical_accepted_rows_pending_backfill: 16
+  matrix_materialized_rows: 123
+  historical_accepted_rows_pending_backfill: 11
 
   proved_now:
     - The raw accumulated source-check counters are 134 examined and 134 COMPLETE with zero unresolved, but duplicate historical acceptance means unique-key proof still requires reconciliation.
     - The corrected pre-backfill Markdown row count was 114 rather than the stale 113 SSOT value.
-    - Four durable historical DeliveryPlanningController rows were atomically promoted, advancing the matrix to 118 rows.
-    - Five DeliveryPlanningStopManagementController keys have located durable full-chain evidence for the next reconciliation batch.
+    - Nine durable historical rows have been atomically promoted across two reconciliation checkpoints, advancing the matrix to 123 rows.
+    - Five DeliveryPlanningStopManagementController rows were promoted this invocation from already-durable full-chain evidence.
+    - Eleven canonical keys remain evidence-location pending; no fresh application-source read is allowed under WU-BL001-002.
     - The latest checkpoint created zero transient lane logs and did not replay the already-closed worker generation.
 
   next_step: >-
-    Continue WU-BL001-002 final reconciliation from durable accepted evidence only. Promote the five evidence-ready
-    DeliveryPlanningStopManagementController rows in a synchronized Markdown/Explorer/progress checkpoint, then locate
-    accepted full-chain evidence for the remaining eleven keys. Do not read application source or guess missing hops.
-    WU-BL001-003 remains blocked until exactly 134 unique matrix rows reconcile.
+    Continue WU-BL001-002 final reconciliation from durable accepted evidence only. Locate full accepted chains for the
+    remaining eleven keys, promote them in synchronized Markdown/Explorer/progress checkpoints when proved, and otherwise
+    remain fail-closed. Do not read application source or guess missing hops. WU-BL001-003 remains blocked until exactly
+    134 unique matrix rows reconcile.
