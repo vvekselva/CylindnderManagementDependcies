@@ -1,135 +1,78 @@
 local_execution:
-  version: 47
+  version: 48
   backlog_item: BL-001
   work_unit: WU-BL001-002
-  state: SOURCE_CHECK_COMPLETE_MATRIX_RECONCILIATION_READY
+  state: MATRIX_RECONCILIATION_BLOCKED_INTEGRITY
   backend: LOCAL_PROCESS_POOL
   architecture: architecture/self-reliant-e2e-execution.md
   self_reliant_governance: governance/self-reliant-execution.yaml
   source_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
-  fallback_source_provider: LOCAL_GIT_CHECKOUT
-  preexisting_local_source_checkout_required: false
-  staged_executor: automation/staged-lane-executor-v3.py
-  staged_worker: automation/staged-lane-worker-v3.py
   configured_lanes: 10
   max_parallel_workers: 10
-  selected_safe_tasks: 10
   github_actions_dependency: NONE
-  external_worker_service_dependency: NONE
 
-  latest_production_fire:
+  latest_worker_generation:
     execution_id: E2E-STAGED-20260823-161214
-    dispatch_fingerprint: 6c99cd0f51605ea5461169a349c7153cd9da658070f15727ab7d93ac7571522d
-    phase: CLOSED_RESTAGE_REQUIRED
-    state: CLOSED
-    result: SOURCE_RESTAGE_AND_BINDING_REQUIRED
-    source_snapshot_materialized_files: 29
+    state: CLOSED_SYNCHRONIZED
     workers_started: 10
     worker_results_received: 10
     worker_failures: 0
-    source_closure_complete: false
-    missing_source_requests: 16
-    missing_binding_requests_emitted_by_workers: 3
-    qg_source_001_state: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
-    expected_concurrent_lanes: 10
-    peak_service_concurrent_lanes: 2
-    average_service_concurrent_lanes: 0.0
-    peak_service_capacity_utilization_percentage: 20.0
-    qg_lane_001_state: UNDERUTILIZED
-    backend_capacity_probe_peak_service_concurrent_lanes: 10
     individual_lane_logs_remaining: 0
+    old_snapshot_source_closure_complete: false
+    old_snapshot_missing_source_requests: 16
     trace_evidence_auto_accepted: false
 
-  active_backlog_drain_invocation:
-    trigger: PRIMARY_ORCHESTRATOR
-    mode: DIRECT_FROZEN_SOURCE_TRACE_AND_RECONCILIATION_HANDOFF
-    status: SOURCE_CHECK_100_PERCENT_SYNCHRONIZED
-    completed_worker_generations_this_window: 0
-    old_generation_idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    current_checkpoint_time: 2026-08-25T05:11:15+05:30
-    current_checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-051115.md
-    worker_fire_started_at_checkpoint: false
-    reason_worker_fire_not_started: PRIOR_GENERATION_CLOSED_SYNCHRONIZED_AND_ADVANCED_IMMUTABLE_STAGED_SNAPSHOT_NOT_PROVED
-    direct_source_analysis_continued: true
-    newly_accepted_endpoint_traces_this_checkpoint: 5
-    historical_rows_backfilled_this_checkpoint: 2
+  current_invocation:
+    owner: PRIMARY_ORCHESTRATOR
+    work_unit: WU-BL001-002
+    idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION
+    worker_generation_started: false
+    workers_started: 0
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
-
-  current_orchestrator_restage_iteration:
-    checkpoint_time: 2026-08-25T05:11:15+05:30
-    checkpoint_log: logs/runs/PRODUCTION-FIRE-20260825-051115.md
-    worker_fire_started: false
-    reason_worker_fire_not_started: SOURCE_CHECK_ALREADY_REACHED_100_PERCENT_VIA_PRIMARY_ORCHESTRATOR_VALIDATED_FROZEN_SOURCE
-    source_snapshot_materialized_files: 29
-    exact_source_requests_pending_from_last_worker_batch: 16
-    source_resolution_entries_ready_for_materialization: 20
-    source_resolution_entries_unresolved: 0
-    source_materialization_transport_blocker: CONNECTOR_TO_EXECUTION_HOST_FILE_BRIDGE_UNAVAILABLE
-    binding_requests_emitted_by_workers: 3
-    binding_identities_source_validated: 3
-    binding_identities_unresolved: 0
-    binding_implementations_already_worker_staged: 2
-    binding_implementations_pending_snapshot_materialization: 1
-    note: >-
-      These old-generation restage facts are retained for audit. They no longer block canonical endpoint source-check coverage,
-      which was completed by Primary-Orchestrator validation directly against the frozen Git source. Do not replay the old
-      worker generation merely to reproduce already accepted source evidence.
-
-  source_state:
-    gate: QG-SOURCE-001
-    state: CANONICAL_ENDPOINT_SOURCE_CHECK_100_PERCENT_DIRECT_FROZEN_SOURCE_VALIDATED
-    controller_roots_verified: 10
-    canonical_endpoint_trace_coverage_percent: 100
-    exact_source_requests_pending_from_old_worker_generation: 16
-    binding_identities_unresolved: 0
-    next_phase: FINAL_MATRIX_RECONCILIATION
-    restage_owner: PRIMARY_ORCHESTRATOR
-    source_layout: repository/source-layout.yaml
-    source_restage_resolution: backlog/runtime/BL-001/source-restage-resolution.yaml
-    source_restage_dispatch: backlog/runtime/BL-001/source-restage-dispatch.yaml
-    old_generation_replay_required: false
+    source_reads_allowed: false
+    new_endpoint_rows_accepted: 0
+    historical_rows_promoted: 0
+    outcome: FAIL_CLOSED_RECONCILIATION_INTEGRITY
+    evidence: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
 
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
-    execution_journal_required: true
     pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
     closed_waiting_validation_behavior: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
     interrupted_running_behavior: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
     changed_dispatch_behavior: START_NEW_EXECUTION_GENERATION
     already_closed_synced: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
-    validation_cases_passed: 5
-    validation_cases_total: 5
-    latest_runtime_recovery: PASS_CLOSED_GENERATION_NOOP_DIRECT_SOURCE_COMPLETION
-    latest_runtime_recovery_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
 
-  accepted_trace_checkpoint:
-    total_endpoints: 134
-    examined: 134
-    complete: 134
-    unresolved: 0
-    blocked: 0
-    failed: 0
-    not_yet_examined: 0
-    matrix_state: READY_FOR_FINAL_RECONCILIATION
-    matrix_materialized_rows: 113
-    historical_accepted_rows_pending_backfill: 21
-    latest_state_transition_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
+  reconciliation_state:
+    canonical_endpoint_inventory_target: 134
+    raw_accumulated_examined_counter: 134
+    raw_accumulated_complete_counter: 134
+    unique_method_path_coverage_proved: false
+    physically_observed_markdown_rows: 114
+    confirmed_missing_canonical_keys: 20
+    prior_ssot_materialized_rows: 113
+    prior_ssot_historical_rows_pending_backfill: 21
+    minimum_proven_duplicate_acceptance_events: 4
+    required_worker_result_state: MISSING
+    required_endpoint_inventory_state: MISSING
+    required_controller_inventory_state: MISSING
+    gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
+    pending_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+    pending_projection_rows: 4
+    pending_projection_accepted: false
 
   work_unit_handoff:
-    completed: WU-BL001-001
-    ready: WU-BL001-002
-    waiting: WU-BL001-003
-    closure_work_unit: WU-BL001-004
-    rule: >-
-      WU-BL001-002 must reconcile the remaining 21 historical accepted rows from durable evidence and consolidate the
-      base-plus-delta structured/browser projection without inventing chains. WU-BL001-003 may run only after that
-      reconciliation passes. BL-001 cannot close without all required gates and explicit user acceptance.
+    WU-BL001-001: COMPLETE_REPORTED_PENDING_UNIQUE_KEY_RECONCILIATION
+    WU-BL001-002: BLOCKED_RECONCILIATION_INTEGRITY
+    WU-BL001-003: BLOCKED_WAITING_FOR_RECONCILIATION
+    WU-BL001-004: WAITING_FOR_DEPENDENCY
+    close_allowed: false
 
   next_action: >-
-    Begin WU-BL001-002 final matrix reconciliation. Backfill the remaining 21 historical accepted endpoint rows only from
-    durable accepted evidence, verify one unique HTTP-method/path row for each of the 134 endpoints, reconcile Markdown,
-    structured JSON, browser projection and zero-unresolved accounting, then hand the reconciled matrix to WU-BL001-003.
+    Reconstruct the canonical 134 unique method/path inventory from durable control-repository evidence only. Reconcile
+    that inventory against the 114 physical Markdown rows and 20 confirmed missing keys. Promote only complete chains
+    already present in durable accepted evidence. Do not perform new source reads under WU-BL001-002 and do not guess.
