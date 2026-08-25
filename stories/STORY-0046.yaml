@@ -1,0 +1,84 @@
+story:
+  story_id: STORY-0046
+  title: Register a customer and persist customer contact and address relationships
+  state: NEEDS_CLARIFICATION
+  fingerprint: 63cf5af46c92099508bf691b7465bfa1b829e88b8a5bc1c637319ff4a604b923
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /registerCustomer"]
+  controller: UC01RegisterCustomerController.doPost
+  endpoint: "POST /registerCustomer"
+  business_purpose: Accept a customer-registration submission, validate proved uniqueness constraints, resolve reference data, persist the customer graph and return the proved success or validation terminal path.
+  trigger_and_context: A caller submits POST /registerCustomer from the customer-registration flow.
+  inputs:
+    - Submitted address-type identifiers are proved because the controller resolves them through LookupDataCache.getAddressTypes.
+    - A GST number is proved because the validator checks CustomerJpaDao.existsByGstNumberIgnoreCase.
+    - A phone number is proved because the validator checks PhoneNumberJpaDao.existsByPhoneNumber.
+    - City, state and country identifiers are proved because CustomerIngestionService resolves them with findById calls.
+    - The accepted trace does not preserve the complete submitted field list, so unproved request fields are not invented.
+  normalization_and_defaults:
+    - Address types are resolved from the in-memory LookupDataCache when present.
+    - If the address-type cache is empty, it is refreshed through AddressTypeFetchByPageService.processRequest with a blank search term and AddressTypeJpaDao.findAll(pageable).
+    - No additional request-field normalization or defaulting is proved by the accepted canonical evidence.
+  validations:
+    - CustomerIngestionRequstValidator checks GST uniqueness through CustomerDetailsExistenceUtility.isGstNumberExists -> CustomerJpaDao.existsByGstNumberIgnoreCase -> CustomerDo -> public.tbl_customer.
+    - CustomerIngestionRequstValidator checks phone uniqueness through CustomerDetailsExistenceUtility.isPhoneNumberExists -> PhoneNumberJpaDao.existsByPhoneNumber -> PhoneNumberDo -> public.tbl_phone_number.
+    - City, state and country are resolved through their JpaDao.findById branches before persistence.
+  invalid_value_paths:
+    - A validation-failure terminal path is proved: final-version-1/UC01RegisterCustomer is rendered and address types are repopulated through the same cache/cache-miss logic.
+    - The accepted trace does not preserve the exact invalid values, rejection ordering or exact validation messages, so those details remain unresolved rather than invented.
+  main_flow:
+    - UC01RegisterCustomerController.doPost resolves submitted address-type identifiers through LookupDataCache.
+    - The controller invokes UC01RegisterCustomerMediator.invokeServices.
+    - The mediator invokes CustomerIngestionService.processRequest under the proved generic Spring binding.
+    - CustomerIngestionRequstValidator performs the proved GST and phone uniqueness checks.
+    - CustomerIngestionService resolves CityDo, StateDo and CountryDo through their JpaDao.findById branches.
+    - CustomerJpaDao.save persists CustomerDo.
+    - CustomerDo.customerAddresses cascades to CustomerAddressDo and AddressDo.
+    - CustomerDo.customerPhoneNumbers cascades to CustomerPhoneNumberDo and PhoneNumberDo.
+    - On success the controller returns redirect:/ownership-dashboard.
+  component_flow:
+    - UC01RegisterCustomerController.doPost
+    - LookupDataCache.getAddressTypes / refreshAddressTypes when needed
+    - AddressTypeFetchByPageService.processRequest on cache miss
+    - AddressTypeJpaDao.findAll(pageable) -> AddressTypeDo -> public.tbl_address_type on cache miss
+    - UC01RegisterCustomerMediator.invokeServices
+    - CustomerIngestionService.processRequest
+    - CustomerIngestionRequstValidator.validate
+    - CustomerDetailsExistenceUtility -> CustomerJpaDao / PhoneNumberJpaDao uniqueness checks
+    - CityJpaDao / StateJpaDao / CountryJpaDao findById
+    - CustomerJpaDao.save -> CustomerDo -> public.tbl_customer
+    - CustomerAddressDo -> public.tbl_customer_address -> AddressDo -> public.tbl_address by cascade
+    - CustomerPhoneNumberDo -> public.tbl_customer_phone_number -> PhoneNumberDo -> public.tbl_phone_number by cascade
+    - redirect:/ownership-dashboard or final-version-1/UC01RegisterCustomer
+  data_reads_and_writes:
+    - READ public.tbl_address_type on the address-type cache-miss branch.
+    - READ public.tbl_customer for GST uniqueness.
+    - READ public.tbl_phone_number for phone uniqueness.
+    - READ public.tbl_city, public.tbl_state and public.tbl_country for reference resolution.
+    - WRITE public.tbl_customer through CustomerJpaDao.save.
+    - WRITE public.tbl_customer_address and public.tbl_address through the proved customer-address cascade.
+    - WRITE public.tbl_customer_phone_number and public.tbl_phone_number through the proved customer-phone cascade.
+  side_effects_and_state_changes:
+    - The cache-miss branch refreshes the in-memory addressTypes cache.
+    - Successful persistence creates/updates the proved customer, address and phone relationship graph according to the cascade mappings.
+    - No additional audit/event side effect is proved by the accepted trace.
+  alternate_and_error_flows:
+    - Cache hit and cache miss are both proved for address-type resolution.
+    - Success redirects to /ownership-dashboard.
+    - Validation failure renders final-version-1/UC01RegisterCustomer and repopulates address types.
+    - Other exception semantics are not promoted because the accepted trace does not enumerate them.
+  output_and_postconditions:
+    - Success: redirect:/ownership-dashboard after the proved persistence graph is saved.
+    - Validation failure: customer-registration view is rendered with address-type data repopulated.
+    - Exact validation messages and the full request-field contract remain clarification items.
+  evidence:
+    - traceability/controller-traceability.md
+    - logs/runs/PRODUCTION-FIRE-20260824-150939.md
+  clarification_required:
+    - Complete submitted request-field list and binding names.
+    - Any normalization/default rules beyond address-type cache refresh.
+    - Exact invalid-value predicates, validation ordering and caller-visible validation messages beyond the proved GST/phone uniqueness checks.
+  downstream_test_assertions:
+    - classification: INTEGRATION
+      assertion: POST /registerCustomer follows the proved controller -> mediator -> CustomerIngestionService chain, performs GST and phone uniqueness reads, resolves city/state/country references, persists the customer/address/phone graph and reaches the proved success or validation terminal path.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 63cf5af46c92099508bf691b7465bfa1b829e88b8a5bc1c637319ff4a604b923}
