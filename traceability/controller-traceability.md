@@ -1,14 +1,14 @@
 # BL-001 Incremental Controller Traceability Matrix
 
-Status: **READY_FOR_FINAL_RECONCILIATION**  
+Status: **RECONCILIATION_BLOCKED_INTEGRITY**  
 Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`  
 Matrix workflow: `workflows/WF-002-incremental-traceability-matrix.yaml`  
 Structured full-chain projection: `traceability/explorer/traceability-matrix.json` plus ordered delta artifacts listed in `traceability/matrix-progress.yaml`.
 
 This matrix was built while source analysis was in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
-Current canonical checkpoint: **134 / 134 examined; 134 COMPLETE; 0 UNRESOLVED; 0 not yet examined.**  
-Rows currently materialized below: **118**. The other 16 historically accepted rows must still be backfilled from durable accepted evidence during WU-BL001-002 and must not be invented from counts alone.
+Reported source-check counter: **134 / 134 examined; 134 COMPLETE; 0 UNRESOLVED; 0 not yet examined.** This raw accumulated counter is **not yet accepted as unique-key coverage proof** because durable history contains duplicate acceptance events.  
+Rows currently materialized below: **123**. The remaining **11** canonical method/path keys must still be reconciled from durable accepted evidence during WU-BL001-002; no row may be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -130,12 +130,17 @@ Rows currently materialized below: **118**. The other 16 historically accepted r
 | GET | `/delivery-planning/dashboard` | `DeliveryPlanningController.showDeliveryPlanningDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/DeliveryPlanningDashboard` | `logs/runs/PRODUCTION-FIRE-20260825-061110-SCHEDULER.md` |
 | GET | `/delivery-planning/customer-density-bubble-map` | `DeliveryPlanningController.showCustomerDensityBubbleMap` | COMPLETE | FULL | TERMINAL_VIEW | `with-menu/CustomerDensityBubbleMap`; no service/DAO/database dependency | `logs/runs/PRODUCTION-FIRE-20260825-061110-SCHEDULER.md` |
 | GET | `/delivery-planning/weekly-forecast` | `DeliveryPlanningController.showWeeklyForecastReview` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEWS_AND_TERMINAL_VIEW | `public.vw_delivery_planning_forecast_confirmation_worklist`; `public.vw_customer_product_consumption_projection`; `public.vw_customer_delivery_planning_signal`; `with-menu/DeliveryPlanningWeeklyForecast` | `logs/runs/PRODUCTION-FIRE-20260825-061110-SCHEDULER.md` |
+| GET | `/delivery-planning/stops/manage` | `DeliveryPlanningStopManagementController.showStopManagementPage` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_VIEW_AND_TERMINAL_VIEW | `public.tbl_delivery_planning_stop`; `public.vw_customer_address_location_status`; `with-menu/DeliveryPlanningStopManagement` | `logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md` |
+| GET | `/delivery-planning/stops/manage/` | `DeliveryPlanningStopManagementController.showStopManagementPage` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_VIEW_AND_TERMINAL_VIEW | `public.tbl_delivery_planning_stop`; `public.vw_customer_address_location_status`; `with-menu/DeliveryPlanningStopManagement` | `logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md` |
+| POST | `/delivery-planning/stops/manage/save` | `DeliveryPlanningStopManagementController.saveStop` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_AND_TERMINAL_REDIRECT | `public.tbl_delivery_planning_stop`; validation or `redirect:/delivery-planning/stops/manage` | `logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md` |
+| POST | `/delivery-planning/stops/manage/save-selected` | `DeliveryPlanningStopManagementController.saveSelectedPoints` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_AND_TERMINAL_REDIRECT | mediator/validator/service/DAO chain to `public.tbl_delivery_planning_stop`; `redirect:/delivery-planning/stops/manage` | `logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md` |
+| POST | `/delivery-planning/stops/manage/remove` | `DeliveryPlanningStopManagementController.removeStop` | COMPLETE | FULL | POSTGRES_TABLE_AND_TERMINAL_REDIRECT | `public.tbl_delivery_planning_stop`; `redirect:/delivery-planning/stops/manage` | `logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md` |
 
 ## Current unresolved paths
 
-**None among all 134 examined endpoints.**
+**None among the 123 currently materialized accepted rows.**
 
-Canonical source-check coverage is now **100 percent**. The matrix is `READY_FOR_FINAL_RECONCILIATION`; WU-BL001-002 must reconcile the remaining 16 historical accepted rows and the base-plus-delta structured/browser projection before WU-BL001-003 traceability-gate validation can run.
+The raw source-check counter reports 134/134 COMPLETE, but unique HTTP-method/path coverage is still under reconciliation because durable history contains duplicate acceptance events. WU-BL001-002 must reconcile the remaining 11 canonical keys and the base-plus-delta structured/browser projection before WU-BL001-003 traceability-gate validation can run.
 
 ## Incremental update rule
 
@@ -144,5 +149,5 @@ Canonical source-check coverage is now **100 percent**. The matrix is `READY_FOR
 3. Immediately upsert the `(HTTP method, path)` row here.
 4. Preserve complete ordered/branching component chains in the Explorer structured projection.
 5. Synchronize unresolved/blocked/failed accounting and `matrix-progress.yaml`.
-6. At 100% coverage, WU-BL001-002 performs final reconciliation rather than recreating the matrix.
+6. At 100% reported coverage, WU-BL001-002 performs unique-key final reconciliation rather than trusting accumulated counters.
 7. BL-001 remains open until final gates and explicit user acceptance pass.
