@@ -1,13 +1,26 @@
 local_execution:
   backlog_item: BL-002
-  state: INITIALIZED_NOT_STARTED
-  execution_id: null
+  state: WAITING_FOR_USER_STORY_APPROVAL
+  execution_id: CYLINDER-PRODUCTION-FIRE-20260825-180109Z
   dispatch_fingerprint: null
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  source_provider: null
-  phase: WAITING_FOR_DEPENDENCY
-  worker_state: NOT_STARTED
-  aggregate_result_fingerprint: null
-  validation_state: NOT_STARTED
-  sync_state: NOT_STARTED
+  source_provider: CANONICAL_BL001_MATRIX_ONLY
+  phase: USER_STORY_APPROVAL_BOUNDARY
+  worker_state: NO_WORKER_REPLAY_THIS_INVOCATION
+  workers_started_this_invocation: 0
+  transient_lane_logs_created: 0
+  residual_transient_lane_logs: 0
+  validation_state: PASS_12_STORIES_READY_FOR_USER_REVIEW
+  sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR_CHECKPOINT
   recovery_state: NONE
+  incremental_scope:
+    canonical_bl001_rows_eligible: 123
+    pending_bl001_atomic_projection_rows_excluded: 11
+    story_candidates_ready_for_review: 12
+    story_candidates_approved: 0
+  approval_boundary:
+    owner: USER
+    state: WAITING_FOR_USER
+    exact_story_ids_and_fingerprints_required: true
+    usecase_generation_allowed: false
+  next_action: WAIT_FOR_EXPLICIT_STORY_APPROVAL_OR_REJECTION; DO_NOT_FORM_USE_CASES_BEFORE_APPROVAL

@@ -1,17 +1,17 @@
 work_unit_status:
   backlog_item: BL-002
-  state: EXECUTING_INCREMENTAL_STORY_GENERATION
-  current_work_unit: WU-BL002-001
+  state: WAITING_FOR_USER_STORY_APPROVAL
+  current_work_unit: WU-BL002-002
   work_units:
     - id: WU-BL002-001
-      state: EXECUTING
+      state: CHECKPOINTED_INCREMENTAL_GENERATION
       name: Generate evidence-backed Stories from accepted canonical BL-001 rows
       progress:
         eligible_rows: 123
-        accounted_rows: 10
-        ready_for_user_review: 10
+        accounted_rows: 12
+        ready_for_user_review: 12
         approved: 0
-      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010]
+      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012]
     - id: WU-BL002-002
       state: WAITING_FOR_USER_DECISION
       name: Story approval
@@ -24,7 +24,9 @@ work_unit_status:
   summary:
     total: 4
     ready: 0
-    executing: 1
+    executing: 0
     blocked: 2
     waiting_for_user: 1
+    checkpointed: 1
     closed: 0
+  next_action: USER_APPROVE_OR_REJECT_EXACT_STORY_IDS_AND_FINGERPRINTS_BEFORE_USECASE_COMPOSITION
