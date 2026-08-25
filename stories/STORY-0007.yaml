@@ -1,0 +1,45 @@
+story:
+  story_id: STORY-0007
+  title: Return offline map status JSON
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 6861a33eef06f56360008bca455a5aa78bd38718cacc6567fb12868e9f4d9a5f
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /offline-map/status-json"]
+  controller: OfflineMapController status-json path
+  endpoint: "GET /offline-map/status-json"
+  business_purpose: Return the source-proved offline-map status information as JSON; no additional business interpretation is asserted.
+  trigger_and_context: A caller requests GET /offline-map/status-json.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths: []
+  main_flow:
+    - The request reaches the OfflineMapController status-json path.
+    - The accepted dependency chain reaches the MBTiles file, SQLite metadata, and frontend classpath resources.
+    - A terminal JSON response is returned.
+  component_flow:
+    - OfflineMapController status-json path
+    - MBTiles file
+    - SQLite metadata
+    - frontend classpath resources
+    - TERMINAL_JSON
+  business_rules: []
+  data_reads_and_writes:
+    - Reads are proved against the MBTiles file and SQLite metadata.
+    - Frontend classpath resources are part of the accepted dependency chain.
+    - No database or file write is proved.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows: []
+  output_and_postconditions:
+    - Offline-map status JSON is returned.
+    - No persistence mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /offline-map/status-json"
+    - logs/runs/INVOCATION-20260823-160000.md / LANE-02
+  downstream_test_assertions:
+    - classification: UNIT_INTEGRATION_CANDIDATE
+      assertion: GET /offline-map/status-json follows the accepted MBTiles/SQLite/classpath dependency chain and returns terminal JSON without a proved persistence mutation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 6861a33eef06f56360008bca455a5aa78bd38718cacc6567fb12868e9f4d9a5f
