@@ -5,9 +5,9 @@ connector_materialization:
   authoritative_branch: chore/rename-dependency-files
   authoritative_branch_head_at_start: c9903589def89b1ebe38a0f02625014fbf0eba01
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  state: IN_PROGRESS
+  state: FULL_BASE_AND_ORDERED_DELTA_CONTENT_MATERIALIZED_CONNECTOR_NATIVE
   purpose: >-
-    Replace the obsolete connector-response-truncation blocker with connector-native Git blob materialization.
+    Replace the obsolete connector-response-truncation blocker with connector-native Git blob/file materialization.
     Reconstruct the existing governed Explorer base plus ordered deltas without replaying workers or weakening
     WF-002 artifact-consistency gates.
   idempotency:
@@ -16,6 +16,7 @@ connector_materialization:
     worker_replay: false
     workers_started: 0
     transient_lane_logs_created: 0
+    residual_transient_lane_logs: 0
   base_model:
     path: traceability/explorer/matrix-data.js
     blob_sha: 3934eea5c72a9996aa555ad9b020ac683c01c827
@@ -27,27 +28,35 @@ connector_materialization:
     apply_deltas_path: traceability/explorer/apply-deltas.js
     apply_deltas_blob_sha: 3ed7a7559b4e73830603c871ba37c499576527c5
     ordered_delta_count: 42
-  verified_ordered_delta_prefix:
-    - {path: traceability/explorer/matrix-delta-20260824-003111.js, blob_sha: 1935bec0c158635c25156f9b8e531032678d0c1a, state: PASS_FULL_CHAIN_CONTENT_READ}
-    - {path: traceability/explorer/matrix-delta-20260824-005711.js, blob_sha: 8840ab062c7bebb0f91adb0d461aa57fa4632454, state: PASS_FULL_CHAIN_CONTENT_READ}
-    - {path: traceability/explorer/matrix-delta-20260824-013336.js, blob_sha: 6d261e6687ec44da91c71e1caf70547496ff502e, state: PASS_FULL_CHAIN_CONTENT_READ}
-    - {path: traceability/explorer/matrix-delta-20260824-013546.js, blob_sha: 84db03cd6627905a3b86a13b519c52fca00379c5, state: PASS_FULL_CHAIN_CONTENT_READ}
-    - {path: traceability/explorer/matrix-delta-20260824-020143.js, blob_sha: 426538bcbb79eedfdf766671f98b17d1faa284c8, state: PASS_FULL_CHAIN_CONTENT_READ}
-  verified_delta_files: 5
-  remaining_delta_files: 37
+    exact_order_source: traceability/explorer/index.html
+    upsert_key: HTTP_METHOD_PLUS_PATH
+  ordered_delta_materialization:
+    state: PASS_ALL_42_FULL_CONTENT_READ
+    verified_delta_files: 42
+    remaining_delta_files: 0
+    large_delta_blob_fallback_used:
+      - path: traceability/explorer/matrix-delta-20260824-181810.js
+        blob_sha: 6af6ad908d3ae702cc559fa476ace021a8b8fc3f
+        state: PASS_FULL_BLOB_READ
+    last_ordered_delta:
+      path: traceability/explorer/matrix-delta-20260825-020007.js
+      blob_sha: f5621e837d80c309a7b7a4d202a72cd824d20637
+      state: PASS_FULL_CHAIN_CONTENT_READ
   canonical_projection:
     materialized_unique_keys: 123
     source_proved_recovery_keys_pending_atomic_projection: 11
     target_unique_keys: 134
     canonical_count_changed_this_checkpoint: false
-    qg_trc_012: BLOCKED_UNTIL_FULL_ORDERED_DELTA_RECONSTRUCTION_AND_ATOMIC_REGENERATION
+    qg_trc_012: BLOCKED_ONLY_ON_MODEL_ASSEMBLY_SERIALIZATION_AND_ATOMIC_REGENERATION
   previous_blocker_reassessment:
     connector_large_minified_matrix_materialization: RESOLVED_BY_FETCH_BLOB
-    connector_ordered_delta_materialization: IN_PROGRESS_5_OF_42
-    local_git_dns: STILL_UNAVAILABLE_BUT_NO_LONGER_ONLY_RECOVERY_PATH
-  next_delta: traceability/explorer/matrix-delta-20260824-023321.js
+    connector_ordered_delta_materialization: RESOLVED_ALL_42
+    local_git_dns: STILL_UNAVAILABLE_BUT_NOT_REQUIRED_FOR_CONTENT_RETRIEVAL
+    raw_container_download: UNAVAILABLE
+    remaining_blocker: CONNECTOR_NATIVE_MODEL_ASSEMBLY_AND_ATOMIC_MULTI_ARTIFACT_SERIALIZATION
   next_action: >-
-    Continue connector-native full-content reads in the exact script order from index.html. After all 42 deltas are
-    reconstructed, apply the same HTTP_METHOD_PLUS_PATH upsert semantics as apply-deltas.js, require exactly 123 unique
-    pre-recovery keys, merge the eleven already source-proved corrected recovery rows, require exactly 134 unique keys
-    with zero duplicates, then regenerate Markdown/JSON/browser/progress/runtime artifacts in one consistent checkpoint.
+    Assemble the already materialized base plus all 42 deltas using the exact HTTP_METHOD_PLUS_PATH replacement semantics
+    from apply-deltas.js; require exactly 123 unique pre-recovery keys. Merge the eleven already source-proved corrected
+    recovery rows, require exactly 134 unique keys with zero duplicates, then regenerate controller-traceability.md,
+    unresolved-traceability.md, matrix-progress.yaml, traceability-matrix.json, matrix-data.js, index.html and Level-3
+    runtime together. Do not change canonical counts or hand off to WU-BL001-002 until that atomic serialization passes.
