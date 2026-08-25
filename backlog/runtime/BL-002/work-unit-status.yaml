@@ -8,11 +8,11 @@ work_unit_status:
       name: Generate evidence-backed Stories from accepted canonical BL-001 rows
       progress:
         eligible_rows: 123
-        accounted_rows: 36
-        ready_for_user_review: 31
+        accounted_rows: 42
+        ready_for_user_review: 37
         needs_clarification: 5
         approved: 0
-      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026, STORY-0027, STORY-0028, STORY-0029, STORY-0030, STORY-0031, STORY-0032, STORY-0033, STORY-0034, STORY-0035, STORY-0036]
+      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026, STORY-0027, STORY-0028, STORY-0029, STORY-0030, STORY-0031, STORY-0032, STORY-0033, STORY-0034, STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042]
     - id: WU-BL002-002
       state: WAITING_FOR_USER_DECISION
       name: Story approval and clarification
@@ -22,12 +22,5 @@ work_unit_status:
     - id: WU-BL002-004
       state: BLOCKED_BY_USECASE_APPROVAL
       name: Approve Use Cases and derive scenarios
-  summary:
-    total: 4
-    ready: 0
-    executing: 0
-    blocked: 2
-    waiting_for_user: 1
-    checkpointed: 1
-    closed: 0
+  summary: {total: 4, ready: 0, executing: 0, blocked: 2, waiting_for_user: 1, checkpointed: 1, closed: 0}
   next_action: USER_APPROVE_OR_REJECT_READY_STORY_IDS_WITH_EXACT_FINGERPRINTS; FIVE_STORIES_REMAIN_NEEDS_CLARIFICATION; CONTINUE_NEW_STORY_DISPOSITIONS_ONLY_FROM_ACCEPTED_CANONICAL_ROWS; DO_NOT_COMPOSE_USE_CASES_BEFORE_APPROVAL
