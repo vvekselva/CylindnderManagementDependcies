@@ -1,0 +1,58 @@
+story:
+  story_id: STORY-0013
+  title: Display predefined delivery trips with planning metrics and stops
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 04de66353dc5b5f90124a0b393160f92f8e7d2994f288113defc362c158400a7
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /delivery-planning/predefined-trips"]
+  controller: PredefinedDeliveryTripController.page
+  endpoint: "GET /delivery-planning/predefined-trips"
+  business_purpose: Display predefined delivery-trip data, metrics and planning-stop information using only source-proved dependencies.
+  trigger_and_context: A caller requests GET /delivery-planning/predefined-trips.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No caller-supplied request-value validation is asserted because none is proved in the accepted endpoint trace.
+  main_flow:
+    - The request reaches PredefinedDeliveryTripController.
+    - The controller invokes PredefinedDeliveryTripService for trips, metrics and stop rows.
+    - The controller also invokes DeliveryPlanningStopService.list.
+    - The service/repository layer reads predefined-trip, trip-stop and delivery-planning-stop data.
+    - The metrics branch explicitly reads customer-address-location-status and customer-delivery-planning-signal views.
+    - The endpoint returns its page response using the assembled data.
+  component_flow:
+    - PredefinedDeliveryTripController
+    - PredefinedDeliveryTripService.trips/metrics/stopRows
+    - DeliveryPlanningStopService.list
+    - PredefinedDeliveryTripJpaDao.findActiveTripMetrics
+    - public.tbl_predefined_delivery_trip
+    - public.tbl_predefined_delivery_trip_stop
+    - public.tbl_delivery_planning_stop
+    - public.vw_customer_address_location_status
+    - public.vw_customer_delivery_planning_signal
+  business_rules:
+    - Only source-proved repository/query selection embodied by the accepted trace is asserted; no additional planning rule is inferred.
+  data_reads_and_writes:
+    - Reads public.tbl_predefined_delivery_trip.
+    - Reads public.tbl_predefined_delivery_trip_stop.
+    - Reads public.tbl_delivery_planning_stop.
+    - Reads public.vw_customer_address_location_status.
+    - Reads public.vw_customer_delivery_planning_signal.
+    - No persistence write is proved for this GET endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate or error branch is asserted beyond framework/runtime handling not proved in the accepted trace.
+  output_and_postconditions:
+    - Returns the predefined-delivery-trip page response with source-proved trip, metric and planning-stop data.
+    - No database mutation is proved.
+  evidence:
+    - traceability/explorer/traceability-matrix.json row "GET /delivery-planning/predefined-trips"
+    - logs/runs/INVOCATION-20260823-160000.md LANE-03
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint must assemble its page data from the accepted predefined-trip, trip-stop, delivery-planning-stop and two metrics-view dependencies without a proved persistence mutation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 04de66353dc5b5f90124a0b393160f92f8e7d2994f288113defc362c158400a7
