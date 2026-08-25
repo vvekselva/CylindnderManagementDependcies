@@ -1,8 +1,8 @@
 local_execution:
-  version: 53
+  version: 54
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: TARGETED_UNIQUE_KEY_RECOVERY_CONSOLIDATION_EXECUTION_HOST_BLOCKED
+  state: TARGETED_UNIQUE_KEY_RECOVERY_CONSOLIDATION_CONNECTOR_MATERIALIZATION_BLOCKED
   backend: LOCAL_PROCESS_POOL
   architecture: architecture/self-reliant-e2e-execution.md
   source_repository: vvekselva/CylinderManagement
@@ -20,7 +20,7 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
   current_invocation:
-    invocation_id: UNIQUE-KEY-CONSOLIDATION-20260825-1104Z
+    invocation_id: UNIQUE-KEY-CONSOLIDATION-CONNECTOR-LIMIT-20260825-1309Z
     owner: PRIMARY_ORCHESTRATOR
     work_unit: WU-BL001-001
     idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_CONTINUE_TARGETED_RECOVERY
@@ -30,6 +30,8 @@ local_execution:
     residual_transient_lane_logs: 0
     source_reads_allowed: true
     source_reads_frozen_baseline_only: true
+    authoritative_control_branch: chore/rename-dependency-files
+    authoritative_control_commit_pinned: d2d84ea9bd1a741c80831864f7360ab018c55318
     recovered_key_source_proofs_completed: 11
     corrected_projection_rows: 4
     consolidation_executor_added: automation/consolidate-traceability-explorer.py
@@ -41,8 +43,10 @@ local_execution:
       direct_git_materialization: BLOCKED_DNS_GITHUB_UNRESOLVABLE
       alternate_container_download: BLOCKED_BY_NETWORK_AND_URL_TRUST_BOUNDARY
       connector_full_filesystem_checkout: NOT_EXPOSED
-    durable_log: logs/runs/UNIQUE-KEY-CONSOLIDATION-EXECUTION-BLOCKED-20260825-1104Z.md
-    outcome: FAIL_CLOSED_CONSOLIDATION_EXECUTION_HOST_MATERIALIZATION_UNAVAILABLE
+      connector_pinned_file_reads: PASS
+      connector_large_minified_matrix_materialization: BLOCKED_RESPONSE_TRUNCATION
+    durable_log: logs/runs/UNIQUE-KEY-CONSOLIDATION-CONNECTOR-LIMIT-20260825-1309Z.md
+    outcome: FAIL_CLOSED_CONSOLIDATION_FULL_EXISTING_EXPLORER_MODEL_NOT_MATERIALIZABLE
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
@@ -61,13 +65,14 @@ local_execution:
     projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
     consolidation_executor: automation/consolidate-traceability-explorer.py
   work_unit_handoff:
-    WU-BL001-001: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_BLOCKED_ON_EXECUTION_HOST_MATERIALIZATION
+    WU-BL001-001: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_BLOCKED_ON_FULL_MODEL_MATERIALIZATION
     WU-BL001-002: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
     WU-BL001-003: BLOCKED_WAITING_FOR_RECONCILIATION
     WU-BL001-004: WAITING_FOR_DEPENDENCY
     close_allowed: false
   next_action: >-
-    Materialize the authoritative chore/rename-dependency-files branch on an approved execution filesystem and run
-    automation/consolidate-traceability-explorer.py. Require exactly 123 unique pre-projection keys, merge the eleven
-    source-proved recovery keys, require exactly 134 unique keys with zero duplicates, regenerate Markdown/JSON/browser/
-    progress/runtime artifacts together, synchronize them atomically, and only then hand off to WU-BL001-002.
+    Materialize the complete Explorer base plus ordered deltas from the pinned authoritative control commit on an execution
+    surface that does not truncate the existing full-chain model, run automation/consolidate-traceability-explorer.py,
+    require exactly 123 unique pre-projection keys, merge the eleven source-proved recovery keys, require exactly 134 unique
+    keys with zero duplicates, regenerate Markdown/JSON/browser/progress/runtime artifacts together, synchronize them in one
+    consistent checkpoint, and only then hand off to WU-BL001-002.
