@@ -1,0 +1,56 @@
+story:
+  story_id: STORY-0020
+  title: Display challan heatmap metrics and filter options
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 02e05d7aed62a5be46bd270674b5671b434ca0ebdc35391452b9f661edbc2d57
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /challan-heatmap"]
+  controller: ChallanHeatmapController.showHeatmap
+  endpoint: "GET /challan-heatmap"
+  business_purpose: Display the challan heatmap dashboard using source-proved heatmap metrics and filter-option reads.
+  trigger_and_context: A caller requests GET /challan-heatmap.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No caller-supplied request-value validation is asserted because none is proved in the accepted endpoint trace.
+  main_flow:
+    - The request reaches ChallanHeatmapController.showHeatmap.
+    - The controller constructs ChallanHeatmapFetchRequestDto without setting serachQueryData.
+    - The controller invokes ChallanHeatmapFetchService.processRequest.
+    - Because the assigned-book-window flags are not set for this controller path, the service follows the normal heatmap-metrics branch.
+    - ChallanHeatmapMetricsViewJpaDao reads heatmap metrics plus distinct book types, book codes and series prefixes.
+    - ChallanHeatmapMetricsViewDo maps rows from public.vw_challan_heatmap_metrics.
+    - ChallanHeatmapMetricsViewMapper maps the view rows to ChallanHeatmapMetricDto.
+    - The controller returns final-version-1/ChallanHeatmapDashboard.
+  component_flow:
+    - ChallanHeatmapController.showHeatmap
+    - ChallanHeatmapFetchService.processRequest
+    - ChallanHeatmapMetricsViewJpaDao.findHeatmapMetrics / findDistinctBookTypes / findDistinctBookCodes / findDistinctSeriesPrefixes
+    - ChallanHeatmapMetricsViewDo
+    - public.vw_challan_heatmap_metrics
+    - ChallanHeatmapMetricsViewMapper.mapDoToDto
+    - final-version-1/ChallanHeatmapDashboard
+  business_rules:
+    - For this endpoint the accepted trace proves that the assigned-book-window branch is not used because the controller does not set its required query-data flags.
+    - No other heatmap business rule is inferred.
+  data_reads_and_writes:
+    - Reads public.vw_challan_heatmap_metrics for metrics and filter option values.
+    - No persistence write is proved for this GET endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - The assigned-book-window service branch is explicitly excluded from this endpoint because its source-proved enabling flags are not set.
+    - No additional error branch is asserted beyond framework/runtime handling not proved in the accepted trace.
+  output_and_postconditions:
+    - Returns final-version-1/ChallanHeatmapDashboard populated from the normal heatmap-metrics branch.
+    - No database mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /challan-heatmap"
+    - logs/runs/PRODUCTION-FIRE-20260824-013336.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint must use the normal heatmap metrics branch, read public.vw_challan_heatmap_metrics for metrics/filter values, and must not claim the assigned-book-window branch for this controller path.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 02e05d7aed62a5be46bd270674b5671b434ca0ebdc35391452b9f661edbc2d57
