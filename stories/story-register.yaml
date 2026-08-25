@@ -1,5 +1,5 @@
 story_register:
-  version: 3
+  version: 4
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -23,10 +23,10 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 8
+    story_dispositions: 10
     draft: 0
     technically_validated: 0
-    ready_for_user_review: 8
+    ready_for_user_review: 10
     approved: 0
     rejected: 0
     needs_clarification: 0
@@ -41,5 +41,7 @@ story_register:
     - {story_id: STORY-0006, matrix_row_keys: ["GET /offline-map/style.json"], state: READY_FOR_USER_REVIEW, fingerprint: 8de2952b18665432b67386fa6de5da875ebdc5297e35d9141090aae03cb21fa5, structured: stories/STORY-0006.yaml, human_readable: stories/STORY-0006.md}
     - {story_id: STORY-0007, matrix_row_keys: ["GET /offline-map/status-json"], state: READY_FOR_USER_REVIEW, fingerprint: 6861a33eef06f56360008bca455a5aa78bd38718cacc6567fb12868e9f4d9a5f, structured: stories/STORY-0007.yaml, human_readable: stories/STORY-0007.md}
     - {story_id: STORY-0008, matrix_row_keys: ["GET /challan-page-photo/{challanPagePhotoId}"], state: READY_FOR_USER_REVIEW, fingerprint: 4f33f3f68b8797e03962b8775008ee72f6848e98784f5de754d86fec344f550a, structured: stories/STORY-0008.yaml, human_readable: stories/STORY-0008.md}
+    - {story_id: STORY-0009, matrix_row_keys: ["GET /offline-map/status"], state: READY_FOR_USER_REVIEW, fingerprint: 5d111354ae77e342dec07b2eb1c127eba3b363e7e8fb19a5fa06e3aa98c4e3d1, structured: stories/STORY-0009.yaml, human_readable: stories/STORY-0009.md}
+    - {story_id: STORY-0010, matrix_row_keys: ["GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf"], state: READY_FOR_USER_REVIEW, fingerprint: e45db69767cee472b169e95c8d4319293c29e521f734ce95631b589bb457241e, structured: stories/STORY-0010.yaml, human_readable: stories/STORY-0010.md}
   invariant: >-
     Incremental BL-002 Story generation may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows. Rows still pending BL-001 atomic projection are excluded. No Story becomes authoritative downstream input until its exact fingerprint is explicitly approved by the user. Final BL-002 verification still requires the complete FINAL_VALIDATED BL-001 matrix and full row accounting.
