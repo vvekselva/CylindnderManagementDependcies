@@ -1,0 +1,84 @@
+unique_key_recovery:
+  version: 1
+  backlog_item: BL-001
+  recovery_id: BL001-UNIQUE-KEY-RECOVERY-20260825-0809
+  created_at: 2026-08-25T08:09:52+05:30
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  owner: PRIMARY_ORCHESTRATOR
+  trigger: RECONCILIATION_PREREQUISITE_INTEGRITY_FAILURE
+
+  idempotency:
+    prior_worker_generation: E2E-STAGED-20260823-161214
+    prior_generation_state: CLOSED_SYNCHRONIZED
+    decision: NOOP_DO_NOT_REPLAY
+    residual_transient_lane_logs: 0
+
+  defect:
+    reported_accumulated_examined_counter: 134
+    reported_accumulated_complete_counter: 134
+    unique_method_path_rows_materialized: 123
+    unique_coverage_proved: false
+    minimum_proven_duplicate_acceptance_keys: 4
+    explanation: >-
+      WU-BL001-001 was reported complete from accumulated acceptance counters, but WF-002 and the BL-001 SOW require
+      canonical uniqueness by HTTP method plus path. Reconciliation proved duplicate acceptance/recount events and only
+      123 unique rows are presently materialized. WU-BL001-001 therefore cannot remain complete and WU-BL001-002 cannot
+      continue as though its dependency were satisfied.
+
+  recovery_boundary:
+    reopen_work_unit: WU-BL001-001
+    reopen_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
+    pause_work_unit: WU-BL001-002
+    pause_state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
+    source_reads_allowed_in_reopened_wu001: true
+    source_reads_allowed_in_wu002: false
+    frozen_source_only: true
+    worker_replay_required: false
+    direct_primary_orchestrator_validation_allowed: true
+    atomic_projection_required: true
+
+  exact_missing_canonical_keys:
+    count: 11
+    families:
+      - {controller: ReconciliationDashboardController, count: 2, keys: ["GET /reconciliation-dashboard", "POST /reconciliation-dashboard"]}
+      - {controller: VehicleLoadFetchByIdController, count: 1, keys: ["GET /vehicle-load/fetch"]}
+      - {controller: LookupManagementController, count: 6, keys: ["GET /lookupManagement", "POST /lookupManagement", "POST /lookupManagement/saveCylinderOwnershipType", "POST /lookupManagement/saveCylinderState", "POST /lookupManagement/saveVehicleTripStatus", "POST /lookupManagement/saveVehicleTripStopType"]}
+      - {controller: VehicleTripIngestionController, count: 2, keys: ["GET /addVechileTrip", "POST /addVechileTrip"]}
+
+  durable_evidence_status:
+    vehicle_load_fetch:
+      key: GET /vehicle-load/fetch
+      source_proof: logs/runs/PRODUCTION-FIRE-20260825-005948-SCHEDULER.md
+      proof_state: FULL_FROZEN_SOURCE_PROOF_EXISTS_ACCEPTANCE_DEFERRED
+      recovery_action: REVALIDATE_PRIMARY_ORCHESTRATOR_ACCEPTANCE_IN_REOPENED_WU001_THEN_ATOMIC_PROJECT
+    remaining_ten_keys:
+      proof_state: NO_DURABLE_PRIOR_FULL_CHAIN_ACCEPTANCE_FOUND
+      recovery_action: FRESH_PINNED_SOURCE_REVALIDATION_IN_REOPENED_WU001
+
+  canonical_state_after_recovery_activation:
+    target_unique_keys: 134
+    accepted_unique_keys_materialized: 123
+    unique_keys_pending_recovery: 11
+    unresolved: 0
+    matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
+    reconciliation_eligible: false
+
+  synchronization_contract:
+    required_atomic_artifacts:
+      - traceability/controller-traceability.md
+      - traceability/unresolved-traceability.md
+      - traceability/matrix-progress.yaml
+      - traceability/explorer/traceability-matrix.json
+      - traceability/explorer/matrix-data.js
+      - backlog/runtime/BL-001/work-unit-status.yaml
+      - backlog/runtime/BL-001/result.yaml
+      - backlog/runtime/BL-001/gate-status.yaml
+    rule: >-
+      Do not increment unique coverage for a recovered key until the Primary Orchestrator proves its complete frozen-source
+      chain and all matrix, unresolved, Explorer, progress and runtime projections move together in one accepted checkpoint.
+
+  next_action: >-
+    Revalidate the 11 exact missing canonical method/path keys against the frozen source under reopened WU-BL001-001.
+    Start with GET /vehicle-load/fetch using its durable full source proof, then source-trace the remaining ten keys. Promote
+    each accepted key only through synchronized atomic projection. Resume WU-BL001-002 only after 134/134 unique keys are
+    materially represented exactly once.
