@@ -1,0 +1,48 @@
+story:
+  story_id: STORY-0009
+  title: Inspect offline map availability and metadata status
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 5d111354ae77e342dec07b2eb1c127eba3b363e7e8fb19a5fa06e3aa98c4e3d1
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /offline-map/status"]
+  controller: OfflineMapController.status path
+  endpoint: "GET /offline-map/status"
+  business_purpose: Report the source-proved offline-map status derived from the configured MBTiles file, its SQLite metadata, and required map frontend resources.
+  trigger_and_context: A caller requests GET /offline-map/status.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths: []
+  main_flow:
+    - The request reaches the OfflineMapController status path.
+    - The controller invokes OfflineVectorTileService.fetchStatus().
+    - The accepted trace inspects the configured MBTiles filesystem path.
+    - The service reads SQLite metadata from the MBTiles metadata table and checks required MapLibre/glyph classpath resources.
+    - The endpoint returns the source-proved status result.
+  component_flow:
+    - OfflineMapController status path
+    - OfflineVectorTileService.fetchStatus()
+    - configured MBTiles filesystem path
+    - SQLite metadata table
+    - MapLibre JS/CSS and glyph classpath resources
+    - terminal status response
+  business_rules: []
+  data_reads_and_writes:
+    - Reads filesystem/SQLite/classpath status evidence only.
+    - No database or file write is proved for this endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No specific alternate or invalid-input branch is asserted beyond whatever status values the accepted implementation reports.
+  output_and_postconditions:
+    - Returns offline-map status information based on the configured MBTiles and frontend-resource checks.
+    - No persistence mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /offline-map/status"
+    - logs/runs/INVOCATION-20260823-160000.md / LANE-02
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The status flow must derive its result from the configured MBTiles file, SQLite metadata and required classpath resources without mutating persistence.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 5d111354ae77e342dec07b2eb1c127eba3b363e7e8fb19a5fa06e3aa98c4e3d1
