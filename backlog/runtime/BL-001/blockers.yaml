@@ -4,7 +4,30 @@ blockers:
   planning_blocked: false
   execution_blocked: false
   real_parallel_execution_blocked: false
-  governance_blockers: []
+  governance_blockers:
+    - id: GB-BL001-UNIQUE-PROJECTION-001
+      state: OPEN_FAIL_CLOSED
+      category: ATOMIC_CANONICAL_PROJECTION_CONSOLIDATION
+      affects: WU-BL001-001_TO_WU-BL001-002_HANDOFF
+      summary: >-
+        All 11 missing canonical HTTP method/path keys are fully frozen-source proved, but canonical unique coverage
+        must remain 123/134 until controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml,
+        traceability/explorer/traceability-matrix.json, traceability/explorer/matrix-data.js and Level-3 runtime
+        projections are regenerated from one consistent accepted model.
+      technical_observation: >-
+        The checked-in Explorer currently uses an old base snapshot plus ordered matrix-delta JavaScript files.
+        apply-deltas.js reconstructs the effective browser model by method/path upsert, while the standalone
+        traceability-matrix.json and matrix-data.js base snapshots are not independently current. Promoting only
+        the final recovery delta would make the browser appear complete while leaving the required standalone
+        canonical projections stale, so that partial promotion is forbidden.
+      evidence:
+        - backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+        - traceability/explorer/apply-deltas.js
+        - traceability/explorer/README.md
+      resolution_condition: >-
+        Consolidate the accepted base-plus-ordered-delta model, append the 11 source-proved recovery records,
+        regenerate both standalone structured/browser projections, then synchronize Markdown, unresolved ledger,
+        progress and Level-3 runtime in the same accepted checkpoint before asserting 134/134 unique coverage.
   platform_blockers: []
 
   resolved_execution_host_prerequisites:
@@ -27,27 +50,19 @@ blockers:
 
   source_resolution_work:
     - id: SR-BL001-001
-      state: OPEN_PROGRESSING_NOT_GLOBAL_BLOCKER
+      state: HISTORICAL_CLOSED_NOT_CURRENT_GATE
       category: RECURSIVE_SOURCE_STAGE_CONTINUATION
-      affects: WU-BL001-001_SOURCE_CLOSURE
-      qg_source_001_effect: PASS_ROOTS_VERIFIED_SOURCE_CLOSURE_PARTIAL
       latest_execution: E2E-STAGED-20260823-161214
       latest_missing_source_request_count: 16
       latest_missing_binding_request_count: 3
-      planning_blocked: false
-      worker_backend_blocked: false
       summary: >-
-        The latest closed ten-worker discovery proved controller-root integrity and returned exact additional source requests.
-        Three interface binding identities have since been source-validated; one implementation remains pending immutable
-        snapshot materialization. This is bounded source-staging work, not an external infrastructure blocker.
-      resolution_condition: >-
-        Resolve exact requests through repository/source-layout.yaml at the same frozen commit; stage/blob-verify them;
-        materialize the remaining validated binding implementation; rerun discovery only after the immutable source snapshot
-        and dispatch fingerprint advance. Fail closed on a repeated unchanged request set or the governed iteration limit.
+        Historical worker-source closure remained partial, but targeted direct frozen-source recovery has since
+        source-proved every currently missing canonical endpoint key. The old worker generation must remain NOOP
+        and is no longer the gating condition for unique-key recovery.
 
   performance_observation:
     - id: PERF-BL001-001
-      state: OPEN_UNDERUTILIZATION
+      state: HISTORICAL_UNDERUTILIZATION
       category: QG_LANE_001_PERFORMANCE_GOVERNANCE
       latest_execution: E2E-STAGED-20260823-161214
       expected_concurrent_lanes: 10
@@ -57,7 +72,7 @@ blockers:
       source_evidence_invalidated: false
       summary: >-
         Natural discovery work measured below ten-way SERVICE overlap even though the process-pool capacity probe reached 10/10.
-        Do not add artificial delay to manufacture a PASS. Continue to measure natural workloads and optimize real scheduling only.
+        No artificial delay is permitted to manufacture a PASS.
 
   active_evidence_gaps: []
 
@@ -77,9 +92,15 @@ blockers:
     interrupted_partial_output_not_accepted: true
 
   remaining_work_constraint:
-    state: OPEN
+    state: OPEN_ATOMIC_PROJECTION_REQUIRED
     affects_gate: QG-TRC-002
-    summary: 29 of 134 caller-visible endpoints remain not yet examined at the canonical 105/134 checkpoint.
+    canonical_unique_target: 134
+    materialized_unique_keys: 123
+    pending_unique_keys: 11
+    fully_source_proved_pending_atomic_projection: 11
+    summary: >-
+      Endpoint source proof is complete for the 11 missing unique keys. Remaining work is atomic canonical projection
+      and Explorer base consolidation, not additional source tracing.
 
-  latest_accepted_attempt: {number: 27, invocation: PRODUCTION-FIRE-20260824-213728, new_endpoint_traces_examined: 1, new_complete: 1, new_unresolved: 0}
+  latest_accepted_attempt: {invocation: PRODUCTION-FIRE-20260825-140218-SCHEDULER, new_endpoint_traces_examined: 0, new_complete: 0, new_unresolved: 0, recovery_keys_source_proved: 11, canonical_rows_promoted: 0}
   self_reliant_backend_transition: {state: COMPLETE_ARCHITECTURE_PROMOTED, dispatch: LOCAL-BL001-DISPATCH-005, configured_lanes: 10, source_provider: ORCHESTRATOR_STAGED_SNAPSHOT}
