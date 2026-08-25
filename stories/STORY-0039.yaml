@@ -1,0 +1,30 @@
+story:
+  story_id: STORY-0039
+  title: List suppliers with mapped contact and location data
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 2da4c54055aa1ca3bc0ec88c1c3b8ec178cb955d2c03b2a7071fd6726279e352
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /fetchSupplierByPage"]
+  controller: SupplierFetchByPageController.doGet
+  endpoint: "GET /fetchSupplierByPage"
+  business_purpose: Fetch a paged supplier listing with source-proved supplier, address, phone, city, state and country data and render the supplier-list view.
+  trigger_and_context: A caller opens GET /fetchSupplierByPage.
+  inputs: [Pagination/search inputs may influence the service, but exact names/defaults are not enumerated in the accepted checkpoint.]
+  normalization_and_defaults: []
+  validations: [No field-level validation is asserted beyond the source-proved fetch path.]
+  invalid_value_paths: [A handled redirect path is proved, but its exact trigger/message is not enumerated.]
+  main_flow:
+    - SupplierFetchByPageController.doGet invokes SupplierFetchByPageService.
+    - SupplierJpaDao reads SupplierDo from public.tbl_supplier.
+    - Mapping traverses source-proved address/phone/city/state/country relations.
+    - The controller returns the supplier-list view or handled redirect.
+  component_flow: [SupplierFetchByPageController.doGet, SupplierFetchByPageService, SupplierJpaDao, SupplierDo, public.tbl_supplier, supplier address/phone relations, city/state/country relations, supplier-list view or handled redirect]
+  data_reads_and_writes: [READ public.tbl_supplier and source-proved related address, phone, city, state and country records.]
+  side_effects_and_state_changes: [No persistence write is asserted for this GET listing flow.]
+  alternate_and_error_flows: [Handled redirect is source-proved; exact trigger/message remains unspecified.]
+  output_and_postconditions: [Returns the supplier-list view with mapped supplier details or the source-proved handled redirect.]
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: GET /fetchSupplierByPage loads supplier and the proved related contact/location data and renders the supplier list.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 2da4c54055aa1ca3bc0ec88c1c3b8ec178cb955d2c03b2a7071fd6726279e352}
