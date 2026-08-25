@@ -1,18 +1,29 @@
 analysis:
   backlog_item: BL-002
-  state: INITIALIZED_WAITING_FOR_DEPENDENCY
+  state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  execution_basis:
+    decision: DEC-BL002-004
+    rule: BL-002 may consume accepted, materialized, non-stale canonical BL-001 rows while BL-001 continues.
   dependency:
     backlog_item: BL-001
-    required_state: VERIFIED_OR_CLOSED
-    current_state: PARTIAL
+    current_state: PARTIAL_UNIQUE_KEY_RECOVERY
+    final_verification_still_requires: VERIFIED_OR_CLOSED_AND_FINAL_VALIDATED_MATRIX
   upstream_matrix:
-    required_state: FINAL_VALIDATED
-    current_state: NOT_YET_ELIGIBLE_FOR_IMPORT
+    current_materialized_unique_rows: 123
+    pending_atomic_projection_rows: 11
+    eligible_for_incremental_story_generation: 123
+    ineligible_until_atomic_projection: 11
   story_progress:
-    canonical_matrix_rows: null
-    accounted_rows: 0
+    eligible_matrix_rows: 123
+    accounted_rows: 3
+    ready_for_user_review: 3
     approved_stories: 0
+    story_ids: [STORY-0001, STORY-0002, STORY-0003]
   usecase_progress:
     approved_for_testing: 0
-  next_action: WAIT_FOR_BL001_DEPENDENCY_THEN_IMPORT_FINAL_MATRIX
+    blocked_by_story_approval: true
+  next_action: >-
+    Continue safe-independent Story generation from remaining accepted canonical BL-001 rows while BL-001 atomic
+    consolidation proceeds. Do not consume the 11 pending projection rows. Stop each technically validated Story at
+    READY_FOR_USER_REVIEW and require explicit user approval before Use Case composition or downstream test use.
