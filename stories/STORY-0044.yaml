@@ -1,0 +1,57 @@
+story:
+  story_id: STORY-0044
+  title: Open vehicle-load entry page with vehicle-load purposes
+  state: READY_FOR_USER_REVIEW
+  fingerprint: d01ddc940d49a4fea56d71956efc9455b3b9f5d63c0a675abdb1cf9569575c96
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /vehicleLoad"]
+  controller: Uc02Phase01VehicleLoadController.doGet
+  endpoint: "GET /vehicleLoad"
+  business_purpose: Display the vehicle-load page with the available vehicle-load-purpose values proved by the accepted trace.
+  trigger_and_context: A caller opens GET /vehicleLoad.
+  inputs:
+    - No required request value is proved for this GET handler.
+    - Flash attributes from a prior trip redirect may populate model values, but the accepted trace proves they do not trigger an additional database lookup.
+  normalization_and_defaults:
+    - LookupDataCache.getVehicleLoadPurposes returns the existing in-memory vehicleLoadPurposes list when it is populated.
+    - An empty cached list causes LookupDataCache.refreshVehicleLoadPurpose to run before the page is rendered.
+  validations:
+    - No caller-input validation is proved for this GET path.
+  invalid_value_paths:
+    - No invalid caller-value branch is proved; no additional error behavior is invented.
+  main_flow:
+    - Uc02Phase01VehicleLoadController.doGet requests vehicle-load purposes from LookupDataCache.
+    - On a cache hit, the existing in-memory vehicleLoadPurposes list is used.
+    - On a cache miss, LookupDataCache.refreshVehicleLoadPurpose invokes VehicleLoadPurposeFetchAllService.processRequest.
+    - VehicleLoadPurposeFetchAllService reads all rows through VehicleLoadPurposeJpaDao.findAll.
+    - VehicleLoadPurposeJpaDao is a JpaRepository for VehicleLoadPurposeDo, which maps to public.tbl_vehicle_load_purpose.
+    - The refreshed purpose list is retained in memory and returned to the controller.
+    - The controller renders with-menu/Uc02-Phase01-VehicleLoadView.
+  component_flow:
+    - Uc02Phase01VehicleLoadController.doGet
+    - LookupDataCache.getVehicleLoadPurposes
+    - LookupDataCache.refreshVehicleLoadPurpose on empty-cache branch
+    - VehicleLoadPurposeFetchAllService.processRequest on empty-cache branch
+    - VehicleLoadPurposeJpaDao.findAll on empty-cache branch
+    - VehicleLoadPurposeDo
+    - public.tbl_vehicle_load_purpose
+    - in-memory vehicleLoadPurposes cache
+    - with-menu/Uc02-Phase01-VehicleLoadView
+  data_reads_and_writes:
+    - READ public.tbl_vehicle_load_purpose only on the cache-miss branch.
+    - No vehicle-load persistence write is invoked by this GET handler.
+  side_effects_and_state_changes:
+    - The cache-miss branch refreshes the in-memory vehicleLoadPurposes list from the database.
+    - No persistent application state change is proved.
+  alternate_and_error_flows:
+    - Cache-hit and cache-miss branches are both proved.
+    - No caller-visible exception/error branch is enumerated by the accepted trace.
+  output_and_postconditions:
+    - Returns with-menu/Uc02-Phase01-VehicleLoadView with vehicle-load-purpose data sourced from cache or the proved database refresh path.
+  evidence:
+    - traceability/controller-traceability.md
+    - logs/runs/PRODUCTION-FIRE-20260824-083401.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: GET /vehicleLoad uses cached vehicle-load purposes when present and otherwise refreshes them through VehicleLoadPurposeFetchAllService -> VehicleLoadPurposeJpaDao -> VehicleLoadPurposeDo -> public.tbl_vehicle_load_purpose before rendering with-menu/Uc02-Phase01-VehicleLoadView.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: d01ddc940d49a4fea56d71956efc9455b3b9f5d63c0a675abdb1cf9569575c96}
