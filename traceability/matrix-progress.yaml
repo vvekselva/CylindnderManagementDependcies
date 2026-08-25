@@ -1,4 +1,4 @@
-version: 44
+version: 45
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -7,8 +7,8 @@ browser_data_artifact: traceability/explorer/matrix-data.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
-state: RECONCILIATION_BLOCKED_INTEGRITY
-projection_state: BASE_PLUS_ORDERED_DELTAS_NOT_FINAL_RECONCILED
+state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
+projection_state: BASE_PLUS_ORDERED_DELTAS_UNDER_TARGETED_SOURCE_CHECK_RECOVERY
 
 reported_source_check:
   canonical_endpoint_inventory_target: 134
@@ -17,70 +17,65 @@ reported_source_check:
   unresolved: 0
   blocked: 0
   failed: 0
-  not_yet_examined_counter: 0
   unique_method_path_coverage_proved: false
+  materialized_unique_method_path_keys: 123
+  pending_unique_method_path_keys: 11
   reason: >-
-    Durable history proves at least four method/path keys were accepted COMPLETE earlier and later counted again as
-    newly examined. Therefore the accumulated 134 counter cannot serve as the WF-002 unique-key coverage proof.
+    Durable history proves duplicate acceptance/recount events. The accumulated counters are audit history only and do
+    not satisfy the BL-001 unique HTTP-method/path completion requirement. WU-BL001-001 is reopened for targeted recovery.
 
-matrix_reconciliation:
+unique_key_recovery:
+  state: ACTIVE
+  work_unit: WU-BL001-001
+  recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
+  target_unique_keys: 134
+  materialized_unique_keys: 123
+  pending_unique_keys: 11
+  source_reads_allowed: true
+  frozen_source_only: true
+  worker_generation_replay_required: false
+  atomic_projection_required: true
+
+matrix_reconciliation_history:
   corrected_pre_backfill_physical_markdown_rows: 114
   materialized_matrix_rows: 123
-  historical_accepted_rows_pending_backfill: 11
+  historical_rows_promoted_total: 9
   confirmed_missing_canonical_keys: 11
-  corrected_counter_state: SYNCHRONIZED_AFTER_SECOND_RECONCILIATION_BACKFILL
   integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
   gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-  first_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
-  first_reconciliation_projection_state: PROMOTED_ATOMICALLY
-  first_reconciliation_rows_promoted: 4
-  second_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-031321.yaml
-  second_reconciliation_projection_state: FIVE_STOP_MANAGEMENT_ROWS_PROMOTED_FROM_DURABLE_ACCEPTED_EVIDENCE
-  second_reconciliation_rows_promoted: 5
-  structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
-  browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
+  reconciliation_work_unit_state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
 
 required_canonical_inputs:
-  worker_result: {path: worker/results/WI-0004.yaml, state: MISSING}
-  endpoint_inventory: {path: traceability/endpoint-inventory.md, state: MISSING}
-  controller_inventory: {path: traceability/controller-inventory.md, state: MISSING}
+  worker_result: {path: worker/results/WI-0004.yaml, state: MISSING_HISTORICAL_INPUT_NOT_USED_TO_INVENT_ROWS}
+  endpoint_inventory: {path: traceability/endpoint-inventory.md, state: MISSING_HISTORICAL_INPUT_RECOVERY_USES_CONFIRMED_11_KEY_GAP_SET}
+  controller_inventory: {path: traceability/controller-inventory.md, state: MISSING_HISTORICAL_INPUT_RECOVERY_USES_CONFIRMED_CONTROLLER_GAP_FAMILIES}
 
 proven_duplicate_acceptance_keys:
-  - {method: GET, path: /search/product-category/{searchText}, early_evidence: RUN-WI0004-20260823-022, later_recount: PRODUCTION-FIRE-20260825-003910}
-  - {method: GET, path: /search/product-uom/{searchText}, early_evidence: RUN-WI0004-20260823-022, later_recount: PRODUCTION-FIRE-20260825-003910}
-  - {method: GET, path: /search/state/{searchText}, early_evidence: RUN-WI0004-20260823-022, later_recount: PRODUCTION-FIRE-20260825-003910}
-  - {method: GET, path: /search/supplier/{searchText}, early_evidence: RUN-WI0004-20260823-023, later_recount: PRODUCTION-FIRE-20260825-003910}
-
-latest_materialized_from_invocation: RECONCILIATION-FIRE-20260825-020007Z
-latest_reconciliation_checkpoint: reconciliation-second-backfill-20260825-020007Z
+  - {method: GET, path: /search/product-category/{searchText}}
+  - {method: GET, path: /search/product-uom/{searchText}}
+  - {method: GET, path: /search/state/{searchText}}
+  - {method: GET, path: /search/supplier/{searchText}}
 
 accepted_changes_this_checkpoint:
   new_endpoint_rows: 0
-  historical_rows_promoted: 5
-  materialized_counter_increment_from_corrected_physical_count: 5
+  historical_rows_promoted: 0
+  unique_key_recovery_activated: true
   unresolved_changes: 0
   worker_generation_started: false
   transient_lane_logs_created: 0
 
-historical_projection_registry:
-  note: >-
-    Existing base and ordered delta artifacts remain durable. WU-BL001-002 is progressively reconciling them against
-    the canonical unique-key inventory using durable accepted evidence only. No source read is performed by this work unit.
-  latest_existing_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
-  latest_existing_browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
-
 update_rule: >-
   Every accepted endpoint trace is keyed by HTTP method plus path and must preserve a complete source-proved ordered or
-  branching chain. Historical rows may be promoted only from durable accepted evidence. Counts are never converted into
-  invented rows, and WU-BL001-002 may not perform new source reads.
+  branching chain. During targeted WU-BL001-001 recovery, a missing canonical key may be accepted only after exact frozen
+  source revalidation by the Primary Orchestrator and atomic synchronization of Markdown, unresolved ledger, progress,
+  structured Explorer JSON, browser data and Level-3 runtime. WU-BL001-002 remains source-read forbidden.
 
 next_action: >-
-  Locate durable accepted full-chain evidence for the remaining 11 confirmed missing canonical keys:
-  reconciliation-dashboard GET/POST, vehicle-load/fetch GET, six lookup-management routes, and addVechileTrip GET/POST.
-  Promote only complete chains already durably accepted. If any chain is absent, keep WU-BL001-002 blocked rather than
-  reading source or guessing. WU-BL001-003 remains blocked until exactly 134 unique rows reconcile.
+  Recover the 11 missing canonical method/path keys under reopened WU-BL001-001. Start with GET /vehicle-load/fetch using
+  its durable full source proof as revalidation input, then source-trace the remaining ten keys at the exact frozen commit.
+  Resume final reconciliation only after exactly 134 unique rows are materially represented once.
 
 finalization_condition: >-
-  Exactly 134 unique caller-visible HTTP method/path keys are represented once, every COMPLETE row has durable accepted
-  full-chain evidence at the frozen baseline, Markdown/structured JSON/browser data reconcile, zero unresolved accounting
-  reconciles, QG-TRC-006 through QG-TRC-012 pass, and only then may WU-BL001-003 run.
+  Exactly 134 unique caller-visible HTTP method/path keys are represented once, every COMPLETE row has Primary-Orchestrator
+  accepted full-chain frozen-source evidence, Markdown/structured JSON/browser data reconcile, zero unresolved accounting
+  reconciles, QG-TRC-006 through QG-TRC-012 pass, and only then may WU-BL001-002 resume/finalize and WU-BL001-003 run.
