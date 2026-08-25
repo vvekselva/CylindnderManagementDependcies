@@ -1,4 +1,4 @@
-version: 5
+version: 6
 purpose: >-
   Define the mandatory three-level Single Source of Truth model. Planning or replanning for a Backlog Item is fail-closed
   until Level 1, Level 2 and Level 3 are complete and internally consistent. Domain artifacts such as BL-002 Stories and
@@ -118,7 +118,9 @@ bl002_domain_ssot:
     schema: usecases/usecase-test-scenario-schema.yaml
   cross_traceability: traceability/controller-story-usecase-map.yaml
   rules:
-    - technical Story assertions originate only from final accepted BL-001 traceability evidence
+    - technical Story assertions originate only from Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 traceability rows
+    - pending atomic-projection rows and raw or unaccepted worker evidence are forbidden BL-002 inputs
+    - BL-001 and BL-002 may execute concurrently when each has independently eligible work
     - no Story or Use Case is auto-approved
     - source or contributing-Story fingerprint changes make affected approval stale
     - BL-003 consumes only APPROVED Story assertions
@@ -131,5 +133,7 @@ planning_rule: >-
 
 execution_rule: >-
   Passing QG-SSOT-001 does not itself authorize execution. Statement of Work, dependency, item-specific quality gates,
-  Work Unit rules and user acceptance continue to apply. For BL-002, QG-DEP-001 requires BL-001 VERIFIED or CLOSED before
-  final matrix import/Story execution, and Story/Use Case approval gates remain fail-closed for downstream testing.
+  Work Unit rules and user acceptance continue to apply. BL-002 may execute incrementally in parallel with BL-001 only
+  from Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 matrix rows. BL-002 must fail closed on
+  pending atomic-projection rows, raw/unaccepted evidence, or stale fingerprints. Story/Use Case approval gates remain
+  fail-closed for downstream testing.
