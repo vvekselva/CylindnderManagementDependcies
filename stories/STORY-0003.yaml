@@ -1,0 +1,35 @@
+story:
+  story_id: STORY-0003
+  title: Display the cylinder delivery page
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 03ebb235a749d5867ad38b79849d738124e7ab283afaceb2db9dce2cdac18d3d
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /cylinderDelivery"]
+  controller: Uc02Phase02CylinderDeliveryController.doGet
+  endpoint: "GET /cylinderDelivery"
+  business_purpose: Display the cylinder delivery page. No additional business meaning is asserted beyond the accepted trace.
+  trigger_and_context: A caller requests GET /cylinderDelivery.
+  inputs: []
+  validations: []
+  main_flow:
+    - The request reaches Uc02Phase02CylinderDeliveryController.doGet.
+    - The controller returns the cylinder delivery view.
+  component_flow:
+    - Uc02Phase02CylinderDeliveryController.doGet
+    - TERMINAL_VIEW cylinder delivery view
+  data_reads_and_writes: []
+  side_effects_and_state_changes: []
+  alternate_and_error_flows: []
+  output_and_postconditions:
+    - The cylinder delivery view is returned.
+    - No mediator, service, DAO or database call is proved for this GET endpoint.
+  evidence:
+    - traceability/controller-traceability.md row "GET /cylinderDelivery"
+    - logs/runs/PRODUCTION-FIRE-20260824-070036.md
+  downstream_test_assertions:
+    - classification: UNIT_CANDIDATE
+      assertion: GET /cylinderDelivery resolves to the delivery view without a proved persistence dependency.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 03ebb235a749d5867ad38b79849d738124e7ab283afaceb2db9dce2cdac18d3d
