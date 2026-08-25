@@ -1,13 +1,11 @@
 completion_path:
-  id: CP-BL-006-v1
-  backlog_item: BL-006
+  id: CP-BL-007-v1
+  backlog_item: BL-007
   type: REQUIREMENTS
   name: Requirements Traceability and Gap Analysis Completion Path
 
   purpose: >-
-    Build a requirements inventory, map each requirement to implementation/evidence,
-    identify gaps, and preserve unresolved requirements without silently inventing
-    requirement content that is not present in approved sources.
+    Build a requirements inventory, map each requirement to implementation/evidence, identify gaps, and preserve unresolved requirements without silently inventing requirement content that is not present in approved sources.
 
   phases:
     - id: ANALYZE
@@ -19,7 +17,7 @@ completion_path:
         - classify each requirement as IMPLEMENTED, PARTIAL, NOT_IMPLEMENTED, NOT_APPLICABLE or UNRESOLVED
         - identify source files/components/tests/artifacts that can support each classification
       outputs:
-        - backlog/runtime/BL-006/analysis.yaml
+        - backlog/runtime/BL-007/analysis.yaml
         - requirements/requirements-inventory.md
       gate: every approved requirement source is processed or an explicit missing-source blocker is recorded
 
@@ -31,7 +29,7 @@ completion_path:
         - define evidence and output requirements for each Work Unit
         - generate Worker Input files
       outputs:
-        - backlog/runtime/BL-006/execution-plan.yaml
+        - backlog/runtime/BL-007/execution-plan.yaml
         - worker/inputs/WI-*.yaml
       gate: every unresolved mandatory requirement has a verification Work Unit or explicit blocker
 
@@ -43,7 +41,7 @@ completion_path:
         - create follow-up Work Units when accepted evidence proves deeper verification is required
         - do not implement a missing requirement unless a separate approved implementation Backlog Item/path authorizes it
       outputs:
-        - backlog/runtime/BL-006/work-unit-status.yaml
+        - backlog/runtime/BL-007/work-unit-status.yaml
         - worker/results/WI-*.yaml
 
     - id: VALIDATE
@@ -64,7 +62,7 @@ completion_path:
       actions:
         - persist final requirement evidence/gaps
         - close required runs
-        - mark BL-006 VERIFIED then CLOSED
+        - mark BL-007 VERIFIED then CLOSED
 
   parallelism:
     max_parallel_work_units: 10

@@ -1,0 +1,65 @@
+usecase_schema:
+  version: 1
+  id_pattern: UC-####
+  backlog_item: BL-002
+
+  required_fields:
+    - usecase_id
+    - title
+    - state
+    - source_baseline
+    - contributing_story_ids
+    - matrix_row_keys
+    - goal
+    - actors_or_callers
+    - preconditions
+    - trigger
+    - main_flow
+    - alternate_flows
+    - postconditions
+    - data_effects
+    - test_scenario_ids
+    - evidence
+    - approval
+
+  allowed_states:
+    - DRAFT
+    - READY_FOR_USER_REVIEW
+    - APPROVED_FOR_TESTING
+    - REJECTED
+    - NEEDS_CLARIFICATION
+    - SPLIT_REQUIRED
+    - MERGE_REQUIRED
+    - STALE_REVIEW_REQUIRED
+    - SUPERSEDED
+
+  composition_rules:
+    minimum_approved_stories: 1
+    story_required_state: APPROVED
+    grouping_must_be_evidence_supported: true
+    class_name_similarity_alone_is_not_sufficient: true
+    existing_approved_usecase_identity_is_preferred_when_available: true
+
+  field_contracts:
+    goal: plain-English end-to-end outcome represented by the contributing approved Stories
+    actors_or_callers: callers/actors only when source or approved project context proves them
+    preconditions: conditions that must already hold before the main flow begins
+    trigger: event/request that starts the Use Case
+    main_flow: ordered successful flow composed from approved Story steps
+    alternate_flows: validation/error/alternate paths from approved Stories
+    postconditions: caller-visible and data/application state after completion
+    data_effects: combined read/write/state/audit/external effects from contributing Stories
+    evidence: all Story IDs, matrix rows and durable technical evidence needed to verify composition
+    test_scenario_ids: references into usecases/usecase-test-scenarios.yaml
+    approval: exact user approval/fingerprint metadata
+
+  approval_contract:
+    approved_state: APPROVED_FOR_TESTING
+    approved_by: USER_ONLY
+    fingerprint_required: true
+    contributing_story_change_action: STALE_REVIEW_REQUIRED
+    source_change_action: STALE_REVIEW_REQUIRED
+
+  downstream_contract:
+    integration_backlog_item: BL-004
+    testing_allowed_only_when: APPROVED_FOR_TESTING

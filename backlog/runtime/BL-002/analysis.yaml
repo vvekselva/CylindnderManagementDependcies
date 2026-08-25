@@ -1,0 +1,18 @@
+analysis:
+  backlog_item: BL-002
+  state: INITIALIZED_WAITING_FOR_DEPENDENCY
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  dependency:
+    backlog_item: BL-001
+    required_state: VERIFIED_OR_CLOSED
+    current_state: PARTIAL
+  upstream_matrix:
+    required_state: FINAL_VALIDATED
+    current_state: NOT_YET_ELIGIBLE_FOR_IMPORT
+  story_progress:
+    canonical_matrix_rows: null
+    accounted_rows: 0
+    approved_stories: 0
+  usecase_progress:
+    approved_for_testing: 0
+  next_action: WAIT_FOR_BL001_DEPENDENCY_THEN_IMPORT_FINAL_MATRIX

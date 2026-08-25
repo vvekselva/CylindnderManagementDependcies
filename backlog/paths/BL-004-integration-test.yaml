@@ -1,0 +1,106 @@
+completion_path:
+  id: CP-BL-004-v2
+  backlog_item: BL-004
+  type: INTEGRATION_TEST
+  name: Integration and Use Case Test Completion Path
+
+  purpose: >-
+    Complete integration testing from the approved BL-002 Use Case layer. Each APPROVED_FOR_TESTING Use Case and its
+    authoritative scenarios must be exercised across the required controller/service/repository/database or other
+    integration boundaries, with reproducible setup and evidence-backed expected outcomes.
+
+  prerequisites:
+    - QG-SSOT-001 must PASS before PLAN or REPLAN
+    - QG-SOW-001 must PASS
+    - BL-002 must be VERIFIED or CLOSED
+    - usecases/usecase-register.yaml must contain the approved Use Case baseline consumed by this run
+    - usecases/usecase-test-scenarios.yaml must contain authoritative scenarios
+    - traceability/controller-story-usecase-map.yaml must reconcile Matrix -> Story -> Use Case -> Scenario references
+
+  usecase_testing_contract:
+    usecase_state_required: APPROVED_FOR_TESTING
+    stale_usecase_allowed: false
+    scenario_source: usecases/usecase-test-scenarios.yaml
+    execution_owner: BL-004
+    rule: >-
+      Every authoritative scenario classified INTEGRATION_REQUIRED or BOTH must be executed or explicitly blocked. No
+      unapproved Use Case, stale approval, invented expected result or orphan scenario may enter the test plan.
+
+  phases:
+    - id: ANALYZE
+      owner: ORCHESTRATOR
+      actions:
+        - establish the approved source baseline
+        - load only APPROVED_FOR_TESTING non-stale Use Cases
+        - load their authoritative scenarios and contributing approved Story/matrix evidence
+        - identify controller-service, service-repository, database, file and external-adapter boundaries required by each scenario
+        - inventory existing integration/use-case tests and infrastructure
+        - identify required fixtures, database state, setup/teardown and external stubs
+        - classify every authoritative integration scenario as COVERED, GAP, NOT_APPLICABLE or UNRESOLVED
+      outputs:
+        - backlog/runtime/BL-004/analysis.yaml
+        - quality/integration-test/integration-test-inventory.md
+        - quality/integration-test/usecase-test-inventory.md
+      gate: every authoritative integration/use-case scenario is classified
+
+    - id: PLAN
+      owner: ORCHESTRATOR
+      actions:
+        - create Work Units for every mandatory integration/use-case test GAP
+        - preserve Use Case ID, Scenario ID, Story IDs and matrix row keys in each Work Unit
+        - define setup/teardown, fixtures, infrastructure, expected outcomes, expected data effects and test command
+        - declare whether Work Units may run in parallel without sharing unsafe state
+        - generate Worker Inputs
+      outputs:
+        - backlog/runtime/BL-004/execution-plan.yaml
+        - worker/inputs/WI-*.yaml
+      gate: every mandatory GAP has a Work Unit or explicit blocker
+
+    - id: EXECUTE
+      owner: ORCHESTRATOR
+      actions:
+        - schedule eligible Worker Inputs
+        - create/update integration/use-case tests on approved automation branches
+        - start/use only infrastructure explicitly defined by the Work Unit and governance
+        - execute the approved Use Case scenarios
+        - capture HTTP/service/database/file/external observations required by the scenario
+        - consume Worker results and create evidence-driven follow-up Work Units only when required
+      outputs:
+        - backlog/runtime/BL-004/work-unit-status.yaml
+        - worker/runs/WI-*.md
+        - worker/results/WI-*.yaml
+
+    - id: VALIDATE
+      owner: ORCHESTRATOR
+      checks:
+        - every authoritative INTEGRATION_REQUIRED or BOTH scenario has an accepted result or explicit blocker
+        - expected caller-visible outcomes match the approved Use Case
+        - expected validation/error paths match approved Stories
+        - expected persistence/state/audit effects are verified where required
+        - setup/teardown is reproducible
+        - failures and infrastructure blockers are visible
+        - Story and Use Case approvals used by tests are still current
+      outputs:
+        - quality/integration-test/integration-test-results.md
+        - quality/integration-test/usecase-test-results.md
+        - quality/integration-test/unresolved-integration-tests.md
+      gate: no mandatory approved Use Case integration scenario remains unprocessed
+
+    - id: CLOSE
+      owner: ORCHESTRATOR
+      actions:
+        - persist final test/evidence mapping
+        - close required runs
+        - mark BL-004 VERIFIED then CLOSED only after configured gates and required user acceptance pass
+
+  parallelism:
+    max_parallel_work_units: 10
+    rule: parallel execution allowed only for scenarios without conflicting shared state/resources
+
+  completion_conditions:
+    - BL-002 approved Use Case dependency satisfied
+    - integration/use-case test inventory complete
+    - every mandatory approved scenario processed
+    - required integration/use-case tests pass
+    - required outputs exist
+    - all required runs closed

@@ -1,8 +1,9 @@
-version: 4
+version: 5
 purpose: >-
-  Define the mandatory three-level Single Source of Truth model. Planning or replanning
-  for a Backlog Item is fail-closed until Level 1, Level 2 and Level 3 are complete and
-  internally consistent.
+  Define the mandatory three-level Single Source of Truth model. Planning or replanning for a Backlog Item is fail-closed
+  until Level 1, Level 2 and Level 3 are complete and internally consistent. Domain artifacts such as BL-002 Stories and
+  Use Cases become authoritative execution outputs only through their registered approval gates; they do not replace the
+  three planning SSOT levels.
 
 planning_gate:
   id: QG-SSOT-001
@@ -22,8 +23,8 @@ levels:
       - backlog/backlog.yaml
       - repository/project-inventory.yaml
     purpose: >-
-      Answer what work exists, which top-level CylinderManagement projects/modules exist,
-      and provide the authoritative master registry and cross-backlog scope classifications.
+      Answer what work exists, which top-level CylinderManagement projects/modules exist, and provide the authoritative
+      master register and cross-backlog scope classifications.
     required_item_fields: [id, name, type, purpose, priority, state, item_definition, statement_of_work, completion_path, quality_gate, dependencies, expected_outputs, runtime]
     repository_inventory_rules:
       - every top-level CylinderManagement project/module must appear exactly once
@@ -43,8 +44,8 @@ levels:
     name: Backlog Definition SSOT
     authoritative_pattern: backlog/items/BL-*.yaml
     purpose: >-
-      Define what the selected Backlog Item means, why it exists, its Statement of Work,
-      scope, target, constraints, dependencies, deliverables, acceptance criteria, Completion Path and Quality Gates.
+      Define what the selected Backlog Item means, why it exists, its Statement of Work, scope, target, constraints,
+      dependencies, deliverables, acceptance criteria, Completion Path and Quality Gates.
     required_components:
       - backlog item definition file
       - valid Statement of Work
@@ -64,8 +65,8 @@ levels:
     name: Runtime SSOT
     authoritative_pattern: backlog/runtime/<BL-ID>/
     purpose: >-
-      Answer what is happening now, including current work-unit state, blockers, worker inputs,
-      results and the live assignment of tasks to orchestration lanes.
+      Answer what is happening now, including current work-unit state, blockers, worker inputs, execution journal,
+      statistics and live assignment of tasks to orchestration lanes.
     required_runtime_files:
       - analysis.yaml
       - execution-plan.yaml
@@ -75,6 +76,9 @@ levels:
       - decisions.yaml
       - worker-input-register.yaml
       - lane-status.yaml
+      - lane-dispatch.yaml
+      - local-execution.yaml
+      - execution-statistics.yaml
       - result.yaml
     validation_rules:
       - all required runtime files exist before PLAN or REPLAN
@@ -84,19 +88,48 @@ levels:
       - execution-plan.yaml may be INITIALIZED/EMPTY before first planning but must exist
       - lane-status.yaml contains LANE-01 through LANE-10 exactly once
       - lane-status.yaml is the authoritative current lane-to-task map
+      - lane-dispatch.yaml identifies only eligible safe-independent tasks when populated
+      - local-execution.yaml preserves dispatch fingerprint/idempotency and synchronization state
+      - execution-statistics.yaml records measured run-over-run progress and staleness without inventing completion percentages
       - every non-IDLE lane reconciles to an eligible Work Unit and current task/run assignment
       - lane summary counts reconcile to ten lane records
       - closed runs release their lane unless a newer assignment replaced them
       - stale runtime values never override newer canonical runtime evidence
     pass_state: COMPLETE
 
+bl002_domain_ssot:
+  purpose: >-
+    Define the approved narrative/test-design layer produced by BL-002 after planning/execution is authorized. These
+    artifacts are domain SSOT for downstream testing but are not additional planning levels.
+  story:
+    register: stories/story-register.yaml
+    schema: stories/story-schema.yaml
+    artifacts: [stories/STORY-*.yaml, stories/STORY-*.md]
+    authoritative_state_for_downstream: APPROVED
+    approval_owner: USER
+  usecase:
+    register: usecases/usecase-register.yaml
+    schema: usecases/usecase-schema.yaml
+    artifacts: [usecases/UC-*.yaml, usecases/UC-*.md]
+    authoritative_state_for_testing: APPROVED_FOR_TESTING
+    approval_owner: USER
+  scenarios:
+    register: usecases/usecase-test-scenarios.yaml
+    schema: usecases/usecase-test-scenario-schema.yaml
+  cross_traceability: traceability/controller-story-usecase-map.yaml
+  rules:
+    - technical Story assertions originate only from final accepted BL-001 traceability evidence
+    - no Story or Use Case is auto-approved
+    - source or contributing-Story fingerprint changes make affected approval stale
+    - BL-003 consumes only APPROVED Story assertions
+    - BL-004 consumes only APPROVED_FOR_TESTING Use Cases and authoritative scenarios
+
 planning_rule: >-
-  The Orchestrator must not create, replace, extend or materially modify an Execution Plan
-  until SSOT-L1, SSOT-L2 and SSOT-L3 all validate COMPLETE and QG-SSOT-001 is PASS.
-  If any level is incomplete, only framework/definition/runtime initialization or repair is allowed.
+  The Orchestrator must not create, replace, extend or materially modify an Execution Plan until SSOT-L1, SSOT-L2 and
+  SSOT-L3 all validate COMPLETE and QG-SSOT-001 is PASS. If any level is incomplete, only framework/definition/runtime
+  initialization or repair is allowed.
 
 execution_rule: >-
-  Passing QG-SSOT-001 does not itself authorize execution. Statement of Work, dependency,
-  item-specific quality gates, Work Unit rules and user acceptance continue to apply.
-  lane-status.yaml must be updated when a lane is assigned, changes lifecycle state,
-  becomes blocked/stale, receives a heartbeat, or is released.
+  Passing QG-SSOT-001 does not itself authorize execution. Statement of Work, dependency, item-specific quality gates,
+  Work Unit rules and user acceptance continue to apply. For BL-002, QG-DEP-001 requires BL-001 VERIFIED or CLOSED before
+  final matrix import/Story execution, and Story/Use Case approval gates remain fail-closed for downstream testing.

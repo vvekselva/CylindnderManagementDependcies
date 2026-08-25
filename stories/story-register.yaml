@@ -1,0 +1,44 @@
+story_register:
+  version: 1
+  backlog_item: BL-002
+  state: INITIALIZED_WAITING_FOR_BL001
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  upstream:
+    backlog_item: BL-001
+    required_state: VERIFIED_OR_CLOSED
+    matrix_state_required: FINAL_VALIDATED
+    matrix_markdown: traceability/controller-traceability.md
+    matrix_structured: traceability/explorer/traceability-matrix.json
+  schema: stories/story-schema.yaml
+  story_artifact_pattern:
+    structured: stories/STORY-*.yaml
+    human_readable: stories/STORY-*.md
+  states:
+    - DRAFT
+    - TECHNICALLY_VALIDATED
+    - READY_FOR_USER_REVIEW
+    - APPROVED
+    - REJECTED
+    - NEEDS_CLARIFICATION
+    - NOT_APPLICABLE
+    - STALE_REVIEW_REQUIRED
+    - SUPERSEDED
+  approval:
+    owner: USER
+    auto_approval_allowed: false
+    approval_fingerprint_required: true
+  counts:
+    canonical_matrix_rows: null
+    story_dispositions: 0
+    draft: 0
+    technically_validated: 0
+    ready_for_user_review: 0
+    approved: 0
+    rejected: 0
+    needs_clarification: 0
+    not_applicable: 0
+    stale_review_required: 0
+  stories: []
+  invariant: >-
+    When BL-002 execution begins, every canonical final BL-001 matrix row must have exactly one Story disposition.
+    No Story becomes authoritative downstream input until its exact fingerprint is explicitly approved by the user.

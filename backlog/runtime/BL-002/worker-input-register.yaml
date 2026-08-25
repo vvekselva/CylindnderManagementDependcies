@@ -1,0 +1,7 @@
+worker_input_register:
+  backlog_item: BL-002
+  state: INITIALIZED_EMPTY
+  issued: []
+  consumed: []
+  pending: []
+  rule: Worker Inputs may be issued only from an approved BL-002 Execution Plan after dependency and Story gates permit execution.

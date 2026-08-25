@@ -1,0 +1,41 @@
+usecase_test_scenario_schema:
+  version: 1
+  backlog_item: BL-002
+  id_pattern: UCTS-####
+
+  required_fields:
+    - scenario_id
+    - usecase_id
+    - contributing_story_ids
+    - matrix_row_keys
+    - title
+    - category
+    - preconditions
+    - inputs
+    - steps
+    - expected_outcomes
+    - expected_data_effects
+    - execution_level
+    - approval_source
+
+  categories:
+    - HAPPY_PATH
+    - VALIDATION_FAILURE
+    - ALTERNATE_PATH
+    - ERROR_PATH
+    - PERSISTENCE_STATE_EFFECT
+    - SECURITY_OR_AUTHORIZATION
+    - BOUNDARY_CONDITION
+
+  execution_levels:
+    - UNIT_CANDIDATE
+    - INTEGRATION_REQUIRED
+    - BOTH
+
+  rules:
+    - scenario must originate from an APPROVED_FOR_TESTING Use Case
+    - all contributing Story IDs must be APPROVED
+    - expected outcomes/data effects must be traceable to approved Story evidence
+    - unsupported expected behaviour must not be invented
+    - BL-003 may consume UNIT_CANDIDATE or BOTH assertions at Story level
+    - BL-004 owns execution of INTEGRATION_REQUIRED and BOTH Use Case scenarios

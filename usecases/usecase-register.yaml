@@ -1,0 +1,34 @@
+usecase_register:
+  version: 1
+  backlog_item: BL-002
+  state: INITIALIZED_WAITING_FOR_APPROVED_STORIES
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  schema: usecases/usecase-schema.yaml
+  story_register: stories/story-register.yaml
+  test_scenarios: usecases/usecase-test-scenarios.yaml
+  states:
+    - DRAFT
+    - READY_FOR_USER_REVIEW
+    - APPROVED_FOR_TESTING
+    - REJECTED
+    - NEEDS_CLARIFICATION
+    - SPLIT_REQUIRED
+    - MERGE_REQUIRED
+    - STALE_REVIEW_REQUIRED
+    - SUPERSEDED
+  approval:
+    owner: USER
+    auto_approval_allowed: false
+    approval_fingerprint_required: true
+  counts:
+    total: 0
+    draft: 0
+    ready_for_user_review: 0
+    approved_for_testing: 0
+    rejected: 0
+    needs_clarification: 0
+    stale_review_required: 0
+  usecases: []
+  invariant: >-
+    Every APPROVED_FOR_TESTING Use Case must contain one or more APPROVED Stories. Any contributing Story becoming stale,
+    rejected or superseded immediately makes the dependent Use Case STALE_REVIEW_REQUIRED.

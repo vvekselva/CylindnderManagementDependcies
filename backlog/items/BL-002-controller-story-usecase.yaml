@@ -1,0 +1,100 @@
+backlog_definition:
+  id: BL-002
+  version: 2
+  name: Controller Dependency Matrix to Human-Readable Stories
+  type: CONTROLLER_STORY_AND_USECASE
+
+  purpose: >-
+    Convert the validated Controller Dependency Matrix into elaborate evidence-backed human-readable Stories that
+    explain inputs, validations, processing, component calls, persistence/read effects, side effects, outcomes and
+    alternate/error paths; obtain user Story approval; combine approved Stories into approved Use Cases; and derive
+    Use Case test scenarios for downstream unit and integration testing. Each Story must further explain what the request
+    is trying to achieve where that intent is proved, which values are received, which validations and business rules are
+    applied, which services/repositories are invoked, what is read or persisted, and what caller-visible result is produced.
+
+  statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml
+
+  target:
+    repository: vvekselva/CylinderManagement
+    baseline_rule: FROZEN_COMMIT
+    frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+    upstream_matrix: traceability/controller-traceability.md
+    upstream_structured_matrix: traceability/explorer/traceability-matrix.json
+
+  scope:
+    in_scope:
+      - consume only Primary-Orchestrator accepted BL-001 traceability evidence
+      - create one atomic human-readable Story for each approved endpoint flow or explicitly justified flow variant
+      - explain request inputs, validations, business rules, component calls, persistence/read effects, side effects, outputs and failure paths
+      - preserve exact source/evidence links for every technical assertion in a Story
+      - keep uncertain business meaning explicit as NEEDS_CLARIFICATION instead of inventing intent
+      - obtain user approval for Stories before downstream test consumption
+      - combine one or more approved Stories into candidate Use Cases using source/evidence-supported functional relationships
+      - obtain user approval for Use Cases before use-case testing
+      - derive testable scenarios from approved Use Cases without executing those tests in BL-002
+      - maintain Matrix -> Story -> Use Case -> Test Scenario traceability
+    out_of_scope:
+      - changing CylinderManagement production code
+      - inventing validations, business rules, persistence operations or user intent that are not supported by source/evidence
+      - treating raw worker output as approved Story truth
+      - executing unit tests, integration tests or use-case tests
+      - allowing an unapproved Story or Use Case to become downstream testing SSOT
+
+  dependencies:
+    backlog_items: [BL-001]
+    dependency_rule: ALL_VERIFIED_OR_CLOSED
+
+  deliverables:
+    - stories/story-register.yaml
+    - stories/STORY-*.yaml
+    - stories/STORY-*.md
+    - usecases/usecase-register.yaml
+    - usecases/UC-*.yaml
+    - usecases/UC-*.md
+    - traceability/controller-story-usecase-map.yaml
+    - usecases/usecase-test-scenarios.yaml
+
+  acceptance_criteria:
+    - every canonical approved BL-001 endpoint trace row is mapped to exactly one Story disposition
+    - every Story records its matrix row key and durable source/evidence references
+    - every Story explains inputs, validations, main flow, alternate/error flow, component chain, data effects and caller-visible outcome where those facts are source-proved
+    - any unproved business meaning is marked NEEDS_CLARIFICATION and never presented as fact
+    - only user-approved Stories may be grouped into an approved Use Case
+    - every approved Use Case identifies all contributing Story IDs and its preconditions, trigger, main flow, alternate flows, postconditions and data effects
+    - use-case test scenarios are derived only from approved Use Cases
+    - Matrix -> Story -> Use Case -> Test Scenario traceability contains no orphan approved Story or approved Use Case
+    - QG-STORY-001 through QG-STORY-010 pass before BL-002 VERIFIED
+    - final BL-002 closure still requires explicit user acceptance
+
+  implementation_workflow: workflows/WF-003-controller-story-usecase.yaml
+  completion_path: backlog/paths/BL-002-controller-story-usecase.yaml
+  quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml
+  runtime: backlog/runtime/BL-002/
+
+  ssot:
+    level_1_registry: backlog/backlog.yaml
+    level_2_definition: backlog/items/BL-002-controller-story-usecase.yaml
+    level_3_runtime: backlog/runtime/BL-002/
+    story_ssot: stories/story-register.yaml
+    usecase_ssot: usecases/usecase-register.yaml
+    cross_traceability_ssot: traceability/controller-story-usecase-map.yaml
+    planning_gate: QG-SSOT-001
+
+  downstream_consumers:
+    BL-003_unit_testing:
+      consumes:
+        - approved Story validation/business-rule/component-flow assertions
+        - Matrix -> Story traceability
+    BL-004_integration_testing:
+      consumes:
+        - approved Use Cases
+        - approved use-case test scenarios
+        - Matrix -> Story -> Use Case traceability
+
+  planning_authorization:
+    allowed_only_when:
+      - SSOT-L1 COMPLETE
+      - SSOT-L2 COMPLETE
+      - SSOT-L3 COMPLETE
+      - QG-SSOT-001 PASS
+      - BL-001 VERIFIED_OR_CLOSED

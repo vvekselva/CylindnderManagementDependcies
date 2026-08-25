@@ -1,30 +1,29 @@
 completion_path:
-  id: CP-BL-004-v1
-  backlog_item: BL-004
+  id: CP-BL-005-v1
+  backlog_item: BL-005
   type: CODE_COVERAGE
   name: Code Coverage Report Completion Path
 
   purpose: >-
-    Produce a trustworthy code-coverage report from the verified unit/integration test
-    baseline without inventing thresholds that are not declared by project policy.
+    Produce a trustworthy code-coverage report from the verified unit/integration test baseline without inventing thresholds that are not declared by project policy.
 
   prerequisites:
     backlog_items:
-      - BL-002
       - BL-003
+      - BL-004
     rule: ALL_VERIFIED_OR_CLOSED
 
   phases:
     - id: ANALYZE
       owner: ORCHESTRATOR
       actions:
-        - confirm Unit Test and Integration Test dependencies are satisfied
+        - confirm Unit Test and Integration/Use Case Test dependencies are satisfied
         - identify modules to include/exclude from coverage
         - identify the actual coverage tool/plugin and test commands configured in source
         - identify any declared coverage thresholds or explicitly record NONE_DECLARED
         - define aggregation rules for multi-module reporting
       outputs:
-        - backlog/runtime/BL-004/analysis.yaml
+        - backlog/runtime/BL-005/analysis.yaml
       gate: coverage command, scope and threshold policy are known or explicitly unresolved
 
     - id: PLAN
@@ -34,7 +33,7 @@ completion_path:
         - define artifact paths and evidence requirements
         - generate Worker Input files
       outputs:
-        - backlog/runtime/BL-004/execution-plan.yaml
+        - backlog/runtime/BL-005/execution-plan.yaml
         - worker/inputs/WI-*.yaml
 
     - id: EXECUTE
@@ -43,17 +42,17 @@ completion_path:
         - schedule coverage Worker Inputs
         - run declared test/coverage commands
         - collect machine coverage artifacts and summaries
-        - aggregate only using the rules established during analysis
+        - aggregate only using rules established during analysis
       outputs:
-        - backlog/runtime/BL-004/work-unit-status.yaml
+        - backlog/runtime/BL-005/work-unit-status.yaml
         - worker/results/WI-*.yaml
 
     - id: VALIDATE
       owner: ORCHESTRATOR
       checks:
         - coverage generation completed successfully
-        - report is based on the approved test/source baseline
-        - module totals reconcile with the generated artifacts
+        - report is based on the approved source/test baseline
+        - module totals reconcile with generated artifacts
         - declared thresholds are evaluated when they exist
         - no threshold is invented when none is declared
       outputs:
@@ -66,7 +65,7 @@ completion_path:
       actions:
         - persist report/evidence
         - close required runs
-        - mark BL-004 VERIFIED then CLOSED
+        - mark BL-005 VERIFIED then CLOSED
 
   parallelism:
     max_parallel_work_units: 10

@@ -1,0 +1,124 @@
+workflow:
+  id: WF-003
+  version: 1
+  name: Controller Matrix to Human-Readable Story and Use Case Workflow
+  backlog_item: BL-002
+  owner: PRIMARY_ORCHESTRATOR
+  source_of_truth:
+    backlog: backlog/backlog.yaml
+    definition: backlog/items/BL-002-controller-story-usecase.yaml
+    sow: backlog/sow/BL-002-controller-story-usecase.yaml
+    completion_path: backlog/paths/BL-002-controller-story-usecase.yaml
+    quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml
+    runtime: backlog/runtime/BL-002/
+    technical_matrix: traceability/explorer/traceability-matrix.json
+    story_register: stories/story-register.yaml
+    usecase_register: usecases/usecase-register.yaml
+    traceability_map: traceability/controller-story-usecase-map.yaml
+
+  trigger:
+    type: BACKLOG_SCHEDULER_SELECTION
+    selection_rule: HIGHEST_PRIORITY_ELIGIBLE_RUN_ENABLED_ITEM
+    dependency: BL-001_VERIFIED_OR_CLOSED
+
+  jobs:
+    - id: IMPORT
+      name: Import Final Controller Matrix
+      safe_parallel: false
+      produces: [stories/story-register.yaml]
+
+    - id: STORY_DRAFT
+      name: Generate Human-Readable Story Candidates
+      safe_parallel: true
+      max_parallel: 10
+      partition_key: canonical_http_method_plus_path
+      produces: [stories/STORY-*.yaml, stories/STORY-*.md]
+
+    - id: STORY_TECHNICAL_VALIDATION
+      name: Validate Story Against Source Evidence
+      safe_parallel: true
+      max_parallel: 10
+      partition_key: story_id
+      produces: [traceability/controller-story-usecase-map.yaml]
+
+    - id: STORY_REVIEW
+      name: Wait for User Story Approval
+      safe_parallel: false
+      external_decision: USER
+      result_states: [APPROVED, REJECTED, NEEDS_CLARIFICATION]
+
+    - id: USECASE_DRAFT
+      name: Combine Approved Stories into Use Cases
+      safe_parallel: true
+      max_parallel: 10
+      rule: no Story may appear in two concurrently edited candidate Use Cases
+      produces: [usecases/UC-*.yaml, usecases/UC-*.md, usecases/usecase-register.yaml]
+
+    - id: USECASE_REVIEW
+      name: Wait for User Use Case Approval
+      safe_parallel: false
+      external_decision: USER
+      result_states: [APPROVED_FOR_TESTING, REJECTED, SPLIT_REQUIRED, MERGE_REQUIRED, NEEDS_CLARIFICATION]
+
+    - id: TEST_SCENARIO_DERIVATION
+      name: Derive Use Case Test Scenarios
+      safe_parallel: true
+      max_parallel: 10
+      partition_key: usecase_id
+      consumes_only: APPROVED_FOR_TESTING
+      produces: [usecases/usecase-test-scenarios.yaml]
+
+    - id: RECONCILE
+      name: Reconcile Matrix Story Use Case and Test Traceability
+      safe_parallel: false
+      produces: [traceability/controller-story-usecase-map.yaml, backlog/runtime/BL-002/result.yaml]
+
+  story_narrative_contract:
+    required_sections:
+      - business_purpose
+      - trigger_and_context
+      - inputs
+      - validations
+      - main_flow
+      - component_flow
+      - data_reads_and_writes
+      - side_effects_and_state_changes
+      - alternate_and_error_flows
+      - output_and_postconditions
+      - evidence
+      - downstream_test_assertions
+    rule: >-
+      Human-readable does not mean speculative. The narrative may simplify technical wording, but every asserted validation,
+      call, data effect and outcome must remain traceable to accepted source evidence.
+
+  usecase_contract:
+    composition: ONE_OR_MORE_APPROVED_STORIES
+    required_sections:
+      - goal
+      - actors_or_callers_when_proved
+      - preconditions
+      - trigger
+      - main_flow
+      - alternate_flows
+      - postconditions
+      - data_effects
+      - contributing_story_ids
+      - matrix_row_keys
+      - test_scenarios
+    approval_required_before_testing: true
+
+  downstream_handoff:
+    BL-003:
+      type: UNIT_TEST
+      input: APPROVED_STORY_ASSERTIONS
+    BL-004:
+      type: INTEGRATION_AND_USECASE_TEST
+      input: APPROVED_FOR_TESTING_USECASES_AND_SCENARIOS
+
+  fail_closed_rules:
+    - no BL-002 execution before BL-001 dependency passes
+    - no unsupported business intent may be stated as fact
+    - no Story may be auto-approved
+    - no Use Case may be auto-approved for testing
+    - source fingerprint change invalidates affected approvals until reviewed again
+    - no downstream test backlog may consume stale or unapproved Story/Use Case data

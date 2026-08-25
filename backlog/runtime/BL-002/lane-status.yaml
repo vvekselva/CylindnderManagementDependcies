@@ -1,0 +1,25 @@
+lane_status:
+  backlog_item: BL-002
+  state: INITIALIZED_ALL_IDLE
+  lanes:
+    LANE-01: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-02: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-03: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-04: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-05: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-06: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-07: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-08: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-09: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-10: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+  summary:
+    total_lanes: 10
+    idle: 10
+    assigned: 0
+    initializing: 0
+    working: 0
+    blocked: 0
+    waiting: 0
+    closing: 0
+    stale: 0
+    active_lane_count: 0

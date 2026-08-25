@@ -1,0 +1,9 @@
+blockers:
+  backlog_item: BL-002
+  state: WAITING_FOR_DEPENDENCY
+  active:
+    - id: BL002-BLOCKER-001
+      type: BACKLOG_DEPENDENCY
+      description: BL-001 Controller Traceability is not yet VERIFIED or CLOSED, so BL-002 cannot import the final matrix or generate authoritative Stories.
+      resolution: Complete and verify BL-001, then re-evaluate QG-DEP-001 and QG-STORY-001.
+  resolved: []

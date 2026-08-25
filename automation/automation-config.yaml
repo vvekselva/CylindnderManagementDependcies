@@ -1,4 +1,4 @@
-version: 13
+version: 14
 
 control_repository: vvekselva/CylindnderManagementDependcies
 target_repository: vvekselva/CylinderManagement
@@ -32,6 +32,10 @@ control_files:
   transient_lane_run_logs: logs/runs/*-LANE-*.md
   human_story: logs/automation-story.md
   sync_register: sync/source-artifact-sync-register.yaml
+  bl002_story_register: stories/story-register.yaml
+  bl002_usecase_register: usecases/usecase-register.yaml
+  bl002_test_scenarios: usecases/usecase-test-scenarios.yaml
+  bl002_cross_traceability: traceability/controller-story-usecase-map.yaml
 
 backlog_orchestration:
   enabled: true
@@ -67,6 +71,7 @@ backlog_orchestration:
   primary_hierarchy:
     - PRE_INVOCATION_LANE_LOG_HYGIENE_CHECK
     - ORCHESTRATOR_INVOCATION_START_LOG
+    - SELECT_HIGHEST_PRIORITY_ELIGIBLE_RUN_ENABLED_BACKLOG_ITEM
     - SSOT_LEVEL_1_BACKLOG_MASTER
     - SSOT_LEVEL_2_BACKLOG_DEFINITION_AND_SOW
     - SSOT_LEVEL_3_RUNTIME
@@ -105,6 +110,9 @@ backlog_orchestration:
     work_unit_status: work-unit-status.yaml
     worker_input_register: worker-input-register.yaml
     lane_status: lane-status.yaml
+    lane_dispatch: lane-dispatch.yaml
+    local_execution: local-execution.yaml
+    execution_statistics: execution-statistics.yaml
     gate_status: gate-status.yaml
     blockers: blockers.yaml
     decisions: decisions.yaml
@@ -123,6 +131,7 @@ coordinator:
     - persist_orchestrator_invocation_start_before_any_analysis_or_execution
     - load_control_files
     - read_backlog_run_config_first
+    - select_highest_priority_eligible_run_enabled_backlog_item
     - ignore_run_disabled_backlog_items
     - load_level_1_backlog_master
     - validate_or_repair_level_1
@@ -153,6 +162,8 @@ coordinator:
     - maintain_blockers_ledger
     - evaluate_item_specific_quality_gates
     - refuse_to_invent_missing_scope_or_quality_gates
+    - enforce_bl002_story_and_usecase_approval_when_selected
+    - stop_for_user_story_or_usecase_decision_when_required
     - wait_for_user_acceptance_gate_when_required
     - produce_backlog_artifacts
     - update_backlog_status
@@ -209,22 +220,15 @@ orchestration_worker_pool:
   lane_run_logs_transient: true
   required_lifecycle_events: [LANE_INIT_START, LANE_INIT_END, LANE_SERVICE_START, LANE_SERVICE_END, LANE_CLOSE_END]
   assignment_rule: >-
-    A lane becomes non-IDLE only after the coordinator records an eligible Work Unit/task assignment
-    in lane-status.yaml. A closed run releases the lane unless a newer assignment already replaced it.
+    A lane becomes non-IDLE only after the coordinator records an eligible Work Unit/task assignment in lane-status.yaml.
   logging_rule: >-
-    Before init(), persist LANE_INIT_START. After init(), persist LANE_INIT_END. Before service(),
-    persist LANE_SERVICE_START. After service(), persist LANE_SERVICE_END. After close(), persist
-    LANE_CLOSE_END. SERVICE events are omitted only when init ends BLOCKED_BEFORE_SERVICE.
+    Persist INIT/SERVICE/CLOSE lifecycle boundaries. SERVICE is omitted only for BLOCKED_BEFORE_SERVICE.
   release_rule: >-
-    A lane may return to IDLE or receive new work within the same invocation only after
-    LANE_CLOSE_END or coordinator recovery-close evidence is persisted.
+    A lane may return to IDLE or receive new work only after LANE_CLOSE_END or recovery-close evidence is persisted.
   retention_rule: >-
-    Individual lane log files remain only until Orchestrator closure. The coordinator accumulates
-    them into the invocation aggregate/shared audit, verifies the transfer, then deletes them.
-    Closed invocation postcondition is zero individual lane log files.
+    Individual lane logs are aggregated, verified and deleted before invocation close; closed invocation postcondition is zero individual lane logs.
   heartbeat_rule: >-
-    WORKING lanes must record last_heartbeat; missing heartbeat beyond the configured stale interval
-    moves the lane to STALE and returns the Work Unit to coordinator recovery.
+    WORKING lanes must record last_heartbeat; stale lanes return their Work Unit to coordinator recovery.
   lanes: [LANE-01, LANE-02, LANE-03, LANE-04, LANE-05, LANE-06, LANE-07, LANE-08, LANE-09, LANE-10]
 
 orchestration_worker_service_lifecycle:
@@ -260,19 +264,17 @@ scheduler:
   pre_invocation_lane_log_scan_required: true
   invocation_start_log_required_before_analysis: true
   invocation_end_log_required_after_runtime_sync_and_lane_log_cleanup: true
+  backlog_selection_required_each_invocation: true
   note: >-
-    The actual hourly schedule is maintained by the ChatGPT scheduled automation. Each invocation
-    first scans for leftover individual lane logs. New execution is forbidden until the count is
-    zero. It then persists ORCHESTRATOR_INVOCATION_START and executes eligible work. Closure must
-    aggregate and delete every individual lane log, prove the count is zero, synchronize runtime,
-    and only then persist ORCHESTRATOR_INVOCATION_END.
+    The ChatGPT scheduled trigger starts one backlog-driven Orchestrator invocation. It must read backlog/backlog.yaml and
+    backlog/orchestrator-run-config.yaml, select the highest-priority eligible run-enabled item, and must not be hard-coded
+    to BL-001. BL-002 becomes eligible only after BL-001 is VERIFIED/CLOSED and its final matrix is validated.
 
 registered_backlog_items:
   source: backlog/backlog.yaml
-  count: 20
+  count: 21
   note: >-
-    The Level 1 Backlog Master is authoritative. Entries with null Level 2/3 planning
-    references are registered but intentionally non-plannable until repaired.
+    The Level 1 Backlog Master is authoritative. Entries with incomplete Level 2/3 planning references remain registered but non-plannable.
 
 current_backlog_item:
   id: BL-001
@@ -294,6 +296,29 @@ current_backlog_item:
   lane_status: backlog/runtime/BL-001/lane-status.yaml
   current_work_unit: WU-BL001-001
   next_worker_input: worker/inputs/WI-0004.yaml
+  handoff_when_complete: BL-002
+
+bl002:
+  id: BL-002
+  run_enabled: true
+  state: WAITING_FOR_DEPENDENCY
+  dependency: BL-001
+  item_definition: backlog/items/BL-002-controller-story-usecase.yaml
+  statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml
+  quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml
+  runtime: backlog/runtime/BL-002/
+  workflow: workflows/WF-003-controller-story-usecase.yaml
+  story_register: stories/story-register.yaml
+  usecase_register: usecases/usecase-register.yaml
+  test_scenarios: usecases/usecase-test-scenarios.yaml
+  cross_traceability: traceability/controller-story-usecase-map.yaml
+  rules:
+    - import_only_final_validated_bl001_matrix
+    - do_not_invent_business_meaning
+    - story_technical_validation_does_not_equal_user_approval
+    - only_user_approved_stories_feed_usecases_or_downstream_testing
+    - only_user_approved_usecases_feed_usecase_testing
+    - source_change_stales_affected_approvals
 
 scheduling:
   dependency_policy: strict
@@ -331,6 +356,10 @@ shared_file_ownership:
     - repository-catalogue.md
     - governance/ssot-levels.yaml
     - governance/quality-gates.yaml
+    - stories/story-register.yaml
+    - usecases/usecase-register.yaml
+    - usecases/usecase-test-scenarios.yaml
+    - traceability/controller-story-usecase-map.yaml
   transient_parallel_lane_owned_paths:
     - logs/runs/INVOCATION-<timestamp>-LANE-<nn>.md
   coordinator_invocation_owned_paths:
@@ -396,4 +425,6 @@ staleness:
 
 registered_workflows:
   - workflows/WF-001-controller-traceability/workflow.yaml
+  - workflows/WF-002-incremental-traceability-matrix.yaml
   - workflows/WF-002-source-artifact-sync/workflow.yaml
+  - workflows/WF-003-controller-story-usecase.yaml

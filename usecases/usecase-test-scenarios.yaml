@@ -1,0 +1,18 @@
+usecase_test_scenarios:
+  version: 1
+  backlog_item: BL-002
+  state: INITIALIZED_WAITING_FOR_APPROVED_USECASES
+  schema: usecases/usecase-test-scenario-schema.yaml
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  usecase_register: usecases/usecase-register.yaml
+  story_register: stories/story-register.yaml
+  downstream:
+    BL-003:
+      consumes_execution_levels: [UNIT_CANDIDATE, BOTH]
+      scope: approved Story-level unit assertions only
+    BL-004:
+      consumes_execution_levels: [INTEGRATION_REQUIRED, BOTH]
+      scope: execute approved Use Case scenarios end-to-end across required integration boundaries
+  scenarios: []
+  invariant: >-
+    No scenario is authoritative until its Use Case is APPROVED_FOR_TESTING and all contributing Stories are APPROVED.

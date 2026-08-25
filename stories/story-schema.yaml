@@ -1,0 +1,76 @@
+story_schema:
+  version: 1
+  id_pattern: STORY-####
+  backlog_item: BL-002
+
+  required_fields:
+    - story_id
+    - title
+    - state
+    - source_baseline
+    - matrix_row_keys
+    - controller
+    - endpoint
+    - business_purpose
+    - trigger_and_context
+    - inputs
+    - validations
+    - main_flow
+    - component_flow
+    - data_reads_and_writes
+    - side_effects_and_state_changes
+    - alternate_and_error_flows
+    - output_and_postconditions
+    - evidence
+    - downstream_test_assertions
+    - approval
+
+  allowed_states:
+    - DRAFT
+    - TECHNICALLY_VALIDATED
+    - READY_FOR_USER_REVIEW
+    - APPROVED
+    - REJECTED
+    - NEEDS_CLARIFICATION
+    - NOT_APPLICABLE
+    - STALE_REVIEW_REQUIRED
+    - SUPERSEDED
+
+  field_contracts:
+    story_id: stable identifier; never reused for a different functional flow
+    title: plain-English action/outcome title
+    source_baseline: exact frozen source commit/fingerprint used by the upstream matrix
+    matrix_row_keys: one or more canonical HTTP method plus path keys from BL-001
+    controller: source-proved controller class and method/handler identity
+    endpoint: HTTP method/path or explicitly justified non-HTTP flow identity
+    business_purpose: >-
+      Plain-English description of what the flow accomplishes. If business intent is not directly supported by source or
+      approved project context, state the technical outcome without inventing business purpose and record clarification.
+    trigger_and_context: caller/actor/context only when source or approved context proves it
+    inputs: >-
+      Every request/form/path/query/body/session/input value that materially influences the flow, with source name/type,
+      required/optional status when proved, normalization/defaulting and destination component.
+    validations: >-
+      Ordered checks actually present in source, including required/null/blank/range/format/lookup/state/ownership/business
+      checks and the exact invalid-path behaviour. Do not infer a validation from a database constraint unless the flow
+      explicitly relies on it.
+    main_flow: numbered plain-English steps from entry through successful terminal outcome
+    component_flow: ordered technical chain preserving controller/service/mediator/repository/DAO/entity/view/final dependency hops
+    data_reads_and_writes: >-
+      Explicit READ/INSERT/UPDATE/DELETE/UPSERT/file/API effects with proved table/view/entity/file/API identity and conditions.
+    side_effects_and_state_changes: audit rows, state transitions, cache changes, emitted events, redirects, files or other proved effects
+    alternate_and_error_flows: branch conditions, validation failures, exceptions, fallback paths and terminal behaviour
+    output_and_postconditions: response/view/redirect/status/body plus proved persisted/post-state
+    evidence: matrix row, source files/lines or durable trace evidence sufficient to verify each technical assertion
+    downstream_test_assertions: candidate assertions classified UNIT_CANDIDATE, INTEGRATION_REQUIRED or BOTH
+    approval: exact user decision/fingerprint metadata; only user can set APPROVED
+
+  assertion_rule: >-
+    Every technical statement must be supportable from accepted BL-001 evidence. Plain-English wording may summarize source,
+    but it must not add a validation, business rule, data operation, side effect or outcome that the evidence does not prove.
+
+  approval_contract:
+    approved_by: USER_ONLY
+    accepted_approval_scopes: [INDIVIDUAL_STORY, EXPLICIT_BATCH]
+    fingerprint_required: true
+    source_change_action: STALE_REVIEW_REQUIRED

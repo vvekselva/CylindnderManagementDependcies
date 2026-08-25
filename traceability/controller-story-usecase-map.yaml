@@ -1,0 +1,21 @@
+controller_story_usecase_traceability:
+  version: 1
+  backlog_item: BL-002
+  state: INITIALIZED_WAITING_FOR_BL001
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  upstream:
+    matrix_markdown: traceability/controller-traceability.md
+    matrix_structured: traceability/explorer/traceability-matrix.json
+    required_state: FINAL_VALIDATED
+  registers:
+    stories: stories/story-register.yaml
+    usecases: usecases/usecase-register.yaml
+    test_scenarios: usecases/usecase-test-scenarios.yaml
+  key_chain: MATRIX_ROW_KEY_TO_STORY_ID_TO_USECASE_ID_TO_SCENARIO_ID
+  rows: []
+  invariants:
+    - every canonical final matrix row has one Story disposition
+    - every APPROVED Story references at least one canonical matrix row
+    - every APPROVED_FOR_TESTING Use Case references only APPROVED Stories
+    - every authoritative test scenario references one APPROVED_FOR_TESTING Use Case
+    - no stale approval may be consumed downstream

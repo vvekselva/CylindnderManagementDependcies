@@ -1,13 +1,11 @@
 completion_path:
-  id: CP-BL-005-v1
-  backlog_item: BL-005
+  id: CP-BL-006-v1
+  backlog_item: BL-006
   type: ARCHUNIT
   name: ArchUnit Architecture Test Completion Path
 
   purpose: >-
-    Analyse the implemented architecture and declared architectural rules, generate
-    ArchUnit Work Units, execute them, and report verified violations without inventing
-    architectural constraints that the project has not established.
+    Analyse the implemented architecture and declared architectural rules, generate ArchUnit Work Units, execute them, and report verified violations without inventing architectural constraints that the project has not established.
 
   phases:
     - id: ANALYZE
@@ -19,7 +17,7 @@ completion_path:
         - identify architecture rules that are already explicit or provable
         - classify potential rules as DECLARED, PROVABLE, PROPOSED or UNRESOLVED
       outputs:
-        - backlog/runtime/BL-005/analysis.yaml
+        - backlog/runtime/BL-006/analysis.yaml
         - quality/archunit/architecture-rules.md
       gate: rules selected for execution are DECLARED or PROVABLE; proposed rules require approval before enforcement
 
@@ -30,7 +28,7 @@ completion_path:
         - define package scopes, allowed/forbidden dependencies and evidence basis
         - generate Worker Input files
       outputs:
-        - backlog/runtime/BL-005/execution-plan.yaml
+        - backlog/runtime/BL-006/execution-plan.yaml
         - worker/inputs/WI-*.yaml
 
     - id: EXECUTE
@@ -41,7 +39,7 @@ completion_path:
         - execute declared ArchUnit/test commands
         - collect violations and Worker evidence
       outputs:
-        - backlog/runtime/BL-005/work-unit-status.yaml
+        - backlog/runtime/BL-006/work-unit-status.yaml
         - worker/results/WI-*.yaml
 
     - id: VALIDATE
@@ -61,7 +59,7 @@ completion_path:
       actions:
         - persist rule/result evidence
         - close required runs
-        - mark BL-005 VERIFIED then CLOSED
+        - mark BL-006 VERIFIED then CLOSED
 
   parallelism:
     max_parallel_work_units: 10

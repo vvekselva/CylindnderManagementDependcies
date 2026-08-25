@@ -1,0 +1,10 @@
+result:
+  backlog_item: BL-002
+  state: WAITING_FOR_DEPENDENCY
+  verified: false
+  closed: false
+  dependency:
+    backlog_item: BL-001
+    required_state: VERIFIED_OR_CLOSED
+  current_outcome: Framework and SSOT initialized; execution has not started.
+  next_action: Wait for BL-001 verification/closure, then scheduler may select BL-002 when all gates pass.

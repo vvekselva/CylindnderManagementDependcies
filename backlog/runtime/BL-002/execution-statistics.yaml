@@ -1,0 +1,17 @@
+execution_statistics:
+  backlog_item: BL-002
+  state: INITIALIZED_NO_RUNS
+  comparison_window:
+    previous_run: {}
+    current_or_latest_run: {}
+  story_metrics:
+    canonical_matrix_rows: null
+    accounted_rows: 0
+    approved_stories: 0
+  usecase_metrics:
+    approved_for_testing: 0
+    test_scenarios: 0
+  staleness:
+    consecutive_no_progress_cycles: 0
+    stale: false
+    reason: null

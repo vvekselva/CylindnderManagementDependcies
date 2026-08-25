@@ -1,0 +1,77 @@
+quality_gate:
+  backlog_item: BL-002
+  version: 1
+  name: Controller Story and Use Case Quality Gates
+  approved_by_user: true
+  approval_basis: USER_DIRECTIVE_2026-08-25_BL002_STORY_USECASE_MODEL
+  execution_allowed_only_after_dependency_gate: true
+
+  gates:
+    - id: QG-STORY-001
+      name: Final Matrix Dependency Gate
+      owner: ORCHESTRATOR
+      pass_condition: BL-001 is VERIFIED or CLOSED and the controller matrix is FINAL_VALIDATED.
+      fail_closed: true
+
+    - id: QG-STORY-002
+      name: Canonical Matrix Row Accounting
+      owner: ORCHESTRATOR
+      pass_condition: Every canonical HTTP method plus path row has exactly one Story disposition and no duplicate row ownership.
+      fail_closed: true
+
+    - id: QG-STORY-003
+      name: Story Evidence Integrity
+      owner: ORCHESTRATOR
+      pass_condition: Every technical assertion in each READY_FOR_USER_REVIEW or APPROVED Story is supported by accepted matrix/source evidence.
+      fail_closed: true
+
+    - id: QG-STORY-004
+      name: Validation and Data Effect Accuracy
+      owner: ORCHESTRATOR
+      pass_condition: Story validation checks, invalid branches, reads, writes, state changes and external effects match proved source behaviour and do not contain inferred facts.
+      fail_closed: true
+
+    - id: QG-STORY-005
+      name: Human Readability Completeness
+      owner: ORCHESTRATOR
+      pass_condition: Each reviewable Story explains trigger/context, inputs, validations, ordered processing, data effects, outcomes and alternate/error paths in plain English where applicable.
+      fail_closed: true
+
+    - id: QG-STORY-006
+      name: Story User Approval Gate
+      owner: USER
+      pass_condition: A Story is marked APPROVED only when an explicit user decision applies to that exact Story fingerprint or explicitly approved batch fingerprint.
+      fail_closed: true
+
+    - id: QG-STORY-007
+      name: Use Case Composition Integrity
+      owner: ORCHESTRATOR
+      pass_condition: Every candidate/approved Use Case contains one or more APPROVED Stories and preserves all contributing Story and matrix references.
+      fail_closed: true
+
+    - id: QG-STORY-008
+      name: Use Case User Approval Gate
+      owner: USER
+      pass_condition: A Use Case is APPROVED_FOR_TESTING only after explicit user approval of its exact fingerprint; rejected/split/merged drafts are not test inputs.
+      fail_closed: true
+
+    - id: QG-STORY-009
+      name: Use Case Test Scenario Traceability
+      owner: ORCHESTRATOR
+      pass_condition: Each APPROVED_FOR_TESTING Use Case has traceable positive, validation-failure and alternate/error scenarios where those branches exist, with explicit NOT_APPLICABLE rationale where they do not.
+      fail_closed: true
+
+    - id: QG-STORY-010
+      name: Downstream Testing Readiness
+      owner: ORCHESTRATOR
+      pass_condition: BL-003 can consume only approved Story assertions and BL-004 can consume only APPROVED_FOR_TESTING Use Cases/scenarios; no orphan or stale approval reference exists.
+      fail_closed: true
+
+  status_rule: >-
+    Automated Story generation never implies approval. A worker may produce a candidate, the Primary Orchestrator may
+    validate technical evidence, and only the user may approve the Story/Use Case for downstream testing. If the source
+    fingerprint changes, affected approvals become STALE_REVIEW_REQUIRED until re-approved.
+
+  close_rule: >-
+    BL-002 may become VERIFIED only when QG-STORY-001 through QG-STORY-010 pass for the final baseline. CLOSED additionally
+    requires the framework-wide explicit user acceptance gate.

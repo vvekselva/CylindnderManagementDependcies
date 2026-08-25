@@ -1,0 +1,15 @@
+decisions:
+  backlog_item: BL-002
+  decisions:
+    - id: DEC-BL002-001
+      date: 2026-08-25
+      owner: USER
+      decision: Insert Controller Dependency Matrix to Human-Readable Stories as BL-002 and shift the former BL-002 onward by one position.
+    - id: DEC-BL002-002
+      date: 2026-08-25
+      owner: USER
+      decision: Approved Stories become controlled input for unit/integration testing; one or more Stories may be combined into Use Cases and Use Case testing must be performed from the approved Use Cases.
+    - id: DEC-BL002-003
+      date: 2026-08-25
+      owner: USER
+      decision: Future scheduler-triggered Cylinder Orchestrator invocations must include BL-002 in backlog selection rather than being hard-coded to BL-001 only.
