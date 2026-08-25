@@ -1,0 +1,54 @@
+audit:
+  backlog_item: BL-001
+  generated_by: PRIMARY_ORCHESTRATOR
+  generated_at: 2026-08-25T12:41:00+05:30
+  authoritative_branch: chore/rename-dependency-files
+  frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  state: FAIL_CLOSED_SOURCE_KEY_MISMATCH
+  workers_started: 0
+  transient_lane_logs_created: 0
+  canonical_unique_target: 134
+  canonical_materialized_unique_keys_before_audit: 123
+  canonical_increment_applied: false
+  findings:
+    - ledger_key: "GET /reconciliation-dashboard"
+      source_result: MATCH
+      controller: ReconciliationDashboardController
+      controller_blob: fec84449c72e5240ea5f9f53db79e55760c742e3
+      source_mapping: "@RequestMapping(\"/reconciliation-dashboard\") + @GetMapping"
+      action: CONTINUE_FULL_CHAIN_REVALIDATION
+    - ledger_key: "POST /reconciliation-dashboard/reconcile"
+      source_result: MISMATCH
+      controller: ReconciliationDashboardController
+      controller_blob: fec84449c72e5240ea5f9f53db79e55760c742e3
+      frozen_source_mapping_found: "POST /reconciliation-dashboard/search"
+      action: DO_NOT_PROMOTE_RECONCILE_KEY_REDERIVE_CANONICAL_INVENTORY
+      reason: "The frozen controller maps @PostMapping(\"/search\"), not /reconcile."
+    - ledger_key_family: "/lookup-management/*"
+      source_result: REQUIRES_KEY_REDERIVATION
+      controller: LookupManagementController
+      controller_blob: a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+      frozen_source_examples:
+        - "GET /lookupManagement"
+        - "POST /lookupManagement/addressType/save"
+        - "POST /lookupManagement/country/save"
+        - "POST /lookupManagement/state/save"
+        - "POST /lookupManagement/city/save"
+      action: DO_NOT_PROMOTE_KEBAB_KEYS_UNTIL_EXACT_FROZEN_MAPPING_IS_PROVED
+      reason: "The located frozen controller uses camel-case /lookupManagement mappings; the recovery ledger contains kebab-case /lookup-management update keys."
+    - ledger_key: "GET /addVechileTrip"
+      source_result: MATCH
+      controller: VehicleTripIngestionController
+      controller_blob: 26f887d731fd58a28c2a76240bd3d2b7ee02fb69
+      action: CONTINUE_FULL_CHAIN_REVALIDATION
+    - ledger_key: "POST /addVechileTrip"
+      source_result: MATCH
+      controller: VehicleTripIngestionController
+      controller_blob: 26f887d731fd58a28c2a76240bd3d2b7ee02fb69
+      action: CONTINUE_FULL_CHAIN_REVALIDATION
+  idempotency:
+    previous_worker_generation: E2E-STAGED-20260823-161214
+    previous_worker_state: CLOSED_SYNCHRONIZED
+    replayed: false
+  fail_closed_rule: >-
+    No canonical unique-key count or matrix row is promoted from a recovery-ledger key whose exact HTTP method/path does not match the frozen source. Re-derive the canonical endpoint inventory from frozen mappings, then reconcile only exact keys.
