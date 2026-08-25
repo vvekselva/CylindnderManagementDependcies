@@ -1,0 +1,53 @@
+story:
+  story_id: STORY-0023
+  title: Return yard locations as GeoJSON
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 7ebd50e76cf17ec67fb06a406e1b5460a81aaf3db9118c6cd4d94ccecab88b0a
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /yard-location/points.geojson"]
+  controller: CustomerAddressLocationController.yardLocationsGeoJson
+  endpoint: "GET /yard-location/points.geojson"
+  business_purpose: Return source-proved active yard-location data as GeoJSON.
+  trigger_and_context: A caller requests GET /yard-location/points.geojson.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No caller-supplied request-value validation is asserted because none is proved in the accepted trace.
+  main_flow:
+    - The request reaches CustomerAddressLocationController.yardLocationsGeoJson.
+    - The controller invokes CustomerAddressLocationOfflineMapService.fetchYardLocationsGeoJson.
+    - The service reads active yard locations through YardLocationJpaDao.findActiveYardLocations.
+    - The accepted native SQL reads public.tbl_yard_location joined with public.tbl_yard_inventory.
+    - YardLocationMapper.toDto maps the returned data.
+    - The service generates and returns the GeoJSON response.
+  component_flow:
+    - CustomerAddressLocationController.yardLocationsGeoJson
+    - CustomerAddressLocationOfflineMapService.fetchYardLocationsGeoJson
+    - YardLocationJpaDao.findActiveYardLocations
+    - public.tbl_yard_location
+    - public.tbl_yard_inventory
+    - YardLocationMapper.toDto
+    - generated GeoJSON response
+  business_rules:
+    - Only the source-proved active-yard-location read and GeoJSON generation are asserted.
+  data_reads_and_writes:
+    - Reads public.tbl_yard_location.
+    - Reads public.tbl_yard_inventory through the proved native join.
+    - No persistence write is proved for this GET endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate/error branch is asserted because none is proved in the accepted trace.
+  output_and_postconditions:
+    - Returns generated yard-location GeoJSON.
+    - No database mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /yard-location/points.geojson"
+    - logs/runs/PRODUCTION-FIRE-20260824-020143.md
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: The endpoint must read active yard-location data through the proved native join, map it, and return generated GeoJSON without a proved write.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 7ebd50e76cf17ec67fb06a406e1b5460a81aaf3db9118c6cd4d94ccecab88b0a
