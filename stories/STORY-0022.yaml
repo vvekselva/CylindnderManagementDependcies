@@ -1,0 +1,62 @@
+story:
+  story_id: STORY-0022
+  title: Save a yard location
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 4c8b35e999cc711389c52a633e9e1e93010a4f29071cd265b81c493ab6289057
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /yard-location/upload"]
+  controller: CustomerAddressLocationController.saveYardLocation
+  endpoint: "POST /yard-location/upload"
+  business_purpose: Persist a yard location using the source-proved yard and location persistence paths.
+  trigger_and_context: A caller submits POST /yard-location/upload.
+  inputs:
+    - Yard/location request values consumed by the controller/service; exact field names, requiredness and formatting are not asserted because the accepted trace does not prove the field-level contract.
+  normalization_and_defaults: []
+  validations:
+    - The service proves a yard lookup by identifier through YardInventoryJpaDao.findById before location persistence.
+  invalid_value_paths:
+    - The accepted trace proves success/error redirects back to /yard-location/upload, but does not prove field-level invalid-value rules; no additional validation semantics are inferred.
+  main_flow:
+    - The request reaches CustomerAddressLocationController.saveYardLocation.
+    - The controller invokes CustomerAddressLocationOfflineMapService.saveYardLocation.
+    - The service reads the target yard through YardInventoryJpaDao.findById.
+    - YardInventoryDo maps that record to public.tbl_yard_inventory.
+    - The service reads an existing active/default-start-point location through YardLocationJpaDao.findFirstByYardYardInventoryIdAndActiveTrueAndDefaultStartPointTrueOrderByYardLocationIdDesc.
+    - The service persists the location through YardLocationJpaDao.save and YardLocationDo mapped to public.tbl_yard_location.
+    - The terminal path redirects back to /yard-location/upload with source-proved success/error handling.
+  component_flow:
+    - CustomerAddressLocationController.saveYardLocation
+    - CustomerAddressLocationOfflineMapService.saveYardLocation
+    - YardInventoryJpaDao.findById
+    - YardInventoryDo
+    - public.tbl_yard_inventory
+    - YardLocationJpaDao.findFirstByYardYardInventoryIdAndActiveTrueAndDefaultStartPointTrueOrderByYardLocationIdDesc
+    - YardLocationJpaDao.save
+    - YardLocationDo
+    - public.tbl_yard_location
+    - redirect:/yard-location/upload
+  business_rules:
+    - The source-proved persistence flow looks up the referenced yard before saving the yard-location record.
+    - No additional ownership, geographic or uniqueness rule is inferred.
+  data_reads_and_writes:
+    - Reads public.tbl_yard_inventory.
+    - Reads public.tbl_yard_location for an active/default-start-point location.
+    - Writes public.tbl_yard_location through YardLocationJpaDao.save.
+  side_effects_and_state_changes:
+    - Persists the source-proved yard-location state.
+    - Redirects back to the yard-location upload page on terminal success/error paths.
+  alternate_and_error_flows:
+    - The accepted trace proves error handling that redirects back to /yard-location/upload.
+    - Exact exception types and field-level validation messages are not asserted because they are not proved in the accepted trace.
+  output_and_postconditions:
+    - On the proved save path, a yard-location record is persisted and the caller is redirected to /yard-location/upload.
+  evidence:
+    - traceability/controller-traceability.md row "POST /yard-location/upload"
+    - logs/runs/PRODUCTION-FIRE-20260824-020143.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint must look up the yard, follow the proved active/default-location repository path, persist through YardLocationJpaDao.save, and terminate with the proved redirect behavior without inventing unproved field validation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 4c8b35e999cc711389c52a633e9e1e93010a4f29071cd265b81c493ab6289057
