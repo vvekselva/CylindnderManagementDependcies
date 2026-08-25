@@ -1,0 +1,55 @@
+story:
+  story_id: STORY-0015
+  title: Add a stop to a predefined delivery trip
+  state: NEEDS_CLARIFICATION
+  fingerprint: f3257c0ceb6efe789c963ab21bafee297ca9f728c76c3e4fda671ad1ef286860
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /delivery-planning/predefined-trips/add-stop"]
+  controller: PredefinedDeliveryTripController.addStop
+  endpoint: "POST /delivery-planning/predefined-trips/add-stop"
+  business_purpose: Add a planning stop to a predefined delivery trip through the source-proved trip, planning-stop and trip-stop persistence chain.
+  trigger_and_context: A caller submits POST /delivery-planning/predefined-trips/add-stop.
+  inputs:
+    - "NEEDS_CLARIFICATION: the accepted canonical trace does not preserve the concrete request field names, types, required/optional semantics or caller-provided values."
+  normalization_and_defaults:
+    - "NEEDS_CLARIFICATION: no request normalization, trimming, defaulting or coercion behavior is proved by the accepted matrix row."
+  validations:
+    - "NEEDS_CLARIFICATION: no field-level validation sequence is proved by the accepted matrix row."
+  invalid_value_paths:
+    - "NEEDS_CLARIFICATION: invalid-value, missing-record and exception handling behavior is not asserted without accepted evidence."
+  main_flow:
+    - The request reaches PredefinedDeliveryTripController.addStop.
+    - The controller invokes PredefinedDeliveryTripService.addStop.
+    - The accepted trace proves downstream participation of PredefinedDeliveryTripJpaDao, DeliveryPlanningStopJpaDao and PredefinedDeliveryTripStopJpaDao.
+    - The persistence chain reaches public.tbl_predefined_delivery_trip, public.tbl_delivery_planning_stop and public.tbl_predefined_delivery_trip_stop.
+  component_flow:
+    - PredefinedDeliveryTripController.addStop
+    - PredefinedDeliveryTripService.addStop
+    - PredefinedDeliveryTripJpaDao
+    - DeliveryPlanningStopJpaDao
+    - PredefinedDeliveryTripStopJpaDao
+    - public.tbl_predefined_delivery_trip
+    - public.tbl_delivery_planning_stop
+    - public.tbl_predefined_delivery_trip_stop
+  business_rules:
+    - No sequencing, duplication, eligibility or stop-selection business rule is asserted because the accepted canonical evidence does not prove those details.
+  data_reads_and_writes:
+    - "The accepted trace proves persistence-layer interaction with public.tbl_predefined_delivery_trip, public.tbl_delivery_planning_stop and public.tbl_predefined_delivery_trip_stop."
+    - "NEEDS_CLARIFICATION: the exact read-versus-write operation performed against each table and exact mutated columns are not preserved in the accepted row."
+  side_effects_and_state_changes:
+    - "A predefined-trip stop association/planning-stop persistence effect is implied by the proved add-stop chain, but exact state changes remain NEEDS_CLARIFICATION until accepted evidence preserves them explicitly."
+  alternate_and_error_flows:
+    - "NEEDS_CLARIFICATION: request validation, missing trip/stop, duplicate association and exception branches are not proved in the accepted trace."
+  output_and_postconditions:
+    - "The add-stop service/persistence chain is invoked."
+    - "NEEDS_CLARIFICATION: exact redirect, view, status code, response body and final record state are not proved in the accepted trace."
+  evidence:
+    - traceability/explorer/traceability-matrix.json row "POST /delivery-planning/predefined-trips/add-stop"
+    - logs/runs/INVOCATION-20260823-160000.md LANE-03
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: The accepted flow must traverse PredefinedDeliveryTripService.addStop and the three proved persistence dependencies; request-field and response assertions remain blocked pending clarification.
+  approval:
+    owner: USER
+    state: NOT_ELIGIBLE_UNTIL_CLARIFIED
+    fingerprint: f3257c0ceb6efe789c963ab21bafee297ca9f728c76c3e4fda671ad1ef286860
