@@ -1,0 +1,54 @@
+story:
+  story_id: STORY-0030
+  title: Return customer consumption dashboard data as JSON
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 1b8d259c2de2ce7aaded367ddf01b4a18d58aff6790d6ab5e1b733844f26a3f5
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-consumption/api/dashboard"]
+  controller: CustomerConsumptionDashboardController.dashboardData
+  endpoint: "GET /customer-consumption/api/dashboard"
+  business_purpose: Return the source-proved customer consumption dashboard data as a JSON response body.
+  trigger_and_context: A caller requests GET /customer-consumption/api/dashboard.
+  inputs:
+    - Dashboard filter/paging values consumed by fetchDashboard when supplied; exact field-level request contract is not asserted because it is not enumerated in the accepted trace.
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No field-level invalid-value behavior is asserted because it is not proved in the accepted trace.
+  main_flow:
+    - The request reaches CustomerConsumptionDashboardController.dashboardData.
+    - The controller invokes CustomerConsumptionDashboardService.fetchDashboard.
+    - The service reads filtered/paged projection data and source-proved summary values through CustomerProductConsumptionProjectionViewJpaDao.
+    - CustomerProductConsumptionProjectionViewDo maps the rows from public.vw_customer_product_consumption_projection.
+    - CustomerConsumptionProjectionMapper maps the result.
+    - The controller returns the mapped dashboard DTO/data as a JSON response body.
+  component_flow:
+    - CustomerConsumptionDashboardController.dashboardData
+    - CustomerConsumptionDashboardService.fetchDashboard
+    - CustomerProductConsumptionProjectionViewJpaDao
+    - CustomerProductConsumptionProjectionViewDo
+    - public.vw_customer_product_consumption_projection
+    - CustomerConsumptionProjectionMapper
+    - JSON response body
+  business_rules:
+    - Only the source-proved filtered/paged projection read and summary-query behavior are asserted.
+    - Hibernate synchronization metadata is not treated as a direct endpoint final dependency.
+  data_reads_and_writes:
+    - Reads public.vw_customer_product_consumption_projection.
+    - No persistence write is proved for this GET endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate/error branch is asserted because none is proved in the accepted trace.
+  output_and_postconditions:
+    - Returns source-proved mapped customer consumption dashboard data as JSON.
+    - No database mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-consumption/api/dashboard"
+    - logs/runs/PRODUCTION-FIRE-20260824-023321.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The API route must execute the proved fetchDashboard projection-read path and return mapped dashboard data as JSON without a proved persistence mutation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 1b8d259c2de2ce7aaded367ddf01b4a18d58aff6790d6ab5e1b733844f26a3f5
