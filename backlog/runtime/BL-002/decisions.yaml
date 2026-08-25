@@ -13,3 +13,7 @@ decisions:
       date: 2026-08-25
       owner: USER
       decision: Future scheduler-triggered Cylinder Orchestrator invocations must include BL-002 in backlog selection rather than being hard-coded to BL-001 only.
+    - id: DEC-BL002-004
+      date: 2026-08-25
+      owner: USER
+      decision: BL-001 and BL-002 execute as parallel coordinated workstreams. BL-002 may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows while BL-001 continues; rows pending atomic projection remain ineligible. Final BL-002 verification still requires the complete final BL-001 matrix and all normal approval gates.
