@@ -1,21 +1,31 @@
 controller_story_usecase_traceability:
-  version: 1
+  version: 2
   backlog_item: BL-002
-  state: INITIALIZED_WAITING_FOR_BL001
+  state: INCREMENTAL_CANONICAL_ROW_MAPPING
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   upstream:
     matrix_markdown: traceability/controller-traceability.md
     matrix_structured: traceability/explorer/traceability-matrix.json
-    required_state: FINAL_VALIDATED
+    final_required_state: FINAL_VALIDATED
+    incremental_input_rule: PRIMARY_ORCHESTRATOR_ACCEPTED_MATERIALIZED_NON_STALE_ROWS_ONLY
   registers:
     stories: stories/story-register.yaml
     usecases: usecases/usecase-register.yaml
     test_scenarios: usecases/usecase-test-scenarios.yaml
   key_chain: MATRIX_ROW_KEY_TO_STORY_ID_TO_USECASE_ID_TO_SCENARIO_ID
-  rows: []
+  rows:
+    - {matrix_row_key: "GET /login", story_id: STORY-0001, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /customer-address-location/planning-map", story_id: STORY-0002, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /cylinderDelivery", story_id: STORY-0003, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /walkin-sale", story_id: STORY-0004, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /customer-address-location/upload", story_id: STORY-0005, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /offline-map/style.json", story_id: STORY-0006, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /offline-map/status-json", story_id: STORY-0007, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /challan-page-photo/{challanPagePhotoId}", story_id: STORY-0008, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
   invariants:
-    - every canonical final matrix row has one Story disposition
+    - every canonical final matrix row has one Story disposition before final BL-002 verification
     - every APPROVED Story references at least one canonical matrix row
     - every APPROVED_FOR_TESTING Use Case references only APPROVED Stories
     - every authoritative test scenario references one APPROVED_FOR_TESTING Use Case
     - no stale approval may be consumed downstream
+    - pending BL-001 atomic-projection rows are not eligible for Story mapping
