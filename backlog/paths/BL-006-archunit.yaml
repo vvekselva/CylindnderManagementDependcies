@@ -1,0 +1,74 @@
+completion_path:
+  id: CP-BL-006-v1
+  backlog_item: BL-006
+  type: ARCHUNIT
+  name: ArchUnit Architecture Test Completion Path
+
+  purpose: >-
+    Analyse the implemented architecture and declared architectural rules, generate ArchUnit Work Units, execute them, and report verified violations without inventing architectural constraints that the project has not established.
+
+  phases:
+    - id: ANALYZE
+      owner: ORCHESTRATOR
+      actions:
+        - establish the approved source baseline
+        - inspect module/package structure and dependency directions
+        - inspect existing ArchUnit tests and architectural documentation/configuration
+        - identify architecture rules that are already explicit or provable
+        - classify potential rules as DECLARED, PROVABLE, PROPOSED or UNRESOLVED
+      outputs:
+        - backlog/runtime/BL-006/analysis.yaml
+        - quality/archunit/architecture-rules.md
+      gate: rules selected for execution are DECLARED or PROVABLE; proposed rules require approval before enforcement
+
+    - id: PLAN
+      owner: ORCHESTRATOR
+      actions:
+        - create Work Units for missing/required ArchUnit tests
+        - define package scopes, allowed/forbidden dependencies and evidence basis
+        - generate Worker Input files
+      outputs:
+        - backlog/runtime/BL-006/execution-plan.yaml
+        - worker/inputs/WI-*.yaml
+
+    - id: EXECUTE
+      owner: ORCHESTRATOR
+      actions:
+        - schedule ArchUnit Worker Inputs
+        - create/update tests only on approved automation branches
+        - execute declared ArchUnit/test commands
+        - collect violations and Worker evidence
+      outputs:
+        - backlog/runtime/BL-006/work-unit-status.yaml
+        - worker/results/WI-*.yaml
+
+    - id: VALIDATE
+      owner: ORCHESTRATOR
+      checks:
+        - every enforced rule has an evidence basis
+        - every planned ArchUnit test has an accepted result
+        - violations are reported rather than hidden
+        - proposed/unapproved rules are not treated as failures
+      outputs:
+        - quality/archunit/archunit-results.md
+        - quality/archunit/unresolved-architecture-rules.md
+      gate: all approved architecture rules have executed results
+
+    - id: CLOSE
+      owner: ORCHESTRATOR
+      actions:
+        - persist rule/result evidence
+        - close required runs
+        - mark BL-006 VERIFIED then CLOSED
+
+  parallelism:
+    max_parallel_work_units: 10
+    rule: independent rule/test files may run concurrently when they do not modify the same files
+
+  completion_conditions:
+    - architecture rule analysis complete
+    - all approved rules executed
+    - results/violations recorded
+    - no invented rule treated as authoritative
+    - required outputs exist
+    - all required runs closed
