@@ -1,0 +1,52 @@
+story:
+  story_id: STORY-0021
+  title: Return customer address map points as GeoJSON
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 97a1894f1f35c7eea236fa40223556b268950cca58ce9a889c3d90a8ede1f736
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-address-location/points.geojson"]
+  controller: CustomerAddressLocationController.customerAddressPointsGeoJson
+  endpoint: "GET /customer-address-location/points.geojson"
+  business_purpose: Return the source-proved customer address map-point data as a GeoJSON response.
+  trigger_and_context: A caller requests GET /customer-address-location/points.geojson.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No caller-supplied request-value validation is asserted because none is proved in the accepted endpoint trace.
+  main_flow:
+    - The request reaches CustomerAddressLocationController.customerAddressPointsGeoJson.
+    - The controller invokes CustomerAddressLocationOfflineMapService.fetchCustomerAddressMapPointsGeoJson.
+    - The service obtains map-point data through fetchCustomerAddressMapPoints and CustomerAddressLocationJpaDao.findCustomerAddressMapPoints.
+    - The accepted native query reads public.vw_customer_address_location_status and public.tbl_customer_order_request.
+    - The service generates the GeoJSON response in memory.
+  component_flow:
+    - CustomerAddressLocationController.customerAddressPointsGeoJson
+    - CustomerAddressLocationOfflineMapService.fetchCustomerAddressMapPointsGeoJson
+    - CustomerAddressLocationOfflineMapService.fetchCustomerAddressMapPoints
+    - CustomerAddressLocationJpaDao.findCustomerAddressMapPoints
+    - public.vw_customer_address_location_status
+    - public.tbl_customer_order_request
+    - generated GeoJSON response
+  business_rules:
+    - Only the source-proved map-point retrieval and GeoJSON generation are asserted; no additional business interpretation is inferred.
+  data_reads_and_writes:
+    - Reads public.vw_customer_address_location_status.
+    - Reads public.tbl_customer_order_request.
+    - No persistence write is proved for this GET endpoint.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate/error branch is asserted because none is proved in the accepted trace.
+  output_and_postconditions:
+    - Returns generated customer-address map data as GeoJSON.
+    - No database mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-address-location/points.geojson"
+    - logs/runs/PRODUCTION-FIRE-20260824-020143.md
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: The endpoint must obtain the accepted map-point data through CustomerAddressLocationJpaDao, read the two proved database objects, and return generated GeoJSON without a proved persistence mutation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 97a1894f1f35c7eea236fa40223556b268950cca58ce9a889c3d90a8ede1f736
