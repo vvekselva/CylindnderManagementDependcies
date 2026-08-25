@@ -1,124 +1,82 @@
-version: 41
+version: 42
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
 structured_matrix_artifact: traceability/explorer/traceability-matrix.json
 browser_data_artifact: traceability/explorer/matrix-data.js
-structured_delta_artifacts:
-  - traceability/explorer/traceability-matrix-delta-20260824-003111.json
-  - traceability/explorer/traceability-matrix-delta-20260824-005711.json
-  - traceability/explorer/traceability-matrix-delta-20260824-013336.json
-  - traceability/explorer/traceability-matrix-delta-20260824-013546.json
-  - traceability/explorer/traceability-matrix-delta-20260824-020143.json
-  - traceability/explorer/traceability-matrix-delta-20260824-023321.json
-  - traceability/explorer/traceability-matrix-delta-20260824-033550.json
-  - traceability/explorer/traceability-matrix-delta-20260824-042714.json
-  - traceability/explorer/traceability-matrix-delta-20260824-045742.json
-  - traceability/explorer/traceability-matrix-delta-20260824-053325.json
-  - traceability/explorer/traceability-matrix-delta-20260824-070036.json
-  - traceability/explorer/traceability-matrix-delta-20260824-080301.json
-  - traceability/explorer/traceability-matrix-delta-20260824-083401.json
-  - traceability/explorer/traceability-matrix-delta-20260824-085811.json
-  - traceability/explorer/traceability-matrix-delta-20260824-093200.json
-  - traceability/explorer/traceability-matrix-delta-20260824-100135.json
-  - traceability/explorer/traceability-matrix-delta-20260824-103703.json
-  - traceability/explorer/traceability-matrix-delta-20260824-110011.json
-  - traceability/explorer/traceability-matrix-delta-20260824-113951.json
-  - traceability/explorer/traceability-matrix-delta-20260824-134342.json
-  - traceability/explorer/traceability-matrix-delta-20260824-143220.json
-  - traceability/explorer/traceability-matrix-delta-20260824-150939.json
-  - traceability/explorer/traceability-matrix-delta-20260824-171009.json
-  - traceability/explorer/traceability-matrix-delta-20260824-172900.json
-  - traceability/explorer/traceability-matrix-delta-20260824-180750.json
-  - traceability/explorer/traceability-matrix-delta-20260824-181810.json
-  - traceability/explorer/traceability-matrix-delta-20260824-190650.json
-  - traceability/explorer/traceability-matrix-delta-20260824-191248.json
-  - traceability/explorer/traceability-matrix-delta-20260824-203431.json
-  - traceability/explorer/traceability-matrix-delta-20260824-213728.json
-  - traceability/explorer/traceability-matrix-delta-20260824-170049.json
-  - traceability/explorer/traceability-matrix-delta-20260824-230001.json
-  - traceability/explorer/traceability-matrix-delta-20260824-231647.json
-  - traceability/explorer/traceability-matrix-delta-20260824-233707.json
-  - traceability/explorer/traceability-matrix-delta-20260825-000044.json
-  - traceability/explorer/traceability-matrix-delta-20260825-001738.json
-  - traceability/explorer/traceability-matrix-delta-20260825-003910.json
-  - traceability/explorer/traceability-matrix-delta-20260825-020259.json
-  - traceability/explorer/traceability-matrix-delta-20260825-035743.json
-  - traceability/explorer/traceability-matrix-delta-20260825-051115.json
-browser_delta_artifacts:
-  - traceability/explorer/matrix-delta-20260824-003111.js
-  - traceability/explorer/matrix-delta-20260824-005711.js
-  - traceability/explorer/matrix-delta-20260824-013336.js
-  - traceability/explorer/matrix-delta-20260824-013546.js
-  - traceability/explorer/matrix-delta-20260824-020143.js
-  - traceability/explorer/matrix-delta-20260824-023321.js
-  - traceability/explorer/matrix-delta-20260824-033550.js
-  - traceability/explorer/matrix-delta-20260824-042714.js
-  - traceability/explorer/matrix-delta-20260824-045742.js
-  - traceability/explorer/matrix-delta-20260824-053325.js
-  - traceability/explorer/matrix-delta-20260824-070036.js
-  - traceability/explorer/matrix-delta-20260824-080301.js
-  - traceability/explorer/matrix-delta-20260824-083401.js
-  - traceability/explorer/matrix-delta-20260824-085811.js
-  - traceability/explorer/matrix-delta-20260824-093200.js
-  - traceability/explorer/matrix-delta-20260824-100135.js
-  - traceability/explorer/matrix-delta-20260824-103703.js
-  - traceability/explorer/matrix-delta-20260824-110011.js
-  - traceability/explorer/matrix-delta-20260824-113951.js
-  - traceability/explorer/matrix-delta-20260824-134342.js
-  - traceability/explorer/matrix-delta-20260824-143220.js
-  - traceability/explorer/matrix-delta-20260824-150939.js
-  - traceability/explorer/matrix-delta-20260824-171009.js
-  - traceability/explorer/matrix-delta-20260824-172900.js
-  - traceability/explorer/matrix-delta-20260824-180750.js
-  - traceability/explorer/matrix-delta-20260824-181810.js
-  - traceability/explorer/matrix-delta-20260824-190650.js
-  - traceability/explorer/matrix-delta-20260824-191248.js
-  - traceability/explorer/matrix-delta-20260824-203431.js
-  - traceability/explorer/matrix-delta-20260824-213728.js
-  - traceability/explorer/matrix-delta-20260824-170049.js
-  - traceability/explorer/matrix-delta-20260824-230001.js
-  - traceability/explorer/matrix-delta-20260824-231647.js
-  - traceability/explorer/matrix-delta-20260824-233707.js
-  - traceability/explorer/matrix-delta-20260825-000044.js
-  - traceability/explorer/matrix-delta-20260825-001738.js
-  - traceability/explorer/matrix-delta-20260825-003910.js
-  - traceability/explorer/matrix-delta-20260825-020259.js
-  - traceability/explorer/matrix-delta-20260825-035743.js
-  - traceability/explorer/matrix-delta-20260825-051115.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-state: READY_FOR_FINAL_RECONCILIATION
-projection_state: BASE_PLUS_ORDERED_DELTAS_CURRENT
-canonical_endpoint_inventory: 134
-canonical_accepted_examined: 134
-canonical_complete: 134
-canonical_unresolved: 0
-canonical_blocked: 0
-canonical_failed: 0
-canonical_not_yet_examined: 0
-materialized_matrix_rows: 113
-historical_accepted_rows_pending_backfill: 21
+
+state: RECONCILIATION_BLOCKED_INTEGRITY
+projection_state: BASE_PLUS_ORDERED_DELTAS_NOT_FINAL_RECONCILED
+
+reported_source_check:
+  canonical_endpoint_inventory_target: 134
+  accumulated_examined_counter: 134
+  accumulated_complete_counter: 134
+  unresolved: 0
+  blocked: 0
+  failed: 0
+  not_yet_examined_counter: 0
+  unique_method_path_coverage_proved: false
+  reason: >-
+    Durable history proves at least four method/path keys were accepted COMPLETE earlier and later counted again as
+    newly examined. Therefore the accumulated 134 counter cannot serve as the WF-002 unique-key coverage proof.
+
+matrix_reconciliation:
+  prior_ssot_materialized_matrix_rows: 113
+  physically_observed_markdown_endpoint_rows: 114
+  prior_ssot_historical_accepted_rows_pending_backfill: 21
+  confirmed_missing_canonical_keys: 20
+  counter_state: STALE_BY_ONE_AND_PENDING_ATOMIC_RECONCILIATION
+  integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
+  gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
+  pending_atomic_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+  pending_atomic_projection_rows: 4
+  pending_atomic_projection_accepted: false
+
+required_canonical_inputs:
+  worker_result: {path: worker/results/WI-0004.yaml, state: MISSING}
+  endpoint_inventory: {path: traceability/endpoint-inventory.md, state: MISSING}
+  controller_inventory: {path: traceability/controller-inventory.md, state: MISSING}
+
+proven_duplicate_acceptance_keys:
+  - {method: GET, path: /search/product-category/{searchText}, early_evidence: RUN-WI0004-20260823-022, later_recount: PRODUCTION-FIRE-20260825-003910}
+  - {method: GET, path: /search/product-uom/{searchText}, early_evidence: RUN-WI0004-20260823-022, later_recount: PRODUCTION-FIRE-20260825-003910}
+  - {method: GET, path: /search/state/{searchText}, early_evidence: RUN-WI0004-20260823-022, later_recount: PRODUCTION-FIRE-20260825-003910}
+  - {method: GET, path: /search/supplier/{searchText}, early_evidence: RUN-WI0004-20260823-023, later_recount: PRODUCTION-FIRE-20260825-003910}
+
 latest_materialized_from_invocation: PRODUCTION-FIRE-20260825-051115
-latest_state_transition:
-  - {method: POST, path: /domainLookup/productUom/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
-  - {method: POST, path: /domainLookup/product/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
-  - {method: POST, path: /domainLookup/cylinder/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
-  - {method: POST, path: /domainLookup/vehicle/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
-  - {method: POST, path: /domainLookup/driver/save, from: NOT_YET_EXAMINED, to: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
-latest_historical_backfill:
-  - {method: GET, path: /domainLookup, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
-  - {method: POST, path: /domainLookup/productCategory/save, state: COMPLETE, chain_completeness: FULL_BRANCHING, evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md}
-projection_note: >-
-  Canonical source-check coverage has reached 134/134. The base-plus-ordered-delta Explorer projection is current through
-  PRODUCTION-FIRE-20260825-051115. Seven Domain Lookup rows were materialized: five new source-check acceptances and two
-  historical accepted-key backfills. Twenty-one historical accepted rows still require durable-evidence reconciliation
-  before the matrix can become FINAL_VALIDATED.
+latest_reconciliation_checkpoint: reconciliation-integrity-audit-20260825
+
+accepted_changes_this_checkpoint:
+  new_endpoint_rows: 0
+  historical_rows_promoted: 0
+  materialized_counter_increment: 0
+  unresolved_changes: 0
+  worker_generation_started: false
+  transient_lane_logs_created: 0
+
+historical_projection_registry:
+  note: >-
+    Existing base and ordered delta artifacts remain durable and are not deleted by this fail-closed checkpoint.
+    Their registry is preserved by Git history/version 41 and the Explorer loader. No new delta is accepted until
+    the canonical key/evidence reconciliation is safe.
+  latest_existing_structured_delta: traceability/explorer/traceability-matrix-delta-20260825-051115.json
+  latest_existing_browser_delta: traceability/explorer/matrix-delta-20260825-051115.js
+
 update_rule: >-
-  Every newly accepted endpoint trace or accepted state transition is immediately upserted into the Markdown matrix and
-  structured full-chain projection. Historical accepted traces may be backfilled only from durable accepted evidence;
-  counts must never be converted into invented rows.
+  Every accepted endpoint trace is keyed by HTTP method plus path and must preserve a complete source-proved ordered or
+  branching chain. Historical rows may be promoted only from durable accepted evidence. Counts are never converted into
+  invented rows, and WU-BL001-002 may not perform new source reads.
+
+next_action: >-
+  Reconstruct the canonical 134-key endpoint inventory only from durable control-repository classification/accepted evidence;
+  reconcile it against the 114 physical Markdown rows and the 20 confirmed missing keys. For each missing key, promote only
+  a complete chain already durably accepted. If any chain is not present in durable accepted evidence, keep reconciliation
+  blocked rather than reading source or guessing. WU-BL001-003 remains blocked until exactly 134 unique rows reconcile.
+
 finalization_condition: >-
-  Canonical accepted trace-result coverage is 100 percent, every caller-visible endpoint appears exactly once,
-  every COMPLETE row has a source-proved full/branching chain, all row evidence references are valid at the frozen
-  source baseline, the base-plus-delta structured/browser projection reconciles, and required traceability gates pass.
+  Exactly 134 unique caller-visible HTTP method/path keys are represented once, every COMPLETE row has durable accepted
+  full-chain evidence at the frozen baseline, Markdown/structured JSON/browser data reconcile, zero unresolved accounting
+  reconciles, QG-TRC-006 through QG-TRC-012 pass, and only then may WU-BL001-003 run.
