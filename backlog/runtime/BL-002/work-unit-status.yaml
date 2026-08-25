@@ -1,6 +1,6 @@
 work_unit_status:
   backlog_item: BL-002
-  state: WAITING_FOR_USER_STORY_APPROVAL
+  state: WAITING_FOR_USER_STORY_APPROVAL_AND_CLARIFICATION
   current_work_unit: WU-BL002-002
   work_units:
     - id: WU-BL002-001
@@ -8,13 +8,14 @@ work_unit_status:
       name: Generate evidence-backed Stories from accepted canonical BL-001 rows
       progress:
         eligible_rows: 123
-        accounted_rows: 12
-        ready_for_user_review: 12
+        accounted_rows: 14
+        ready_for_user_review: 13
+        needs_clarification: 1
         approved: 0
-      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012]
+      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0014]
     - id: WU-BL002-002
       state: WAITING_FOR_USER_DECISION
-      name: Story approval
+      name: Story approval and clarification
     - id: WU-BL002-003
       state: BLOCKED_BY_STORY_APPROVAL
       name: Compose candidate Use Cases
@@ -29,4 +30,4 @@ work_unit_status:
     waiting_for_user: 1
     checkpointed: 1
     closed: 0
-  next_action: USER_APPROVE_OR_REJECT_EXACT_STORY_IDS_AND_FINGERPRINTS_BEFORE_USECASE_COMPOSITION
+  next_action: USER_APPROVE_OR_REJECT_EXACT_STORY_IDS_AND_FINGERPRINTS_FOR_STORY_0001_TO_0013; STORY_0014_REMAINS_NEEDS_CLARIFICATION; DO_NOT_COMPOSE_USE_CASES_BEFORE_APPROVAL
