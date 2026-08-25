@@ -1,0 +1,88 @@
+story:
+  story_id: STORY-0031
+  title: Complete a vehicle trip and return cylinders to yard records
+  state: READY_FOR_USER_REVIEW
+  fingerprint: bec09f914e6bf1601fda2adb2704c547f06765174bc5f0f6f8961561ee9bc014
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /complete-trip"]
+  controller: CompleteTripController.completeTrip
+  endpoint: "POST /complete-trip"
+  business_purpose: Complete the source-proved trip workflow by validating the active vehicle-load/logistics state, recording yard return information, updating logistics and trip records, and redirecting to the home route.
+  trigger_and_context: A caller submits POST /complete-trip to CompleteTripController.completeTrip.
+  inputs:
+    - The request identifies the vehicle load consumed by CompleteTripServiceImpl.processRequest; exact request-field names are not asserted because they are not enumerated in the accepted trace.
+  normalization_and_defaults: []
+  validations:
+    - CompleteTripRequestValidator validates the vehicle load through VehicleLoadJpaDao.findById.
+    - It validates the related logistics execution through CylinderLogisticsExecutionJpaDao.findByVehicleLoad.
+    - It validates active logistics lines through CylinderLogisticsExecutionLineJpaDao.findByCylinderLogisticsExecutionAndActive.
+    - It reads allowed yard inventory states through YardInventoryAllowedStateJpaDao.findAll and associated CylinderStateDo records.
+    - It checks for an existing active yard inventory line through YardInventoryLineJpaDao.findByCylinderAndActive.
+  invalid_value_paths:
+    - The accepted trace proves the validation reads above but does not enumerate exact caller-visible error messages or status codes; those behaviors are not invented.
+  main_flow:
+    - The request reaches CompleteTripController.completeTrip and invokes CompleteTripServiceImpl.processRequest.
+    - CompleteTripRequestValidator performs the source-proved vehicle-load, logistics-execution, active-line, allowed-yard-state and duplicate-active-yard-line checks.
+    - The service reads the vehicle load and related active logistics execution data.
+    - The service updates the logistics execution and active logistics lines where the source-proved flow requires save operations.
+    - It creates a yard entry through YardEntriesJpaDao.save.
+    - It resolves the active yard inventory and yard source type and resolves the cylinder state used by the yard return path.
+    - It creates the yard inventory line through YardInventoryLineJpaDao.save.
+    - It resolves the target trip status, updates the vehicle trip through VehicleTripJpaDao.save, and creates the yard-end trip stop through VehicleTripStopJpaDao after resolving the stop type.
+    - Cylinder identity is obtained from the active logistics line association to CylinderDo.
+    - The controller returns redirect:ViewConstants.REDIRECT_HOME_LINK.
+  component_flow:
+    - CompleteTripController.completeTrip
+    - CompleteTripServiceImpl.processRequest
+    - CompleteTripRequestValidator.validate
+    - VehicleLoadJpaDao / VehicleLoadDo / public.tbl_vehicle_load
+    - CylinderLogisticsExecutionJpaDao / CylinderLogisticsExecutionDo / public.tbl_cylinder_logistics_execution
+    - CylinderLogisticsExecutionLineJpaDao / CylinderLogisticsExecutionLineDo / public.tbl_cylinder_logistics_execution_line
+    - YardInventoryAllowedStateJpaDao / YardInventoryAllowedStateDo / public.tbl_yard_inventory_allowed_state
+    - CylinderStateDo / public.tbl_cylinder_states
+    - YardInventoryLineJpaDao / YardInventoryLineDo / public.tbl_yard_inventory_line
+    - YardEntriesJpaDao / YardEntryDo / public.tbl_yard_entries
+    - YardInventoryJpaDao / YardInventoryDo / public.tbl_yard_inventory
+    - YardInventorySourceTypeJpaDao / YardInventorySourceTypeDo / public.tbl_yard_inventory_source_type
+    - VehicleTripStatusJpaDao / VehicleTripStatusDo / public.tbl_trip_status
+    - VehicleTripJpaDao / VehicleTripDo / public.tbl_vehicle_trip
+    - VehicleTripStopJpaDao / VehicleTripStopDo / public.tbl_vehicle_trip_stop
+    - VehicleTripStopTypeJpaDao / VehicleTripStopTypeDo / public.tbl_stop_type
+    - CylinderDo / public.tbl_cylinder
+    - redirect:ViewConstants.REDIRECT_HOME_LINK
+  business_rules:
+    - Trip completion proceeds only through the source-proved validation chain before the proved yard/logistics/trip writes.
+    - The accepted trace proves an allowed-yard-state read and an active-yard-line duplicate check, but it does not prove the exact human-readable rejection text; no such text is asserted.
+  data_reads_and_writes:
+    - Reads public.tbl_vehicle_load.
+    - Reads and writes public.tbl_cylinder_logistics_execution.
+    - Reads and writes public.tbl_cylinder_logistics_execution_line.
+    - Reads public.tbl_yard_inventory_allowed_state and public.tbl_cylinder_states.
+    - Reads public.tbl_yard_inventory and public.tbl_yard_inventory_source_type.
+    - Creates a row in public.tbl_yard_entries through YardEntriesJpaDao.save.
+    - Reads and creates/updates the yard-cylinder location through public.tbl_yard_inventory_line.
+    - Reads public.tbl_trip_status and writes public.tbl_vehicle_trip.
+    - Reads public.tbl_stop_type and writes public.tbl_vehicle_trip_stop.
+    - Reads the cylinder association from public.tbl_cylinder.
+  side_effects_and_state_changes:
+    - Yard return records are materialized in the proved yard-entry and yard-inventory-line paths.
+    - Logistics execution and active logistics-line state are persisted through their proved save operations.
+    - The vehicle trip is persisted with the resolved trip status.
+    - A yard-end trip stop is persisted.
+  alternate_and_error_flows:
+    - Validation can stop the normal completion path when the source-proved prerequisites are not satisfied, but exact exception/message/HTTP behavior is not asserted because it is not enumerated in the accepted trace.
+  output_and_postconditions:
+    - On the proved successful path, the controller returns redirect:ViewConstants.REDIRECT_HOME_LINK.
+    - The related yard, logistics and trip records described above have followed their source-proved persistence paths.
+  evidence:
+    - traceability/explorer/traceability-matrix.json row "POST /complete-trip"
+    - logs/runs/PRODUCTION-FIRE-20260824-000114.md
+  downstream_test_assertions:
+    - classification: UNIT
+      assertion: CompleteTripRequestValidator must execute the proved vehicle-load, logistics-execution, active-line, allowed-yard-state and duplicate-active-yard-line validation reads before successful completion proceeds.
+    - classification: INTEGRATION
+      assertion: A successful complete-trip flow must exercise the proved yard-entry, yard-inventory-line, logistics, trip and yard-end-stop persistence paths and return the proved home redirect.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: bec09f914e6bf1601fda2adb2704c547f06765174bc5f0f6f8961561ee9bc014
