@@ -8,7 +8,7 @@ Structured full-chain projection: `traceability/explorer/traceability-matrix.jso
 This matrix was built while source analysis was in progress. A row is added or updated only after the Primary Orchestrator accepts the endpoint trace from pinned source evidence. Worker candidates do not become matrix truth automatically. The Markdown table is the compact endpoint index; ordered and branching component chains are preserved in the structured Explorer projection and durable evidence logs.
 
 Current canonical checkpoint: **134 / 134 examined; 134 COMPLETE; 0 UNRESOLVED; 0 not yet examined.**  
-Rows currently materialized below: **113**. The other 21 historically accepted rows must still be backfilled from durable accepted evidence during WU-BL001-002 and must not be invented from counts alone.
+Rows currently materialized below: **118**. The other 16 historically accepted rows must still be backfilled from durable accepted evidence during WU-BL001-002 and must not be invented from counts alone.
 
 | HTTP method | Path | Controller / method | State | Chain | Final dependency type | Final dependency | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -126,12 +126,16 @@ Rows currently materialized below: **113**. The other 21 historically accepted r
 | POST | `/domainLookup/cylinder/save` | `DomainLookupController.saveCylinder` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLES_CACHE_AND_TERMINAL_REDIRECT_VIEW | cylinder/identifier/ownership/product/UOM/yard inventory/source type/state/yard line tables; targeted cache refresh; validation-error model rebuild | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
 | POST | `/domainLookup/vehicle/save` | `DomainLookupController.saveVehicle` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_CACHE_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_vehicle`; targeted cache refresh; validation-error full model rebuild | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
 | POST | `/domainLookup/driver/save` | `DomainLookupController.saveDriver` | COMPLETE | FULL_BRANCHING | POSTGRES_TABLE_CACHE_AND_TERMINAL_REDIRECT_VIEW | `public.tbl_driver`; targeted cache refresh; validation-error full model rebuild | `logs/runs/PRODUCTION-FIRE-20260825-051115.md` |
+| GET | `/delivery-planning` | `DeliveryPlanningController.showDeliveryPlanningDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/DeliveryPlanningDashboard` | `logs/runs/PRODUCTION-FIRE-20260825-061110-SCHEDULER.md` |
+| GET | `/delivery-planning/dashboard` | `DeliveryPlanningController.showDeliveryPlanningDashboard` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEW_AND_TERMINAL_VIEW | `public.vw_customer_product_consumption_projection`; `with-menu/DeliveryPlanningDashboard` | `logs/runs/PRODUCTION-FIRE-20260825-061110-SCHEDULER.md` |
+| GET | `/delivery-planning/customer-density-bubble-map` | `DeliveryPlanningController.showCustomerDensityBubbleMap` | COMPLETE | FULL | TERMINAL_VIEW | `with-menu/CustomerDensityBubbleMap`; no service/DAO/database dependency | `logs/runs/PRODUCTION-FIRE-20260825-061110-SCHEDULER.md` |
+| GET | `/delivery-planning/weekly-forecast` | `DeliveryPlanningController.showWeeklyForecastReview` | COMPLETE | FULL_BRANCHING | POSTGRES_VIEWS_AND_TERMINAL_VIEW | `public.vw_delivery_planning_forecast_confirmation_worklist`; `public.vw_customer_product_consumption_projection`; `public.vw_customer_delivery_planning_signal`; `with-menu/DeliveryPlanningWeeklyForecast` | `logs/runs/PRODUCTION-FIRE-20260825-061110-SCHEDULER.md` |
 
 ## Current unresolved paths
 
 **None among all 134 examined endpoints.**
 
-Canonical source-check coverage is now **100 percent**. The matrix is `READY_FOR_FINAL_RECONCILIATION`; WU-BL001-002 must reconcile the remaining 21 historical accepted rows and the base-plus-delta structured/browser projection before WU-BL001-003 traceability-gate validation can run.
+Canonical source-check coverage is now **100 percent**. The matrix is `READY_FOR_FINAL_RECONCILIATION`; WU-BL001-002 must reconcile the remaining 16 historical accepted rows and the base-plus-delta structured/browser projection before WU-BL001-003 traceability-gate validation can run.
 
 ## Incremental update rule
 
