@@ -1,0 +1,55 @@
+story:
+  story_id: STORY-0033
+  title: Display the trip-return challan-book review page
+  state: READY_FOR_USER_REVIEW
+  fingerprint: adafc2b8f7da95ddb52f40abe8c129dd0746cb1218f75685452c4765d1f5b32d
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /trip-return"]
+  controller: TripReturnController.showReturnPage
+  endpoint: "GET /trip-return"
+  business_purpose: Present the source-proved trip-return review state for a vehicle load, including trip, vehicle, driver, challan-book assignment, page-ledger and photo information.
+  trigger_and_context: A caller opens GET /trip-return.
+  inputs:
+    - The accepted trace proves a vehicle-load context is consumed by TripReturnWorkflowService.loadReturnPage; exact request parameter names are not enumerated.
+  normalization_and_defaults: []
+  validations:
+    - TripReturnWorkflowService resolves the vehicle load and related vehicle trip/status before rendering.
+    - The flow reads challan-book assignment, page-ledger and photo state required by the review page.
+  invalid_value_paths:
+    - Exact missing-load or error status behaviour is not enumerated by the accepted trace and is not invented.
+  main_flow:
+    - TripReturnController.showReturnPage receives GET /trip-return.
+    - TripReturnWorkflowService.loadReturnPage loads vehicle load, trip, status, vehicle and driver data.
+    - The workflow loads challan assignment, page ledger and photo state.
+    - The controller renders final-version-1/TripReturnChallanBookReview.
+  component_flow:
+    - TripReturnController.showReturnPage
+    - TripReturnWorkflowService.loadReturnPage
+    - VehicleLoadJpaDao / VehicleLoadDo / public.tbl_vehicle_load
+    - VehicleTripDo / public.tbl_vehicle_trip
+    - VehicleTripStatusDo / public.tbl_trip_status
+    - VehicleDo / public.tbl_vehicle
+    - DriverDo / public.tbl_driver
+    - trip challan assignment view
+    - challan page ledger/photo state
+    - final-version-1/TripReturnChallanBookReview
+  data_reads_and_writes:
+    - READ vehicle load, trip, trip status, vehicle and driver data.
+    - READ challan-book assignment, page-ledger and photo state.
+  side_effects_and_state_changes:
+    - No persistence write is asserted for this GET path.
+    - The terminal effect is rendering the trip-return challan-book review view.
+  alternate_and_error_flows:
+    - Unproved caller-visible error behaviour remains unspecified.
+  output_and_postconditions:
+    - Returns final-version-1/TripReturnChallanBookReview populated from the source-proved reads.
+  evidence:
+    - traceability/controller-traceability.md row "GET /trip-return"
+    - logs/runs/PRODUCTION-FIRE-20260824-181810.md
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: GET /trip-return loads the proved trip/load/challan review dependencies and renders the proved review view.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: adafc2b8f7da95ddb52f40abe8c129dd0746cb1218f75685452c4765d1f5b32d
