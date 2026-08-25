@@ -1,0 +1,50 @@
+story:
+  story_id: STORY-0012
+  title: Display the yard location upload page with active yards
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 9a2ad04609d2ab03387f065289116814f23b4260328afe551e7fa94fe100fa1d
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /yard-location/upload"]
+  controller: CustomerAddressLocationController.showYardLocationUpload
+  endpoint: "GET /yard-location/upload"
+  business_purpose: Display the yard-location upload page using the source-proved set of active yards.
+  trigger_and_context: A caller requests GET /yard-location/upload.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No request-value validation is asserted because the accepted canonical trace proves no caller-supplied input for this flow.
+  main_flow:
+    - The request reaches CustomerAddressLocationController.showYardLocationUpload.
+    - The controller invokes CustomerAddressLocationOfflineMapService.fetchActiveYardsForLocationCapture.
+    - The service calls YardInventoryJpaDao.findByActiveTrueOrderByYardNameAsc.
+    - The repository reads YardInventoryDo records from public.tbl_yard_inventory.
+    - The controller renders with-menu/YardLocationUpload using the returned active-yard data.
+  component_flow:
+    - CustomerAddressLocationController.showYardLocationUpload
+    - CustomerAddressLocationOfflineMapService.fetchActiveYardsForLocationCapture
+    - YardInventoryJpaDao.findByActiveTrueOrderByYardNameAsc
+    - YardInventoryDo
+    - public.tbl_yard_inventory
+    - with-menu/YardLocationUpload
+  business_rules:
+    - Only the repository method's source-proved active=true selection and yard-name ordering are asserted.
+  data_reads_and_writes:
+    - Reads active yard inventory rows from public.tbl_yard_inventory.
+    - No persistence write is proved.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate or error branch is asserted beyond framework/runtime handling not proved in the accepted trace.
+  output_and_postconditions:
+    - Returns the yard-location upload view with the active-yard data returned by the repository.
+    - No database state mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /yard-location/upload"
+    - logs/runs/PRODUCTION-FIRE-20260824-020143.md endpoint 3
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint must load active yards ordered by yard name from public.tbl_yard_inventory, render the yard-location upload view, and perform no proved persistence mutation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 9a2ad04609d2ab03387f065289116814f23b4260328afe551e7fa94fe100fa1d
