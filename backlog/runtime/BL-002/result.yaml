@@ -1,10 +1,37 @@
 result:
   backlog_item: BL-002
-  state: WAITING_FOR_DEPENDENCY
+  state: PARTIAL_INCREMENTAL_EXECUTION
   verified: false
   closed: false
-  dependency:
-    backlog_item: BL-001
-    required_state: VERIFIED_OR_CLOSED
-  current_outcome: Framework and SSOT initialized; execution has not started.
-  next_action: Wait for BL-001 verification/closure, then scheduler may select BL-002 when all gates pass.
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  execution_basis: DEC-BL002-004
+  upstream:
+    bl001_state: PARTIAL_UNIQUE_KEY_RECOVERY
+    materialized_unique_rows: 123
+    pending_atomic_projection_rows: 11
+    eligible_rows_for_incremental_story_generation: 123
+  story_result:
+    story_dispositions: 3
+    ready_for_user_review: 3
+    approved: 0
+    story_ids: [STORY-0001, STORY-0002, STORY-0003]
+    fingerprints:
+      STORY-0001: 86f9d1e462553f6d69f78afef2770737931a267253ccef8d0c0d4075489cf624
+      STORY-0002: a92084eb69e026bf18431514c19bed9472bae66254eeff4bc0c3772b2f2a3276
+      STORY-0003: 03ebb235a749d5867ad38b79849d738124e7ab283afaceb2db9dce2cdac18d3d
+  usecase_result:
+    candidate_usecases: 0
+    approved_for_testing: 0
+    blocker: STORY_USER_APPROVAL_REQUIRED
+  final_verification_blockers:
+    - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED
+    - ALL_CANONICAL_ROWS_REQUIRE_STORY_DISPOSITION
+    - STORY_USER_APPROVAL_REQUIRED
+    - USECASE_USER_APPROVAL_REQUIRED
+  current_outcome: >-
+    BL-002 execution has started incrementally from accepted canonical BL-001 rows. Three Stories are technically
+    constrained and READY_FOR_USER_REVIEW. No pending BL-001 atomic-projection row was consumed and no Story or Use Case
+    was auto-approved.
+  next_action: >-
+    Continue safe-independent Story generation from the remaining eligible canonical rows and present exact Story IDs and
+    fingerprints for user approval. Do not use the 11 pending BL-001 rows until they are atomically canonical.
