@@ -1,0 +1,13 @@
+local_execution:
+  backlog_item: BL-002
+  state: INITIALIZED_NOT_STARTED
+  execution_id: null
+  dispatch_fingerprint: null
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  source_provider: null
+  phase: WAITING_FOR_DEPENDENCY
+  worker_state: NOT_STARTED
+  aggregate_result_fingerprint: null
+  validation_state: NOT_STARTED
+  sync_state: NOT_STARTED
+  recovery_state: NONE
