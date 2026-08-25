@@ -1,5 +1,5 @@
 execution_statistics:
-  version: 24
+  version: 25
   backlog_item: BL-001
   authoritative_for_run_statistics: true
   purpose: endpoint-trace coverage and self-reliant execution statistics
@@ -14,7 +14,7 @@ execution_statistics:
     blocked: 0
     failed: 0
     not_yet_examined: 0
-    latest_production_fire_changed_checkpoint: true
+    latest_production_fire_changed_checkpoint: false
   latest_worker_fire:
     execution_id: E2E-STAGED-20260823-161214
     state: CLOSED
@@ -28,28 +28,31 @@ execution_statistics:
     individual_lane_logs_remaining: 0
     replay_decision: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION
   latest_orchestrator_checkpoint:
-    checkpoint_id: PRODUCTION-FIRE-20260825-051115
+    checkpoint_id: PRODUCTION-FIRE-20260825-070408
     worker_fire_started: false
-    endpoint_trace_checkpoint_before: 129
+    endpoint_trace_checkpoint_before: 134
     endpoint_trace_checkpoint_after: 134
-    endpoints_examined_added: 5
-    complete_added: 5
-    historical_rows_backfilled: 2
-    matrix_materialized_rows_after: 113
-    historical_accepted_rows_pending_backfill: 21
-    matrix_state: READY_FOR_FINAL_RECONCILIATION
+    endpoints_examined_added: 0
+    complete_added: 0
+    historical_rows_backfilled: 4
+    corrected_pre_backfill_markdown_rows: 114
+    matrix_materialized_rows_after: 118
+    historical_accepted_rows_pending_backfill: 16
+    confirmed_missing_canonical_keys: 16
+    matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
     residual_transient_lane_logs: 0
   run_over_run:
-    endpoint_progress_percentage_point_change: 3.73
-    endpoint_examined_change: 5
-    complete_endpoint_change: 5
-    remaining_endpoint_change: -5
-    remaining_work_reduction_percentage: 100.0
-    trace_direction: SOURCE_CHECK_COMPLETE_129_TO_134_OF_134
+    endpoint_progress_percentage_point_change: 0.0
+    endpoint_examined_change: 0
+    complete_endpoint_change: 0
+    remaining_endpoint_change: 0
+    reconciliation_row_change: 4
+    reconciliation_backlog_reduction_percentage: 20.0
+    trace_direction: SOURCE_CHECK_ALREADY_COMPLETE_RECONCILIATION_114_TO_118
     natural_concurrency_direction: NO_NEW_WORKER_FIRE
   current_work_unit:
     id: WU-BL001-002
-    state: IN_PROGRESS
+    state: IN_PROGRESS_RECONCILIATION_BACKFILL
     purpose: FINAL_MATRIX_RECONCILIATION
   staleness:
     stale: false
@@ -57,4 +60,5 @@ execution_statistics:
   update_rules:
     - never replay the already synchronized old worker generation
     - historical matrix rows require durable accepted evidence
+    - WU-BL001-002 performs no new application-source reads
     - worker evidence is not canonical truth until Primary-Orchestrator validation
