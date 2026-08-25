@@ -1,0 +1,31 @@
+story:
+  story_id: STORY-0040
+  title: List active vehicle loads and trip status
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 55c311333b6383bb6a828c324d4a0bf2501d7f8a2613c0b0541383d1cfd81c45
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /vehicle-loads/list"]
+  controller: VehicleLoadByPageController.listVehicleLoads
+  endpoint: "GET /vehicle-loads/list"
+  business_purpose: Display active vehicle-load/trip records with source-proved vehicle, driver and trip-status information.
+  trigger_and_context: A caller opens GET /vehicle-loads/list.
+  inputs: [Pagination/filter inputs are not enumerated in the accepted checkpoint and are not asserted.]
+  normalization_and_defaults: []
+  validations: [No caller-input validation is explicitly proved for this GET path.]
+  invalid_value_paths: [Unproved error behavior is not invented.]
+  main_flow:
+    - VehicleLoadByPageController.listVehicleLoads invokes VehicleActiveTripFetchByPageService.
+    - VehicleActiveTripJpaDao reads VehicleActiveTripDo from public.vw_active_trips.
+    - The mapping reads trip/load/vehicle/driver data.
+    - TripReturnWorkflowService.getTripStatusByVehicleLoadIds resolves trip status.
+    - The controller renders the VehicleLoad list view.
+  component_flow: [VehicleLoadByPageController.listVehicleLoads, VehicleActiveTripFetchByPageService, VehicleActiveTripJpaDao, VehicleActiveTripDo, public.vw_active_trips, trip/load/vehicle/driver reads, TripReturnWorkflowService.getTripStatusByVehicleLoadIds, trip status, VehicleLoad list view]
+  data_reads_and_writes: [READ public.vw_active_trips, READ related trip/load/vehicle/driver/status data.]
+  side_effects_and_state_changes: [No persistence write is asserted.]
+  alternate_and_error_flows: [No alternate/error path is enumerated in the accepted trace.]
+  output_and_postconditions: [Returns the VehicleLoad list view populated with active trip/load and status data.]
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: GET /vehicle-loads/list reads the active-trip view and proved status helper data and renders the VehicleLoad list.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 55c311333b6383bb6a828c324d4a0bf2501d7f8a2613c0b0541383d1cfd81c45}
