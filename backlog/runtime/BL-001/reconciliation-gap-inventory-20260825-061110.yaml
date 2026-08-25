@@ -1,0 +1,70 @@
+reconciliation_gap_inventory:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-002
+  checkpoint: 2026-08-25T06:11:10+05:30
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  canonical_endpoint_inventory: 134
+  canonical_complete: 134
+  current_markdown_physical_rows_observed: 114
+  prior_ssot_materialized_row_count: 113
+  prior_ssot_pending_backfill_count: 21
+  reconciliation_finding: >-
+    The compact Markdown table physically contains 114 endpoint rows: 36 rows in lines 15-50,
+    50 rows in lines 51-100, and 28 rows in lines 101-128. Historical classification evidence
+    proves 20 canonical HTTP-method/path keys absent from the current Markdown table. Therefore the
+    prior 113/21 arithmetic is stale by one row. This artifact does not yet promote the corrected
+    counter into canonical matrix-progress; counter synchronization is deferred to the same atomic
+    projection checkpoint that materializes the first recovered rows.
+  confirmed_missing_key_count: 20
+  missing_families:
+    - controller: DeliveryPlanningController
+      classification_evidence_commit: 3e27bcbaea9bd7ff316d107e925e87eee906601c
+      keys:
+        - {method: GET, path: /delivery-planning}
+        - {method: GET, path: /delivery-planning/dashboard}
+        - {method: GET, path: /delivery-planning/customer-density-bubble-map}
+        - {method: GET, path: /delivery-planning/weekly-forecast}
+    - controller: DeliveryPlanningStopManagementController
+      classification_evidence_commit: 3e27bcbaea9bd7ff316d107e925e87eee906601c
+      keys:
+        - {method: GET, path: /delivery-planning/stops/manage}
+        - {method: GET, path: /delivery-planning/stops/manage/}
+        - {method: POST, path: /delivery-planning/stops/manage/save}
+        - {method: POST, path: /delivery-planning/stops/manage/save-selected}
+        - {method: POST, path: /delivery-planning/stops/manage/remove}
+    - controller: ReconciliationDashboardController
+      classification_evidence_commit: 28988931c4fe28564711c3e5db8853e06f07361c
+      keys:
+        - {method: GET, path: /reconciliation-dashboard}
+        - {method: POST, path: /reconciliation-dashboard/search}
+    - controller: VehicleLoadFetchByIdController
+      classification_evidence_commit: b0fb0c09fb9e992df9f859876ad5eaae8ec551fd
+      keys:
+        - {method: GET, path: /vehicle-load/fetch}
+    - controller: LookupManagementController
+      classification_evidence_commit: ce31593f584576e6289cdb955d3328937f94ae70
+      keys:
+        - {method: GET, path: /lookup}
+        - {method: GET, path: /lookupManagement}
+        - {method: POST, path: /lookupManagement/addressType/save}
+        - {method: POST, path: /lookupManagement/country/save}
+        - {method: POST, path: /lookupManagement/state/save}
+        - {method: POST, path: /lookupManagement/city/save}
+    - controller: VehicleTripIngestionController
+      classification_evidence_commit: 557393d3009a9721542398844ab737826c8a65ab
+      keys:
+        - {method: GET, path: /addVechileTrip}
+        - {method: POST, path: /addVechileTrip}
+  absence_check:
+    method: EXACT_CONTROLLER_FAMILY_COMPARISON_AGAINST_CURRENT_MARKDOWN_MATRIX
+    result: PASS_20_CONFIRMED_ABSENT_KEYS
+  uniqueness_gate:
+    state: PENDING_FINAL_RECONCILIATION
+    rule: >-
+      Do not claim FINAL_VALIDATED until all 134 canonical keys are materialized exactly once and a full
+      uniqueness scan passes across Markdown and the structured/browser Explorer model.
+  next_action: >-
+    Source-revalidate the confirmed missing families from the frozen baseline, starting with the four
+    DeliveryPlanningController rows already proved suitable for atomic backfill, then materialize Markdown,
+    structured Explorer, browser data, unresolved accounting and matrix-progress in one accepted checkpoint.
