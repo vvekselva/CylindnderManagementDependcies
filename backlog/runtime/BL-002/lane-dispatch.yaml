@@ -1,0 +1,11 @@
+lane_dispatch:
+  backlog_item: BL-002
+  state: INITIALIZED_EMPTY_QUEUE
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  worker_backend: LOCAL_PROCESS_POOL
+  configured_lanes: 10
+  source_provider_policy: ORCHESTRATOR_STAGED_SNAPSHOT_THEN_LOCAL_GIT_CHECKOUT
+  work_unit: null
+  tasks: []
+  dispatch_fingerprint: null
+  rule: Only safe-independent Story/Use Case tasks from an approved BL-002 plan may be dispatched.
