@@ -1,0 +1,74 @@
+pending_atomic_projection:
+  backlog_item: BL-001
+  recovery_id: BL001-UNIQUE-KEY-RECOVERY-20260825-0809
+  checkpoint_id: UNIQUE-KEY-RECOVERY-20260825-1159
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  owner: PRIMARY_ORCHESTRATOR
+  work_unit: WU-BL001-001
+  state: VALIDATED_AWAITING_REQUIRED_ATOMIC_MULTI_ARTIFACT_PROJECTION
+  idempotency:
+    prior_worker_generation: E2E-STAGED-20260823-161214
+    prior_generation_state: CLOSED_SYNCHRONIZED
+    decision: NOOP_DO_NOT_REPLAY
+    workers_started: 0
+    transient_lane_logs_created: 0
+  endpoint:
+    method: GET
+    path: /vehicle-load/fetch
+    controller: VehicleLoadFetchByIdController
+    controller_method: doGet
+    trace_state: COMPLETE_CANDIDATE_REVALIDATED
+    chain_completeness: FULL_BRANCHING
+    ordered_paths:
+      - label: vehicle-load-and-trip-display
+        nodes:
+          - VehicleLoadFetchByIdController.doGet
+          - ICylinderManagementApplicationService<VehicleLoadFetchByIdRequestDto, VehicleLoadFetchByIdResponseDto>
+          - VehicleLoadFetchByIdService
+          - VehicleLoadJpaDao.findById
+          - VehicleLoadDo
+          - public.tbl_vehicle_load
+          - VehicleTripDo
+          - public.tbl_vehicle_trip
+          - DriverDo
+          - public.tbl_driver
+          - VehicleDo
+          - public.tbl_vehicle
+          - VehicleTripStopDo
+          - public.tbl_vehicle_trip_stop
+          - VehicleTripStopTypeDo
+          - public.tbl_stop_type
+          - with-menu/Displayvehicleload.html
+      - label: trip-return-status
+        nodes:
+          - VehicleLoadFetchByIdController.doGet
+          - TripReturnWorkflowService.getTripStatusByVehicleLoadId
+          - VehicleTripStatusDo
+          - public.tbl_trip_status
+          - with-menu/Displayvehicleload.html
+    final_dependencies:
+      - public.tbl_vehicle_load
+      - public.tbl_vehicle_trip
+      - public.tbl_driver
+      - public.tbl_vehicle
+      - public.tbl_vehicle_trip_stop
+      - public.tbl_stop_type
+      - public.tbl_trip_status
+      - with-menu/Displayvehicleload.html
+    durable_evidence:
+      - logs/runs/PRODUCTION-FIRE-20260825-005948-SCHEDULER.md
+      - backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
+  canonical_projection_decision:
+    accepted_for_source_validity: true
+    unique_coverage_incremented: false
+    materialized_unique_keys_before: 123
+    materialized_unique_keys_after: 123
+    pending_unique_keys_before: 11
+    pending_unique_keys_after: 11
+    reason: >-
+      Recovery governance requires controller-traceability.md, unresolved ledger, matrix-progress.yaml,
+      traceability-matrix.json, matrix-data.js and Level-3 runtime to move together. This checkpoint records
+      Primary-Orchestrator revalidation only and intentionally does not claim 124/134 until that atomic projection is committed.
+  next_action: >-
+    Atomically project this revalidated endpoint into all required canonical artifacts, then re-read and verify 124 unique
+    method/path keys before proceeding to the remaining ten recovery keys.
