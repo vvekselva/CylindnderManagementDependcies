@@ -1,5 +1,5 @@
 story_register:
-  version: 5
+  version: 6
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -23,13 +23,13 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 12
+    story_dispositions: 14
     draft: 0
     technically_validated: 0
-    ready_for_user_review: 12
+    ready_for_user_review: 13
     approved: 0
     rejected: 0
-    needs_clarification: 0
+    needs_clarification: 1
     not_applicable: 0
     stale_review_required: 0
   stories:
@@ -45,5 +45,7 @@ story_register:
     - {story_id: STORY-0010, matrix_row_keys: ["GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf"], state: READY_FOR_USER_REVIEW, fingerprint: e45db69767cee472b169e95c8d4319293c29e521f734ce95631b589bb457241e, structured: stories/STORY-0010.yaml, human_readable: stories/STORY-0010.md}
     - {story_id: STORY-0011, matrix_row_keys: ["GET /customer-address-location/missing"], state: READY_FOR_USER_REVIEW, fingerprint: c34ea04e99af64319cb6d9bcee30860a8cd0a056e47bb49e8a41d8a6faefa3c4, structured: stories/STORY-0011.yaml, human_readable: stories/STORY-0011.md}
     - {story_id: STORY-0012, matrix_row_keys: ["GET /yard-location/upload"], state: READY_FOR_USER_REVIEW, fingerprint: 9a2ad04609d2ab03387f065289116814f23b4260328afe551e7fa94fe100fa1d, structured: stories/STORY-0012.yaml, human_readable: stories/STORY-0012.md}
+    - {story_id: STORY-0013, matrix_row_keys: ["GET /delivery-planning/predefined-trips"], state: READY_FOR_USER_REVIEW, fingerprint: 04de66353dc5b5f90124a0b393160f92f8e7d2994f288113defc362c158400a7, structured: stories/STORY-0013.yaml, human_readable: stories/STORY-0013.md}
+    - {story_id: STORY-0014, matrix_row_keys: ["POST /delivery-planning/predefined-trips/create"], state: NEEDS_CLARIFICATION, fingerprint: 2721798676302f09c07f0cd0b1d08341cb5e29ebaa6bf7390291bcdb417932e7, structured: stories/STORY-0014.yaml, human_readable: stories/STORY-0014.md}
   invariant: >-
     Incremental BL-002 Story generation may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows. Rows still pending BL-001 atomic projection are excluded. No Story becomes authoritative downstream input until its exact fingerprint is explicitly approved by the user. Final BL-002 verification still requires the complete FINAL_VALIDATED BL-001 matrix and full row accounting.
