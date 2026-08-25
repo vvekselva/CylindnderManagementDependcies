@@ -1,0 +1,30 @@
+story:
+  story_id: STORY-0042
+  title: List vehicle trips
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 6d9cadbabdc18aabd256d86cc14d81fa20331861b7db71772bb82936fa3f7679
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /vehicle-trips/list"]
+  controller: VehicleTripController.listVehicleTrips
+  endpoint: "GET /vehicle-trips/list"
+  business_purpose: Display vehicle-trip records with source-proved nested vehicle and driver data.
+  trigger_and_context: A caller opens GET /vehicle-trips/list.
+  inputs: [Pagination/filter inputs are not enumerated in the accepted trace.]
+  normalization_and_defaults: []
+  validations: [No caller-input validation is explicitly proved for this GET path.]
+  invalid_value_paths: [Unproved error behavior is not invented.]
+  main_flow:
+    - VehicleTripController.listVehicleTrips invokes VehicleTripFetchByPageService.
+    - VehicleTripJpaDao reads VehicleTripDo from public.tbl_vehicle_trip.
+    - The response mapping uses source-proved vehicle and driver relations.
+    - The controller renders tst/trip-list.
+  component_flow: [VehicleTripController.listVehicleTrips, VehicleTripFetchByPageService, VehicleTripJpaDao, VehicleTripDo, public.tbl_vehicle_trip, Vehicle relation, Driver relation, tst/trip-list]
+  data_reads_and_writes: [READ public.tbl_vehicle_trip and related vehicle/driver data.]
+  side_effects_and_state_changes: [No persistence write is asserted.]
+  alternate_and_error_flows: [No alternate/error branch is enumerated in the accepted trace.]
+  output_and_postconditions: [Returns tst/trip-list populated from the proved trip/vehicle/driver data.]
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: GET /vehicle-trips/list reads public.tbl_vehicle_trip with the proved vehicle/driver relations and renders tst/trip-list.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 6d9cadbabdc18aabd256d86cc14d81fa20331861b7db71772bb82936fa3f7679}
