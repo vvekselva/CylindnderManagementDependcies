@@ -1,0 +1,111 @@
+statement_of_work:
+  backlog_item: BL-002
+  version: 1
+  title: Convert Controller Traceability into Approved Human-Readable Stories and Use Cases
+  status: APPROVED_FOR_DEPENDENCY_WAIT
+
+  objective: >-
+    Transform the verified technical Controller Dependency Matrix into a human-readable functional layer that can be
+    reviewed by a person and then used as controlled test-design input. Each technical controller flow must become an
+    evidence-backed Story. One or more approved Stories may then be combined into an approved Use Case. Downstream unit
+    testing consumes approved Story-level rules and flow assertions, while integration testing consumes approved Use Cases
+    and their derived use-case test scenarios.
+
+  problem_statement: >-
+    A controller dependency matrix proves technical call chains, but it is not sufficient by itself to explain the
+    application behaviour in business language. For example, knowing that a Vehicle ingestion controller invokes a Vehicle
+    ingestion service does not by itself explain which vehicle details are accepted, which values are validated, what
+    happens when validation fails, which records are read or persisted, which side effects occur, or what the caller sees.
+    Without a reviewed narrative layer, tests can be technically connected to code while still missing the intended flow.
+
+  scope:
+    in_scope:
+      - import the final validated BL-001 controller traceability model
+      - create evidence-backed atomic Stories from controller/endpoint flows
+      - document request inputs and their provenance
+      - document validation checks and invalid-value behaviour only when proved by source/evidence
+      - document ordered Controller -> Service/Mediator -> Service -> DAO/Repository -> Entity/View -> final dependency chains
+      - document database/file/API reads and writes, state transitions, audit side effects and terminal responses where proved
+      - document alternate/error paths and exception handling where proved
+      - record source evidence for every technical assertion
+      - route ambiguous or unproved business meaning to NEEDS_CLARIFICATION
+      - support user review and approval of individual Stories or explicitly approved batches
+      - group approved Stories into candidate Use Cases
+      - support user review and approval of Use Cases
+      - derive use-case test scenarios for later BL-004 execution
+      - maintain end-to-end Matrix -> Story -> Use Case -> Test Scenario traceability
+    out_of_scope:
+      - modify production application behaviour
+      - infer undocumented business meaning merely from class or method names
+      - execute unit, integration or use-case tests
+      - mark downstream testing complete
+      - auto-approve Stories or Use Cases
+
+  target:
+    repository: vvekselva/CylinderManagement
+    baseline_rule: FROZEN_COMMIT
+    frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+
+  deliverables:
+    - stories/story-register.yaml
+    - evidence-backed Story YAML and Markdown artifacts
+    - usecases/usecase-register.yaml
+    - evidence-backed Use Case YAML and Markdown artifacts
+    - traceability/controller-story-usecase-map.yaml
+    - usecases/usecase-test-scenarios.yaml
+
+  execution_requirements:
+    - BL-001 must be VERIFIED or CLOSED before BL-002 execution begins
+    - only Primary-Orchestrator accepted traceability evidence may be treated as technical truth
+    - structured traceability chains must be preserved; no intermediate hop may be skipped in narrative evidence
+    - each Story must use the controlled Story schema
+    - each Use Case must use the controlled Use Case schema
+    - every Story technical assertion must be traceable to a matrix row and source/evidence reference
+    - uncertain business interpretation must be labelled NEEDS_CLARIFICATION
+    - user approval is mandatory before a Story becomes APPROVED
+    - only APPROVED Stories may enter an APPROVED Use Case
+    - user approval is mandatory before a Use Case becomes APPROVED_FOR_TESTING
+    - use-case test scenarios must be generated only from APPROVED_FOR_TESTING Use Cases
+    - downstream BL-003 and BL-004 must fail closed when referenced Story/Use Case approvals are absent or stale
+    - up to ten safe-independent Story generation/validation Work Units may run in parallel
+    - shared Story/Use Case registers are Primary-Orchestrator single-writer artifacts
+
+  dependencies:
+    backlog_items: [BL-001]
+    external_dependencies: []
+
+  acceptance_criteria:
+    - all canonical BL-001 trace rows have an explicit Story mapping or justified NOT_APPLICABLE disposition
+    - no Story presents unsupported validation, business rule, persistence or outcome as fact
+    - approved Stories cover the technical flow in plain English including inputs, validations, processing, data effects and outcomes
+    - every approved Use Case contains at least one approved Story
+    - every approved Story belongs to at least one approved Use Case or is explicitly marked STANDALONE_WITH_JUSTIFICATION
+    - every approved Use Case has derived positive, validation-failure and alternate-path scenarios where applicable
+    - downstream test mapping is explicit and machine-readable
+    - all configured BL-002 quality gates pass
+
+  quality_gate_requirements:
+    item_quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml
+    user_acceptance_required: true
+
+  completion_definition:
+    - all canonical matrix rows are accounted for in Story SSOT
+    - all required Stories are reviewed and resolved to APPROVED, NOT_APPLICABLE or explicit NEEDS_CLARIFICATION blocker
+    - required approved Stories are grouped into approved Use Cases
+    - Use Case test scenarios are generated and cross-linked
+    - Matrix -> Story -> Use Case -> Test Scenario traceability validates without orphan approved records
+    - all mandatory quality gates pass
+    - all required Work Units are closed
+    - final user acceptance is obtained before CLOSED
+
+  execution_authorization:
+    sow_required: true
+    structurally_valid: true
+    placeholders_present: false
+    validated_by: ORCHESTRATOR
+    validation_evidence: USER_DIRECTIVE_2026-08-25_BL002_STORY_USECASE_MODEL
+
+  governance_rule: >-
+    BL-002 is registered and structurally defined now, but execution is dependency-gated. It may be selected by future
+    scheduler invocations only after BL-001 is VERIFIED or CLOSED and all common/item gates pass. No scheduler may bypass
+    Story/Use Case approval states to unlock downstream testing.
