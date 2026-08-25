@@ -8,11 +8,11 @@ work_unit_status:
       name: Generate evidence-backed Stories from accepted canonical BL-001 rows
       progress:
         eligible_rows: 123
-        accounted_rows: 14
-        ready_for_user_review: 13
-        needs_clarification: 1
+        accounted_rows: 26
+        ready_for_user_review: 22
+        needs_clarification: 4
         approved: 0
-      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0014]
+      latest_story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026]
     - id: WU-BL002-002
       state: WAITING_FOR_USER_DECISION
       name: Story approval and clarification
@@ -30,4 +30,4 @@ work_unit_status:
     waiting_for_user: 1
     checkpointed: 1
     closed: 0
-  next_action: USER_APPROVE_OR_REJECT_EXACT_STORY_IDS_AND_FINGERPRINTS_FOR_STORY_0001_TO_0013; STORY_0014_REMAINS_NEEDS_CLARIFICATION; DO_NOT_COMPOSE_USE_CASES_BEFORE_APPROVAL
+  next_action: USER_APPROVE_OR_REJECT_READY_STORY_IDS_WITH_EXACT_FINGERPRINTS; STORY_0014_TO_0017_REMAIN_NEEDS_CLARIFICATION; CONTINUE_NEW_STORY_DISPOSITIONS_ONLY_FROM_ACCEPTED_CANONICAL_ROWS; DO_NOT_COMPOSE_USE_CASES_BEFORE_APPROVAL
