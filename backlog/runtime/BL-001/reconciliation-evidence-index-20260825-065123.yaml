@@ -1,0 +1,82 @@
+reconciliation_evidence_index:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-002
+  checkpoint: 2026-08-25T06:51:23+05:30
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  governing_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_NEW_SOURCE_READS
+  canonical_target_keys: 134
+  physically_observed_markdown_rows: 114
+  confirmed_missing_keys: 20
+  evidence_ready_missing_keys: 9
+  evidence_location_pending_keys: 11
+  canonical_promotions_this_checkpoint: 0
+  source_reads_performed: 0
+  worker_generation_started: false
+  trace_lanes_used: 0
+  source_materialization_slots_used: 0
+  transient_lane_logs_created: 0
+  residual_transient_lane_logs: 0
+
+  evidence_ready:
+    - method: GET
+      path: /delivery-planning
+      evidence: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+      state: FULL_CHAIN_DURABLE_PENDING_ATOMIC_PROJECTION
+    - method: GET
+      path: /delivery-planning/dashboard
+      evidence: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+      state: FULL_CHAIN_DURABLE_PENDING_ATOMIC_PROJECTION
+    - method: GET
+      path: /delivery-planning/customer-density-bubble-map
+      evidence: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+      state: FULL_CHAIN_DURABLE_PENDING_ATOMIC_PROJECTION
+    - method: GET
+      path: /delivery-planning/weekly-forecast
+      evidence: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+      state: FULL_CHAIN_DURABLE_PENDING_ATOMIC_PROJECTION
+    - method: GET
+      path: /delivery-planning/stops/manage
+      evidence: logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md
+      state: FULL_CHAIN_DURABLE_READY_FOR_RECONCILIATION
+    - method: GET
+      path: /delivery-planning/stops/manage/
+      evidence: logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md
+      state: FULL_CHAIN_DURABLE_READY_FOR_RECONCILIATION
+    - method: POST
+      path: /delivery-planning/stops/manage/save
+      evidence: logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md
+      state: FULL_CHAIN_DURABLE_READY_FOR_RECONCILIATION
+    - method: POST
+      path: /delivery-planning/stops/manage/save-selected
+      evidence: logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md
+      state: FULL_CHAIN_DURABLE_READY_FOR_RECONCILIATION
+    - method: POST
+      path: /delivery-planning/stops/manage/remove
+      evidence: logs/runs/PRODUCTION-FIRE-20260825-031321-SCHEDULER.md
+      state: FULL_CHAIN_DURABLE_READY_FOR_RECONCILIATION
+
+  evidence_location_pending:
+    - {method: GET, path: /reconciliation-dashboard}
+    - {method: POST, path: /reconciliation-dashboard/search}
+    - {method: GET, path: /vehicle-load/fetch}
+    - {method: GET, path: /lookup}
+    - {method: GET, path: /lookupManagement}
+    - {method: POST, path: /lookupManagement/addressType/save}
+    - {method: POST, path: /lookupManagement/country/save}
+    - {method: POST, path: /lookupManagement/state/save}
+    - {method: POST, path: /lookupManagement/city/save}
+    - {method: GET, path: /addVechileTrip}
+    - {method: POST, path: /addVechileTrip}
+
+  reconciliation_decision: >-
+    Do not promote any row yet. The current WU-BL001-002 integrity contract requires reconstruction of the complete
+    canonical 134-key inventory and durable accepted full-chain evidence for every missing key before the Markdown,
+    structured Explorer, browser data, unresolved accounting and matrix-progress projections are reconciled atomically.
+    Nine missing keys now have located durable full-chain evidence. Eleven remain evidence-location pending. No source
+    reads, worker replay, snapshot materialization claim, or guessed chain is permitted under this work unit.
+
+  next_action: >-
+    Locate already-durable accepted full-chain evidence for the remaining eleven keys from control-repository history.
+    If all eleven are proved, perform one atomic 20-row reconciliation and uniqueness scan. If any key lacks durable
+    accepted chain evidence, keep WU-BL001-002 fail-closed and do not read application source or invent the missing chain.
