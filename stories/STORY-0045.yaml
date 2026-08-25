@@ -1,0 +1,56 @@
+story:
+  story_id: STORY-0045
+  title: Open customer registration page with address types
+  state: READY_FOR_USER_REVIEW
+  fingerprint: b56eb8eaaa94e447bf7045a37f535ec6cf2fb844a825f3ac50abd9804868bc69
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /registerCustomer"]
+  controller: UC01RegisterCustomerController.doGet
+  endpoint: "GET /registerCustomer"
+  business_purpose: Display the customer-registration page with the address-type values proved by the accepted trace.
+  trigger_and_context: A caller opens GET /registerCustomer.
+  inputs:
+    - No required request value is proved for this GET handler.
+  normalization_and_defaults:
+    - LookupDataCache.getAddressTypes returns the in-memory addressTypes list when populated.
+    - When the cache is empty, LookupDataCache.refreshAddressTypes invokes the typed address-type fetch service with a blank search term.
+  validations:
+    - No caller-input validation is proved for this GET path.
+  invalid_value_paths:
+    - No invalid caller-value path is proved; no additional error behavior is invented.
+  main_flow:
+    - UC01RegisterCustomerController.doGet requests address types from LookupDataCache.
+    - On a cache hit, the existing in-memory addressTypes list is used.
+    - On a cache miss, LookupDataCache.refreshAddressTypes invokes AddressTypeFetchByPageService.processRequest with a blank search term.
+    - The blank-search service path calls AddressTypeJpaDao.findAll(pageable).
+    - AddressTypeJpaDao is a JpaRepository for AddressTypeDo, which maps to public.tbl_address_type.
+    - The refreshed address-type list is retained in memory and returned to the controller.
+    - The controller renders final-version-1/UC01RegisterCustomer.
+  component_flow:
+    - UC01RegisterCustomerController.doGet
+    - LookupDataCache.getAddressTypes
+    - LookupDataCache.refreshAddressTypes on empty-cache branch
+    - AddressTypeFetchByPageService.processRequest on empty-cache branch
+    - AddressTypeJpaDao.findAll(pageable) on blank-search branch
+    - AddressTypeDo
+    - public.tbl_address_type
+    - in-memory addressTypes cache
+    - final-version-1/UC01RegisterCustomer
+  data_reads_and_writes:
+    - READ public.tbl_address_type only on the cache-miss branch.
+    - No customer persistence write is invoked by this GET handler.
+  side_effects_and_state_changes:
+    - The cache-miss branch refreshes the in-memory addressTypes list from the database.
+    - No persistent application state change is proved.
+  alternate_and_error_flows:
+    - Cache-hit and cache-miss branches are both proved.
+    - No caller-visible exception/error branch is enumerated by the accepted trace.
+  output_and_postconditions:
+    - Returns final-version-1/UC01RegisterCustomer with address-type data sourced from cache or the proved database refresh path.
+  evidence:
+    - traceability/controller-traceability.md
+    - logs/runs/PRODUCTION-FIRE-20260824-093200.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: GET /registerCustomer uses cached address types when present and otherwise refreshes them through AddressTypeFetchByPageService -> AddressTypeJpaDao -> AddressTypeDo -> public.tbl_address_type before rendering final-version-1/UC01RegisterCustomer.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: b56eb8eaaa94e447bf7045a37f535ec6cf2fb844a825f3ac50abd9804868bc69}
