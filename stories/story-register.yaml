@@ -1,5 +1,5 @@
 story_register:
-  version: 10
+  version: 11
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -23,10 +23,10 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 30
+    story_dispositions: 31
     draft: 0
     technically_validated: 0
-    ready_for_user_review: 26
+    ready_for_user_review: 27
     approved: 0
     rejected: 0
     needs_clarification: 4
@@ -63,5 +63,6 @@ story_register:
     - {story_id: STORY-0028, matrix_row_keys: ["GET /customer-consumption/"], state: READY_FOR_USER_REVIEW, fingerprint: af8aeb62ca47f17ac42af9bf3920456b2cbe1171cccc1293a599f90e5ea5cf2c, structured: stories/STORY-0028.yaml, human_readable: stories/STORY-0028.md}
     - {story_id: STORY-0029, matrix_row_keys: ["GET /customer-consumption/dashboard"], state: READY_FOR_USER_REVIEW, fingerprint: 8369674424acd257c82a9fb0ef54da08e15d1eb78de471c6d1d46bf4597f2e39, structured: stories/STORY-0029.yaml, human_readable: stories/STORY-0029.md}
     - {story_id: STORY-0030, matrix_row_keys: ["GET /customer-consumption/api/dashboard"], state: READY_FOR_USER_REVIEW, fingerprint: 1b8d259c2de2ce7aaded367ddf01b4a18d58aff6790d6ab5e1b733844f26a3f5, structured: stories/STORY-0030.yaml, human_readable: stories/STORY-0030.md}
+    - {story_id: STORY-0031, matrix_row_keys: ["POST /complete-trip"], state: READY_FOR_USER_REVIEW, fingerprint: bec09f914e6bf1601fda2adb2704c547f06765174bc5f0f6f8961561ee9bc014, structured: stories/STORY-0031.yaml, human_readable: stories/STORY-0031.md}
   invariant: >-
     Incremental BL-002 Story generation may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows. Rows still pending BL-001 atomic projection are excluded. No Story becomes authoritative downstream input until its exact fingerprint is explicitly approved by the user. Final BL-002 verification still requires the complete FINAL_VALIDATED BL-001 matrix and full row accounting.
