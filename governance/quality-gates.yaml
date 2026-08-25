@@ -1,4 +1,4 @@
-version: 12
+version: 13
 purpose: >-
   Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete
   SSOT and SOW. Source-reading execution additionally requires verified source/binding evidence, lifecycle logging and
@@ -28,7 +28,10 @@ common_gate:
   name: Backlog Dependency Gate
   applies_to: ALL_BACKLOG_ITEMS
   owner: ORCHESTRATOR
-  pass_condition: Every declared dependency is VERIFIED or CLOSED, or the selected Backlog Item declares no dependencies.
+  pass_condition: >-
+    Every declared dependency is VERIFIED or CLOSED unless the selected item has an explicitly governed incremental
+    dependency mode. For BL-002 incremental execution, the dependency gate passes only for Primary-Orchestrator-accepted,
+    materialized, non-stale canonical BL-001 matrix rows; pending atomic-projection rows and raw/unaccepted evidence remain blocked.
 
 execution_source_gate:
   id: QG-SOURCE-001
@@ -112,7 +115,7 @@ user_verification:
 
 backlog_quality_gates:
   BL-001: {name: Controller Traceability, configured: true, config: backlog/gates/BL-001-traceability.yaml, approved_by_user: true, execution_allowed: true}
-  BL-002: {name: Controller Dependency Matrix to Human-Readable Stories, configured: true, config: backlog/gates/BL-002-controller-story-usecase.yaml, approved_by_user: true, execution_allowed: false, waiting_for_dependency: BL-001}
+  BL-002: {name: Controller Dependency Matrix to Human-Readable Stories, configured: true, config: backlog/gates/BL-002-controller-story-usecase.yaml, approved_by_user: true, execution_allowed: true, incremental_dependency_mode: ACCEPTED_CANONICAL_BL001_ROWS_ONLY}
   BL-003: {name: Unit Test Completion, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-004: {name: Integration Test Completion, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-005: {name: Code Coverage Report, configured: false, config: null, approved_by_user: false, execution_allowed: false}
@@ -134,6 +137,7 @@ backlog_quality_gates:
   BL-021: {name: Customer Data Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
 
 orchestrator_rule: >-
-  Select only run-enabled eligible Backlog Items. Validate QG-SSOT-001, QG-SOW-001 and QG-DEP-001 before execution.
-  BL-002 must additionally enforce its Story/Use Case gates: technical validation never substitutes for user approval, and
-  downstream testing must fail closed on unapproved or stale Story/Use Case input.
+  Select run-enabled eligible Backlog Items and allow BL-001 plus BL-002 to run concurrently when both have independently
+  eligible work. Validate QG-SSOT-001, QG-SOW-001 and QG-DEP-001 before execution. BL-002 may consume only accepted,
+  materialized, non-stale canonical BL-001 matrix rows and must fail closed on pending atomic projection, raw/unaccepted
+  evidence or stale fingerprints. Technical validation never substitutes for user Story/Use Case approval.
