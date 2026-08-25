@@ -1,0 +1,50 @@
+story:
+  story_id: STORY-0011
+  title: Display customer addresses whose locations are missing
+  state: READY_FOR_USER_REVIEW
+  fingerprint: c34ea04e99af64319cb6d9bcee30860a8cd0a056e47bb49e8a41d8a6faefa3c4
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /customer-address-location/missing"]
+  controller: CustomerAddressLocationController.showMissingLocations
+  endpoint: "GET /customer-address-location/missing"
+  business_purpose: Display the source-proved list of customer addresses whose location status is returned by the missing-location query.
+  trigger_and_context: A caller requests GET /customer-address-location/missing.
+  inputs: []
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No request-value validation is asserted because the accepted canonical trace proves no caller-supplied input for this flow.
+  main_flow:
+    - The request reaches CustomerAddressLocationController.showMissingLocations.
+    - The controller invokes CustomerAddressLocationOfflineMapService.fetchMissingCustomerAddressLocations.
+    - The service invokes CustomerAddressLocationJpaDao.findMissingCustomerAddressLocations.
+    - The DAO executes the source-proved query against public.vw_customer_address_location_status.
+    - CustomerAddressLocationMapper.toDto converts returned rows to DTOs.
+    - The controller renders with-menu/CustomerAddressLocationMissing.
+  component_flow:
+    - CustomerAddressLocationController.showMissingLocations
+    - CustomerAddressLocationOfflineMapService.fetchMissingCustomerAddressLocations
+    - CustomerAddressLocationJpaDao.findMissingCustomerAddressLocations
+    - public.vw_customer_address_location_status
+    - CustomerAddressLocationMapper.toDto
+    - with-menu/CustomerAddressLocationMissing
+  business_rules: []
+  data_reads_and_writes:
+    - Reads public.vw_customer_address_location_status through the source-proved DAO query.
+    - No persistence write is proved.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate or error branch is asserted beyond framework/runtime handling not proved in the accepted trace.
+  output_and_postconditions:
+    - Returns the missing-location view populated from the query result.
+    - No database state mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /customer-address-location/missing"
+    - logs/runs/PRODUCTION-FIRE-20260824-020143.md endpoint 1
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint must call the missing-location service/DAO chain, read public.vw_customer_address_location_status, map returned rows, render the missing-location view, and perform no proved persistence mutation.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: c34ea04e99af64319cb6d9bcee30860a8cd0a056e47bb49e8a41d8a6faefa3c4
