@@ -1,6 +1,6 @@
 work_units:
   WU-BL001-001:
-    state: COMPLETE_REPORTED_PENDING_UNIQUE_KEY_RECONCILIATION
+    state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
     execution_mode: PRIMARY_ORCHESTRATOR_DIRECT_FROZEN_SOURCE_PLUS_SELF_RELIANT_STAGED_SOURCE
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
     reported_checkpoint:
@@ -10,42 +10,42 @@ work_units:
       unresolved: 0
       blocked: 0
       failed: 0
-    uniqueness_status: RECONCILIATION_REQUIRED
+    canonical_unique_checkpoint:
+      target_method_path_keys: 134
+      materialized_unique_keys: 123
+      pending_unique_keys: 11
+      unique_method_path_coverage_proved: false
+    uniqueness_status: RECOVERY_ACTIVE
     reason: >-
-      Durable history proves at least four HTTP-method/path keys were accepted COMPLETE earlier and later counted again
-      as newly examined. The raw 134 counter therefore cannot by itself prove 134 unique examined keys.
-    completion_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
+      The raw accumulated 134 counter contains proven duplicate acceptance/recount events and does not prove the BL-001
+      SOW requirement of 134 unique HTTP-method/path keys. WU-BL001-001 is reopened only for the 11 exact missing keys.
+    recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
+    prior_completion_evidence: logs/runs/PRODUCTION-FIRE-20260825-051115.md
     worker_generation_replay_required: false
+    direct_frozen_source_revalidation_allowed: true
     residual_transient_lane_logs: 0
+    next_action: >-
+      Primary-Orchestrator revalidate the 11 exact missing canonical keys at the frozen source baseline and atomically
+      project only fully proved chains. Resume WU-BL001-002 only after 134/134 unique keys are materialized exactly once.
 
   WU-BL001-002:
-    state: IN_PROGRESS_RECONCILIATION_BACKFILL
+    state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
     name: Final Matrix Reconciliation
     dependency: WU-BL001-001
-    dependency_state: REPORTED_COMPLETE_UNIQUE_KEY_RECONCILIATION_REQUIRED
-    matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
+    dependency_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
+    matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
     corrected_pre_backfill_markdown_rows: 114
     materialized_matrix_rows: 123
     confirmed_missing_canonical_keys: 11
-    historical_accepted_rows_pending_backfill: 11
+    historical_accepted_rows_promoted_total: 9
     canonical_endpoint_inventory_target: 134
     reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ_NO_INVENTED_CHAINS
     integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
     gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-    first_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
-    first_reconciliation_projection_state: PROMOTED_ATOMICALLY
-    first_reconciliation_rows_promoted: 4
-    second_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-031321.yaml
-    second_reconciliation_projection_state: FIVE_STOP_MANAGEMENT_ROWS_PROMOTED_FROM_DURABLE_ACCEPTED_EVIDENCE
-    second_reconciliation_rows_promoted: 5
-    structured_delta: traceability/explorer/traceability-matrix-delta-20260825-020007.json
-    browser_delta: traceability/explorer/matrix-delta-20260825-020007.js
+    recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
     next_action: >-
-      Locate already-durable accepted full-chain evidence for the remaining 11 canonical method/path keys in the control
-      repository: reconciliation-dashboard GET/POST, vehicle-load/fetch GET, lookup/lookupManagement and four lookup saves,
-      and addVechileTrip GET/POST. Promote complete historical chains in synchronized Markdown/Explorer/progress checkpoints.
-      If any key lacks durable accepted full-chain evidence, keep WU-BL001-002 blocked; do not perform new source reads
-      and do not guess missing hops.
+      Wait for reopened WU-BL001-001 to establish true 134/134 unique method/path coverage. Do not perform source reads
+      inside WU-BL001-002 and do not promote unaccepted historical proof while the prerequisite remains false.
 
   WU-BL001-003:
     state: BLOCKED_WAITING_FOR_RECONCILIATION
