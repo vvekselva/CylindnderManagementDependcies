@@ -1,0 +1,7 @@
+execution_plan:
+  backlog_item: BL-002
+  state: INITIALIZED_EMPTY
+  planning_allowed: false
+  blocker: BL-001_NOT_YET_VERIFIED_OR_CLOSED
+  work_units: []
+  rule: Plan only after QG-SSOT-001, QG-SOW-001, QG-DEP-001 and BL-002 item gates permit analysis/planning.
