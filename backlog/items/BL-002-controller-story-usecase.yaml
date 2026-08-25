@@ -1,15 +1,16 @@
 backlog_definition:
   id: BL-002
-  version: 1
+  version: 2
   name: Controller Dependency Matrix to Human-Readable Stories
   type: CONTROLLER_STORY_AND_USECASE
 
   purpose: >-
-    Convert each source-proved Controller Dependency Matrix flow into an elaborate human-readable story that explains
-    what the request is trying to achieve, which values are received, which validations and business rules are applied,
-    which services/repositories are invoked, what is read or persisted, what alternate/error paths exist, and what
-    caller-visible result is produced. Approved stories are then combined into approved Use Cases that become the
-    controlled functional basis for downstream unit testing and integration/use-case testing.
+    Convert the validated Controller Dependency Matrix into elaborate evidence-backed human-readable Stories that
+    explain inputs, validations, processing, component calls, persistence/read effects, side effects, outcomes and
+    alternate/error paths; obtain user Story approval; combine approved Stories into approved Use Cases; and derive
+    Use Case test scenarios for downstream unit and integration testing. Each Story must further explain what the request
+    is trying to achieve where that intent is proved, which values are received, which validations and business rules are
+    applied, which services/repositories are invoked, what is read or persisted, and what caller-visible result is produced.
 
   statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml
 
