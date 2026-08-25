@@ -1,7 +1,32 @@
 execution_plan:
   backlog_item: BL-002
-  state: INITIALIZED_EMPTY
-  planning_allowed: false
-  blocker: BL-001_NOT_YET_VERIFIED_OR_CLOSED
-  work_units: []
-  rule: Plan only after QG-SSOT-001, QG-SOW-001, QG-DEP-001 and BL-002 item gates permit analysis/planning.
+  state: ACTIVE_INCREMENTAL_CANONICAL_ROW_SCOPE
+  planning_allowed: true
+  execution_basis: DEC-BL002-004
+  upstream_scope:
+    eligible_materialized_canonical_rows: 123
+    excluded_pending_atomic_projection_rows: 11
+    final_matrix_target: 134
+  work_units:
+    - id: WU-BL002-001
+      name: Generate evidence-backed Stories from accepted canonical BL-001 rows
+      state: EXECUTING
+      safe_independent: true
+      max_parallel_workers: 10
+      outputs: [stories/story-register.yaml, stories/STORY-*.yaml, stories/STORY-*.md]
+    - id: WU-BL002-002
+      name: User Story approval
+      state: WAITING_FOR_USER_DECISION
+      depends_on: [WU-BL002-001]
+    - id: WU-BL002-003
+      name: Compose candidate Use Cases from approved Stories
+      state: BLOCKED_BY_STORY_APPROVAL
+      depends_on: [WU-BL002-002]
+    - id: WU-BL002-004
+      name: User Use Case approval and scenario derivation
+      state: BLOCKED_BY_USECASE_APPROVAL
+      depends_on: [WU-BL002-003]
+  rule: >-
+    Story generation may proceed only from Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows.
+    Pending BL-001 atomic-projection rows are excluded. Final BL-002 verification remains blocked until BL-001 is
+    FINAL_VALIDATED and all 134 rows are accounted for.
