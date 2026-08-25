@@ -1,9 +1,10 @@
 unique_key_recovery:
-  version: 2
+  version: 3
   backlog_item: BL-001
   recovery_id: BL001-UNIQUE-KEY-RECOVERY-20260825-0809
   created_at: 2026-08-25T08:09:52+05:30
   corrected_at: 2026-08-25T13:00:58+05:30
+  advanced_at: 2026-08-25T10:48:00+05:30
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   owner: PRIMARY_ORCHESTRATOR
   trigger: RECONCILIATION_PREREQUISITE_INTEGRITY_FAILURE
@@ -94,6 +95,7 @@ unique_key_recovery:
       dao: PASS_EXACT_FROZEN_BLOB
       entity: PASS_EXACT_FROZEN_BLOB
       terminal_table: public.tbl_reconciliation_checkpoint
+      terminal_view: final-version-1/reconciliation_checkpoint_dashboard
       service_blob_sha: c0817301fa57492da946b23674c28a0af1642c2a
       dao_blob_sha: 824f29c1b66f7c58de28a9cbf9962262e1c63e4e
       entity_blob_sha: c9855d934dfa12b01f7ed2787d660cc978092b6c
@@ -106,17 +108,35 @@ unique_key_recovery:
     lookup_management:
       controller: PASS_EXACT_FROZEN_BLOB
       controller_blob_sha: a23814eb9c1f155779a3d51e67e16ac0ee9d2436
-      cache: PASS_EXACT_FROZEN_BLOB
-      status: EXACT_ROUTE_INVENTORY_CORRECTED_DOWNSTREAM_CHAIN_VALIDATION_IN_PROGRESS
+      legacy_redirect:
+        key: "GET /lookup"
+        chain: "LookupManagementController.legacyRedirect -> redirect:/lookupManagement"
+        database_dependency: NONE
+        status: FULL_TERMINAL_REDIRECT_SOURCE_PROVED_READY_FOR_ATOMIC_PROJECTION
+      main_page: DOWNSTREAM_CACHE_CHAIN_VALIDATION_IN_PROGRESS
+      save_routes: DOWNSTREAM_INGESTION_AND_CACHE_REFRESH_CHAIN_VALIDATION_IN_PROGRESS
+      status: EXACT_ROUTE_INVENTORY_CORRECTED_PARTIAL_FAMILY_PROOF_ADVANCED
     vehicle_trip_ingestion:
       controller: PASS_EXACT_FROZEN_BLOB
       controller_blob_sha: 26f887d731fd58a28c2a76240bd3d2b7ee02fb69
       implementation: PASS_EXACT_GENERIC_BINDING_SOURCE
       implementation_blob_sha: 34683207750da12cd72d0c6c76e7ceade792e9a8
-      get_state: TERMINAL_VIEW_SOURCE_PROVED
+      get:
+        key: "GET /addVechileTrip"
+        chain: "VehicleTripIngestionController.doGet -> with-menu/VehicleTripIngestion"
+        database_dependency: NONE
+        status: FULL_TERMINAL_VIEW_SOURCE_PROVED_READY_FOR_ATOMIC_PROJECTION
       post_state: FULL_BRANCHING_SOURCE_VALIDATION_IN_PROGRESS
 
   durable_evidence_status:
+    recovery_ready_keys:
+      count: 4
+      keys:
+        - "GET /reconciliation-dashboard"
+        - "POST /reconciliation-dashboard/search"
+        - "GET /lookup"
+        - "GET /addVechileTrip"
+      state: FULL_SOURCE_PROVED_AWAITING_ATOMIC_CANONICAL_PROJECTION
     vehicle_load_fetch:
       key: GET /vehicle-load/fetch
       source_proof: logs/runs/PRODUCTION-FIRE-20260825-005948-SCHEDULER.md
@@ -130,6 +150,7 @@ unique_key_recovery:
     target_unique_keys: 134
     accepted_unique_keys_materialized: 123
     unique_keys_pending_recovery: 11
+    fully_source_proved_awaiting_atomic_projection: 4
     unresolved: 0
     matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
     reconciliation_eligible: false
@@ -150,8 +171,7 @@ unique_key_recovery:
       chain and all matrix, unresolved, Explorer, progress and runtime projections move together in one accepted checkpoint.
 
   next_action: >-
-    Continue frozen-source validation of the corrected 11-key set. Atomically project the two fully source-proved
-    reconciliation-dashboard keys and any other key only after its complete chain is proved. Complete LookupDataCache
-    fetch-service bindings plus four lookup-ingestion service persistence chains, finish VehicleTripIngestion POST and
-    revalidate GET /vehicle-load/fetch. Resume WU-BL001-002 only after exactly 134 unique method/path keys are materially
-    represented once each.
+    Atomically project the four fully source-proved recovery keys when the complete canonical structured model can be
+    regenerated without losing existing ordered-delta history. Continue LookupDataCache fetch-service bindings plus four
+    lookup-ingestion service persistence chains, finish POST /addVechileTrip, and revalidate GET /vehicle-load/fetch.
+    Resume WU-BL001-002 only after exactly 134 unique method/path keys are materially represented once each.

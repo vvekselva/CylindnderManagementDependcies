@@ -20,20 +20,23 @@ work_units:
       The raw accumulated 134 counter contains proven duplicate acceptance/recount events and does not prove the BL-001
       SOW requirement of 134 unique HTTP-method/path keys. WU-BL001-001 is reopened only for the 11 exact missing keys.
       Frozen-source revalidation on 25 Aug 2026 also found stale route names in the recovery plan; the 11-key inventory
-      has now been rederived from exact controller mappings without changing its cardinality.
+      has been rederived from exact controller mappings without changing its cardinality.
     recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
-    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-130058-SCHEDULER.md
+    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-1048-RECOVERY.md
     corrected_route_families: 2
-    fully_source_proved_recovery_keys_ready_for_atomic_projection: 2
-    fully_source_proved_recovery_key_family: ReconciliationDashboardController
+    fully_source_proved_recovery_keys_ready_for_atomic_projection: 4
+    fully_source_proved_recovery_key_families:
+      - ReconciliationDashboardController
+      - LookupManagementController_legacy_redirect
+      - VehicleTripIngestionController_GET
     worker_generation_replay_required: false
     direct_frozen_source_revalidation_allowed: true
     residual_transient_lane_logs: 0
     next_action: >-
       Continue Primary-Orchestrator frozen-source validation of the corrected 11 exact missing canonical keys. Atomically
-      project the two fully proved reconciliation-dashboard routes only together with Markdown, unresolved, matrix-progress,
-      Explorer JSON/browser data and runtime projections. Complete the remaining lookup, vehicle-load and vehicle-trip chains.
-      Resume WU-BL001-002 only after 134/134 unique keys are materialized exactly once.
+      project the four fully proved routes only together with Markdown, unresolved, matrix-progress, Explorer JSON/browser
+      data and runtime projections. Complete the remaining lookup, vehicle-load and vehicle-trip chains. Resume WU-BL001-002
+      only after 134/134 unique keys are materialized exactly once.
 
   WU-BL001-002:
     state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION

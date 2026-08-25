@@ -48,8 +48,8 @@ quality_gate_status:
     QG-TRC-004: {name: Endpoint Inventory Completeness, state: RECOVERY_IN_PROGRESS_11_EXACT_FROZEN_SOURCE_KEYS_CORRECTED}
     QG-TRC-005: {name: Source Check Output Validity, state: RECOVERY_IN_PROGRESS_RAW_COUNTER_NOT_CANONICAL_UNIQUE_PROOF}
     QG-TRC-006: {name: Endpoint To Trace Completeness, state: BLOCKED_UNTIL_134_UNIQUE_ROWS}
-    QG-TRC-007: {name: Call Path Evidence, state: IN_PROGRESS_2_RECOVERY_KEYS_FULL_CHAIN_SOURCE_PROVED}
-    QG-TRC-008: {name: Final Dependency Evidence, state: IN_PROGRESS_RECONCILIATION_DASHBOARD_TABLE_PROVED}
+    QG-TRC-007: {name: Call Path Evidence, state: IN_PROGRESS_4_RECOVERY_KEYS_FULL_CHAIN_SOURCE_PROVED}
+    QG-TRC-008: {name: Final Dependency Evidence, state: IN_PROGRESS_RECONCILIATION_TABLE_PLUS_TERMINAL_REDIRECT_VIEW_PROVED}
     QG-TRC-009: {name: No Guessing And Unresolved Quality, state: PASS_FAIL_CLOSED_STALE_KEYS_REJECTED}
     QG-TRC-010: {name: Matrix Coverage, state: IN_PROGRESS_123_OF_134_UNIQUE_ROWS}
     QG-TRC-011: {name: Resolution Accounting, state: PASS_ZERO_UNRESOLVED_REPORTED}
@@ -66,9 +66,9 @@ quality_gate_status:
     pending_unique_keys: 11
     confirmed_missing_controller_families: 4
     stale_route_keys_rejected: true
-    fully_source_proved_ready_for_atomic_projection: 2
+    fully_source_proved_ready_for_atomic_projection: 4
     recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
-    latest_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-130058-SCHEDULER.md
+    latest_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-1048-RECOVERY.md
     source_reads_in_wu001_allowed: true
     source_reads_in_wu002_allowed: false
     atomic_projection_required: true
@@ -77,6 +77,6 @@ quality_gate_status:
   reason: >-
     Final reconciliation exposed that the raw 134 acceptance counter is not a unique method/path inventory: at least four
     keys were counted more than once and only 123 unique rows are materialized. WU-BL001-001 is reopened solely for the
-    11 exact missing canonical keys. Frozen-source validation has corrected stale recovery route names and fully proved
-    both ReconciliationDashboardController routes through ReconciliationDashboardService, ReconciliationCheckpointJpaDao
-    and public.tbl_reconciliation_checkpoint. They are not counted until the required atomic projection completes.
+    11 exact missing canonical keys. Frozen-source validation has corrected stale recovery route names and now fully proves
+    four recovery keys: both ReconciliationDashboardController routes, the legacy GET /lookup redirect, and GET /addVechileTrip
+    terminal view. None is counted until the required atomic canonical projection completes.
