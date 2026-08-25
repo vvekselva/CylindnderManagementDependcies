@@ -7,18 +7,18 @@ quality_gate_status:
 
   three_level_ssot_gate:
     id: QG-SSOT-001
-    state: PASS_WITH_RECONCILIATION_BLOCKER
+    state: PASS_RECOVERY_STATE_SYNCHRONIZED
     planning_allowed: true
     replanning_allowed: true
-    reconciliation_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
+    recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
 
   statement_of_work_gate: {id: QG-SOW-001, state: PASS}
   common_dependency_gate: {id: QG-DEP-001, state: PASS}
 
   execution_source_gate:
     id: QG-SOURCE-001
-    state: PASS_FROZEN_BASELINE_INTEGRITY_OLD_WORKER_GENERATION_CLOSED
-    source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+    state: PASS_FROZEN_BASELINE_TARGETED_RECOVERY_ALLOWED
+    source_provider: PRIMARY_ORCHESTRATOR_EXACT_FROZEN_SOURCE
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
     latest_worker_generation: E2E-STAGED-20260823-161214
     latest_worker_generation_state: CLOSED_SYNCHRONIZED
@@ -27,66 +27,51 @@ quality_gate_status:
   execution_lifecycle_logging_gate:
     id: QG-LOG-001
     state: PASS
-    latest_tested_worker_execution: E2E-STAGED-20260823-161214
-    worker_results_received: 10
-    worker_failures: 0
     post_aggregate_individual_lane_logs: 0
 
   execution_recovery_gate:
     id: QG-RECOVERY-001
-    state: PASS
+    state: PASS_TARGETED_PREREQUISITE_RECOVERY
     prior_generation_decision: CLOSED_SYNCHRONIZED_NOOP
     replayed: false
 
   real_lane_utilization_gate:
     id: QG-LANE-001
-    state: UNDERUTILIZED
+    state: NOT_APPLICABLE_THIS_RECOVERY_CHECKPOINT_NO_WORKER_FIRE
     configured_lanes: 10
-    latest_natural_execution: E2E-STAGED-20260823-161214
-    measured_peak_service_concurrent_lanes: 2
-    backend_capacity_probe_peak_service_concurrent_lanes: 10
+    worker_generation_started_this_checkpoint: false
 
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
-    QG-TRC-002: {name: Complete Source Check, state: RECONCILIATION_REQUIRED_UNIQUE_COVERAGE_NOT_PROVED}
-    QG-TRC-003: {name: Controller Inventory Completeness, state: RECONCILIATION_REQUIRED_CANONICAL_INVENTORY_ARTIFACT_MISSING}
-    QG-TRC-004: {name: Endpoint Inventory Completeness, state: RECONCILIATION_REQUIRED_CANONICAL_ENDPOINT_ARTIFACT_MISSING}
-    QG-TRC-005: {name: Source Check Output Validity, state: BLOCKED_MISSING_WORKER_RESULTS_WI0004}
-    QG-TRC-006: {name: Endpoint To Trace Completeness, state: BLOCKED_UNTIL_134_UNIQUE_ROWS_RECONCILE}
-    QG-TRC-007: {name: Call Path Evidence, state: BLOCKED_HISTORICAL_DURABLE_EVIDENCE_RECONCILIATION}
-    QG-TRC-008: {name: Final Dependency Evidence, state: BLOCKED_HISTORICAL_DURABLE_EVIDENCE_RECONCILIATION}
-    QG-TRC-009: {name: No Guessing And Unresolved Quality, state: PASS_FAIL_CLOSED_DURABLE_EVIDENCE_ONLY}
-    QG-TRC-010: {name: Matrix Coverage, state: BLOCKED_PHYSICAL_ROWS_123_TARGET_134_CONFIRMED_MISSING_11}
+    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_123_OF_134}
+    QG-TRC-003: {name: Controller Inventory Completeness, state: RECOVERY_IN_PROGRESS_CONFIRMED_MISSING_CONTROLLER_FAMILIES_4}
+    QG-TRC-004: {name: Endpoint Inventory Completeness, state: RECOVERY_IN_PROGRESS_CONFIRMED_MISSING_KEYS_11}
+    QG-TRC-005: {name: Source Check Output Validity, state: RECOVERY_IN_PROGRESS_RAW_COUNTER_NOT_CANONICAL_UNIQUE_PROOF}
+    QG-TRC-006: {name: Endpoint To Trace Completeness, state: BLOCKED_UNTIL_134_UNIQUE_ROWS}
+    QG-TRC-007: {name: Call Path Evidence, state: BLOCKED_UNTIL_RECOVERED_KEYS_HAVE_ACCEPTED_FULL_CHAINS}
+    QG-TRC-008: {name: Final Dependency Evidence, state: BLOCKED_UNTIL_RECOVERED_KEYS_HAVE_ACCEPTED_FULL_CHAINS}
+    QG-TRC-009: {name: No Guessing And Unresolved Quality, state: PASS_FAIL_CLOSED_EXACT_FROZEN_SOURCE_ONLY}
+    QG-TRC-010: {name: Matrix Coverage, state: IN_PROGRESS_123_OF_134_UNIQUE_ROWS}
     QG-TRC-011: {name: Resolution Accounting, state: PASS_ZERO_UNRESOLVED_REPORTED}
-    QG-TRC-012: {name: Artifact Consistency, state: BLOCKED_BASE_PLUS_DELTAS_NOT_FINAL_RECONCILED}
+    QG-TRC-012: {name: Artifact Consistency, state: BLOCKED_UNTIL_RECOVERY_ATOMIC_PROJECTIONS_COMPLETE}
     QG-TRC-013: {name: Source Artifact Registration, state: WAITING}
     QG-TRC-014: {name: Execution Closure, state: WAITING}
     QG-TRC-015: {name: User Acceptance, state: WAITING, owner: USER, automatic: false}
 
-  reconciliation_integrity:
-    raw_reported_endpoint_counter: 134
-    unique_endpoint_coverage_proved: false
-    corrected_pre_backfill_physical_markdown_rows: 114
-    physically_materialized_markdown_rows: 123
-    confirmed_missing_canonical_keys: 11
-    historical_rows_promoted_total: 9
-    historical_rows_promoted_this_checkpoint: 5
-    minimum_proven_duplicate_acceptance_keys: 4
-    duplicate_keys:
-      - GET /search/product-category/{searchText}
-      - GET /search/product-uom/{searchText}
-      - GET /search/state/{searchText}
-      - GET /search/supplier/{searchText}
-    required_worker_result: worker/results/WI-0004.yaml
-    required_worker_result_state: MISSING
-    required_endpoint_inventory: traceability/endpoint-inventory.md
-    required_endpoint_inventory_state: MISSING
-    required_controller_inventory: traceability/controller-inventory.md
-    required_controller_inventory_state: MISSING
+  unique_key_recovery:
+    state: ACTIVE
+    work_unit: WU-BL001-001
+    target_unique_keys: 134
+    materialized_unique_rows: 123
+    pending_unique_keys: 11
+    confirmed_missing_controller_families: 4
+    recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
+    source_reads_in_wu001_allowed: true
+    source_reads_in_wu002_allowed: false
+    atomic_projection_required: true
 
   close_allowed: false
   reason: >-
-    WU-BL001-002 has promoted nine durable historical rows in two reconciliation checkpoints: four DeliveryPlanningController
-    rows and five DeliveryPlanningStopManagementController rows. The corrected matrix has advanced from 114 to 123 physical
-    rows. Eleven canonical keys remain absent and require already-durable full-chain evidence. WU-BL001-003 and BL-001
-    closure remain blocked until exactly 134 unique method/path keys and all structured/browser projections reconcile.
+    Final reconciliation exposed that the raw 134 acceptance counter is not a unique method/path inventory: at least four
+    keys were counted more than once and only 123 unique rows are materialized. WU-BL001-001 is reopened solely for the
+    11 exact missing canonical keys. WU-BL001-002 is blocked until true 134/134 unique-key source-check coverage is proved.
