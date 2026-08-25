@@ -19,25 +19,29 @@ work_units:
     residual_transient_lane_logs: 0
 
   WU-BL001-002:
-    state: BLOCKED_RECONCILIATION_INTEGRITY
+    state: IN_PROGRESS_RECONCILIATION_BACKFILL
     name: Final Matrix Reconciliation
     dependency: WU-BL001-001
     dependency_state: REPORTED_COMPLETE_UNIQUE_KEY_RECONCILIATION_REQUIRED
     matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
-    prior_materialized_matrix_rows: 113
-    physically_observed_markdown_rows: 114
-    confirmed_missing_canonical_keys: 20
-    prior_historical_accepted_rows_pending_backfill: 21
+    corrected_pre_backfill_markdown_rows: 114
+    materialized_matrix_rows: 118
+    confirmed_missing_canonical_keys: 16
+    historical_accepted_rows_pending_backfill: 16
     canonical_endpoint_inventory_target: 134
     reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ_NO_INVENTED_CHAINS
     integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
     gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-    pending_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
-    pending_projection_accepted: false
+    first_reconciliation_projection: backlog/runtime/BL-001/pending-atomic-projection-20260825-061110.yaml
+    first_reconciliation_projection_state: PROMOTED_ATOMICALLY
+    first_reconciliation_rows_promoted: 4
+    structured_delta: traceability/explorer/traceability-matrix-delta-20260825-070408.json
+    browser_delta: traceability/explorer/matrix-delta-20260825-070408.js
     next_action: >-
-      Reconstruct the canonical 134 unique method/path keys from durable control-repository evidence and reconcile them
-      against the physical Markdown matrix. Promote only missing rows whose complete chain is already durably accepted.
-      Do not perform new source reads under WU-BL001-002 and do not guess missing hops.
+      Reconstruct the remaining 16 canonical method/path keys only from durable accepted evidence already present in the
+      control repository. Promote complete historical chains in synchronized Markdown/Explorer/progress checkpoints.
+      If any key lacks durable accepted full-chain evidence, keep WU-BL001-002 blocked; do not perform new source reads
+      and do not guess missing hops.
 
   WU-BL001-003:
     state: BLOCKED_WAITING_FOR_RECONCILIATION
