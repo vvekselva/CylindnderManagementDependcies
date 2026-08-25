@@ -1,0 +1,42 @@
+story:
+  story_id: STORY-0014
+  title: Create a predefined delivery trip
+  state: NEEDS_CLARIFICATION
+  fingerprint: 2721798676302f09c07f0cd0b1d08341cb5e29ebaa6bf7390291bcdb417932e7
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /delivery-planning/predefined-trips/create"]
+  controller: PredefinedDeliveryTripController.create
+  endpoint: "POST /delivery-planning/predefined-trips/create"
+  business_purpose: Create a predefined delivery-trip record using the source-proved service and persistence chain.
+  trigger_and_context: A caller submits POST /delivery-planning/predefined-trips/create.
+  inputs:
+    - The accepted canonical trace proves a POST create flow but does not preserve the concrete request field names, types or required/optional semantics; these remain NEEDS_CLARIFICATION.
+  normalization_and_defaults: ["NEEDS_CLARIFICATION: no normalization/default details are proved by the accepted trace."]
+  validations: ["NEEDS_CLARIFICATION: no field-level validation sequence is proved by the accepted trace."]
+  invalid_value_paths: ["NEEDS_CLARIFICATION: invalid-value behaviour is not asserted without source evidence."]
+  main_flow:
+    - The request reaches PredefinedDeliveryTripController.create.
+    - The controller invokes PredefinedDeliveryTripService.create.
+    - The service persists through PredefinedDeliveryTripJpaDao.
+    - PredefinedDeliveryTripDo maps persistence to public.tbl_predefined_delivery_trip.
+  component_flow:
+    - PredefinedDeliveryTripController.create
+    - PredefinedDeliveryTripService.create
+    - PredefinedDeliveryTripJpaDao
+    - PredefinedDeliveryTripDo
+    - public.tbl_predefined_delivery_trip
+  business_rules: ["No business rule beyond the proved create/persist chain is asserted."]
+  data_reads_and_writes: ["INSERT/UPDATE semantics at repository save level are represented only as a persistence write to public.tbl_predefined_delivery_trip; exact field mutation remains NEEDS_CLARIFICATION."]
+  side_effects_and_state_changes: ["A persisted predefined-delivery-trip row is the only proved state effect."]
+  alternate_and_error_flows: ["NEEDS_CLARIFICATION: request-validation and exception branches are not proved in the accepted trace."]
+  output_and_postconditions: ["A predefined-delivery-trip persistence operation is performed; exact response/redirect semantics remain NEEDS_CLARIFICATION."]
+  evidence:
+    - traceability/explorer/traceability-matrix.json row "POST /delivery-planning/predefined-trips/create"
+    - logs/runs/INVOCATION-20260823-160000.md LANE-03
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: The accepted flow must persist through PredefinedDeliveryTripJpaDao and PredefinedDeliveryTripDo to public.tbl_predefined_delivery_trip; field-level request assertions are blocked pending clarification.
+  approval:
+    owner: USER
+    state: NOT_ELIGIBLE_UNTIL_CLARIFIED
+    fingerprint: 2721798676302f09c07f0cd0b1d08341cb5e29ebaa6bf7390291bcdb417932e7
