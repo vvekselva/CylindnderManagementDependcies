@@ -1,11 +1,11 @@
 invocation_lease:
-  version: 23
-  state: RELEASED
+  version: 24
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-035738IST
-  acquired_at: 2026-08-26T03:57:38+05:30
-  released_at: 2026-08-26T04:05:40+05:30
+  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-041627IST
+  acquired_at: 2026-08-26T04:16:27+05:30
+  released_at: null
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-001 and BL-002 execution
   duplicate_action: NOOP
-  outcome: BL001_ATOMIC_PROJECTION_PENDING_BL002_ADVANCED_TO_43_STORY_DISPOSITIONS
+  outcome: RUNNING
