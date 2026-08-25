@@ -1,5 +1,5 @@
 controller_story_usecase_traceability:
-  version: 12
+  version: 13
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_MAPPING
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -8,10 +8,7 @@ controller_story_usecase_traceability:
     matrix_structured: traceability/explorer/traceability-matrix.json
     final_required_state: FINAL_VALIDATED
     incremental_input_rule: PRIMARY_ORCHESTRATOR_ACCEPTED_MATERIALIZED_NON_STALE_ROWS_ONLY
-  registers:
-    stories: stories/story-register.yaml
-    usecases: usecases/usecase-register.yaml
-    test_scenarios: usecases/usecase-test-scenarios.yaml
+  registers: {stories: stories/story-register.yaml, usecases: usecases/usecase-register.yaml, test_scenarios: usecases/usecase-test-scenarios.yaml}
   key_chain: MATRIX_ROW_KEY_TO_STORY_ID_TO_USECASE_ID_TO_SCENARIO_ID
   rows:
     - {matrix_row_key: "GET /login", story_id: STORY-0001, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
@@ -50,6 +47,12 @@ controller_story_usecase_traceability:
     - {matrix_row_key: "POST /trip-return", story_id: STORY-0034, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "GET /customer-demands", story_id: STORY-0035, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "POST /customer-demands", story_id: STORY-0036, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "POST /customer-demands/{requestId}/mark-delivered", story_id: STORY-0037, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /trip-review", story_id: STORY-0038, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /fetchSupplierByPage", story_id: STORY-0039, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /vehicle-loads/list", story_id: STORY-0040, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /vehicle-loads/all-list", story_id: STORY-0041, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /vehicle-trips/list", story_id: STORY-0042, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
   invariants:
     - every canonical final matrix row has one Story disposition before final BL-002 verification
     - every APPROVED Story references at least one canonical matrix row
