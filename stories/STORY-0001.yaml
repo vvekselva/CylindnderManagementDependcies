@@ -1,0 +1,35 @@
+story:
+  story_id: STORY-0001
+  title: Display the login page
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 86f9d1e462553f6d69f78afef2770737931a267253ccef8d0c0d4075489cf624
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /login"]
+  controller: LoginController.showLoginPage
+  endpoint: "GET /login"
+  business_purpose: Display the application's login form. No additional business purpose is asserted beyond the source-proved terminal view.
+  trigger_and_context: A caller requests GET /login.
+  inputs: []
+  validations: []
+  main_flow:
+    - The request reaches LoginController.showLoginPage.
+    - The controller returns the login form view.
+  component_flow:
+    - LoginController.showLoginPage
+    - TERMINAL_VIEW LOGIN_FORM_VIEW
+  data_reads_and_writes: []
+  side_effects_and_state_changes: []
+  alternate_and_error_flows: []
+  output_and_postconditions:
+    - The login form view is returned.
+    - No service, DAO, database, file or API dependency is proved for this endpoint.
+  evidence:
+    - traceability/controller-traceability.md row "GET /login"
+    - logs/runs/INVOCATION-20260823-160000.md / LANE-01
+  downstream_test_assertions:
+    - classification: UNIT_CANDIDATE
+      assertion: GET /login resolves to the login form view without a proved persistence dependency.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: 86f9d1e462553f6d69f78afef2770737931a267253ccef8d0c0d4075489cf624
