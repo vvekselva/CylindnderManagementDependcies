@@ -1,0 +1,54 @@
+story:
+  story_id: STORY-0016
+  title: Remove and resequence a stop from a predefined delivery trip
+  state: NEEDS_CLARIFICATION
+  fingerprint: 89c281cd0521fa14a683cd68c35d4cee8230a31de50555deb7f45bfd700c77df
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /delivery-planning/predefined-trips/remove-stop"]
+  controller: PredefinedDeliveryTripController.removeStop
+  endpoint: "POST /delivery-planning/predefined-trips/remove-stop"
+  business_purpose: Remove a predefined-trip stop using the source-proved remove/resequence persistence chain.
+  trigger_and_context: A caller submits POST /delivery-planning/predefined-trips/remove-stop.
+  inputs:
+    - "NEEDS_CLARIFICATION: concrete request field names, identifiers, types and required/optional semantics are not preserved in the accepted canonical trace."
+  normalization_and_defaults:
+    - "NEEDS_CLARIFICATION: no request normalization/default behavior is proved by the accepted row."
+  validations:
+    - "NEEDS_CLARIFICATION: no field-level validation, record-existence validation or sequencing validation is proved by the accepted row."
+  invalid_value_paths:
+    - "NEEDS_CLARIFICATION: invalid identifiers, absent associations and exception behavior are not asserted."
+  main_flow:
+    - The request reaches PredefinedDeliveryTripController.removeStop.
+    - The controller invokes PredefinedDeliveryTripService.removeStop/resequence.
+    - The accepted trace proves persistence through PredefinedDeliveryTripStopJpaDao.
+    - PredefinedDeliveryTripStopDo maps to public.tbl_predefined_delivery_trip_stop.
+  component_flow:
+    - PredefinedDeliveryTripController.removeStop
+    - PredefinedDeliveryTripService.removeStop/resequence
+    - PredefinedDeliveryTripStopJpaDao
+    - PredefinedDeliveryTripStopDo
+    - public.tbl_predefined_delivery_trip_stop
+  business_rules:
+    - The accepted trace proves that remove-stop processing includes a resequence operation.
+    - "NEEDS_CLARIFICATION: the ordering algorithm, affected rows, constraints and exact resequencing rule are not preserved in the accepted evidence."
+  data_reads_and_writes:
+    - The persistence chain reaches public.tbl_predefined_delivery_trip_stop.
+    - "NEEDS_CLARIFICATION: exact delete/update behavior, row selection and column mutations are not preserved in the accepted row."
+  side_effects_and_state_changes:
+    - A trip-stop persistence change and resequencing activity are proved at service-chain level.
+    - "NEEDS_CLARIFICATION: exact resulting sequence values and row lifecycle are not asserted."
+  alternate_and_error_flows:
+    - "NEEDS_CLARIFICATION: not-found, invalid-sequence and repository exception paths are not proved in the accepted trace."
+  output_and_postconditions:
+    - The remove/resequence persistence path is invoked against public.tbl_predefined_delivery_trip_stop.
+    - "NEEDS_CLARIFICATION: exact redirect, view, HTTP status, response body and final ordering are not proved."
+  evidence:
+    - traceability/explorer/traceability-matrix.json row "POST /delivery-planning/predefined-trips/remove-stop"
+    - logs/runs/INVOCATION-20260823-160000.md LANE-03
+  downstream_test_assertions:
+    - classification: INTEGRATION_REQUIRED
+      assertion: The accepted flow must traverse PredefinedDeliveryTripService.removeStop/resequence and PredefinedDeliveryTripStopJpaDao to public.tbl_predefined_delivery_trip_stop; exact ordering assertions remain blocked pending clarification.
+  approval:
+    owner: USER
+    state: NOT_ELIGIBLE_UNTIL_CLARIFIED
+    fingerprint: 89c281cd0521fa14a683cd68c35d4cee8230a31de50555deb7f45bfd700c77df
