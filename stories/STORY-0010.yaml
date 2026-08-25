@@ -1,0 +1,58 @@
+story:
+  story_id: STORY-0010
+  title: Retrieve an offline vector map tile
+  state: READY_FOR_USER_REVIEW
+  fingerprint: e45db69767cee472b169e95c8d4319293c29e521f734ce95631b589bb457241e
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf"]
+  controller: OfflineMapController vector-tile path
+  endpoint: "GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf"
+  business_purpose: Retrieve the requested offline vector tile from the configured MBTiles data source using the source-proved tile coordinates.
+  trigger_and_context: A caller requests GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf.
+  inputs:
+    - name: z
+      source: path
+      meaning: Tile zoom coordinate used by the vector-tile lookup.
+    - name: x
+      source: path
+      meaning: Tile x coordinate used by the vector-tile lookup.
+    - name: y
+      source: path
+      meaning: Tile y coordinate used by the vector-tile lookup.
+  normalization_and_defaults: []
+  validations: []
+  invalid_value_paths:
+    - No coordinate range or format validation is asserted because the accepted canonical trace does not prove one.
+  main_flow:
+    - The request reaches the OfflineMapController vector-tile path.
+    - The controller invokes OfflineVectorTileService.fetchTile(...).
+    - The service accesses the configured MBTiles filesystem file.
+    - The accepted trace reads tile_data from the SQLite tiles table and reads metadata needed for tile format handling.
+    - The endpoint returns the source-proved vector-tile HTTP result.
+  component_flow:
+    - OfflineMapController vector-tile path
+    - OfflineVectorTileService.fetchTile(...)
+    - configured MBTiles filesystem file
+    - SQLite tiles table
+    - SQLite metadata table
+    - terminal vector-tile HTTP response
+  business_rules: []
+  data_reads_and_writes:
+    - Reads the configured MBTiles file and SQLite tiles/metadata records needed for the requested tile.
+    - No file or database write is proved.
+  side_effects_and_state_changes: []
+  alternate_and_error_flows:
+    - No additional alternate/error branch is asserted beyond the terminal behaviour supported by the accepted trace.
+  output_and_postconditions:
+    - Returns the source-proved vector-tile HTTP response for the requested coordinates when available.
+    - No persistence mutation is proved.
+  evidence:
+    - traceability/controller-traceability.md row "GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf"
+    - logs/runs/INVOCATION-20260823-160000.md / LANE-02
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The tile flow must read the configured MBTiles/SQLite dependencies for the requested z/x/y coordinates and must not mutate persistence.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: e45db69767cee472b169e95c8d4319293c29e521f734ce95631b589bb457241e
