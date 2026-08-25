@@ -1,8 +1,9 @@
 unique_key_recovery:
-  version: 1
+  version: 2
   backlog_item: BL-001
   recovery_id: BL001-UNIQUE-KEY-RECOVERY-20260825-0809
   created_at: 2026-08-25T08:09:52+05:30
+  corrected_at: 2026-08-25T13:00:58+05:30
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   owner: PRIMARY_ORCHESTRATOR
   trigger: RECONCILIATION_PREREQUISITE_INTEGRITY_FAILURE
@@ -19,11 +20,13 @@ unique_key_recovery:
     unique_method_path_rows_materialized: 123
     unique_coverage_proved: false
     minimum_proven_duplicate_acceptance_keys: 4
+    stale_recovery_key_defect_found: true
     explanation: >-
       WU-BL001-001 was reported complete from accumulated acceptance counters, but WF-002 and the BL-001 SOW require
       canonical uniqueness by HTTP method plus path. Reconciliation proved duplicate acceptance/recount events and only
-      123 unique rows are presently materialized. WU-BL001-001 therefore cannot remain complete and WU-BL001-002 cannot
-      continue as though its dependency were satisfied.
+      123 unique rows are presently materialized. During targeted recovery, the Primary Orchestrator also proved that
+      several previously recorded missing keys did not match the actual Spring mappings at the frozen source baseline.
+      Those stale keys have been replaced below from exact controller source; no nonexistent route is accepted.
 
   recovery_boundary:
     reopen_work_unit: WU-BL001-001
@@ -39,11 +42,79 @@ unique_key_recovery:
 
   exact_missing_canonical_keys:
     count: 11
+    derivation: LIVE_MATRIX_ABSENCE_PLUS_EXACT_FROZEN_CONTROLLER_MAPPINGS
     families:
-      - {controller: ReconciliationDashboardController, count: 2, keys: ["GET /reconciliation-dashboard", "POST /reconciliation-dashboard"]}
-      - {controller: VehicleLoadFetchByIdController, count: 1, keys: ["GET /vehicle-load/fetch"]}
-      - {controller: LookupManagementController, count: 6, keys: ["GET /lookupManagement", "POST /lookupManagement", "POST /lookupManagement/saveCylinderOwnershipType", "POST /lookupManagement/saveCylinderState", "POST /lookupManagement/saveVehicleTripStatus", "POST /lookupManagement/saveVehicleTripStopType"]}
-      - {controller: VehicleTripIngestionController, count: 2, keys: ["GET /addVechileTrip", "POST /addVechileTrip"]}
+      - controller: ReconciliationDashboardController
+        controller_blob_sha: fec84449c72e5240ea5f9f53db79e55760c742e3
+        count: 2
+        keys:
+          - "GET /reconciliation-dashboard"
+          - "POST /reconciliation-dashboard/search"
+        stale_keys_rejected:
+          - "POST /reconciliation-dashboard"
+          - "POST /reconciliation-dashboard/refresh"
+      - controller: VehicleLoadFetchByIdController
+        controller_blob_sha: 7ac5d84933d4841be17b2ff8110797051085f3f7
+        count: 1
+        keys:
+          - "GET /vehicle-load/fetch"
+      - controller: LookupManagementController
+        controller_blob_sha: a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+        count: 6
+        keys:
+          - "GET /lookup"
+          - "GET /lookupManagement"
+          - "POST /lookupManagement/addressType/save"
+          - "POST /lookupManagement/country/save"
+          - "POST /lookupManagement/state/save"
+          - "POST /lookupManagement/city/save"
+        stale_keys_rejected:
+          - "POST /lookupManagement"
+          - "POST /lookupManagement/saveCylinderOwnershipType"
+          - "POST /lookupManagement/saveCylinderState"
+          - "POST /lookupManagement/saveVehicleTripStatus"
+          - "POST /lookupManagement/saveVehicleTripStopType"
+          - "GET /lookup/management"
+          - "GET /lookup/management/{lookupType}"
+          - "POST /lookup/management"
+          - "POST /lookup/management/{lookupType}"
+          - "POST /lookup/management/delete"
+          - "POST /lookup/management/delete/{lookupType}"
+      - controller: VehicleTripIngestionController
+        controller_blob_sha: 26f887d731fd58a28c2a76240bd3d2b7ee02fb69
+        count: 2
+        keys:
+          - "GET /addVechileTrip"
+          - "POST /addVechileTrip"
+
+  source_revalidation_progress:
+    reconciliation_dashboard:
+      controller: PASS_EXACT_FROZEN_BLOB
+      service: PASS_EXACT_FROZEN_BLOB
+      dao: PASS_EXACT_FROZEN_BLOB
+      entity: PASS_EXACT_FROZEN_BLOB
+      terminal_table: public.tbl_reconciliation_checkpoint
+      service_blob_sha: c0817301fa57492da946b23674c28a0af1642c2a
+      dao_blob_sha: 824f29c1b66f7c58de28a9cbf9962262e1c63e4e
+      entity_blob_sha: c9855d934dfa12b01f7ed2787d660cc978092b6c
+      status: FULL_CHAIN_SOURCE_PROVED_READY_FOR_ATOMIC_PROJECTION
+    vehicle_load_fetch:
+      controller: PASS_EXACT_FROZEN_BLOB
+      controller_blob_sha: 7ac5d84933d4841be17b2ff8110797051085f3f7
+      durable_source_proof: logs/runs/PRODUCTION-FIRE-20260825-005948-SCHEDULER.md
+      status: FULL_FROZEN_SOURCE_PROOF_EXISTS_REVALIDATION_ACTIVE
+    lookup_management:
+      controller: PASS_EXACT_FROZEN_BLOB
+      controller_blob_sha: a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+      cache: PASS_EXACT_FROZEN_BLOB
+      status: EXACT_ROUTE_INVENTORY_CORRECTED_DOWNSTREAM_CHAIN_VALIDATION_IN_PROGRESS
+    vehicle_trip_ingestion:
+      controller: PASS_EXACT_FROZEN_BLOB
+      controller_blob_sha: 26f887d731fd58a28c2a76240bd3d2b7ee02fb69
+      implementation: PASS_EXACT_GENERIC_BINDING_SOURCE
+      implementation_blob_sha: 34683207750da12cd72d0c6c76e7ceade792e9a8
+      get_state: TERMINAL_VIEW_SOURCE_PROVED
+      post_state: FULL_BRANCHING_SOURCE_VALIDATION_IN_PROGRESS
 
   durable_evidence_status:
     vehicle_load_fetch:
@@ -51,9 +122,9 @@ unique_key_recovery:
       source_proof: logs/runs/PRODUCTION-FIRE-20260825-005948-SCHEDULER.md
       proof_state: FULL_FROZEN_SOURCE_PROOF_EXISTS_ACCEPTANCE_DEFERRED
       recovery_action: REVALIDATE_PRIMARY_ORCHESTRATOR_ACCEPTANCE_IN_REOPENED_WU001_THEN_ATOMIC_PROJECT
-    remaining_ten_keys:
-      proof_state: NO_DURABLE_PRIOR_FULL_CHAIN_ACCEPTANCE_FOUND
-      recovery_action: FRESH_PINNED_SOURCE_REVALIDATION_IN_REOPENED_WU001
+    remaining_keys:
+      proof_state: FRESH_PINNED_SOURCE_REVALIDATION_ACTIVE
+      recovery_action: ACCEPT_ONLY_AFTER_COMPLETE_CHAIN_AND_ATOMIC_PROJECTION
 
   canonical_state_after_recovery_activation:
     target_unique_keys: 134
@@ -62,6 +133,7 @@ unique_key_recovery:
     unresolved: 0
     matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
     reconciliation_eligible: false
+    denominator_status: RETAINED_134_WITH_MISSING_KEY_SET_REDERIVED_FROM_FROZEN_SOURCE
 
   synchronization_contract:
     required_atomic_artifacts:
@@ -78,7 +150,8 @@ unique_key_recovery:
       chain and all matrix, unresolved, Explorer, progress and runtime projections move together in one accepted checkpoint.
 
   next_action: >-
-    Revalidate the 11 exact missing canonical method/path keys against the frozen source under reopened WU-BL001-001.
-    Start with GET /vehicle-load/fetch using its durable full source proof, then source-trace the remaining ten keys. Promote
-    each accepted key only through synchronized atomic projection. Resume WU-BL001-002 only after 134/134 unique keys are
-    materially represented exactly once.
+    Continue frozen-source validation of the corrected 11-key set. Atomically project the two fully source-proved
+    reconciliation-dashboard keys and any other key only after its complete chain is proved. Complete LookupDataCache
+    fetch-service bindings plus four lookup-ingestion service persistence chains, finish VehicleTripIngestion POST and
+    revalidate GET /vehicle-load/fetch. Resume WU-BL001-002 only after exactly 134 unique method/path keys are materially
+    represented once each.
