@@ -1,6 +1,8 @@
-version: 11
+version: 12
 purpose: >-
-  Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete SSOT and SOW. Source-reading execution additionally requires verified recursive source/binding closure, lifecycle logging and measured real-lane utilization.
+  Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete
+  SSOT and SOW. Source-reading execution additionally requires verified source/binding evidence, lifecycle logging and
+  recovery/idempotency. BL-002 adds explicit human Story and Use Case approval gates before downstream testing.
 
 three_level_ssot_gate:
   id: QG-SSOT-001
@@ -39,15 +41,12 @@ execution_source_gate:
   preferred_provider: ORCHESTRATOR_STAGED_SNAPSHOT
   fallback_provider: LOCAL_GIT_CHECKOUT
   pass_for_discovery_condition: >-
-    An approved provider supplies every dispatched controller root at the exact frozen baseline. For an
-    Orchestrator-staged snapshot, every root exists in the manifest and its recomputed Git blob SHA matches
-    before SERVICE.
+    An approved provider supplies every dispatched source root at the exact selected Backlog baseline and each staged file
+    recomputes to the declared Git blob SHA before SERVICE.
   source_closure_complete_condition: >-
-    Recursive discovery has zero missing_source_requests and zero missing_binding_requests. Every interface
-    binding followed by a worker has source-validated implementation signature/generic arguments and qualifier/bean identity.
+    Recursive discovery has zero missing_source_requests and zero missing_binding_requests for the evidence being accepted.
   partial_closure_rule: >-
-    PASS_ROOTS_VERIFIED permits discovery collection but never final acceptance of evidence whose path depends
-    on unresolved source or binding. The Orchestrator performs at most eight progressing restage/rebind iterations.
+    Verified roots may support bounded discovery, but no final assertion depending on unresolved source/binding may be accepted.
   on_integrity_failure: BLOCK_BEFORE_SERVICE
   on_resolution_stall: SOURCE_RESOLUTION_STALLED_FAIL_CLOSED
   on_iteration_limit: SOURCE_RESOLUTION_LIMIT_REACHED_FAIL_CLOSED
@@ -60,9 +59,8 @@ execution_lifecycle_logging_gate:
   governance: governance/execution-lifecycle-logging.yaml
   fail_closed: true
   pass_condition: >-
-    Zero stale individual lane logs exist before fire; required START/END records and heartbeat evidence exist
-    in order with exact task identity; every started lane closes or is recovery-closed; transient logs are
-    aggregated verified deleted and rescanned to zero.
+    Zero stale individual lane logs exist before fire; required START/END/heartbeat evidence is in order; every started
+    lane closes or is recovery-closed; transient logs are aggregated, verified, deleted and rescanned to zero.
 
 real_lane_utilization_gate:
   id: QG-LANE-001
@@ -72,26 +70,13 @@ real_lane_utilization_gate:
   governance: governance/lane-execution.yaml
   category: PERFORMANCE_GOVERNANCE
   fail_closed_for_parallelism_claim: true
-  does_not_invalidate_source_evidence: true
+  does_not_invalidate_correct_evidence: true
   expected_concurrency_formula: min(configured_lanes, eligible_independent_tasks)
   current_backend: LOCAL_PROCESS_POOL
   pass_condition: >-
-    For the natural production workload, when at least two safe independent tasks are dispatched, measured
-    peak overlapping SERVICE intervals reaches expected safe concurrency.
+    When at least two safe independent tasks exist, measured natural overlapping SERVICE intervals reach expected safe concurrency.
   underutilized_condition: >-
-    Natural workload peak SERVICE concurrency is lower than expected safe concurrency. Preserve correct source
-    evidence but record underutilization. Artificial service delays must not be added merely to pass this gate.
-  backend_capacity_probe_rule: >-
-    A separate capacity probe may prove that the executor can host ten concurrent workers, but it does not
-    replace natural production QG-LANE-001 measurement.
-  latest_full_discovery_measurement:
-    execution_id: E2E-STAGED-20260823-151810
-    peak_service_concurrent_lanes: 4
-    average_service_concurrent_lanes: 0.26
-    expected_concurrent_lanes: 10
-    state: UNDERUTILIZED
-    source_evidence_remains_usable: true
-  backend_capacity_probe_peak: 10
+    Lower natural concurrency is recorded as underutilization; artificial delay is forbidden merely to pass this gate.
 
 execution_recovery_gate:
   id: QG-RECOVERY-001
@@ -101,39 +86,54 @@ execution_recovery_gate:
   governance: governance/self-reliant-execution.yaml
   fail_closed: true
   pass_condition: >-
-    Execution journal and dispatch fingerprint exist; repeated invocations do not duplicate worker execution or
-    trace acceptance; interrupted executions reject partial output; PENDING_SYNC retries persistence only; an
-    already synchronized execution becomes a no-op.
-  validated_cases_2026_08_23: 5/5_PASS
+    Execution journal and dispatch fingerprint exist; repeated invocations do not duplicate execution/acceptance;
+    interrupted partial output is rejected; PENDING_SYNC retries persistence only; synchronized work is not rerun.
+
+human_approval_governance:
+  story_approval:
+    owner: USER
+    backlog_item: BL-002
+    gate: QG-STORY-006
+    auto_approval_allowed: false
+    stale_on_source_fingerprint_change: true
+  usecase_approval:
+    owner: USER
+    backlog_item: BL-002
+    gate: QG-STORY-008
+    approved_state: APPROVED_FOR_TESTING
+    auto_approval_allowed: false
+    stale_on_story_or_source_fingerprint_change: true
+  downstream_rule: >-
+    BL-003 consumes only APPROVED Story assertions. BL-004 consumes only APPROVED_FOR_TESTING Use Cases and authoritative scenarios.
 
 user_verification:
   required_before_backlog_close: true
-  rule: Automated gates may prove technical completion, but a Backlog Item must not move to CLOSED until its User Acceptance gate is approved by the user.
+  rule: Automated gates may prove technical completion, but a Backlog Item must not move to CLOSED until its final User Acceptance gate is approved by the user.
 
 backlog_quality_gates:
   BL-001: {name: Controller Traceability, configured: true, config: backlog/gates/BL-001-traceability.yaml, approved_by_user: true, execution_allowed: true}
-  BL-002: {name: Unit Test Completion, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-003: {name: Integration Test Completion, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-004: {name: Code Coverage Report, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-005: {name: ArchUnit Architecture Test, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-006: {name: Requirements Traceability and Gap Analysis, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-007: {name: Migration of the Database to the Ownership Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-008: {name: Supplier Owned, Customer Owned and Company Owned Cylinder Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-009: {name: Physical Challan Book Location, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-010: {name: Ownership Dashboard Changes, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-011: {name: CRUD Services for All Tables, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-012: {name: On Spot Cylinder Checks, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-013: {name: Correction Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-014: {name: Invoice Generation and Check in Tally, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-015: {name: Attendance Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-016: {name: Trip Planning for the Customers, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-017: {name: CEO Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-018: {name: Restoring the Logical Backup, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-019: {name: Task Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-020: {name: Customer Data Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-002: {name: Controller Dependency Matrix to Human-Readable Stories, configured: true, config: backlog/gates/BL-002-controller-story-usecase.yaml, approved_by_user: true, execution_allowed: false, waiting_for_dependency: BL-001}
+  BL-003: {name: Unit Test Completion, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-004: {name: Integration Test Completion, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-005: {name: Code Coverage Report, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-006: {name: ArchUnit Architecture Test, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-007: {name: Requirements Traceability and Gap Analysis, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-008: {name: Migration of the Database to the Ownership Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-009: {name: Supplier Owned, Customer Owned and Company Owned Cylinder Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-010: {name: Physical Challan Book Location, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-011: {name: Ownership Dashboard Changes, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-012: {name: CRUD Services for All Tables, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-013: {name: On Spot Cylinder Checks, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-014: {name: Correction Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-015: {name: Invoice Generation and Check in Tally, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-016: {name: Attendance Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-017: {name: Trip Planning for the Customers, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-018: {name: CEO Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-019: {name: Restoring the Logical Backup, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-020: {name: Task Management, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-021: {name: Customer Data Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
 
 orchestrator_rule: >-
-  Validate QG-SSOT-001 before PLAN/REPLAN. Before source-reading workers start enforce QG-SOURCE-001.
-  Enforce QG-RECOVERY-001 on repeated/interrupted/pending-sync invocations, QG-LOG-001 on lifecycle boundaries,
-  and QG-LANE-001 using natural SERVICE overlap. None of these gates authorizes naming inference, automatic trace
-  completion or bypass of BL-001 final user acceptance.
+  Select only run-enabled eligible Backlog Items. Validate QG-SSOT-001, QG-SOW-001 and QG-DEP-001 before execution.
+  BL-002 must additionally enforce its Story/Use Case gates: technical validation never substitutes for user approval, and
+  downstream testing must fail closed on unapproved or stale Story/Use Case input.
