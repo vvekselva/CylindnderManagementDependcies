@@ -1,0 +1,152 @@
+projection_corrections:
+  backlog_item: BL-001
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  owner: PRIMARY_ORCHESTRATOR
+  purpose: >-
+    Replace four abbreviated Lookup Management POST recovery records with complete source-proved ordered/branching
+    Controller -> Service -> DAO -> Entity -> DB -> cache refresh -> terminal chains. No names are inferred; all
+    persistence hops are proved by the frozen-source blobs recorded below.
+  rows:
+    - method: POST
+      path: /lookupManagement/addressType/save
+      controller: LookupManagementController
+      controller_method: saveAddressType
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - label: persist and refresh address type
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: saveAddressType}
+            - {type: SERVICE, name: AddressTypeIngestionService, method: processRequest}
+            - {type: DAO, name: AddressTypeJpaDao, method: findByAddressTypeContainingIgnoreCase / saveAndFlush}
+            - {type: ENTITY, name: AddressTypeDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_address_type}
+            - {type: CACHE, name: LookupDataCache, method: refreshAddressTypes}
+            - {type: SERVICE, name: AddressTypeFetchByPageService, method: processRequest}
+            - {type: DAO, name: AddressTypeJpaDao, method: findAll/page query}
+            - {type: ENTITY, name: AddressTypeDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_address_type}
+            - {type: TERMINAL_REDIRECT, name: redirect:/lookupManagement?tab=addressType}
+        - label: validation error model rebuild potential lazy refreshes
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: saveAddressType}
+            - {type: SERVICE, name: AddressTypeIngestionService, method: processRequest validation failure}
+            - {type: CACHE, name: LookupDataCache, method: address/country/state/city getters}
+            - {type: SERVICE_GROUP, name: AddressTypeFetchByPageService; CountryFetchByPageService; StateFetchByPageService; CityFetchByPageService}
+            - {type: DAO_GROUP, name: AddressTypeJpaDao; CountryJpaDao; StateJpaDao; CityJpaDao}
+            - {type: ENTITY_GROUP, name: AddressTypeDo; CountryDo; StateDo; CityDo}
+            - {type: POSTGRES_TABLE_GROUP, name: public.tbl_address_type; public.tbl_country; public.tbl_state; public.tbl_city}
+            - {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}
+      evidence_blobs:
+        - a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+        - 9352596300343106963ed364ff21c3d2cfe70b6f
+        - f886ff1f55a4367a9435cb37cc992320abb9f08a
+        - aeca6fbefbfbab15f342c9e9b250d33d749c2170
+        - 4e516ae03de1fabb7730c5e50659f512ef12003f
+
+    - method: POST
+      path: /lookupManagement/country/save
+      controller: LookupManagementController
+      controller_method: saveCountry
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - label: persist and refresh country
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: saveCountry}
+            - {type: SERVICE, name: CountryIngestionService, method: processRequest}
+            - {type: DAO, name: CountryJpaDao, method: findByCountryNameContainingIgnoreCase / saveAndFlush}
+            - {type: ENTITY, name: CountryDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_country}
+            - {type: CACHE, name: LookupDataCache, method: refreshCountries}
+            - {type: SERVICE, name: CountryFetchByPageService, method: processRequest}
+            - {type: DAO, name: CountryJpaDao, method: findAll/page query}
+            - {type: ENTITY, name: CountryDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_country}
+            - {type: TERMINAL_REDIRECT, name: redirect:/lookupManagement?tab=country}
+        - label: validation error model rebuild potential lazy refreshes
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: saveCountry}
+            - {type: SERVICE, name: CountryIngestionService, method: processRequest validation failure}
+            - {type: CACHE, name: LookupDataCache, method: address/country/state/city getters}
+            - {type: SERVICE_GROUP, name: AddressTypeFetchByPageService; CountryFetchByPageService; StateFetchByPageService; CityFetchByPageService}
+            - {type: DAO_GROUP, name: AddressTypeJpaDao; CountryJpaDao; StateJpaDao; CityJpaDao}
+            - {type: ENTITY_GROUP, name: AddressTypeDo; CountryDo; StateDo; CityDo}
+            - {type: POSTGRES_TABLE_GROUP, name: public.tbl_address_type; public.tbl_country; public.tbl_state; public.tbl_city}
+            - {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}
+      evidence_blobs:
+        - a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+        - ef34fbfba3737ac40bdbd8b4b2a83b256af222aa
+        - 3df1dcf7e8112ca4aeb91c4c4515c42c65031247
+        - 7a3b718f4af15ff7c0d2ce01626b00fc1887ec88
+        - 00ad32588d030566a937349b5415de562957f23c
+
+    - method: POST
+      path: /lookupManagement/state/save
+      controller: LookupManagementController
+      controller_method: saveState
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - label: persist and refresh state
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: saveState}
+            - {type: SERVICE, name: StateIngestionService, method: processRequest}
+            - {type: DAO, name: StateJpaDao, method: findByStateNameContainingIgnoreCase / saveAndFlush}
+            - {type: ENTITY, name: StateDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_state}
+            - {type: CACHE, name: LookupDataCache, method: refreshStates}
+            - {type: SERVICE, name: StateFetchByPageService, method: processRequest}
+            - {type: DAO, name: StateJpaDao, method: findAll/page query}
+            - {type: ENTITY, name: StateDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_state}
+            - {type: TERMINAL_REDIRECT, name: redirect:/lookupManagement?tab=state}
+        - label: validation error model rebuild potential lazy refreshes
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: saveState}
+            - {type: SERVICE, name: StateIngestionService, method: processRequest validation failure}
+            - {type: CACHE, name: LookupDataCache, method: address/country/state/city getters}
+            - {type: SERVICE_GROUP, name: AddressTypeFetchByPageService; CountryFetchByPageService; StateFetchByPageService; CityFetchByPageService}
+            - {type: DAO_GROUP, name: AddressTypeJpaDao; CountryJpaDao; StateJpaDao; CityJpaDao}
+            - {type: ENTITY_GROUP, name: AddressTypeDo; CountryDo; StateDo; CityDo}
+            - {type: POSTGRES_TABLE_GROUP, name: public.tbl_address_type; public.tbl_country; public.tbl_state; public.tbl_city}
+            - {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}
+      evidence_blobs:
+        - a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+        - ef7225a42f729bc1b6c69e5b83e96b57f4f7cc3d
+        - dd377adb2b5d7be9ebab783de2ec99013c89a0b8
+        - ccb59cfed50c9aff73dacbbb6216f7a28d96e508
+        - 78d0c715b1d6eb7b5ebeb481922c4d3899b47587
+
+    - method: POST
+      path: /lookupManagement/city/save
+      controller: LookupManagementController
+      controller_method: saveCity
+      chain_completeness: FULL_BRANCHING
+      paths:
+        - label: persist and refresh city
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: saveCity}
+            - {type: SERVICE, name: CityIngestionService, method: processRequest}
+            - {type: DAO, name: CityJpaDao, method: findByCityNameContainingIgnoreCase / saveAndFlush}
+            - {type: ENTITY, name: CityDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_city}
+            - {type: CACHE, name: LookupDataCache, method: refreshCities}
+            - {type: SERVICE, name: CityFetchByPageService, method: processRequest}
+            - {type: DAO, name: CityJpaDao, method: findAll/page query}
+            - {type: ENTITY, name: CityDo}
+            - {type: POSTGRES_TABLE, name: public.tbl_city}
+            - {type: TERMINAL_REDIRECT, name: redirect:/lookupManagement?tab=city}
+        - label: validation error model rebuild potential lazy refreshes
+          nodes:
+            - {type: CONTROLLER, name: LookupManagementController, method: saveCity}
+            - {type: SERVICE, name: CityIngestionService, method: processRequest validation failure}
+            - {type: CACHE, name: LookupDataCache, method: address/country/state/city getters}
+            - {type: SERVICE_GROUP, name: AddressTypeFetchByPageService; CountryFetchByPageService; StateFetchByPageService; CityFetchByPageService}
+            - {type: DAO_GROUP, name: AddressTypeJpaDao; CountryJpaDao; StateJpaDao; CityJpaDao}
+            - {type: ENTITY_GROUP, name: AddressTypeDo; CountryDo; StateDo; CityDo}
+            - {type: POSTGRES_TABLE_GROUP, name: public.tbl_address_type; public.tbl_country; public.tbl_state; public.tbl_city}
+            - {type: TERMINAL_VIEW, name: final-version-1/LookupManagement}
+      evidence_blobs:
+        - a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+        - fa3c5d972c509a1ab482e9d995ceaa5d3f50ec74
+        - 3e8f8d0ce7e368814e995249a62697e426eb283b
+        - f52598daf80d94f8bbaab8762e7f3330eff71f69
+        - 525fa532fc7ea22e74679cd1ddb8fc55dd558cf6
