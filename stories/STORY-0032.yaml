@@ -1,0 +1,82 @@
+story:
+  story_id: STORY-0032
+  title: Save a challan book and conditionally persist its page ledger
+  state: NEEDS_CLARIFICATION
+  fingerprint: c5f8674196bffe41ba9c4a39307eb9a850134708ece1419a7f4c2aab04debe61
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /logistics/challan-books/save"]
+  controller: ChallanBookWebController.processBookIngestion
+  endpoint: "POST /logistics/challan-books/save"
+  business_purpose: Persist a challan-book registry record and, when page DTOs are present, persist the associated challan-page audit ledger records through the mapped parent-child aggregate.
+  trigger_and_context: A caller submits POST /logistics/challan-books/save to ChallanBookWebController.processBookIngestion.
+  inputs:
+    - The accepted trace proves that a request DTO is passed into ChallanBookIngestionService.processRequest and then ChallanBookRegistryMapper.mapDtoToDo.
+    - Exact caller-visible request field names and required/optional field semantics are not preserved in the accepted trace and are therefore not asserted.
+  normalization_and_defaults:
+    - No normalization or defaulting rule is asserted because the accepted trace does not preserve such behaviour.
+  validations:
+    - No field-level validation rule is asserted from the accepted trace.
+    - The endpoint has a proved CylinderManagementApplicationException error path, but the exact condition or validation that raises it is not preserved in this accepted evidence.
+  invalid_value_paths:
+    - When CylinderManagementApplicationException is raised, the controller re-renders final-version-1/add-challan-book.
+    - The error re-render path reloads summary metrics through SummaryMetricLookupFetchService -> SummaryMetricLookupJpaDao -> SummaryMetricLookupDo -> public.tbl_summary_metric_lookup.
+    - Exact invalid values, validation ordering and user-facing validation messages remain NEEDS_CLARIFICATION because they are not proved by the accepted trace.
+  main_flow:
+    - The request reaches ChallanBookWebController.processBookIngestion.
+    - The controller invokes ChallanBookIngestionService.processRequest.
+    - ChallanBookRegistryMapper.mapDtoToDo maps the request DTO into ChallanBookRegistryDo.
+    - ChallanBookRegistryJpaDao.saveAndFlush persists ChallanBookRegistryDo into public.tbl_challan_book_registry.
+    - When the request DTO contains page entries, ChallanBookRegistryMapper invokes ChallanPageAuditLedgerMapper for those page DTOs.
+    - ChallanPageAuditLedgerMapper maps them into ChallanPageAuditLedgerDo children.
+    - ChallanBookRegistryDo.pages is configured with CascadeType.ALL, so the child ledger entities are conditionally persisted into public.tbl_challan_page_audit_ledger as part of the aggregate persistence.
+    - On the proved success branch, the controller returns redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10.
+  component_flow:
+    - ChallanBookWebController.processBookIngestion
+    - ChallanBookIngestionService.processRequest
+    - ChallanBookRegistryMapper.mapDtoToDo
+    - ChallanBookRegistryJpaDao.saveAndFlush
+    - ChallanBookRegistryDo
+    - public.tbl_challan_book_registry
+    - conditional: ChallanPageAuditLedgerMapper
+    - conditional: ChallanPageAuditLedgerDo
+    - conditional: public.tbl_challan_page_audit_ledger
+    - terminal success redirect: redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10
+  business_rules:
+    - Child page-ledger persistence occurs only when page DTOs are present in the mapped request aggregate.
+    - No additional business rule is asserted beyond the accepted source-proved persistence and error branches.
+  data_reads_and_writes:
+    - Writes public.tbl_challan_book_registry through ChallanBookRegistryJpaDao.saveAndFlush.
+    - Conditionally writes public.tbl_challan_page_audit_ledger through the CascadeType.ALL parent-child mapping when page DTOs are present.
+    - On the proved error branch, reads public.tbl_summary_metric_lookup to repopulate summary metrics for the add-book form.
+  side_effects_and_state_changes:
+    - Creates or updates the persisted challan-book aggregate represented by ChallanBookRegistryDo.
+    - Conditionally persists associated challan-page audit-ledger children.
+    - No additional audit/state side effect is asserted because none is proved in the accepted trace.
+  alternate_and_error_flows:
+    - CylinderManagementApplicationException is caught by the controller.
+    - The controller re-renders final-version-1/add-challan-book and reloads summary metrics from public.tbl_summary_metric_lookup.
+    - Other exception types, transaction rollback details and exact validation-message semantics are not asserted by this Story.
+  output_and_postconditions:
+    - Success returns redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10 after the proved challan-book persistence path.
+    - Error returns final-version-1/add-challan-book with the source-proved summary-metric reload path.
+    - Exact field-level success payload, flash attributes and validation messages remain unresolved unless separately source-proved.
+  evidence:
+    - traceability/controller-traceability.md row "POST /logistics/challan-books/save"
+    - logs/runs/PRODUCTION-FIRE-20260824-003111.md
+  downstream_test_assertions:
+    - classification: INTEGRATION
+      assertion: A successful source-valid request must invoke ChallanBookIngestionService, map to ChallanBookRegistryDo, persist through ChallanBookRegistryJpaDao.saveAndFlush and reach the proved success redirect.
+    - classification: INTEGRATION
+      assertion: When page DTOs are present, the mapped ChallanBookRegistryDo aggregate must include ChallanPageAuditLedgerDo children whose persistence dependency is public.tbl_challan_page_audit_ledger through the source-proved cascade.
+    - classification: INTEGRATION
+      assertion: A CylinderManagementApplicationException must take the proved add-book re-render branch and reload summary metrics through SummaryMetricLookupJpaDao/public.tbl_summary_metric_lookup.
+  clarification_required:
+    - Exact request field names and types.
+    - Required versus optional request fields.
+    - Normalization/default rules, if any.
+    - Field-level validation rules and validation order.
+    - Which invalid values raise CylinderManagementApplicationException and the exact user-facing messages.
+  approval:
+    owner: USER
+    state: PENDING_USER_DECISION
+    fingerprint: c5f8674196bffe41ba9c4a39307eb9a850134708ece1419a7f4c2aab04debe61
