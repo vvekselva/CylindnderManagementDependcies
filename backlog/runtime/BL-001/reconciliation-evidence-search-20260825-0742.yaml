@@ -1,0 +1,110 @@
+reconciliation_evidence_search:
+  version: 1
+  backlog_item: BL-001
+  work_unit: WU-BL001-002
+  checkpoint: 2026-08-25T07:42:00+05:30
+  authoritative_branch: chore/rename-dependency-files
+  frozen_source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  state: FAIL_CLOSED_DURABLE_ACCEPTANCE_EVIDENCE_GAP
+
+  governing_constraints:
+    source_reads_performed: false
+    source_read_allowed_in_wu_bl001_002: false
+    worker_generation_started: false
+    transient_lane_logs_created: 0
+    residual_transient_lane_logs: 0
+    historical_backfill_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY
+    no_guessing: true
+
+  checkpoint_before_search:
+    source_check_accumulated_complete: 134
+    materialized_unique_matrix_rows: 123
+    confirmed_missing_canonical_keys: 11
+    unresolved_source_check_rows: 0
+    matrix_state: RECONCILIATION_BLOCKED_INTEGRITY
+
+  durable_evidence_search_scope:
+    - worker/runs/WI-0004.md historical revisions through Attempts 1-25
+    - logs/runs/INVOCATION-20260823-145512.md
+    - production-fire checkpoints from 2026-08-24 and 2026-08-25 already persisted on the authoritative branch
+    - reconciliation-gap-inventory-20260825-061110.yaml
+    - reconciliation-integrity-audit-20260825.yaml
+    - reconciliation-evidence-index-20260825-065123.yaml
+
+  remaining_keys:
+    - method: GET
+      path: /reconciliation-dashboard
+      family: ReconciliationDashboardController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+      last_proved_boundary: ReconciliationDashboardService
+    - method: POST
+      path: /reconciliation-dashboard/search
+      family: ReconciliationDashboardController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+      last_proved_boundary: ReconciliationDashboardService
+    - method: GET
+      path: /vehicle-load/fetch
+      family: VehicleLoadFetchByIdController
+      evidence_state: FULL_SOURCE_PROOF_DURABLE_BUT_NOT_PREVIOUSLY_ACCEPTED_ATOMICALLY
+      durable_source_proof: logs/runs/PRODUCTION-FIRE-20260825-005948-SCHEDULER.md
+      note: >-
+        The durable checkpoint proves the controller/service/DAO/entity/table/view chain but explicitly states the
+        route was not promoted canonically in that checkpoint. Under WU-BL001-002's accepted-evidence-only rule,
+        source proof alone is insufficient to backfill it as accepted history.
+    - method: GET
+      path: /lookup
+      family: LookupManagementController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+    - method: GET
+      path: /lookupManagement
+      family: LookupManagementController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+    - method: POST
+      path: /lookupManagement/addressType/save
+      family: LookupManagementController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+    - method: POST
+      path: /lookupManagement/country/save
+      family: LookupManagementController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+    - method: POST
+      path: /lookupManagement/state/save
+      family: LookupManagementController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+    - method: POST
+      path: /lookupManagement/city/save
+      family: LookupManagementController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+    - method: GET
+      path: /addVechileTrip
+      family: VehicleTripIngestionController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+    - method: POST
+      path: /addVechileTrip
+      family: VehicleTripIngestionController
+      evidence_state: CLASSIFICATION_ONLY_NO_DURABLE_ACCEPTED_FULL_CHAIN_FOUND
+
+  accepted_checkpoint_decision:
+    rows_promoted_this_checkpoint: 0
+    matrix_rows_after: 123
+    missing_keys_after: 11
+    reason: >-
+      WU-BL001-002 permits historical backfill only from durable Orchestrator-accepted full-chain evidence.
+      The available durable history does not prove prior acceptance for these eleven keys. One key has full durable
+      source proof but its own checkpoint explicitly deferred canonical acceptance; the other ten have only exposure/
+      immediate-handoff classification evidence. Promoting any of them here would violate fail-closed reconciliation.
+
+  blocker:
+    type: DURABLE_ACCEPTED_FULL_CHAIN_EVIDENCE_MISSING
+    affects: WU-BL001-002
+    source_availability_is_not_the_blocker: true
+    downstream_effect:
+      WU-BL001-003: BLOCKED
+      WU-BL001-004: WAITING
+      BL-001_close_allowed: false
+
+  next_action: >-
+    Continue history-only reconciliation for explicit Primary-Orchestrator acceptance records for the eleven keys.
+    Do not perform new application-source reads under WU-BL001-002. If no such accepted history exists, the governing
+    workflow must explicitly authorize a recovery/revalidation path before these keys can be source-revalidated and
+    atomically promoted. Until then preserve 123/134 materialized rows and fail closed.
