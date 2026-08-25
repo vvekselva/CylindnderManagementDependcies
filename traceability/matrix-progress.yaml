@@ -1,4 +1,4 @@
-version: 47
+version: 48
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -7,7 +7,7 @@ browser_data_artifact: traceability/explorer/matrix-data.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
-projection_state: CONSOLIDATION_EXECUTOR_AND_CORRECTED_11_ROW_INPUT_READY_EXECUTION_PENDING
+projection_state: CONNECTOR_NATIVE_ORDERED_DELTA_MATERIALIZATION_IN_PROGRESS
 reported_source_check:
   canonical_endpoint_inventory_target: 134
   accumulated_examined_counter: 134
@@ -21,17 +21,17 @@ reported_source_check:
   fully_source_proved_pending_atomic_projection: 11
   reason: >-
     The accumulated 134 counters remain audit history because duplicate acceptance events were proven. All eleven exact
-    recovery keys have source-proved chains. Four Lookup Management POST records that were previously abbreviated have
-    now been corrected with explicit Controller -> Service -> DAO -> Entity -> DB -> cache-refresh -> terminal paths.
-    Canonical unique coverage remains 123 until the deterministic consolidation utility executes successfully and all
-    Markdown/JSON/browser/runtime artifacts move together.
+    recovery keys have source-proved chains. The previous connector truncation blocker for the minified base matrix has
+    now been removed by direct Git blob retrieval. The existing governed base-plus-delta Explorer model is being
+    reconstructed connector-natively before any canonical 123-to-134 projection is allowed.
 unique_key_recovery:
-  state: CONSOLIDATION_EXECUTOR_READY
+  state: CONNECTOR_NATIVE_CONSOLIDATION_IN_PROGRESS
   work_unit: WU-BL001-001
   recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
   projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
   projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
   consolidation_executor: automation/consolidate-traceability-explorer.py
+  connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
   target_unique_keys: 134
   materialized_unique_keys: 123
   pending_unique_keys: 11
@@ -42,6 +42,11 @@ unique_key_recovery:
   atomic_projection_required: true
   pre_projection_assertion: EXACTLY_123_UNIQUE_KEYS
   post_projection_assertion: EXACTLY_134_UNIQUE_KEYS_ZERO_DUPLICATES
+  base_blob_full_read: PASS
+  ordered_delta_files_total: 42
+  ordered_delta_files_full_read: 5
+  ordered_delta_files_remaining: 37
+  next_delta: traceability/explorer/matrix-delta-20260824-023321.js
 matrix_reconciliation_history:
   corrected_pre_backfill_physical_markdown_rows: 114
   materialized_matrix_rows: 123
@@ -58,18 +63,21 @@ accepted_changes_this_checkpoint:
   historical_rows_promoted: 0
   recovery_keys_source_proved: 11
   corrected_full_chain_records: 4
-  consolidation_executor_added: true
+  connector_base_blob_materialized: true
+  connector_ordered_deltas_verified: 5
   unresolved_changes: 0
   worker_generation_started: false
   transient_lane_logs_created: 0
 update_rule: >-
   A recovered key is not canonical until the Primary Orchestrator regenerates and synchronizes every required matrix and
-  Explorer projection together. The consolidation utility must fail closed on a pre-count other than 123, a candidate
-  without ordered paths, any overlap with existing keys, any duplicate key, or a post-count other than 134.
+  Explorer projection together. Connector-native reconstruction must apply the exact index.html delta order and the
+  HTTP_METHOD_PLUS_PATH upsert semantics from apply-deltas.js, fail closed on a pre-count other than 123, any overlap or
+  duplicate key, or a post-count other than 134.
 next_action: >-
-  Run automation/consolidate-traceability-explorer.py against an authoritative control-repository filesystem checkout.
-  On PASS, atomically synchronize controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml,
-  traceability-matrix.json, matrix-data.js, index.html and Level-3 runtime and then hand off to WU-BL001-002.
+  Continue connector-native full-content reads for the remaining 37 ordered delta files. Once the existing model is
+  reconstructed and validates to exactly 123 unique rows, merge the eleven corrected recovery rows and atomically
+  synchronize controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml, traceability-matrix.json,
+  matrix-data.js, index.html and Level-3 runtime, then hand off to WU-BL001-002.
 finalization_condition: >-
   Exactly 134 unique caller-visible HTTP method/path keys are represented once with accepted full-chain frozen-source
   evidence and all Markdown/JSON/browser/runtime artifacts reconcile before WU-BL001-002 may resume.
