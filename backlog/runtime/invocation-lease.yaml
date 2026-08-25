@@ -1,11 +1,19 @@
 invocation_lease:
-  version: 24
+  version: 25
   state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-041627IST
-  acquired_at: 2026-08-26T04:16:27+05:30
+  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-051635IST
+  acquired_at: 2026-08-26T05:16:35+05:30
   released_at: null
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-001 and BL-002 execution
   duplicate_action: NOOP
   outcome: RUNNING
+  recovered_prior_lease:
+    invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-041627IST
+    acquired_at: 2026-08-26T04:16:27+05:30
+    recovery_reason: EXCEEDED_45_MINUTE_HARD_STOP_WITH_ZERO_LIVE_LANES
+    BL-001_active_lanes: 0
+    BL-002_active_lanes: 0
+    transient_lane_logs_remaining: 0
+    recovery_state: RECOVERED_CLEAN_BOUNDARY
