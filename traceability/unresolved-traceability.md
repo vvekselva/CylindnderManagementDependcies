@@ -1,6 +1,6 @@
 # BL-001 Incremental Unresolved Traceability
 
-Status: **READY FOR FINAL RECONCILIATION — ZERO CURRENT UNRESOLVED ROWS**  
+Status: **RECONCILIATION BLOCKED ON UNIQUE-KEY INTEGRITY — ZERO CURRENT UNRESOLVED ROWS**  
 Backlog Item: BL-001 Controller Traceability  
 Work Unit: WU-BL001-002 Final Matrix Reconciliation  
 Frozen source baseline: `3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -9,30 +9,31 @@ This artifact contains only source-proved facts and explicit evidence gaps; it i
 
 ## Current canonical checkpoint
 
-- Total caller-visible endpoints: **134**
-- Source-check accumulated COMPLETE: **134**
+- Total caller-visible endpoint target: **134**
+- Raw accumulated source-check COMPLETE counter: **134** — not yet accepted as unique-key proof
 - UNRESOLVED: **0**
 - BLOCKED: **0**
 - FAILED: **0**
-- Current physical Markdown rows after reconciliation backfill: **118**
-- Confirmed canonical keys still absent from the matrix: **16**
+- Current physical Markdown rows after reconciliation backfill: **123**
+- Confirmed canonical keys still absent from the matrix: **11**
 
 ## Current unresolved paths
 
 **None.**
 
-The remaining 16 rows are not unresolved endpoint traces. They are historical accepted endpoint keys that still require matrix backfill from durable accepted evidence under WU-BL001-002. The Primary Orchestrator must not read source or invent a chain merely to fill them.
+The remaining 11 rows are not unresolved endpoint traces. They are canonical endpoint keys whose already-accepted historical full-chain evidence still has to be located and reconciled under WU-BL001-002. The Primary Orchestrator must not read application source or invent a chain merely to fill them.
 
 ## Latest accepted state
 
-The first WU-BL001-002 reconciliation backfill promoted four durable source-proved `DeliveryPlanningController` rows:
+The second WU-BL001-002 reconciliation backfill promoted five durable source-proved `DeliveryPlanningStopManagementController` rows:
 
-- `GET /delivery-planning`
-- `GET /delivery-planning/dashboard`
-- `GET /delivery-planning/customer-density-bubble-map`
-- `GET /delivery-planning/weekly-forecast`
+- `GET /delivery-planning/stops/manage`
+- `GET /delivery-planning/stops/manage/`
+- `POST /delivery-planning/stops/manage/save`
+- `POST /delivery-planning/stops/manage/save-selected`
+- `POST /delivery-planning/stops/manage/remove`
 
-Their Markdown rows and ordered structured/browser Explorer deltas are synchronized at checkpoint `PRODUCTION-FIRE-20260825-070408`. The corrected pre-backfill physical count was 114, so the matrix is now **118/134** with **16** confirmed missing canonical keys.
+Their compact Markdown rows and ordered structured/browser Explorer deltas are synchronized at checkpoint `RECONCILIATION-FIRE-20260825-020007Z`. Together with the first four-row reconciliation backfill, the corrected pre-backfill physical count of 114 has advanced to **123/134**, leaving **11** confirmed missing canonical keys.
 
 ## Reconciliation rule
 
