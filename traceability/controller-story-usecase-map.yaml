@@ -1,5 +1,5 @@
 controller_story_usecase_traceability:
-  version: 11
+  version: 12
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_MAPPING
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -46,6 +46,10 @@ controller_story_usecase_traceability:
     - {matrix_row_key: "GET /customer-consumption/api/dashboard", story_id: STORY-0030, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "POST /complete-trip", story_id: STORY-0031, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "POST /logistics/challan-books/save", story_id: STORY-0032, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /trip-return", story_id: STORY-0033, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "POST /trip-return", story_id: STORY-0034, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /customer-demands", story_id: STORY-0035, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "POST /customer-demands", story_id: STORY-0036, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
   invariants:
     - every canonical final matrix row has one Story disposition before final BL-002 verification
     - every APPROVED Story references at least one canonical matrix row
