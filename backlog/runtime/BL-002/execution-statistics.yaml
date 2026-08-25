@@ -1,14 +1,27 @@
 execution_statistics:
   backlog_item: BL-002
-  state: INITIALIZED_NO_RUNS
+  state: ACTIVE_INCREMENTAL_EXECUTION
   comparison_window:
-    previous_run: {}
-    current_or_latest_run: {}
+    previous_run:
+      story_dispositions: 30
+      ready_for_user_review: 26
+      needs_clarification: 4
+      approved_stories: 0
+    current_or_latest_run:
+      story_dispositions: 31
+      ready_for_user_review: 27
+      needs_clarification: 4
+      approved_stories: 0
   story_metrics:
-    canonical_matrix_rows: null
-    accounted_rows: 0
+    canonical_matrix_rows_currently_eligible: 123
+    final_matrix_target_rows: 134
+    accounted_rows: 31
+    ready_for_user_review: 27
+    needs_clarification: 4
     approved_stories: 0
+    remaining_currently_eligible_rows_without_story_disposition: 92
   usecase_metrics:
+    candidate_usecases: 0
     approved_for_testing: 0
     test_scenarios: 0
   staleness:
