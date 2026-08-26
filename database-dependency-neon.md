@@ -115,6 +115,7 @@ Manual SQL substitution          NOT ALLOWED
 | 2026-08-26 | Governed fire at 11:16 IST: reverify configured Neon target | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` | VERIFY_FROM_LIVE_NEON | BLOCKED_SAME_REQUIREMENT | Required historical project was not returned and a follow-up lookup encountered connector authentication failure. No DB mutation. |
 | 2026-08-26 | Governed fire at 12:02 IST: live Neon project rediscovery | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` required; visible `production` | VERIFY_ON_EXISTING_MAIN | BLOCKED_TARGET_MISMATCH | Connector exposes `cylinder_db_for_testing` (`weathered-heart-89789162`), but its visible/default branch is `production`; no existing `main` was proved and branch creation is forbidden. No mutation occurred. |
 | 2026-08-26 | Governed fire at 12:58 IST: revalidate main-only target gate | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` required; visible `production` | VERIFY_ON_EXISTING_MAIN | BLOCKED_SAME_TARGET_MISMATCH | Live discovery again exposes only `cylinder_db_for_testing` / `production`; `main` is not proved. No requirement selected, no SQL/Flyway write, no branch creation, no manual SQL. |
+| 2026-08-26 | Governed fire at 15:13 IST: revalidate authoritative main-only target | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` required; visible `production` | VERIFY_ON_EXISTING_MAIN | BLOCKED_SAME_TARGET_MISMATCH | Owned and shared searches return no `holy-glitter-02245694`/`neon-for-cylinder-db`. The only visible project remains `cylinder_db_for_testing` (`weathered-heart-89789162`) with primary/default branch `production` (`br-holy-scene-ax0ddw93`). No requirement selected, no Flyway validation/migration, no SQL write, no branch creation, no manual SQL, no external production deployment. |
 
 ## 8. Application-to-Database Dependency Contract
 
@@ -163,6 +164,24 @@ Database write status  : NOT AUTHORIZED
 - Flyway validation: not run.
 - Flyway migration: not run.
 - SQL reads against `production` as a substitute for `main`: zero.
+- Database writes: zero.
+- Neon branches created: zero.
+- Manual SQL substitutions: zero.
+- External production deployments: zero.
+
+## 11. Latest Governed Invocation Evidence — 2026-08-26 15:13 IST
+
+- Invocation: `CYLINDER-PRODUCTION-FIRE-20260826-151312IST`.
+- Owned-project search by required project ID `holy-glitter-02245694`: zero matches.
+- Shared-project search by required project ID: zero matches.
+- Owned-project search by required project name `neon-for-cylinder-db`: zero matches.
+- The connected organization currently exposes one project: `cylinder_db_for_testing` (`weathered-heart-89789162`).
+- Fresh project description proves one branch, `production` (`br-holy-scene-ax0ddw93`), marked primary/default.
+- Required existing branch `main` is not visible; identity equivalence to the governed project remains unproved; branch creation remains forbidden.
+- Decision: remain at `BLOCKED_TEST_DATABASE_CONTROL_PLANE_TARGET_MISMATCH` before requirement selection.
+- Active database requirement: none.
+- `flyway_schema_history`: not read from `production` as a substitute for `main`.
+- Flyway validation/migration: not run.
 - Database writes: zero.
 - Neon branches created: zero.
 - Manual SQL substitutions: zero.
