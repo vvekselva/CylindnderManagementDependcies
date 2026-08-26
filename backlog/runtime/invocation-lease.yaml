@@ -1,21 +1,18 @@
 invocation_lease:
-  version: 39
-  state: RELEASED
+  version: 40
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-015827Z
-  acquired_at: 2026-08-26T01:58:27Z
-  released_at: 2026-08-26T02:00:47Z
+  invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-0809IST
+  acquired_at: 2026-08-26T02:39:00Z
+  released_at: null
   authoritative_branch: chore/rename-dependency-files
-  purpose: coordinated BL-001 and BL-002 backlog-driven production execution
+  purpose: coordinated BL-001, BL-002 and BL-008 manual production execution
   duplicate_action: NOOP
-  outcome: PARTIAL_NO_RUNNABLE_WORKER_GENERATION_RUNTIME_RECONCILED
+  outcome: RUNNING
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
+  BL-008_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - Live authoritative backlog/run-config/SSOT/quality-gate files were read before execution.
-    - BL-001 prior worker generation remained CLOSED_SYNCHRONIZED and was not replayed; canonical state remains 123 unique rows plus 11 source-proved rows pending atomic projection.
-    - Exact 134-row uniqueness was not claimed because atomic connector-native model assembly and multi-artifact serialization have not passed.
-    - BL-002 additional Story generation is paused by user-owned DEC-BL002-005 pending complete 134-item Release 1/Release 2 classification; no Story or Use Case was generated.
-    - BL-002 blockers/gate/local runtime were reconciled to the current user-owned release-classification gate.
-    - Both backlog streams ended with zero active lanes and zero residual transient lane logs.
+    - Manual production fire requested by user.
+    - Latest BL-008 policy uses Neon main only, creates no Neon branches, and serializes database requirements one at a time.
