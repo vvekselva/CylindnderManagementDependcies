@@ -1,27 +1,25 @@
-version: 3
+version: 4
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations:
+active_invocations: []
+recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-141701IST
-    trigger: SCHEDULED_PRODUCTION_FIRE
-    execution_state: RUNNING
-    health_state: ACTIVE
+    execution_state: TERMINAL_CHECKPOINTED
+    health_state: COMPLETE
     started_at: 2026-08-26T14:17:01+05:30
-    heartbeat_at: 2026-08-26T14:17:01+05:30
-    last_progress_at: 2026-08-26T14:17:01+05:30
+    completed_at: 2026-08-26T14:19:54+05:30
+    heartbeat_at: 2026-08-26T14:19:54+05:30
+    last_progress_at: 2026-08-26T14:19:54+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: PLANNING
+    coordinator_phase: SYNCHRONIZED_TERMINAL
     current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
-    current_work_unit: PRECHECK_AND_WORK_SELECTION
-    progress_fingerprint: RECOVERY_COMPLETE_AND_NEW_INVOCATION_REGISTERED
-    blocked_reason: null
-    recovery_action: null
-    productive_assignment_cutoff: 2026-08-26T14:47:01+05:30
-    new_work_assignment_open: true
-    accumulation_state: PENDING
-recent_completed_invocations:
+    current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
+    progress_fingerprint: HEALTH_RECOVERY_PLUS_BL008_REVALIDATION_PLUS_BL001_IDEMPOTENT_CHECKPOINT_PLUS_BL002_STORY0057_RECONCILIATION
+    blocked_reason: BL008_TARGET_MAIN_NOT_VISIBLE; BL001_ATOMIC_MODEL_ASSEMBLY_NOT_PROCESS_READABLE
+    recovery_action: NONE_CURRENT_INVOCATION
+    outcome: PARTIAL_CHECKPOINT_SYNCHRONIZED
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1202IST
     prior_state: ACTIVE_LEGACY_COMPATIBILITY
     execution_state: TERMINAL_RECOVERED
@@ -62,7 +60,8 @@ work_claims:
       prior_owner_invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-120416IST
       prior_state: EXECUTING
       recovery_state: RELEASED_AFTER_STALE_OWNER_RECOVERY
-      partial_output_acceptance: REJECTED_UNLESS_ALREADY_DURABLY_VALIDATED_OUTSIDE_STALE_INVOCATION
+      durable_state_found: STORY_0057_ALREADY_REGISTERED_NEEDS_CLARIFICATION
+      partial_output_acceptance: PRESERVE_ONLY_ALREADY_DURABLE_REGISTERED_STATE
       recovered_at: 2026-08-26T14:17:01+05:30
 locks:
   shared_ssot_write:
