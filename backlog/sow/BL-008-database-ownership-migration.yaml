@@ -1,28 +1,28 @@
 statement_of_work:
   backlog_item: BL-008
-  version: 1
+  version: 2
   title: Migrate CylinderManagement Database to Ownership Model
   status: APPROVED_FOR_EXECUTION_AFTER_GATES
   objective: >-
-    Execute the authoritative Flyway migration sequence for CylinderManagement against the governed Neon database, first on
-    an isolated validation branch and then on production only after validation passes, while proving ownership-model and data integrity.
+    Execute CylinderManagement database migration requirements against the separate Neon test environment on branch main only,
+    one database requirement at a time, using Flyway and proving ownership-model and data integrity after each completed requirement.
   authoritative_sources:
     dependency_ledger: database-dependency-neon.md
     flyway_repository: vvekselva/CylinderManagement
     flyway_path: cylinder.datascripts/src/main/resources/db/migration/
-    required_target: V176
     ownership_reference_roots: [NewOwnerShipModelv3/, cmas.database.operations/]
   execution_requirements:
-    - verify Neon project, branch and database identity before writes
-    - prove the production database pre-state and current flyway_schema_history state
-    - create or verify a migration validation branch derived from production before any migration
-    - inventory migration filenames, versions and checksums; fail on duplicate/out-of-order/invalid migration candidates
-    - run Flyway validate before migrate
-    - run Flyway migrate through the required target on the validation branch
-    - run post-migration schema, ownership, referential-integrity and critical-data checks
-    - promote the identical validated migration source to production only if validation branch gates pass
-    - run the same post-migration checks on production
-    - record exact migration/version/result evidence in database-dependency-neon.md
+    - use Neon project neon-for-cylinder-db as a separate test environment, not as direct external production
+    - use Neon branch main only for BL-008 migration execution
+    - do not create any Neon migration, validation, feature or recovery branch
+    - verify the exact database name on Neon main before any write
+    - discover the ordered database requirements from authoritative Flyway/source evidence
+    - keep exactly one database requirement in ACTIVE/EXECUTING state at a time
+    - complete validation and durable evidence for the active database requirement before selecting the next one
+    - run Flyway validation before applying the active requirement
+    - validate flyway_schema_history after the active requirement
+    - run post-change schema, ownership, referential-integrity and critical-data checks after each requirement
+    - record the exact requirement/version/result in database-dependency-neon.md before the next requirement begins
     - never use manual SQL as a substitute for the Flyway migration sequence
     - do not log secrets or full connection strings
   ownership_invariants:
@@ -31,23 +31,26 @@ statement_of_work:
     - CUSTOMER_OWNED must identify a customer and must not identify a supplier owner
     - supplier and customer ownership must never both be populated for one ownership record
     - migration must preserve cylinder identity, state/history, custody/logistics and audit relationships unless a versioned migration explicitly changes them
-  rollback_and_recovery:
-    required_before_mutation: true
-    preferred: NEON_VALIDATION_BRANCH_FROM_PRODUCTION
-    production_failure_action: FAIL_CLOSED_NO_MANUAL_PATCH
-    evidence_required: branch identity plus pre-migration schema/history snapshot
+  recovery:
+    branch_creation_allowed: false
+    method: FAIL_CLOSED_AND_STOP_CURRENT_REQUIREMENT
+    rule: >-
+      If validation or execution fails, do not continue to the next database requirement and do not apply an ad-hoc fix.
+      Preserve the failure evidence, repair the authoritative Flyway/source requirement, then retry the same requirement under governance.
   deliverables:
     - validated BL-008 runtime SSOT and logs
-    - validated Flyway migration result through V176
+    - sequential database-requirement execution evidence
     - ownership-model integrity evidence
     - updated database-dependency-neon.md ledger
   acceptance_criteria:
     - all BL-008 quality gates pass
-    - validation branch migration passes before production migration
-    - production migration reaches V176 with successful Flyway history
-    - ownership invariants and critical integrity checks pass
+    - no Neon branch is created
+    - only Neon main is mutated by BL-008
+    - one database requirement is completed and recorded before the next starts
+    - all selected Flyway requirements succeed in sequence
+    - ownership invariants and critical integrity checks pass after each requirement
     - no manual SQL substitution occurs
     - explicit user acceptance is obtained before CLOSED
-  user_authorization_basis: USER_DIRECTIVE_2026-08-26_INCLUDE_DATABASE_MIGRATION_IN_ORCHESTRATION
+  user_authorization_basis: USER_DIRECTIVE_2026-08-26_NEON_MAIN_ONLY_SEQUENTIAL_DB_REQUIREMENTS
   structurally_valid: true
   placeholders_present: false
