@@ -1,9 +1,9 @@
 invocation_lease:
-  version: 49
+  version: 50
   state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-0932IST
-  acquired_at: 2026-08-26T04:02:45Z
+  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1116IST
+  acquired_at: 2026-08-26T05:46:29Z
   released_at: null
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-008 BL-001 BL-002 production execution
@@ -14,6 +14,7 @@ invocation_lease:
   BL-008_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - Singleton lease acquired after confirming prior lease RELEASED.
+    - Recovered stale prior ACTIVE lease after the 45-minute safety ceiling was exceeded.
+    - BL-001, BL-002 and BL-008 lane-status each proved 10/10 IDLE with zero active lanes before takeover.
     - BL-008 database mutation remains serialized at parallelism 1 and requires exact Flyway/history validation before write.
     - BL-001 and BL-002 proceed independently under their own gates.
