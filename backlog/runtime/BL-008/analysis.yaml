@@ -1,49 +1,24 @@
 backlog_item: BL-008
-version: 3
-state: BLOCKED_TEST_DATABASE_CONTROL_PLANE_TARGET_MISMATCH
-analysis:
-  authoritative_database_ledger: database-dependency-neon.md
-  required_target_project: neon-for-cylinder-db
-  required_target_project_id: holy-glitter-02245694
-  required_branch: main
-  branch_creation: FORBIDDEN
-  environment_role: SEPARATE_NEON_TEST_ENVIRONMENT
-  database_requirement_parallelism: 1
-  migration_mechanism: FLYWAY_ONLY
-  manual_sql_substitution: FORBIDDEN
-  source_repository: vvekselva/CylinderManagement
-  source_branch: main
-  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+version: 7
+state: READY_TARGET_VERIFIED
+analysis_date: 2026-08-26
+proved_facts:
+  - Neon project neon-for-cylinder-db is reachable as project small-bread-22546365.
+  - Required TEST branch main exists and is reachable as br-delicate-mountain-ayzs1f3l.
+  - Exact database identity is neondb and current user is neondb_owner.
+  - PostgreSQL server version is 18.6.
+  - The verified main database currently has zero public tables.
+  - public.flyway_schema_history does not exist on the fresh empty main database.
+  - The prior missing-main blocker BLK-BL008-006 is resolved.
+  - No Neon branch was created and no database write was performed during this verification.
+source_truth:
+  repository: vvekselva/CylinderManagement
+  frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   migration_path: cylinder.datascripts/src/main/resources/db/migration/
-  source_head: V170
-  live_discovery_at: 2026-08-26T14:17:01+05:30
-  owned_project_search_by_required_id: ZERO_MATCHES
-  shared_project_search_by_required_id: ZERO_MATCHES
-  owned_project_search_by_required_name: ZERO_MATCHES
-  visible_projects:
-    - name: cylinder_db_for_testing
-      project_id: weathered-heart-89789162
-      postgres_major: 18
-      branches:
-        - name: production
-          id: br-holy-scene-ax0ddw93
-          primary: true
-          default: true
-  required_main_branch_visible: false
-  target_identity_equivalence_proved: false
-  flyway_schema_history_read: false
-  flyway_validation_run: false
-  database_requirement_selected: false
-  database_write_attempted_this_fire: false
-  neon_branch_created: false
-  external_production_deployment: false
-  disposition: FAIL_CLOSED_ON_SAME_PRE_REQUIREMENT_TARGET_GATE
-  exact_blocker: >-
-    The governed target neon-for-cylinder-db / holy-glitter-02245694 on existing branch main is not visible. The only
-    connected project is cylinder_db_for_testing / weathered-heart-89789162 and its only proved branch is production.
-    Identity equivalence is not proved, main does not exist, and branch creation is forbidden. Therefore no database
-    requirement may be selected, validated, or applied.
-  next_action: >-
-    Re-establish connector visibility of holy-glitter-02245694 with its existing main branch, or durably change the
-    authoritative BL-008 target policy through user-approved governance. Until then remain on the same pre-requirement gate.
-  execution_id: CYLINDER-PRODUCTION-FIRE-20260826-141701IST
+  current_inventory_head: V170
+execution_interpretation: >-
+  The absence of flyway_schema_history is not a blocker because the permitted main database is a fresh empty target.
+  BL-008 should now select the first authoritative Flyway requirement, prove version/order/checksum/prerequisites,
+  validate it, and apply exactly one requirement before verifying history and integrity.
+active_blockers: []
+next_action: SELECT_INITIAL_AUTHORITATIVE_FLYWAY_REQUIREMENT_AND_RUN_PRE_APPLY_VALIDATION_ON_VERIFIED_NEON_MAIN
