@@ -1,0 +1,27 @@
+story:
+  story_id: STORY-0058
+  title: Ownership dashboard - Customer
+  state: NEEDS_CLARIFICATION
+  fingerprint: c84d59ba859012f3c1c0506d52de7c6213a1cb75ea05135ac9508f6db95e34c5
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /ownership-dashboard/customer"]
+  controller: OwnershipDashboardController.showCustomerOwnership
+  endpoint: "GET /ownership-dashboard/customer"
+  business_purpose: Display customer ownership-location detail using the accepted BL-001 source chain.
+  accepted_backend_chain:
+    - OwnershipDashboardController.showCustomerOwnership
+    - OwnershipDashboardFetchService
+    - public.vw_ownership_current_cylinder_location
+    - OwnershipLocationDetail
+  data_reads_and_writes:
+    - READ public.vw_ownership_current_cylinder_location.
+    - No persistence write is proved.
+  field_level_evidence:
+    state: INCOMPLETE
+    not_proved:
+      - exact page-field/component to DTO/model-field mappings
+      - exact view columns rendered on the page
+      - exact filter/default/null-handling semantics
+  disposition_reason: Accepted trace proves the backend read path but not the current field-level Story contract.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
