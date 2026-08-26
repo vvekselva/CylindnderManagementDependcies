@@ -1,5 +1,5 @@
 backlog_item: BL-008
-version: 3
+version: 4
 state: BLOCKED_DISCOVERY_LIVE_NEON_NOT_VISIBLE
 verified: false
 closed: false
@@ -17,20 +17,29 @@ execution_policy:
   database_write_parallelism: 1
   advance_rule: CURRENT_REQUIREMENT_MUST_PASS_AND_SYNC_BEFORE_NEXT
 source_inventory:
-  current_main_head: NOT_YET_PROVED
+  current_main_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
+  current_main_head: V170
+  current_main_inventory_complete: true
   previous_expected_head_from_ledger: V176
-  frozen_bl001_observation: V172_AT_FROZEN_TRACEABILITY_COMMIT
-  reconciliation_required: true
+  previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
+  reconciliation_required: false
 live_neon_discovery:
+  attempted_at: 2026-08-26T03:03:00Z
   visible_projects: 0
   exact_project_verified: false
   exact_database_verified: false
   write_attempted: false
+database_requirement:
+  active_requirement: null
+  selection_state: BLOCKED_UNTIL_LIVE_NEON_IDENTITY_IS_PROVED
+  reason: The next Flyway requirement cannot be selected relative to flyway_schema_history until the exact Neon main database is visible and verified.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  Governance is ready, but BL-008 cannot select or apply its first database requirement because the connected Neon integration
-  currently exposes zero projects and the exact current-main Flyway inventory has not yet been reconciled. No Neon branch was
-  created and no database write was attempted.
-next_action: RESTORE_LIVE_NEON_PROJECT_VISIBILITY_AND_COMPLETE_CURRENT_MAIN_FLYWAY_INVENTORY_THEN_SELECT_EXACTLY_ONE_FIRST_REQUIREMENT
+  Current CylinderManagement main Flyway source inventory is reconciled through V170 at commit
+  3ae6e61442132d94a307275b08dd65fcef228d89. The connected Neon organization remains visible but exposes zero projects,
+  so project/main/database identity and flyway_schema_history cannot be proved. No Neon branch was created, no database
+  requirement was activated, and no database write was attempted.
+next_action: RESTORE_LIVE_NEON_PROJECT_VISIBILITY_THEN_VERIFY_MAIN_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_EXACTLY_ONE_NEXT_REQUIREMENT
 user_acceptance_required_before_close: true
