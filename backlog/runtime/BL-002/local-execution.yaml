@@ -1,19 +1,18 @@
 local_execution:
-  version: 23
+  version: 24
   backlog_item: BL-002
-  state: RELEASE_1_FIELD_LEVEL_REWORK_IN_PROGRESS
-  execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-0917IST
-  dispatch_fingerprint: RELEASE_CLASSIFICATION_88_46_FIELD_LEVEL_REWORK
+  state: RELEASE_1_FIELD_LEVEL_REWORK_IN_PROGRESS_NEXT_ASSIGNMENT_SELECTED
+  execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-105438IST
+  dispatch_fingerprint: WORK_DRIVEN_REPLAN_STORY_BATCH_0053_0056
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: CANONICAL_BL001_MATRIX_ONLY
-  phase: RELEASE_1_FIELD_LEVEL_STORY_REWORK
-  worker_state: NO_SAFE_INDEPENDENT_WORKER_GENERATION_NEEDED_THIS_CHECKPOINT
-  workers_started_this_invocation: 0
+  phase: ORCHESTRATOR_REPLAN_AFTER_EXECUTOR_COMPLETION
+  worker_state: EXECUTOR_COMPLETED_AND_EXITED
+  workers_started_this_assignment: 0
   transient_lane_logs_created: 0
   residual_transient_lane_logs: 0
-  validation_state: PARTIAL_FIELD_LEVEL_REVALIDATION_FAIL_CLOSED
-  sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR_CHECKPOINT
-  recovery_state: STORY_0049_0052_REGISTRATION_HELD_FOR_FIELD_LEVEL_EVIDENCE
+  validation_state: VALIDATED_FAIL_CLOSED_FIELD_LEVEL_NO_INVENTION
+  sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR
   incremental_scope:
     canonical_bl001_rows_eligible: 123
     pending_bl001_atomic_projection_rows_excluded: 11
@@ -21,48 +20,42 @@ local_execution:
     release_2_assigned: 46
     release_1_work_allowed: true
     release_2_work_allowed: false
-    story_dispositions_registered: 48
-    story_candidates_ready_for_review: 41
-    story_candidates_needs_clarification: 7
+    story_dispositions_registered: 56
+    story_candidates_ready_for_review: 45
+    story_candidates_needs_clarification: 11
     story_candidates_approved: 0
-    materialized_story_artifacts: 52
-    pending_registration_sync_story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
-  release_classification_boundary:
-    owner: USER
-    state: SATISFIED
-    target_traceability_items: 134
-    classified_items: 134
-    release_1: 88
-    release_2: 46
-    rule: COMPLETE_RELEASE_1_FIELD_LEVEL_STORY_REWORK_BEFORE_RELEASE_2
-  field_level_contract:
-    display_mapping: PAGE_FIELD_OR_COMPONENT_TO_MODEL_DTO_TO_CONTROLLER_TO_SERVICE_TO_DAO_REPOSITORY_TO_ENTITY_VIEW_FIELD_TO_DATABASE_TABLE_VIEW_COLUMN
-    static_ui_disposition: STATIC_UI_NO_DATABASE_MAPPING
-    input_required_attributes: [datatype, required_or_optional, normalization_or_default, validation, accepted_values_or_rules, invalid_behavior, persistence_destination, state_or_side_effect]
-    no_invention_rule: UNPROVED_MEANING_IS_NEEDS_CLARIFICATION
-  current_revalidation:
+  reconciled_prior_batch:
     story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
-    chain_evidence_state: PROVED_FROM_CANONICAL_BL001_ACCEPTED_EVIDENCE
-    field_level_state: INCOMPLETE
-    proved_example:
-      story_id: STORY-0049
-      endpoint: GET /search/addresstype/{searchText}
-      ordered_chain: RestfulAddressTypeServices.getAddressTypes -> AddressTypeSearchService.searchWithText -> SearchRequestValidator.validate -> AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase -> AddressTypeDo -> public.tbl_address_type -> mapper -> AddressTypeSearchResponseDto JSON
-      writes: NONE_PROVED
-    missing_field_level_evidence:
-      - exact SearchRequestValidator rejection predicates
-      - exact trimming/case/default behavior if any
-      - exact invalid-value message/status semantics if any
-    disposition: DO_NOT_REGISTER_OR_PROMOTE_UNTIL_FIELD_LEVEL_CONTRACT_IS_SATISFIED_OR_NEEDS_CLARIFICATION_IS_EXPLICITLY_RECORDED
-  pending_story_sync:
-    story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
-    state: MATERIALIZED_NOT_AUTHORITATIVE
-    rule: Revalidate each artifact against the current field-level contract and synchronize story-register.yaml plus controller-story-usecase-map.yaml together before downstream use. Do not auto-approve.
+    result: ALREADY_AUTHORITATIVE_IN_NEWER_STORY_REGISTER
+    state: READY_FOR_USER_REVIEW
+  completed_assignment:
+    story_ids: [STORY-0053, STORY-0054, STORY-0055, STORY-0056]
+    matrix_rows:
+      - GET /party-custody-traceability
+      - GET /reconciliation-command-center
+      - GET /reconciliation-command-center/details
+      - GET /ownership-dashboard
+    result: MATERIALIZED_AND_REGISTER_SYNCHRONIZED
+    disposition: NEEDS_CLARIFICATION
+    reason: Accepted BL-001 evidence proves backend chains and terminal views but not every page-field/component to model/view-column mapping required by the BL-002 field-level contract.
+  executor_handoff:
+    executor_state: COMPLETED
+    assigned_executor_work_remaining: false
+    orchestrator_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
+    return_control_to: PRIMARY_ORCHESTRATOR
+    orchestrator_validation: PASS
+    synchronization: PASS
+  orchestrator_replan:
+    state: NEXT_ASSIGNMENT_SELECTED
+    next_story_rows:
+      - GET /ownership-dashboard/yard
+      - GET /ownership-dashboard/customer
+      - GET /ownership-dashboard/supplier
+      - GET /ownership-dashboard/logistics
+    source_evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md
+    rule: Create the next executor only for this assigned work; do not keep the completed executor alive.
   approval_boundary:
     owner: USER
-    gate: QG-STORY-006
-    state: WAITING_FOR_USER_AFTER_FIELD_LEVEL_REWORK
-    exact_story_ids_and_fingerprints_required: true
+    auto_approval_allowed: false
     usecase_generation_allowed: false
-  next_action: >-
-    Obtain or preserve exact field-level evidence for STORY-0049 through STORY-0052. If validation/default semantics remain unproved, convert those facts explicitly to NEEDS_CLARIFICATION before authoritative Story Register synchronization. Continue Release 1 field-level Story rework only from canonical BL-001 rows; keep Release 2 blocked.
+  next_action: Execute the selected ownership-detail Story assignment, then require EXECUTOR_COMPLETED_REPLAN_REQUIRED and replan again.
