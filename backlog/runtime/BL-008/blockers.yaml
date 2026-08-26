@@ -1,30 +1,24 @@
 backlog_item: BL-008
-version: 2
-active_blockers:
-  - blocker_id: BL008-CONNECTIVITY-001
-    state: ACTIVE
-    type: EXECUTION_CONNECTIVITY_AND_CONTROL_PLANE_MAPPING
-    target_environment: TEST
-    target_host: ep-dawn-forest-axk2scoa-pooler.c-4.us-east-2.aws.neon.tech
-    target_database: neondb
-    target_user: neondb_owner
-    credentials: RUNTIME_ONLY_NOT_PERSISTED
-    evidence:
-      - User declared the direct CylinderManagement Neon TEST JDBC endpoint.
-      - Local execution host could not resolve/reach the Neon hostname during this manual fire.
-      - Connected Neon control plane could not map the endpoint to an accessible project.
-    impact:
-      - Live database identity query cannot be proved.
-      - flyway_schema_history cannot be inspected.
-      - No next Flyway requirement can be selected safely.
-      - Database mutation remains forbidden.
-    clear_condition: Execution host connectivity or Neon control-plane project mapping must allow a read-only identity and flyway_schema_history verification against the declared TEST database.
-conditional_fail_closed_conditions:
-  - UNPROVED_LIVE_DATABASE_IDENTITY_QUERY
-  - UNPROVED_FLYWAY_SCHEMA_HISTORY
-  - MIGRATION_SOURCE_DUPLICATE_OR_ORDER_AMBIGUITY
-  - VALIDATION_BRANCH_OR_ROLLBACK_POINT_MISSING
-  - FLYWAY_VALIDATE_FAILURE
-  - OWNERSHIP_INTEGRITY_FAILURE
-  - CRITICAL_DATA_INTEGRITY_FAILURE
-  - PRODUCTION_PRESTATE_CHANGED_FROM_VALIDATED_ASSUMPTION
+version: 6
+active_blockers: 0
+blockers:
+  - id: BLK-BL008-006
+    state: RESOLVED
+    category: NEON_TARGET_BRANCH_VISIBILITY
+    summary: Required Neon TEST branch main is now visible and reachable.
+    prior_reason: Required main branch was previously not visible to the Orchestrator.
+    resolution_evidence:
+      project: neon-for-cylinder-db
+      project_id: small-bread-22546365
+      branch: main
+      branch_id: br-delicate-mountain-ayzs1f3l
+      database: neondb
+      database_user: neondb_owner
+      postgres_version: "18.6"
+      public_table_count: 0
+      flyway_schema_history_exists: false
+    resolved_on: 2026-08-26
+    next_action: Select and validate the initial authoritative Flyway requirement on the verified main target.
+notes:
+  - Absence of flyway_schema_history is expected on this fresh empty schema and is not itself a blocker.
+  - No Neon branch was created and no database mutation was performed during target verification.
