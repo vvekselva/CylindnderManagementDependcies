@@ -1,8 +1,8 @@
-version: 1
+version: 2
 purpose: >-
   Control whether the Primary Orchestrator must expect repository changes while a production invocation is running.
-  This separates runtime source reads from GitHub persistence and prevents repeated repository-tree discovery when
-  the source is known to be stable.
+  This separates runtime source reads from GitHub persistence, prevents repeated repository-tree discovery when the
+  source is stable, and batches durable Git writes so scheduling is never gated by one commit per executor.
 
 runtime_source_mode:
   repository_tree_snapshot:
@@ -43,8 +43,40 @@ orchestrator_generated_commits:
   update_local_control_state_immediately: true
   require_repository_tree_refetch: false
   reason: >-
-    The Primary Orchestrator already knows exactly which control files it changed. It must update its in-memory/local
-    control snapshot directly instead of rediscovering the whole repository tree.
+    The Primary Orchestrator already knows exactly which control files it changed. It updates its local control snapshot
+    directly instead of rediscovering the whole repository tree.
+
+git_persistence_mode:
+  mode: BATCHED_CHECKPOINT_ONLY
+  commit_after_each_worker: false
+  commit_after_each_executor: false
+  commit_after_each_story: false
+  commit_before_replan: false
+  commit_before_slot_refill: false
+  scheduling_uses_local_validated_state_before_git_persistence: true
+  accumulate_validated_deltas_locally: true
+  preferred_commit_boundaries:
+    - FAIL_CLOSED_DURABILITY_BOUNDARY_WHEN_REQUIRED
+    - EXPLICIT_ORCHESTRATOR_CHECKPOINT
+    - INVOCATION_END
+  one_batch_commit_may_contain_multiple_executor_results: true
+  persistence_failure_state: PENDING_SYNC
+  persistence_failure_does_not_restart_completed_executor: true
+  prohibited_patterns:
+    - ONE_COMMIT_PER_WORKER
+    - ONE_COMMIT_PER_EXECUTOR
+    - ONE_COMMIT_PER_STORY
+    - TREE_REFETCH_AFTER_SELF_COMMIT
+
+executor_completion_scheduling:
+  completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
+  process_each_completion_independently: true
+  wait_for_peer_executors: false
+  wait_for_peer_workers: false
+  release_completed_slot_immediately_after_validation: true
+  refill_completed_slot_immediately_when_eligible_work_exists: true
+  github_persistence_required_before_refill: false
+  sibling_executors_continue_uninterrupted: true
 
 next_invocation_rule:
   always_take_new_tree_snapshot_at_start: true
