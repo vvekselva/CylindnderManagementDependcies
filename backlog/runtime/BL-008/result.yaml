@@ -1,5 +1,5 @@
 backlog_item: BL-008
-version: 12
+version: 13
 state: BLOCKED_REQUIRED_MAIN_BRANCH_NOT_VISIBLE
 verified: false
 closed: false
@@ -29,7 +29,7 @@ source_inventory:
   previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
   reconciliation_required: false
 live_neon_discovery:
-  attempted_at: 2026-08-26T17:18:49+05:30
+  attempted_at: 2026-08-26T18:07:09+05:30
   organization_id: org-spring-mode-70853603
   target_project_match_verified: true
   visible_target_project_id: small-bread-22546365
@@ -50,7 +50,7 @@ database_requirement:
   active_requirement: null
   selection_state: BLOCKED_UNTIL_EXISTING_MAIN_BRANCH_AND_LIVE_FLYWAY_HISTORY_ARE_PROVED
   reason: >-
-    Fresh Neon project inspection at 2026-08-26T17:18:49+05:30 proves project neon-for-cylinder-db
+    Fresh Neon project inspection during the 18:00 IST production fire proves project neon-for-cylinder-db
     (small-bread-22546365) is visible and has exactly one branch: production (br-orange-violet-aylucoco),
     which is primary/default. Governing BL-008 policy requires an existing branch named main and forbids
     branch creation. Production was therefore not queried or mutated as a substitute for main, and no
