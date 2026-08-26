@@ -1,4 +1,4 @@
-version: 13
+version: 14
 purpose: >-
   Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
   workstreams when independently eligible. Shared worker capacity is dynamic; shared SSOT remains single-writer and
@@ -49,21 +49,40 @@ execution_engine:
   fallback_source_provider: LOCAL_GIT_CHECKOUT
   staged_executor: automation/staged-lane-executor-v3.py
   staged_worker: automation/staged-lane-worker-v3.py
+  executor_completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
+  executor_completion_return_owner: PRIMARY_ORCHESTRATOR
 
 invocation_utilization_contract:
-  mode: BACKLOG_DRAIN_WINDOW
+  mode: WORK_DRIVEN_ORCHESTRATOR_REPLAN_LOOP
   singleton_invocation_required: true
-  target_invocation_window_minutes: 45
-  minimum_productive_window_minutes: 30
-  hard_stop_window_minutes: 45
-  batch_loop:
+  executor_liveness:
+    live_only_while_assigned_executor_work_remains: true
+    no_idle_keepalive: true
+    on_assigned_work_complete: EMIT_EXECUTOR_COMPLETED_REPLAN_REQUIRED_AND_EXIT
+    on_assigned_work_failed_or_blocked: EMIT_EXECUTOR_COMPLETED_REPLAN_REQUIRED_AND_EXIT
+  orchestrator_liveness:
+    continue_while_eligible_or_recoverable_work_exists: true
+    on_executor_completion: VALIDATE_SYNC_REPLAN_AND_ASSIGN_NEXT_WORK
+    no_dependency_on_executor_process_liveness: true
+    stop_when:
+      - NO_ELIGIBLE_OR_RECOVERABLE_WORK
+      - FAIL_CLOSED_GATE_REQUIRES_EXTERNAL_STATE_CHANGE
+      - SAFETY_HARD_STOP_REACHED
+  assignment_loop:
     enabled: true
-    replan_after_every_validated_checkpoint: true
+    executor_completion_signal_required: EXECUTOR_COMPLETED_REPLAN_REQUIRED
+    replan_after_every_executor_completion: true
+    validate_before_reassignment: true
+    synchronize_validated_checkpoint_before_reassignment: true
     refill_worker_pool_from_backlog: true
     max_workers_per_generation: 10
-    continue_generations_while_time_remains_and_work_exists: true
-  window_expiry:
-    behavior: CHECKPOINT_SYNC_AND_EXIT_WINDOW_EXPIRED
+    continue_generations_while_work_exists: true
+  safety_stop:
+    hard_stop_window_minutes: 45
+    purpose: SAFETY_CEILING_ONLY
+    is_minimum_runtime: false
+    is_target_runtime: false
+    behavior: CHECKPOINT_SYNC_AND_EXIT_SAFETY_LIMIT
     remaining_backlog_stays_open: true
     next_scheduler_invocation_resumes_idempotently: true
 
@@ -142,6 +161,8 @@ bl008_database_migration_contract:
 
 execution_recovery_contract:
   execution_journal_required: true
+  executor_completion_always_returns_control_to_orchestrator: true
+  executor_completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
   same_fingerprint_pending_sync: RETRY_SYNC_ONLY_NO_WORKER_RESTART
   same_fingerprint_closed_waiting_validation: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
   interrupted_running_without_live_workers: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
@@ -179,6 +200,11 @@ scheduled_run_rules:
   - execute BL-001, BL-002 and BL-008 when independently eligible up to max_active_backlog_items
   - enforce QG-SSOT-001, QG-SOW-001, QG-DEP-001 and item-specific gates per stream
   - share up to 10 workers dynamically without starvation
+  - an executor lives only while its currently assigned executor work remains
+  - executor completion must emit EXECUTOR_COMPLETED_REPLAN_REQUIRED and return control to the Primary Orchestrator
+  - Primary Orchestrator validates and synchronizes the completed executor result, replans the backlog, and immediately assigns the next eligible or recoverable work
+  - do not keep an idle executor alive to satisfy a time window
+  - continue the invocation while eligible or recoverable work exists, subject only to the safety hard stop
   - BL-002 executes Release 1 field-level Story rework before Release 2
   - BL-008 uses Neon main only and creates no Neon branches
   - BL-008 selects and completes exactly one database requirement before selecting the next
