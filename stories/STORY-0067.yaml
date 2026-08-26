@@ -1,0 +1,41 @@
+story:
+  story_id: STORY-0067
+  title: Trip review - Close review
+  state: NEEDS_CLARIFICATION
+  fingerprint: d6e63227683821f1ad2ec045d1804db74ec2501e6697680e12b194fd67fb49dd
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /trip-review/{vehicleTripId}/close-review"]
+  controller: TripReviewController.closeReview
+  endpoint: "POST /trip-review/{vehicleTripId}/close-review"
+  release: RELEASE_1
+  business_purpose: Close the review state for the selected vehicle trip and redirect back to that trip review page.
+  accepted_backend_chain:
+    - TripReviewController.closeReview
+    - vehicleTripId path input
+    - vehicle-trip review close persistence path
+    - public.tbl_vehicle_trip
+    - public.tbl_vehicle_review_status
+    - redirect:/trip-review/{vehicleTripId}
+  data_reads_and_writes:
+    - READ/WRITE public.tbl_vehicle_trip as part of the source-proved review-close flow.
+    - READ public.tbl_vehicle_review_status as part of the source-proved review-status transition flow.
+  field_level_evidence:
+    state: INCOMPLETE
+    proved:
+      - vehicleTripId is carried in the endpoint path.
+      - endpoint is classified as RELEASE_1.
+      - accepted BL-001 trace proves TripReviewController.closeReview.
+      - accepted BL-001 trace proves dependency on public.tbl_vehicle_trip and public.tbl_vehicle_review_status.
+      - terminal behavior redirects to /trip-review/{vehicleTripId}.
+    not_proved:
+      - exact Java datatype and validation constraints for vehicleTripId from frozen controller source in this checkpoint.
+      - whether any additional request/form fields are accepted by the close-review method.
+      - exact service/DAO/repository method names between controller and persistence.
+      - exact entity fields and database columns mutated during review closure.
+      - exact allowed prior review statuses and resulting review status value.
+      - exact invalid/not-found behavior for an unknown vehicleTripId.
+  disposition_reason: The accepted canonical BL-001 row proves the endpoint, controller, persistence tables and terminal redirect, but the mandatory field-to-service-to-entity-to-column transition contract is not fully source-proved. Missing details are intentionally left as NEEDS_CLARIFICATION rather than inferred.
+  evidence:
+    - traceability/controller-traceability.md
+    - logs/runs/PRODUCTION-FIRE-20260824-213728.md
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
