@@ -29,7 +29,7 @@ result:
     synchronized_story_ids_this_fire: []
     human_readable_materialized_this_fire: [STORY-0066]
     story_register_synchronized_through: STORY-0065
-    cross_traceability_map_synchronized_through: STORY-0065
+    cross_traceability_map_synchronized_through: STORY-0066
     cross_traceability_map: traceability/controller-story-usecase-map.yaml
     shallow_story_generation_allowed: false
     release_1_field_level_rework_allowed: true
@@ -50,13 +50,13 @@ result:
     - RELEASE_1_FIELD_LEVEL_STORY_REWORK_REQUIRED
     - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED_FOR_FINAL_BL002_VERIFICATION
     - ALL_RELEASE_1_CANONICAL_ROWS_REQUIRE_FIELD_LEVEL_STORY_DISPOSITION
-    - STORY_0066_REGISTER_AND_CROSS_MAP_SYNC_REQUIRED
+    - STORY_0066_REGISTER_SYNC_REQUIRED
     - STORY_USER_APPROVAL_REQUIRED
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    Release classification remains 88 Release 1 and 46 Release 2 items. STORY-0066 was durably materialized from the accepted,
+    Release classification remains 88 Release 1 and 46 Release 2 items. STORY-0066 is durably materialized from the accepted,
     materialized BL-001 row POST /ingestYardStockCheck and remains NEEDS_CLARIFICATION because the exact field-level input-to-column
-    contract is not proved. The Story register and cross-traceability map remain synchronized only through STORY-0065, so the
-    registered count remains 65 while physical Story artifacts are now 66. No Story was auto-approved and no pending BL-001
-    atomic-projection row was consumed. Release 2 remains blocked.
-  next_action: ATOMICALLY_SYNC_STORY_0066_IN_REGISTER_AND_CROSS_MAP_THEN_CONTINUE_RELEASE_1_FIELD_LEVEL_REWORK
+    contract is not proved. Fresh reconciliation proves the controller-story-usecase cross-map already contains STORY-0066, while
+    the authoritative Story register still stops at STORY-0065. Therefore only the Story-register synchronization remains pending.
+    No Story was auto-approved and no pending BL-001 atomic-projection row was consumed. Release 2 remains blocked.
+  next_action: SYNC_STORY_0066_IN_STORY_REGISTER_THEN_CONTINUE_RELEASE_1_FIELD_LEVEL_REWORK
