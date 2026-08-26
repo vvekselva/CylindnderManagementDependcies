@@ -1,20 +1,17 @@
 invocation_lease:
-  version: 45
-  state: RELEASED
+  version: 46
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRIMARY-20260826-0330Z
-  acquired_at: 2026-08-26T03:30:38Z
-  released_at: 2026-08-26T03:41:57Z
+  invocation_id: CYLINDER-PRIMARY-20260826-0915IST
+  acquired_at: 2026-08-26T03:45:24Z
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-008, BL-001 and BL-002 execution
   duplicate_action: NOOP
-  outcome: PARTIAL_PROGRESS_WITH_SAFE_BLOCKERS
+  outcome: RUNNING
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   BL-008_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - BL-002 synchronized STORY-0049 through STORY-0052 into the story register and controller-story-usecase map without approval.
-    - BL-001 remains at 123 materialized canonical rows with 11 exact keys requiring safe atomic promotion to reach 134.
-    - BL-008 remains blocked because connected Neon discovery exposes zero organization or shared projects; no database write or branch creation occurred.
-    - Durable checkpoint: logs/runs/CYLINDER-PRIMARY-20260826-0330Z.md.
+    - Lease acquired after prior lease was RELEASED.
+    - BL-008 database writes remain serialized at parallelism 1 on Neon main only.
