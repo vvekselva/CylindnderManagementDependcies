@@ -1,8 +1,20 @@
-version: 11
+version: 12
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations: []
+active_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-201420IST
+    execution_state: RUNNING
+    health_state: ACTIVE
+    started_at: 2026-08-26T20:14:20+05:30
+    heartbeat_at: 2026-08-26T20:14:20+05:30
+    last_progress_at: 2026-08-26T20:14:20+05:30
+    last_lane_activity_at: null
+    active_lane_count: 0
+    coordinator_phase: STARTING
+    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
+    current_work_unit: STARTUP_HANDSHAKE
+    progress_fingerprint: START_RECORD_PERSISTED
 recent_completed_invocations:
   - invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
     execution_state: PARTIAL_CONTINUE_REQUIRED
@@ -11,7 +23,6 @@ recent_completed_invocations:
     completed_at: 2026-08-26T19:41:30+05:30
     heartbeat_at: 2026-08-26T19:41:30+05:30
     last_progress_at: 2026-08-26T19:41:30+05:30
-    last_lane_activity_at: null
     active_lane_count: 0
     coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
     current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
@@ -42,92 +53,6 @@ recent_completed_invocations:
     recovery_action: RECONCILED_BY_MANUAL_CYLINDER_FIRE_FIXED_20260826_193250IST
     outcome: PARTIAL_CONTINUE_REQUIRED
     durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260826-1800IST.md
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-161634IST
-    execution_state: TERMINAL_CHECKPOINTED
-    health_state: COMPLETE
-    started_at: 2026-08-26T16:16:34+05:30
-    completed_at: 2026-08-26T16:19:16+05:30
-    heartbeat_at: 2026-08-26T16:19:16+05:30
-    last_progress_at: 2026-08-26T16:19:16+05:30
-    active_lane_count: 0
-    coordinator_phase: SYNCHRONIZED_TERMINAL
-    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
-    current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
-    progress_fingerprint: BL008_MAIN_TARGET_REVALIDATED_PLUS_BL001_IDEMPOTENT_ATOMIC_BLOCKER_PLUS_BL002_STORY0066_REGISTER_RECONCILED
-    blocked_reason: BL008_MAIN_TARGET_NOT_VISIBLE; BL001_ATOMIC_MODEL_NOT_PROCESS_READABLE
-    recovery_action: NONE
-    outcome: PARTIAL_CHECKPOINT_SYNCHRONIZED
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-    execution_state: TERMINAL_CHECKPOINTED
-    health_state: COMPLETE
-    started_at: 2026-08-26T15:13:12+05:30
-    completed_at: 2026-08-26T15:20:35+05:30
-    heartbeat_at: 2026-08-26T15:20:35+05:30
-    last_progress_at: 2026-08-26T15:20:35+05:30
-    active_lane_count: 0
-    coordinator_phase: SYNCHRONIZED_TERMINAL
-    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
-    current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
-    progress_fingerprint: BL008_TARGET_REVALIDATED_PLUS_BL001_IDEMPOTENT_ATOMIC_BLOCKER_PLUS_BL002_STORY0066_CROSSMAP_SYNC
-    blocked_reason: BL008_MAIN_TARGET_NOT_VISIBLE; BL001_ATOMIC_MODEL_NOT_PROCESS_READABLE; BL002_STORY0066_REGISTER_ATOMIC_MERGE_PENDING
-    recovery_action: NONE
-    outcome: PARTIAL_CHECKPOINT_SYNCHRONIZED
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-145821IST
-    execution_state: TERMINAL_CHECKPOINTED
-    health_state: COMPLETE
-    started_at: 2026-08-26T14:58:21+05:30
-    completed_at: 2026-08-26T15:06:20+05:30
-    heartbeat_at: 2026-08-26T15:06:20+05:30
-    last_progress_at: 2026-08-26T15:06:20+05:30
-    active_lane_count: 0
-    coordinator_phase: SYNCHRONIZED_TERMINAL
-    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
-    current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
-    progress_fingerprint: BL008_MAIN_REVALIDATED_PLUS_BL002_STORY0066_MATERIALIZED_PLUS_BL001_FROZEN_TREE_RECHECK
-    blocked_reason: BL008_MAIN_NOT_VISIBLE; BL001_ADDITIONAL_FULL_CHAIN_NOT_PROVED; BL002_STORY0066_REGISTER_AND_CROSS_MAP_SYNC_PENDING
-    recovery_action: NONE
-    outcome: PARTIAL_CHECKPOINT_SYNCHRONIZED
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-141701IST
-    execution_state: TERMINAL_CHECKPOINTED
-    health_state: COMPLETE
-    started_at: 2026-08-26T14:17:01+05:30
-    completed_at: 2026-08-26T14:19:54+05:30
-    heartbeat_at: 2026-08-26T14:19:54+05:30
-    last_progress_at: 2026-08-26T14:19:54+05:30
-    active_lane_count: 0
-    coordinator_phase: SYNCHRONIZED_TERMINAL
-    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
-    current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
-    progress_fingerprint: HEALTH_RECOVERY_PLUS_BL008_REVALIDATION_PLUS_BL001_IDEMPOTENT_CHECKPOINT_PLUS_BL002_STORY0057_RECONCILIATION
-    blocked_reason: BL008_TARGET_MAIN_NOT_VISIBLE; BL001_ATOMIC_MODEL_ASSEMBLY_NOT_PROCESS_READABLE
-    recovery_action: NONE_CURRENT_INVOCATION
-    outcome: PARTIAL_CHECKPOINT_SYNCHRONIZED
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1202IST
-    execution_state: TERMINAL_RECOVERED
-    health_state: STALE
-    started_at: 2026-08-26T12:02:08+05:30
-    heartbeat_at: null
-    last_progress_at: null
-    active_lane_count: 0
-    coordinator_phase: RECOVERY_CLOSE
-    progress_fingerprint: MISSING_NONCOMPLIANT_HEALTH_RECORD
-    blocked_reason: REQUIRED_HEARTBEAT_AND_PROGRESS_SIGNALS_ABSENT
-    recovery_action: FAIL_CLOSED_RECOVERY_PRESERVE_DURABLE_EVIDENCE_RELEASE_CAPACITY
-    recovered_at: 2026-08-26T14:17:01+05:30
-  - invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-120416IST
-    execution_state: TERMINAL_RECOVERED
-    health_state: STALE
-    started_at: 2026-08-26T12:04:16+05:30
-    heartbeat_at: null
-    last_progress_at: null
-    active_lane_count: 1
-    coordinator_phase: RECOVERY_CLOSE
-    current_backlog_item: BL-002
-    current_work_unit: WU-STORY-REGISTER-CONSISTENCY
-    progress_fingerprint: MISSING_NONCOMPLIANT_HEALTH_RECORD
-    blocked_reason: REQUIRED_HEARTBEAT_AND_PROGRESS_SIGNALS_ABSENT
-    recovery_action: FAIL_CLOSED_RECOVERY_REJECT_UNVALIDATED_PARTIAL_RELEASE_CLAIM_AND_CAPACITY
-    recovered_at: 2026-08-26T14:17:01+05:30
 work_claims:
   active: []
   completed:
@@ -147,39 +72,7 @@ work_claims:
       state: RELEASED_FOR_CONTINUATION
       durable_state_found: STORY0066_UI_SOURCE_ANALYSIS_EXECUTED_NO_NEW_FIELD_PROOF
       completed_at: 2026-08-26T19:41:30+05:30
-    - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0066
-      backlog_item: BL-002
-      work_unit: WU-STORY-REGISTER-CONSISTENCY
-      task_id: STORY-0066-RUNTIME-RECONCILIATION
-      prior_owner_invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
-      state: VALIDATED_COMPLETION
-      durable_state_found: STORY0066_ALREADY_REGISTERED_PRIOR_LOCAL_EXECUTION_MARKER_STALE_FIXED
-      completed_at: 2026-08-26T19:35:33+05:30
-  recovered:
-    - claim_key: BL-008|WU-BL008-001|LIVE-MAIN-TARGET-REVALIDATION
-      backlog_item: BL-008
-      work_unit: WU-BL008-001
-      task_id: LIVE-MAIN-TARGET-REVALIDATION
-      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-      recovery_state: RELEASED_AFTER_VALIDATED_BLOCKER_CHECKPOINT
-      durable_state_found: MAIN_NOT_VISIBLE_PRODUCTION_ONLY_NO_DB_MUTATION
-      recovered_at: 2026-08-26T15:20:35+05:30
-    - claim_key: BL-001|WU-BL001-001|TARGETED-UNIQUE-KEY-RECOVERY
-      backlog_item: BL-001
-      work_unit: WU-BL001-001
-      task_id: TARGETED-UNIQUE-KEY-RECOVERY
-      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-      recovery_state: RELEASED_AFTER_SAFE_CHECKPOINT
-      durable_state_found: NO_NEW_CANONICAL_ROW_ACCEPTED_MATRIX_REMAINS_123_OF_134
-      recovered_at: 2026-08-26T15:20:35+05:30
-    - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0066
-      backlog_item: BL-002
-      work_unit: WU-STORY-REGISTER-CONSISTENCY
-      task_id: STORY-0066-REGISTER-AND-CROSS-MAP-SYNC
-      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-      recovery_state: RELEASED_AFTER_PARTIAL_DURABLE_SYNC
-      durable_state_found: STORY_0066_ARTIFACT_EXISTS_CROSS_MAP_SYNCED_REGISTER_ROW_PENDING
-      recovered_at: 2026-08-26T15:20:35+05:30
+  recovered: []
 locks:
   shared_ssot_write:
     capacity: 1
