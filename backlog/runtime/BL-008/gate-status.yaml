@@ -1,38 +1,34 @@
 backlog_item: BL-008
-version: 4
-state: DISCOVERY_FAIL_CLOSED_LIVE_NEON_TARGET_NOT_VISIBLE
-common_gates:
+version: 6
+overall_state: READY_TO_SELECT_INITIAL_FLYWAY_REQUIREMENT
+gates:
   QG-SSOT-001: PASS
   QG-SOW-001: PASS
-  QG-DEP-001: PASS_NO_BACKLOG_DEPENDENCIES
-item_gates:
-  QG-DBMIG-001: BLOCKED_LIVE_NEON_TARGET_VISIBILITY_ONLY_SOURCE_INVENTORY_PASS_V170
-  QG-DBMIG-002: BLOCKED_BY_QG-DBMIG-001
-  QG-DBMIG-003: BLOCKED_BY_QG-DBMIG-002
-  QG-DBMIG-004: BLOCKED_BY_QG-DBMIG-003
-  QG-DBMIG-005: BLOCKED_BY_QG-DBMIG-004
-  QG-DBMIG-006: BLOCKED_BY_QG-DBMIG-005
-  QG-DBMIG-007: BLOCKED_BY_QG-DBMIG-006
-planning_authorized: true
-discovery_execution_authorized: true
-database_mutation_authorized: false
-policy:
-  neon_environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
-  neon_branch: main
-  branch_creation: FORBIDDEN
-  database_requirement_parallelism: 1
-  requirement_rule: COMPLETE_VALIDATE_AND_RECORD_ONE_REQUIREMENT_BEFORE_NEXT
-source_discovery:
-  current_main_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
-  migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
-  current_main_flyway_head: V170
-  current_main_inventory_complete: true
-live_discovery:
-  attempted_at: 2026-08-26T03:03:00Z
-  neon_connector_visible_projects: 0
-  requested_project: neon-for-cylinder-db
-  historical_project_id: holy-glitter-02245694
-  exact_project_verified_live: false
-  exact_database_verified_live: false
-write_attempted: false
-next_gate_action: RESTORE_OR_VERIFY_NEON_PROJECT_VISIBILITY_THEN_VERIFY_MAIN_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
+  QG-DEP-001: PASS
+  QG-BL008-TARGET:
+    state: PASS_TARGET_VERIFIED
+    evidence:
+      project_id: small-bread-22546365
+      project_name: neon-for-cylinder-db
+      branch: main
+      branch_id: br-delicate-mountain-ayzs1f3l
+      database: neondb
+      user: neondb_owner
+      postgres_version: "18.6"
+  QG-BL008-SOURCE:
+    state: PASS_SOURCE_INVENTORY
+    frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+    migration_path: cylinder.datascripts/src/main/resources/db/migration/
+    source_head: V170
+  QG-BL008-PLAN: READY_INITIAL_REQUIREMENT_SELECTION
+  QG-BL008-VALIDATE: WAITING_FOR_INITIAL_REQUIREMENT
+  QG-BL008-APPLY: WAITING_FOR_VALIDATION
+  QG-BL008-INTEGRITY: WAITING_FOR_APPLY
+  QG-BL008-LEDGER: WAITING_FOR_INTEGRITY
+  QG-BL008-ACCEPTANCE: WAITING_FOR_USER
+safety:
+  neon_branch_creation: FORBIDDEN
+  migration_mechanism: FLYWAY_ONLY
+  database_write_parallelism: 1
+  manual_sql_substitution: FORBIDDEN
+  target_verification_database_writes: 0
