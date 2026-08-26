@@ -1,11 +1,38 @@
-version: 1
+version: 2
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations: []
+active_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1202IST
+    trigger: SCHEDULED_LEGACY_DISCOVERED_AT_MANUAL_START
+    state: ACTIVE_LEGACY_COMPATIBILITY
+    started_at: 2026-08-26T12:02:08+05:30
+    productive_assignment_cutoff: 2026-08-26T12:32:08+05:30
+    snapshot_commit: d49cc6ac2ad315cf0c5c74585068ebf324d090f0
+    active_lanes_observed_at_manual_start: 0
+    compatibility_note: legacy lease is superseded by v16 but this invocation is conservatively counted against concurrency capacity until it closes or proves inactive
+  - invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-120416IST
+    trigger: MANUAL_USER_REQUEST
+    state: ACTIVE_ASSIGNING
+    started_at: 2026-08-26T12:04:16+05:30
+    productive_assignment_cutoff: 2026-08-26T12:34:16+05:30
+    source_snapshot_commit: d49cc6ac2ad315cf0c5c74585068ebf324d090f0
+    control_tree_snapshot: a3d723f6f3c0400951d4272026005a9097c98be1
+    application_source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+    workspace_mode: INVOCATION_LOCAL_OR_STAGED_SNAPSHOT
+    new_work_assignment_open: true
+    accumulation_state: PENDING
+    active_executor_count: 1
 recent_completed_invocations: []
 work_claims:
-  active: []
+  active:
+    - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0057
+      backlog_item: BL-002
+      work_unit: WU-STORY-REGISTER-CONSISTENCY
+      task_id: STORY-0057-ORPHAN-RECONCILIATION
+      owner_invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-120416IST
+      claimed_at: 2026-08-26T12:04:16+05:30
+      state: EXECUTING
 locks:
   shared_ssot_write:
     capacity: 1
