@@ -1,0 +1,26 @@
+checkpoint:
+  backlog_item: BL-001
+  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1116IST
+  work_unit: WU-BL001-001
+  state: PARTIAL_ATOMIC_CONSOLIDATION_BLOCKED
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  idempotency:
+    prior_worker_generation: E2E-STAGED-20260823-161214
+    prior_worker_state: CLOSED_SYNCHRONIZED
+    replayed: false
+  canonical_state:
+    materialized_unique_method_path_keys: 123
+    source_proved_pending_atomic_projection: 11
+    target_unique_method_path_keys: 134
+    exactly_134_proved: false
+    canonical_rows_added_this_invocation: 0
+  consolidation:
+    executor: automation/consolidate-traceability-explorer.py
+    attempted_on_execution_host: true
+    process_repository_materialization: BLOCKED_DNS_GITHUB_UNRESOLVABLE
+    partial_projection_accepted: false
+  workers_started: 0
+  transient_lane_logs_created: 0
+  residual_transient_lane_logs: 0
+  decision: KEEP_WU_BL001_001_FAIL_CLOSED
+  next_action: Present the authoritative control repository as one exact process-readable tree, execute 123-plus-11 atomic consolidation, and require exactly 134 unique HTTP method/path keys with zero duplicates before handoff.
