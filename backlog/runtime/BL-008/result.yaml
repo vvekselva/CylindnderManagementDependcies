@@ -1,12 +1,15 @@
 backlog_item: BL-008
-version: 1
-state: BOOTSTRAPPED_READY_FOR_GATE_REEVALUATION
+version: 2
+state: READY_FOR_EXECUTION
 verified: false
 closed: false
+governance_bootstrap: COMPLETE
+common_gates: {QG-SSOT-001: PASS, QG-SOW-001: PASS, QG-DEP-001: PASS}
+current_work_unit: WU-BL008-001
 migration_target: V176
 validation_branch_state: NOT_STARTED
 production_state: NOT_STARTED
 ownership_integrity: NOT_EVALUATED
-database_ledger_sync: BOOTSTRAP_COMPLETE_EXECUTION_PENDING
-next_action: REEVALUATE_QG_SSOT_001_THEN_EXECUTE_WU_BL008_001
+database_mutation_authorized: false
+next_action: EXECUTE_DISCOVER_AND_INVENTORY_THEN_UNLOCK_VALIDATION_BRANCH_GATES
 user_acceptance_required_before_close: true
