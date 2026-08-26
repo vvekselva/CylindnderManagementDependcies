@@ -1,20 +1,33 @@
 invocation_lease:
-  version: 54
-  state: ACTIVE
+  version: 55
+  state: RELEASED_RECOVERED_STALE
   owner: PRIMARY_ORCHESTRATOR
   invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1258IST
   acquired_at: 2026-08-26T07:28:45Z
-  released_at: null
+  released_at: 2026-08-26T08:47:01Z
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-008 BL-001 BL-002 production execution
   duplicate_action: NOOP
-  outcome: RUNNING
+  outcome: RECOVERED_STALE
+  execution_state: TERMINAL_RECOVERED
+  health_state: STALE
+  heartbeat_at: null
+  last_progress_at: null
+  heartbeat_age_seconds_at_recovery: UNKNOWN_BUT_GREATER_THAN_300_REQUIRED_HEARTBEAT_ABSENT
+  seconds_since_progress_at_recovery: UNKNOWN_REQUIRED_PROGRESS_SIGNAL_ABSENT
+  active_lane_count: 0
+  coordinator_phase: RECOVERY_CLOSE
+  current_backlog_item: null
+  current_work_unit: null
+  progress_fingerprint: MISSING_NONCOMPLIANT_HEALTH_RECORD
+  blocked_reason: REQUIRED_HEARTBEAT_AND_PROGRESS_SIGNALS_ABSENT
+  recovery_action: FAIL_CLOSED_RECOVERY_PRESERVE_DURABLE_EVIDENCE_RELEASE_CAPACITY
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   BL-008_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - Lease acquired from released state.
-    - BL-008 policy: Neon main only, no branch creation, one database requirement at a time.
-    - BL-001 atomic projection requires exactly 134 unique HTTP-method/path rows.
-    - BL-002 Release 1 first: 88 RELEASE_1 and 46 RELEASE_2 assignments; no auto-approval.
+    - Legacy RUNNING/ACTIVE lease is not liveness proof under governance/invocation-concurrency.yaml and governance/invocation-health.yaml.
+    - No compliant orchestrator heartbeat/progress evidence was present; recovery therefore failed closed as STALE.
+    - Zero active lanes and zero residual transient lane logs were preserved as boundary evidence, but were not used alone to infer staleness.
+    - No incomplete partial output was promoted during recovery.
