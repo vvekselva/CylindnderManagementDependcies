@@ -1,23 +1,31 @@
-version: 10
+version: 11
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations:
+active_invocations: []
+recent_completed_invocations:
   - invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
-    execution_state: RUNNING
-    health_state: ACTIVE
+    execution_state: PARTIAL_CONTINUE_REQUIRED
+    health_state: TERMINAL_HANDOFF
     started_at: 2026-08-26T19:32:50+05:30
-    heartbeat_at: 2026-08-26T19:35:33+05:30
-    last_progress_at: 2026-08-26T19:35:33+05:30
+    completed_at: 2026-08-26T19:41:30+05:30
+    heartbeat_at: 2026-08-26T19:41:30+05:30
+    last_progress_at: 2026-08-26T19:41:30+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: VALIDATING_AND_REPLANNING
+    coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
     current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-    current_work_unit: BL001_ATOMIC_PROJECTION_PLUS_BL002_RELEASE1_REWORK
-    progress_fingerprint: PRIOR_1800_REGISTRY_RECONCILED_STORY0066_STALE_RUNTIME_FIXED_BL001_11_ALL_SOURCE_PROVED
-    blocked_reason: BL008_MAIN_BRANCH_BLOCKER_CACHED
-    recovery_action: EXECUTE_BL001_ATOMIC_PROJECTION_AND_CONTINUE_BL002_UI_SOURCE_ANALYSIS
-recent_completed_invocations:
+    current_work_unit: PARTIAL_CONTINUE_REQUIRED
+    progress_fingerprint: PRIOR_1800_REGISTRY_RECONCILED_PLUS_BL001_ALL_11_SOURCE_PROVED_ATOMIC_EXECUTOR_BLOCKED_PLUS_BL002_STORY0066_RUNTIME_RECONCILED_UI_SOURCE_ANALYSIS
+    blocked_reason: BL001_ATOMIC_RECONSTRUCTION_EXECUTOR_NOT_AVAILABLE_IN_AUTOMATION_RUNTIME; BL008_MAIN_BRANCH_BLOCKER_CACHED; BL002_ADDITIONAL_RELEASE1_WORK_REMAINS
+    recovery_action: NEXT_FIRE_RESUME_ATOMIC_134_PROJECTION_AND_RELEASE1_UI_SOURCE_ANALYSIS
+    outcome: PARTIAL_CONTINUE_REQUIRED
+    workers_started: 0
+    claims_created: 2
+    canonical_bl001_delta: 0
+    bl002_runtime_consistency_repairs: 2
+    transient_lane_logs_remaining: 0
+    durable_log: logs/runs/MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST.md
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1800IST
     execution_state: TERMINAL_CHECKPOINTED
     health_state: COMPLETE_WITH_REGISTRY_RECONCILIATION_REQUIRED
@@ -121,27 +129,29 @@ recent_completed_invocations:
     recovery_action: FAIL_CLOSED_RECOVERY_REJECT_UNVALIDATED_PARTIAL_RELEASE_CLAIM_AND_CAPACITY
     recovered_at: 2026-08-26T14:17:01+05:30
 work_claims:
-  active:
+  active: []
+  completed:
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       backlog_item: BL-001
       work_unit: WU-BL001-001
       task_id: ATOMIC-134-PROJECTION
-      claim_owner: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
-      state: CLAIMED
-      claimed_at: 2026-08-26T19:35:33+05:30
+      prior_owner_invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
+      state: RELEASED_FOR_CONTINUATION
+      durable_state_found: ALL_11_MISSING_ROWS_SOURCE_PROVED_ATOMIC_RECONSTRUCTION_NOT_EXECUTABLE_IN_THIS_RUNTIME
+      completed_at: 2026-08-26T19:41:30+05:30
     - claim_key: BL-002|RELEASE-1-FIELD-LEVEL|NEXT-UI-SOURCE-ANALYSIS
       backlog_item: BL-002
       work_unit: RELEASE-1-FIELD-LEVEL
       task_id: NEXT-UI-SOURCE-ANALYSIS
-      claim_owner: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
-      state: CLAIMED
-      claimed_at: 2026-08-26T19:35:33+05:30
-  completed:
+      prior_owner_invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
+      state: RELEASED_FOR_CONTINUATION
+      durable_state_found: STORY0066_UI_SOURCE_ANALYSIS_EXECUTED_NO_NEW_FIELD_PROOF
+      completed_at: 2026-08-26T19:41:30+05:30
     - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0066
       backlog_item: BL-002
       work_unit: WU-STORY-REGISTER-CONSISTENCY
       task_id: STORY-0066-RUNTIME-RECONCILIATION
-      claim_owner: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
+      prior_owner_invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
       state: VALIDATED_COMPLETION
       durable_state_found: STORY0066_ALREADY_REGISTERED_PRIOR_LOCAL_EXECUTION_MARKER_STALE_FIXED
       completed_at: 2026-08-26T19:35:33+05:30
