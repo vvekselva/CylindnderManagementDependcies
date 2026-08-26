@@ -1,0 +1,33 @@
+story:
+  story_id: STORY-0056
+  title: View ownership dashboard
+  state: NEEDS_CLARIFICATION
+  fingerprint: e8cfd41f1deeac5c9c2aeb5baa63b46586a8c563cabf82897309fd10f5b85f2c
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /ownership-dashboard"]
+  controller: OwnershipDashboardController.showOwnershipDashboard
+  endpoint: "GET /ownership-dashboard"
+  business_purpose: Display the ownership dashboard from source-proved ownership summary, current-cylinder-location and party ownership views.
+  trigger_and_context: A caller opens the ownership dashboard.
+  inputs: []
+  normalization_and_defaults:
+    - No caller-input normalization or default is proved for this GET path.
+  validations:
+    - No caller-input validation predicate is proved for this GET path.
+  main_flow:
+    - OwnershipDashboardController.showOwnershipDashboard handles the request.
+    - OwnershipDashboardFetchService reads ownership dashboard data.
+    - The accepted trace proves reads from public.vw_ownership_summary_by_location, public.vw_ownership_current_cylinder_location and public.vw_party_cylinder_dashboard_ownership.
+    - The premium ownership dashboard is rendered.
+  data_reads_and_writes:
+    - READ the three source-proved ownership views.
+    - No persistence write is proved.
+  side_effects_and_state_changes:
+    - No persistent state change is proved.
+  field_level_mapping:
+    state: NEEDS_CLARIFICATION
+    reason: The accepted BL-001 trace proves the dashboard data views and terminal view but does not preserve every page field/component to view-column mapping required by the field-level Story contract.
+  output_and_postconditions:
+    - Renders the premium ownership dashboard from the proved read-only view chain.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  approval: {owner: USER, state: NOT_READY_FIELD_LEVEL_CLARIFICATION_REQUIRED, fingerprint: e8cfd41f1deeac5c9c2aeb5baa63b46586a8c563cabf82897309fd10f5b85f2c}
