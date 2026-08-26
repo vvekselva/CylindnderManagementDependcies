@@ -7,14 +7,14 @@ active_invocations:
     execution_state: RUNNING
     health_state: ACTIVE
     started_at: 2026-08-26T14:58:21+05:30
-    heartbeat_at: 2026-08-26T14:58:21+05:30
+    heartbeat_at: 2026-08-26T15:04:30+05:30
     last_progress_at: 2026-08-26T14:58:21+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: DISCOVERY_AND_REPLAN
+    coordinator_phase: DIRECT_SOURCE_AND_NEON_VERIFICATION
     current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
-    current_work_unit: HEALTH_VALIDATED_PRE_DISPATCH
-    progress_fingerprint: HEALTH_V5_ACTIVE_NO_STALE_OWNERS
+    current_work_unit: HEALTH_VALIDATED_DIRECT_VERIFICATION
+    progress_fingerprint: HEALTH_V5_ACTIVE_DIRECT_VERIFICATION
     blocked_reason: null
     recovery_action: NONE
     stale_after_seconds: 300
