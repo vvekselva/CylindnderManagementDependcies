@@ -1,18 +1,22 @@
 invocation_lease:
-  version: 40
-  state: ACTIVE
+  version: 41
+  state: RELEASED
   owner: PRIMARY_ORCHESTRATOR
   invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-0809IST
   acquired_at: 2026-08-26T02:39:00Z
-  released_at: null
+  released_at: 2026-08-26T02:45:00Z
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-001, BL-002 and BL-008 manual production execution
   duplicate_action: NOOP
-  outcome: RUNNING
+  outcome: PARTIAL_RECONCILED_BL008_BLOCKED_LIVE_NEON_VISIBILITY
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   BL-008_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - Manual production fire requested by user.
-    - Latest BL-008 policy uses Neon main only, creates no Neon branches, and serializes database requirements one at a time.
+    - Manual production fire completed without duplicate execution.
+    - BL-001 remains 123/134 canonical unique rows pending atomic consolidation.
+    - BL-002 is release-classified 88/46 and ready for Release-1 field-level Story rework; no Story auto-approved.
+    - BL-008 is governed for Neon main only with no branch creation and one database requirement at a time.
+    - Connected Neon integration exposed zero projects, so no database write was authorized or attempted.
+    - Durable checkpoint: logs/runs/MANUAL-PRODUCTION-FIRE-20260826-0809-BL001-BL002-BL008.md
