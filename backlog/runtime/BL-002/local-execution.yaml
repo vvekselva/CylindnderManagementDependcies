@@ -1,19 +1,19 @@
 local_execution:
-  version: 22
+  version: 23
   backlog_item: BL-002
-  state: RELEASE_1_FIELD_LEVEL_REWORK_READY
-  execution_id: CYLINDER-PRIMARY-20260826-0302Z
+  state: RELEASE_1_FIELD_LEVEL_REWORK_IN_PROGRESS
+  execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-0917IST
   dispatch_fingerprint: RELEASE_CLASSIFICATION_88_46_FIELD_LEVEL_REWORK
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: CANONICAL_BL001_MATRIX_ONLY
   phase: RELEASE_1_FIELD_LEVEL_STORY_REWORK
-  worker_state: NO_WORKER_DISPATCH_THIS_CHECKPOINT
+  worker_state: NO_SAFE_INDEPENDENT_WORKER_GENERATION_NEEDED_THIS_CHECKPOINT
   workers_started_this_invocation: 0
   transient_lane_logs_created: 0
   residual_transient_lane_logs: 0
-  validation_state: PASS_RELEASE_CLASSIFICATION_RECONCILED
+  validation_state: PARTIAL_FIELD_LEVEL_REVALIDATION_FAIL_CLOSED
   sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR_CHECKPOINT
-  recovery_state: RUNTIME_RECONCILED_TO_RELEASE_CLASSIFICATION_VERSION_2
+  recovery_state: STORY_0049_0052_REGISTRATION_HELD_FOR_FIELD_LEVEL_EVIDENCE
   incremental_scope:
     canonical_bl001_rows_eligible: 123
     pending_bl001_atomic_projection_rows_excluded: 11
@@ -40,6 +40,20 @@ local_execution:
     static_ui_disposition: STATIC_UI_NO_DATABASE_MAPPING
     input_required_attributes: [datatype, required_or_optional, normalization_or_default, validation, accepted_values_or_rules, invalid_behavior, persistence_destination, state_or_side_effect]
     no_invention_rule: UNPROVED_MEANING_IS_NEEDS_CLARIFICATION
+  current_revalidation:
+    story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
+    chain_evidence_state: PROVED_FROM_CANONICAL_BL001_ACCEPTED_EVIDENCE
+    field_level_state: INCOMPLETE
+    proved_example:
+      story_id: STORY-0049
+      endpoint: GET /search/addresstype/{searchText}
+      ordered_chain: RestfulAddressTypeServices.getAddressTypes -> AddressTypeSearchService.searchWithText -> SearchRequestValidator.validate -> AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase -> AddressTypeDo -> public.tbl_address_type -> mapper -> AddressTypeSearchResponseDto JSON
+      writes: NONE_PROVED
+    missing_field_level_evidence:
+      - exact SearchRequestValidator rejection predicates
+      - exact trimming/case/default behavior if any
+      - exact invalid-value message/status semantics if any
+    disposition: DO_NOT_REGISTER_OR_PROMOTE_UNTIL_FIELD_LEVEL_CONTRACT_IS_SATISFIED_OR_NEEDS_CLARIFICATION_IS_EXPLICITLY_RECORDED
   pending_story_sync:
     story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
     state: MATERIALIZED_NOT_AUTHORITATIVE
@@ -51,4 +65,4 @@ local_execution:
     exact_story_ids_and_fingerprints_required: true
     usecase_generation_allowed: false
   next_action: >-
-    Revalidate and synchronize STORY-0049 through STORY-0052 without approval, then continue Release 1 field-level Story rework using only accepted materialized non-stale canonical BL-001 rows. Keep Release 2 blocked until the Release 1 boundary is reached.
+    Obtain or preserve exact field-level evidence for STORY-0049 through STORY-0052. If validation/default semantics remain unproved, convert those facts explicitly to NEEDS_CLARIFICATION before authoritative Story Register synchronization. Continue Release 1 field-level Story rework only from canonical BL-001 rows; keep Release 2 blocked.
