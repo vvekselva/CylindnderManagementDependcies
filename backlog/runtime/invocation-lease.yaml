@@ -1,19 +1,17 @@
 invocation_lease:
-  version: 29
-  state: RELEASED
+  version: 30
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-060133IST
-  acquired_at: 2026-08-26T06:01:33+05:30
-  released_at: 2026-08-26T06:04:05+05:30
+  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-061700IST
+  acquired_at: 2026-08-26T06:17:00+05:30
+  released_at: null
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-001 and BL-002 execution
   duplicate_action: NOOP
-  outcome: PARTIAL_PROGRESS
+  outcome: RUNNING
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - BL-001 remains fail-closed at 123 materialized canonical rows plus 11 fully source-proved pending atomic projection; no prior worker generation was replayed and no pending row was partially promoted.
-    - BL-002 advanced to Story Register version 19 with 47 dispositions: 41 READY_FOR_USER_REVIEW, 6 NEEDS_CLARIFICATION and 0 APPROVED.
-    - STORY-0047 for GET /wizard/vehicle-trip-load was added from accepted canonical evidence with fingerprint 2ab938e66f6b38bfb37d6b2b4d6e9f032cab670213cc8e9b7e8abefc37b2f47c.
-    - Matrix-to-Story traceability and BL-002 runtime result were synchronized; no Use Case was auto-created.
+    - Singleton lease acquired only after verifying the prior lease was RELEASED and both BL-001 and BL-002 reported zero active lanes.
+    - Execute independently eligible BL-001 and BL-002 work under shared single-writer SSOT and fail-closed gates.
