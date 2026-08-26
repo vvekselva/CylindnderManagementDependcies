@@ -1,0 +1,35 @@
+checkpoint:
+  backlog_item: BL-002
+  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1116IST
+  state: PARTIAL_RELEASE_1_FIELD_LEVEL_REWORK_FAIL_CLOSED_NO_UNPROVED_MUTATION
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  upstream:
+    accepted_materialized_non_stale_bl001_rows: 123
+    pending_atomic_projection_rows_excluded: 11
+  release_classification:
+    release_1: 88
+    release_2: 46
+    unassigned: 0
+    release_2_work_allowed: false
+  story_register:
+    registered_dispositions: 52
+    ready_for_user_review: 45
+    needs_clarification: 7
+    approved: 0
+    new_story_dispositions_this_invocation: 0
+    stories_reworked_this_invocation: 0
+  field_level_rework:
+    attempted: true
+    requirement: PAGE_MODEL_CONTROLLER_SERVICE_REPOSITORY_ENTITY_DATABASE_COLUMN_OR_STATIC_UI_MAPPING
+    eligible_release: RELEASE_1
+    result: NO_DURABLE_STORY_MUTATION_WITHOUT_COMPLETE_FIELD_LEVEL_SOURCE_PROOF
+    invented_behavior: false
+  downstream:
+    candidate_usecases: 0
+    approved_for_testing_usecases: 0
+    authoritative_test_scenarios: 0
+  workers_started: 0
+  transient_lane_logs_created: 0
+  residual_transient_lane_logs: 0
+  decision: KEEP_RELEASE_1_REWORK_ACTIVE_WITHOUT_AUTO_APPROVAL
+  next_action: Continue Release 1 field-level rework from exact accepted canonical BL-001 rows; mark any unproved field semantics NEEDS_CLARIFICATION and do not begin Release 2 until the Release 1 boundary passes.
