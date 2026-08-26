@@ -1,13 +1,12 @@
-version: 11
+version: 12
 purpose: >-
-  Tell the Orchestrator which Backlog Items may run and enforce the self-reliant production execution loop. Scheduler
-  invocations are backlog-driven. BL-001 and BL-002 may run as parallel coordinated workstreams whenever each has
-  independently eligible work. BL-002 may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical
-  BL-001 matrix rows; it must not consume pending atomic-projection rows or raw/unaccepted evidence.
+  Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
+  workstreams when independently eligible. Shared worker capacity is dynamic; shared SSOT remains single-writer and
+  database mutation under BL-008 is always serialized.
 
 selection:
   mode: ENABLED_ELIGIBLE_BACKLOG_ITEMS_WITH_SAFE_PARALLELISM
-  max_active_backlog_items: 2
+  max_active_backlog_items: 3
   choose_from_enabled_items_by: HIGHEST_PRIORITY_ELIGIBLE_ITEMS
   require_three_level_ssot_gate: true
   require_statement_of_work_gate: true
@@ -15,13 +14,20 @@ selection:
   require_item_specific_quality_gate: true
   require_item_quality_gate_approved_by_user: true
   eligibility_order: [run_enabled, QG-SSOT-001, QG-SOW-001, QG-DEP-001, item_specific_quality_gate, work_unit_dependencies]
-  parallel_pair_rules:
+  coordinated_streams:
+    - BL-001
+    - BL-002
+    - BL-008
+  rules:
     BL-001_BL-002:
       allowed: true
-      shared_worker_pool: true
-      shared_ssot_single_writer: true
       BL-002_incremental_input: ACCEPTED_MATERIALIZED_NON_STALE_CANONICAL_BL001_ROWS_ONLY
       forbidden_BL-002_input: [PENDING_ATOMIC_PROJECTION_ROWS, RAW_WORKER_EVIDENCE, UNACCEPTED_CANDIDATES, STALE_FINGERPRINTS]
+    BL-008:
+      allowed_in_parallel_with: [BL-001, BL-002]
+      read_only_discovery_may_parallelize: true
+      database_mutation_serialized: true
+      validation_branch_before_production: true
 
 execution_engine:
   owner: AUTOMATION_TOOL
@@ -31,6 +37,7 @@ execution_engine:
   max_parallel_workers: 10
   worker_pool_allocation: DYNAMIC_ACROSS_ELIGIBLE_BACKLOG_ITEMS
   starvation_forbidden: true
+  shared_ssot_single_writer: true
   github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
   github_actions_required: false
   external_worker_service_required: false
@@ -45,21 +52,16 @@ execution_engine:
 
 invocation_utilization_contract:
   mode: BACKLOG_DRAIN_WINDOW
-  scheduler_trigger_starts: ONE_ORCHESTRATOR_INVOCATION
-  scheduler_trigger_is_not: ONE_WORKER_BATCH
   singleton_invocation_required: true
   target_invocation_window_minutes: 45
   minimum_productive_window_minutes: 30
   hard_stop_window_minutes: 45
-  early_exit_before_minimum_allowed_only_when: ELIGIBLE_RUNNABLE_BACKLOG_TASK_COUNT_ZERO_OR_USER_DECISION_GATE
-  normal_exit_conditions: [ELIGIBLE_RUNNABLE_BACKLOG_TASK_COUNT_ZERO, USER_DECISION_GATE_WITH_NO_OTHER_ELIGIBLE_WORK, INVOCATION_HARD_STOP_WINDOW_REACHED]
   batch_loop:
     enabled: true
     replan_after_every_validated_checkpoint: true
     refill_worker_pool_from_backlog: true
     max_workers_per_generation: 10
     continue_generations_while_time_remains_and_work_exists: true
-    one_generation_success_does_not_close_invocation: true
   window_expiry:
     behavior: CHECKPOINT_SYNC_AND_EXIT_WINDOW_EXPIRED
     remaining_backlog_stays_open: true
@@ -76,24 +78,14 @@ production_source_contract:
     every_materialized_file_requires_git_blob_sha: true
     every_worker_verifies_file_before_read: true
     workers_access_github_directly: false
-    source_request_types: [missing_source_requests, missing_binding_requests]
-    max_staging_iterations: 8
-    repeated_identical_request_set: SOURCE_RESOLUTION_STALLED
-    maximum_iterations_reached: SOURCE_RESOLUTION_LIMIT_REACHED
-  binding_validation:
-    naming_may_generate_candidate_only: true
-    implementation_source_must_prove_declared_interface: true
-    generic_signature_must_match_when_present: true
-    qualifier_or_default_bean_identity_must_match_when_present: true
   local_git_fallback:
     frozen_commit_must_exist_locally: true
     active_checkout_is_not_switched: true
     executor_uses_detached_worktree: true
   common_preflight:
     - selected backlog items and Work Units are eligible
-    - approved dispatch contains only READY safe-independent tasks
+    - required source and SSOT inputs are available
     - duplicate lane and task IDs are rejected
-    - required source/SSOT inputs are available
     - zero leftover individual lane logs before fire
 
 bl001_traceability_contract:
@@ -103,66 +95,68 @@ bl001_traceability_contract:
   progress_artifact: traceability/matrix-progress.yaml
   structured_matrix: traceability/explorer/traceability-matrix.json
   row_key: HTTP_METHOD_PLUS_PATH
+  final_unique_row_requirement: 134
   worker_direct_matrix_write_allowed: false
   raw_worker_candidate_is_matrix_truth: false
-  update_trigger: EACH_PRIMARY_ORCHESTRATOR_ACCEPTED_ENDPOINT_TRACE
-  finalization_owner: WU-BL001-002
-  downstream_validation_owner: WU-BL001-003
-  baseline_registration_owner: WU-BL001-004
-  final_unique_row_requirement: 134
-  rule: >-
-    BL-001 continues targeted source-proved recovery and atomic canonical matrix/explorer projection. Final reconciliation
-    requires exactly 134 distinct HTTP method plus path keys and synchronized Markdown, unresolved ledger, progress,
-    structured Explorer representations and Level-3 runtime.
 
 bl002_story_usecase_contract:
   workflow: workflows/WF-003-controller-story-usecase.yaml
   dependency: BL-001
   dependency_rule: INCREMENTAL_ACCEPTED_CANONICAL_ROWS
-  structured_matrix: traceability/explorer/traceability-matrix.json
+  release_classification: traceability/release-classification.yaml
+  release_1_items: 88
+  release_2_items: 46
+  execution_order: RELEASE_1_BEFORE_RELEASE_2
   accepted_row_requirement: PRIMARY_ORCHESTRATOR_ACCEPTED_MATERIALIZED_NON_STALE
   forbidden_inputs: [PENDING_ATOMIC_PROJECTION_ROWS, RAW_WORKER_EVIDENCE, UNACCEPTED_CANDIDATES, STALE_FINGERPRINTS]
-  story_schema: stories/story-schema.yaml
-  story_register: stories/story-register.yaml
-  story_template: stories/story-template.md
-  usecase_schema: usecases/usecase-schema.yaml
-  usecase_register: usecases/usecase-register.yaml
-  test_scenario_schema: usecases/usecase-test-scenario-schema.yaml
-  test_scenarios: usecases/usecase-test-scenarios.yaml
-  cross_traceability: traceability/controller-story-usecase-map.yaml
-  story_generation_parallelism: 10
-  usecase_generation_parallelism: 10
   story_user_approval_required: true
   usecase_user_approval_required: true
   auto_approval_forbidden: true
-  source_change_invalidates_affected_approval: true
-  narrative_required_content: [inputs, validations, main flow, ordered component flow, data reads and writes, side effects/state changes, alternate/error flows, output/postconditions, evidence, downstream test assertions]
-  no_invention_rule: >-
-    Human-readable wording may simplify source behaviour but must never invent a validation, business rule, persistence
-    operation, side effect, actor or expected outcome. Unproved business meaning is NEEDS_CLARIFICATION.
-  downstream:
-    BL-003: {consumes: APPROVED_STORY_ASSERTIONS_ONLY}
-    BL-004: {consumes: APPROVED_FOR_TESTING_USECASES_AND_SCENARIOS_ONLY, owns_usecase_test_execution: true}
+  field_level_story_required: true
+  display_mapping_chain: PAGE_FIELD_OR_COMPONENT_TO_MODEL_DTO_TO_CONTROLLER_TO_SERVICE_TO_DAO_REPOSITORY_TO_ENTITY_VIEW_FIELD_TO_DB_TABLE_VIEW_COLUMN
+  static_ui_disposition: STATIC_UI_NO_DATABASE_MAPPING
+  input_field_attributes: [datatype, required_or_optional, normalization_or_default, validation, accepted_values_or_rules, invalid_behavior, persistence_destination, state_or_side_effect]
+  no_invention_rule: UNPROVED_MEANING_IS_NEEDS_CLARIFICATION
+
+bl008_database_migration_contract:
+  workflow: workflows/WF-004-database-ownership-migration.yaml
+  dependency_ledger: database-dependency-neon.md
+  source_repository: vvekselva/CylinderManagement
+  flyway_path: cylinder.datascripts/src/main/resources/db/migration/
+  migration_target: V176
+  ownership_source_roots: [NewOwnerShipModelv3/, cmas.database.operations/]
+  target_project: neon-for-cylinder-db
+  target_project_id: holy-glitter-02245694
+  production_branch: production
+  production_branch_id: br-steep-snow-aw6u5odt
+  database: neon-for-cylinder-db
+  migration_mechanism: FLYWAY_ONLY
+  manual_sql_substitution: FORBIDDEN
+  validation_branch_before_production: REQUIRED
+  database_mutation_owner: PRIMARY_ORCHESTRATOR_SERIAL_STAGE
+  ownership_types: [COMPANY_OWNED, SUPPLIER_OWNED, CUSTOMER_OWNED]
+  require_pre_post_integrity_checks: true
+  require_ledger_sync: true
 
 execution_recovery_contract:
   execution_journal_required: true
-  dispatch_fingerprint_basis: SELECTED_BACKLOG_BASELINE_PLUS_ORDERED_APPROVED_TASKS
   same_fingerprint_pending_sync: RETRY_SYNC_ONLY_NO_WORKER_RESTART
   same_fingerprint_closed_waiting_validation: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
   interrupted_running_without_live_workers: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
   changed_fingerprint: START_NEW_EXECUTION_GENERATION
   already_closed_synced: NOOP_THEN_REPLAN_INVOCATION
   github_sync_failure: PRESERVE_VALIDATED_RESULT_AS_PENDING_SYNC_AND_RETRY_SYNC_ONLY
+  database_mutation_failure: FAIL_CLOSED_PRESERVE_RECOVERY_POINT_NO_MANUAL_PATCH
 
 backlog_items:
   BL-001: {name: Controller Traceability, run_enabled: true, item_definition: backlog/items/BL-001-controller-traceability.yaml, statement_of_work: backlog/sow/BL-001-controller-traceability.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-001/, completion_path: backlog/paths/BL-001-traceability.yaml, quality_gate: backlog/gates/BL-001-traceability.yaml, quality_gate_configured: true, quality_gate_approved: true}
   BL-002: {name: Controller Dependency Matrix to Human-Readable Stories, run_enabled: true, item_definition: backlog/items/BL-002-controller-story-usecase.yaml, statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-002/, completion_path: backlog/paths/BL-002-controller-story-usecase.yaml, quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml, quality_gate_configured: true, quality_gate_approved: true}
-  BL-003: {name: Unit Test Completion, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: backlog/paths/BL-003-unit-test.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-004: {name: Integration Test Completion, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: backlog/paths/BL-004-integration-test.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
-  BL-005: {name: Code Coverage Report, run_enabled: false, item_definition: null, statement_of_work: null, statement_of_work_configured: false, runtime: null, completion_path: backlog/paths/BL-005-code-coverage.yaml, quality_gate: null, quality_gate_configured: false, quality_gate_approved: false}
+  BL-003: {name: Unit Test Completion, run_enabled: false}
+  BL-004: {name: Integration Test Completion, run_enabled: false}
+  BL-005: {name: Code Coverage Report, run_enabled: false}
   BL-006: {name: ArchUnit Architecture Test, run_enabled: false}
   BL-007: {name: Requirements Traceability and Gap Analysis, run_enabled: false}
-  BL-008: {name: Migration of the Database to the Ownership Model, run_enabled: false}
+  BL-008: {name: Migration of the Database to the Ownership Model, run_enabled: true, item_definition: backlog/items/BL-008-database-ownership-migration.yaml, statement_of_work: backlog/sow/BL-008-database-ownership-migration.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-008/, completion_path: backlog/paths/BL-008-database-ownership-migration.yaml, quality_gate: backlog/gates/BL-008-database-ownership-migration.yaml, quality_gate_configured: true, quality_gate_approved: true}
   BL-009: {name: Supplier Owned Customer Owned and Company Owned Cylinder Model, run_enabled: false}
   BL-010: {name: Physical Challan Book Location, run_enabled: false}
   BL-011: {name: Ownership Dashboard Changes, run_enabled: false}
@@ -178,26 +172,15 @@ backlog_items:
   BL-021: {name: Customer Data Dashboard, run_enabled: false}
 
 scheduled_run_rules:
-  - read backlog/backlog.yaml and this run-config first on every scheduler invocation
-  - acquire a singleton invocation lease; never overlap two Cylinder coordinator invocations
-  - select all independently eligible run-enabled Backlog Items up to max_active_backlog_items
-  - execute BL-001 and BL-002 as parallel coordinated workstreams whenever both have independently eligible work
-  - enforce QG-SSOT-001 and QG-SOW-001 before PLAN or REPLAN
-  - enforce QG-DEP-001 per consumed evidence; BL-002 incremental execution is allowed only for accepted materialized non-stale canonical BL-001 rows
-  - BL-002 must never consume pending atomic-projection rows or raw/unaccepted worker evidence
-  - for BL-001 continue source checking, canonical matrix projection, reconciliation and final validation to exactly 134 unique keys
-  - for BL-002 generate evidence-backed Story candidates incrementally from eligible canonical rows
-  - BL-002 Stories may be technically validated by the Orchestrator but never auto-approved
-  - stop each Story at READY_FOR_USER_REVIEW or NEEDS_CLARIFICATION and persist exact Story IDs/fingerprints
-  - after approved Stories exist, build candidate Use Cases only from evidence-supported groupings and stop for user Use Case approval
-  - only APPROVED_FOR_TESTING Use Cases may produce authoritative test scenarios
-  - persist Matrix -> Story -> Use Case -> Test Scenario traceability continuously
-  - inspect execution journal before firing each worker generation
-  - retry PENDING_SYNC synchronization only without worker restart
-  - validate closed evidence without rerunning workers
-  - after every validated/synchronized checkpoint re-read both BL-001 and BL-002 runtime and reselect eligible work
-  - refill up to 10 safe-independent lanes dynamically across eligible streams without starvation
-  - shared SSOT remains single-writer
-  - enforce zero transient lane logs at worker-generation and invocation boundaries
-  - synchronize only validated durable runtime/log/evidence/Story/Use Case/matrix changes back to GitHub
-  - never mark any Backlog Item CLOSED without required explicit user acceptance
+  - read backlog/backlog.yaml and this run-config first
+  - acquire singleton invocation lease and NOOP on overlap
+  - execute BL-001, BL-002 and BL-008 when independently eligible up to max_active_backlog_items
+  - enforce QG-SSOT-001, QG-SOW-001, QG-DEP-001 and item-specific gates per stream
+  - share up to 10 workers dynamically without starvation
+  - BL-002 executes Release 1 field-level Story rework before Release 2
+  - BL-008 performs read-only discovery in parallel but serializes database mutation
+  - BL-008 must validate on an isolated branch before production migration
+  - retry PENDING_SYNC without restarting completed work
+  - leave zero transient lane logs at boundaries
+  - synchronize only validated durable state
+  - never mark any Backlog Item CLOSED without explicit user acceptance
