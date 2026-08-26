@@ -1,20 +1,22 @@
 invocation_lease:
-  version: 47
-  state: ACTIVE
+  version: 48
+  state: RELEASED
   owner: PRIMARY_ORCHESTRATOR
   invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-0917IST
   acquired_at: 2026-08-26T03:47:14Z
-  released_at: null
+  released_at: 2026-08-26T03:54:00Z
   authoritative_branch: chore/rename-dependency-files
   purpose: manual coordinated BL-001 BL-002 BL-008 production trigger
   duplicate_action: NOOP
-  outcome: RUNNING
+  outcome: PARTIAL_ACCEPTED_CHECKPOINT_BL001_ATOMIC_PENDING_BL002_FIELD_LEVEL_REWORK_BL008_CONNECTIVITY_BLOCKED
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   BL-008_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - Manual production trigger requested by user.
-    - BL-008 will use the user-supplied CylinderManagement TEST database connection at runtime; credentials must not be persisted in repository artifacts or logs.
-    - BL-008 read/identity/Flyway-history verification precedes any mutation.
-    - BL-001 and BL-002 remain independently eligible under parallel coordinated governance.
+    - Singleton lease acquired after confirming the prior lease was RELEASED; no duplicate coordinator execution occurred.
+    - BL-001 remained at 123 canonical + 11 fully source-proved pending atomic projection; closed worker generation was not replayed.
+    - BL-002 re-entered Release 1 field-level Story rework; STORY-0049 through STORY-0052 remain non-authoritative pending exact field-level evidence or explicit NEEDS_CLARIFICATION disposition.
+    - BL-008 target TEST host/database/user identity is now user-declared and sanitized in runtime SSOT; credentials were not persisted.
+    - BL-008 local execution host connectivity and Neon control-plane mapping remain blocked, so flyway_schema_history was not read and no database requirement/write was attempted.
+    - Zero transient lane logs remain.
