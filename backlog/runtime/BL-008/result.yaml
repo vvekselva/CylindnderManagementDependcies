@@ -1,6 +1,6 @@
 backlog_item: BL-008
-version: 5
-state: BLOCKED_DISCOVERY_LIVE_NEON_NOT_VISIBLE
+version: 6
+state: BLOCKED_TEST_DATABASE_CONNECTIVITY_AND_CONTROL_PLANE_MAPPING
 verified: false
 closed: false
 governance_bootstrap: COMPLETE
@@ -10,7 +10,11 @@ environment:
   role: SEPARATE_NEON_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
   branch: main
   branch_creation: FORBIDDEN
-  database: VERIFY_FROM_LIVE_NEON_BEFORE_WRITE
+  database: neondb
+  target_host: ep-dawn-forest-axk2scoa-pooler.c-4.us-east-2.aws.neon.tech
+  target_user: neondb_owner
+  target_identity_source: USER_DECLARED_DIRECT_JDBC_ENDPOINT
+  credentials: RUNTIME_ONLY_NOT_PERSISTED
 execution_policy:
   migration_mechanism: FLYWAY_ONLY
   database_requirements: ONE_AT_A_TIME
@@ -25,23 +29,28 @@ source_inventory:
   previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
   reconciliation_required: false
 live_neon_discovery:
-  attempted_at: 2026-08-26T03:40:06Z
+  attempted_at: 2026-08-26T03:47:14Z
+  target_endpoint_declared: true
+  exact_host_database_user_known: true
   organization_projects_visible: 0
   shared_projects_visible: 0
-  exact_project_verified: false
-  exact_database_verified: false
+  control_plane_project_mapping_verified: false
+  execution_host_dns_connectivity_verified: false
+  live_database_identity_query_verified: false
+  flyway_schema_history_verified: false
   write_attempted: false
 database_requirement:
   active_requirement: null
-  selection_state: BLOCKED_UNTIL_LIVE_NEON_IDENTITY_IS_PROVED
-  reason: The next Flyway requirement cannot be selected relative to flyway_schema_history until the exact Neon main database is visible and verified.
+  selection_state: BLOCKED_UNTIL_LIVE_FLYWAY_HISTORY_IS_PROVED
+  reason: The TEST endpoint identity is now user-declared, but this execution host cannot resolve/reach the endpoint and the connected Neon control plane cannot map it to an accessible project; therefore flyway_schema_history cannot yet be inspected and the first outstanding Flyway requirement cannot be selected safely.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  Current CylinderManagement main Flyway source inventory remains reconciled through V170 at commit
-  3ae6e61442132d94a307275b08dd65fcef228d89. During the 2026-08-26 09:00 IST production fire, the connected Neon
-  organization project list and shared-project list both exposed zero projects, so project/main/database identity and
-  flyway_schema_history cannot be proved. No Neon branch was created, no database requirement was activated, and no
-  database write was attempted.
-next_action: RESTORE_LIVE_NEON_PROJECT_VISIBILITY_THEN_VERIFY_MAIN_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_EXACTLY_ONE_NEXT_REQUIREMENT
+  CylinderManagement main Flyway source remains reconciled through V170 at commit
+  3ae6e61442132d94a307275b08dd65fcef228d89. The user supplied the direct Neon TEST endpoint,
+  database name and database user, so target identity is no longer unknown. Credentials are runtime-only and are not
+  persisted. During this manual production fire, the local execution host could not resolve/reach the Neon hostname and
+  the connected Neon control plane could not map the endpoint to a visible project. Consequently no identity query,
+  flyway_schema_history read, requirement activation, branch creation, manual SQL, or database write was performed.
+next_action: RESTORE_EXECUTION_CONNECTIVITY_OR_CONTROL_PLANE_MAPPING_TO_THE_DECLARED_TEST_ENDPOINT_THEN_VERIFY_DATABASE_IDENTITY_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_EXACTLY_ONE_REQUIREMENT
 user_acceptance_required_before_close: true
