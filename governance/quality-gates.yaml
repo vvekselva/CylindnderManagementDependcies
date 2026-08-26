@@ -1,8 +1,8 @@
-version: 13
+version: 14
 purpose: >-
   Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete
-  SSOT and SOW. Source-reading execution additionally requires verified source/binding evidence, lifecycle logging and
-  recovery/idempotency. BL-002 adds explicit human Story and Use Case approval gates before downstream testing.
+  SSOT and SOW. Source-reading execution requires verified source/binding evidence, lifecycle logging and recovery/idempotency.
+  BL-002 adds human Story/Use Case approval gates. BL-008 adds fail-closed database migration and ownership-integrity gates.
 
 three_level_ssot_gate:
   id: QG-SSOT-001
@@ -11,8 +11,7 @@ three_level_ssot_gate:
   owner: ORCHESTRATOR
   governance: governance/ssot-levels.yaml
   fail_closed: true
-  pass_condition: >-
-    SSOT-L1 Backlog Master/Repository Scope, SSOT-L2 Backlog Definition and SSOT-L3 Runtime are COMPLETE and mutually consistent for the selected Backlog Item.
+  pass_condition: SSOT-L1, SSOT-L2 and SSOT-L3 are COMPLETE and mutually consistent for the selected Backlog Item.
 
 statement_of_work_gate:
   id: QG-SOW-001
@@ -20,8 +19,7 @@ statement_of_work_gate:
   applies_to: ALL_BACKLOG_ITEMS
   owner: ORCHESTRATOR
   fail_closed: true
-  pass_condition: >-
-    The selected Backlog Item has a non-placeholder SOW whose backlog ID, objective, scope, deliverables, execution requirements, acceptance criteria and completion definition are valid.
+  pass_condition: The selected Backlog Item has a non-placeholder structurally valid SOW matching its Level-1 and Level-2 identity.
 
 common_gate:
   id: QG-DEP-001
@@ -29,9 +27,9 @@ common_gate:
   applies_to: ALL_BACKLOG_ITEMS
   owner: ORCHESTRATOR
   pass_condition: >-
-    Every declared dependency is VERIFIED or CLOSED unless the selected item has an explicitly governed incremental
-    dependency mode. For BL-002 incremental execution, the dependency gate passes only for Primary-Orchestrator-accepted,
-    materialized, non-stale canonical BL-001 matrix rows; pending atomic-projection rows and raw/unaccepted evidence remain blocked.
+    Every declared dependency is VERIFIED/CLOSED unless an explicitly governed incremental dependency mode applies.
+    BL-002 may consume only accepted materialized non-stale canonical BL-001 rows. BL-008 has no backlog dependency but
+    remains gated by its target/recovery/Flyway/ownership-integrity gates.
 
 execution_source_gate:
   id: QG-SOURCE-001
@@ -43,16 +41,7 @@ execution_source_gate:
   fail_closed: true
   preferred_provider: ORCHESTRATOR_STAGED_SNAPSHOT
   fallback_provider: LOCAL_GIT_CHECKOUT
-  pass_for_discovery_condition: >-
-    An approved provider supplies every dispatched source root at the exact selected Backlog baseline and each staged file
-    recomputes to the declared Git blob SHA before SERVICE.
-  source_closure_complete_condition: >-
-    Recursive discovery has zero missing_source_requests and zero missing_binding_requests for the evidence being accepted.
-  partial_closure_rule: >-
-    Verified roots may support bounded discovery, but no final assertion depending on unresolved source/binding may be accepted.
-  on_integrity_failure: BLOCK_BEFORE_SERVICE
-  on_resolution_stall: SOURCE_RESOLUTION_STALLED_FAIL_CLOSED
-  on_iteration_limit: SOURCE_RESOLUTION_LIMIT_REACHED_FAIL_CLOSED
+  pass_condition: Dispatched source is from the exact selected baseline and integrity-verified before acceptance.
 
 execution_lifecycle_logging_gate:
   id: QG-LOG-001
@@ -61,9 +50,7 @@ execution_lifecycle_logging_gate:
   owner: ORCHESTRATOR
   governance: governance/execution-lifecycle-logging.yaml
   fail_closed: true
-  pass_condition: >-
-    Zero stale individual lane logs exist before fire; required START/END/heartbeat evidence is in order; every started
-    lane closes or is recovery-closed; transient logs are aggregated, verified, deleted and rescanned to zero.
+  pass_condition: Every started lane closes/recovery-closes and transient lane logs are aggregated and rescanned to zero.
 
 real_lane_utilization_gate:
   id: QG-LANE-001
@@ -76,10 +63,6 @@ real_lane_utilization_gate:
   does_not_invalidate_correct_evidence: true
   expected_concurrency_formula: min(configured_lanes, eligible_independent_tasks)
   current_backend: LOCAL_PROCESS_POOL
-  pass_condition: >-
-    When at least two safe independent tasks exist, measured natural overlapping SERVICE intervals reach expected safe concurrency.
-  underutilized_condition: >-
-    Lower natural concurrency is recorded as underutilization; artificial delay is forbidden merely to pass this gate.
 
 execution_recovery_gate:
   id: QG-RECOVERY-001
@@ -88,30 +71,15 @@ execution_recovery_gate:
   owner: ORCHESTRATOR
   governance: governance/self-reliant-execution.yaml
   fail_closed: true
-  pass_condition: >-
-    Execution journal and dispatch fingerprint exist; repeated invocations do not duplicate execution/acceptance;
-    interrupted partial output is rejected; PENDING_SYNC retries persistence only; synchronized work is not rerun.
+  pass_condition: Repeated invocations do not duplicate accepted work; interrupted partial work fails closed and PENDING_SYNC retries persistence only.
 
 human_approval_governance:
-  story_approval:
-    owner: USER
-    backlog_item: BL-002
-    gate: QG-STORY-006
-    auto_approval_allowed: false
-    stale_on_source_fingerprint_change: true
-  usecase_approval:
-    owner: USER
-    backlog_item: BL-002
-    gate: QG-STORY-008
-    approved_state: APPROVED_FOR_TESTING
-    auto_approval_allowed: false
-    stale_on_story_or_source_fingerprint_change: true
-  downstream_rule: >-
-    BL-003 consumes only APPROVED Story assertions. BL-004 consumes only APPROVED_FOR_TESTING Use Cases and authoritative scenarios.
+  story_approval: {owner: USER, backlog_item: BL-002, gate: QG-STORY-006, auto_approval_allowed: false, stale_on_source_fingerprint_change: true}
+  usecase_approval: {owner: USER, backlog_item: BL-002, gate: QG-STORY-008, approved_state: APPROVED_FOR_TESTING, auto_approval_allowed: false, stale_on_story_or_source_fingerprint_change: true}
 
 user_verification:
   required_before_backlog_close: true
-  rule: Automated gates may prove technical completion, but a Backlog Item must not move to CLOSED until its final User Acceptance gate is approved by the user.
+  rule: Automated gates may prove technical completion, but no Backlog Item moves to CLOSED without explicit user acceptance.
 
 backlog_quality_gates:
   BL-001: {name: Controller Traceability, configured: true, config: backlog/gates/BL-001-traceability.yaml, approved_by_user: true, execution_allowed: true}
@@ -121,7 +89,7 @@ backlog_quality_gates:
   BL-005: {name: Code Coverage Report, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-006: {name: ArchUnit Architecture Test, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-007: {name: Requirements Traceability and Gap Analysis, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-008: {name: Migration of the Database to the Ownership Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
+  BL-008: {name: Migration of the Database to the Ownership Model, configured: true, config: backlog/gates/BL-008-database-ownership-migration.yaml, approved_by_user: true, execution_allowed: true, database_mutation_mode: VALIDATION_BRANCH_THEN_PRODUCTION}
   BL-009: {name: Supplier Owned, Customer Owned and Company Owned Cylinder Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-010: {name: Physical Challan Book Location, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-011: {name: Ownership Dashboard Changes, configured: false, config: null, approved_by_user: false, execution_allowed: false}
@@ -137,7 +105,6 @@ backlog_quality_gates:
   BL-021: {name: Customer Data Dashboard, configured: false, config: null, approved_by_user: false, execution_allowed: false}
 
 orchestrator_rule: >-
-  Select run-enabled eligible Backlog Items and allow BL-001 plus BL-002 to run concurrently when both have independently
-  eligible work. Validate QG-SSOT-001, QG-SOW-001 and QG-DEP-001 before execution. BL-002 may consume only accepted,
-  materialized, non-stale canonical BL-001 matrix rows and must fail closed on pending atomic projection, raw/unaccepted
-  evidence or stale fingerprints. Technical validation never substitutes for user Story/Use Case approval.
+  Select run-enabled eligible BL-001, BL-002 and BL-008 concurrently when each passes its own gates. BL-002 may only
+  consume accepted materialized non-stale BL-001 rows. BL-008 may perform read-only discovery in parallel, but migration
+  mutation is serialized, validation-branch-first, Flyway-only, and fail-closed on any target, rollback or integrity ambiguity.
