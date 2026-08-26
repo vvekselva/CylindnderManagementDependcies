@@ -108,6 +108,7 @@ Manual SQL substitution          NOT ALLOWED
 | 2026-08-26 | Adopt Neon main-only sequential migration policy | N/A | `vvekselva/CylinderManagement` | `main` | VERIFY_FROM_LIVE_NEON | PASS_POLICY | Neon is a separate test environment; no Neon branch creation; one database requirement at a time. |
 | 2026-08-26 | Manual production fire live Neon target discovery | N/A | N/A | `main` | VERIFY_FROM_LIVE_NEON | BLOCKED | Connected Neon integration exposed zero projects. No DB mutation performed. |
 | 2026-08-26 | Reconcile current authoritative Flyway source inventory | V170 head | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` | VERIFY_FROM_LIVE_NEON | PASS_SOURCE_INVENTORY | Migration tree `c2b6e219...` proves current main through V170. Older V176 expectation superseded. Live Neon remains invisible, so no requirement selected or applied. |
+| 2026-08-26 | Scheduled governed fire at 11:16 IST: reverify configured Neon target | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` | VERIFY_FROM_LIVE_NEON | BLOCKED_SAME_REQUIREMENT | Owned and shared Neon discovery did not return required project `holy-glitter-02245694`; a follow-up project lookup encountered connector authentication failure. Exact project/main/database identity was not proved. No Flyway validate, migration, manual SQL, branch creation, schema mutation, or external production deployment occurred. |
 
 ## 8. Application-to-Database Dependency Contract
 
@@ -140,5 +141,23 @@ Migration tool         : Flyway
 Requirement handling   : ONE AT A TIME
 Database write status  : NOT AUTHORIZED
 ```
+
+## 10. Latest Governed Invocation Evidence — 2026-08-26 11:16 IST
+
+- Invocation: `CYLINDER-PRODUCTION-FIRE-20260826-1116IST`.
+- Required Neon project: `holy-glitter-02245694` (`neon-for-cylinder-db`).
+- Required Neon branch: `main`; branch creation remains forbidden.
+- Authoritative Flyway source remains `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89`, migration tree `c2b6e219cfc8b0d23e0208d46cd634271bf39356`, head V170.
+- Owned-project discovery: required project not returned.
+- Shared-project discovery: required project not returned.
+- Secondary connected-project lookup: authentication failure; not usable as target proof.
+- Decision: `BLOCKED_NEON_TARGET_NOT_PROVED`; remain on the same database requirement boundary.
+- `flyway_schema_history`: not read because target identity was not proved.
+- Flyway validation: not run.
+- Flyway migration: not run.
+- Database writes: zero.
+- Neon branches created: zero.
+- Manual SQL substitutions: zero.
+- External production deployments: zero.
 
 This file must be updated after every BL-008 database requirement and whenever the environment, migration policy or authoritative Flyway source inventory changes.
