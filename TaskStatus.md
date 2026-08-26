@@ -1,98 +1,98 @@
 # CylinderManagement Automation Task Status
 
-> Derived dashboard. Canonical truth remains Level 1/2/3 SSOT. Endpoint statistics come from `backlog/runtime/BL-001/execution-statistics.yaml`; execution/recovery truth from `backlog/runtime/BL-001/local-execution.yaml`; traceability truth from the Orchestrator-accepted matrix artifacts.
+> Derived dashboard. Canonical truth remains Level 1/2/3 SSOT on `chore/rename-dependency-files`.
 
-## End-to-End Architecture
+## Current Orchestrator Framework
 
-Canonical architecture: `architecture/self-reliant-e2e-execution.md`  
-Traceability Explorer architecture: `architecture/traceability-explorer.md`
-
-| Component | Role |
+| Component | Current role |
 |---|---|
-| GitHub - `vvekselva/CylinderManagement` | Version-controlled application source and frozen source baseline |
-| GitHub - `vvekselva/CylindnderManagementDependcies` | Durable SSOT, runtime, evidence, matrix and Explorer persistence |
-| Primary Automation Tool / Orchestrator | Source staging, execution control, evidence validation, matrix projection, recovery and synchronization |
-| Local Execution Engine | `LOCAL_PROCESS_POOL`, up to 10 real OS workers |
-| Traceability Explorer | Read-only browser view of full Controller -> Service/Validator/Mediator -> DAO/Entity -> DB/File/API chains and durable logs |
+| GitHub - `vvekselva/CylinderManagement` | Version-controlled application source and frozen source evidence |
+| GitHub - `vvekselva/CylindnderManagementDependcies` | Durable SSOT, runtime, evidence, matrix, Stories, database ledger and logs |
+| Primary Automation Tool / Orchestrator | Planning, source staging, work claims, execution, validation, recovery and synchronization |
+| Local Execution Engine | `LOCAL_PROCESS_POOL`, up to 10 safe-independent workers per invocation |
+| Invocation governance | Up to 2 overlap-safe invocations; heartbeat/progress health; global work claims; shared SSOT single writer |
+| Traceability Explorer | Read-only full Controller -> Service/Mediator -> DAO/Repository -> Entity/View -> DB/File/API/terminal chains |
+| BL-008 DB stage | Neon TEST `main` only; Flyway only; one database requirement at a time; global DB write parallelism 1 |
 
-## Latest Worker Fire
+Production fires now obey `governance/production-fire-progress-guarantee.yaml`: START/heartbeat must be persisted before analysis, and a fire may not terminate while eligible unclaimed work and execution capacity remain. If work remains at the end of a fire, the result is `PARTIAL_CONTINUE_REQUIRED`, not `COMPLETE`.
 
-Latest worker execution: **`E2E-STAGED-20260823-161214`**
+## Current Backlog Selection
 
-| Metric | Result |
-|---|---:|
-| Source provider | `ORCHESTRATOR_STAGED_SNAPSHOT` |
-| Frozen source baseline | `3ae6e61442132d94a307275b08dd65fcef228d89` |
-| Snapshot files | **29** |
-| Workers started / results | **10 / 10** |
-| Worker failures | **0** |
-| Residual lane logs | **0** |
-| Exact source requests remaining | **16** |
-| Worker-emitted binding requests | **3** |
-| Binding identities unresolved now | **0** |
-| Binding implementations pending snapshot materialization | **1** |
-| QG-SOURCE-001 | **PASS ROOTS VERIFIED / CLOSURE PARTIAL** |
-| Peak natural SERVICE concurrency | **2 / 10** |
-| QG-LANE-001 | **UNDERUTILIZED** |
-| Backend capacity probe | **10 / 10** |
+Active coordinated streams: **BL-001, BL-002 and BL-008**.
 
-No unchanged discovery batch was rerun because the immutable snapshot still requires source restaging.
+| Backlog | Current state | Current next action |
+|---|---|---|
+| BL-001 Controller Traceability | PARTIAL / UNIQUE-KEY RECOVERY | Atomically project 11 source-proved recovery rows into the existing 123 unique keys and prove exactly 134 unique method/path rows with zero duplicates. |
+| BL-002 Controller Matrix -> Human-Readable Stories | PARTIAL / RELEASE-1 FIELD-LEVEL REWORK | Atomically register/cross-map STORY-0067, then continue Release-1 field-level Story rework from accepted BL-001 rows. |
+| BL-008 Ownership-model DB Migration | **READY_TARGET_VERIFIED** | Select the initial authoritative Flyway requirement, prove version/order/checksum/prerequisites, validate, apply exactly one requirement to verified Neon `main`, then verify history/integrity. |
 
-## Latest Orchestrator Checkpoint
+BL-003 and BL-004 wait on approved BL-002 outputs; BL-005 waits on BL-003/BL-004. BL-006/BL-007 and BL-009..BL-021 remain not enabled/yet-to-do according to the backlog master.
 
-Checkpoint: **`PRODUCTION-FIRE-20260824-085811`**
-
-`POST /vehicleLoad` advanced from **NOT YET EXAMINED** to **COMPLETE / FULL_BRANCHING**. The source-proved chain is `Uc02Phase01VehicleLoadController.doPost -> Uc02Phase01VehicleLoadMediator.invokeServices -> VehicleLoadIngestionService.processRequest -> VehicleLoadIngestionValidator -> CylinderLocationExclusivityValidator` plus typed DAO/entity branches. The proved PostgreSQL objects are `public.tbl_cylinder`, `public.tbl_yard_inventory_line`, `public.tbl_cylinder_logistics_execution_line`, `public.tbl_vehicle_trip`, `public.tbl_vehicle_load_purpose`, `public.tbl_stop_type`, `public.tbl_vehicle_trip_stop`, `public.tbl_trip_status`, `public.tbl_vehicle_load`, `public.tbl_vehicle_load_line`, `public.tbl_cylinder_logistics_execution`, and `public.tbl_cylinder_states`. Success redirects to `/vehicle-loads/list`; validation failure re-renders `with-menu/Uc02-Phase01-VehicleLoadView`.
-
-## Framework / Gate State
-
-| Gate | State |
-|---|---|
-| QG-SOW-001 | **PASS** |
-| QG-SSOT-001 | **PASS** |
-| QG-DEP-001 | **PASS** |
-| QG-SOURCE-001 | **PASS ROOTS VERIFIED / SOURCE CLOSURE PARTIAL** |
-| QG-LOG-001 | **PASS - zero transient lane logs** |
-| QG-RECOVERY-001 | **PASS - 5/5 state cases** |
-| QG-LANE-001 | **UNDERUTILIZED - latest natural worker fire 2/10** |
-| QG-TRC-002 Complete Source Check | **IN PROGRESS** |
-
-## Current Lane State
-
-All **10 lanes are IDLE between worker fires**. The last worker batch closed cleanly. Direct frozen-source trace closure continues while the shared immutable snapshot is restaged; workers restart only after QG-SOURCE-001 proves the snapshot advanced.
-
-## Current BL-001 Traceability Runtime
+## BL-001 Trusted Unique-Key State
 
 | Metric | Current value |
 |---|---:|
-| Caller-visible endpoints | **134** |
-| Examined | **62** |
-| COMPLETE | **60** |
-| UNRESOLVED | **2** |
-| BLOCKED / FAILED | **0 / 0** |
-| NOT YET EXAMINED | **72** |
-| Traceability Matrix | **INCREMENTAL_PARTIAL** |
-| Materialized full-chain rows | **38** |
-| Historical accepted rows awaiting evidence backfill | **24** |
+| Frozen source baseline | `3ae6e61442132d94a307275b08dd65fcef228d89` |
+| Final unique HTTP method/path target | **134** |
+| Canonical unique keys materialized | **123** |
+| Exact pending unique keys | **11** |
+| Pending keys fully source-proved | **11 / 11** |
+| Explorer base full-read | PASS |
+| Ordered delta artifacts verified | **42 / 42** |
+| Remaining delta reads | **0** |
+| Required post-projection state | **134 unique rows / zero duplicates** |
 
-Current examination coverage: **46.27%**. Current COMPLETE coverage: **44.78%**.
+Historical aggregate 134/134 counters are audit-only because duplicate acceptance events were later proven. Canonical completion therefore depends on unique `HTTP_METHOD_PLUS_PATH` reconciliation.
 
-Open canonical evidence gaps remain:
+## BL-002 Story State
 
-- `POST /customer-spot-cylinder-check/submit`
-- `POST /walkin-sale`
+| Metric | Current value |
+|---|---:|
+| Release 1 assignments | **88** |
+| Release 2 assignments | **46** |
+| Registered Story dispositions | **66** |
+| Ready for user review | **45** |
+| NEEDS_CLARIFICATION | **21** |
+| Approved | **0** |
+| Materialized Story artifacts | **67** |
+| Latest pending register/cross-map sync | `STORY-0067` |
 
-## Current Work Units
+Release 2 remains blocked until the Release-1 field-level boundary. Stories and Use Cases require explicit user approval and are never auto-approved.
 
-| Work Unit | State |
+## BL-008 Neon TEST Target - Blocker Resolved
+
+The previous `BLK-BL008-006 / BLOCKED_REQUIRED_MAIN_BRANCH_NOT_VISIBLE` state is **RESOLVED**.
+
+| Verified target field | Live value |
 |---|---|
-| WU-BL001-001 Complete Source Repository Check And Maintain Incremental Matrix | **IN PROGRESS / SOURCE RESTAGE + TRACE CLOSURE** |
-| WU-BL001-002 Finalize And Reconcile Traceability Matrix | WAITING_FOR_DEPENDENCY |
-| WU-BL001-003 Validate Traceability Gates From Final Matrix | WAITING_FOR_DEPENDENCY |
-| WU-BL001-004 Register Source And Matrix Baseline / Closure | WAITING_FOR_DEPENDENCY |
+| Project | `neon-for-cylinder-db` |
+| Project ID | `small-bread-22546365` |
+| Required branch | `main` |
+| Main branch ID | `br-delicate-mountain-ayzs1f3l` |
+| Database | `neondb` |
+| Database user | `neondb_owner` |
+| PostgreSQL server version | `18.6` |
+| Public tables | **0** |
+| `flyway_schema_history` | **Absent** |
+| Database writes during verification | **0** |
 
-## Exact Next Action
+The verified `main` database is a fresh empty target. Absence of `flyway_schema_history` is therefore **not a blocker**; it means the initial Flyway baseline has not yet been applied. BL-008 is ready to begin the one-requirement-at-a-time Flyway sequence.
 
-Continue other not-yet-examined endpoint families from exact frozen-source evidence while resolving and blob-verifying the **16 outstanding worker source requests** and materializing the validated `CompleteTripServiceImpl` into the immutable snapshot. Fire the ten-worker discovery only after staged preflight proves the snapshot advanced. Preserve the two canonical unresolved POST endpoints until every branch dependency is source-proved.
+## Current Gates / Safety
 
-BL-001 remains **PARTIAL** and cannot close before 100% endpoint trace-result coverage, final matrix reconciliation/gates, and explicit `QG-TRC-015` user acceptance.
+- QG-SSOT-001: PASS
+- QG-SOW-001: PASS
+- QG-DEP-001: PASS
+- BL-008 target gate: **PASS_TARGET_VERIFIED**
+- GitHub Actions dependency: NONE
+- Neon branch creation: FORBIDDEN
+- BL-008 manual SQL substitution: FORBIDDEN
+- BL-008 database write parallelism: 1
+- Shared SSOT writer capacity: 1
+- Backlog closure: explicit user acceptance remains required where configured
+
+## Immediate Orchestrator Actions
+
+1. BL-001: execute the atomic 123 + 11 -> 134 unique-key Matrix/Explorer projection and reconciliation.
+2. BL-002: synchronize STORY-0067 and continue Release-1 field-level Story evidence/rework.
+3. BL-008: select and validate the initial authoritative Flyway requirement on verified `main` / `neondb`, apply exactly one requirement only after validation, then verify `flyway_schema_history` plus schema/ownership/data integrity.
