@@ -1,14 +1,18 @@
 backlog_item: BL-008
-version: 3
+version: 4
 state: DISCOVERY_FAIL_CLOSED_LIVE_NEON_TARGET_NOT_VISIBLE
 common_gates:
   QG-SSOT-001: PASS
   QG-SOW-001: PASS
   QG-DEP-001: PASS_NO_BACKLOG_DEPENDENCIES
 item_gates:
-  QG-DBMIG-001: BLOCKED_LIVE_NEON_TARGET_VISIBILITY_AND_SOURCE_INVENTORY_RECONCILIATION
+  QG-DBMIG-001: BLOCKED_LIVE_NEON_TARGET_VISIBILITY_ONLY_SOURCE_INVENTORY_PASS_V170
   QG-DBMIG-002: BLOCKED_BY_QG-DBMIG-001
   QG-DBMIG-003: BLOCKED_BY_QG-DBMIG-002
+  QG-DBMIG-004: BLOCKED_BY_QG-DBMIG-003
+  QG-DBMIG-005: BLOCKED_BY_QG-DBMIG-004
+  QG-DBMIG-006: BLOCKED_BY_QG-DBMIG-005
+  QG-DBMIG-007: BLOCKED_BY_QG-DBMIG-006
 planning_authorized: true
 discovery_execution_authorized: true
 database_mutation_authorized: false
@@ -18,14 +22,17 @@ policy:
   branch_creation: FORBIDDEN
   database_requirement_parallelism: 1
   requirement_rule: COMPLETE_VALIDATE_AND_RECORD_ONE_REQUIREMENT_BEFORE_NEXT
+source_discovery:
+  current_main_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
+  current_main_flyway_head: V170
+  current_main_inventory_complete: true
 live_discovery:
-  attempted_at: 2026-08-26T02:39:00Z
+  attempted_at: 2026-08-26T03:03:00Z
   neon_connector_visible_projects: 0
   requested_project: neon-for-cylinder-db
   historical_project_id: holy-glitter-02245694
+  exact_project_verified_live: false
   exact_database_verified_live: false
-  source_repository_current_main_inventory_complete: false
-  frozen_bl001_source_observation: HISTORICALLY_ONLY_THROUGH_V172_AT_3ae6e61442132d94a307275b08dd65fcef228d89
-  rule: DO_NOT_TREAT_FROZEN_BL001_SOURCE_HEAD_AS_CURRENT_BL008_SOURCE_HEAD_WITHOUT_REINVENTORY
 write_attempted: false
-next_gate_action: RESTORE_OR_VERIFY_NEON_CONNECTOR_PROJECT_VISIBILITY_AND_COMPLETE_CURRENT_MAIN_FLYWAY_INVENTORY_BEFORE_SELECTING_FIRST_DATABASE_REQUIREMENT
+next_gate_action: RESTORE_OR_VERIFY_NEON_PROJECT_VISIBILITY_THEN_VERIFY_MAIN_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
