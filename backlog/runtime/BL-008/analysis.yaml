@@ -1,0 +1,18 @@
+backlog_item: BL-008
+version: 1
+state: INITIALIZED
+analysis:
+  authoritative_database_ledger: database-dependency-neon.md
+  target_project: neon-for-cylinder-db
+  target_project_id: holy-glitter-02245694
+  production_branch: production
+  production_branch_id: br-steep-snow-aw6u5odt
+  database: neon-for-cylinder-db
+  postgres: 18.4
+  current_database_state: FRESH_EMPTY_MIGRATION_PENDING
+  required_flyway_target: V176
+  migration_source_repository: vvekselva/CylinderManagement
+  migration_source_path: cylinder.datascripts/src/main/resources/db/migration/
+  ownership_source_roots: [NewOwnerShipModelv3/, cmas.database.operations/]
+  manual_sql_substitution: FORBIDDEN
+  first_execution_action: VERIFY_EXACT_MIGRATION_INVENTORY_AND_CREATE_OR_VERIFY_VALIDATION_BRANCH
