@@ -1,21 +1,18 @@
 invocation_lease:
-  version: 37
-  state: RELEASED
+  version: 38
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-071618IST
-  acquired_at: 2026-08-26T07:16:18+05:30
-  released_at: 2026-08-26T07:19:16+05:30
+  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-015827Z
+  acquired_at: 2026-08-26T01:58:27Z
+  released_at: null
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-001 and BL-002 backlog-driven production execution
   duplicate_action: NOOP
-  outcome: PARTIAL_NO_RUNNABLE_WORKER_GENERATION_CHECKPOINT_SYNCHRONIZED
+  outcome: RUNNING
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
     - Live authoritative backlog/run-config/SSOT/quality-gate files were read before execution.
-    - BL-001 prior worker generation remained CLOSED_SYNCHRONIZED and was not replayed; canonical state remains 123 unique rows plus 11 source-proved rows pending atomic projection.
-    - Exact 134-row uniqueness was not claimed because atomic connector-native model assembly and multi-artifact serialization have not passed.
-    - BL-002 additional Story generation is paused by user-owned DEC-BL002-005 pending complete 134-item Release 1/Release 2 classification; release-classification remains 0/134 assigned.
-    - STORY-0049 through STORY-0052 were inspected only as pre-existing artifacts; STORY-0053 was not generated and no Story/Use Case was auto-approved.
-    - Both backlog lane sets remained 10/10 IDLE with zero active lanes and zero residual transient lane logs.
+    - Lease acquired only after prior invocation was confirmed RELEASED.
+    - BL-001 and BL-002 will be replanned independently under their current Level-3 runtime and user-owned gates.
