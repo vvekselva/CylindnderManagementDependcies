@@ -1,13 +1,22 @@
-version: 16
+version: 17
 purpose: >-
   Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
-  workstreams when independently eligible. Shared worker capacity is dynamic; shared SSOT writes remain serialized,
-  database mutation under BL-008 is always serialized one requirement at a time, and separate production invocations
-  may overlap safely when they claim different work.
+  workstreams when independently eligible. GitHub is VCS/durable persistence; the Primary Automation Tool owns planning,
+  source staging, execution, validation, recovery and synchronization. Shared SSOT writes are serialized and BL-008
+  database mutation is always one requirement at a time.
+
+authority:
+  control_repository: vvekselva/CylindnderManagementDependcies
+  control_branch: chore/rename-dependency-files
+  source_repository: vvekselva/CylinderManagement
+  production_fire_progress_governance: governance/production-fire-progress-guarantee.yaml
+  invocation_health_governance: governance/invocation-health.yaml
+  invocation_concurrency_governance: governance/invocation-concurrency.yaml
 
 selection:
   mode: ENABLED_ELIGIBLE_BACKLOG_ITEMS_WITH_SAFE_PARALLELISM
   max_active_backlog_items: 3
+  coordinated_streams: [BL-001, BL-002, BL-008]
   choose_from_enabled_items_by: HIGHEST_PRIORITY_ELIGIBLE_ITEMS
   require_three_level_ssot_gate: true
   require_statement_of_work_gate: true
@@ -15,7 +24,6 @@ selection:
   require_item_specific_quality_gate: true
   require_item_quality_gate_approved_by_user: true
   eligibility_order: [run_enabled, QG-SSOT-001, QG-SOW-001, QG-DEP-001, item_specific_quality_gate, work_unit_dependencies]
-  coordinated_streams: [BL-001, BL-002, BL-008]
   rules:
     BL-001_BL-002:
       allowed: true
@@ -23,7 +31,6 @@ selection:
       forbidden_BL-002_input: [PENDING_ATOMIC_PROJECTION_ROWS, RAW_WORKER_EVIDENCE, UNACCEPTED_CANDIDATES, STALE_FINGERPRINTS]
     BL-008:
       allowed_in_parallel_with: [BL-001, BL-002]
-      read_only_discovery_may_parallelize: true
       database_mutation_serialized: true
       database_requirement_parallelism: 1
       neon_environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
@@ -33,8 +40,6 @@ selection:
 execution_engine:
   owner: AUTOMATION_TOOL
   architecture: architecture/self-reliant-e2e-execution.md
-  self_reliant_governance: governance/self-reliant-execution.yaml
-  invocation_concurrency_governance: governance/invocation-concurrency.yaml
   backend: LOCAL_PROCESS_POOL
   max_parallel_workers_per_invocation: 10
   worker_pool_allocation: EVENT_DRIVEN_DYNAMIC_REFILL
@@ -43,8 +48,6 @@ execution_engine:
   github_role: START_SNAPSHOT_AND_BATCHED_DURABLE_PERSISTENCE_ONLY
   github_actions_required: false
   external_worker_service_required: false
-  source_repository: vvekselva/CylinderManagement
-  control_repository: vvekselva/CylindnderManagementDependcies
   source_provider_governance: governance/source-provider.yaml
   execution_source_mode: governance/execution-source-mode.yaml
   source_layout: repository/source-layout.yaml
@@ -53,26 +56,8 @@ execution_engine:
   staged_executor: automation/staged-lane-executor-v3.py
   staged_worker: automation/staged-lane-worker-v3.py
   executor_completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
-  executor_completion_return_owner: PRIMARY_ORCHESTRATOR
-
-repository_snapshot_contract:
-  config: governance/execution-source-mode.yaml
-  fetch_repository_tree_once_at_invocation_start: true
-  repository_tree_reuse_scope: SINGLE_INVOCATION
-  independent_snapshot_per_overlapping_invocation: true
-  git_changes_expected_during_execution: false
-  external_commits_expected_through: 2026-08-30T23:59:59+05:30
-  runtime_reads_after_start: LOCAL_OR_STAGED_SNAPSHOT_ONLY
-  workers_may_fetch_repository_tree: false
-  executor_may_fetch_repository_tree: false
-  orchestrator_may_refetch_tree_before_replan: false
-  orchestrator_may_refetch_tree_after_executor_completion: false
-  remote_polling_when_change_flag_false: false
-  orchestrator_generated_commit_behavior: UPDATE_OWN_LOCAL_CONTROL_SNAPSHOT_WITHOUT_TREE_REFETCH
-  change_flag_true_behavior: REFRESH_ONLY_ON_EXPLICIT_CHANGE_SIGNAL
 
 invocation_concurrency_contract:
-  config: governance/invocation-concurrency.yaml
   singleton_invocation_required: false
   overlapping_invocations_allowed: true
   max_concurrent_invocations: 2
@@ -88,52 +73,37 @@ invocation_concurrency_contract:
   shared_ssot_write_lock_capacity: 1
   bl008_database_write_lock_capacity: 1
 
-invocation_utilization_contract:
-  mode: THIRTY_MINUTE_PRODUCTIVE_WINDOW_WITH_LONG_TASK_DRAIN
-  executor_liveness:
-    live_only_while_assigned_executor_work_remains: true
-    no_idle_keepalive: true
-    on_assigned_work_complete: EMIT_EXECUTOR_COMPLETED_REPLAN_REQUIRED_AND_EXIT
-    on_assigned_work_failed_or_blocked: EMIT_EXECUTOR_COMPLETED_REPLAN_REQUIRED_AND_EXIT
-  orchestrator_liveness:
-    continue_assigning_while_productive_window_open_and_eligible_work_exists: true
-    on_executor_completion: VALIDATE_RESULT_RELEASE_SLOT_REPLAN_AND_ASSIGN_IMMEDIATELY
-    no_dependency_on_executor_process_liveness: true
-    no_wait_for_other_executors_before_refill: true
-    target_productive_window_minutes: 30
-    at_target_window:
-      start_new_executor_work: false
-      cancel_running_executor_work: false
-      wait_for_active_long_running_tasks_to_complete: true
-      begin_accumulation_only_after_active_tasks_complete: true
-      invocation_may_exceed_30_minutes_for_running_long_tasks: true
-    early_stop_when:
-      - NO_ELIGIBLE_OR_RECOVERABLE_UNCLAIMED_WORK
-      - FAIL_CLOSED_GATE_REQUIRES_EXTERNAL_STATE_CHANGE_AND_NO_OTHER_UNCLAIMED_WORK_EXISTS
-    wall_clock_timeout_for_healthy_long_running_task: NONE
-    stale_task_recovery_uses_heartbeat_not_elapsed_runtime: true
-  assignment_loop:
-    enabled: true
-    model: EVENT_DRIVEN_PER_EXECUTOR_COMPLETION
-    executor_completion_signal_required: EXECUTOR_COMPLETED_REPLAN_REQUIRED
-    replan_after_every_executor_completion: true
-    validate_completed_executor_only: true
-    wait_for_all_workers_before_reassignment: false
-    generation_barrier_for_refill: false
-    release_and_refill_freed_slot_immediately: true
-    preserve_other_running_executors: true
-    shared_control_writes_remain_serialized: true
-    github_persistence_is_not_required_before_reassignment: true
-    refill_worker_pool_from_backlog: true
-    max_concurrent_executors_per_invocation: 10
-    continue_assigning_while_productive_window_open: true
-  accumulation:
-    begin_when: PRODUCTIVE_WINDOW_CLOSED_AND_ALL_TASKS_STARTED_BY_THIS_INVOCATION_REACHED_TERMINAL_EXECUTOR_STATE
-    wait_for_other_overlapping_invocations: false
-    aggregate_only_this_invocations_results: true
-    validate_and_merge_shared_ssot_under_single_writer_lock: true
-    clean_this_invocations_transient_lane_logs_to_zero: true
-    batch_git_checkpoint_after_validated_merge: true
+invocation_health_contract:
+  register_start_before_analysis: true
+  heartbeat_interval_seconds: 60
+  stale_after_seconds_without_heartbeat: 300
+  stuck_after_seconds_without_meaningful_progress_with_fresh_heartbeat: 600
+  running_flag_alone_proves_liveness: false
+  health_states: [ACTIVE, IDLE_BUT_HEALTHY, BLOCKED, STALE, STUCK, RECOVERING]
+  missing_registry_start_action: SCHEDULER_TO_ORCHESTRATOR_START_FAILURE
+  stale_or_stuck_recovery: FAIL_CLOSED_BEFORE_DUPLICATE_WORK
+
+production_fire_progress_contract:
+  terminal_checkpoint_forbidden_when_eligible_work_and_free_capacity: true
+  mandatory_action_when_free_capacity_and_eligible_work: REPLAN_CLAIM_DISPATCH
+  blocked_stream_does_not_block_independent_streams: true
+  unchanged_external_blocker_recheck_policy: CACHE_WITHIN_INVOCATION_AND_CONTINUE_OTHER_ELIGIBLE_WORK
+  complete_allowed_only_when_no_eligible_or_recoverable_unclaimed_work: true
+  work_remaining_at_stop_state: PARTIAL_CONTINUE_REQUIRED
+  status_check_alone_is_production_completion: false
+  target_productive_window_minutes: 30
+  running_long_tasks_may_exceed_target: true
+
+repository_snapshot_contract:
+  fetch_repository_tree_once_at_invocation_start: true
+  repository_tree_reuse_scope: SINGLE_INVOCATION
+  independent_snapshot_per_overlapping_invocation: true
+  git_changes_expected_during_execution: false
+  runtime_reads_after_start: LOCAL_OR_STAGED_SNAPSHOT_ONLY
+  workers_may_fetch_repository_tree: false
+  executor_may_fetch_repository_tree: false
+  remote_polling_when_change_flag_false: false
+  external_commits_expected_through: 2026-08-30T23:59:59+05:30
 
 production_source_contract:
   gate: QG-SOURCE-001
@@ -142,38 +112,45 @@ production_source_contract:
     owner: PRIMARY_ORCHESTRATOR
     repository: vvekselva/CylinderManagement
     baseline: MUST_MATCH_SELECTED_BACKLOG_BASELINE
-    repository_tree_captured_once_at_invocation_start: true
     manifest_required: true
     every_materialized_file_requires_git_blob_sha: true
     every_worker_verifies_file_before_read: true
     workers_access_github_directly: false
     executor_accesses_github_directly: false
-    orchestrator_runtime_source_access_after_start: LOCAL_OR_STAGED_ONLY
   local_git_fallback:
     frozen_commit_must_exist_locally: true
     active_checkout_is_not_switched: true
     executor_uses_detached_worktree: true
   common_preflight:
-    - load governance/invocation-concurrency.yaml
-    - register unique invocation before claiming work
-    - capture one repository tree snapshot for this invocation
-    - load governance/execution-source-mode.yaml
-    - selected backlog items and Work Units are eligible
+    - persist invocation START record and initial heartbeat
+    - classify every RUNNING invocation from heartbeat/progress evidence
+    - selected backlog items and work units are eligible
+    - capture one immutable repository snapshot for the invocation
     - required source and SSOT inputs are available
-    - duplicate lane and task IDs are rejected inside an invocation
     - globally claimed work is excluded from dispatch
-    - this invocation starts with zero leftover individual lane logs in its workspace
+    - transient lane logs start at zero or recovery cleans them first
 
 bl001_traceability_contract:
   workflow: workflows/WF-002-incremental-traceability-matrix.yaml
+  frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   matrix_artifact: traceability/controller-traceability.md
   unresolved_artifact: traceability/unresolved-traceability.md
   progress_artifact: traceability/matrix-progress.yaml
   structured_matrix: traceability/explorer/traceability-matrix.json
+  browser_data: traceability/explorer/matrix-data.js
+  viewer: traceability/explorer/index.html
   row_key: HTTP_METHOD_PLUS_PATH
   final_unique_row_requirement: 134
+  full_chain_required: CONTROLLER_SERVICE_MEDIATOR_ADDITIONAL_SERVICES_DAO_REPOSITORY_ENTITY_VIEW_FINAL_DEPENDENCY
+  branching_paths_preserved_separately: true
   worker_direct_matrix_write_allowed: false
   raw_worker_candidate_is_matrix_truth: false
+  pending_unique_projection:
+    canonical_unique_rows: 123
+    source_proved_pending_rows: 11
+    required_post_projection_unique_rows: 134
+    duplicates_allowed: 0
+    atomic_projection_required: true
 
 bl002_story_usecase_contract:
   workflow: workflows/WF-003-controller-story-usecase.yaml
@@ -197,13 +174,24 @@ bl002_story_usecase_contract:
 bl008_database_migration_contract:
   workflow: workflows/WF-004-database-ownership-migration.yaml
   dependency_ledger: database-dependency-neon.md
+  runtime_result: backlog/runtime/BL-008/result.yaml
   source_repository: vvekselva/CylinderManagement
+  frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   flyway_path: cylinder.datascripts/src/main/resources/db/migration/
+  current_source_inventory_head: V170
   ownership_source_roots: [NewOwnerShipModelv3/, cmas.database.operations/]
   target_project: neon-for-cylinder-db
-  target_project_id: holy-glitter-02245694
+  target_project_id: small-bread-22546365
   neon_branch: main
-  database: VERIFY_FROM_NEON_BEFORE_WRITE
+  main_branch_id: br-delicate-mountain-ayzs1f3l
+  database: neondb
+  database_user: neondb_owner
+  database_identity_verified: true
+  postgres_server_version: "18.6"
+  verified_public_table_count: 0
+  flyway_schema_history_exists: false
+  target_state: READY_TARGET_VERIFIED
+  resolved_blocker: BLK-BL008-006
   environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
   migration_mechanism: FLYWAY_ONLY
   manual_sql_substitution: FORBIDDEN
@@ -211,11 +199,13 @@ bl008_database_migration_contract:
   database_requirement_parallelism: 1
   global_database_write_lock_across_overlapping_invocations: true
   selected_requirement_rule: EXACTLY_ONE_ACTIVE_REQUIREMENT_IN_AUTHORITATIVE_ORDER
+  initial_requirement_selection_state: READY
   database_mutation_owner: PRIMARY_ORCHESTRATOR_SERIAL_STAGE
   ownership_types: [COMPANY_OWNED, SUPPLIER_OWNED, CUSTOMER_OWNED]
   require_pre_post_integrity_checks: true
   require_ledger_sync_before_next_requirement: true
   failure_rule: FAIL_CLOSED_ON_CURRENT_REQUIREMENT_DO_NOT_ADVANCE
+  next_action: SELECT_INITIAL_REQUIREMENT_PROVE_VERSION_ORDER_CHECKSUM_VALIDATE_APPLY_ONE_VERIFY_HISTORY_AND_INTEGRITY
 
 execution_recovery_contract:
   execution_journal_required: true
@@ -234,14 +224,14 @@ execution_recovery_contract:
   database_mutation_failure: FAIL_CLOSED_ON_CURRENT_REQUIREMENT_NO_MANUAL_PATCH_NO_ADVANCE
 
 backlog_items:
-  BL-001: {name: Controller Traceability, run_enabled: true, item_definition: backlog/items/BL-001-controller-traceability.yaml, statement_of_work: backlog/sow/BL-001-controller-traceability.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-001/, completion_path: backlog/paths/BL-001-traceability.yaml, quality_gate: backlog/gates/BL-001-traceability.yaml, quality_gate_configured: true, quality_gate_approved: true}
-  BL-002: {name: Controller Dependency Matrix to Human-Readable Stories, run_enabled: true, item_definition: backlog/items/BL-002-controller-story-usecase.yaml, statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-002/, completion_path: backlog/paths/BL-002-controller-story-usecase.yaml, quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml, quality_gate_configured: true, quality_gate_approved: true}
+  BL-001: {name: Controller Traceability, run_enabled: true, runtime: backlog/runtime/BL-001/, quality_gate_approved: true}
+  BL-002: {name: Controller Dependency Matrix to Human-Readable Stories, run_enabled: true, runtime: backlog/runtime/BL-002/, quality_gate_approved: true}
   BL-003: {name: Unit Test Completion, run_enabled: false}
   BL-004: {name: Integration Test Completion, run_enabled: false}
   BL-005: {name: Code Coverage Report, run_enabled: false}
   BL-006: {name: ArchUnit Architecture Test, run_enabled: false}
   BL-007: {name: Requirements Traceability and Gap Analysis, run_enabled: false}
-  BL-008: {name: Migration of the Database to the Ownership Model, run_enabled: true, item_definition: backlog/items/BL-008-database-ownership-migration.yaml, statement_of_work: backlog/sow/BL-008-database-ownership-migration.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-008/, completion_path: backlog/paths/BL-008-database-ownership-migration.yaml, quality_gate: backlog/gates/BL-008-database-ownership-migration.yaml, quality_gate_configured: true, quality_gate_approved: true}
+  BL-008: {name: Migration of the Database to the Ownership Model, run_enabled: true, runtime: backlog/runtime/BL-008/, quality_gate_approved: true}
   BL-009: {name: Supplier Owned Customer Owned and Company Owned Cylinder Model, run_enabled: false}
   BL-010: {name: Physical Challan Book Location, run_enabled: false}
   BL-011: {name: Ownership Dashboard Changes, run_enabled: false}
@@ -257,29 +247,23 @@ backlog_items:
   BL-021: {name: Customer Data Dashboard, run_enabled: false}
 
 scheduled_run_rules:
-  - read backlog/backlog.yaml, this run-config, governance/invocation-concurrency.yaml, and governance/execution-source-mode.yaml first
-  - register a unique invocation; do not acquire a singleton lease
-  - allow a new trigger to run in parallel with an existing invocation when max_concurrent_invocations has capacity
+  - read authoritative control branch and v17 run-config before work
+  - persist a unique invocation START record and initial heartbeat before analysis
+  - classify all recorded RUNNING invocations from heartbeat and progress evidence
+  - recover STALE/STUCK invocations fail-closed before duplicate work
   - atomically claim work before dispatch and never assign work already claimed by another live invocation
-  - capture repository tree once at each invocation start and reuse that invocations own snapshot
-  - when git_changes_expected_during_execution is false, use only that invocation-start local/staged snapshot for runtime source reads
-  - do not poll or refetch GitHub tree after worker completion, before replan, or before reassignment
-  - orchestrator-authored commits update only the originating invocations local control snapshot and do not trigger whole-tree rediscovery
-  - execute BL-001, BL-002 and BL-008 when independently eligible up to max_active_backlog_items
-  - enforce QG-SSOT-001, QG-SOW-001, QG-DEP-001 and item-specific gates per stream
+  - execute BL-001, BL-002 and BL-008 independently when eligible; one blocked stream must not stop another
   - share up to 10 workers per invocation dynamically without starvation
-  - an executor lives only while its currently assigned executor work remains
-  - executor completion must emit EXECUTOR_COMPLETED_REPLAN_REQUIRED and return control to its Primary Orchestrator
-  - on any single executor completion, validate that executor result, release that slot, replan, and immediately assign the next eligible unclaimed work to that slot
-  - never wait for other still-running executors before refilling a completed executor slot
-  - keep assigning productive work for about 30 minutes while eligible unclaimed work exists
-  - at the 30-minute target stop starting new executor work, allow already-running long tasks to finish, then perform accumulation and cleanup
-  - overlapping invocations do not wait for one another before their own accumulation; shared SSOT merge is serialized
-  - BL-002 executes Release 1 field-level Story rework before Release 2
-  - BL-008 uses Neon main only and creates no Neon branches
-  - BL-008 selects and completes exactly one database requirement before selecting the next
-  - BL-008 database writes use a global lock of capacity 1 across all overlapping invocations
+  - on executor completion validate, release slot, replan and refill immediately while productive window remains open
+  - if eligible unclaimed work exists and active lanes are zero, terminal checkpoint is forbidden
+  - do not repeatedly recheck an unchanged external blocker within the same invocation when other work exists
+  - BL-001 projection must reconcile exactly 134 unique HTTP method/path keys with zero duplicates
+  - BL-002 executes Release 1 field-level Story rework before Release 2 and never auto-approves
+  - BL-008 uses verified Neon project small-bread-22546365 branch main br-delicate-mountain-ayzs1f3l database neondb
+  - BL-008 creates no Neon branches, uses Flyway only and completes exactly one database requirement before selecting the next
+  - BL-008 database writes use a global lock of capacity 1 across overlapping invocations
   - retry PENDING_SYNC without restarting completed work
-  - leave zero transient lane logs for the finishing invocation before its end
+  - leave zero transient lane logs for the finishing invocation
   - synchronize only validated durable state using batched checkpoint persistence
-  - never mark any Backlog Item CLOSED without explicit user acceptance
+  - COMPLETE is allowed only when no eligible or recoverable unclaimed work remains; otherwise use PARTIAL_CONTINUE_REQUIRED
+  - never mark any Backlog Item CLOSED without explicit user acceptance where configured
