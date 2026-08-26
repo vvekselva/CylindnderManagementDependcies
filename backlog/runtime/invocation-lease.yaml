@@ -1,22 +1,19 @@
 invocation_lease:
-  version: 51
-  state: RELEASED
+  version: 52
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1116IST
-  acquired_at: 2026-08-26T05:46:29Z
-  released_at: 2026-08-26T05:58:48Z
+  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1202IST
+  acquired_at: 2026-08-26T06:32:08Z
+  released_at: null
   authoritative_branch: chore/rename-dependency-files
   purpose: coordinated BL-008 BL-001 BL-002 production execution
   duplicate_action: NOOP
-  outcome: CHECKPOINTED_AFTER_SNAPSHOT_EVENT_DRIVEN_FIRE
+  outcome: RUNNING
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   BL-008_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - Manual fire adopted run-config v15 and governance/execution-source-mode.yaml.
-    - Repository tree is fetched once per invocation when Git changes are not expected.
-    - Executor completion is processed independently without waiting for peer executors or workers.
-    - STORY-0057 was already durably persisted before batched-persistence mode was added.
-    - Subsequent executor/story results must accumulate locally and persist only at a checkpoint or invocation end.
-    - No executor is left marked RUNNING after this synchronous checkpoint.
+    - Lease acquired from RELEASED state.
+    - BL-008 uses Neon main only, no Neon branches, one database requirement at a time.
+    - BL-002 RELEASE_1 work precedes RELEASE_2 and Stories require field-level mappings.
