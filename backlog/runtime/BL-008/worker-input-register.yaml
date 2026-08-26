@@ -1,0 +1,24 @@
+backlog_item: BL-008
+version: 1
+state: INITIALIZED
+inputs:
+  - id: BL008-IN-001
+    type: SOURCE_ROOT
+    value: cylinder.datascripts/src/main/resources/db/migration/
+    source_repository: vvekselva/CylinderManagement
+  - id: BL008-IN-002
+    type: SOURCE_ROOT
+    value: NewOwnerShipModelv3/
+    source_repository: vvekselva/CylinderManagement
+  - id: BL008-IN-003
+    type: SOURCE_ROOT
+    value: cmas.database.operations/
+    source_repository: vvekselva/CylinderManagement
+  - id: BL008-IN-004
+    type: CONTROL_SSOT
+    value: database-dependency-neon.md
+    control_repository: vvekselva/CylindnderManagementDependcies
+constraints:
+  secrets_allowed: false
+  database_mutation_by_workers: false
+  mutation_owner: PRIMARY_ORCHESTRATOR_SERIAL_STAGE
