@@ -1,16 +1,13 @@
 local_execution:
-  version: 68
+  version: 69
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED_ON_CONNECTOR_NATIVE_MODEL_ASSEMBLY_AND_ATOMIC_SERIALIZATION
+  state: TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED_ON_PROCESS_READABLE_AUTHORITATIVE_MODEL_ASSEMBLY
   backend: LOCAL_PROCESS_POOL
-  architecture: architecture/self-reliant-e2e-execution.md
   source_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  source_provider: PRIMARY_ORCHESTRATOR_EXACT_FROZEN_SOURCE
   configured_lanes: 10
   max_parallel_workers: 10
-  github_actions_dependency: NONE
   latest_worker_generation:
     execution_id: E2E-STAGED-20260823-161214
     state: CLOSED_SYNCHRONIZED
@@ -20,7 +17,7 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
   current_invocation:
-    invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-015827Z
+    invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-141701IST
     owner: PRIMARY_ORCHESTRATOR
     work_unit: WU-BL001-001
     idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_REPLAN_INVOCATION
@@ -30,21 +27,18 @@ local_execution:
     residual_transient_lane_logs: 0
     source_reads_allowed: true
     source_reads_frozen_baseline_only: true
+    connector_native_base_and_42_deltas_materialized_durably: true
     consolidation_executor: automation/consolidate-traceability-explorer.py
     consolidation_executor_validation: PASS_FAIL_CLOSED_123_PLUS_11_EQUALS_134_ZERO_DUPLICATES
-    connector_native_base_and_42_deltas_materialized_durably: true
-    model_assembly_execution: BLOCKED_NO_PROCESS_READABLE_AUTHORITATIVE_REPOSITORY_TREE_FOR_CONSOLIDATOR
+    model_assembly_execution: BLOCKED_NO_SINGLE_PROCESS_READABLE_AUTHORITATIVE_CONTROL_TREE
     canonical_rows_added: 0
     materialized_rows_after: 123
     pending_unique_keys_after: 11
-    outcome: NO_WORKER_REPLAY; ATOMIC_PROJECTION_NOT_EXECUTED; EXACT_134_UNIQUE_KEY_PROOF_NOT_CLAIMED
+    exact_134_unique_key_proof: NOT_PROVED
+    outcome: NO_WORKER_REPLAY_ATOMIC_PROJECTION_NOT_EXECUTED
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
-    pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
-    closed_waiting_validation_behavior: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
-    interrupted_running_behavior: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
-    changed_dispatch_behavior: START_NEW_EXECUTION_GENERATION
     already_closed_synced: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
   unique_recovery_state:
     canonical_endpoint_inventory_target: 134
@@ -54,8 +48,6 @@ local_execution:
     unique_method_path_coverage_proved: false
     projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
     projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
-    consolidation_executor: automation/consolidate-traceability-explorer.py
-    connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
   work_unit_handoff:
     WU-BL001-001: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED
     WU-BL001-002: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
@@ -63,4 +55,6 @@ local_execution:
     WU-BL001-004: WAITING_FOR_DEPENDENCY
     close_allowed: false
   next_action: >-
-    Execute the checked-in consolidator only when the authoritative control branch is available as one process-readable repository tree. Assemble the base plus all 42 ordered deltas with HTTP_METHOD_PLUS_PATH upsert semantics, require exactly 123 unique pre-recovery keys, merge the eleven corrected source-proved recovery rows, require exactly 134 unique keys with zero duplicates, then atomically regenerate matrix/explorer/runtime artifacts. Do not replay the closed worker generation.
+    Present the authoritative control repository as one process-readable tree, assemble the accepted base plus all 42 ordered
+    deltas with HTTP_METHOD_PLUS_PATH upsert semantics, prove exactly 123 pre-recovery unique keys, merge the eleven corrected
+    source-proved rows, require exactly 134 unique keys with zero duplicates, and regenerate matrix/explorer/runtime atomically.
