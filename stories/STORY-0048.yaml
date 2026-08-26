@@ -1,0 +1,97 @@
+story:
+  story_id: STORY-0048
+  title: Submit the vehicle trip/load wizard and persist the proved trip/load aggregate
+  state: NEEDS_CLARIFICATION
+  fingerprint: 771b0908502f43602eaad86e130e21dd7a528a3ebce548e3e2c40545527077a9
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /wizard/vehicle-trip-load/save"]
+  controller: VehicleTripLoadWizardController.save
+  endpoint: "POST /wizard/vehicle-trip-load/save"
+  business_purpose: Submit the vehicle trip/load wizard through the source-proved transactional ingestion service and persist the proved trip, load, challan-book, stop, logistics and yard changes.
+  trigger_and_context: A caller submits POST /wizard/vehicle-trip-load/save with UC02Phase01VehicleLoadRequestDto.
+  inputs:
+    - The accepted canonical trace proves that the controller receives UC02Phase01VehicleLoadRequestDto.
+    - The accepted trace does not enumerate the complete submitted field set, so field names or required/optional status are not invented.
+  normalization_and_defaults:
+    - The accepted canonical trace does not preserve complete field normalization or defaulting rules for UC02Phase01VehicleLoadRequestDto.
+    - No trimming, casing, null substitution, identifier default or numeric default is asserted without accepted evidence.
+  validations:
+    - TripChallanBookAssignmentSelectionValidator validates the challan-book selection and reads the active challan-book view, challan-page audit ledger and existing trip challan-book assignments.
+    - VehicleLoadIngestionValidator validates cylinder-related input and reads CylinderDo through CylinderJpaDao.
+    - CylinderLocationExclusivityValidator validates cylinder location exclusivity using yard-inventory-line and cylinder-logistics-execution-line persistence.
+  invalid_value_paths:
+    - The accepted trace proves an application-error terminal branch back through VehicleTripLoadWizardController.errorMav.
+    - Exact field-level invalid predicates, validation ordering and caller-visible error messages are not fully preserved by the accepted canonical trace and therefore remain clarification-required.
+  main_flow:
+    - VehicleTripLoadWizardController.save handles POST /wizard/vehicle-trip-load/save and passes UC02Phase01VehicleLoadRequestDto to VehicleLoadAndTripIngestionService.processRequest.
+    - VehicleLoadAndTripIngestionService is the source-proved implementation of ICylinderManagementApplicationService<UC02Phase01VehicleLoadRequestDto, UC02Phase01VehicleLoadResponseDto> and executes transactionally.
+    - Challan-book selection validation reads public.vw_active_challan_books_for_trip_load, public.tbl_challan_page_audit_ledger and public.tbl_trip_challan_book_assignment.
+    - Cylinder-location validation reads public.tbl_cylinder, public.tbl_yard_inventory_line and public.tbl_cylinder_logistics_execution_line.
+    - The trip/master branch reads vehicle, driver, customer, customer-address and trip-status masters and persists VehicleTripDo to public.tbl_vehicle_trip.
+    - The load branch reads load-purpose/cylinder/yard data and persists VehicleLoadDo to public.tbl_vehicle_load with VehicleLoadLineDo cascading to public.tbl_vehicle_load_line.
+    - The yard-start branch resolves the stop type and persists VehicleTripStopDo to public.tbl_vehicle_trip_stop.
+    - The assigned challan-book branch persists four selected TripChallanBookAssignmentDo records to public.tbl_trip_challan_book_assignment.
+    - The yard-to-logistics branch persists CylinderLogisticsExecutionDo and CylinderLogisticsExecutionLineDo records, reads the cylinder state master and updates yard inventory lines through saveAll.
+    - On success the controller returns redirect:/vehicle-loads/list.
+  component_flow:
+    - VehicleTripLoadWizardController.save
+    - VehicleLoadAndTripIngestionService.processRequest
+    - TripChallanBookAssignmentSelectionValidator.validate
+    - ActiveChallanBookForTripLoadViewJpaDao -> ActiveChallanBookForTripLoadViewDo -> public.vw_active_challan_books_for_trip_load
+    - ChallanPageAuditLedgerJpaDao -> ChallanPageAuditLedgerDo -> public.tbl_challan_page_audit_ledger
+    - TripChallanBookAssignmentJpaDao -> TripChallanBookAssignmentDo -> public.tbl_trip_challan_book_assignment
+    - VehicleLoadIngestionValidator -> CylinderJpaDao -> CylinderDo -> public.tbl_cylinder
+    - CylinderLocationExclusivityValidator -> YardInventoryLineJpaDao -> YardInventoryLineDo -> public.tbl_yard_inventory_line
+    - CylinderLocationExclusivityValidator -> CylinderLogisticsExecutionLineJpaDao -> CylinderLogisticsExecutionLineDo -> public.tbl_cylinder_logistics_execution_line
+    - VehicleJpaDao -> VehicleDo -> public.tbl_vehicle
+    - DriverJpaDao -> DriverDo -> public.tbl_driver
+    - CustomerJpaDao -> CustomerDo -> public.tbl_customer
+    - CustomerAddressJpaDao -> CustomerAddressDo -> public.tbl_customer_address
+    - VehicleTripStatusJpaDao -> VehicleTripStatusDo -> public.tbl_trip_status
+    - VehicleTripJpaDao -> VehicleTripDo -> public.tbl_vehicle_trip
+    - VehicleLoadPurposeJpaDao -> VehicleLoadPurposeDo -> public.tbl_vehicle_load_purpose
+    - VehicleLoadJpaDao -> VehicleLoadDo -> public.tbl_vehicle_load -> VehicleLoadLineDo -> public.tbl_vehicle_load_line
+    - VehicleTripStopTypeJpaDao -> VehicleTripStopTypeDo -> public.tbl_stop_type
+    - VehicleTripStopJpaDao -> VehicleTripStopDo -> public.tbl_vehicle_trip_stop
+    - CylinderLogisticsExecutionJpaDao -> CylinderLogisticsExecutionDo -> public.tbl_cylinder_logistics_execution
+    - CylinderStateJpaDao -> CylinderStateDo -> public.tbl_cylinder_states
+    - CylinderLogisticsExecutionLineJpaDao -> CylinderLogisticsExecutionLineDo -> public.tbl_cylinder_logistics_execution_line
+    - YardInventoryLineJpaDao.saveAll -> public.tbl_yard_inventory_line
+  data_reads_and_writes:
+    - READ public.vw_active_challan_books_for_trip_load, public.tbl_challan_page_audit_ledger and existing public.tbl_trip_challan_book_assignment rows during challan-book validation.
+    - READ public.tbl_cylinder, public.tbl_yard_inventory_line and public.tbl_cylinder_logistics_execution_line during cylinder/location validation.
+    - READ public.tbl_vehicle, public.tbl_driver, public.tbl_customer, public.tbl_customer_address, public.tbl_trip_status, public.tbl_vehicle_load_purpose, public.tbl_stop_type and public.tbl_cylinder_states as proved masters/state inputs.
+    - WRITE public.tbl_vehicle_trip.
+    - WRITE public.tbl_vehicle_load and cascaded public.tbl_vehicle_load_line.
+    - WRITE public.tbl_vehicle_trip_stop.
+    - WRITE four selected public.tbl_trip_challan_book_assignment records.
+    - WRITE public.tbl_cylinder_logistics_execution and public.tbl_cylinder_logistics_execution_line.
+    - UPDATE public.tbl_yard_inventory_line through YardInventoryLineJpaDao.saveAll.
+  side_effects_and_state_changes:
+    - A vehicle trip is persisted.
+    - A vehicle load and its load-line collection are persisted.
+    - A yard-start trip stop is persisted.
+    - Four selected challan books are assigned to the trip/load.
+    - Cylinder logistics execution header/line state is persisted for the yard-to-logistics transition.
+    - Yard inventory lines are updated as proved by the accepted chain.
+    - Additional audit semantics beyond the proved persistence paths are not invented.
+  alternate_and_error_flows:
+    - Success terminates at redirect:/vehicle-loads/list.
+    - A proved application-error branch invokes VehicleTripLoadWizardController.errorMav, refreshes lookup/cache and active challan-book data, and renders final-version-1/VehicleTripLoadWizard.
+    - Exact exception-to-field/message mapping is not fully preserved by the accepted trace and remains clarification-required.
+  output_and_postconditions:
+    - Success returns redirect:/vehicle-loads/list after the transactional service has performed the proved persistence branches.
+    - Error returns final-version-1/VehicleTripLoadWizard with lookup/cache and active challan-book data refreshed.
+    - Because exact request-field semantics and invalid-value predicates are incomplete in accepted evidence, this Story is not READY_FOR_USER_REVIEW and remains NEEDS_CLARIFICATION.
+  evidence:
+    - traceability/controller-traceability.md
+    - logs/runs/PRODUCTION-FIRE-20260824-113951.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: POST /wizard/vehicle-trip-load/save invokes VehicleLoadAndTripIngestionService transactionally, executes the accepted challan-book and cylinder-location validation branches, persists the proved trip/load/stop/challan-assignment/logistics/yard changes, redirects to /vehicle-loads/list on success, and follows errorMav back to final-version-1/VehicleTripLoadWizard on the proved application-error path.
+  clarification_required:
+    - Complete submitted UC02Phase01VehicleLoadRequestDto field list and required/optional status.
+    - Exact normalization/default rules applied to each received field.
+    - Exact field-level validation predicates and their evaluation order.
+    - Exact caller-visible validation/error messages and field association.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 771b0908502f43602eaad86e130e21dd7a528a3ebce548e3e2c40545527077a9}
