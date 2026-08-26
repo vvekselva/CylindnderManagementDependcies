@@ -1,5 +1,5 @@
 story_register:
-  version: 18
+  version: 19
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -18,10 +18,10 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 46
+    story_dispositions: 47
     draft: 0
     technically_validated: 0
-    ready_for_user_review: 40
+    ready_for_user_review: 41
     approved: 0
     rejected: 0
     needs_clarification: 6
@@ -74,5 +74,6 @@ story_register:
     - {story_id: STORY-0044, matrix_row_keys: ["GET /vehicleLoad"], state: READY_FOR_USER_REVIEW, fingerprint: d01ddc940d49a4fea56d71956efc9455b3b9f5d63c0a675abdb1cf9569575c96, structured: stories/STORY-0044.yaml, human_readable: stories/STORY-0044.md}
     - {story_id: STORY-0045, matrix_row_keys: ["GET /registerCustomer"], state: READY_FOR_USER_REVIEW, fingerprint: b56eb8eaaa94e447bf7045a37f535ec6cf2fb844a825f3ac50abd9804868bc69, structured: stories/STORY-0045.yaml, human_readable: stories/STORY-0045.md}
     - {story_id: STORY-0046, matrix_row_keys: ["POST /registerCustomer"], state: NEEDS_CLARIFICATION, fingerprint: 63cf5af46c92099508bf691b7465bfa1b829e88b8a5bc1c637319ff4a604b923, structured: stories/STORY-0046.yaml, human_readable: stories/STORY-0046.md}
+    - {story_id: STORY-0047, matrix_row_keys: ["GET /wizard/vehicle-trip-load"], state: READY_FOR_USER_REVIEW, fingerprint: 2ab938e66f6b38bfb37d6b2b4d6e9f032cab670213cc8e9b7e8abefc37b2f47c, structured: stories/STORY-0047.yaml, human_readable: stories/STORY-0047.md}
   invariant: >-
     Only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows are eligible. Pending atomic-projection rows remain excluded. No Story becomes downstream-authoritative before explicit user approval of its exact fingerprint.
