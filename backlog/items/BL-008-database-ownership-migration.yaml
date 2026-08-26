@@ -1,0 +1,66 @@
+backlog_definition:
+  id: BL-008
+  version: 1
+  name: Migration of the Database to the Ownership Model
+  type: DATABASE_MIGRATION
+  purpose: >-
+    Migrate the authoritative CylinderManagement Neon PostgreSQL database through the approved Flyway sequence and validate
+    the ownership-model schema/data rules for COMPANY_OWNED, SUPPLIER_OWNED and CUSTOMER_OWNED cylinders without manual SQL substitution.
+  statement_of_work: backlog/sow/BL-008-database-ownership-migration.yaml
+  target:
+    application_repository: vvekselva/CylinderManagement
+    dependency_repository: vvekselva/CylindnderManagementDependcies
+    flyway_path: cylinder.datascripts/src/main/resources/db/migration/
+    migration_target: V176
+    database_platform: Neon Serverless PostgreSQL
+    project: neon-for-cylinder-db
+    project_id: holy-glitter-02245694
+    production_branch: production
+    production_branch_id: br-steep-snow-aw6u5odt
+    database: neon-for-cylinder-db
+    database_dependency_ssot: database-dependency-neon.md
+    ownership_source_roots:
+      - NewOwnerShipModelv3/
+      - cylinder.datascripts/src/main/resources/db/migration/
+      - cmas.database.operations/
+  scope:
+    in_scope:
+      - inventory and validate exact Flyway migrations V1 through V176 from the authoritative source repository
+      - create or verify an isolated migration validation branch from the controlled production database line
+      - run Flyway validation and migration on the isolated validation branch first
+      - validate ownership-model tables/views/constraints and existing-data compatibility
+      - validate COMPANY_OWNED, SUPPLIER_OWNED and CUSTOMER_OWNED ownership invariants
+      - validate schema history, row counts and critical cylinder/logistics/audit data integrity
+      - promote the same validated Flyway sequence to production only after all pre-production gates pass
+      - update database-dependency-neon.md with execution and validation evidence
+    out_of_scope:
+      - ad-hoc/manual SQL as a substitute for Flyway
+      - rewriting already-applied migrations on a controlled database
+      - destructive cleanup without source-proved migration intent and rollback evidence
+      - exposing database credentials or connection strings
+  dependencies: []
+  deliverables:
+    - database-dependency-neon.md
+    - backlog/runtime/BL-008/analysis.yaml
+    - backlog/runtime/BL-008/execution-plan.yaml
+    - backlog/runtime/BL-008/work-unit-status.yaml
+    - backlog/runtime/BL-008/gate-status.yaml
+    - backlog/runtime/BL-008/result.yaml
+    - logs/runs/BL008-*.md
+  acceptance_criteria:
+    - QG-SSOT-001 and QG-SOW-001 pass
+    - exact target database and branch identities are verified before any mutation
+    - isolated validation branch or equivalent rollback point exists before migration execution
+    - Flyway validates and migrates through V176 without manual SQL substitution
+    - flyway_schema_history records the expected successful migration sequence
+    - ownership-model integrity checks pass for all supported ownership types
+    - critical data-integrity checks pass before and after migration
+    - production promotion uses the same validated source sequence
+    - database-dependency-neon.md records final status and evidence
+    - BL-008 is not CLOSED without explicit user acceptance
+  implementation_workflow: workflows/WF-004-database-ownership-migration.yaml
+  completion_path: backlog/paths/BL-008-database-ownership-migration.yaml
+  quality_gate: backlog/gates/BL-008-database-ownership-migration.yaml
+  runtime: backlog/runtime/BL-008/
+  planning_authorization:
+    requires: [SSOT-L1_COMPLETE, SSOT-L2_COMPLETE, SSOT-L3_COMPLETE, QG-SSOT-001_PASS, QG-SOW-001_PASS]
