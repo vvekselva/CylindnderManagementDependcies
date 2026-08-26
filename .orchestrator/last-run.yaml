@@ -1,4 +1,4 @@
-run_time: 2026-08-26T17:33:11+05:30
+run_time: 2026-08-26T23:31:34+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: FULLY_BLOCKED
 policy:
@@ -14,18 +14,17 @@ policy:
 lease:
   overlap_detected: false
   status: ACQUIRED
-  acquired_commit: 8c4d5d254f05e55327716e95e6aa7a00e7e88126
+  acquired_commit: afb071eda7203de4fc43f321da675130b540c154
 bl008:
   status: BLOCKED_BEFORE_DATABASE_ACCESS
   authoritative_flyway_source:
     repository: vvekselva/CylinderManagement
     branch: main
     migration_path: cylinder.datascripts/src/main/resources/db/migration
-    source_directory_present: true
   control_repository_conflict:
     file: database-dependency.md
-    observed_state: "stale ledger still points to neon-for-cylinder-db / production and conflicts with current TEST-main-only policy"
-    execution_effect: "not consumed as an executable target"
+    observed_state: "ledger still points to neon-for-cylinder-db / production and conflicts with current TEST-main-only policy"
+    execution_effect: "not consumed as executable target"
   neon_project:
     name: cylinder_db_for_testing
     project_id: weathered-heart-89789162
@@ -40,7 +39,7 @@ bl008:
     main_present: false
   requirement_selection:
     status: BLOCKED_SAME_REQUIREMENT
-    reason: "Required TEST branch main does not exist. Policy forbids branch creation and forbids substituting production. Exact database identity, flyway_schema_history, next version/order/checksum/prerequisites therefore cannot be proven on the permitted target."
+    reason: "Required TEST branch main does not exist. Policy forbids branch creation and forbids substituting production; exact permitted database identity and Flyway state cannot be proven."
   database_actions:
     database_access_on_production_branch: NOT_ATTEMPTED
     flyway_validate: NOT_ATTEMPTED
@@ -51,7 +50,7 @@ bl008:
     flyway_schema_history: NOT_ATTEMPTED
     ownership_schema_data_integrity: NOT_ATTEMPTED
   blocker: "Existing Neon TEST branch named main is missing."
-  exact_missing_condition: "Provide an existing branch named main in project weathered-heart-89789162; orchestrator must not create it."
+  exact_missing_condition: "An existing branch named main must exist in project weathered-heart-89789162; orchestrator must not create it."
 bl001:
   status: BLOCKED
   target_unique_method_path_rows: 134
