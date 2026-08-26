@@ -1,18 +1,18 @@
 local_execution:
-  version: 25
+  version: 26
   backlog_item: BL-002
-  state: RELEASE_1_FIELD_LEVEL_REWORK_PARTIAL_REGISTER_RECONCILIATION
-  execution_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-  dispatch_fingerprint: STORY0066_REGISTER_CROSSMAP_RECONCILIATION
+  state: RELEASE_1_FIELD_LEVEL_REWORK_CONTINUES
+  execution_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
+  dispatch_fingerprint: STORY0066_REGISTER_RECONCILED_NEXT_UI_SOURCE_ANALYSIS
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: CANONICAL_BL001_MATRIX_ONLY
-  phase: PRIMARY_ORCHESTRATOR_VALIDATION_AND_SYNC
-  worker_state: NO_LOCAL_WORKER_REQUIRED_DURABLE_RECONCILIATION
+  phase: PRIMARY_ORCHESTRATOR_VALIDATION_AND_REPLAN
+  worker_state: STORY0066_RECONCILED_NEXT_RELEASE1_WORK_ELIGIBLE
   workers_started_this_assignment: 0
   transient_lane_logs_created: 0
   residual_transient_lane_logs: 0
   validation_state: VALIDATED_FAIL_CLOSED_FIELD_LEVEL_NO_INVENTION
-  sync_state: PARTIAL_DURABLE_SYNC
+  sync_state: DURABLE_REGISTER_RECONCILED
   incremental_scope:
     canonical_bl001_rows_eligible: 123
     pending_bl001_atomic_projection_rows_excluded: 11
@@ -20,32 +20,27 @@ local_execution:
     release_2_assigned: 46
     release_1_work_allowed: true
     release_2_work_allowed: false
-    story_dispositions_registered: 65
+    story_dispositions_registered: 66
     story_artifacts_materialized: 66
     story_candidates_ready_for_review: 45
-    story_candidates_needs_clarification_registered: 20
+    story_candidates_needs_clarification_registered: 21
     story_candidates_approved: 0
-  current_assignment:
+  reconciled_assignment:
     story_id: STORY-0066
     matrix_row: POST /ingestYardStockCheck
     release: RELEASE_1
     story_artifact_state: NEEDS_CLARIFICATION
-    story_artifact_materialized: true
     story_fingerprint: 440b6696ad978eece771a41c520270253cef1fc8da560235095c45c29a0188c8
-    cross_traceability_sync: PASS
-    story_register_sync: PENDING
-    reason: >-
-      Accepted canonical BL-001 evidence proves the controller, cylinder-state validation read, header/line persistence tables
-      and terminal paths, but not the complete required field-level datatype, required/optional, normalization/default,
-      validation, accepted-rule, invalid-behavior, exact persistence-column and per-field side-effect contract. No meaning is inferred.
+    story_register_sync: PASS
+    evidence: stories/story-register.yaml
+    finding: STORY-0066 is already durably present in story-register version 26; prior local-execution PENDING state was stale runtime metadata.
   approval_boundary:
     owner: USER
     auto_approval_allowed: false
     story_0066_approval_state: NOT_READY_FOR_APPROVAL
     usecase_generation_allowed: false
-  blocker:
-    exact: STORY_REGISTER_ROW_NOT_YET_ATOMICALLY_MERGED
-    safe_state: STORY_0066_ARTIFACT_AND_CROSS_MAP_DURABLE_REGISTER_COUNT_REMAINS_65
+  blocker: null
   next_action: >-
-    Atomically merge STORY-0066 into stories/story-register.yaml preserving all existing Story IDs/fingerprints, then continue
-    Release-1 field-level rework from accepted/materialized/non-stale BL-001 rows only.
+    Continue Release-1 field-level rework from accepted/materialized/non-stale BL-001 rows. For any Story with missing field
+    contract, create UI_SOURCE_ANALYSIS against the exact page template/request model/DTO/controller/validator/service/repository/entity
+    evidence before retaining NEEDS_CLARIFICATION. Pending BL-001 atomic-projection rows remain excluded until the 134-row projection is committed.
