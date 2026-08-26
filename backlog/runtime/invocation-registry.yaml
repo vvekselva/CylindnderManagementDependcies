@@ -1,8 +1,22 @@
-version: 5
+version: 6
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations: []
+active_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
+    execution_state: RUNNING
+    health_state: ACTIVE
+    started_at: 2026-08-26T15:13:12+05:30
+    heartbeat_at: 2026-08-26T15:13:12+05:30
+    last_progress_at: 2026-08-26T15:13:12+05:30
+    last_lane_activity_at: null
+    active_lane_count: 0
+    coordinator_phase: PLANNING
+    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
+    current_work_unit: PREFLIGHT_AND_CLAIM
+    progress_fingerprint: PREFLIGHT_REGISTERED_BL008_REVALIDATION_BL001_ATOMIC_RECOVERY_BL002_STORY0066_SYNC
+    blocked_reason: null
+    recovery_action: NONE
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-145821IST
     execution_state: TERMINAL_CHECKPOINTED
@@ -28,6 +42,7 @@ recent_completed_invocations:
     heartbeat_at: 2026-08-26T14:19:54+05:30
     last_progress_at: 2026-08-26T14:19:54+05:30
     last_lane_activity_at: null
+    active_lane_count: 0
     coordinator_phase: SYNCHRONIZED_TERMINAL
     current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
     current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
@@ -66,7 +81,28 @@ recent_completed_invocations:
     recovery_action: FAIL_CLOSED_RECOVERY_REJECT_UNVALIDATED_PARTIAL_RELEASE_CLAIM_AND_CAPACITY
     recovered_at: 2026-08-26T14:17:01+05:30
 work_claims:
-  active: []
+  active:
+    - claim_key: BL-008|WU-BL008-001|LIVE-MAIN-TARGET-REVALIDATION
+      backlog_item: BL-008
+      work_unit: WU-BL008-001
+      task_id: LIVE-MAIN-TARGET-REVALIDATION
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
+      state: CLAIMED
+      claimed_at: 2026-08-26T15:13:12+05:30
+    - claim_key: BL-001|WU-BL001-001|TARGETED-UNIQUE-KEY-RECOVERY
+      backlog_item: BL-001
+      work_unit: WU-BL001-001
+      task_id: TARGETED-UNIQUE-KEY-RECOVERY
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
+      state: CLAIMED
+      claimed_at: 2026-08-26T15:13:12+05:30
+    - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0066
+      backlog_item: BL-002
+      work_unit: WU-STORY-REGISTER-CONSISTENCY
+      task_id: STORY-0066-REGISTER-AND-CROSS-MAP-SYNC
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
+      state: CLAIMED
+      claimed_at: 2026-08-26T15:13:12+05:30
   recovered:
     - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0057
       backlog_item: BL-002
