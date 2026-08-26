@@ -1,14 +1,17 @@
-version: 1
+version: 2
 name: Overlap-Safe Production Invocation Concurrency
 purpose: >-
   Allow a later Cylinder production trigger to run in parallel with an invocation that is still executing, while preventing
-  duplicate work, shared-SSOT races, duplicate database mutation and cross-invocation cleanup.
+  duplicate work, shared-SSOT races, duplicate database mutation and cross-invocation cleanup. Invocation liveness is
+  determined from heartbeat and progress evidence; a RUNNING flag or legacy lease alone never proves health.
 
 authority:
   applies_to: [MANUAL_PRODUCTION_FIRE, SCHEDULED_PRODUCTION_FIRE]
   overrides_legacy_singleton_lease: true
   legacy_singleton_file: backlog/runtime/invocation-lease.yaml
   invocation_registry: backlog/runtime/invocation-registry.yaml
+  invocation_health_governance: governance/invocation-health.yaml
+  invocation_health_architecture: architecture/invocation-health-and-recovery.md
 
 invocation_concurrency:
   overlapping_invocations_allowed: true
@@ -18,9 +21,43 @@ invocation_concurrency:
   independent_source_snapshot_per_invocation: true
   independent_lane_logs_per_invocation: true
   new_trigger_behavior:
+    preflight_health_classification_required: true
     below_concurrency_limit: START_NEW_PARALLEL_INVOCATION
     at_concurrency_limit: NOOP_CONCURRENCY_LIMIT_WITH_EVIDENCE
-  existing_invocation_behavior_on_new_trigger: CONTINUE_UNINTERRUPTED
+    stale_invocation_detected: RECOVER_STALE_BEFORE_CAPACITY_DECISION
+    stuck_invocation_detected: FAIL_CLOSED_DIAGNOSE_BEFORE_DUPLICATE_WORK
+    blocked_zombie_detected: FINALIZE_BLOCKED_AND_RELEASE_CAPACITY
+  existing_invocation_behavior_on_new_trigger: CONTINUE_UNINTERRUPTED_IF_ACTIVE_OR_IDLE_BUT_HEALTHY
+
+invocation_health:
+  config: governance/invocation-health.yaml
+  running_flag_alone_proves_liveness: false
+  heartbeat_interval_seconds: 60
+  stale_after_seconds_without_orchestrator_heartbeat: 300
+  stuck_after_seconds_without_meaningful_progress: 600
+  total_runtime_alone_is_stale_signal: false
+  zero_active_lanes_alone_is_stuck_signal: false
+  every_running_invocation_must_classify_as:
+    - ACTIVE
+    - IDLE_BUT_HEALTHY
+    - BLOCKED
+    - STALE
+    - STUCK
+    - RECOVERING
+  required_runtime_signals:
+    - heartbeat_at
+    - last_progress_at
+    - last_lane_activity_at
+    - active_lane_count
+    - coordinator_phase
+    - current_backlog_item
+    - current_work_unit
+    - progress_fingerprint
+    - blocked_reason
+    - recovery_action
+  trigger_must_evaluate_health_before_noop_or_start: true
+  heartbeat_update_must_not_fake_progress: true
+  blocked_invocation_must_cleanly_exit_when_no_other_eligible_work_exists: true
 
 productive_window:
   target_minutes: 30
@@ -66,6 +103,8 @@ work_claims:
     elapsed_runtime_alone_is_not_stale: true
     requires_missing_or_stale_owner_heartbeat: true
     requires_recovery_evidence_before_reclaim: true
+    preserve_validated_durable_evidence: true
+    reject_incomplete_partial_output: true
 
 shared_state:
   shared_ssot_write_lock:
@@ -99,9 +138,28 @@ accumulation:
   cleanup_must_not_delete_other_invocations_lane_logs: true
   final_checkpoint_may_include_multiple_executor_results: true
 
+status_reporting:
+  running_status_must_include_health_state: true
+  required_fields:
+    - invocation_id
+    - execution_state
+    - health_state
+    - heartbeat_age_seconds
+    - seconds_since_progress
+    - active_lane_count
+    - coordinator_phase
+    - current_backlog_item
+    - current_work_unit
+    - blocker_or_recovery_action
+  forbidden_claims:
+    - ACTIVE_BASED_ONLY_ON_LEASE_OR_RUNNING_FLAG
+    - STALE_BASED_ONLY_ON_TOTAL_RUNTIME
+    - STUCK_BASED_ONLY_ON_ZERO_LANES
+
 safety:
   never_duplicate_claimed_work: true
   never_force_cancel_healthy_long_running_task_at_30_minutes: true
   never_allow_two_bl008_database_writes: true
   never_force_push_control_repository: true
   never_close_backlog_item_without_required_user_acceptance: true
+  uncertain_invocation_health_requires_fail_closed_evaluation: true
