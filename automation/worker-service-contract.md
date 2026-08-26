@@ -43,6 +43,23 @@ LANE_CLOSE_END
 
 The required logging is not optional progress reporting. It is part of the execution contract.
 
+## Event-driven completion and immediate refill
+
+Worker completion is handled per executor/lane, not per generation.
+
+When one lane reaches `LANE_CLOSE_END`:
+
+1. that executor emits `EXECUTOR_COMPLETED_REPLAN_REQUIRED` immediately;
+2. the Primary Orchestrator validates only that completed executor result;
+3. the completed lane/slot is released independently;
+4. the Primary Orchestrator replans against the current local/staged SSOT snapshot;
+5. if eligible work exists, the freed slot is assigned immediately;
+6. other executors continue running and are not awaited, stopped, restarted or included in a generation barrier.
+
+There is no `wait for all workers` rule for refill. Shared SSOT writes remain serialized, but serialization of a short control-state update must not become a barrier waiting for unrelated running executors.
+
+The orchestrator must not refetch the repository tree merely because a lane completed. Repository/source refresh behavior is controlled by `governance/execution-source-mode.yaml`.
+
 ## START log task rule
 
 Every lane START record must identify the exact task that is about to execute.
@@ -170,9 +187,9 @@ It must state Actions completed/not completed, evidence summary, and blocker/fai
 
 ### After close()
 
-The lane persists `LANE_CLOSE_END` with `Log State: CLOSED`.
+The lane persists `LANE_CLOSE_END` with `Log State: CLOSED` and emits `EXECUTOR_COMPLETED_REPLAN_REQUIRED`.
 
-Only after this record is persisted may the coordinator release the lane to IDLE or assign new work within the same invocation.
+Only after this record is persisted may the coordinator release the lane to IDLE or assign new work within the same invocation. The coordinator must process this completion independently and must not wait for peer lanes to close before refilling the freed slot.
 
 If the lane stops unexpectedly before close, the coordinator performs recovery closure with `RESULT_NOT_CONFIRMED` and persists recovery evidence before release.
 
@@ -187,7 +204,7 @@ LANE_INIT_START      -> lane ASSIGNED/INITIALIZING + exact task
 LANE_INIT_END        -> lane INITIALIZING or BLOCKED
 LANE_SERVICE_START   -> lane WORKING + same task
 LANE_SERVICE_END     -> lane WORKING/BLOCKED/CLOSING
-LANE_CLOSE_END       -> lane may be released/reused in same invocation
+LANE_CLOSE_END       -> emit completion signal; lane may be released/reused immediately
 INVOCATION AGGREGATION PASS -> individual lane log may be deleted
 ```
 
@@ -205,4 +222,4 @@ A lane owns only its current assigned Job attempt and its transient per-run life
 
 The Worker may return `COMPLETED` only when all required Actions and completion checks pass. Otherwise use `PARTIAL`, `BLOCKED` or `FAILED`.
 
-A result is not accepted as final input until the run is closed, the declared result contract validates, and required lifecycle logging passes `QG-LOG-001`. The Orchestrator invocation itself is not closed until all individual lane logs have been accumulated and removed.
+A result is not accepted as final input until the run is closed, the declared result contract validates, and required lifecycle logging passes `QG-LOG-001`. This validation is per completed executor for refill purposes; it does not require all other active executors to finish. The Orchestrator invocation itself is not closed until all individual lane logs have been accumulated and removed.
