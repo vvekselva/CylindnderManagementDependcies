@@ -1,0 +1,35 @@
+story:
+  story_id: STORY-0050
+  title: Search challan types by text
+  state: READY_FOR_USER_REVIEW
+  fingerprint: b29a1e8069a5907600247fefd64bb9bf2ee2b4c13ae02d33f38e1cec9b6fc3c2
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /search/challantype/{searchText}"]
+  controller: RestfulChallanTypeServices.getChallanTypes
+  endpoint: "GET /search/challantype/{searchText}"
+  business_purpose: Return challan-type records matching caller search text through the accepted search chain.
+  trigger_and_context: A caller invokes GET /search/challantype/{searchText}.
+  inputs: [searchText is supplied in the URL and passed through CylinderManagementApplicationRequestDto.]
+  normalization_and_defaults: [No request normalization or defaulting is proved by the accepted trace.]
+  validations:
+    - SearchRequestValidator.validate is invoked before DAO access; exact invalid predicates are not preserved by the accepted evidence.
+  invalid_value_paths:
+    - Service exceptions return an empty ChallanTypeSearchResponseDto; exact validation messages or HTTP-status changes are not proved.
+  main_flow:
+    - RestfulChallanTypeServices.getChallanTypes receives searchText and calls the typed search service.
+    - ChallanTypeSearchService is the source-proved active implementation.
+    - The service invokes SearchRequestValidator.validate.
+    - It calls ChallanTypeJpaDao.findByChallanTypeContainingIgnoreCase.
+    - ChallanTypeJpaDao is JpaRepository<ChallanTypeDo, Long>.
+    - ChallanTypeDo maps to public.tbl_challan_type.
+    - Matched rows are mapped to terminal ChallanTypeSearchResponseDto JSON.
+  component_flow: [RestfulChallanTypeServices.getChallanTypes, ChallanTypeSearchService.searchWithText, SearchRequestValidator.validate, ChallanTypeJpaDao.findByChallanTypeContainingIgnoreCase, ChallanTypeDo, public.tbl_challan_type, challan-type mapper, ChallanTypeSearchResponseDto JSON]
+  data_reads_and_writes: [READ public.tbl_challan_type., No persistence write is proved.]
+  side_effects_and_state_changes: [No persistent state change is proved.]
+  alternate_and_error_flows: [Service exceptions return an empty response DTO; no additional behavior is invented.]
+  output_and_postconditions: [Returns ChallanTypeSearchResponseDto JSON from matched rows or the proved empty DTO exception outcome.]
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-233707.md]
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint validates the search request and reads public.tbl_challan_type through the exact service/DAO/entity chain before returning ChallanTypeSearchResponseDto JSON.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: b29a1e8069a5907600247fefd64bb9bf2ee2b4c13ae02d33f38e1cec9b6fc3c2}
