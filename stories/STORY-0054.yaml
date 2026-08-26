@@ -1,0 +1,32 @@
+story:
+  story_id: STORY-0054
+  title: View reconciliation command center
+  state: NEEDS_CLARIFICATION
+  fingerprint: b16bb4335c67af89f3c45b9ea7567967e777f2fb5ae00bfef55174f275707acf
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /reconciliation-command-center"]
+  controller: ReconciliationCommandCenterController.showCommandCenter
+  endpoint: "GET /reconciliation-command-center"
+  business_purpose: Display reconciliation status using the source-proved reconciliation header and challan tracker data, with conditional event/status-audit reads when trip context is supplied.
+  trigger_and_context: A caller opens the reconciliation command center.
+  inputs:
+    - An optional trip context may cause additional event/status-audit reads according to the accepted trace; its exact request parameter contract is not preserved in that evidence.
+  normalization_and_defaults:
+    - No exact normalization/default rule is proved by the accepted trace.
+  validations:
+    - Exact request validation predicates are not preserved in the accepted trace.
+  main_flow:
+    - ReconciliationCommandCenterController.showCommandCenter receives the request.
+    - ReconciliationCommandCenterService reads reconciliation header and challan tracker data.
+    - When trip context is present, event and status-audit branches are also read.
+    - The command-center view is rendered.
+  data_reads_and_writes:
+    - READ reconciliation header/tracker and conditional event/status-audit persistence objects proved by BL-001.
+    - No persistence write is proved.
+  field_level_mapping:
+    state: NEEDS_CLARIFICATION
+    reason: Exact dashboard component-to-model-to-database-column mappings and the exact optional trip request contract are not preserved in the accepted trace.
+  output_and_postconditions:
+    - Renders the reconciliation command-center view with source-proved read-only data.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  approval: {owner: USER, state: NOT_READY_FIELD_LEVEL_CLARIFICATION_REQUIRED, fingerprint: b16bb4335c67af89f3c45b9ea7567967e777f2fb5ae00bfef55174f275707acf}
