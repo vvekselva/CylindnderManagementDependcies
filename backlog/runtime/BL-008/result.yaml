@@ -1,15 +1,36 @@
 backlog_item: BL-008
-version: 2
-state: READY_FOR_EXECUTION
+version: 3
+state: BLOCKED_DISCOVERY_LIVE_NEON_NOT_VISIBLE
 verified: false
 closed: false
 governance_bootstrap: COMPLETE
 common_gates: {QG-SSOT-001: PASS, QG-SOW-001: PASS, QG-DEP-001: PASS}
 current_work_unit: WU-BL008-001
-migration_target: V176
-validation_branch_state: NOT_STARTED
-production_state: NOT_STARTED
-ownership_integrity: NOT_EVALUATED
+environment:
+  role: SEPARATE_NEON_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
+  branch: main
+  branch_creation: FORBIDDEN
+  database: VERIFY_FROM_LIVE_NEON_BEFORE_WRITE
+execution_policy:
+  migration_mechanism: FLYWAY_ONLY
+  database_requirements: ONE_AT_A_TIME
+  database_write_parallelism: 1
+  advance_rule: CURRENT_REQUIREMENT_MUST_PASS_AND_SYNC_BEFORE_NEXT
+source_inventory:
+  current_main_head: NOT_YET_PROVED
+  previous_expected_head_from_ledger: V176
+  frozen_bl001_observation: V172_AT_FROZEN_TRACEABILITY_COMMIT
+  reconciliation_required: true
+live_neon_discovery:
+  visible_projects: 0
+  exact_project_verified: false
+  exact_database_verified: false
+  write_attempted: false
 database_mutation_authorized: false
-next_action: EXECUTE_DISCOVER_AND_INVENTORY_THEN_UNLOCK_VALIDATION_BRANCH_GATES
+ownership_integrity: NOT_EVALUATED
+current_outcome: >-
+  Governance is ready, but BL-008 cannot select or apply its first database requirement because the connected Neon integration
+  currently exposes zero projects and the exact current-main Flyway inventory has not yet been reconciled. No Neon branch was
+  created and no database write was attempted.
+next_action: RESTORE_LIVE_NEON_PROJECT_VISIBILITY_AND_COMPLETE_CURRENT_MAIN_FLYWAY_INVENTORY_THEN_SELECT_EXACTLY_ONE_FIRST_REQUIREMENT
 user_acceptance_required_before_close: true
