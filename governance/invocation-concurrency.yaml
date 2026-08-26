@@ -1,0 +1,107 @@
+version: 1
+name: Overlap-Safe Production Invocation Concurrency
+purpose: >-
+  Allow a later Cylinder production trigger to run in parallel with an invocation that is still executing, while preventing
+  duplicate work, shared-SSOT races, duplicate database mutation and cross-invocation cleanup.
+
+authority:
+  applies_to: [MANUAL_PRODUCTION_FIRE, SCHEDULED_PRODUCTION_FIRE]
+  overrides_legacy_singleton_lease: true
+  legacy_singleton_file: backlog/runtime/invocation-lease.yaml
+  invocation_registry: backlog/runtime/invocation-registry.yaml
+
+invocation_concurrency:
+  overlapping_invocations_allowed: true
+  max_concurrent_invocations: 2
+  unique_invocation_id_required: true
+  invocation_workspace: runtime/invocations/<INVOCATION_ID>/
+  independent_source_snapshot_per_invocation: true
+  independent_lane_logs_per_invocation: true
+  new_trigger_behavior:
+    below_concurrency_limit: START_NEW_PARALLEL_INVOCATION
+    at_concurrency_limit: NOOP_CONCURRENCY_LIMIT_WITH_EVIDENCE
+  existing_invocation_behavior_on_new_trigger: CONTINUE_UNINTERRUPTED
+
+productive_window:
+  target_minutes: 30
+  meaning: TARGET_FOR_NEW_WORK_ASSIGNMENT_NOT_HARD_PROCESS_KILL
+  before_target:
+    assign_new_eligible_unclaimed_work: true
+    refill_each_completed_executor_slot_immediately: true
+  at_or_after_target:
+    assign_new_work: false
+    cancel_running_work: false
+    wait_for_tasks_started_by_this_invocation: true
+    allow_healthy_long_running_task_to_exceed_target: true
+  after_all_started_tasks_terminal:
+    - ACCUMULATE_THIS_INVOCATIONS_RESULTS
+    - VALIDATE_THIS_INVOCATIONS_RESULTS
+    - MERGE_SHARED_SSOT_UNDER_SINGLE_WRITER_LOCK
+    - CLEAN_THIS_INVOCATIONS_TRANSIENT_LOGS_TO_ZERO
+    - BATCH_PERSIST_DURABLE_CHECKPOINT
+    - MARK_INVOCATION_COMPLETE
+  no_artificial_idle_to_reach_30_minutes_when_no_eligible_work_exists: true
+
+executor_completion:
+  signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
+  process_independently: true
+  wait_for_peer_executors: false
+  validate_completed_executor_only: true
+  release_freed_slot_after_validation: true
+  replan_immediately: true
+  refill_freed_slot_immediately_when_window_open_and_work_exists: true
+  running_siblings_continue_uninterrupted: true
+
+work_claims:
+  required_before_dispatch: true
+  scope: GLOBAL_ACROSS_ACTIVE_INVOCATIONS
+  claim_key: BACKLOG_ITEM_PLUS_WORK_UNIT_PLUS_TASK_ID
+  atomic_claim_required: true
+  claim_owner: INVOCATION_ID
+  heartbeat_required_for_long_running_claim: true
+  claimed_work_excluded_from_other_invocations: true
+  duplicate_claim_action: SELECT_DIFFERENT_ELIGIBLE_UNCLAIMED_WORK
+  release_on: [VALIDATED_COMPLETION, VALIDATED_BLOCKED_COMPLETION, RECOVERY_CLOSE]
+  stale_claim_recovery:
+    elapsed_runtime_alone_is_not_stale: true
+    requires_missing_or_stale_owner_heartbeat: true
+    requires_recovery_evidence_before_reclaim: true
+
+shared_state:
+  shared_ssot_write_lock:
+    capacity: 1
+    scope: GLOBAL_ACROSS_INVOCATIONS
+    hold_only_for_atomic_merge: true
+    must_not_cover_executor_runtime: true
+  git_checkpoint_lock:
+    capacity: 1
+    mode: BATCHED_CHECKPOINT_ONLY
+    one_commit_per_worker_forbidden: true
+    one_commit_per_executor_forbidden: true
+    one_commit_per_story_forbidden: true
+  bl008_database_write_lock:
+    capacity: 1
+    scope: GLOBAL_ACROSS_INVOCATIONS
+    requirement_claim_required: true
+    second_invocation_may_continue_non_database_work: true
+
+source_snapshot:
+  each_invocation_fetches_repository_tree_once_at_start: true
+  no_tree_refetch_during_invocation_when_git_change_flag_false: true
+  one_invocations_orchestrator_commits_do_not_invalidate_another_invocations_frozen_source_snapshot: true
+  external_git_change_flag_source: governance/execution-source-mode.yaml
+
+accumulation:
+  invocation_local: true
+  wait_for_other_invocations: false
+  wait_only_for_tasks_started_by_same_invocation: true
+  shared_merge_serialized: true
+  cleanup_must_not_delete_other_invocations_lane_logs: true
+  final_checkpoint_may_include_multiple_executor_results: true
+
+safety:
+  never_duplicate_claimed_work: true
+  never_force_cancel_healthy_long_running_task_at_30_minutes: true
+  never_allow_two_bl008_database_writes: true
+  never_force_push_control_repository: true
+  never_close_backlog_item_without_required_user_acceptance: true
