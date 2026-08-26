@@ -1,5 +1,5 @@
 backlog_item: BL-008
-version: 11
+version: 12
 state: BLOCKED_REQUIRED_MAIN_BRANCH_NOT_VISIBLE
 verified: false
 closed: false
@@ -29,13 +29,14 @@ source_inventory:
   previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
   reconciliation_required: false
 live_neon_discovery:
-  attempted_at: 2026-08-26T17:01:00+05:30
+  attempted_at: 2026-08-26T17:18:49+05:30
   organization_id: org-spring-mode-70853603
   target_project_match_verified: true
   visible_target_project_id: small-bread-22546365
   visible_target_project_name: neon-for-cylinder-db
   postgres_version: 18
   visible_default_branch: production
+  visible_branch_id: br-orange-violet-aylucoco
   visible_branch_count: 1
   required_branch_main_visible: false
   branch_creation_attempted: false
@@ -43,21 +44,22 @@ live_neon_discovery:
   flyway_schema_history_verified: false
   sql_read_attempted_on_production_branch: false
   write_attempted: false
-  blocker_changed_from_prior_fire: true
-  blocker_change: TARGET_PROJECT_NOW_VISIBLE_BUT_REQUIRED_MAIN_BRANCH_STILL_ABSENT
+  blocker_changed_from_prior_fire: false
+  blocker_change: TARGET_PROJECT_VISIBLE_BUT_REQUIRED_MAIN_BRANCH_REMAINS_ABSENT
 database_requirement:
   active_requirement: null
   selection_state: BLOCKED_UNTIL_EXISTING_MAIN_BRANCH_AND_LIVE_FLYWAY_HISTORY_ARE_PROVED
   reason: >-
-    The intended Neon project neon-for-cylinder-db is now visible as project small-bread-22546365. Live project description
-    proves that its only existing primary/default branch is named production. Governing BL-008 policy permits main only and
-    explicitly forbids creating Neon branches. Production is therefore not queried or mutated as a substitute for main, and
-    the first database requirement cannot yet be selected from live flyway_schema_history.
+    Fresh Neon project inspection at 2026-08-26T17:18:49+05:30 proves project neon-for-cylinder-db
+    (small-bread-22546365) is visible and has exactly one branch: production (br-orange-violet-aylucoco),
+    which is primary/default. Governing BL-008 policy requires an existing branch named main and forbids
+    branch creation. Production was therefore not queried or mutated as a substitute for main, and no
+    database requirement was selected.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  Control-plane target identity improved: the intended project is visible. The remaining fail-closed blocker is specifically
-  the absence of an existing branch named main. No Neon branch was created, no SQL or Flyway command was run on production,
-  no database write occurred, and no manual SQL substitution was used.
+  Fresh control-plane evidence confirms the remaining blocker is the absence of an existing Neon main branch.
+  No Neon branch was created, no SQL or Flyway command was run on production, no database write occurred,
+  no manual SQL substitution was used, and no external production deployment occurred.
 next_action: PROVE_EXISTING_NEON_MAIN_BRANCH_WITHOUT_CREATING_ONE_THEN_VERIFY_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_EXACTLY_ONE_REQUIREMENT
 user_acceptance_required_before_close: true
