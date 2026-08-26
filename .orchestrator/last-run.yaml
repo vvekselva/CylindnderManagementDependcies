@@ -1,53 +1,66 @@
-run_time: 2026-08-26T13:32:20+05:30
+run_time: 2026-08-26T17:33:11+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: FULLY_BLOCKED
 policy:
   neon_environment: TEST
+  neon_project_name: cylinder_db_for_testing
+  neon_project_id: weathered-heart-89789162
   neon_branch_required: main
   create_neon_branches: false
+  direct_external_production_deployment: false
   manual_sql_substitution: forbidden
   bl008_write_parallelism: 1
   shared_ssot_single_writer: true
 lease:
   overlap_detected: false
-  acquired_commit: e293da072dcc7fa56d0931729f9e5ffbebb6710a
+  status: ACQUIRED
+  acquired_commit: 8c4d5d254f05e55327716e95e6aa7a00e7e88126
 bl008:
   status: BLOCKED_BEFORE_DATABASE_ACCESS
-  authoritative_control:
-    migration_scope: cylinder.datascripts/src/main/resources/db/migration
-    target_database: cylinder
-    sequencing: "V1 Cylinder Management; V2-V175 Production Baseline; V176+ New Incremental Changes"
+  authoritative_flyway_source:
+    repository: vvekselva/CylinderManagement
+    branch: main
+    migration_path: cylinder.datascripts/src/main/resources/db/migration
+    source_directory_present: true
+  control_repository_conflict:
+    file: database-dependency.md
+    observed_state: "stale ledger still points to neon-for-cylinder-db / production and conflicts with current TEST-main-only policy"
+    execution_effect: "not consumed as an executable target"
   neon_project:
     name: cylinder_db_for_testing
     project_id: weathered-heart-89789162
     postgres_version: 18
-  verified_branch_state:
-    required_branch: main
+    branches_count: 1
     observed_branches:
       - name: production
-        id: br-withered-cherry-ah7vz7av
+        id: br-holy-scene-ax0ddw93
         primary: true
+        default: true
         state: ready
     main_present: false
   requirement_selection:
-    status: BLOCKED
-    reason: "The permitted main branch does not exist, so its flyway_schema_history and exact database identity cannot be inspected. The exact next Flyway version/order/checksum/prerequisites therefore cannot be proven safely."
+    status: BLOCKED_SAME_REQUIREMENT
+    reason: "Required TEST branch main does not exist. Policy forbids branch creation and forbids substituting production. Exact database identity, flyway_schema_history, next version/order/checksum/prerequisites therefore cannot be proven on the permitted target."
   database_actions:
     database_access_on_production_branch: NOT_ATTEMPTED
     flyway_validate: NOT_ATTEMPTED
     flyway_migrate: NOT_ATTEMPTED
     sql: NOT_ATTEMPTED
     manual_sql_substitution: false
-  blocker: "An existing Neon TEST branch named main is required. Policy forbids creating Neon branches and forbids using production in place of main."
-  next_requirement: "Hold the same BL-008 requirement until an existing Neon TEST branch named main is available and the exact next Flyway version/order/checksum/prerequisites can be proven from authoritative source plus flyway_schema_history."
+  integrity_verification:
+    flyway_schema_history: NOT_ATTEMPTED
+    ownership_schema_data_integrity: NOT_ATTEMPTED
+  blocker: "Existing Neon TEST branch named main is missing."
+  exact_missing_condition: "Provide an existing branch named main in project weathered-heart-89789162; orchestrator must not create it."
 bl001:
   status: BLOCKED
   target_unique_method_path_rows: 134
+  control_repository_tree_verified: true
   live_control_usecases_entries:
     - Readme.md
   accepted_materialized_non_stale_rows_available: false
   atomic_matrix_explorer_consolidation_performed: false
-  blocker: "Current authoritative main does not contain the previously referenced BL-001 manifest/recovery artifacts or an accepted/materialized/non-stale source-proof row set. Old references are treated as stale and are not consumed."
+  blocker: "Authoritative control main contains no BL-001 manifest/recovery/matrix/Explorer artifacts and no accepted/materialized/non-stale source-proof row set."
 bl002:
   status: BLOCKED
   expected_release_1_assignments: 88
@@ -55,11 +68,13 @@ bl002:
   release_classification_found: false
   consumable_bl001_rows_available: false
   stories_auto_approved: 0
+  stories_materialized: 0
   backlog_items_closed: 0
   policy:
     release_1_first: true
     needs_clarification_on_unproved_meaning: true
     auto_approve: false
-  blocker: "release-classification.yaml is not source-proved on authoritative main, and BL-001 has no consumable accepted/materialized/non-stale rows."
+  blocker: "release-classification.yaml is absent from authoritative control main and BL-001 has no consumable accepted/materialized/non-stale rows."
 backlog_closed: []
 transient_lane_logs_remaining: 0
+database_writes_performed: 0
