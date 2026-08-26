@@ -1,0 +1,29 @@
+run_time: 2026-08-26T10:30:35+05:30
+orchestrator: Primary Cylinder Automation Tool
+result: BLOCKED
+policy:
+  neon_environment: TEST
+  neon_branch: main
+  create_neon_branches: false
+  manual_sql_substitution: forbidden
+  bl008_write_parallelism: 1
+bl008:
+  status: BLOCKED
+  database_write_attempted: false
+  blockers:
+    - "database-dependency.md is stale: it still designates production while current user policy requires main only."
+    - "Neon project/branch identity could not be authorized through the connected Neon control plane; exact main database identity was therefore not proven."
+    - "Live CylinderManagement Flyway tree does not prove a continuous V1-V176 source set; observed gaps include V116 and V157 and the inspected tree ends at V170."
+  next_requirement: "Do not select/apply a migration until branch/database identity and a complete ordered Flyway source set are proven."
+bl001:
+  status: BLOCKED
+  blocker: "Authoritative dependency control repository contains no BL-001 SSOT, accepted/materialized row set, matrix, Explorer consolidation artifact, or source-proof ledger to continue safely."
+bl002:
+  status: BLOCKED
+  blocker: "release-classification.yaml is absent from the authoritative dependency control repository, so the 88 RELEASE_1 / 46 RELEASE_2 assignments cannot be source-proved or consumed."
+  policy:
+    release_1_first: true
+    needs_clarification_on_unproved_meaning: true
+    auto_approve: false
+backlog_closed: []
+transient_lane_logs_remaining: 0
