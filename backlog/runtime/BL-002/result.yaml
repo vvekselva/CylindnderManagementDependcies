@@ -20,14 +20,14 @@ result:
     release_3: WHATSAPP_INTEGRATION_DATE_TBD
     rule: COMPLETE_RELEASE_1_FIELD_LEVEL_STORY_REWORK_BEFORE_RELEASE_2
   story_result:
-    registered_story_dispositions: 57
+    registered_story_dispositions: 60
     ready_for_user_review_in_existing_register: 45
-    needs_clarification_in_existing_register: 12
+    needs_clarification_in_existing_register: 15
     approved: 0
-    materialized_story_artifacts: 57
+    materialized_story_artifacts: 60
     pending_registration_sync_story_ids: []
-    synchronized_story_ids_this_fire: [STORY-0053, STORY-0054, STORY-0055, STORY-0056, STORY-0057]
-    human_readable_materialized_this_fire: [STORY-0057]
+    synchronized_story_ids_this_fire: [STORY-0058, STORY-0059, STORY-0060]
+    human_readable_materialized_this_fire: [STORY-0058, STORY-0059, STORY-0060]
     shallow_story_generation_allowed: false
     release_1_field_level_rework_allowed: true
     release_2_story_work_allowed: false
@@ -50,8 +50,8 @@ result:
     - STORY_USER_APPROVAL_REQUIRED
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    User release classification remains 88 Release 1 and 46 Release 2 items. The Story register and controller/story map are
-    synchronized through STORY-0057. STORY-0057 now has both structured and human-readable artifacts and remains
+    User release classification remains 88 Release 1 and 46 Release 2 items. The Story register is synchronized through
+    STORY-0060. STORY-0058, STORY-0059 and STORY-0060 now have structured and human-readable artifacts and remain
     NEEDS_CLARIFICATION because exact field-level page/view mappings are not proved. No Story was auto-approved and no
     pending BL-001 atomic-projection row was consumed. Release 2 remains blocked until the Release 1 completion/review boundary.
   next_action: REWORK_RELEASE_1_CANONICAL_STORIES_TO_FIELD_LEVEL_STANDARD_WITHOUT_AUTO_APPROVAL
