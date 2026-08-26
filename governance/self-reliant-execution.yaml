@@ -1,4 +1,4 @@
-version: 1
+version: 2
 name: Self-Reliant End-to-End Execution Governance
 architecture: architecture/self-reliant-e2e-execution.md
 purpose: >-
@@ -8,7 +8,8 @@ purpose: >-
 
 roles:
   github: VERSION_CONTROL_AND_DURABLE_PERSISTENCE
-  primary_orchestrator: PLAN_STAGE_DISPATCH_EXECUTE_VALIDATE_RECOVER_SYNCHRONIZE
+  primary_orchestrator: PLAN_STAGE_DISPATCH_EXECUTE_VALIDATE_RECOVER_SYNCHRONIZE_REPLAN
+  executors: EXECUTE_ONLY_CURRENT_ASSIGNED_WORK_AND_RETURN_CONTROL
   workers: READ_ONLY_SOURCE_EVIDENCE_COLLECTION
   final_trace_decision_owner: PRIMARY_ORCHESTRATOR
 
@@ -17,6 +18,24 @@ external_execution_dependencies:
   github_runner: false
   jenkins: false
   mandatory_local_source_checkout: false
+
+executor_orchestrator_handoff:
+  executor_live_condition: ASSIGNED_EXECUTOR_WORK_REMAINS
+  executor_idle_keepalive: FORBIDDEN
+  completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
+  completion_signal_required_on: [SUCCESS, FAILURE, BLOCKED, RESTAGE_REQUIRED]
+  executor_action_after_signal: EXIT_AND_RETURN_CONTROL
+  orchestrator_action_on_signal:
+    - validate_executor_result
+    - synchronize_validated_checkpoint
+    - refresh_ssot_and_backlog_eligibility
+    - select_next_eligible_or_recoverable_work
+    - dispatch_next_executor_assignment_when_work_exists
+  orchestrator_continues_without_prior_executor_process: true
+  orchestration_stop_conditions:
+    - NO_ELIGIBLE_OR_RECOVERABLE_WORK
+    - FAIL_CLOSED_GATE_REQUIRES_EXTERNAL_STATE_CHANGE
+    - SAFETY_HARD_STOP_REACHED
 
 source_provider_priority:
   - ORCHESTRATOR_STAGED_SNAPSHOT
@@ -60,18 +79,20 @@ execution_state_machine:
     - PRODUCTION_FIRE
     - AGGREGATING
     - CLOSED_READY_FOR_VALIDATION
+    - EXECUTOR_COMPLETED
+    - ORCHESTRATOR_VALIDATING
     - VALIDATING_EVIDENCE
     - VALIDATED_PENDING_SYNC
     - PENDING_SYNC
     - CLOSED_SYNCED
+    - ORCHESTRATOR_REPLAN
+    - NEXT_ASSIGNMENT_DISPATCHED
+    - NO_ELIGIBLE_WORK
     - RECOVERY_REQUIRED
     - BLOCKED_SOURCE_INTEGRITY
     - SOURCE_RESOLUTION_STALLED
     - SOURCE_RESOLUTION_LIMIT_REACHED
-  normal_path:
-    - BOOTSTRAP
-    - LOAD_SSOT
-    - VALIDATE_GATES
+  normal_assignment_path:
     - BUILD_DISPATCH
     - SOURCE_STAGE_ROOTS
     - SOURCE_ROOTS_VERIFIED
@@ -80,9 +101,16 @@ execution_state_machine:
     - PRODUCTION_FIRE
     - AGGREGATING
     - CLOSED_READY_FOR_VALIDATION
+    - EXECUTOR_COMPLETED
+    - ORCHESTRATOR_VALIDATING
     - VALIDATING_EVIDENCE
     - VALIDATED_PENDING_SYNC
     - CLOSED_SYNCED
+    - ORCHESTRATOR_REPLAN
+  replan_transition:
+    work_exists: NEXT_ASSIGNMENT_DISPATCHED
+    no_work_exists: NO_ELIGIBLE_WORK
+    executor_process_must_remain_live_for_replan: false
 
 execution_journal:
   required: true
@@ -99,13 +127,14 @@ execution_journal:
     - source_closure_complete
     - validation_state
     - sync_state
+    - executor_handoff
   dispatch_fingerprint_basis: FROZEN_BASELINE_PLUS_ORDERED_APPROVED_TASKS
 
 idempotency_rules:
   same_fingerprint_pending_sync: RETRY_SYNC_ONLY_NO_WORKER_RESTART
   same_fingerprint_closed_waiting_validation: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
   changed_fingerprint: START_NEW_EXECUTION_GENERATION
-  already_closed_synced: NOOP_ALREADY_COMMITTED
+  already_closed_synced: NOOP_ALREADY_COMMITTED_THEN_REPLAN
   duplicate_trace_acceptance_prohibited: true
 
 recovery_rules:
@@ -126,13 +155,13 @@ recovery_rules:
 persistence_sync:
   owner: PRIMARY_ORCHESTRATOR
   transport: CONNECTED_GITHUB_CONTROL_PLANE
-  on_success: CLOSED_SYNCED
+  on_success: CLOSED_SYNCED_THEN_REPLAN
   on_failure:
     state: PENDING_SYNC
     preserve_local_aggregate: true
     preserve_result_fingerprint: true
     rerun_workers_for_same_fingerprint: false
-    next_invocation_action: RETRY_SYNC_ONLY
+    next_invocation_action: RETRY_SYNC_ONLY_THEN_REPLAN
   verification: READ_BACK_OR_OTHER_SOURCE_PROVED_PERSISTENCE_CONFIRMATION
 
 worker_preflight:
