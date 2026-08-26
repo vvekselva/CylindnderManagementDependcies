@@ -1,29 +1,174 @@
 release_classification:
-  version: 1
+  version: 2
   backlog_item: BL-002
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   owner: USER
-  state: WAITING_FOR_USER_ASSIGNMENT
+  state: CLASSIFIED
   inventory:
     target_unique_method_path_items: 134
     currently_materialized_canonical_items: 123
     source_proved_pending_atomic_projection_items: 11
     canonical_inventory_source: traceability/controller-traceability.md
     pending_inventory_source: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
-  allowed_release_values: [RELEASE_1, RELEASE_2]
+  allowed_release_values:
+  - RELEASE_1
+  - RELEASE_2
   counts:
-    release_1: 0
-    release_2: 0
-    unassigned: 134
+    release_1: 88
+    release_2: 46
+    unassigned: 0
   execution_order:
-    - USER classifies all 134 traceability items into Release 1 or Release 2.
-    - BL-002 reworks and completes Release 1 Stories first using the field-level Story standard.
-    - Release 2 Story work remains blocked until Release 1 reaches its configured completion/review boundary.
+  - BL-002 reworks and completes Release 1 Stories first using the field-level Story standard.
+  - Release 2 Story work remains blocked until Release 1 reaches its configured completion/review boundary.
   field_level_story_contract:
     display_page:
       required_chain: PAGE_FIELD_OR_COMPONENT -> MODEL_OR_DTO_FIELD -> CONTROLLER -> SERVICE -> DAO_OR_REPOSITORY -> ENTITY_OR_VIEW_FIELD -> DATABASE_TABLE_OR_VIEW_COLUMN
       static_ui_rule: Mark STATIC_UI_NO_DATABASE_MAPPING when source proves no data binding.
     input_page:
-      required_attributes: [field_name, datatype, required_or_optional, normalization_or_default, validation, accepted_values_or_rules, invalid_value_behavior, persistence_table_or_view, persistence_column, state_or_side_effect]
+      required_attributes:
+      - field_name
+      - datatype
+      - required_or_optional
+      - normalization_or_default
+      - validation
+      - accepted_values_or_rules
+      - invalid_value_behavior
+      - persistence_table_or_view
+      - persistence_column
+      - state_or_side_effect
     evidence_rule: Never infer business meaning or database column mapping without frozen-source proof; use NEEDS_CLARIFICATION.
-  assignments: []
+  assignments:
+  - {no: 1, method: GET, path: /login, functional_area: 'Authentication / Login', release: RELEASE_1}
+  - {no: 2, method: GET, path: /offline-map/status, functional_area: Offline Map, release: RELEASE_2}
+  - {no: 3, method: GET, path: /offline-map/status-json, functional_area: Offline Map, release: RELEASE_2}
+  - {no: 4, method: GET, path: /offline-map/style.json, functional_area: Offline Map, release: RELEASE_2}
+  - {no: 5, method: GET, path: '/offline-map/vector-tiles/{z}/{x}/{y}.pbf', functional_area: Offline Map, release: RELEASE_2}
+  - {no: 6, method: GET, path: /delivery-planning/predefined-trips, functional_area: Predefined Delivery Trips, release: RELEASE_2}
+  - {no: 7, method: POST, path: /delivery-planning/predefined-trips/create, functional_area: Predefined Delivery Trips, release: RELEASE_2}
+  - {no: 8, method: POST, path: /delivery-planning/predefined-trips/add-stop, functional_area: Predefined Delivery Trips, release: RELEASE_2}
+  - {no: 9, method: POST, path: /delivery-planning/predefined-trips/remove-stop, functional_area: Predefined Delivery Trips, release: RELEASE_2}
+  - {no: 10, method: POST, path: /delivery-planning/predefined-trips/remove, functional_area: Predefined Delivery Trips, release: RELEASE_2}
+  - {no: 11, method: POST, path: /complete-trip, functional_area: Trip Completion, release: RELEASE_1}
+  - {no: 12, method: GET, path: /logistics/challan-books/add-form, functional_area: Challan Book Management, release: RELEASE_1}
+  - {no: 13, method: POST, path: /logistics/challan-books/save, functional_area: Challan Book Management, release: RELEASE_1}
+  - {no: 14, method: GET, path: /challan-entry-aging-dashboard, functional_area: Challan Monitoring, release: RELEASE_2}
+  - {no: 15, method: GET, path: /challan-heatmap, functional_area: Challan Monitoring, release: RELEASE_2}
+  - {no: 16, method: GET, path: '/challan-page-photo/{challanPagePhotoId}', functional_area: Challan Monitoring, release: RELEASE_1}
+  - {no: 17, method: GET, path: /customer-address-location/planning-map, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 18, method: GET, path: /customer-address-location/missing, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 19, method: GET, path: /customer-address-location/points.geojson, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 20, method: GET, path: /yard-location/upload, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 21, method: POST, path: /yard-location/upload, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 22, method: GET, path: /yard-location/points.geojson, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 23, method: GET, path: /customer-address-location/upload, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 24, method: POST, path: /customer-address-location/upload, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 25, method: GET, path: /customer-address-location/import-whatsapp-export, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 26, method: POST, path: /customer-address-location/import-whatsapp-export, functional_area: 'Customer / Yard Location', release: RELEASE_2}
+  - {no: 27, method: GET, path: /customer-consumption, functional_area: Customer Consumption, release: RELEASE_2}
+  - {no: 28, method: GET, path: /customer-consumption/, functional_area: Customer Consumption, release: RELEASE_2}
+  - {no: 29, method: GET, path: /customer-consumption/dashboard, functional_area: Customer Consumption, release: RELEASE_2}
+  - {no: 30, method: GET, path: /customer-consumption/api/dashboard, functional_area: Customer Consumption, release: RELEASE_2}
+  - {no: 31, method: GET, path: /ownership-obligation-dashboard, functional_area: Ownership Obligation, release: RELEASE_2}
+  - {no: 32, method: GET, path: /walkin-sale, functional_area: Walk-In Sale, release: RELEASE_1}
+  - {no: 33, method: POST, path: /walkin-sale, functional_area: Walk-In Sale, release: RELEASE_1}
+  - {no: 34, method: POST, path: /customer-spot-cylinder-check/submit, functional_area: Customer Spot Cylinder Check, release: RELEASE_1}
+  - {no: 35, method: GET, path: /customer-spot-cylinder-check/fetch, functional_area: Customer Spot Cylinder Check, release: RELEASE_1}
+  - {no: 36, method: GET, path: /yard-audit-dashboard, functional_area: Yard Audit, release: RELEASE_1}
+  - {no: 37, method: GET, path: /cylinderDelivery, functional_area: Cylinder Delivery, release: RELEASE_1}
+  - {no: 38, method: POST, path: /cylinderDelivery, functional_area: Cylinder Delivery, release: RELEASE_1}
+  - {no: 39, method: GET, path: /vehicleLoad, functional_area: Vehicle Load, release: RELEASE_1}
+  - {no: 40, method: POST, path: /vehicleLoad, functional_area: Vehicle Load, release: RELEASE_1}
+  - {no: 41, method: GET, path: /registerCustomer, functional_area: Customer Registration, release: RELEASE_1}
+  - {no: 42, method: POST, path: /registerCustomer, functional_area: Customer Registration, release: RELEASE_1}
+  - {no: 43, method: GET, path: /wizard/vehicle-trip-load, functional_area: 'Vehicle Trip / Load Wizard', release: RELEASE_1}
+  - {no: 44, method: POST, path: /wizard/vehicle-trip-load/save, functional_area: 'Vehicle Trip / Load Wizard', release: RELEASE_1}
+  - {no: 45, method: GET, path: /displayCustomer, functional_area: Customer Maintenance, release: RELEASE_1}
+  - {no: 46, method: GET, path: /fetchCustomerByPage, functional_area: Customer Maintenance, release: RELEASE_1}
+  - {no: 47, method: POST, path: /updateCustomer, functional_area: Customer Maintenance, release: RELEASE_1}
+  - {no: 48, method: POST, path: /add-stop/challan-page-photo/delete-ajax, functional_area: 'Add Stop / Challan Photos', release: RELEASE_1}
+  - {no: 49, method: POST, path: /add-stop/challan-page-photo/upload, functional_area: 'Add Stop / Challan Photos', release: RELEASE_1}
+  - {no: 50, method: POST, path: /add-stop/challan-page-photo/upload-ajax, functional_area: 'Add Stop / Challan Photos', release: RELEASE_1}
+  - {no: 51, method: GET, path: /add-stop, functional_area: 'Add Stop / Challan Photos', release: RELEASE_1}
+  - {no: 52, method: GET, path: /trip-return, functional_area: Trip Return, release: RELEASE_1}
+  - {no: 53, method: POST, path: /trip-return, functional_area: Trip Return, release: RELEASE_1}
+  - {no: 54, method: GET, path: /customer-demands, functional_area: Customer Demand, release: RELEASE_2}
+  - {no: 55, method: POST, path: /customer-demands, functional_area: Customer Demand, release: RELEASE_2}
+  - {no: 56, method: POST, path: '/customer-demands/{requestId}/mark-delivered', functional_area: Customer Demand, release: RELEASE_2}
+  - {no: 57, method: GET, path: /trip-review, functional_area: Trip Review, release: RELEASE_1}
+  - {no: 58, method: GET, path: '/trip-review/{vehicleTripId}', functional_area: Trip Review, release: RELEASE_1}
+  - {no: 59, method: GET, path: /fetchSupplierByPage, functional_area: Supplier Maintenance, release: RELEASE_1}
+  - {no: 60, method: GET, path: /vehicle-loads/list, functional_area: 'Vehicle Load / Trip Listing', release: RELEASE_1}
+  - {no: 61, method: GET, path: /vehicle-loads/all-list, functional_area: 'Vehicle Load / Trip Listing', release: RELEASE_1}
+  - {no: 62, method: GET, path: /vehicle-trips/list, functional_area: 'Vehicle Load / Trip Listing', release: RELEASE_1}
+  - {no: 63, method: GET, path: /party-custody-traceability, functional_area: Party Custody, release: RELEASE_1}
+  - {no: 64, method: GET, path: /reconciliation-command-center, functional_area: Reconciliation Command Center, release: RELEASE_1}
+  - {no: 65, method: GET, path: /reconciliation-command-center/details, functional_area: Reconciliation Command Center, release: RELEASE_1}
+  - {no: 66, method: GET, path: /ownership-dashboard, functional_area: Ownership Dashboard, release: RELEASE_1}
+  - {no: 67, method: GET, path: /ownership-dashboard/yard, functional_area: Ownership Dashboard, release: RELEASE_1}
+  - {no: 68, method: GET, path: /ownership-dashboard/customer, functional_area: Ownership Dashboard, release: RELEASE_1}
+  - {no: 69, method: GET, path: /ownership-dashboard/supplier, functional_area: Ownership Dashboard, release: RELEASE_1}
+  - {no: 70, method: GET, path: /ownership-dashboard/logistics, functional_area: Ownership Dashboard, release: RELEASE_1}
+  - {no: 71, method: GET, path: /delivery-planning/demand-points.geojson, functional_area: Delivery Planning APIs, release: RELEASE_2}
+  - {no: 72, method: GET, path: /delivery-planning/demand-bubbles.geojson, functional_area: Delivery Planning APIs, release: RELEASE_2}
+  - {no: 73, method: GET, path: /delivery-planning/customer-density-bubbles.geojson, functional_area: Delivery Planning APIs, release: RELEASE_2}
+  - {no: 74, method: GET, path: /delivery-planning/stops, functional_area: Delivery Planning APIs, release: RELEASE_2}
+  - {no: 75, method: GET, path: '/delivery-planning/stops/{stopId}/nearby-customers', functional_area: Delivery Planning APIs, release: RELEASE_2}
+  - {no: 76, method: GET, path: /delivery-planning/customer-coverage.geojson, functional_area: Delivery Planning APIs, release: RELEASE_2}
+  - {no: 77, method: GET, path: /delivery-planning/stops.geojson, functional_area: Delivery Planning APIs, release: RELEASE_2}
+  - {no: 78, method: POST, path: /setCustomerInactive, functional_area: Customer Activation, release: RELEASE_1}
+  - {no: 79, method: POST, path: /setCustomerActive, functional_area: Customer Activation, release: RELEASE_1}
+  - {no: 80, method: GET, path: /ingestSupplier, functional_area: Supplier Registration, release: RELEASE_1}
+  - {no: 81, method: POST, path: /ingestSupplier, functional_area: Supplier Registration, release: RELEASE_1}
+  - {no: 82, method: GET, path: /ingestYardStockCheck, functional_area: Yard Stock Check, release: RELEASE_1}
+  - {no: 83, method: POST, path: /ingestYardStockCheck, functional_area: Yard Stock Check, release: RELEASE_1}
+  - {no: 84, method: POST, path: '/trip-review/{vehicleTripId}/close-review', functional_area: Trip Review Closure, release: RELEASE_1}
+  - {no: 85, method: POST, path: /stop, functional_area: 'Customer / Supplier Stop Processing', release: RELEASE_1}
+  - {no: 86, method: GET, path: '/search/address/customer-address/{customerId}', functional_area: Address REST Services, release: RELEASE_1}
+  - {no: 87, method: GET, path: '/search/addresstype/{searchText}', functional_area: Address REST Services, release: RELEASE_1}
+  - {no: 88, method: GET, path: '/search/challantype/{searchText}', functional_area: Challan Type REST Service, release: RELEASE_1}
+  - {no: 89, method: GET, path: '/search/city/{searchText}', functional_area: Geography REST Services, release: RELEASE_1}
+  - {no: 90, method: GET, path: '/search/country/{searchText}', functional_area: Geography REST Services, release: RELEASE_1}
+  - {no: 91, method: GET, path: '/search/customer/{searchText}', functional_area: Customer REST Service, release: RELEASE_1}
+  - {no: 92, method: GET, path: '/search/driver/{searchText}', functional_area: Driver REST Services, release: RELEASE_1}
+  - {no: 93, method: GET, path: '/find/Driver-by-Id/{driverId}', functional_area: Driver REST Services, release: RELEASE_1}
+  - {no: 94, method: GET, path: '/search/cylinder/{searchText}', functional_area: Cylinder REST Services, release: RELEASE_1}
+  - {no: 95, method: POST, path: /search/cylinder/by-serial-and-state, functional_area: Cylinder REST Services, release: RELEASE_1}
+  - {no: 96, method: POST, path: /search/cylinder/by-customer, functional_area: Cylinder REST Services, release: RELEASE_1}
+  - {no: 97, method: POST, path: /search/cylinder/by-supplier, functional_area: Cylinder REST Services, release: RELEASE_1}
+  - {no: 98, method: GET, path: '/search/product-category/{searchText}', functional_area: Product REST Services, release: RELEASE_1}
+  - {no: 99, method: GET, path: '/search/product/{searchText}', functional_area: Product REST Services, release: RELEASE_1}
+  - {no: 100, method: GET, path: '/search/product-uom/{searchText}', functional_area: Product REST Services, release: RELEASE_1}
+  - {no: 101, method: GET, path: '/search/state/{searchText}', functional_area: 'State / Supplier Search', release: RELEASE_1}
+  - {no: 102, method: GET, path: '/search/supplier/{searchText}', functional_area: 'State / Supplier Search', release: RELEASE_1}
+  - {no: 103, method: GET, path: '/search/vehicle/{searchText}', functional_area: Vehicle REST Services, release: RELEASE_1}
+  - {no: 104, method: GET, path: '/find/Vehicle-by-Id/{vehicleId}', functional_area: Vehicle REST Services, release: RELEASE_1}
+  - {no: 105, method: POST, path: /search/cylinder/ownership/by-state, functional_area: Ownership-Aware Cylinder Search, release: RELEASE_1}
+  - {no: 106, method: POST, path: /search/cylinder/by-state, functional_area: Ownership-Aware Cylinder Search, release: RELEASE_1}
+  - {no: 107, method: POST, path: /search/cylinder/on-vehicle, functional_area: Ownership-Aware Cylinder Search, release: RELEASE_1}
+  - {no: 108, method: GET, path: /domainLookup, functional_area: 'Domain Lookup / Master Data', release: RELEASE_1}
+  - {no: 109, method: POST, path: /domainLookup/productCategory/save, functional_area: 'Domain Lookup / Master Data', release: RELEASE_1}
+  - {no: 110, method: POST, path: /domainLookup/productUom/save, functional_area: 'Domain Lookup / Master Data', release: RELEASE_1}
+  - {no: 111, method: POST, path: /domainLookup/product/save, functional_area: 'Domain Lookup / Master Data', release: RELEASE_1}
+  - {no: 112, method: POST, path: /domainLookup/cylinder/save, functional_area: 'Domain Lookup / Master Data', release: RELEASE_1}
+  - {no: 113, method: POST, path: /domainLookup/vehicle/save, functional_area: 'Domain Lookup / Master Data', release: RELEASE_1}
+  - {no: 114, method: POST, path: /domainLookup/driver/save, functional_area: 'Domain Lookup / Master Data', release: RELEASE_1}
+  - {no: 115, method: GET, path: /delivery-planning, functional_area: Delivery Planning Pages, release: RELEASE_2}
+  - {no: 116, method: GET, path: /delivery-planning/dashboard, functional_area: Delivery Planning Pages, release: RELEASE_2}
+  - {no: 117, method: GET, path: /delivery-planning/customer-density-bubble-map, functional_area: Delivery Planning Pages, release: RELEASE_2}
+  - {no: 118, method: GET, path: /delivery-planning/weekly-forecast, functional_area: Delivery Planning Pages, release: RELEASE_2}
+  - {no: 119, method: GET, path: /delivery-planning/stops/manage, functional_area: Delivery Planning Stop Management, release: RELEASE_2}
+  - {no: 120, method: GET, path: /delivery-planning/stops/manage/, functional_area: Delivery Planning Stop Management, release: RELEASE_2}
+  - {no: 121, method: POST, path: /delivery-planning/stops/manage/save, functional_area: Delivery Planning Stop Management, release: RELEASE_2}
+  - {no: 122, method: POST, path: /delivery-planning/stops/manage/save-selected, functional_area: Delivery Planning Stop Management, release: RELEASE_2}
+  - {no: 123, method: POST, path: /delivery-planning/stops/manage/remove, functional_area: Delivery Planning Stop Management, release: RELEASE_2}
+  - {no: 124, method: GET, path: /reconciliation-dashboard, functional_area: Reconciliation Dashboard, release: RELEASE_1}
+  - {no: 125, method: POST, path: /reconciliation-dashboard/search, functional_area: Reconciliation Dashboard, release: RELEASE_1}
+  - {no: 126, method: GET, path: /vehicle-load/fetch, functional_area: Vehicle Load Details, release: RELEASE_1}
+  - {no: 127, method: GET, path: /lookup, functional_area: Lookup Management, release: RELEASE_1}
+  - {no: 128, method: GET, path: /lookupManagement, functional_area: Lookup Management, release: RELEASE_1}
+  - {no: 129, method: POST, path: /lookupManagement/addressType/save, functional_area: Lookup Management, release: RELEASE_1}
+  - {no: 130, method: POST, path: /lookupManagement/country/save, functional_area: Lookup Management, release: RELEASE_1}
+  - {no: 131, method: POST, path: /lookupManagement/state/save, functional_area: Lookup Management, release: RELEASE_1}
+  - {no: 132, method: POST, path: /lookupManagement/city/save, functional_area: Lookup Management, release: RELEASE_1}
+  - {no: 133, method: GET, path: /addVechileTrip, functional_area: Vehicle Trip Ingestion, release: RELEASE_1}
+  - {no: 134, method: POST, path: /addVechileTrip, functional_area: Vehicle Trip Ingestion, release: RELEASE_1}
