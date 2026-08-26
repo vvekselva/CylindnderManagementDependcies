@@ -1,13 +1,13 @@
 backlog_item: BL-008
-version: 2
-state: DISCOVERY_BLOCKED_LIVE_NEON_IDENTITY_NOT_VISIBLE
+version: 3
+state: TEST_TARGET_KNOWN_CONNECTIVITY_BLOCKED
 execution_backend: LOCAL_PROCESS_POOL
 max_workers: 10
 shared_ssot_single_writer: true
 execution_journal_required: true
-dispatch_fingerprint: BL008-DISCOVERY-MAIN-V170-LIVE-NEON-IDENTITY
-last_execution_id: CYLINDER-PRIMARY-20260826-0302Z
-sync_state: SYNCHRONIZED_DISCOVERY_CHECKPOINT
+dispatch_fingerprint: BL008-DISCOVERY-MAIN-V170-DECLARED-TEST-ENDPOINT
+last_execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-0917IST
+sync_state: SYNCHRONIZED_FAIL_CLOSED_CHECKPOINT
 transient_lane_logs: 0
 idempotency:
   same_closed_fingerprint: NOOP
@@ -20,18 +20,22 @@ current_invocation:
     migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
     flyway_head: V170
     state: PASS
-  neon_discovery:
-    organization: selvakumar
-    organization_id: org-spring-mode-70853603
-    visible_projects: 0
-    requested_project: neon-for-cylinder-db
-    historical_project_id: holy-glitter-02245694
-    project_verified: false
-    database_verified: false
+  neon_test_target:
+    source: USER_DECLARED_DIRECT_JDBC_ENDPOINT
+    host: ep-dawn-forest-axk2scoa-pooler.c-4.us-east-2.aws.neon.tech
+    database: neondb
+    user: neondb_owner
+    credentials: RUNTIME_ONLY_NOT_PERSISTED
+    exact_host_database_user_known: true
+  connectivity:
+    local_execution_host_dns_reachability: FAIL
+    neon_control_plane_project_mapping: FAIL
+    live_identity_query: NOT_EXECUTED
+    flyway_schema_history_read: NOT_EXECUTED
   active_database_requirement: null
   database_write_parallelism: 1
   database_write_attempted: false
   neon_branch_created: false
   manual_sql_used: false
   outcome: FAIL_CLOSED_BEFORE_REQUIREMENT_SELECTION
-next_action: RESTORE_LIVE_NEON_PROJECT_VISIBILITY_THEN_VERIFY_MAIN_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
+next_action: RESTORE_CONNECTIVITY_OR_CONTROL_PLANE_MAPPING_THEN_VERIFY_DECLARED_TEST_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
