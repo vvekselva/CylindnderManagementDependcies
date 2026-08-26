@@ -1,27 +1,37 @@
 gate_status:
   backlog_item: BL-002
-  state: INCREMENTAL_STORY_GENERATION_WITH_USER_REVIEW_AND_CLARIFICATION_PENDING
+  state: WAITING_FOR_USER_RELEASE_CLASSIFICATION_AND_STORY_APPROVAL
   gates:
     QG-SSOT-001: PASS_FOR_INCREMENTAL_CANONICAL_ROW_SCOPE_BY_USER_DIRECTIVE_DEC-BL002-004
     QG-SOW-001: PASS
     QG-DEP-001: PASS_INCREMENTAL_CANONICAL_ROW_SCOPE_ONLY
     QG-STORY-001: PARTIAL_FINAL_MATRIX_GATE_DEFERRED_UNTIL_BL001_FINAL_VALIDATED
-    QG-STORY-002: IN_PROGRESS
-    QG-STORY-003: PASS_FOR_41_READY_STORY_SET; SEVEN_STORIES_NEED_CLARIFICATION
-    QG-STORY-004: PASS_FOR_41_READY_STORY_SET; SEVEN_STORIES_NEED_CLARIFICATION
-    QG-STORY-005: PASS_FOR_41_READY_STORY_SET; SEVEN_STORIES_NEED_CLARIFICATION
+    QG-STORY-002: PAUSED_BY_USER_DECISION_DEC-BL002-005
+    QG-STORY-003: PASS_FOR_EXISTING_41_READY_STORY_SET; SEVEN_STORIES_NEED_CLARIFICATION
+    QG-STORY-004: PASS_FOR_EXISTING_41_READY_STORY_SET; SEVEN_STORIES_NEED_CLARIFICATION
+    QG-STORY-005: PASS_FOR_EXISTING_41_READY_STORY_SET; SEVEN_STORIES_NEED_CLARIFICATION
     QG-STORY-006: WAITING_FOR_USER_APPROVAL_READY_STORY_SET
     QG-STORY-007: NOT_STARTED
     QG-STORY-008: NOT_STARTED
     QG-STORY-009: NOT_STARTED
     QG-STORY-010: NOT_STARTED
-  execution_allowed: true
+  execution_allowed: false
+  pause_reason: >-
+    DEC-BL002-005 is a user-owned gate that pauses additional Story generation until all 134 traceability items are classified into Release 1 and Release 2. Existing accepted BL-001 canonical rows remain valid inputs but no new Story work may be started while this gate is open.
   execution_scope:
     allowed_upstream_rows: PRIMARY_ORCHESTRATOR_ACCEPTED_MATERIALIZED_NON_STALE_CANONICAL_BL001_ROWS
-    currently_eligible_rows: 123
+    currently_eligible_rows_if_pause_released: 123
     excluded_pending_atomic_projection_rows: 11
     final_verification_requires_bl001_final_validated: true
+  release_classification_gate:
+    owner: USER
+    decision: DEC-BL002-005
+    state: WAITING_FOR_USER
+    target_traceability_items: 134
+    classified_items: 0
+    release_1_story_rework_must_complete_before_release_2: true
   approval_gate:
+    owner: USER
     state: WAITING_FOR_USER
     ready_story_count: 41
     exact_fingerprint_required: true
