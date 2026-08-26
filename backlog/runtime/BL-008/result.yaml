@@ -1,5 +1,5 @@
 backlog_item: BL-008
-version: 13
+version: 14
 state: BLOCKED_REQUIRED_MAIN_BRANCH_NOT_VISIBLE
 verified: false
 closed: false
@@ -29,8 +29,7 @@ source_inventory:
   previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
   reconciliation_required: false
 live_neon_discovery:
-  attempted_at: 2026-08-26T18:07:09+05:30
-  organization_id: org-spring-mode-70853603
+  attempted_at: 2026-08-26T18:12:20+05:30
   target_project_match_verified: true
   visible_target_project_id: small-bread-22546365
   visible_target_project_name: neon-for-cylinder-db
@@ -43,6 +42,7 @@ live_neon_discovery:
   exact_main_database_identity_verified: false
   flyway_schema_history_verified: false
   sql_read_attempted_on_production_branch: false
+  flyway_validation_attempted: false
   write_attempted: false
   blocker_changed_from_prior_fire: false
   blocker_change: TARGET_PROJECT_VISIBLE_BUT_REQUIRED_MAIN_BRANCH_REMAINS_ABSENT
@@ -50,16 +50,16 @@ database_requirement:
   active_requirement: null
   selection_state: BLOCKED_UNTIL_EXISTING_MAIN_BRANCH_AND_LIVE_FLYWAY_HISTORY_ARE_PROVED
   reason: >-
-    Fresh Neon project inspection during the 18:00 IST production fire proves project neon-for-cylinder-db
+    Fresh Neon project inspection during this governed fire proves project neon-for-cylinder-db
     (small-bread-22546365) is visible and has exactly one branch: production (br-orange-violet-aylucoco),
-    which is primary/default. Governing BL-008 policy requires an existing branch named main and forbids
+    which is primary/default. Current BL-008 policy requires an existing branch named main and forbids
     branch creation. Production was therefore not queried or mutated as a substitute for main, and no
     database requirement was selected.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  Fresh control-plane evidence confirms the remaining blocker is the absence of an existing Neon main branch.
-  No Neon branch was created, no SQL or Flyway command was run on production, no database write occurred,
-  no manual SQL substitution was used, and no external production deployment occurred.
+  The target project is reachable, but the mandatory existing Neon main branch is absent. No Neon branch was
+  created, no SQL or Flyway command was run on production, no database write occurred, no manual SQL substitution
+  was used, and no external production deployment occurred.
 next_action: PROVE_EXISTING_NEON_MAIN_BRANCH_WITHOUT_CREATING_ONE_THEN_VERIFY_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_EXACTLY_ONE_REQUIREMENT
 user_acceptance_required_before_close: true
