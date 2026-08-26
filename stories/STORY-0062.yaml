@@ -1,0 +1,28 @@
+story:
+  story_id: STORY-0062
+  title: Customer activation - Set active
+  state: NEEDS_CLARIFICATION
+  fingerprint: 1f5750b834ce5fad3f69f427cab2b8628bee0ea9ca584d961be3d1233db8db82
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /setCustomerActive"]
+  controller: ToggleCustomerActiveStatusController.setCustomerActive
+  endpoint: "POST /setCustomerActive"
+  business_purpose: Mark a customer active through the accepted BL-001 flow.
+  accepted_backend_chain:
+    - ToggleCustomerActiveStatusController.setCustomerActive
+    - public.tbl_customer
+    - redirect:/fetchCustomerByPage
+  data_reads_and_writes:
+    - WRITE public.tbl_customer.
+    - Redirect to customer listing is source-proved.
+  field_level_evidence:
+    state: INCOMPLETE
+    not_proved:
+      - exact request parameter datatype and required/optional contract
+      - normalization/default behavior
+      - exact validation and invalid-value behavior
+      - exact entity field and database column changed
+      - exact caller-visible message parameters on redirect
+  disposition_reason: Endpoint action and persistence table are proved, but the required field-level input/persistence contract is incomplete.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-190650.md]
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
