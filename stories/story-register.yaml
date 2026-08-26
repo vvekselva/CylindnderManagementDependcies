@@ -1,5 +1,5 @@
 story_register:
-  version: 21
+  version: 22
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -18,13 +18,13 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 52
+    story_dispositions: 56
     draft: 0
     technically_validated: 0
     ready_for_user_review: 45
     approved: 0
     rejected: 0
-    needs_clarification: 7
+    needs_clarification: 11
     not_applicable: 0
     stale_review_required: 0
   stories:
@@ -80,5 +80,9 @@ story_register:
     - {story_id: STORY-0050, matrix_row_keys: ["GET /search/challantype/{searchText}"], state: READY_FOR_USER_REVIEW, fingerprint: b29a1e8069a5907600247fefd64bb9bf2ee2b4c13ae02d33f38e1cec9b6fc3c2, structured: stories/STORY-0050.yaml, human_readable: stories/STORY-0050.md}
     - {story_id: STORY-0051, matrix_row_keys: ["GET /search/city/{searchText}"], state: READY_FOR_USER_REVIEW, fingerprint: 833c4f4664ef6d7e0b82e88cd602e766f8e6f419ed356cfbbe84545007bdd180, structured: stories/STORY-0051.yaml, human_readable: stories/STORY-0051.md}
     - {story_id: STORY-0052, matrix_row_keys: ["GET /search/country/{searchText}"], state: READY_FOR_USER_REVIEW, fingerprint: 385002c2e8dc6643c621c462fd76e26025c5ec3ca33c09a1ef6299573e0b97db, structured: stories/STORY-0052.yaml, human_readable: stories/STORY-0052.md}
+    - {story_id: STORY-0053, matrix_row_keys: ["GET /party-custody-traceability"], state: NEEDS_CLARIFICATION, fingerprint: 5ca5e9dc1b3193901f30b22d8a9046ebce90bd6162e5049c655afc2b4bb05b19, structured: stories/STORY-0053.yaml, human_readable: stories/STORY-0053.md}
+    - {story_id: STORY-0054, matrix_row_keys: ["GET /reconciliation-command-center"], state: NEEDS_CLARIFICATION, fingerprint: b16bb4335c67af89f3c45b9ea7567967e777f2fb5ae00bfef55174f275707acf, structured: stories/STORY-0054.yaml, human_readable: stories/STORY-0054.md}
+    - {story_id: STORY-0055, matrix_row_keys: ["GET /reconciliation-command-center/details"], state: NEEDS_CLARIFICATION, fingerprint: f52a9f966656aeacd4f80f7bf298f6e8986669e515228ddcef8f552102689082, structured: stories/STORY-0055.yaml, human_readable: stories/STORY-0055.md}
+    - {story_id: STORY-0056, matrix_row_keys: ["GET /ownership-dashboard"], state: NEEDS_CLARIFICATION, fingerprint: e8cfd41f1deeac5c9c2aeb5baa63b46586a8c563cabf82897309fd10f5b85f2c, structured: stories/STORY-0056.yaml, human_readable: stories/STORY-0056.md}
   invariant: >-
     Only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows are eligible. Pending atomic-projection rows remain excluded. No Story becomes downstream-authoritative before explicit user approval of its exact fingerprint.
