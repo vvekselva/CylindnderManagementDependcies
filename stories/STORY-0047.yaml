@@ -1,0 +1,57 @@
+story:
+  story_id: STORY-0047
+  title: Open the vehicle trip/load wizard with lookup and active challan-book data
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 2ab938e66f6b38bfb37d6b2b4d6e9f032cab670213cc8e9b7e8abefc37b2f47c
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /wizard/vehicle-trip-load"]
+  controller: VehicleTripLoadWizardController.showWizard
+  endpoint: "GET /wizard/vehicle-trip-load"
+  business_purpose: Display the vehicle trip/load wizard using source-proved lookup data and active challan-book data.
+  trigger_and_context: A caller opens GET /wizard/vehicle-trip-load.
+  inputs:
+    - No required caller-supplied request value is proved for this GET handler by the accepted trace.
+    - The handler consumes lookup data and active challan-book data needed to prepare the wizard page.
+  normalization_and_defaults:
+    - Vehicle-load purposes, total products and product details are read through LookupDataCache.
+    - The accepted request trace proves only the cache access within this request; it does not prove a database population path behind the cache for this GET invocation.
+  validations:
+    - No caller-input validation branch is proved for this GET path.
+  invalid_value_paths:
+    - No invalid caller-value branch is proved; no additional failure behavior is invented.
+  main_flow:
+    - VehicleTripLoadWizardController.showWizard handles GET /wizard/vehicle-trip-load.
+    - The controller reads vehicle-load purposes, total products and product details through LookupDataCache.
+    - The controller invokes populateActiveChallanBooks for the active challan-book branch.
+    - populateActiveChallanBooks queries ActiveChallanBookForTripLoadViewJpaDao.findByBookType.
+    - The DAO maps ActiveChallanBookForTripLoadViewDo to public.vw_active_challan_books_for_trip_load.
+    - The controller combines the proved lookup-cache data and active challan-book data for the wizard model.
+    - The terminal view is final-version-1/VehicleTripLoadWizard.
+  component_flow:
+    - VehicleTripLoadWizardController.showWizard
+    - LookupDataCache.getVehicleLoadPurposes / getTotalProducts / getProduct
+    - in-memory LookupDataCache
+    - VehicleTripLoadWizardController.populateActiveChallanBooks
+    - ActiveChallanBookForTripLoadViewJpaDao.findByBookType
+    - ActiveChallanBookForTripLoadViewDo
+    - public.vw_active_challan_books_for_trip_load
+    - final-version-1/VehicleTripLoadWizard
+  data_reads_and_writes:
+    - READ public.vw_active_challan_books_for_trip_load through ActiveChallanBookForTripLoadViewJpaDao.findByBookType.
+    - READ lookup values from the in-memory LookupDataCache.
+    - No persistent write is proved for this GET handler.
+  side_effects_and_state_changes:
+    - No persistent application state change is proved.
+    - No database write is performed by the accepted request path.
+  alternate_and_error_flows:
+    - The accepted trace proves a lookup-cache branch and a database-view branch used to prepare the same wizard page.
+    - No caller-visible exception or error branch is enumerated by the accepted trace.
+  output_and_postconditions:
+    - Returns final-version-1/VehicleTripLoadWizard with the source-proved lookup and active challan-book data available to the page.
+  evidence:
+    - traceability/controller-traceability.md
+    - logs/runs/PRODUCTION-FIRE-20260824-110011.md
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: GET /wizard/vehicle-trip-load reads wizard lookup values from LookupDataCache, queries active challan books through ActiveChallanBookForTripLoadViewJpaDao -> ActiveChallanBookForTripLoadViewDo -> public.vw_active_challan_books_for_trip_load, and renders final-version-1/VehicleTripLoadWizard without a proved persistence write.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 2ab938e66f6b38bfb37d6b2b4d6e9f032cab670213cc8e9b7e8abefc37b2f47c}
