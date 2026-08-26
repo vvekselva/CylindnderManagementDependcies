@@ -1,8 +1,27 @@
 backlog_item: BL-008
-version: 1
-active_blockers: []
+version: 2
+active_blockers:
+  - blocker_id: BL008-CONNECTIVITY-001
+    state: ACTIVE
+    type: EXECUTION_CONNECTIVITY_AND_CONTROL_PLANE_MAPPING
+    target_environment: TEST
+    target_host: ep-dawn-forest-axk2scoa-pooler.c-4.us-east-2.aws.neon.tech
+    target_database: neondb
+    target_user: neondb_owner
+    credentials: RUNTIME_ONLY_NOT_PERSISTED
+    evidence:
+      - User declared the direct CylinderManagement Neon TEST JDBC endpoint.
+      - Local execution host could not resolve/reach the Neon hostname during this manual fire.
+      - Connected Neon control plane could not map the endpoint to an accessible project.
+    impact:
+      - Live database identity query cannot be proved.
+      - flyway_schema_history cannot be inspected.
+      - No next Flyway requirement can be selected safely.
+      - Database mutation remains forbidden.
+    clear_condition: Execution host connectivity or Neon control-plane project mapping must allow a read-only identity and flyway_schema_history verification against the declared TEST database.
 conditional_fail_closed_conditions:
-  - UNPROVED_TARGET_DATABASE_IDENTITY
+  - UNPROVED_LIVE_DATABASE_IDENTITY_QUERY
+  - UNPROVED_FLYWAY_SCHEMA_HISTORY
   - MIGRATION_SOURCE_DUPLICATE_OR_ORDER_AMBIGUITY
   - VALIDATION_BRANCH_OR_ROLLBACK_POINT_MISSING
   - FLYWAY_VALIDATE_FAILURE
