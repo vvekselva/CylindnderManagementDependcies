@@ -1,0 +1,11 @@
+backlog_item: BL-008
+version: 1
+state: INITIALIZED
+work_units:
+  - {id: WU-BL008-001, name: Discover migration source and target, state: READY}
+  - {id: WU-BL008-002, name: Establish validation branch and recovery point, state: WAITING_FOR_DEPENDENCY, depends_on: [WU-BL008-001]}
+  - {id: WU-BL008-003, name: Validate and migrate isolated branch, state: WAITING_FOR_DEPENDENCY, depends_on: [WU-BL008-002]}
+  - {id: WU-BL008-004, name: Validate ownership and data integrity, state: WAITING_FOR_DEPENDENCY, depends_on: [WU-BL008-003]}
+  - {id: WU-BL008-005, name: Promote validated Flyway sequence to production, state: WAITING_FOR_DEPENDENCY, depends_on: [WU-BL008-004]}
+  - {id: WU-BL008-006, name: Post-production validation and ledger sync, state: WAITING_FOR_DEPENDENCY, depends_on: [WU-BL008-005]}
+  - {id: WU-BL008-007, name: Final verification, state: WAITING_FOR_DEPENDENCY, depends_on: [WU-BL008-006]}
