@@ -1,5 +1,5 @@
 controller_story_usecase_traceability:
-  version: 19
+  version: 20
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_MAPPING
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -63,6 +63,11 @@ controller_story_usecase_traceability:
     - {matrix_row_key: "GET /search/challantype/{searchText}", story_id: STORY-0050, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "GET /search/city/{searchText}", story_id: STORY-0051, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "GET /search/country/{searchText}", story_id: STORY-0052, story_state: READY_FOR_USER_REVIEW, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /party-custody-traceability", story_id: STORY-0053, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /reconciliation-command-center", story_id: STORY-0054, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /reconciliation-command-center/details", story_id: STORY-0055, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /ownership-dashboard", story_id: STORY-0056, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /ownership-dashboard/yard", story_id: STORY-0057, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
   invariants:
     - every canonical final matrix row has one Story disposition before final BL-002 verification
     - every APPROVED Story references at least one canonical matrix row
