@@ -1,0 +1,29 @@
+release_classification:
+  version: 1
+  backlog_item: BL-002
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  owner: USER
+  state: WAITING_FOR_USER_ASSIGNMENT
+  inventory:
+    target_unique_method_path_items: 134
+    currently_materialized_canonical_items: 123
+    source_proved_pending_atomic_projection_items: 11
+    canonical_inventory_source: traceability/controller-traceability.md
+    pending_inventory_source: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
+  allowed_release_values: [RELEASE_1, RELEASE_2]
+  counts:
+    release_1: 0
+    release_2: 0
+    unassigned: 134
+  execution_order:
+    - USER classifies all 134 traceability items into Release 1 or Release 2.
+    - BL-002 reworks and completes Release 1 Stories first using the field-level Story standard.
+    - Release 2 Story work remains blocked until Release 1 reaches its configured completion/review boundary.
+  field_level_story_contract:
+    display_page:
+      required_chain: PAGE_FIELD_OR_COMPONENT -> MODEL_OR_DTO_FIELD -> CONTROLLER -> SERVICE -> DAO_OR_REPOSITORY -> ENTITY_OR_VIEW_FIELD -> DATABASE_TABLE_OR_VIEW_COLUMN
+      static_ui_rule: Mark STATIC_UI_NO_DATABASE_MAPPING when source proves no data binding.
+    input_page:
+      required_attributes: [field_name, datatype, required_or_optional, normalization_or_default, validation, accepted_values_or_rules, invalid_value_behavior, persistence_table_or_view, persistence_column, state_or_side_effect]
+    evidence_rule: Never infer business meaning or database column mapping without frozen-source proof; use NEEDS_CLARIFICATION.
+  assignments: []
