@@ -1,0 +1,12 @@
+backlog_item: BL-008
+version: 1
+state: BOOTSTRAPPED_READY_FOR_GATE_REEVALUATION
+verified: false
+closed: false
+migration_target: V176
+validation_branch_state: NOT_STARTED
+production_state: NOT_STARTED
+ownership_integrity: NOT_EVALUATED
+database_ledger_sync: BOOTSTRAP_COMPLETE_EXECUTION_PENDING
+next_action: REEVALUATE_QG_SSOT_001_THEN_EXECUTE_WU_BL008_001
+user_acceptance_required_before_close: true
