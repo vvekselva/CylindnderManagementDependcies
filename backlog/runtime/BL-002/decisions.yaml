@@ -17,3 +17,13 @@ decisions:
       date: 2026-08-25
       owner: USER
       decision: BL-001 and BL-002 execute as parallel coordinated workstreams. BL-002 may consume only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows while BL-001 continues; rows pending atomic projection remain ineligible. Final BL-002 verification still requires the complete final BL-001 matrix and all normal approval gates.
+    - id: DEC-BL002-005
+      date: 2026-08-26
+      owner: USER
+      decision: >-
+        Pause additional BL-002 Story generation until the complete 134-item traceability inventory is classified by the USER into Release 1 and Release 2. After classification, complete Release 1 Story rework first; Release 2 Story work must not begin until the Release 1 Story scope is completed to its configured review/approval boundary.
+    - id: DEC-BL002-006
+      date: 2026-08-26
+      owner: USER
+      decision: >-
+        Reworked Stories must be field-level descriptive. For display pages, enumerate page fields/components and prove each data-backed field through page/model-or-DTO/controller/service/DAO-or-repository/entity-or-view/database table-or-view and column when source evidence supports it; static UI fields must be identified as having no database mapping. For input pages, additionally record datatype, required/optional status, actual validation, accepted rules, invalid-value behavior, persistence table/column and resulting state or side effect. Unproved mappings or semantics are NEEDS_CLARIFICATION and must never be invented.
