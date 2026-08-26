@@ -1,0 +1,15 @@
+backlog_item: BL-008
+version: 1
+state: INITIALIZED_NOT_STARTED
+execution_backend: LOCAL_PROCESS_POOL
+max_workers: 10
+shared_ssot_single_writer: true
+execution_journal_required: true
+dispatch_fingerprint: null
+last_execution_id: null
+sync_state: SYNCHRONIZED_BOOTSTRAP
+transient_lane_logs: 0
+idempotency:
+  same_closed_fingerprint: NOOP
+  pending_sync: RETRY_SYNC_ONLY
+  interrupted_mutation: FAIL_CLOSED_AND_RECOVER_FROM_VALIDATED_CHECKPOINT
