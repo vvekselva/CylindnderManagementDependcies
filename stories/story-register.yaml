@@ -1,5 +1,5 @@
 story_register:
-  version: 23
+  version: 24
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -18,13 +18,13 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 57
+    story_dispositions: 60
     draft: 0
     technically_validated: 0
     ready_for_user_review: 45
     approved: 0
     rejected: 0
-    needs_clarification: 12
+    needs_clarification: 15
     not_applicable: 0
     stale_review_required: 0
   stories:
@@ -85,5 +85,8 @@ story_register:
     - {story_id: STORY-0055, matrix_row_keys: ["GET /reconciliation-command-center/details"], state: NEEDS_CLARIFICATION, fingerprint: f52a9f966656aeacd4f80f7bf298f6e8986669e515228ddcef8f552102689082, structured: stories/STORY-0055.yaml, human_readable: stories/STORY-0055.md}
     - {story_id: STORY-0056, matrix_row_keys: ["GET /ownership-dashboard"], state: NEEDS_CLARIFICATION, fingerprint: e8cfd41f1deeac5c9c2aeb5baa63b46586a8c563cabf82897309fd10f5b85f2c, structured: stories/STORY-0056.yaml, human_readable: stories/STORY-0056.md}
     - {story_id: STORY-0057, matrix_row_keys: ["GET /ownership-dashboard/yard"], state: NEEDS_CLARIFICATION, fingerprint: ac9dc879eb82e3d78a47925bb37b2f8a105efd56ac42d05d374bc2561fae751a, structured: stories/STORY-0057.yaml, human_readable: stories/STORY-0057.md}
+    - {story_id: STORY-0058, matrix_row_keys: ["GET /ownership-dashboard/customer"], state: NEEDS_CLARIFICATION, fingerprint: c84d59ba859012f3c1c0506d52de7c6213a1cb75ea05135ac9508f6db95e34c5, structured: stories/STORY-0058.yaml, human_readable: stories/STORY-0058.md}
+    - {story_id: STORY-0059, matrix_row_keys: ["GET /ownership-dashboard/supplier"], state: NEEDS_CLARIFICATION, fingerprint: f8c42377a905619d24b8d4ae9fd2645762603b9de63226d8718b8616e4bd2d13, structured: stories/STORY-0059.yaml, human_readable: stories/STORY-0059.md}
+    - {story_id: STORY-0060, matrix_row_keys: ["GET /ownership-dashboard/logistics"], state: NEEDS_CLARIFICATION, fingerprint: 67ed68536a77774774013855af30fbb01b25248eaa9d719bc71359ae1c4d7c80, structured: stories/STORY-0060.yaml, human_readable: stories/STORY-0060.md}
   invariant: >-
     Only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows are eligible. Pending atomic-projection rows remain excluded. No Story becomes downstream-authoritative before explicit user approval of its exact fingerprint.
