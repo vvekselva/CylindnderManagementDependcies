@@ -1,5 +1,5 @@
 story_register:
-  version: 24
+  version: 25
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -18,13 +18,13 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 60
+    story_dispositions: 65
     draft: 0
     technically_validated: 0
     ready_for_user_review: 45
     approved: 0
     rejected: 0
-    needs_clarification: 15
+    needs_clarification: 20
     not_applicable: 0
     stale_review_required: 0
   stories:
@@ -88,5 +88,10 @@ story_register:
     - {story_id: STORY-0058, matrix_row_keys: ["GET /ownership-dashboard/customer"], state: NEEDS_CLARIFICATION, fingerprint: c84d59ba859012f3c1c0506d52de7c6213a1cb75ea05135ac9508f6db95e34c5, structured: stories/STORY-0058.yaml, human_readable: stories/STORY-0058.md}
     - {story_id: STORY-0059, matrix_row_keys: ["GET /ownership-dashboard/supplier"], state: NEEDS_CLARIFICATION, fingerprint: f8c42377a905619d24b8d4ae9fd2645762603b9de63226d8718b8616e4bd2d13, structured: stories/STORY-0059.yaml, human_readable: stories/STORY-0059.md}
     - {story_id: STORY-0060, matrix_row_keys: ["GET /ownership-dashboard/logistics"], state: NEEDS_CLARIFICATION, fingerprint: 67ed68536a77774774013855af30fbb01b25248eaa9d719bc71359ae1c4d7c80, structured: stories/STORY-0060.yaml, human_readable: stories/STORY-0060.md}
+    - {story_id: STORY-0061, matrix_row_keys: ["POST /setCustomerInactive"], state: NEEDS_CLARIFICATION, fingerprint: 56f0cfb1a1e6bfbe6cef3c8e13dc605aeb39778bfcf892722bd046d8e62fc5f2, structured: stories/STORY-0061.yaml, human_readable: stories/STORY-0061.md}
+    - {story_id: STORY-0062, matrix_row_keys: ["POST /setCustomerActive"], state: NEEDS_CLARIFICATION, fingerprint: 1f5750b834ce5fad3f69f427cab2b8628bee0ea9ca584d961be3d1233db8db82, structured: stories/STORY-0062.yaml, human_readable: stories/STORY-0062.md}
+    - {story_id: STORY-0063, matrix_row_keys: ["GET /ingestSupplier"], state: NEEDS_CLARIFICATION, fingerprint: 6fbc85de511a96a4355afee05b4fd7aa6d69c4430aec62b743bdcf9afa49d39c, structured: stories/STORY-0063.yaml, human_readable: stories/STORY-0063.md}
+    - {story_id: STORY-0064, matrix_row_keys: ["POST /ingestSupplier"], state: NEEDS_CLARIFICATION, fingerprint: 2c963408c22418d11f03cb3c4223f2afbb8e86fe9bcfa7e14614087ae01dff15, structured: stories/STORY-0064.yaml, human_readable: stories/STORY-0064.md}
+    - {story_id: STORY-0065, matrix_row_keys: ["GET /ingestYardStockCheck"], state: NEEDS_CLARIFICATION, fingerprint: f59c56ebfd100c9a58880ca094e327038c305d332773917cec8cea8e209a7ca8, structured: stories/STORY-0065.yaml, human_readable: stories/STORY-0065.md}
   invariant: >-
     Only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows are eligible. Pending atomic-projection rows remain excluded. No Story becomes downstream-authoritative before explicit user approval of its exact fingerprint.
