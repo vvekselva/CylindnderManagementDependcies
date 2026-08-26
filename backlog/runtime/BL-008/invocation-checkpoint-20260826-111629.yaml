@@ -1,0 +1,31 @@
+checkpoint:
+  backlog_item: BL-008
+  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1116IST
+  state: BLOCKED_SAME_REQUIREMENT_NEON_TARGET_NOT_PROVED
+  environment_role: TEST_ONLY
+  required_project_name: neon-for-cylinder-db
+  required_project_id: holy-glitter-02245694
+  required_branch: main
+  branch_creation_allowed: false
+  database_write_parallelism: 1
+  source_repository: vvekselva/CylinderManagement
+  source_branch: main
+  source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
+  authoritative_source_head: V170
+  target_verification:
+    owned_project_discovery: REQUIRED_PROJECT_NOT_RETURNED
+    shared_project_discovery: REQUIRED_PROJECT_NOT_RETURNED
+    secondary_project_lookup: AUTHENTICATION_FAILURE
+    exact_project_main_database_proved: false
+  flyway:
+    schema_history_read: false
+    validate_run: false
+    migration_run: false
+  mutations:
+    database_writes: 0
+    neon_branches_created: 0
+    manual_sql_substitutions: 0
+    external_production_deployments: 0
+  decision: KEEP_CURRENT_REQUIREMENT_FAIL_CLOSED
+  next_action: Reprove the exact configured Neon project, main branch and application database from live Neon evidence before any Flyway validation or migration.
