@@ -1,5 +1,5 @@
 backlog_item: BL-008
-version: 8
+version: 9
 state: BLOCKED_TEST_DATABASE_CONTROL_PLANE_TARGET_MISMATCH
 verified: false
 closed: false
@@ -29,7 +29,7 @@ source_inventory:
   previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
   reconciliation_required: false
 live_neon_discovery:
-  attempted_at: 2026-08-26T07:34:00Z
+  attempted_at: 2026-08-26T09:34:00Z
   organization_projects_visible: 1
   visible_project_id: weathered-heart-89789162
   visible_project_name: cylinder_db_for_testing
@@ -47,16 +47,15 @@ database_requirement:
   active_requirement: null
   selection_state: BLOCKED_UNTIL_REQUIRED_MAIN_TARGET_AND_LIVE_FLYWAY_HISTORY_ARE_PROVED
   reason: >-
-    Live Neon discovery again exposes project weathered-heart-89789162 (cylinder_db_for_testing), but its only visible/default
-    branch is production and no existing main branch is proved. The governing BL-008 policy permits main only and forbids
-    creating Neon branches. Project identity equivalence to the historical authoritative target remains unproved. Therefore
-    production cannot be queried or mutated as a substitute for main and the first outstanding Flyway requirement cannot be
-    selected from live flyway_schema_history.
+    Fresh Neon discovery in the 14:58 IST production invocation again exposes project weathered-heart-89789162
+    (cylinder_db_for_testing), but the visible/default branch remains production and no existing main branch is returned by
+    the live control plane. Governing BL-008 policy permits main only and forbids branch creation. Production cannot be queried
+    or mutated as a substitute, so the first outstanding Flyway requirement cannot be selected from live flyway_schema_history.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  The 12:58 IST governed fire reconfirmed the existing target mismatch. No Neon branch was created, no SQL was run against
-  production as a substitute, no Flyway validate/migrate was run, no manual SQL substitution occurred, and no external
-  production deployment was performed. BL-008 remains on the same pre-requirement boundary until exact Neon main identity is proved.
+  The 14:58 IST governed fire revalidated the same target mismatch. No Neon branch was created, no SQL was run against production,
+  no Flyway validate/migrate was run, no manual SQL substitution occurred, and no external production deployment was performed.
+  BL-008 remains at the pre-requirement boundary until exact Neon main identity is proved.
 next_action: PROVE_EXISTING_NEON_MAIN_TARGET_WITHOUT_CREATING_A_BRANCH_THEN_VERIFY_EXACT_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
 user_acceptance_required_before_close: true
