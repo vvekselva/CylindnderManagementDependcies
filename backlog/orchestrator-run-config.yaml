@@ -1,4 +1,4 @@
-version: 14
+version: 15
 purpose: >-
   Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
   workstreams when independently eligible. Shared worker capacity is dynamic; shared SSOT remains single-writer and
@@ -35,25 +35,41 @@ execution_engine:
   self_reliant_governance: governance/self-reliant-execution.yaml
   backend: LOCAL_PROCESS_POOL
   max_parallel_workers: 10
-  worker_pool_allocation: DYNAMIC_ACROSS_ELIGIBLE_BACKLOG_ITEMS
+  worker_pool_allocation: EVENT_DRIVEN_DYNAMIC_REFILL
   starvation_forbidden: true
   shared_ssot_single_writer: true
-  github_role: VERSION_CONTROL_AND_DURABLE_PERSISTENCE_ONLY
+  github_role: START_SNAPSHOT_AND_DURABLE_PERSISTENCE_ONLY
   github_actions_required: false
   external_worker_service_required: false
   source_repository: vvekselva/CylinderManagement
   control_repository: vvekselva/CylindnderManagementDependcies
   source_provider_governance: governance/source-provider.yaml
+  execution_source_mode: governance/execution-source-mode.yaml
   source_layout: repository/source-layout.yaml
-  default_source_provider: ORCHESTRATOR_STAGED_SNAPSHOT
+  default_source_provider: INVOCATION_START_LOCAL_OR_STAGED_SNAPSHOT
   fallback_source_provider: LOCAL_GIT_CHECKOUT
   staged_executor: automation/staged-lane-executor-v3.py
   staged_worker: automation/staged-lane-worker-v3.py
   executor_completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
   executor_completion_return_owner: PRIMARY_ORCHESTRATOR
 
+repository_snapshot_contract:
+  config: governance/execution-source-mode.yaml
+  fetch_repository_tree_once_at_invocation_start: true
+  repository_tree_reuse_scope: ENTIRE_INVOCATION
+  git_changes_expected_during_execution: false
+  external_commits_expected_through: 2026-08-30T23:59:59+05:30
+  runtime_reads_after_start: LOCAL_OR_STAGED_SNAPSHOT_ONLY
+  workers_may_fetch_repository_tree: false
+  executor_may_fetch_repository_tree: false
+  orchestrator_may_refetch_tree_before_replan: false
+  orchestrator_may_refetch_tree_after_executor_completion: false
+  remote_polling_when_change_flag_false: false
+  orchestrator_generated_commit_behavior: UPDATE_LOCAL_CONTROL_SNAPSHOT_WITHOUT_TREE_REFETCH
+  change_flag_true_behavior: REFRESH_ONLY_ON_EXPLICIT_CHANGE_SIGNAL
+
 invocation_utilization_contract:
-  mode: WORK_DRIVEN_ORCHESTRATOR_REPLAN_LOOP
+  mode: WORK_DRIVEN_EVENT_DRIVEN_ORCHESTRATOR_LOOP
   singleton_invocation_required: true
   executor_liveness:
     live_only_while_assigned_executor_work_remains: true
@@ -62,21 +78,29 @@ invocation_utilization_contract:
     on_assigned_work_failed_or_blocked: EMIT_EXECUTOR_COMPLETED_REPLAN_REQUIRED_AND_EXIT
   orchestrator_liveness:
     continue_while_eligible_or_recoverable_work_exists: true
-    on_executor_completion: VALIDATE_SYNC_REPLAN_AND_ASSIGN_NEXT_WORK
+    on_executor_completion: VALIDATE_RESULT_RELEASE_SLOT_REPLAN_AND_ASSIGN_IMMEDIATELY
     no_dependency_on_executor_process_liveness: true
+    no_wait_for_other_executors_before_refill: true
     stop_when:
       - NO_ELIGIBLE_OR_RECOVERABLE_WORK
       - FAIL_CLOSED_GATE_REQUIRES_EXTERNAL_STATE_CHANGE
       - SAFETY_HARD_STOP_REACHED
   assignment_loop:
     enabled: true
+    model: EVENT_DRIVEN_PER_EXECUTOR_COMPLETION
     executor_completion_signal_required: EXECUTOR_COMPLETED_REPLAN_REQUIRED
     replan_after_every_executor_completion: true
-    validate_before_reassignment: true
-    synchronize_validated_checkpoint_before_reassignment: true
+    validate_completed_executor_only: true
+    wait_for_all_workers_before_reassignment: false
+    generation_barrier_for_refill: false
+    release_and_refill_freed_slot_immediately: true
+    preserve_other_running_executors: true
+    shared_control_writes_remain_serialized: true
+    synchronize_completed_result_before_that_result_becomes_ssot: true
+    synchronization_of_one_result_must_not_wait_for_other_executors: true
     refill_worker_pool_from_backlog: true
-    max_workers_per_generation: 10
-    continue_generations_while_work_exists: true
+    max_concurrent_executors: 10
+    continue_assigning_while_work_exists: true
   safety_stop:
     hard_stop_window_minutes: 45
     purpose: SAFETY_CEILING_ONLY
@@ -93,15 +117,20 @@ production_source_contract:
     owner: PRIMARY_ORCHESTRATOR
     repository: vvekselva/CylinderManagement
     baseline: MUST_MATCH_SELECTED_BACKLOG_BASELINE
+    repository_tree_captured_once_at_invocation_start: true
     manifest_required: true
     every_materialized_file_requires_git_blob_sha: true
     every_worker_verifies_file_before_read: true
     workers_access_github_directly: false
+    executor_accesses_github_directly: false
+    orchestrator_runtime_source_access_after_start: LOCAL_OR_STAGED_ONLY
   local_git_fallback:
     frozen_commit_must_exist_locally: true
     active_checkout_is_not_switched: true
     executor_uses_detached_worktree: true
   common_preflight:
+    - capture one repository tree snapshot for the invocation
+    - load governance/execution-source-mode.yaml
     - selected backlog items and Work Units are eligible
     - required source and SSOT inputs are available
     - duplicate lane and task IDs are rejected
@@ -163,6 +192,8 @@ execution_recovery_contract:
   execution_journal_required: true
   executor_completion_always_returns_control_to_orchestrator: true
   executor_completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
+  immediate_refill_after_each_executor_completion: true
+  do_not_wait_for_peer_executors: true
   same_fingerprint_pending_sync: RETRY_SYNC_ONLY_NO_WORKER_RESTART
   same_fingerprint_closed_waiting_validation: VALIDATE_EXISTING_EVIDENCE_NO_WORKER_RESTART
   interrupted_running_without_live_workers: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
@@ -195,14 +226,19 @@ backlog_items:
   BL-021: {name: Customer Data Dashboard, run_enabled: false}
 
 scheduled_run_rules:
-  - read backlog/backlog.yaml and this run-config first
+  - read backlog/backlog.yaml, this run-config, and governance/execution-source-mode.yaml first
   - acquire singleton invocation lease and NOOP on overlap
+  - capture repository tree once at invocation start and reuse it for the whole invocation
+  - when git_changes_expected_during_execution is false, use only the invocation-start local/staged snapshot for runtime source reads
+  - do not poll or refetch GitHub tree after worker completion, before replan, or before reassignment
+  - orchestrator-authored commits update the local control snapshot directly and do not trigger whole-tree rediscovery
   - execute BL-001, BL-002 and BL-008 when independently eligible up to max_active_backlog_items
   - enforce QG-SSOT-001, QG-SOW-001, QG-DEP-001 and item-specific gates per stream
   - share up to 10 workers dynamically without starvation
   - an executor lives only while its currently assigned executor work remains
   - executor completion must emit EXECUTOR_COMPLETED_REPLAN_REQUIRED and return control to the Primary Orchestrator
-  - Primary Orchestrator validates and synchronizes the completed executor result, replans the backlog, and immediately assigns the next eligible or recoverable work
+  - on any single executor completion, validate that executor result, release that slot, replan, and immediately assign the next eligible work to that slot
+  - never wait for other still-running executors before refilling a completed executor slot
   - do not keep an idle executor alive to satisfy a time window
   - continue the invocation while eligible or recoverable work exists, subject only to the safety hard stop
   - BL-002 executes Release 1 field-level Story rework before Release 2
