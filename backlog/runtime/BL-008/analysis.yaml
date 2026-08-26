@@ -1,18 +1,28 @@
 backlog_item: BL-008
-version: 1
-state: INITIALIZED
+version: 2
+state: LIVE_CONNECTIVITY_PASS_POLICY_RECONCILIATION_REQUIRED
 analysis:
   authoritative_database_ledger: database-dependency-neon.md
-  target_project: neon-for-cylinder-db
-  target_project_id: holy-glitter-02245694
-  production_branch: production
-  production_branch_id: br-steep-snow-aw6u5odt
-  database: neon-for-cylinder-db
-  postgres: 18.4
-  current_database_state: FRESH_EMPTY_MIGRATION_PENDING
-  required_flyway_target: V176
+  live_target_project: cylinder_db_for_testing
+  live_target_project_id: weathered-heart-89789162
+  live_default_branch: production
+  live_default_branch_is_primary: true
+  database: neondb
+  database_user: neondb_owner
+  postgres: 18.6
+  connectivity: PASS
+  flyway_schema_history_exists: false
+  current_database_state: REACHABLE_NOT_FLYWAY_INITIALIZED
   migration_source_repository: vvekselva/CylinderManagement
   migration_source_path: cylinder.datascripts/src/main/resources/db/migration/
-  ownership_source_roots: [NewOwnerShipModelv3/, cmas.database.operations/]
   manual_sql_substitution: FORBIDDEN
-  first_execution_action: VERIFY_EXACT_MIGRATION_INVENTORY_AND_CREATE_OR_VERIFY_VALIDATION_BRANCH
+  new_neon_branch_creation: FORBIDDEN
+  database_write_parallelism: 1
+  database_write_attempted_this_fire: false
+  policy_mismatch:
+    expected_test_migration_branch_policy: MAIN_ONLY_NO_NEW_BRANCH
+    observed_live_default_branch: production
+    observed_branch_named_main: false
+    disposition: FAIL_CLOSED_BEFORE_DATABASE_MUTATION
+  next_action: RECONCILE_MAIN_ONLY_POLICY_WITH_THE_EXISTING_PRIMARY_DEFAULT_BRANCH_IDENTITY_THEN_REVALIDATE_FLYWAY_INVENTORY_AND_SELECT_EXACTLY_ONE_DATABASE_REQUIREMENT
+  execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-104359IST
