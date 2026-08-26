@@ -1,22 +1,24 @@
 result:
   backlog_item: BL-002
-  state: WAITING_FOR_USER_RELEASE_CLASSIFICATION
+  state: PARTIAL_RELEASE_1_FIELD_LEVEL_REWORK_READY
   verified: false
   closed: false
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  execution_basis: DEC-BL002-005_AND_DEC-BL002-006
   upstream:
     bl001_state: PARTIAL_UNIQUE_KEY_RECOVERY
     materialized_unique_rows: 123
     pending_atomic_projection_rows: 11
     final_target_rows: 134
   release_gate:
-    state: BLOCKED_WAITING_FOR_USER_ASSIGNMENT
+    state: PASS_USER_CLASSIFICATION_COMPLETE
     register: traceability/release-classification.yaml
-    release_1_assigned: 0
-    release_2_assigned: 0
-    unassigned: 134
-    rule: COMPLETE_RELEASE_1_STORY_REWORK_BEFORE_RELEASE_2
+    release_1_assigned: 88
+    release_2_assigned: 46
+    unassigned: 0
+    release_1_target_date: 2026-08-29
+    release_2_target_date: 2026-09-05
+    release_3: WHATSAPP_INTEGRATION_DATE_TBD
+    rule: COMPLETE_RELEASE_1_FIELD_LEVEL_STORY_REWORK_BEFORE_RELEASE_2
   story_result:
     registered_story_dispositions: 48
     ready_for_user_review_in_existing_register: 41
@@ -24,24 +26,30 @@ result:
     approved: 0
     materialized_story_artifacts: 52
     pending_registration_sync_story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
-    new_story_generation_allowed: false
-    field_level_rework_required: true
-    authoritative_review_eligibility: BLOCKED_UNTIL_RELEASE_CLASSIFICATION_AND_FIELD_LEVEL_REWORK
+    shallow_story_generation_allowed: false
+    release_1_field_level_rework_allowed: true
+    release_2_story_work_allowed: false
+    field_level_contract: >-
+      For display pages map every source-proved page field/component through model/DTO, controller, service, DAO/repository,
+      entity/view field and database table/view column, or mark STATIC_UI_NO_DATABASE_MAPPING. For input pages additionally
+      document datatype, required/optional, normalization/default, validation, accepted values/rules, invalid-value behavior,
+      persistence destination/column and state/side effect. Unproved meaning is NEEDS_CLARIFICATION.
   usecase_result:
     candidate_usecases: 0
     approved_for_testing: 0
-    blocker: STORY_USER_APPROVAL_REQUIRED_AFTER_RELEASE_SCOPED_REWORK
+    blocker: STORY_USER_APPROVAL_REQUIRED_AFTER_RELEASE_1_FIELD_LEVEL_REWORK
   test_scenario_result:
     authoritative_scenarios: 0
     blocker: APPROVED_FOR_TESTING_USECASE_REQUIRED
   final_verification_blockers:
-    - USER_RELEASE_1_RELEASE_2_CLASSIFICATION_REQUIRED
-    - RELEASE_1_FIELD_LEVEL_STORY_REWORK_REQUIRED_FIRST
-    - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED
-    - ALL_CANONICAL_ROWS_REQUIRE_RELEASE_SCOPED_STORY_DISPOSITION
+    - RELEASE_1_FIELD_LEVEL_STORY_REWORK_REQUIRED
+    - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED_FOR_FINAL_BL002_VERIFICATION
+    - ALL_RELEASE_1_CANONICAL_ROWS_REQUIRE_FIELD_LEVEL_STORY_DISPOSITION
     - STORY_USER_APPROVAL_REQUIRED
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    Additional shallow Story generation is paused by the latest user decision. Forty-eight Story dispositions remain registered, while STORY-0049 through STORY-0052 are already materialized from a prior accepted invocation but await register and cross-traceability synchronization. Those four artifacts are not downstream-authoritative. No STORY-0053 was generated in this invocation. The durable release-classification register now waits for the USER to assign all 134 traceability items to Release 1 or Release 2.
-  next_action: >-
-    On the next safe checkpoint, synchronize only the already-materialized STORY-0049 through STORY-0052 into the Story register and Matrix-to-Story map without generating new Stories. Keep Story rework blocked until the USER assigns the 134 inventory items. Once assigned, rework Release 1 first using field-level page/input-to-database traceability and only then allow Release 2 according to DEC-BL002-005 and DEC-BL002-006.
+    User release classification is complete: 88 Release 1 and 46 Release 2 items. Additional shallow Story generation remains
+    prohibited. BL-002 may now rework eligible canonical Release 1 rows to the field-level standard while BL-001 continues.
+    Release 2 remains blocked until the Release 1 completion/review boundary. STORY-0049 through STORY-0052 remain materialized
+    but not authoritative until register and cross-traceability synchronization.
+  next_action: SYNCHRONIZE_STORY_0049_TO_0052_WITHOUT_PROMOTION_THEN_REWORK_RELEASE_1_CANONICAL_STORIES_TO_FIELD_LEVEL_STANDARD
