@@ -55,7 +55,7 @@ The current authoritative `CylinderManagement/main` branch was re-read on 2026-0
 
 ### Live connector state on 2026-08-26
 
-The connected Neon integration now exposes **one project**, `cylinder_db_for_testing` (`weathered-heart-89789162`). This is an improvement over the earlier zero-project result. However, the project exposes/defaults to branch **`production`**, while BL-008 is governed to use an already-existing **`main` only** and is forbidden from creating a Neon branch. The newly visible project also does not by itself prove identity equivalence to the historical authoritative project record `neon-for-cylinder-db` / `holy-glitter-02245694`. Therefore exact `main` project/database identity and `flyway_schema_history` are still not proved. No SQL or database write was attempted against `production` as a substitute for `main`.
+The connected Neon integration exposes **one project**, `cylinder_db_for_testing` (`weathered-heart-89789162`). The project exposes/defaults to branch **`production`**, while BL-008 is governed to use an already-existing **`main` only** and is forbidden from creating a Neon branch. The visible project also does not by itself prove identity equivalence to the historical authoritative project record `neon-for-cylinder-db` / `holy-glitter-02245694`. Therefore exact `main` project/database identity and `flyway_schema_history` remain unproved. No SQL or database write is authorized against `production` as a substitute for `main`.
 
 ## 4. Sequential Requirement Rule
 
@@ -90,7 +90,7 @@ Neon environment role           PASS (separate TEST environment)
 Required branch policy          PASS (main only; no branch creation)
 One-requirement-at-a-time rule   PASS
 Current Flyway source inventory PASS (current main = V170 at 3ae6e614...)
-Live Neon project visibility     PASS (one connected project now visible)
+Live Neon project visibility     PASS (one connected project visible)
 Authoritative target match       BLOCKED (visible project identity not proved equivalent)
 Required main branch visibility  BLOCKED (visible/default branch is production)
 Exact main database identity     BLOCKED
@@ -113,7 +113,8 @@ Manual SQL substitution          NOT ALLOWED
 | 2026-08-26 | Manual production fire live Neon target discovery | N/A | N/A | `main` | VERIFY_FROM_LIVE_NEON | BLOCKED | Connected Neon integration exposed zero projects. No DB mutation performed. |
 | 2026-08-26 | Reconcile current authoritative Flyway source inventory | V170 head | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` | VERIFY_FROM_LIVE_NEON | PASS_SOURCE_INVENTORY | Migration tree `c2b6e219...` proves current main through V170. Older V176 expectation superseded. Live Neon remained unavailable at that checkpoint. |
 | 2026-08-26 | Governed fire at 11:16 IST: reverify configured Neon target | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` | VERIFY_FROM_LIVE_NEON | BLOCKED_SAME_REQUIREMENT | Required historical project was not returned and a follow-up lookup encountered connector authentication failure. No DB mutation. |
-| 2026-08-26 | Governed fire at 12:02 IST: live Neon project rediscovery | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` required; visible `production` | VERIFY_ON_EXISTING_MAIN | BLOCKED_TARGET_MISMATCH | Connector now exposes `cylinder_db_for_testing` (`weathered-heart-89789162`), but its visible/default branch is `production`; no existing `main` was proved and branch creation is forbidden. Project identity equivalence to the historical authoritative target is also unproved. No SQL, Flyway validate/migrate, branch creation, manual SQL, schema mutation, or external production deployment occurred. |
+| 2026-08-26 | Governed fire at 12:02 IST: live Neon project rediscovery | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` required; visible `production` | VERIFY_ON_EXISTING_MAIN | BLOCKED_TARGET_MISMATCH | Connector exposes `cylinder_db_for_testing` (`weathered-heart-89789162`), but its visible/default branch is `production`; no existing `main` was proved and branch creation is forbidden. No mutation occurred. |
+| 2026-08-26 | Governed fire at 12:58 IST: revalidate main-only target gate | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` required; visible `production` | VERIFY_ON_EXISTING_MAIN | BLOCKED_SAME_TARGET_MISMATCH | Live discovery again exposes only `cylinder_db_for_testing` / `production`; `main` is not proved. No requirement selected, no SQL/Flyway write, no branch creation, no manual SQL. |
 
 ## 8. Application-to-Database Dependency Contract
 
@@ -149,16 +150,16 @@ Requirement handling   : ONE AT A TIME
 Database write status  : NOT AUTHORIZED
 ```
 
-## 10. Latest Governed Invocation Evidence — 2026-08-26 12:02 IST
+## 10. Latest Governed Invocation Evidence — 2026-08-26 12:58 IST
 
-- Invocation: `CYLINDER-PRODUCTION-FIRE-20260826-1202IST`.
+- Invocation: `CYLINDER-PRODUCTION-FIRE-20260826-1258IST`.
 - Authoritative Flyway source remains `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89`, migration tree `c2b6e219cfc8b0d23e0208d46cd634271bf39356`, head V170.
-- Connected Neon discovery now returns one project: `cylinder_db_for_testing` (`weathered-heart-89789162`).
-- Its visible/default branch is `production`; no existing `main` branch was proved.
+- Connected Neon discovery returns one project: `cylinder_db_for_testing` (`weathered-heart-89789162`).
+- Its visible/default and only proved branch is `production`; no existing `main` branch is proved.
 - User policy requires `main` only and prohibits creating Neon branches.
-- Identity equivalence between the newly visible project and historical authoritative target `neon-for-cylinder-db` / `holy-glitter-02245694` is not proved.
+- Identity equivalence between the visible project and historical target `neon-for-cylinder-db` / `holy-glitter-02245694` remains unproved.
 - Decision: `BLOCKED_TEST_DATABASE_CONTROL_PLANE_TARGET_MISMATCH`; remain before selecting any database requirement.
-- `flyway_schema_history`: not read because the required main target was not proved.
+- `flyway_schema_history`: not read because the required main target is not proved.
 - Flyway validation: not run.
 - Flyway migration: not run.
 - SQL reads against `production` as a substitute for `main`: zero.
