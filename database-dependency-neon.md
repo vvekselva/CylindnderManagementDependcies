@@ -17,7 +17,7 @@ The user-approved policy as of 2026-08-26 is:
 - A failed or ambiguous current requirement blocks advancement to later requirements.
 - Manual SQL substitution for Flyway is **not allowed**.
 
-Historical references below to a Neon `production` branch are retained only as audit history and are **superseded for BL-008 execution** by the main-only policy above.
+Historical references to a Neon `production` branch are retained only as audit history and are **superseded for BL-008 execution** by the main-only policy above.
 
 ## 2. Flyway Source
 
@@ -31,36 +31,62 @@ Historical references below to a Neon `production` branch are retained only as a
 | Migration mechanism | Flyway only |
 | Manual SQL substitution | FORBIDDEN |
 | Active migration selection | Exactly one requirement at a time, in proved authoritative order |
-| Previously documented expected head | V176 — superseded by live current-main inventory |
 | Current-main exact source head | **V170** |
 
-The current authoritative `CylinderManagement/main` branch was re-read on 2026-08-26. Its migration tree contains versioned Flyway SQL through **V170** and no V171+ entry. The older V176 statement is retained only as historical audit data and must not override the live GitHub main inventory.
+The older V176 expectation is retained only as historical audit data and is superseded by the current GitHub source inventory through V170 at the frozen baseline.
 
-## 3. Neon Environment
+## 3. Verified Neon TEST Target — 26 Aug 2026
 
-| Item | Current value |
+Fresh live Neon verification now proves the previously missing target is available.
+
+| Item | Verified value |
 |---|---|
 | Platform | Neon Serverless PostgreSQL |
 | Environment role | Separate TEST environment; not direct external production |
-| Current visible target project | `neon-for-cylinder-db` (`small-bread-22546365`) |
-| Required BL-008 branch | `main` |
-| Current visible/default branch | `production` (`br-orange-violet-aylucoco`) |
-| Visible branch count | 1 |
-| Branch creation | FORBIDDEN |
-| Application database | VERIFY_ON_EXISTING_MAIN_BEFORE_FIRST_WRITE |
-| PostgreSQL version | 18 (project metadata; exact main DB verification still required) |
+| Target project | `neon-for-cylinder-db` |
+| Project ID | `small-bread-22546365` |
+| Required branch | `main` |
+| Main branch ID | `br-delicate-mountain-ayzs1f3l` |
+| Database | `neondb` |
+| Database user | `neondb_owner` |
+| PostgreSQL server version | `18.6` |
+| Public table count | **0** |
+| `flyway_schema_history` | **ABSENT** |
+| Branch creation performed | **NO** |
+| Database writes during verification | **0** |
 
-### Live connector state on 2026-08-26 18:12 IST
+The absence of `flyway_schema_history` is **not a blocker** here. The verified `main` database is a fresh empty target with zero public tables, so BL-008 can now start the initial governed Flyway baseline sequence.
 
-Fresh Neon discovery proves the intended project `neon-for-cylinder-db` (`small-bread-22546365`) is reachable. Project inspection proves exactly one branch is present: **`production`** (`br-orange-violet-aylucoco`), which is primary/default. BL-008 is currently governed to use an already-existing **`main` only** and is forbidden from creating a Neon branch. Therefore exact `main` database identity and `flyway_schema_history` remain unproved. No SQL read or write was executed against `production` as a substitute for `main`.
+## 4. Blocker Resolution
 
-## 4. Sequential Requirement Rule
+The prior runtime blocker `BLK-BL008-006 / BLOCKED_REQUIRED_MAIN_BRANCH_NOT_VISIBLE` is **RESOLVED**.
+
+```text
+Old state
+  Project visible
+  main not visible
+  exact database unproved
+       ↓
+Live verification
+       ↓
+Project small-bread-22546365 verified
+main br-delicate-mountain-ayzs1f3l verified
+neondb / neondb_owner / PostgreSQL 18.6 verified
+0 public tables; no flyway_schema_history
+       ↓
+New state
+READY_TARGET_VERIFIED
+```
+
+BL-008 is **not complete**. The environment blocker is solved; the next work is to select, prove, validate and apply the first authoritative Flyway requirement.
+
+## 5. Sequential Requirement Rule
 
 For each database requirement, the Orchestrator must perform this loop:
 
-1. Select exactly one next requirement from the authoritative Flyway source order and the live target's `flyway_schema_history`.
-2. Prove its migration version, filename/checksum and prerequisites.
-3. Verify the live Neon `main` target and exact database identity.
+1. Select exactly one next requirement from the authoritative Flyway source order and the live target state.
+2. Prove migration version, filename/checksum, order and prerequisites.
+3. Reconfirm the exact Neon `main` target and database identity.
 4. Run Flyway validation for the current requirement/sequence state.
 5. Apply only the selected next requirement through Flyway to Neon `main`.
 6. Verify `flyway_schema_history`, schema integrity, ownership rules and critical data integrity.
@@ -69,7 +95,7 @@ For each database requirement, the Orchestrator must perform this loop:
 
 Database migration writes under BL-008 have effective parallelism **1**.
 
-## 5. Ownership Integrity Requirements
+## 6. Ownership Integrity Requirements
 
 The migration must preserve and validate the supported ownership model:
 
@@ -79,7 +105,7 @@ The migration must preserve and validate the supported ownership model:
 - Supplier and customer ownership must never both be populated for one ownership record.
 - Cylinder identity, state/history, custody/logistics and audit relationships must be preserved unless an authoritative versioned migration explicitly changes them.
 
-## 6. Current Database Quality Gate
+## 7. Current Database Quality Gate
 
 ```text
 BL-008 governance                PASS
@@ -88,28 +114,28 @@ Required branch policy          PASS (main only; no branch creation)
 One-requirement-at-a-time rule   PASS
 Current Flyway source inventory PASS (current main = V170 at 3ae6e614...)
 Live Neon target project        PASS (neon-for-cylinder-db / small-bread-22546365)
-Required main branch visibility BLOCKED (only production exists)
-Exact main database identity    BLOCKED
-flyway_schema_history            NOT VERIFIED ON MAIN
-Active database requirement      NONE — selection blocked pending live main
-Flyway execution                 NOT STARTED
-Database mutation                NOT AUTHORIZED
-Manual SQL substitution          NOT ALLOWED
+Required main branch visibility PASS (br-delicate-mountain-ayzs1f3l)
+Exact main database identity    PASS (neondb / neondb_owner / PostgreSQL 18.6)
+Fresh schema check              PASS (0 public tables)
+flyway_schema_history           ABSENT ON FRESH TARGET - NOT A BLOCKER
+Active database requirement     NONE - READY TO SELECT INITIAL REQUIREMENT
+Flyway execution                NOT STARTED
+Database mutation               NOT YET AUTHORIZED
+Manual SQL substitution         NOT ALLOWED
 ```
 
-## 7. Database Change Ledger
+## 8. Database Change Ledger
 
 | Date | Change / requirement | Flyway version | Source | Neon branch | Database | Status | Validation / notes |
 |---|---|---|---|---|---|---|---|
-| 2026-08-16 | Created dedicated Neon project for CylinderManagement | N/A | N/A | `main` | `neondb` | HISTORICAL | Initial project creation record. |
-| 2026-08-16 | Created controlled `production` branch | N/A | N/A | `production` | inherited | SUPERSEDED_FOR_BL008 | Historical branch record; BL-008 no longer uses this branch. |
-| 2026-08-16 | Created fresh CylinderManagement application database | N/A | N/A | `production` | `neon-for-cylinder-db` | HISTORICAL | Historical target under former policy. |
-| 2026-08-16 | Connectivity validation against former target | N/A | N/A | `production` | `neon-for-cylinder-db` | HISTORICAL | Earlier evidence must not substitute for current main-only live verification. |
-| 2026-08-26 | Adopt Neon main-only sequential migration policy | N/A | `vvekselva/CylinderManagement` | `main` | VERIFY_FROM_LIVE_NEON | PASS_POLICY | Neon is a separate test environment; no Neon branch creation; one database requirement at a time. |
-| 2026-08-26 | Reconcile current authoritative Flyway source inventory | V170 head | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` | VERIFY_FROM_LIVE_NEON | PASS_SOURCE_INVENTORY | Migration tree `c2b6e219...` proves current main through V170. Older V176 expectation superseded. |
-| 2026-08-26 18:12 IST | Governed fire: revalidate intended project and mandatory main branch | N/A | `CylinderManagement/main@3ae6e61442132d94a307275b08dd65fcef228d89` | `main` required; only `production` visible | VERIFY_ON_EXISTING_MAIN | BLOCKED_REQUIRED_MAIN_BRANCH_NOT_VISIBLE | Fresh Neon discovery verifies project `neon-for-cylinder-db` (`small-bread-22546365`) but project inspection shows exactly one branch, `production` (`br-orange-violet-aylucoco`). No requirement selected, no SQL/Flyway validation or migration, no database write, no branch creation, no manual SQL, no external production deployment. |
+| 2026-08-16 | Created dedicated Neon project for CylinderManagement | N/A | N/A | historical | historical | HISTORICAL | Initial project creation record. |
+| 2026-08-16 | Connectivity validation against former target | N/A | N/A | `production` | historical | HISTORICAL | Former-policy evidence only. |
+| 2026-08-26 | Adopt Neon main-only sequential migration policy | N/A | `vvekselva/CylinderManagement` | `main` | live target | PASS_POLICY | Test environment; no branch creation; one requirement at a time. |
+| 2026-08-26 | Reconcile authoritative Flyway source inventory | V170 head | `CylinderManagement@3ae6e614...` | `main` | live target | PASS_SOURCE_INVENTORY | Migration tree proves source through V170. |
+| 2026-08-26 18:12 IST | Revalidate project while main was not visible to prior invocation | N/A | frozen source | `main` required | unproved then | HISTORICAL_BLOCKER | Retained as audit history; superseded by later live verification. |
+| 2026-08-26 | Verify Neon `main` and exact fresh database target | N/A | frozen source | `main` / `br-delicate-mountain-ayzs1f3l` | `neondb` | PASS_TARGET_VERIFIED | Project `small-bread-22546365`; user `neondb_owner`; PostgreSQL 18.6; 0 public tables; no `flyway_schema_history`; no writes performed. |
 
-## 8. Application-to-Database Dependency Contract
+## 9. Application-to-Database Dependency Contract
 
 A database requirement is complete only when:
 
@@ -123,39 +149,29 @@ A database requirement is complete only when:
 
 No later requirement may start before these conditions pass for the current requirement.
 
-## 9. Current Authoritative BL-008 Target
+## 10. Current Authoritative BL-008 Target
 
 ```text
 Dependency repository : vvekselva/CylindnderManagementDependcies
+Control branch         : chore/rename-dependency-files
 Flyway source repo     : vvekselva/CylinderManagement
-Source branch          : main
 Source commit          : 3ae6e61442132d94a307275b08dd65fcef228d89
 Current Flyway head    : V170
 Neon target project    : neon-for-cylinder-db / small-bread-22546365
-Required branch        : main
-Visible/default branch : production / br-orange-violet-aylucoco
-Visible branch count   : 1
-Branch creation        : FORBIDDEN
+Required branch        : main / br-delicate-mountain-ayzs1f3l
 Environment role       : TEST ONLY / NOT DIRECT EXTERNAL PRODUCTION
-Database               : VERIFY_ON_EXISTING_MAIN_BEFORE_WRITE
+Database               : neondb
+Database user          : neondb_owner
+PostgreSQL             : 18.6
+Current schema         : FRESH / 0 public tables
+flyway_schema_history  : ABSENT - INITIAL BASELINE NOT YET APPLIED
 Migration tool         : Flyway
 Requirement handling   : ONE AT A TIME
-Database write status  : NOT AUTHORIZED
+Database write status  : NOT YET STARTED
 ```
 
-## 10. Latest Governed Invocation Evidence — 2026-08-26 18:12 IST
+## 11. Exact Next Action
 
-- Preflight registry contained no recorded RUNNING invocation and no active work claim; no stale/stuck recovery was required before this fire.
-- Fresh Neon discovery verified project `neon-for-cylinder-db` (`small-bread-22546365`).
-- Fresh project inspection proved exactly one branch: `production` (`br-orange-violet-aylucoco`), primary/default.
-- Required existing branch `main` is not visible and branch creation is forbidden.
-- Decision: remain at `BLOCKED_REQUIRED_MAIN_BRANCH_NOT_VISIBLE` before selecting a database requirement.
-- Active database requirement: none.
-- `flyway_schema_history`: not read from `production` as a substitute for `main`.
-- Flyway validation/migration: not run.
-- Database writes: zero.
-- Neon branches created: zero.
-- Manual SQL substitutions: zero.
-- External production deployments: zero.
+Select the **initial authoritative Flyway requirement** from the frozen source, prove its version/order/checksum/prerequisites, run pre-apply validation against the verified Neon `main` / `neondb` target, apply exactly that one requirement through Flyway, then verify `flyway_schema_history` and schema/ownership/data integrity before proceeding.
 
 This file must be updated after every BL-008 database requirement and whenever the environment, migration policy or authoritative Flyway source inventory changes.
