@@ -1,4 +1,4 @@
-run_time: 2026-08-26T10:30:35+05:30
+run_time: 2026-08-26T12:27:49+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: BLOCKED
 policy:
@@ -10,17 +10,24 @@ policy:
 bl008:
   status: BLOCKED
   database_write_attempted: false
+  neon_project:
+    name: cylinder_db_for_testing
+    project_id: weathered-heart-89789162
+    postgres_version: 18
+  verified_branch_state:
+    required_branch: main
+    observed_primary_branch: production
+    main_present: false
   blockers:
-    - "database-dependency.md is stale: it still designates production while current user policy requires main only."
-    - "Neon project/branch identity could not be authorized through the connected Neon control plane; exact main database identity was therefore not proven."
-    - "Live CylinderManagement Flyway tree does not prove a continuous V1-V176 source set; observed gaps include V116 and V157 and the inspected tree ends at V170."
-  next_requirement: "Do not select/apply a migration until branch/database identity and a complete ordered Flyway source set are proven."
+    - "Neon TEST project is reachable, but the observed primary branch is production; required branch main is not present. Policy forbids creating a Neon branch, so no SQL/Flyway action was attempted."
+    - "Live CylinderManagement Flyway source inspection still does not prove an ordered continuous authoritative migration set through the previously asserted V176; exact next version/checksum/prerequisites therefore remain unproved."
+  next_requirement: "Hold the same BL-008 requirement until an existing Neon branch named main and the exact next Flyway version/order/checksum/prerequisites are all proven. Do not substitute manual SQL."
 bl001:
   status: BLOCKED
-  blocker: "Authoritative dependency control repository contains no BL-001 SSOT, accepted/materialized row set, matrix, Explorer consolidation artifact, or source-proof ledger to continue safely."
+  blocker: "Authoritative dependency control repository still provides no accepted/materialized/non-stale BL-001 SSOT row set, atomic matrix/Explorer consolidation artifact, or source-proof ledger from which to continue safely toward exactly 134 unique method/path rows."
 bl002:
   status: BLOCKED
-  blocker: "release-classification.yaml is absent from the authoritative dependency control repository, so the 88 RELEASE_1 / 46 RELEASE_2 assignments cannot be source-proved or consumed."
+  blocker: "release-classification.yaml is not proven present in the authoritative dependency control repository, so the 88 RELEASE_1 / 46 RELEASE_2 assignment set cannot be safely consumed. BL-002 also cannot consume unmaterialized BL-001 rows."
   policy:
     release_1_first: true
     needs_clarification_on_unproved_meaning: true
