@@ -1,0 +1,27 @@
+story:
+  story_id: STORY-0057
+  title: Ownership dashboard - Yard
+  state: NEEDS_CLARIFICATION
+  fingerprint: ac9dc879eb82e3d78a47925bb37b2f8a105efd56ac42d05d374bc2561fae751a
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /ownership-dashboard/yard"]
+  controller: OwnershipDashboardController.showYardOwnership
+  endpoint: "GET /ownership-dashboard/yard"
+  business_purpose: Display yard ownership-location detail using the accepted BL-001 source chain.
+  accepted_backend_chain:
+    - OwnershipDashboardController.showYardOwnership
+    - OwnershipDashboardFetchService
+    - public.vw_ownership_current_cylinder_location
+    - OwnershipLocationDetail
+  data_reads_and_writes:
+    - READ public.vw_ownership_current_cylinder_location.
+    - No persistence write is proved.
+  field_level_evidence:
+    state: INCOMPLETE
+    not_proved:
+      - exact page-field/component to DTO/model-field mappings
+      - exact view columns rendered on the page
+      - exact filter/default/null-handling semantics
+  disposition_reason: Accepted trace proves the backend read path but not the current field-level Story contract.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
