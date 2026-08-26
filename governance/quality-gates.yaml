@@ -1,4 +1,4 @@
-version: 14
+version: 15
 purpose: >-
   Define common Backlog planning/execution gates and the item-specific Quality Gate registry. Planning requires complete
   SSOT and SOW. Source-reading execution requires verified source/binding evidence, lifecycle logging and recovery/idempotency.
@@ -89,7 +89,7 @@ backlog_quality_gates:
   BL-005: {name: Code Coverage Report, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-006: {name: ArchUnit Architecture Test, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-007: {name: Requirements Traceability and Gap Analysis, configured: false, config: null, approved_by_user: false, execution_allowed: false}
-  BL-008: {name: Migration of the Database to the Ownership Model, configured: true, config: backlog/gates/BL-008-database-ownership-migration.yaml, approved_by_user: true, execution_allowed: true, database_mutation_mode: VALIDATION_BRANCH_THEN_PRODUCTION}
+  BL-008: {name: Migration of the Database to the Ownership Model, configured: true, config: backlog/gates/BL-008-database-ownership-migration.yaml, approved_by_user: true, execution_allowed: true, database_mutation_mode: NEON_MAIN_ONLY_SEQUENTIAL_TEST_ENVIRONMENT}
   BL-009: {name: Supplier Owned, Customer Owned and Company Owned Cylinder Model, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-010: {name: Physical Challan Book Location, configured: false, config: null, approved_by_user: false, execution_allowed: false}
   BL-011: {name: Ownership Dashboard Changes, configured: false, config: null, approved_by_user: false, execution_allowed: false}
@@ -107,4 +107,5 @@ backlog_quality_gates:
 orchestrator_rule: >-
   Select run-enabled eligible BL-001, BL-002 and BL-008 concurrently when each passes its own gates. BL-002 may only
   consume accepted materialized non-stale BL-001 rows. BL-008 may perform read-only discovery in parallel, but migration
-  mutation is serialized, validation-branch-first, Flyway-only, and fail-closed on any target, rollback or integrity ambiguity.
+  mutation is serialized on Neon main only, creates no Neon branches, uses Flyway only, and fails closed on any target,
+  ordering, checksum, history or integrity ambiguity.
