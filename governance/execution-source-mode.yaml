@@ -1,0 +1,53 @@
+version: 1
+purpose: >-
+  Control whether the Primary Orchestrator must expect repository changes while a production invocation is running.
+  This separates runtime source reads from GitHub persistence and prevents repeated repository-tree discovery when
+  the source is known to be stable.
+
+runtime_source_mode:
+  repository_tree_snapshot:
+    fetch_once_at_invocation_start: true
+    cache_for_entire_invocation: true
+    re_fetch_during_invocation: false
+    snapshot_identity_required: true
+    use_snapshot_for_path_resolution: true
+  source_content:
+    primary_provider_after_start: LOCAL_OR_STAGED_SNAPSHOT
+    github_direct_reads_by_workers: false
+    github_direct_reads_by_executor: false
+    github_direct_reads_by_orchestrator_after_snapshot: false
+    missing_local_source_action: RESOLVE_FROM_START_SNAPSHOT_OR_FAIL_CLOSED
+
+repository_change_expectation:
+  git_changes_expected_during_execution: false
+  external_commits_expected: false
+  effective_until: 2026-08-30T23:59:59+05:30
+  user_statement: >-
+    No external commits are expected through Sunday. Commits may occur only when the Primary Orchestrator deliberately
+    persists validated orchestration/control artifacts.
+  when_false:
+    poll_remote_during_execution: false
+    refresh_repository_tree_after_executor_completion: false
+    refresh_repository_tree_before_replan: false
+    compare_remote_head_before_each_assignment: false
+    source_of_truth_for_runtime_reads: INVOCATION_START_LOCAL_OR_STAGED_SNAPSHOT
+  when_true:
+    remote_change_detection_required: true
+    refresh_only_after_change_signal: true
+    never_poll_per_worker: true
+    invalidate_only_affected_cached_paths: true
+
+orchestrator_generated_commits:
+  allowed: true
+  treated_as_external_source_change: false
+  update_local_control_state_immediately: true
+  require_repository_tree_refetch: false
+  reason: >-
+    The Primary Orchestrator already knows exactly which control files it changed. It must update its in-memory/local
+    control snapshot directly instead of rediscovering the whole repository tree.
+
+next_invocation_rule:
+  always_take_new_tree_snapshot_at_start: true
+  reason: >-
+    A new invocation gets one fresh repository view. Within that invocation the view remains stable unless the explicit
+    git_changes_expected_during_execution flag is changed to true or a change signal is received.
