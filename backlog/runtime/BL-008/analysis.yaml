@@ -1,28 +1,49 @@
 backlog_item: BL-008
-version: 2
-state: LIVE_CONNECTIVITY_PASS_POLICY_RECONCILIATION_REQUIRED
+version: 3
+state: BLOCKED_TEST_DATABASE_CONTROL_PLANE_TARGET_MISMATCH
 analysis:
   authoritative_database_ledger: database-dependency-neon.md
-  live_target_project: cylinder_db_for_testing
-  live_target_project_id: weathered-heart-89789162
-  live_default_branch: production
-  live_default_branch_is_primary: true
-  database: neondb
-  database_user: neondb_owner
-  postgres: 18.6
-  connectivity: PASS
-  flyway_schema_history_exists: false
-  current_database_state: REACHABLE_NOT_FLYWAY_INITIALIZED
-  migration_source_repository: vvekselva/CylinderManagement
-  migration_source_path: cylinder.datascripts/src/main/resources/db/migration/
+  required_target_project: neon-for-cylinder-db
+  required_target_project_id: holy-glitter-02245694
+  required_branch: main
+  branch_creation: FORBIDDEN
+  environment_role: SEPARATE_NEON_TEST_ENVIRONMENT
+  database_requirement_parallelism: 1
+  migration_mechanism: FLYWAY_ONLY
   manual_sql_substitution: FORBIDDEN
-  new_neon_branch_creation: FORBIDDEN
-  database_write_parallelism: 1
+  source_repository: vvekselva/CylinderManagement
+  source_branch: main
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  migration_path: cylinder.datascripts/src/main/resources/db/migration/
+  source_head: V170
+  live_discovery_at: 2026-08-26T14:17:01+05:30
+  owned_project_search_by_required_id: ZERO_MATCHES
+  shared_project_search_by_required_id: ZERO_MATCHES
+  owned_project_search_by_required_name: ZERO_MATCHES
+  visible_projects:
+    - name: cylinder_db_for_testing
+      project_id: weathered-heart-89789162
+      postgres_major: 18
+      branches:
+        - name: production
+          id: br-holy-scene-ax0ddw93
+          primary: true
+          default: true
+  required_main_branch_visible: false
+  target_identity_equivalence_proved: false
+  flyway_schema_history_read: false
+  flyway_validation_run: false
+  database_requirement_selected: false
   database_write_attempted_this_fire: false
-  policy_mismatch:
-    expected_test_migration_branch_policy: MAIN_ONLY_NO_NEW_BRANCH
-    observed_live_default_branch: production
-    observed_branch_named_main: false
-    disposition: FAIL_CLOSED_BEFORE_DATABASE_MUTATION
-  next_action: RECONCILE_MAIN_ONLY_POLICY_WITH_THE_EXISTING_PRIMARY_DEFAULT_BRANCH_IDENTITY_THEN_REVALIDATE_FLYWAY_INVENTORY_AND_SELECT_EXACTLY_ONE_DATABASE_REQUIREMENT
-  execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-104359IST
+  neon_branch_created: false
+  external_production_deployment: false
+  disposition: FAIL_CLOSED_ON_SAME_PRE_REQUIREMENT_TARGET_GATE
+  exact_blocker: >-
+    The governed target neon-for-cylinder-db / holy-glitter-02245694 on existing branch main is not visible. The only
+    connected project is cylinder_db_for_testing / weathered-heart-89789162 and its only proved branch is production.
+    Identity equivalence is not proved, main does not exist, and branch creation is forbidden. Therefore no database
+    requirement may be selected, validated, or applied.
+  next_action: >-
+    Re-establish connector visibility of holy-glitter-02245694 with its existing main branch, or durably change the
+    authoritative BL-008 target policy through user-approved governance. Until then remain on the same pre-requirement gate.
+  execution_id: CYLINDER-PRODUCTION-FIRE-20260826-141701IST
