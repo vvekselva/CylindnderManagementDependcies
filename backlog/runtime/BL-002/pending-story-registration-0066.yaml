@@ -1,7 +1,7 @@
 pending_story_registration:
   story_id: STORY-0066
   release: RELEASE_1
-  state: PENDING_REGISTER_AND_CROSS_MAP_SYNC
+  state: RECONCILED_REGISTERED
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   matrix_row_key: "POST /ingestYardStockCheck"
   disposition: NEEDS_CLARIFICATION
@@ -10,10 +10,11 @@ pending_story_registration:
   materialized: true
   consumed_bl001_input: ACCEPTED_MATERIALIZED_NON_STALE_CANONICAL_ROW_ONLY
   pending_bl001_atomic_projection_consumed: false
-  register_sync_required: true
-  cross_traceability_map_sync_required: true
+  register_sync_required: false
+  cross_traceability_map_sync_required: false
   approval_state: NOT_READY_FOR_APPROVAL
+  reconciled_by_invocation: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
+  evidence: stories/story-register.yaml version 26 contains STORY-0066 with matching matrix row and fingerprint
   reason: >-
-    The Story artifacts are durably materialized from an accepted Release-1 BL-001 row, but the shared Story register and
-    controller-story-usecase map have not yet been atomically synchronized. Preserve the materialized artifact while keeping
-    registered counts unchanged until that shared-state synchronization succeeds.
+    The earlier PENDING marker was stale. STORY-0066 is already durably registered and its counts are already reflected in
+    the canonical story register. No duplicate row was created and no Story was auto-approved.
