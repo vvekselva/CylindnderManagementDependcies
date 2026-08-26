@@ -1,5 +1,5 @@
 backlog:
-  version: 8
+  version: 9
   target_repository: vvekselva/CylinderManagement
   run_config: backlog/orchestrator-run-config.yaml
   quality_gate_governance: governance/quality-gates.yaml
@@ -10,12 +10,11 @@ backlog:
   three_level_ssot_gate: QG-SSOT-001
   statement_of_work_gate: QG-SOW-001
   selection_policy: HIGHEST_PRIORITY_ELIGIBLE_ITEMS_WITH_SAFE_PARALLELISM
-  max_parallel_backlog_items: 2
+  max_parallel_backlog_items: 3
   note: >-
-    backlog.yaml is the authoritative Level 1 Backlog Master SSOT. A Backlog Item may be catalogued before it is ready,
-    but PLAN/REPLAN is fail-closed until its Level 1 master entry, Level 2 definition/SOW/Completion Path/Quality Gate,
-    and Level 3 runtime SSOT are complete and QG-SSOT-001 passes. Scheduler invocations may execute multiple run-enabled
-    independently eligible backlog items when governance explicitly permits safe parallelism.
+    backlog.yaml is the authoritative Level 1 Backlog Master SSOT. PLAN/REPLAN is fail-closed until Level 1, Level 2
+    and Level 3 are complete. BL-001, BL-002 and BL-008 may execute as coordinated parallel workstreams when their own
+    gates pass; database mutation remains serialized under BL-008.
 
   states: [YET_TO_DO, WAITING_FOR_DEPENDENCY, READY, ANALYZING, PLANNED, EXECUTING, PARTIAL, BLOCKED, WAITING_FOR_DECISION, FAILED, VALIDATING, WAITING_FOR_USER_VERIFICATION, VERIFIED, CLOSED]
 
@@ -39,9 +38,7 @@ backlog:
     - id: BL-002
       name: Controller Dependency Matrix to Human-Readable Stories
       type: CONTROLLER_STORY_AND_USECASE
-      purpose: >-
-        Convert accepted canonical Controller Dependency Matrix rows into elaborate evidence-backed human-readable Stories,
-        obtain user Story approval, combine approved Stories into approved Use Cases, and derive Use Case test scenarios.
+      purpose: Convert accepted canonical Controller Dependency Matrix rows into detailed evidence-backed Stories and approved Use Cases.
       priority: P2_CRITICAL_PATH
       state: PARTIAL
       item_definition: backlog/items/BL-002-controller-story-usecase.yaml
@@ -62,7 +59,23 @@ backlog:
     - {id: BL-005, name: Code Coverage Report, type: CODE_COVERAGE, purpose: Produce code coverage after required unit and integration testing., priority: P2_CRITICAL_PATH, state: WAITING_FOR_DEPENDENCY, item_definition: null, statement_of_work: null, completion_path: backlog/paths/BL-005-code-coverage.yaml, quality_gate: null, runtime: null, dependencies: [BL-003, BL-004], dependency_rule: ALL_VERIFIED_OR_CLOSED, expected_outputs: [quality/code-coverage/coverage-report.md, quality/code-coverage/coverage-summary.yaml]}
     - {id: BL-006, name: ArchUnit Architecture Test, type: ARCHUNIT, purpose: Validate architecture rules., priority: P3_NORMAL, state: YET_TO_DO, item_definition: null, statement_of_work: null, completion_path: backlog/paths/BL-006-archunit.yaml, quality_gate: null, runtime: null, dependencies: [], expected_outputs: [quality/archunit/architecture-rules.md, quality/archunit/archunit-results.md, quality/archunit/unresolved-architecture-rules.md]}
     - {id: BL-007, name: Requirements Traceability and Gap Analysis, type: REQUIREMENTS, purpose: Trace requirements and identify gaps., priority: P2_CRITICAL_PATH, state: YET_TO_DO, item_definition: null, statement_of_work: null, completion_path: backlog/paths/BL-007-requirements.yaml, quality_gate: null, runtime: null, dependencies: [], expected_outputs: [requirements/requirements-inventory.md, requirements/requirements-traceability.md, requirements/requirements-gaps.md]}
-    - {id: BL-008, name: Migration of the Database to the Ownership Model, type: DATABASE_MIGRATION, purpose: Migrate database to ownership model., priority: P3_NORMAL, state: YET_TO_DO, item_definition: null, statement_of_work: null, completion_path: null, quality_gate: null, runtime: null, dependencies: [], expected_outputs: []}
+
+    - id: BL-008
+      name: Migration of the Database to the Ownership Model
+      type: DATABASE_MIGRATION
+      purpose: Migrate the governed Neon CylinderManagement database through Flyway to the ownership-model target and prove ownership/data integrity.
+      priority: P2_CRITICAL_PATH
+      state: READY
+      item_definition: backlog/items/BL-008-database-ownership-migration.yaml
+      statement_of_work: backlog/sow/BL-008-database-ownership-migration.yaml
+      completion_path: backlog/paths/BL-008-database-ownership-migration.yaml
+      quality_gate: backlog/gates/BL-008-database-ownership-migration.yaml
+      implementation_workflow: workflows/WF-004-database-ownership-migration.yaml
+      runtime: backlog/runtime/BL-008/
+      dependencies: []
+      current_work_unit: WU-BL008-001
+      expected_outputs: [database-dependency-neon.md, backlog/runtime/BL-008/result.yaml, backlog/runtime/BL-008/gate-status.yaml, logs/runs/BL008-*.md]
+
     - {id: BL-009, name: Supplier Owned Customer Owned and Company Owned Cylinder Model, type: OWNERSHIP_MODEL, purpose: Implement ownership model., priority: P3_NORMAL, state: YET_TO_DO, item_definition: null, statement_of_work: null, completion_path: null, quality_gate: null, runtime: null, dependencies: [], expected_outputs: []}
     - {id: BL-010, name: Physical Challan Book Location, type: CHALLAN_MANAGEMENT, purpose: Track physical challan book location., priority: P3_NORMAL, state: YET_TO_DO, item_definition: null, statement_of_work: null, completion_path: null, quality_gate: null, runtime: null, dependencies: [], expected_outputs: []}
     - {id: BL-011, name: Ownership Dashboard Changes, type: DASHBOARD, purpose: Update ownership dashboards., priority: P3_NORMAL, state: YET_TO_DO, item_definition: null, statement_of_work: null, completion_path: null, quality_gate: null, runtime: null, dependencies: [], expected_outputs: []}
@@ -78,7 +91,7 @@ backlog:
     - {id: BL-021, name: Customer Data Dashboard, type: DASHBOARD, purpose: Implement customer data dashboard., priority: P3_NORMAL, state: YET_TO_DO, item_definition: null, statement_of_work: null, completion_path: null, quality_gate: null, runtime: null, dependencies: [], expected_outputs: []}
 
   current_selection:
-    backlog_items: [BL-001, BL-002]
+    backlog_items: [BL-001, BL-002, BL-008]
     mode: PARALLEL_COORDINATED
     run_enabled: true
     ssot_level_1: COMPLETE
@@ -93,8 +106,15 @@ backlog:
       current_work_unit: WU-BL001-001
       runtime: backlog/runtime/BL-001/
     BL-002:
-      phase: INCREMENTAL_STORY_GENERATION
+      phase: RELEASE_1_FIELD_LEVEL_STORY_REWORK
       runtime: backlog/runtime/BL-002/
+      release_1_items: 88
+      release_2_items: 46
       input_rule: ACCEPTED_MATERIALIZED_NON_STALE_CANONICAL_BL001_ROWS_ONLY
-    last_attempt_result: PARTIAL
-    next_action: CONTINUE_BL001_AND_BL002_IN_PARALLEL_WITH_INDEPENDENT_GATES
+    BL-008:
+      phase: DISCOVER_AND_INVENTORY
+      current_work_unit: WU-BL008-001
+      runtime: backlog/runtime/BL-008/
+      mutation_rule: VALIDATION_BRANCH_BEFORE_PRODUCTION
+    last_attempt_result: GOVERNANCE_BOOTSTRAP_COMPLETE
+    next_action: CONTINUE_BL001_BL002_BL008_WITH_INDEPENDENT_GATES_AND_SHARED_WORKER_POOL
