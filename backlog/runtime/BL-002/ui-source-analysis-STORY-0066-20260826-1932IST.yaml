@@ -1,0 +1,33 @@
+backlog_item: BL-002
+story_id: STORY-0066
+invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
+matrix_row: "POST /ingestYardStockCheck"
+release: RELEASE_1
+analysis_state: UI_SOURCE_ANALYSIS_EXECUTED_NO_NEW_FIELD_PROOF
+accepted_story_evidence: stories/STORY-0066.yaml
+known_controller: YardStockCheckIngestionController.ingestYardStockCheck
+known_service: YardStockCheckIngestionService.processRequest
+known_final_dependencies:
+  - public.tbl_cylinder
+  - public.tbl_yard_inventory_line
+  - public.tbl_yard_inventory
+source_search:
+  frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  exact_controller_symbol_search_result: NO_INDEXED_MATCH_RETURNED
+  exact_endpoint_symbol_search_result: NO_INDEXED_MATCH_RETURNED
+  invention_allowed: false
+field_contract_result:
+  exact_submitted_fields_proved: false
+  datatypes_proved: false
+  required_optional_rules_proved: false
+  normalization_defaults_proved: false
+  per_field_validation_proved: false
+  exact_persistence_columns_proved: false
+  per_input_side_effects_proved: false
+disposition: NEEDS_CLARIFICATION
+reason: >-
+  The field-level contract is still not source-proved from the accessible frozen-source evidence. The story remains
+  NEEDS_CLARIFICATION rather than inventing page fields, validation rules or database-column mappings.
+next_action: >-
+  Resolve the exact frozen-source path for YardStockCheckIngestionController and its page/request model/template evidence,
+  then rerun field-level UI source analysis before changing STORY-0066 disposition.
