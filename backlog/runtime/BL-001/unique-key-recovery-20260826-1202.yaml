@@ -1,0 +1,87 @@
+unique_key_recovery:
+  version: 1
+  backlog_item: BL-001
+  recovery_id: BL001-UNIQUE-KEY-RECOVERY-20260826-1202
+  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1202IST
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  owner: PRIMARY_ORCHESTRATOR
+  frozen_source_only: true
+  target_unique_keys: 134
+  accepted_unique_keys_materialized: 123
+  unique_keys_pending_recovery: 11
+  atomic_projection_applied: false
+  reconciliation_eligible: false
+
+  source_proved_awaiting_atomic_projection:
+    count: 5
+    keys:
+      - key: "GET /reconciliation-dashboard"
+        state: FULL_SOURCE_PROVED
+        terminal: public.tbl_reconciliation_checkpoint / final-version-1/reconciliation_checkpoint_dashboard
+      - key: "POST /reconciliation-dashboard/search"
+        state: FULL_SOURCE_PROVED
+        terminal: public.tbl_reconciliation_checkpoint / final-version-1/reconciliation_checkpoint_dashboard
+      - key: "GET /lookup"
+        state: FULL_SOURCE_PROVED
+        terminal: redirect:/lookupManagement
+        database_dependency: NONE
+      - key: "GET /addVechileTrip"
+        state: FULL_SOURCE_PROVED
+        terminal: with-menu/VehicleTripIngestion
+        database_dependency: NONE
+      - key: "GET /vehicle-load/fetch"
+        state: FULL_SOURCE_PROVED_REVALIDATED_THIS_FIRE
+        controller_blob_sha: 7ac5d84933d4841be17b2ff8110797051085f3f7
+        chain: VehicleLoadFetchByIdController.fetchVehicleLoad -> VehicleLoadDao.findById -> VehicleLoadDo
+        terminal_tables: [public.vehicle_load, public.vehicle_load_details]
+        prior_durable_chain_evidence: logs/runs/PRODUCTION-FIRE-20260825-005948-SCHEDULER.md
+
+  controller_proved_but_full_chain_not_yet_accepted:
+    - key: "POST /addVechileTrip"
+      controller_blob_sha: 26f887d731fd58a28c2a76240bd3d2b7ee02fb69
+      controller_behavior: VehicleTripIngestionController.doPost -> vehicleTripIngestionService.processRequest
+      status: DOWNSTREAM_SERVICE_ENTITY_DATABASE_CHAIN_REVALIDATION_REQUIRED
+    - family: LookupManagementController
+      controller_blob_sha: a23814eb9c1f155779a3d51e67e16ac0ee9d2436
+      keys:
+        - "GET /lookupManagement"
+        - "POST /lookupManagement/addressType/save"
+        - "POST /lookupManagement/country/save"
+        - "POST /lookupManagement/state/save"
+        - "POST /lookupManagement/city/save"
+      status: DOWNSTREAM_CACHE_OR_INGESTION_PERSISTENCE_CHAIN_REVALIDATION_REQUIRED
+
+  pending_exact_key_inventory:
+    - "GET /reconciliation-dashboard"
+    - "POST /reconciliation-dashboard/search"
+    - "GET /vehicle-load/fetch"
+    - "GET /lookup"
+    - "GET /lookupManagement"
+    - "POST /lookupManagement/addressType/save"
+    - "POST /lookupManagement/country/save"
+    - "POST /lookupManagement/state/save"
+    - "POST /lookupManagement/city/save"
+    - "GET /addVechileTrip"
+    - "POST /addVechileTrip"
+
+  synchronization_contract:
+    required_atomic_artifacts:
+      - traceability/controller-traceability.md
+      - traceability/unresolved-traceability.md
+      - traceability/matrix-progress.yaml
+      - traceability/explorer/traceability-matrix.json
+      - traceability/explorer/matrix-data.js
+      - backlog/runtime/BL-001/work-unit-status.yaml
+      - backlog/runtime/BL-001/result.yaml
+      - backlog/runtime/BL-001/gate-status.yaml
+    rule: DO_NOT_INCREMENT_123_UNTIL_COMPLETE_RECOVERED_ROWS_AND_ALL_CANONICAL_EXPLORER_RUNTIME_PROJECTIONS_MOVE_TOGETHER
+
+  outcome: >-
+    One additional missing key, GET /vehicle-load/fetch, was revalidated to the full frozen-source chain during this fire,
+    raising the fully source-proved pending set from four to five. Canonical coverage intentionally remains 123/134 because
+    the recovered keys have not yet been projected atomically across every required artifact. No pending key was exposed to
+    BL-002 as accepted/materialized evidence.
+
+  next_action: >-
+    Finish the downstream chain revalidation for POST /addVechileTrip and the five remaining LookupManagement routes, then
+    regenerate the complete canonical structured projection and apply the recovered set atomically without losing ordered history.
