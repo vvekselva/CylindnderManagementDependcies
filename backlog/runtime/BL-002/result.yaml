@@ -28,6 +28,9 @@ result:
     pending_registration_sync_story_ids: []
     synchronized_story_ids_this_fire: [STORY-0058, STORY-0059, STORY-0060, STORY-0061, STORY-0062, STORY-0063, STORY-0064, STORY-0065]
     human_readable_materialized_this_fire: [STORY-0058, STORY-0059, STORY-0060, STORY-0061, STORY-0062, STORY-0063, STORY-0064, STORY-0065]
+    story_register_synchronized_through: STORY-0065
+    cross_traceability_map_synchronized_through: STORY-0065
+    cross_traceability_map: traceability/controller-story-usecase-map.yaml
     shallow_story_generation_allowed: false
     release_1_field_level_rework_allowed: true
     release_2_story_work_allowed: false
@@ -50,8 +53,8 @@ result:
     - STORY_USER_APPROVAL_REQUIRED
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    User release classification remains 88 Release 1 and 46 Release 2 items. The Story register is synchronized through
-    STORY-0065. Eight Release-1 Stories were materialized in this fire from accepted, materialized BL-001 rows only.
-    All eight remain NEEDS_CLARIFICATION where the exact field-level page/input/database-column contract is not proved.
-    No Story was auto-approved and no pending BL-001 atomic-projection row was consumed. Release 2 remains blocked.
+    User release classification remains 88 Release 1 and 46 Release 2 items. The Story register and the controller-story-usecase
+    traceability map are synchronized through STORY-0065. Eight Release-1 Stories were materialized in this fire from accepted,
+    materialized BL-001 rows only. All eight remain NEEDS_CLARIFICATION where the exact field-level page/input/database-column
+    contract is not proved. No Story was auto-approved and no pending BL-001 atomic-projection row was consumed. Release 2 remains blocked.
   next_action: REWORK_RELEASE_1_CANONICAL_STORIES_TO_FIELD_LEVEL_STANDARD_WITHOUT_AUTO_APPROVAL
