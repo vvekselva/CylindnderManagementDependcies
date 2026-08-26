@@ -1,0 +1,31 @@
+story:
+  story_id: STORY-0055
+  title: View reconciliation command center trip details
+  state: NEEDS_CLARIFICATION
+  fingerprint: f52a9f966656aeacd4f80f7bf298f6e8986669e515228ddcef8f552102689082
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /reconciliation-command-center/details"]
+  controller: ReconciliationCommandCenterController.showTripDetails
+  endpoint: "GET /reconciliation-command-center/details"
+  business_purpose: Display reconciliation details for a trip using the source-proved reconciliation header, challan tracker, event and status-audit data chain.
+  trigger_and_context: A caller requests reconciliation detail information for trip context.
+  inputs:
+    - Trip context is required by the detail flow, but its exact parameter name/type/default/validation contract is not preserved in the accepted BL-001 evidence.
+  normalization_and_defaults:
+    - No exact normalization or default behavior is proved.
+  validations:
+    - Exact input validation predicates and invalid-value behavior are not preserved in the accepted trace.
+  main_flow:
+    - ReconciliationCommandCenterController.showTripDetails handles the request.
+    - ReconciliationCommandCenterService reads reconciliation header, challan tracker, event and status-audit data for the trip context.
+    - The details view is rendered.
+  data_reads_and_writes:
+    - READ reconciliation header/tracker/event/status-audit persistence objects proved by BL-001.
+    - No persistence write is proved.
+  field_level_mapping:
+    state: NEEDS_CLARIFICATION
+    reason: Exact trip parameter attributes and displayed detail-field to model/database-column mappings are not preserved in the accepted trace.
+  output_and_postconditions:
+    - Renders the reconciliation details view using the proved read-only chain.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  approval: {owner: USER, state: NOT_READY_FIELD_LEVEL_CLARIFICATION_REQUIRED, fingerprint: f52a9f966656aeacd4f80f7bf298f6e8986669e515228ddcef8f552102689082}
