@@ -1,8 +1,8 @@
-version: 12
+version: 13
 purpose: >-
   Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
   workstreams when independently eligible. Shared worker capacity is dynamic; shared SSOT remains single-writer and
-  database mutation under BL-008 is always serialized.
+  database mutation under BL-008 is always serialized one requirement at a time on the separate Neon test environment.
 
 selection:
   mode: ENABLED_ELIGIBLE_BACKLOG_ITEMS_WITH_SAFE_PARALLELISM
@@ -14,10 +14,7 @@ selection:
   require_item_specific_quality_gate: true
   require_item_quality_gate_approved_by_user: true
   eligibility_order: [run_enabled, QG-SSOT-001, QG-SOW-001, QG-DEP-001, item_specific_quality_gate, work_unit_dependencies]
-  coordinated_streams:
-    - BL-001
-    - BL-002
-    - BL-008
+  coordinated_streams: [BL-001, BL-002, BL-008]
   rules:
     BL-001_BL-002:
       allowed: true
@@ -27,7 +24,10 @@ selection:
       allowed_in_parallel_with: [BL-001, BL-002]
       read_only_discovery_may_parallelize: true
       database_mutation_serialized: true
-      validation_branch_before_production: true
+      database_requirement_parallelism: 1
+      neon_environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
+      neon_branch: main
+      neon_branch_creation_forbidden: true
 
 execution_engine:
   owner: AUTOMATION_TOOL
@@ -123,20 +123,22 @@ bl008_database_migration_contract:
   dependency_ledger: database-dependency-neon.md
   source_repository: vvekselva/CylinderManagement
   flyway_path: cylinder.datascripts/src/main/resources/db/migration/
-  migration_target: V176
   ownership_source_roots: [NewOwnerShipModelv3/, cmas.database.operations/]
   target_project: neon-for-cylinder-db
   target_project_id: holy-glitter-02245694
-  production_branch: production
-  production_branch_id: br-steep-snow-aw6u5odt
-  database: neon-for-cylinder-db
+  neon_branch: main
+  database: VERIFY_FROM_NEON_BEFORE_WRITE
+  environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
   migration_mechanism: FLYWAY_ONLY
   manual_sql_substitution: FORBIDDEN
-  validation_branch_before_production: REQUIRED
+  neon_branch_creation: FORBIDDEN
+  database_requirement_parallelism: 1
+  selected_requirement_rule: EXACTLY_ONE_ACTIVE_REQUIREMENT_IN_AUTHORITATIVE_ORDER
   database_mutation_owner: PRIMARY_ORCHESTRATOR_SERIAL_STAGE
   ownership_types: [COMPANY_OWNED, SUPPLIER_OWNED, CUSTOMER_OWNED]
   require_pre_post_integrity_checks: true
-  require_ledger_sync: true
+  require_ledger_sync_before_next_requirement: true
+  failure_rule: FAIL_CLOSED_ON_CURRENT_REQUIREMENT_DO_NOT_ADVANCE
 
 execution_recovery_contract:
   execution_journal_required: true
@@ -146,7 +148,7 @@ execution_recovery_contract:
   changed_fingerprint: START_NEW_EXECUTION_GENERATION
   already_closed_synced: NOOP_THEN_REPLAN_INVOCATION
   github_sync_failure: PRESERVE_VALIDATED_RESULT_AS_PENDING_SYNC_AND_RETRY_SYNC_ONLY
-  database_mutation_failure: FAIL_CLOSED_PRESERVE_RECOVERY_POINT_NO_MANUAL_PATCH
+  database_mutation_failure: FAIL_CLOSED_ON_CURRENT_REQUIREMENT_NO_MANUAL_PATCH_NO_ADVANCE
 
 backlog_items:
   BL-001: {name: Controller Traceability, run_enabled: true, item_definition: backlog/items/BL-001-controller-traceability.yaml, statement_of_work: backlog/sow/BL-001-controller-traceability.yaml, statement_of_work_configured: true, runtime: backlog/runtime/BL-001/, completion_path: backlog/paths/BL-001-traceability.yaml, quality_gate: backlog/gates/BL-001-traceability.yaml, quality_gate_configured: true, quality_gate_approved: true}
@@ -178,8 +180,9 @@ scheduled_run_rules:
   - enforce QG-SSOT-001, QG-SOW-001, QG-DEP-001 and item-specific gates per stream
   - share up to 10 workers dynamically without starvation
   - BL-002 executes Release 1 field-level Story rework before Release 2
-  - BL-008 performs read-only discovery in parallel but serializes database mutation
-  - BL-008 must validate on an isolated branch before production migration
+  - BL-008 uses Neon main only and creates no Neon branches
+  - BL-008 selects and completes exactly one database requirement before selecting the next
+  - BL-008 database writes are serialized at parallelism 1
   - retry PENDING_SYNC without restarting completed work
   - leave zero transient lane logs at boundaries
   - synchronize only validated durable state
