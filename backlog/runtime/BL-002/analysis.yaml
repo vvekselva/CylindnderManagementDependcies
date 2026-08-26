@@ -16,13 +16,19 @@ analysis:
     ineligible_until_atomic_projection: 11
   story_progress:
     eligible_matrix_rows: 123
-    accounted_rows: 32
-    ready_for_user_review: 27
-    needs_clarification: 5
+    accounted_rows: 48
+    ready_for_user_review: 41
+    needs_clarification: 7
     approved_stories: 0
-    latest_story_id: STORY-0032
+    latest_story_id: STORY-0048
   usecase_progress:
+    candidate_usecases: 0
     approved_for_testing: 0
+    authoritative_test_scenarios: 0
     blocked_by_story_approval: true
+  current_checkpoint:
+    latest_matrix_row_key: "POST /wizard/vehicle-trip-load/save"
+    latest_story_state: NEEDS_CLARIFICATION
+    reason: ACCEPTED_CHAIN_IS_COMPLETE_BUT_REQUEST_FIELD_NORMALIZATION_EXACT_INVALID_PREDICATES_VALIDATION_ORDER_AND_CALLER_VISIBLE_MESSAGES_ARE_NOT_FULLY_PROVED
   next_action: >-
     Continue safe-independent Story generation from remaining accepted canonical BL-001 rows while BL-001 atomic consolidation proceeds. Do not consume the 11 pending projection rows. Stop each technically validated Story at READY_FOR_USER_REVIEW or NEEDS_CLARIFICATION and require explicit user approval before Use Case composition or downstream test use.
