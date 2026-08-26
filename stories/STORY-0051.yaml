@@ -1,0 +1,33 @@
+story:
+  story_id: STORY-0051
+  title: Search cities by name text
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 833c4f4664ef6d7e0b82e88cd602e766f8e6f419ed356cfbbe84545007bdd180
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /search/city/{searchText}"]
+  controller: RestfulCityServices.getCities
+  endpoint: "GET /search/city/{searchText}"
+  business_purpose: Return city records whose city name matches caller search text through the accepted search chain.
+  trigger_and_context: A caller invokes GET /search/city/{searchText}.
+  inputs: [searchText is supplied in the URL and passed through the search request DTO.]
+  normalization_and_defaults: [No request normalization/defaulting is proved.]
+  validations: [SearchRequestValidator.validate is invoked before DAO access; exact rejection predicates are not preserved by accepted evidence.]
+  invalid_value_paths: [Service exceptions return an empty CitySearchResponseDto; exact validation messages or HTTP-status changes are not proved.]
+  main_flow:
+    - RestfulCityServices.getCities receives searchText and calls the typed search service.
+    - CitySearchService is the source-proved active implementation.
+    - CitySearchService invokes SearchRequestValidator.validate.
+    - The service calls CityJpaDao.findByCityNameContainingIgnoreCase.
+    - CityJpaDao is JpaRepository<CityDo, Long>.
+    - CityDo maps to public.tbl_city.
+    - Matched rows are mapped to CitySearchResponseDto JSON.
+  component_flow: [RestfulCityServices.getCities, CitySearchService.searchWithText, SearchRequestValidator.validate, CityJpaDao.findByCityNameContainingIgnoreCase, CityDo, public.tbl_city, city mapper, CitySearchResponseDto JSON]
+  data_reads_and_writes: [READ public.tbl_city., No persistence write is proved.]
+  side_effects_and_state_changes: [No persistent state change is proved.]
+  alternate_and_error_flows: [Service exceptions return an empty response DTO; no additional behavior is invented.]
+  output_and_postconditions: [Returns CitySearchResponseDto JSON from matched city rows or the proved empty DTO exception outcome.]
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-233707.md]
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint validates the search request, queries public.tbl_city through CitySearchService and CityJpaDao, maps results, and performs no persistence write.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 833c4f4664ef6d7e0b82e88cd602e766f8e6f419ed356cfbbe84545007bdd180}
