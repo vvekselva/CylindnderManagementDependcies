@@ -1,0 +1,7 @@
+{
+  "holder": "Primary Cylinder Automation Tool",
+  "acquired_at": "2026-08-26T10:30:35+05:30",
+  "scope": ["BL-008", "BL-001", "BL-002"],
+  "mode": "singleton",
+  "status": "ACTIVE"
+}
