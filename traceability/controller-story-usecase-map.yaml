@@ -1,5 +1,5 @@
 controller_story_usecase_traceability:
-  version: 20
+  version: 21
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_MAPPING
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -68,6 +68,14 @@ controller_story_usecase_traceability:
     - {matrix_row_key: "GET /reconciliation-command-center/details", story_id: STORY-0055, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "GET /ownership-dashboard", story_id: STORY-0056, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
     - {matrix_row_key: "GET /ownership-dashboard/yard", story_id: STORY-0057, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /ownership-dashboard/customer", story_id: STORY-0058, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /ownership-dashboard/supplier", story_id: STORY-0059, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /ownership-dashboard/logistics", story_id: STORY-0060, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "POST /setCustomerInactive", story_id: STORY-0061, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "POST /setCustomerActive", story_id: STORY-0062, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /ingestSupplier", story_id: STORY-0063, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "POST /ingestSupplier", story_id: STORY-0064, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
+    - {matrix_row_key: "GET /ingestYardStockCheck", story_id: STORY-0065, story_state: NEEDS_CLARIFICATION, usecase_id: null, scenario_ids: []}
   invariants:
     - every canonical final matrix row has one Story disposition before final BL-002 verification
     - every APPROVED Story references at least one canonical matrix row
