@@ -1,0 +1,13 @@
+backlog_item: BL-008
+version: 1
+state: INITIALIZED
+runs: 0
+work_units_total: 7
+work_units_complete: 0
+work_units_remaining: 7
+migration_target: V176
+validation_branch_migrated: false
+production_migrated: false
+ownership_integrity_pass: false
+transient_lane_logs: 0
+last_meaningful_progress: GOVERNANCE_BOOTSTRAP
