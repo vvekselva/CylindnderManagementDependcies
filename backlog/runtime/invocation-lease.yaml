@@ -1,20 +1,20 @@
 invocation_lease:
-  version: 46
-  state: RELEASED
+  version: 47
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRIMARY-20260826-0915IST
-  acquired_at: 2026-08-26T03:45:24Z
-  released_at: 2026-08-26T03:47:58Z
+  invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-0917IST
+  acquired_at: 2026-08-26T03:47:14Z
+  released_at: null
   authoritative_branch: chore/rename-dependency-files
-  purpose: coordinated BL-008, BL-001 and BL-002 execution
+  purpose: manual coordinated BL-001 BL-002 BL-008 production trigger
   duplicate_action: NOOP
-  outcome: PARTIAL_PROGRESS_WITH_SAFE_BLOCKERS
+  outcome: RUNNING
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   BL-008_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - BL-008 target project holy-glitter-02245694 remains undiscoverable in both owned and shared connected Neon projects; no database mutation or branch creation occurred.
-    - BL-001 remains at 123/134 with 11 exact keys pending atomic promotion; no old worker replay or partial promotion occurred.
-    - BL-002 remains at 52 dispositions under 88 RELEASE_1 / 46 RELEASE_2 classification; Release 1 field-level rework remains next and no Story was auto-approved.
-    - Durable checkpoint: logs/runs/CYLINDER-PRIMARY-20260826-0915IST.md.
+    - Manual production trigger requested by user.
+    - BL-008 will use the user-supplied CylinderManagement TEST database connection at runtime; credentials must not be persisted in repository artifacts or logs.
+    - BL-008 read/identity/Flyway-history verification precedes any mutation.
+    - BL-001 and BL-002 remain independently eligible under parallel coordinated governance.
