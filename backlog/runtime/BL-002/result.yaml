@@ -20,15 +20,15 @@ result:
     release_3: WHATSAPP_INTEGRATION_DATE_TBD
     rule: COMPLETE_RELEASE_1_FIELD_LEVEL_STORY_REWORK_BEFORE_RELEASE_2
   story_result:
-    registered_story_dispositions: 65
+    registered_story_dispositions: 66
     ready_for_user_review_in_existing_register: 45
-    needs_clarification_in_existing_register: 20
+    needs_clarification_in_existing_register: 21
     approved: 0
     materialized_story_artifacts: 66
-    pending_registration_sync_story_ids: [STORY-0066]
-    synchronized_story_ids_this_fire: []
-    human_readable_materialized_this_fire: [STORY-0066]
-    story_register_synchronized_through: STORY-0065
+    pending_registration_sync_story_ids: []
+    synchronized_story_ids_this_fire: [STORY-0066]
+    human_readable_materialized_this_fire: []
+    story_register_synchronized_through: STORY-0066
     cross_traceability_map_synchronized_through: STORY-0066
     cross_traceability_map: traceability/controller-story-usecase-map.yaml
     shallow_story_generation_allowed: false
@@ -50,13 +50,11 @@ result:
     - RELEASE_1_FIELD_LEVEL_STORY_REWORK_REQUIRED
     - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED_FOR_FINAL_BL002_VERIFICATION
     - ALL_RELEASE_1_CANONICAL_ROWS_REQUIRE_FIELD_LEVEL_STORY_DISPOSITION
-    - STORY_0066_REGISTER_SYNC_REQUIRED
     - STORY_USER_APPROVAL_REQUIRED
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    Release classification remains 88 Release 1 and 46 Release 2 items. STORY-0066 is durably materialized from the accepted,
-    materialized BL-001 row POST /ingestYardStockCheck and remains NEEDS_CLARIFICATION because the exact field-level input-to-column
-    contract is not proved. Fresh reconciliation proves the controller-story-usecase cross-map already contains STORY-0066, while
-    the authoritative Story register still stops at STORY-0065. Therefore only the Story-register synchronization remains pending.
-    No Story was auto-approved and no pending BL-001 atomic-projection row was consumed. Release 2 remains blocked.
-  next_action: SYNC_STORY_0066_IN_STORY_REGISTER_THEN_CONTINUE_RELEASE_1_FIELD_LEVEL_REWORK
+    Story-register reconciliation confirms 66 registered dispositions through STORY-0066: 45 READY_FOR_USER_REVIEW,
+    21 NEEDS_CLARIFICATION and 0 APPROVED. STORY-0066 remains NEEDS_CLARIFICATION because the exact field-by-field
+    input-to-database-column contract is not proved. No Story was auto-approved and no pending BL-001 atomic-projection row
+    was consumed. Release 2 remains blocked.
+  next_action: REWORK_RELEASE_1_CANONICAL_STORIES_TO_FIELD_LEVEL_STANDARD_WITHOUT_AUTO_APPROVAL
