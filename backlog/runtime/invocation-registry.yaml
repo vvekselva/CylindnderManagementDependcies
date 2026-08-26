@@ -1,9 +1,25 @@
-version: 7
+version: 8
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
 active_invocations: []
 recent_completed_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-161634IST
+    execution_state: TERMINAL_CHECKPOINTED
+    health_state: COMPLETE
+    started_at: 2026-08-26T16:16:34+05:30
+    completed_at: 2026-08-26T16:19:16+05:30
+    heartbeat_at: 2026-08-26T16:19:16+05:30
+    last_progress_at: 2026-08-26T16:19:16+05:30
+    last_lane_activity_at: null
+    active_lane_count: 0
+    coordinator_phase: SYNCHRONIZED_TERMINAL
+    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
+    current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
+    progress_fingerprint: BL008_MAIN_TARGET_REVALIDATED_PLUS_BL001_IDEMPOTENT_ATOMIC_BLOCKER_PLUS_BL002_STORY0066_REGISTER_RECONCILED
+    blocked_reason: BL008_MAIN_TARGET_NOT_VISIBLE; BL001_ATOMIC_MODEL_NOT_PROCESS_READABLE
+    recovery_action: NONE
+    outcome: PARTIAL_CHECKPOINT_SYNCHRONIZED
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
     execution_state: TERMINAL_CHECKPOINTED
     health_state: COMPLETE
@@ -44,6 +60,7 @@ recent_completed_invocations:
     heartbeat_at: 2026-08-26T14:19:54+05:30
     last_progress_at: 2026-08-26T14:19:54+05:30
     last_lane_activity_at: null
+    active_lane_count: 0
     coordinator_phase: SYNCHRONIZED_TERMINAL
     current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
     current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
