@@ -3,23 +3,23 @@ execution_statistics:
   state: ACTIVE_INCREMENTAL_EXECUTION
   comparison_window:
     previous_run:
-      story_dispositions: 30
-      ready_for_user_review: 26
-      needs_clarification: 4
+      story_dispositions: 47
+      ready_for_user_review: 41
+      needs_clarification: 6
       approved_stories: 0
     current_or_latest_run:
-      story_dispositions: 31
-      ready_for_user_review: 27
-      needs_clarification: 4
+      story_dispositions: 48
+      ready_for_user_review: 41
+      needs_clarification: 7
       approved_stories: 0
   story_metrics:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    accounted_rows: 31
-    ready_for_user_review: 27
-    needs_clarification: 4
+    accounted_rows: 48
+    ready_for_user_review: 41
+    needs_clarification: 7
     approved_stories: 0
-    remaining_currently_eligible_rows_without_story_disposition: 92
+    remaining_currently_eligible_rows_without_story_disposition: 75
   usecase_metrics:
     candidate_usecases: 0
     approved_for_testing: 0
