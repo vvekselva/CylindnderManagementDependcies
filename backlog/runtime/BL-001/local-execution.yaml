@@ -1,5 +1,5 @@
 local_execution:
-  version: 67
+  version: 68
   backlog_item: BL-001
   work_unit: WU-BL001-001
   state: TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED_ON_CONNECTOR_NATIVE_MODEL_ASSEMBLY_AND_ATOMIC_SERIALIZATION
@@ -20,7 +20,7 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
   current_invocation:
-    invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-071618IST
+    invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-015827Z
     owner: PRIMARY_ORCHESTRATOR
     work_unit: WU-BL001-001
     idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_REPLAN_INVOCATION
@@ -32,13 +32,12 @@ local_execution:
     source_reads_frozen_baseline_only: true
     consolidation_executor: automation/consolidate-traceability-explorer.py
     consolidation_executor_validation: PASS_FAIL_CLOSED_123_PLUS_11_EQUALS_134_ZERO_DUPLICATES
-    local_git_materialization_attempt: BLOCKED_DNS_GITHUB_UNRESOLVABLE_RECONFIRMED_20260826_0716IST
     connector_native_base_and_42_deltas_materialized_durably: true
-    structured_matrix_direct_read: BASE_ONLY_11_ROWS_WITH_ORDERED_DELTAS_REQUIRED
+    model_assembly_execution: BLOCKED_NO_PROCESS_READABLE_AUTHORITATIVE_REPOSITORY_TREE_FOR_CONSOLIDATOR
     canonical_rows_added: 0
     materialized_rows_after: 123
     pending_unique_keys_after: 11
-    outcome: NO_WORKER_REPLAY; ATOMIC_PROJECTION_NOT_EXECUTED; EXACT_134_UNIQUE_KEY_PROOF_NOT_CLAIMED; BL002_BLOCKED_ON_USER_RELEASE_CLASSIFICATION
+    outcome: NO_WORKER_REPLAY; ATOMIC_PROJECTION_NOT_EXECUTED; EXACT_134_UNIQUE_KEY_PROOF_NOT_CLAIMED
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
@@ -64,4 +63,4 @@ local_execution:
     WU-BL001-004: WAITING_FOR_DEPENDENCY
     close_allowed: false
   next_action: >-
-    Assemble the connector-materialized authoritative base plus all 42 ordered deltas using exact HTTP_METHOD_PLUS_PATH upsert semantics, require exactly 123 unique pre-recovery keys, merge the eleven source-proved corrected recovery rows, require exactly 134 unique keys with zero duplicates, then atomically regenerate all matrix/explorer/runtime artifacts. Do not replay the closed worker generation. BL-002 remains paused until USER release classification under DEC-BL002-005 is complete.
+    Execute the checked-in consolidator only when the authoritative control branch is available as one process-readable repository tree. Assemble the base plus all 42 ordered deltas with HTTP_METHOD_PLUS_PATH upsert semantics, require exactly 123 unique pre-recovery keys, merge the eleven corrected source-proved recovery rows, require exactly 134 unique keys with zero duplicates, then atomically regenerate matrix/explorer/runtime artifacts. Do not replay the closed worker generation.
