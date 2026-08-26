@@ -1,74 +1,82 @@
 project_inventory:
-  version: 1
+  version: 2
   repository: vvekselva/CylinderManagement
   source_branch: main
   purpose: >-
-    Provide the Level 1 Single Source of Truth for top-level projects/modules in the
-    CylinderManagement repository and record governance classifications that affect
-    backlog scope. The Orchestrator must use this inventory instead of inferring testing
-    scope from project names or source structure.
+    Provide the Level 1 Single Source of Truth for top-level projects/modules and backlog-specific scope classifications.
+    The Orchestrator must use this inventory instead of inferring scope from project names.
 
   unit_test_policy:
     backlog_item: BL-002
+    rule: Preserve the existing explicit unit-test classifications; unclassified unit-test scope must not be inferred.
+
+  bl008_database_migration_policy:
+    backlog_item: BL-008
     rule: >-
-      Only projects explicitly classified UNIT_TEST_REQUIRED may enter BL-002 planning
-      or execution. Projects classified NO_UNIT_TEST_REQUIRED are excluded. Projects
-      classified UNIT_TEST_POSTPONED are excluded from the current BL-002 execution and
-      retained for a future user-authorized cycle. Projects classified
-      UNIT_TEST_SCOPE_UNCLASSIFIED block completion of BL-002 Level 2 scope definition;
-      the Orchestrator must not infer their status.
+      BL-008 may read only modules explicitly classified below. cylinder.datascripts is the authoritative Flyway execution
+      source; NewOwnerShipModelv3 is an ownership-model reference source; cmas.database.operations is a database-governance
+      and recovery reference source. Other top-level modules are not direct BL-008 migration sources unless a later source-proved dependency is recorded.
 
   projects:
     - id: PRJ-001
       path: Cylinder.management.dto
       unit_test_scope: NO_UNIT_TEST_REQUIRED
+      bl008_database_migration_scope: NOT_DIRECT_MIGRATION_SOURCE
       source: USER_DIRECTIVE_2026-08-23
 
     - id: PRJ-002
       path: NewOwnerShipModelv3
       unit_test_scope: UNIT_TEST_SCOPE_UNCLASSIFIED
-      source: NOT_YET_DEFINED
+      bl008_database_migration_scope: OWNERSHIP_MODEL_REFERENCE_REQUIRED
+      source: USER_DIRECTIVE_2026-08-26_BL008_BOOTSTRAP
 
     - id: PRJ-003
       path: cmas.database.operations
       unit_test_scope: UNIT_TEST_POSTPONED
-      source: USER_DIRECTIVE_2026-08-23
-      note: Unit testing is required later, but postponed for the current cycle.
+      bl008_database_migration_scope: DATABASE_GOVERNANCE_AND_RECOVERY_REFERENCE_REQUIRED
+      source: USER_DIRECTIVE_2026-08-26_BL008_BOOTSTRAP
+      note: Unit testing remains postponed; BL-008 may read this module for database governance/recovery evidence.
 
     - id: PRJ-004
       path: cylinder.datascripts
       unit_test_scope: UNIT_TEST_SCOPE_UNCLASSIFIED
-      source: NOT_YET_DEFINED
+      bl008_database_migration_scope: AUTHORITATIVE_FLYWAY_MIGRATION_SOURCE_REQUIRED
+      source: USER_DIRECTIVE_2026-08-26_BL008_BOOTSTRAP
 
     - id: PRJ-005
       path: cylinder.management.dao
       unit_test_scope: NO_UNIT_TEST_REQUIRED
+      bl008_database_migration_scope: NOT_DIRECT_MIGRATION_SOURCE
       source: USER_DIRECTIVE_2026-08-23
 
     - id: PRJ-006
       path: cylindermanagement.custommapper.service
       unit_test_scope: NO_UNIT_TEST_REQUIRED
+      bl008_database_migration_scope: NOT_DIRECT_MIGRATION_SOURCE
       source: USER_DIRECTIVE_2026-08-23
 
     - id: PRJ-007
       path: cylindermanagement.offlinemap
       unit_test_scope: UNIT_TEST_POSTPONED
+      bl008_database_migration_scope: NOT_DIRECT_MIGRATION_SOURCE
       source: USER_DIRECTIVE_2026-08-23
-      note: Unit testing is required later, but postponed for the current cycle.
 
     - id: PRJ-008
       path: cylindermanagement.security
       unit_test_scope: NO_UNIT_TEST_REQUIRED
+      bl008_database_migration_scope: NOT_DIRECT_MIGRATION_SOURCE
       source: USER_DIRECTIVE_2026-08-23
 
     - id: PRJ-009
       path: cylindermanagement.web
       unit_test_scope: UNIT_TEST_SCOPE_UNCLASSIFIED
-      source: NOT_YET_DEFINED
+      bl008_database_migration_scope: NOT_DIRECT_MIGRATION_SOURCE
+      source: NOT_YET_DEFINED_FOR_UNIT_TEST
 
     - id: PRJ-010
       path: framework
       unit_test_scope: NO_UNIT_TEST_REQUIRED
+      bl008_database_migration_scope: NOT_DIRECT_MIGRATION_SOURCE
       source: USER_DIRECTIVE_2026-08-23
 
   unit_test_scope_summary:
@@ -77,8 +85,11 @@ project_inventory:
     unit_test_postponed: 2
     unit_test_required_current_cycle: 0
     unit_test_scope_unclassified: 3
-    bl_002_scope_definition_complete: false
-    blocker: >-
-      BL-002 cannot complete Level 2 scope definition or become plannable until the
-      unit-test classification for NewOwnerShipModelv3, cylinder.datascripts and
-      cylindermanagement.web is explicitly defined.
+
+  bl008_database_migration_scope_summary:
+    total_projects: 10
+    authoritative_flyway_source: 1
+    ownership_reference: 1
+    database_governance_reference: 1
+    not_direct_migration_source: 7
+    scope_definition_complete: true
