@@ -1,0 +1,42 @@
+checkpoint:
+  backlog_item: BL-001
+  invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1258IST
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  state: ALL_MISSING_KEYS_SOURCE_PROVED_ATOMIC_PROJECTION_PENDING
+  canonical_unique_rows_before_projection: 123
+  final_target_unique_rows: 134
+  missing_unique_rows: 11
+  fully_source_proved_pending_atomic_projection: 11
+  unresolved_source_keys: 0
+  candidate_source: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+  exact_keys:
+    - "GET /reconciliation-dashboard"
+    - "POST /reconciliation-dashboard/search"
+    - "GET /vehicle-load/fetch"
+    - "GET /lookup"
+    - "GET /lookupManagement"
+    - "POST /lookupManagement/addressType/save"
+    - "POST /lookupManagement/country/save"
+    - "POST /lookupManagement/state/save"
+    - "POST /lookupManagement/city/save"
+    - "GET /addVechileTrip"
+    - "POST /addVechileTrip"
+  projection_gate:
+    canonical_markdown: traceability/controller-traceability.md
+    explorer_structured: traceability/explorer/traceability-matrix.json
+    explorer_script: traceability/explorer/matrix-data.js
+    explorer_delta_history: traceability/explorer/traceability-deltas.json
+    rule: ALL_FOUR_PROJECTIONS_MUST_BE_REGENERATED_FROM_ONE_ACCEPTED_134_ROW_MODEL_AND_COMMITTED_ATOMICALLY
+    partial_projection_allowed: false
+  result_this_fire:
+    source_recovery_advanced: false
+    reason: ALL_11_WERE_ALREADY_SOURCE_PROVED_AT_FIRE_START
+    canonical_projection_executed: false
+    canonical_unique_rows_after_fire: 123
+    unsafe_partial_promotion: false
+  blocker: >-
+    The accepted source evidence is complete for all eleven missing HTTP method/path keys. Final BL-001 advancement now
+    requires mechanical reconstruction of a single consistent 134-row accepted model and atomic regeneration of the canonical
+    Markdown plus all Explorer projections/delta history. The current Explorer state contains historical base/delta layering,
+    so appending only the eleven rows would violate the atomic projection invariant.
+  next_action: RECONSTRUCT_ACCEPTED_134_ROW_MODEL_THEN_ATOMICALLY_REGENERATE_ALL_CANONICAL_AND_EXPLORER_PROJECTIONS
