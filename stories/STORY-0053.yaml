@@ -1,0 +1,42 @@
+story:
+  story_id: STORY-0053
+  title: View party cylinder custody traceability
+  state: NEEDS_CLARIFICATION
+  fingerprint: 5ca5e9dc1b3193901f30b22d8a9046ebce90bd6162e5049c655afc2b4bb05b19
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /party-custody-traceability"]
+  controller: PartyCustodyTraceabilityController.showTraceability
+  endpoint: "GET /party-custody-traceability"
+  business_purpose: Display cylinder custody information by party from the source-proved custody, cylinder, customer and supplier data chain.
+  trigger_and_context: A caller opens the party custody traceability dashboard.
+  inputs: []
+  normalization_and_defaults:
+    - No caller-input normalization or default is proved by the accepted trace.
+  validations:
+    - No caller-input validation predicate is proved for this GET path.
+  main_flow:
+    - PartyCustodyTraceabilityController.showTraceability handles the request.
+    - OwnershipObligationDashboardService supplies traceability data.
+    - Source-proved detail and summary DAO/view paths read custody, cylinder, customer and supplier data.
+    - The request terminates at PartyCustodyTraceabilityDashboard.
+  component_flow:
+    - PartyCustodyTraceabilityController.showTraceability
+    - OwnershipObligationDashboardService
+    - detail/summary DAO and virtual-view paths
+    - public.tbl_cylinder_party_custody
+    - public.tbl_cylinder
+    - public.tbl_customer
+    - public.tbl_supplier
+    - PartyCustodyTraceabilityDashboard
+  data_reads_and_writes:
+    - READ public.tbl_cylinder_party_custody, public.tbl_cylinder, public.tbl_customer and public.tbl_supplier through the accepted trace.
+    - No persistence write is proved.
+  side_effects_and_state_changes:
+    - No persistent state change is proved.
+  field_level_mapping:
+    state: NEEDS_CLARIFICATION
+    reason: The accepted BL-001 trace proves the backend dependency chain and terminal view, but does not preserve exact dashboard field/component to DTO/entity/view-column mappings required by the BL-002 field-level contract.
+  output_and_postconditions:
+    - Renders PartyCustodyTraceabilityDashboard from the proved read chain.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-181810.md]
+  approval: {owner: USER, state: NOT_READY_FIELD_LEVEL_CLARIFICATION_REQUIRED, fingerprint: 5ca5e9dc1b3193901f30b22d8a9046ebce90bd6162e5049c655afc2b4bb05b19}
