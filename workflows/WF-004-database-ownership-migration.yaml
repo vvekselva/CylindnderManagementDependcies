@@ -1,0 +1,25 @@
+workflow:
+  id: WF-004
+  name: Database Ownership Migration
+  backlog_item: BL-008
+  owner: PRIMARY_ORCHESTRATOR
+  execution_backend: LOCAL_PROCESS_POOL
+  max_workers: 10
+  shared_ssot_single_writer: true
+  stages:
+    - DISCOVER_AND_INVENTORY
+    - ESTABLISH_RECOVERY_POINT
+    - VALIDATE_MIGRATIONS
+    - MIGRATE_VALIDATION_BRANCH
+    - POST_VALIDATE_VALIDATION_BRANCH
+    - PROMOTE_TO_PRODUCTION
+    - POST_VALIDATE_PRODUCTION
+    - RECORD_AND_VERIFY
+  rules:
+    - all database mutation stages are serialized
+    - read-only source inventory and integrity analysis may use parallel workers
+    - never mutate production before validation-branch gates pass
+    - use Flyway only for migration execution
+    - fail closed on target-identity, checksum, ordering, ownership-integrity or rollback ambiguity
+    - synchronize durable evidence after each accepted stage
+    - leave zero transient lane logs at boundaries
