@@ -1,0 +1,28 @@
+story:
+  story_id: STORY-0061
+  title: Customer activation - Set inactive
+  state: NEEDS_CLARIFICATION
+  fingerprint: 56f0cfb1a1e6bfbe6cef3c8e13dc605aeb39778bfcf892722bd046d8e62fc5f2
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /setCustomerInactive"]
+  controller: ToggleCustomerActiveStatusController.setCustomerInactive
+  endpoint: "POST /setCustomerInactive"
+  business_purpose: Mark a customer inactive through the accepted BL-001 flow.
+  accepted_backend_chain:
+    - ToggleCustomerActiveStatusController.setCustomerInactive
+    - public.tbl_customer
+    - redirect:/fetchCustomerByPage
+  data_reads_and_writes:
+    - WRITE public.tbl_customer.
+    - Redirect to customer listing is source-proved.
+  field_level_evidence:
+    state: INCOMPLETE
+    not_proved:
+      - exact request parameter datatype and required/optional contract
+      - normalization/default behavior
+      - exact validation and invalid-value behavior
+      - exact entity field and database column changed
+      - exact caller-visible message parameters on redirect
+  disposition_reason: Endpoint action and persistence table are proved, but the required field-level input/persistence contract is incomplete.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-190650.md]
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
