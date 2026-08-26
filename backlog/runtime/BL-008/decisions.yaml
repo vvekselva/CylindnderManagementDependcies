@@ -1,5 +1,5 @@
 backlog_item: BL-008
-version: 1
+version: 2
 decisions:
   - id: DEC-BL008-001
     decision: USE_FLYWAY_ONLY_NO_MANUAL_SQL_SUBSTITUTION
@@ -13,3 +13,20 @@ decisions:
   - id: DEC-BL008-004
     decision: PRODUCTION_PROMOTION_ALLOWED_ONLY_AFTER_ALL_PREPRODUCTION_GATES_PASS
     basis: FAIL_CLOSED_DATABASE_CHANGE_POLICY
+  - id: DEC-BL008-005
+    decision: USE_USER_SUPPLIED_NEON_TEST_TARGET_SMALL_BREAD_22546365_PRODUCTION
+    basis: USER_DIRECTIVE_2026-08-26_16XX_IST_JDBC_TARGET_AND_LIVE_CONNECTIVITY_PROOF
+    target_project_name: neon-for-cylinder-db
+    target_project_id: small-bread-22546365
+    target_branch_name: production
+    target_branch_id: br-orange-violet-aylucoco
+    target_database: neondb
+    target_role: neondb_owner
+    endpoint_id: ep-calm-tooth-ayje8p7p
+    environment_role: SEPARATE_NEON_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
+    supersedes_for_BL008_target_identity: [holy-glitter-02245694, main]
+    preserves:
+      - FLYWAY_ONLY
+      - NO_MANUAL_SQL_SUBSTITUTION
+      - NO_NEON_BRANCH_CREATION
+      - ONE_DATABASE_REQUIREMENT_AT_A_TIME
