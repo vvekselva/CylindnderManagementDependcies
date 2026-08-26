@@ -1,0 +1,25 @@
+story:
+  story_id: STORY-0063
+  title: Supplier registration - Form
+  state: NEEDS_CLARIFICATION
+  fingerprint: 6fbc85de511a96a4355afee05b4fd7aa6d69c4430aec62b743bdcf9afa49d39c
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /ingestSupplier"]
+  controller: SupplierIngestionController.doGet
+  endpoint: "GET /ingestSupplier"
+  business_purpose: Display the supplier registration form.
+  accepted_backend_chain:
+    - SupplierIngestionController.doGet
+    - with-menu/SupplierIngestion
+  data_reads_and_writes:
+    - No persistence service or database dependency is source-proved for this GET flow.
+    - STATIC_UI_NO_DATABASE_MAPPING applies only to components proved static by source; exact page components remain unresolved.
+  field_level_evidence:
+    state: INCOMPLETE
+    not_proved:
+      - exact page fields/components
+      - exact model/DTO field mappings
+      - exact datatype/required/default rules for form inputs
+  disposition_reason: Terminal view is proved, but field-level page contract is incomplete.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-191248.md]
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
