@@ -1,0 +1,14 @@
+backlog_item: BL-008
+version: 1
+summary: {configured: 10, active: 0, idle: 10}
+lanes:
+  - {id: LANE-01, state: IDLE, task: null}
+  - {id: LANE-02, state: IDLE, task: null}
+  - {id: LANE-03, state: IDLE, task: null}
+  - {id: LANE-04, state: IDLE, task: null}
+  - {id: LANE-05, state: IDLE, task: null}
+  - {id: LANE-06, state: IDLE, task: null}
+  - {id: LANE-07, state: IDLE, task: null}
+  - {id: LANE-08, state: IDLE, task: null}
+  - {id: LANE-09, state: IDLE, task: null}
+  - {id: LANE-10, state: IDLE, task: null}
