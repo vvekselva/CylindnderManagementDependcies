@@ -1,0 +1,49 @@
+quality_gate:
+  backlog_item: BL-008
+  version: 1
+  name: Database Ownership Migration Quality Gates
+  approved_by_user: true
+  approval_basis: USER_DIRECTIVE_2026-08-26_INCLUDE_DATABASE_MIGRATION_IN_ORCHESTRATION
+  gates:
+    - id: QG-DBMIG-001
+      name: Migration Source and Target Inventory
+      owner: ORCHESTRATOR
+      fail_closed: true
+      pass_condition: Exact Neon target identity and exact Flyway migration set through V176 are proved from authoritative sources; no duplicate or ambiguous migration version remains.
+    - id: QG-DBMIG-002
+      name: Recovery Point and Pre-State
+      owner: ORCHESTRATOR
+      fail_closed: true
+      pass_condition: An isolated validation branch or equivalent rollback point exists and pre-migration schema/history/critical-row-count evidence is captured.
+    - id: QG-DBMIG-003
+      name: Flyway Validate
+      owner: ORCHESTRATOR
+      fail_closed: true
+      pass_condition: Flyway validation succeeds on the isolated validation target with no checksum/order/duplicate migration failure.
+    - id: QG-DBMIG-004
+      name: Validation Branch Migration and Integrity
+      owner: ORCHESTRATOR
+      fail_closed: true
+      pass_condition: Validation target reaches V176 successfully and schema, referential, ownership and critical-data integrity checks pass.
+    - id: QG-DBMIG-005
+      name: Production Promotion
+      owner: ORCHESTRATOR
+      fail_closed: true
+      pass_condition: The production target identity is reverified and the identical validated Flyway source reaches V176 without manual SQL substitution.
+    - id: QG-DBMIG-006
+      name: Production Ownership and Data Integrity
+      owner: ORCHESTRATOR
+      fail_closed: true
+      pass_condition: COMPANY_OWNED, SUPPLIER_OWNED and CUSTOMER_OWNED constraints plus cylinder/state/custody/logistics/audit integrity checks pass on production.
+    - id: QG-DBMIG-007
+      name: Migration Ledger Synchronization
+      owner: ORCHESTRATOR
+      fail_closed: true
+      pass_condition: database-dependency-neon.md and BL-008 runtime/log evidence record exact migration target, result and validation state.
+  forbidden_actions:
+    - MANUAL_SQL_SUBSTITUTION_FOR_FLYWAY
+    - SECRET_OR_CONNECTION_STRING_COMMIT
+    - PRODUCTION_MIGRATION_BEFORE_VALIDATION_BRANCH_PASS
+    - SILENT_REWRITE_OF_APPLIED_MIGRATION
+    - DESTRUCTIVE_REPAIR_WITHOUT_VERSIONED_SOURCE_AND_ROLLBACK
+  close_rule: BL-008 may become VERIFIED only after QG-DBMIG-001 through QG-DBMIG-007 pass; CLOSED additionally requires explicit user acceptance.
