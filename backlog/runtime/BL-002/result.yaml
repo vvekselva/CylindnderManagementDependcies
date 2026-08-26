@@ -11,12 +11,12 @@ result:
     pending_atomic_projection_rows: 11
     eligible_rows_for_incremental_story_generation: 123
   story_result:
-    story_dispositions: 45
-    ready_for_user_review: 40
-    needs_clarification: 5
+    story_dispositions: 47
+    ready_for_user_review: 41
+    needs_clarification: 6
     approved: 0
-    newest_story_id: STORY-0045
-    newest_fingerprint: b56eb8eaaa94e447bf7045a37f535ec6cf2fb844a825f3ac50abd9804868bc69
+    newest_story_id: STORY-0047
+    newest_fingerprint: 2ab938e66f6b38bfb37d6b2b4d6e9f032cab670213cc8e9b7e8abefc37b2f47c
   usecase_result:
     candidate_usecases: 0
     approved_for_testing: 0
@@ -31,6 +31,6 @@ result:
     - NEEDS_CLARIFICATION_STORIES_REQUIRE_CLARIFICATION_OR_ACCEPTED_EVIDENCE
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    BL-002 continues incrementally from accepted canonical BL-001 rows. Forty-five Story dispositions now exist: forty READY_FOR_USER_REVIEW and five NEEDS_CLARIFICATION. This invocation added STORY-0044 from GET /vehicleLoad and STORY-0045 from GET /registerCustomer, both using accepted canonical rows and their durable full-branch evidence. No pending BL-001 atomic-projection row was consumed and no Story or Use Case was auto-approved.
+    BL-002 continues incrementally from accepted canonical BL-001 rows. Forty-seven Story dispositions now exist: forty-one READY_FOR_USER_REVIEW and six NEEDS_CLARIFICATION. This invocation added STORY-0047 from GET /wizard/vehicle-trip-load using the accepted canonical row and its durable full-branch evidence. No pending BL-001 atomic-projection row was consumed and no Story or Use Case was auto-approved.
   next_action: >-
     Continue safe-independent Story generation from remaining eligible canonical rows while awaiting explicit user approval for exact Story IDs/fingerprints and clarification or additional accepted evidence for NEEDS_CLARIFICATION Stories. Do not use the 11 pending BL-001 rows until atomically canonical and do not form authoritative Use Cases before Story approval.
