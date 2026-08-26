@@ -1,9 +1,21 @@
 blockers:
   backlog_item: BL-002
-  state: WAITING_FOR_DEPENDENCY
+  state: WAITING_FOR_USER_DECISION
   active:
+    - id: BL002-BLOCKER-RELEASE-001
+      type: USER_DECISION_GATE
+      decision: DEC-BL002-005
+      description: >-
+        Additional BL-002 Story generation is paused until the complete 134-item traceability inventory is classified by the USER into Release 1 and Release 2.
+      resolution: >-
+        Obtain the user's complete Release 1 / Release 2 classification for all 134 traceability items. Then replan BL-002, complete Release 1 Story rework to its configured review/approval boundary, and only then permit Release 2 Story work.
+    - id: BL002-BLOCKER-APPROVAL-001
+      type: USER_APPROVAL_GATE
+      gate: QG-STORY-006
+      description: Existing technically validated READY_FOR_USER_REVIEW Stories remain unapproved.
+      resolution: User explicitly approves or rejects exact Story IDs/fingerprints after the release-classification/rework boundary permits review.
+  resolved:
     - id: BL002-BLOCKER-001
       type: BACKLOG_DEPENDENCY
-      description: BL-001 Controller Traceability is not yet VERIFIED or CLOSED, so BL-002 cannot import the final matrix or generate authoritative Stories.
-      resolution: Complete and verify BL-001, then re-evaluate QG-DEP-001 and QG-STORY-001.
-  resolved: []
+      resolution: >-
+        Superseded by governed incremental dependency mode DEC-BL002-004: BL-002 may consume Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows without waiting for total BL-001 closure.
