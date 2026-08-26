@@ -1,6 +1,6 @@
 backlog_item: BL-008
-version: 10
-state: BLOCKED_TEST_DATABASE_CONTROL_PLANE_TARGET_MISMATCH
+version: 11
+state: BLOCKED_REQUIRED_MAIN_BRANCH_NOT_VISIBLE
 verified: false
 closed: false
 governance_bootstrap: COMPLETE
@@ -10,10 +10,10 @@ environment:
   role: SEPARATE_NEON_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
   required_branch: main
   branch_creation: FORBIDDEN
+  target_project_name: neon-for-cylinder-db
+  live_target_project_id: small-bread-22546365
   user_declared_database: neondb
-  target_host: ep-dawn-forest-axk2scoa-pooler.c-4.us-east-2.aws.neon.tech
   target_user: neondb_owner
-  target_identity_source: USER_DECLARED_DIRECT_JDBC_ENDPOINT
   credentials: RUNTIME_ONLY_NOT_PERSISTED
 execution_policy:
   migration_mechanism: FLYWAY_ONLY
@@ -29,35 +29,35 @@ source_inventory:
   previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
   reconciliation_required: false
 live_neon_discovery:
-  attempted_at: 2026-08-26T16:16:34+05:30
-  target_project_search_owned_matches: 0
-  target_project_search_shared_matches: 0
-  organization_projects_visible: 1
-  visible_project_id: weathered-heart-89789162
-  visible_project_name: cylinder_db_for_testing
+  attempted_at: 2026-08-26T17:01:00+05:30
+  organization_id: org-spring-mode-70853603
+  target_project_match_verified: true
+  visible_target_project_id: small-bread-22546365
+  visible_target_project_name: neon-for-cylinder-db
+  postgres_version: 18
   visible_default_branch: production
   visible_branch_count: 1
   required_branch_main_visible: false
   branch_creation_attempted: false
-  authoritative_target_project_match_verified: false
   exact_main_database_identity_verified: false
   flyway_schema_history_verified: false
   sql_read_attempted_on_production_branch: false
   write_attempted: false
-  blocker_changed_from_prior_fire: false
-  blocker_change: NONE_SAME_TARGET_MISMATCH_CONFIRMED
+  blocker_changed_from_prior_fire: true
+  blocker_change: TARGET_PROJECT_NOW_VISIBLE_BUT_REQUIRED_MAIN_BRANCH_STILL_ABSENT
 database_requirement:
   active_requirement: null
-  selection_state: BLOCKED_UNTIL_REQUIRED_MAIN_TARGET_AND_LIVE_FLYWAY_HISTORY_ARE_PROVED
+  selection_state: BLOCKED_UNTIL_EXISTING_MAIN_BRANCH_AND_LIVE_FLYWAY_HISTORY_ARE_PROVED
   reason: >-
-    Fresh governed Neon discovery on 2026-08-26 again returns zero owned/shared matches for target project
-    holy-glitter-02245694. The only visible project is weathered-heart-89789162 (cylinder_db_for_testing), with one
-    existing default/primary branch named production. Governing BL-008 policy permits main only and forbids branch
-    creation. Production is not used as a substitute, so the first database requirement remains unselected.
+    The intended Neon project neon-for-cylinder-db is now visible as project small-bread-22546365. Live project description
+    proves that its only existing primary/default branch is named production. Governing BL-008 policy permits main only and
+    explicitly forbids creating Neon branches. Production is therefore not queried or mutated as a substitute for main, and
+    the first database requirement cannot yet be selected from live flyway_schema_history.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  Target mismatch revalidated. No Neon branch was created, no SQL was run against production, no Flyway validate/migrate
-  was run, no manual SQL substitution occurred, and no external production deployment was performed.
-next_action: PROVE_EXISTING_NEON_MAIN_TARGET_WITHOUT_CREATING_A_BRANCH_THEN_VERIFY_EXACT_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
+  Control-plane target identity improved: the intended project is visible. The remaining fail-closed blocker is specifically
+  the absence of an existing branch named main. No Neon branch was created, no SQL or Flyway command was run on production,
+  no database write occurred, and no manual SQL substitution was used.
+next_action: PROVE_EXISTING_NEON_MAIN_BRANCH_WITHOUT_CREATING_ONE_THEN_VERIFY_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_EXACTLY_ONE_REQUIREMENT
 user_acceptance_required_before_close: true
