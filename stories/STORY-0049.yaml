@@ -1,0 +1,53 @@
+story:
+  story_id: STORY-0049
+  title: Search address types by text
+  state: READY_FOR_USER_REVIEW
+  fingerprint: f99fa00122db2bc862f9be27f6b9ec4778987dde363603d1b94d23bca1779a20
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /search/addresstype/{searchText}"]
+  controller: RestfulAddressTypeServices.getAddressTypes
+  endpoint: "GET /search/addresstype/{searchText}"
+  business_purpose: Return address-type records whose address-type text matches the caller search text, using only the source-proved search chain.
+  trigger_and_context: A caller invokes the address-type REST search endpoint with path variable searchText.
+  inputs:
+    - searchText is supplied as the path variable and placed in CylinderManagementApplicationRequestDto.
+  normalization_and_defaults:
+    - No trimming, case conversion, blank substitution or other normalization is proved by the accepted trace.
+  validations:
+    - SearchRequestValidator.validate is invoked before repository access.
+    - The accepted trace does not preserve the validator's exact rejection predicates, so none are invented.
+  invalid_value_paths:
+    - Service exceptions terminate with an empty AddressTypeSearchResponseDto according to the accepted evidence.
+    - Exact validation messages or HTTP-status changes are not proved.
+  main_flow:
+    - RestfulAddressTypeServices.getAddressTypes receives searchText and builds CylinderManagementApplicationRequestDto.
+    - The controller calls the typed ICylinderManagementApplicationSearchService.searchWithText binding.
+    - AddressTypeSearchService is the source-proved active implementation.
+    - AddressTypeSearchService invokes SearchRequestValidator.validate.
+    - The service calls AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase.
+    - AddressTypeJpaDao is JpaRepository<AddressTypeDo, Long>.
+    - AddressTypeDo maps to public.tbl_address_type.
+    - The mapper converts matched persistence rows to AddressTypeSearchResponseDto returned as JSON.
+  component_flow:
+    - RestfulAddressTypeServices.getAddressTypes
+    - AddressTypeSearchService.searchWithText
+    - SearchRequestValidator.validate
+    - AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase
+    - AddressTypeDo
+    - public.tbl_address_type
+    - address-type mapper
+    - AddressTypeSearchResponseDto JSON
+  data_reads_and_writes:
+    - READ public.tbl_address_type.
+    - No persistence write is proved.
+  side_effects_and_state_changes:
+    - No persistent state change is proved.
+  alternate_and_error_flows:
+    - Service exceptions return an empty response DTO; no additional behavior is asserted.
+  output_and_postconditions:
+    - Returns AddressTypeSearchResponseDto JSON populated from matched address-type rows, or the proved empty DTO exception outcome.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-233707.md]
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint validates the search request, queries public.tbl_address_type through the proved service/DAO/entity chain, maps results to AddressTypeSearchResponseDto, and performs no persistence write.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: f99fa00122db2bc862f9be27f6b9ec4778987dde363603d1b94d23bca1779a20}
