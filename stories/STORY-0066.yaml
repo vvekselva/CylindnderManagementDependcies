@@ -1,0 +1,41 @@
+story:
+  story_id: STORY-0066
+  title: Yard stock check - Submit
+  state: NEEDS_CLARIFICATION
+  fingerprint: 440b6696ad978eece771a41c520270253cef1fc8da560235095c45c29a0188c8
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /ingestYardStockCheck"]
+  controller: YardStockCheckIngestionController.doPost
+  endpoint: "POST /ingestYardStockCheck"
+  release: RELEASE_1
+  business_purpose: Validate and persist a yard stock-check submission, including the stock-check header and its cylinder lines, then return either the success redirect or the yard-stock-check error view.
+  accepted_backend_chain:
+    - YardStockCheckIngestionController.doPost
+    - validator and cylinder-state lookup
+    - public.tbl_cylinder_states
+    - yard stock-check persistence service/DAO chain
+    - public.tbl_yard_stock_check
+    - public.tbl_yard_stock_check_line
+    - success redirect or final-version-1/YardStockCheckIngestion error view/cache refresh
+  data_reads_and_writes:
+    - READ public.tbl_cylinder_states for validation/state reference.
+    - WRITE public.tbl_yard_stock_check for the accepted stock-check header.
+    - WRITE public.tbl_yard_stock_check_line for accepted submitted cylinder lines.
+  field_level_evidence:
+    state: INCOMPLETE
+    proved:
+      - endpoint is a Release-1 input flow
+      - header and line persistence tables are source-proved by the accepted canonical BL-001 row
+      - invalid/error flow returns to the yard-stock-check ingestion view
+    not_proved:
+      - exact submitted page field names and request/model binding names
+      - datatype of each submitted field
+      - required versus optional status of each submitted field
+      - normalization or default rules per field
+      - exact accepted values and validation constraints per field
+      - invalid-value behavior per individual field
+      - exact persistence column for each page/input field
+      - exact state/side-effect mapping for each individual input
+  disposition_reason: The accepted BL-001 trace proves the controller, validation/state-read behavior, header/line persistence tables and terminal paths, but does not prove the mandatory field-by-field input-to-column contract. Unproved meaning is intentionally not inferred.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-203431.md]
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
