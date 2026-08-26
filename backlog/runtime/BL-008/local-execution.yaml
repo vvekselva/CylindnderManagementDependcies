@@ -1,12 +1,12 @@
 backlog_item: BL-008
-version: 3
-state: TEST_TARGET_KNOWN_CONNECTIVITY_BLOCKED
-execution_backend: LOCAL_PROCESS_POOL
+version: 4
+state: CONNECTIVITY_VERIFIED_DATABASE_MUTATION_GATED
+execution_backend: PRIMARY_ORCHESTRATOR
 max_workers: 10
 shared_ssot_single_writer: true
 execution_journal_required: true
-dispatch_fingerprint: BL008-DISCOVERY-MAIN-V170-DECLARED-TEST-ENDPOINT
-last_execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-0917IST
+dispatch_fingerprint: BL008-LIVE-NEON-REVALIDATION-20260826-104359IST
+last_execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-104359IST
 sync_state: SYNCHRONIZED_FAIL_CLOSED_CHECKPOINT
 transient_lane_logs: 0
 idempotency:
@@ -17,25 +17,30 @@ current_invocation:
   source_inventory:
     branch: main
     commit: 3ae6e61442132d94a307275b08dd65fcef228d89
-    migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
-    flyway_head: V170
-    state: PASS
+    migration_inventory_revalidation: PENDING
   neon_test_target:
-    source: USER_DECLARED_DIRECT_JDBC_ENDPOINT
-    host: ep-dawn-forest-axk2scoa-pooler.c-4.us-east-2.aws.neon.tech
+    project: cylinder_db_for_testing
+    project_id: weathered-heart-89789162
+    default_branch: production
+    default_branch_is_primary: true
     database: neondb
     user: neondb_owner
     credentials: RUNTIME_ONLY_NOT_PERSISTED
-    exact_host_database_user_known: true
   connectivity:
-    local_execution_host_dns_reachability: FAIL
-    neon_control_plane_project_mapping: FAIL
-    live_identity_query: NOT_EXECUTED
-    flyway_schema_history_read: NOT_EXECUTED
+    neon_control_plane_project_mapping: PASS
+    live_identity_query: PASS
+    postgres_version: 18.6
+    flyway_schema_history_read: PASS
+    flyway_schema_history_exists: false
+  policy_gate:
+    no_new_branch: PASS
+    main_only_policy_observed_live_branch_match: FAIL
+    observed_live_default_branch: production
+    mutation_authorized: false
   active_database_requirement: null
   database_write_parallelism: 1
   database_write_attempted: false
   neon_branch_created: false
   manual_sql_used: false
   outcome: FAIL_CLOSED_BEFORE_REQUIREMENT_SELECTION
-next_action: RESTORE_CONNECTIVITY_OR_CONTROL_PLANE_MAPPING_THEN_VERIFY_DECLARED_TEST_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
+next_action: RECONCILE_MAIN_ONLY_POLICY_WITH_EXISTING_PRIMARY_DEFAULT_BRANCH_IDENTITY_THEN_REVALIDATE_FLYWAY_INVENTORY_AND_SELECT_ONE_REQUIREMENT
