@@ -1,6 +1,6 @@
 backlog_item: BL-008
-version: 6
-state: BLOCKED_TEST_DATABASE_CONNECTIVITY_AND_CONTROL_PLANE_MAPPING
+version: 7
+state: BLOCKED_TEST_DATABASE_CONTROL_PLANE_TARGET_MISMATCH
 verified: false
 closed: false
 governance_bootstrap: COMPLETE
@@ -8,9 +8,9 @@ common_gates: {QG-SSOT-001: PASS, QG-SOW-001: PASS, QG-DEP-001: PASS}
 current_work_unit: WU-BL008-001
 environment:
   role: SEPARATE_NEON_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
-  branch: main
+  required_branch: main
   branch_creation: FORBIDDEN
-  database: neondb
+  user_declared_database: neondb
   target_host: ep-dawn-forest-axk2scoa-pooler.c-4.us-east-2.aws.neon.tech
   target_user: neondb_owner
   target_identity_source: USER_DECLARED_DIRECT_JDBC_ENDPOINT
@@ -29,28 +29,36 @@ source_inventory:
   previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
   reconciliation_required: false
 live_neon_discovery:
-  attempted_at: 2026-08-26T03:47:14Z
-  target_endpoint_declared: true
-  exact_host_database_user_known: true
-  organization_projects_visible: 0
-  shared_projects_visible: 0
-  control_plane_project_mapping_verified: false
-  execution_host_dns_connectivity_verified: false
-  live_database_identity_query_verified: false
+  attempted_at: 2026-08-26T06:36:00Z
+  organization_projects_visible: 1
+  visible_project_id: weathered-heart-89789162
+  visible_project_name: cylinder_db_for_testing
+  visible_default_branch: production
+  required_branch_main_visible: false
+  branch_creation_attempted: false
+  authoritative_target_project_match_verified: false
+  exact_main_database_identity_verified: false
   flyway_schema_history_verified: false
+  sql_read_attempted_on_production_branch: false
   write_attempted: false
+  blocker_changed_from_prior_fire: true
+  blocker_change: CONNECTOR_NOW_EXPOSES_ONE_PROJECT_BUT_IT_DOES_NOT_PROVE_THE_REQUIRED_MAIN_TARGET
 database_requirement:
   active_requirement: null
-  selection_state: BLOCKED_UNTIL_LIVE_FLYWAY_HISTORY_IS_PROVED
-  reason: The TEST endpoint identity is now user-declared, but this execution host cannot resolve/reach the endpoint and the connected Neon control plane cannot map it to an accessible project; therefore flyway_schema_history cannot yet be inspected and the first outstanding Flyway requirement cannot be selected safely.
+  selection_state: BLOCKED_UNTIL_REQUIRED_MAIN_TARGET_AND_LIVE_FLYWAY_HISTORY_ARE_PROVED
+  reason: >-
+    Live Neon discovery now exposes project weathered-heart-89789162 (cylinder_db_for_testing), but its visible/default branch
+    is production and no main branch was proved. The governing BL-008 policy permits main only and forbids creating Neon
+    branches. The visible project also does not prove identity equivalence to the authoritative historical target record.
+    Therefore the orchestrator must not query or mutate production as a substitute for main and cannot yet select the first
+    outstanding Flyway requirement from live flyway_schema_history.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  CylinderManagement main Flyway source remains reconciled through V170 at commit
-  3ae6e61442132d94a307275b08dd65fcef228d89. The user supplied the direct Neon TEST endpoint,
-  database name and database user, so target identity is no longer unknown. Credentials are runtime-only and are not
-  persisted. During this manual production fire, the local execution host could not resolve/reach the Neon hostname and
-  the connected Neon control plane could not map the endpoint to a visible project. Consequently no identity query,
-  flyway_schema_history read, requirement activation, branch creation, manual SQL, or database write was performed.
-next_action: RESTORE_EXECUTION_CONNECTIVITY_OR_CONTROL_PLANE_MAPPING_TO_THE_DECLARED_TEST_ENDPOINT_THEN_VERIFY_DATABASE_IDENTITY_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_EXACTLY_ONE_REQUIREMENT
+  Neon control-plane visibility improved from zero projects to one visible project. This resolves the old zero-project symptom
+  but does not satisfy the BL-008 target gate: the visible project is cylinder_db_for_testing / weathered-heart-89789162 and
+  exposes production rather than the required main branch. No Neon branch was created, no SQL was run against production as a
+  substitute, no Flyway validate/migrate was run, no manual SQL substitution occurred, and no external production deployment
+  was performed. BL-008 remains on the same pre-requirement boundary until exact Neon main identity is proved.
+next_action: PROVE_EXISTING_NEON_MAIN_TARGET_WITHOUT_CREATING_A_BRANCH_THEN_VERIFY_EXACT_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
 user_acceptance_required_before_close: true
