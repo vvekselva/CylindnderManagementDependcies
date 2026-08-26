@@ -1,20 +1,19 @@
 invocation_lease:
-  version: 33
-  state: RELEASED
+  version: 34
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-PRIMARY-MANUAL
-  acquired_at: 2026-08-26T06:30:00+05:30
-  released_at: 2026-08-26T06:42:00+05:30
+  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-070226IST
+  acquired_at: 2026-08-26T07:02:26+05:30
+  released_at: null
   authoritative_branch: chore/rename-dependency-files
-  purpose: coordinated BL-001 and BL-002 execution
+  purpose: coordinated BL-001 execution and BL-002 release-boundary reconciliation
   duplicate_action: NOOP
-  outcome: PARTIAL_CHECKPOINT_STORY_ARTIFACTS_CREATED_REGISTER_SYNC_PENDING
+  outcome: RUNNING
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - BL-001 prior worker generation remains CLOSED_SYNCHRONIZED and was not replayed; canonical state remains 123 materialized plus 11 fully source-proved rows pending atomic projection.
-    - BL-002 consumed only canonical accepted BL-001 rows and technically validated STORY-0049 through STORY-0052 from durable frozen-source evidence for four REST lookup flows.
-    - Structured and human-readable Story artifacts for STORY-0049 through STORY-0052 were committed; story-register and cross-traceability registration are pending synchronization and these four Stories must not be consumed downstream until that registration checkpoint completes.
-    - No Story was auto-approved; no Use Case or test scenario was generated.
-    - Boundary state is zero active lanes and zero residual transient lane logs.
+    - Singleton lease acquired only after confirming prior lease version 33 was RELEASED with zero active lanes.
+    - BL-001 remains eligible for targeted unique-key recovery and atomic consolidation subject to gates and idempotency.
+    - BL-002 Story generation is temporarily held at the latest user decision boundary: the 134 traceability items must first be classified into Release 1 and Release 2, and Release 1 must be completed before Release 2.
+    - Existing shallow Story artifacts are not auto-approved and will not be extended with more shallow candidates during this boundary.
