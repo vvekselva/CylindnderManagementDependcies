@@ -1,222 +1,136 @@
 # CylinderManagement Database Dependency
 
-This repository is the authoritative **database requirements, dependencies, environment, branch-purpose, migration-status, and database-change ledger** for CylinderManagement.
+This file is the authoritative database requirements, environment, migration-status and database-change ledger for CylinderManagement.
 
-> **Repository scope:** This repository does **not** store Flyway SQL migration scripts. The actual Flyway scripts remain in the main CylinderManagement source repository: `vvekselva/CylinderManagement`. Database migrations are executed from that source repository. This repository records the dependency and change-control information only.
+> **Repository scope:** Flyway SQL migration scripts remain only in `vvekselva/CylinderManagement`. This dependency repository records requirements and validation evidence; it does not duplicate migration SQL.
 
-## 1. Repository Responsibilities
+## 1. Current BL-008 Database Policy
 
-This repository stores:
+The user-approved policy as of 2026-08-26 is:
 
-- database platform and version requirements;
-- Neon organization/project/database identifiers;
-- Neon branch names, IDs, parent relationships, and intended purpose;
-- required Flyway migration version for the application;
-- migration execution status and validation status;
-- database dependency rules for application releases;
-- a database change ledger describing what changed and why;
-- database-related quality-gate results.
+- Neon is a **separate TEST environment** for CylinderManagement database migration work.
+- BL-008 uses the Neon branch **`main` only**.
+- BL-008 must **not create additional Neon branches**.
+- A change applied to Neon does **not** mean that an external/real production database has been changed.
+- Database work is executed **one requirement at a time**.
+- The current requirement must be source-proved, Flyway-applied, validated and durably recorded before the next requirement is selected.
+- A failed or ambiguous current requirement blocks advancement to later requirements.
+- Manual SQL substitution for Flyway is **not allowed**.
 
-This repository must **not** store:
+Historical references below to a Neon `production` branch are retained only as audit history and are **superseded for BL-008 execution** by the main-only policy above.
 
-- Flyway SQL migration scripts;
-- ad-hoc SQL used as a substitute for Flyway;
-- database passwords, access tokens, or complete connection strings;
-- application source code.
-
-## 2. Flyway Source Repository
+## 2. Flyway Source
 
 | Item | Current value |
 |---|---|
 | Flyway source repository | `vvekselva/CylinderManagement` |
-| Migration execution source | CylinderManagement source repository |
-| Application Flyway migration path | `cylinder.datascripts/src/main/resources/db/migration/` |
-| Database migration mechanism | Flyway |
-| Current required migration target | V176 |
-| SQL stored in this dependency repository | No |
+| Migration path | `cylinder.datascripts/src/main/resources/db/migration/` |
+| Migration mechanism | Flyway only |
+| Manual SQL substitution | FORBIDDEN |
+| Active migration selection | Exactly one requirement at a time, in proved authoritative order |
+| Previously documented expected head | V176 |
+| Current-main exact source head | DISCOVERY_REQUIRED |
 
-### Rule
+The previous dependency ledger stated that V1-V176 were present. A later frozen-source inspection used for BL-001 proved files only through V172 at that frozen commit. Those two statements are not treated as interchangeable truth. BL-008 must inventory the **current authoritative migration source** before selecting the active requirement.
 
-Every database change has two separate responsibilities:
-
-1. **Implementation:** Add the versioned Flyway SQL migration to `vvekselva/CylinderManagement`.
-2. **Dependency/change control:** Update this `database-dependency-neon.md` with the migration requirement, purpose, target branch/database, execution status, and validation result.
-
-The SQL must not be duplicated into this repository.
-
-## 3. Database Platform
+## 3. Neon Environment
 
 | Item | Current value |
 |---|---|
-| Database platform | Neon Serverless PostgreSQL |
-| Neon organization | `selvakumar` |
-| Neon organization ID | `org-spring-mode-70853603` |
-| Neon project | `neon-for-cylinder-db` |
-| Neon project ID | `holy-glitter-02245694` |
-| PostgreSQL major version | 18 |
-| Application database | `neon-for-cylinder-db` |
-| Migration mechanism | Flyway |
-| Required migration version | V176 |
+| Platform | Neon Serverless PostgreSQL |
+| Organization | `selvakumar` |
+| Historical organization ID | `org-spring-mode-70853603` |
+| Project | `neon-for-cylinder-db` |
+| Historical project ID | `holy-glitter-02245694` |
+| BL-008 branch | `main` |
+| Branch creation | FORBIDDEN |
+| Environment role | Separate TEST environment; not direct external production |
+| Application database | VERIFY_FROM_LIVE_NEON_BEFORE_FIRST_WRITE |
+| PostgreSQL version | VERIFY_FROM_LIVE_NEON_BEFORE_FIRST_WRITE |
 
-No database password, access token, or full connection string may be stored in this repository. Credentials must be supplied through environment variables or another approved secret-management mechanism.
+### Live connector state on 2026-08-26 manual fire
 
-## 4. Neon Project, Branch, and Database Model
+The connected Neon tool returned **zero visible projects** when BL-008 attempted live target verification. Therefore the project/branch/database identity cannot currently be re-proved from live Neon evidence. This is a fail-closed execution blocker only for database mutation; no database write was attempted.
 
-Neon uses the following hierarchy:
+## 4. Sequential Requirement Rule
 
-```text
-Organization
-└── Project
-    └── Branch
-        └── PostgreSQL Database
-            ├── Schemas
-            ├── Tables
-            ├── Views
-            ├── Functions
-            ├── Triggers
-            └── Data
-```
+For each database requirement, the Orchestrator must perform this loop:
 
-A **Neon project** is the top-level PostgreSQL environment. A **Neon branch** is an isolated database history/environment inside that project. A child branch starts from its parent branch's state and can then change independently. A PostgreSQL **database** exists inside a branch.
+1. Select exactly one next requirement from the authoritative Flyway source order.
+2. Prove its migration version, filename/checksum and prerequisites.
+3. Verify the live Neon `main` target and exact database identity.
+4. Run Flyway validation for the current requirement/sequence state.
+5. Apply only the selected next requirement through Flyway to Neon `main`.
+6. Verify `flyway_schema_history`, schema integrity, ownership rules and critical data integrity.
+7. Record PASS/FAIL and evidence in this ledger and BL-008 runtime.
+8. Select the next requirement only after the current requirement is PASS and synchronized.
 
-This branching model allows database migrations and application/database integration to be tested without changing the controlled production branch.
+Database migration writes under BL-008 have effective parallelism **1**.
 
-## 5. Current Neon Branches and Their Purpose
+## 5. Ownership Integrity Requirements
 
-### `main`
+The migration must preserve and validate the supported ownership model:
 
-| Item | Value |
-|---|---|
-| Branch name | `main` |
-| Branch ID | `br-holy-waterfall-awy01vfa` |
-| Purpose | Clean parent/reference branch |
-| CMAS application deployment | No |
-| Flyway production target | No |
-| Expected use | Preserve a clean baseline from which controlled branches can be created |
+- `COMPANY_OWNED`: no supplier owner and no customer owner.
+- `SUPPLIER_OWNED`: supplier owner required; customer owner forbidden.
+- `CUSTOMER_OWNED`: customer owner required; supplier owner forbidden.
+- Supplier and customer ownership must never both be populated for one ownership record.
+- Cylinder identity, state/history, custody/logistics and audit relationships must be preserved unless an authoritative versioned migration explicitly changes them.
 
-**Rule:** `main` is not the CylinderManagement production database. It should remain a clean reference/baseline unless a future database governance decision explicitly changes this policy.
-
-### `production`
-
-| Item | Value |
-|---|---|
-| Branch name | `production` |
-| Branch ID | `br-steep-snow-aw6u5odt` |
-| Parent branch | `main` |
-| Application database | `neon-for-cylinder-db` |
-| Purpose | Authoritative CylinderManagement production/integration database line |
-| Flyway migration target | Yes |
-| Current database state | Fresh, reachable and empty; Flyway migration pending |
-
-**Rule:** Approved CylinderManagement migrations are executed through Flyway from the `vvekselva/CylinderManagement` source repository against this branch/database. Manual SQL replay is not an acceptable substitute for Flyway execution.
-
-## 6. Future Neon Branch Purposes
-
-Additional Neon branches should be created only when a separate database lifecycle purpose is required.
-
-| Branch pattern | Purpose | May modify production directly? |
-|---|---|---|
-| `production` | Authoritative deployed CMAS database | N/A — controlled target |
-| `migration-*` | Validate a Flyway migration sequence before production | No |
-| `integration-*` | Application/database integration testing | No |
-| `feature-*` | Database work isolated to a feature | No |
-| `hotfix-*` | Validate an urgent database correction before production | No |
-
-Temporary/test branches should be removed after their purpose is complete unless retained for audit or recovery.
-
-## 7. Flyway and Database Change Governance
-
-1. Flyway SQL implementation belongs only in `vvekselva/CylinderManagement`.
-2. This dependency repository records requirements, dependencies, branch/database targets, status, and validation evidence only.
-3. Migration scripts must follow Flyway versioning and naming rules.
-4. Existing applied migration scripts must not be silently rewritten after application to a controlled database.
-5. A subsequent database change requires a new Flyway migration version.
-6. Flyway must own migration ordering and maintain `flyway_schema_history`.
-7. Manual SQL substitution for the migration sequence is **not allowed**.
-8. Every database migration/change must be recorded in the Database Change Ledger below.
-9. A database change is not complete until both the Flyway execution and its validation are recorded here.
-10. Secrets must never be committed to either repository.
-
-## 8. Current Database Quality Gate
+## 6. Current Database Quality Gate
 
 ```text
-Fresh Neon project               PASS
-production branch                PASS
-Fresh CMAS database              PASS
-Neon database connectivity       PASS
-Database empty before migration  PASS
-V1–V176 migration source present PASS
-Flyway execution                 PENDING
+BL-008 governance                PASS
+Neon environment role           PASS (separate TEST environment)
+Required branch policy           PASS (main only; no branch creation)
+One-requirement-at-a-time rule   PASS
+Live Neon project visibility     BLOCKED (connector currently shows zero projects)
+Exact database identity          BLOCKED pending live Neon visibility
+Current Flyway source inventory  IN PROGRESS / not yet reconciled
+Flyway execution                 NOT STARTED
+Database mutation                NOT AUTHORIZED
 Manual SQL substitution          NOT ALLOWED
 ```
 
-### Gate interpretation
+## 7. Database Change Ledger
 
-- **Fresh Neon project — PASS:** Dedicated Neon project `neon-for-cylinder-db` exists.
-- **production branch — PASS:** Controlled `production` branch exists under the new project.
-- **Fresh CMAS database — PASS:** PostgreSQL database `neon-for-cylinder-db` exists on `production`.
-- **Neon database connectivity — PASS:** A read-only connection test reached the intended `production` database using the database owner role; PostgreSQL reported version 18.4.
-- **Database empty before migration — PASS:** The connectivity validation confirmed zero public base tables and no `flyway_schema_history` table before Flyway execution.
-- **V1–V176 migration source present — PASS:** The authoritative CylinderManagement workspace/source set contains the Flyway migration source through V176.
-- **Flyway execution — PENDING:** The fresh production database has not yet been migrated through Flyway.
-- **Manual SQL substitution — NOT ALLOWED:** Migration SQL must be executed under Flyway control from the CylinderManagement source repository.
-
-The database baseline is **not migration-complete** until Flyway execution and post-migration validation both pass.
-
-## 9. Database Change Ledger
-
-Every database-related change must add or update an entry here. Do not paste SQL into this ledger.
-
-| Date | Change / requirement | Flyway version | Flyway source repository | Neon branch | Database | Status | Validation / notes |
+| Date | Change / requirement | Flyway version | Source | Neon branch | Database | Status | Validation / notes |
 |---|---|---|---|---|---|---|---|
-| 2026-08-16 | Created dedicated Neon project for CylinderManagement | N/A | N/A | `main` | `neondb` | PASS | Project `neon-for-cylinder-db` created as a fresh Neon project. |
-| 2026-08-16 | Created controlled production branch | N/A | N/A | `production` | inherited databases | PASS | `production` created from clean `main`. |
-| 2026-08-16 | Created fresh CylinderManagement application database | N/A | N/A | `production` | `neon-for-cylinder-db` | PASS | Database verified empty before migration. |
-| 2026-08-16 | Validate connectivity to the authoritative Neon target | N/A | N/A | `production` | `neon-for-cylinder-db` | PASS | Connected as `neondb_owner`; PostgreSQL 18.4; zero public base tables; `flyway_schema_history` absent. No schema/data change was made. |
-| 2026-08-16 | Establish required Flyway baseline through ownership/status workflow | V1–V176 | `vvekselva/CylinderManagement` | `production` | `neon-for-cylinder-db` | PENDING | Flyway execution has not yet been run on the fresh database. |
+| 2026-08-16 | Created dedicated Neon project for CylinderManagement | N/A | N/A | `main` | `neondb` | HISTORICAL | Initial project creation record. |
+| 2026-08-16 | Created controlled `production` branch | N/A | N/A | `production` | inherited | SUPERSEDED_FOR_BL008 | Historical branch record; BL-008 no longer uses this branch. |
+| 2026-08-16 | Created fresh CylinderManagement application database | N/A | N/A | `production` | `neon-for-cylinder-db` | HISTORICAL | Historical target under former policy. |
+| 2026-08-16 | Connectivity validation against former target | N/A | N/A | `production` | `neon-for-cylinder-db` | HISTORICAL | Earlier evidence reported PostgreSQL 18.4 and empty database. Must not substitute for current main-only live verification. |
+| 2026-08-26 | Adopt Neon main-only sequential migration policy | N/A | `vvekselva/CylinderManagement` | `main` | VERIFY_FROM_LIVE_NEON | PASS_POLICY | Neon is a separate test environment; no Neon branch creation; one database requirement at a time. |
+| 2026-08-26 | Manual production fire live Neon target discovery | N/A | N/A | `main` | VERIFY_FROM_LIVE_NEON | BLOCKED | Connected Neon integration exposed zero projects. No DB mutation performed. |
 
-### Required fields for future entries
+## 8. Application-to-Database Dependency Contract
 
-For each future database change, record:
+A database requirement is complete only when:
 
-- date;
-- short business/technical purpose or dependency requirement;
-- Flyway version/script identifier;
-- source repository containing the implementation;
-- Neon branch where it was validated or deployed;
-- target database;
-- result (`PLANNED`, `TESTING`, `PASS`, `FAILED`, `ROLLED BACK`, or `SUPERSEDED`);
-- validation evidence and important dependency notes.
+1. the authoritative Flyway migration exists in `vvekselva/CylinderManagement`;
+2. its exact order/version/checksum is proved;
+3. the live Neon `main` project and database are verified;
+4. Flyway validation passes;
+5. the current requirement is applied through Flyway;
+6. post-migration ownership/schema/data checks pass; and
+7. this ledger and BL-008 runtime are synchronized.
 
-## 10. Application-to-Database Dependency Contract
+No later requirement may start before these conditions pass for the current requirement.
 
-A CylinderManagement source-code release must not be treated as database-compatible unless:
-
-1. the required Flyway migration scripts exist in `vvekselva/CylinderManagement`;
-2. this `database-dependency-neon.md` identifies the required database/Flyway version;
-3. Flyway validates successfully against the target database;
-4. the database migration quality gate is PASS;
-5. application integration tests use the intended Neon branch/database; and
-6. no application source change assumes a database structure newer than the dependency recorded here.
-
-If application code introduces or depends on a database change, the source-code change and the corresponding dependency-ledger update must be treated as one release requirement even though they live in separate repositories.
-
-## 11. Current Authoritative Target
+## 9. Current Authoritative BL-008 Target
 
 ```text
 Dependency repository : vvekselva/CylindnderManagementDependcies
 Flyway source repo     : vvekselva/CylinderManagement
-Neon organization     : selvakumar
-Neon project          : neon-for-cylinder-db
-Project ID            : holy-glitter-02245694
-Branch                : production
-Branch ID             : br-steep-snow-aw6u5odt
-Database              : neon-for-cylinder-db
-Connectivity          : PASS
-PostgreSQL            : 18.4
+Neon project          : neon-for-cylinder-db (historical ID holy-glitter-02245694; live verification pending)
+Branch                : main
+Branch creation       : FORBIDDEN
+Environment role      : TEST ONLY / NOT DIRECT EXTERNAL PRODUCTION
+Database              : VERIFY_FROM_LIVE_NEON_BEFORE_WRITE
 Migration tool        : Flyway
-Required version      : V176
-Migration status      : PENDING
+Requirement handling  : ONE AT A TIME
+Source inventory      : DISCOVERY/RECONCILIATION REQUIRED
+Database write status : NOT AUTHORIZED
 ```
 
-This file must be updated whenever the database requirement, Neon environment, branch purpose, migration target, execution status, or validation status changes.
+This file must be updated after every BL-008 database requirement and whenever the environment or migration policy changes.
