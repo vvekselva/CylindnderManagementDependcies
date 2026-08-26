@@ -1,0 +1,27 @@
+version: 1
+mode: OVERLAP_SAFE_MULTI_INVOCATION
+authoritative: true
+max_concurrent_invocations: 2
+active_invocations: []
+recent_completed_invocations: []
+work_claims:
+  active: []
+locks:
+  shared_ssot_write:
+    capacity: 1
+    owner_invocation_id: null
+  git_checkpoint:
+    capacity: 1
+    owner_invocation_id: null
+  bl008_database_write:
+    capacity: 1
+    owner_invocation_id: null
+rules:
+  - each invocation owns only its own workspace, lane logs and executor processes
+  - each work claim is globally unique across active invocations
+  - a new trigger may start while another invocation is active when capacity remains
+  - completed executor capacity is refilled immediately without waiting for sibling executors
+  - at about 30 minutes an invocation stops starting new work but lets already-running tasks finish
+  - accumulation begins only after tasks started by that invocation reach terminal executor states
+  - accumulation does not wait for unrelated overlapping invocations
+  - shared SSOT merge and BL-008 database writes remain globally serialized
