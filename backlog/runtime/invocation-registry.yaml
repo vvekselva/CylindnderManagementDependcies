@@ -1,8 +1,24 @@
-version: 4
+version: 5
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations: []
+active_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-145821IST
+    execution_state: RUNNING
+    health_state: ACTIVE
+    started_at: 2026-08-26T14:58:21+05:30
+    heartbeat_at: 2026-08-26T14:58:21+05:30
+    last_progress_at: 2026-08-26T14:58:21+05:30
+    last_lane_activity_at: null
+    active_lane_count: 0
+    coordinator_phase: DISCOVERY_AND_REPLAN
+    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
+    current_work_unit: HEALTH_VALIDATED_PRE_DISPATCH
+    progress_fingerprint: HEALTH_V5_ACTIVE_NO_STALE_OWNERS
+    blocked_reason: null
+    recovery_action: NONE
+    stale_after_seconds: 300
+    stuck_after_seconds: 600
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-141701IST
     execution_state: TERMINAL_CHECKPOINTED
@@ -51,7 +67,25 @@ recent_completed_invocations:
     recovery_action: FAIL_CLOSED_RECOVERY_REJECT_UNVALIDATED_PARTIAL_RELEASE_CLAIM_AND_CAPACITY
     recovered_at: 2026-08-26T14:17:01+05:30
 work_claims:
-  active: []
+  active:
+    - claim_key: BL-001|WU-BL001-001|TARGETED-UNIQUE-KEY-RECOVERY
+      backlog_item: BL-001
+      work_unit: WU-BL001-001
+      task_id: TARGETED-UNIQUE-KEY-RECOVERY
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-145821IST
+      state: CLAIMED
+    - claim_key: BL-002|RELEASE-1-FIELD-LEVEL|NEXT-ELIGIBLE-STORIES
+      backlog_item: BL-002
+      work_unit: RELEASE-1-FIELD-LEVEL
+      task_id: NEXT-ELIGIBLE-STORIES
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-145821IST
+      state: CLAIMED
+    - claim_key: BL-008|WU-BL008-001|LIVE-MAIN-TARGET-REVALIDATION
+      backlog_item: BL-008
+      work_unit: WU-BL008-001
+      task_id: LIVE-MAIN-TARGET-REVALIDATION
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-145821IST
+      state: CLAIMED
   recovered:
     - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0057
       backlog_item: BL-002
