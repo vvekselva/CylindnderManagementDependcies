@@ -1,21 +1,17 @@
 invocation_lease:
-  version: 35
-  state: RELEASED
+  version: 36
+  state: ACTIVE
   owner: PRIMARY_ORCHESTRATOR
-  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-070226IST
-  acquired_at: 2026-08-26T07:02:26+05:30
-  released_at: 2026-08-26T07:05:14+05:30
+  invocation_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-071618IST
+  acquired_at: 2026-08-26T07:16:18+05:30
+  released_at: null
   authoritative_branch: chore/rename-dependency-files
-  purpose: coordinated BL-001 execution and BL-002 release-boundary reconciliation
+  purpose: coordinated BL-001 and BL-002 backlog-driven production execution
   duplicate_action: NOOP
-  outcome: PARTIAL_CHECKPOINT_RELEASE_CLASSIFICATION_GATE_INSTALLED
+  outcome: RUNNING
   BL-001_active_lanes: 0
   BL-002_active_lanes: 0
   transient_lane_logs_remaining: 0
   notes:
-    - BL-001 remains at 123 materialized unique rows plus 11 source-proved rows pending atomic projection; exact 134-row uniqueness was not falsely claimed.
-    - Process-host Git materialization was retried and remains blocked by github.com DNS resolution in that environment; old worker generation was not replayed.
-    - BL-002 new shallow Story generation is paused. DEC-BL002-005 and DEC-BL002-006 record Release 1/Release 2 sequencing and the field-level Story mapping standard.
-    - traceability/release-classification.yaml now waits for USER assignment of all 134 traceability items; Release 1 and Release 2 counts are both zero and unassigned is 134.
-    - STORY-0049 through STORY-0052 remain already-materialized prior artifacts pending register/cross-traceability sync; no STORY-0053 was generated and none of those four may be consumed downstream before sync and release-scoped rework.
-    - Both backlog lane sets were verified 10/10 IDLE with zero active lanes and zero residual transient lane logs before release.
+    - Lease acquired only after observing prior state RELEASED and zero active lanes/transient logs.
+    - Execute only independently eligible work under live SSOT/SOW/dependency/item gates.
