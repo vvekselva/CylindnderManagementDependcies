@@ -1,36 +1,47 @@
 result:
   backlog_item: BL-002
-  state: PARTIAL_INCREMENTAL_EXECUTION
+  state: WAITING_FOR_USER_RELEASE_CLASSIFICATION
   verified: false
   closed: false
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-  execution_basis: DEC-BL002-004
+  execution_basis: DEC-BL002-005_AND_DEC-BL002-006
   upstream:
     bl001_state: PARTIAL_UNIQUE_KEY_RECOVERY
     materialized_unique_rows: 123
     pending_atomic_projection_rows: 11
-    eligible_rows_for_incremental_story_generation: 123
+    final_target_rows: 134
+  release_gate:
+    state: BLOCKED_WAITING_FOR_USER_ASSIGNMENT
+    register: traceability/release-classification.yaml
+    release_1_assigned: 0
+    release_2_assigned: 0
+    unassigned: 134
+    rule: COMPLETE_RELEASE_1_STORY_REWORK_BEFORE_RELEASE_2
   story_result:
-    story_dispositions: 48
-    ready_for_user_review: 41
-    needs_clarification: 7
+    registered_story_dispositions: 48
+    ready_for_user_review_in_existing_register: 41
+    needs_clarification_in_existing_register: 7
     approved: 0
-    newest_story_id: STORY-0048
-    newest_fingerprint: 771b0908502f43602eaad86e130e21dd7a528a3ebce548e3e2c40545527077a9
+    materialized_story_artifacts: 52
+    pending_registration_sync_story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
+    new_story_generation_allowed: false
+    field_level_rework_required: true
+    authoritative_review_eligibility: BLOCKED_UNTIL_RELEASE_CLASSIFICATION_AND_FIELD_LEVEL_REWORK
   usecase_result:
     candidate_usecases: 0
     approved_for_testing: 0
-    blocker: STORY_USER_APPROVAL_REQUIRED
+    blocker: STORY_USER_APPROVAL_REQUIRED_AFTER_RELEASE_SCOPED_REWORK
   test_scenario_result:
     authoritative_scenarios: 0
     blocker: APPROVED_FOR_TESTING_USECASE_REQUIRED
   final_verification_blockers:
+    - USER_RELEASE_1_RELEASE_2_CLASSIFICATION_REQUIRED
+    - RELEASE_1_FIELD_LEVEL_STORY_REWORK_REQUIRED_FIRST
     - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED
-    - ALL_CANONICAL_ROWS_REQUIRE_STORY_DISPOSITION
+    - ALL_CANONICAL_ROWS_REQUIRE_RELEASE_SCOPED_STORY_DISPOSITION
     - STORY_USER_APPROVAL_REQUIRED
-    - NEEDS_CLARIFICATION_STORIES_REQUIRE_CLARIFICATION_OR_ACCEPTED_EVIDENCE
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    BL-002 continues incrementally from accepted canonical BL-001 rows. Forty-eight Story dispositions now exist: forty-one READY_FOR_USER_REVIEW and seven NEEDS_CLARIFICATION. This invocation added STORY-0048 from POST /wizard/vehicle-trip-load/save using the accepted canonical full-branch evidence. No pending BL-001 atomic-projection row was consumed and no Story or Use Case was auto-approved.
+    Additional shallow Story generation is paused by the latest user decision. Forty-eight Story dispositions remain registered, while STORY-0049 through STORY-0052 are already materialized from a prior accepted invocation but await register and cross-traceability synchronization. Those four artifacts are not downstream-authoritative. No STORY-0053 was generated in this invocation. The durable release-classification register now waits for the USER to assign all 134 traceability items to Release 1 or Release 2.
   next_action: >-
-    Continue safe-independent Story generation from remaining eligible canonical rows while awaiting explicit user approval for exact Story IDs/fingerprints and clarification or additional accepted evidence for NEEDS_CLARIFICATION Stories. Do not use the 11 pending BL-001 rows until atomically canonical and do not form authoritative Use Cases before Story approval.
+    On the next safe checkpoint, synchronize only the already-materialized STORY-0049 through STORY-0052 into the Story register and Matrix-to-Story map without generating new Stories. Keep Story rework blocked until the USER assigns the 134 inventory items. Once assigned, rework Release 1 first using field-level page/input-to-database traceability and only then allow Release 2 according to DEC-BL002-005 and DEC-BL002-006.
