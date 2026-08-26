@@ -1,38 +1,69 @@
-version: 2
+version: 3
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
 active_invocations:
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1202IST
-    trigger: SCHEDULED_LEGACY_DISCOVERED_AT_MANUAL_START
-    state: ACTIVE_LEGACY_COMPATIBILITY
-    started_at: 2026-08-26T12:02:08+05:30
-    productive_assignment_cutoff: 2026-08-26T12:32:08+05:30
-    snapshot_commit: d49cc6ac2ad315cf0c5c74585068ebf324d090f0
-    active_lanes_observed_at_manual_start: 0
-    compatibility_note: legacy lease is superseded by v16 but this invocation is conservatively counted against concurrency capacity until it closes or proves inactive
-  - invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-120416IST
-    trigger: MANUAL_USER_REQUEST
-    state: ACTIVE_ASSIGNING
-    started_at: 2026-08-26T12:04:16+05:30
-    productive_assignment_cutoff: 2026-08-26T12:34:16+05:30
-    source_snapshot_commit: d49cc6ac2ad315cf0c5c74585068ebf324d090f0
-    control_tree_snapshot: a3d723f6f3c0400951d4272026005a9097c98be1
-    application_source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-    workspace_mode: INVOCATION_LOCAL_OR_STAGED_SNAPSHOT
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-141701IST
+    trigger: SCHEDULED_PRODUCTION_FIRE
+    execution_state: RUNNING
+    health_state: ACTIVE
+    started_at: 2026-08-26T14:17:01+05:30
+    heartbeat_at: 2026-08-26T14:17:01+05:30
+    last_progress_at: 2026-08-26T14:17:01+05:30
+    last_lane_activity_at: null
+    active_lane_count: 0
+    coordinator_phase: PLANNING
+    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
+    current_work_unit: PRECHECK_AND_WORK_SELECTION
+    progress_fingerprint: RECOVERY_COMPLETE_AND_NEW_INVOCATION_REGISTERED
+    blocked_reason: null
+    recovery_action: null
+    productive_assignment_cutoff: 2026-08-26T14:47:01+05:30
     new_work_assignment_open: true
     accumulation_state: PENDING
-    active_executor_count: 1
-recent_completed_invocations: []
+recent_completed_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1202IST
+    prior_state: ACTIVE_LEGACY_COMPATIBILITY
+    execution_state: TERMINAL_RECOVERED
+    health_state: STALE
+    started_at: 2026-08-26T12:02:08+05:30
+    heartbeat_at: null
+    last_progress_at: null
+    active_lane_count: 0
+    coordinator_phase: RECOVERY_CLOSE
+    current_backlog_item: null
+    current_work_unit: null
+    progress_fingerprint: MISSING_NONCOMPLIANT_HEALTH_RECORD
+    blocked_reason: REQUIRED_HEARTBEAT_AND_PROGRESS_SIGNALS_ABSENT
+    recovery_action: FAIL_CLOSED_RECOVERY_PRESERVE_DURABLE_EVIDENCE_RELEASE_CAPACITY
+    recovered_at: 2026-08-26T14:17:01+05:30
+  - invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-120416IST
+    prior_state: ACTIVE_ASSIGNING
+    execution_state: TERMINAL_RECOVERED
+    health_state: STALE
+    started_at: 2026-08-26T12:04:16+05:30
+    heartbeat_at: null
+    last_progress_at: null
+    active_lane_count: 1
+    coordinator_phase: RECOVERY_CLOSE
+    current_backlog_item: BL-002
+    current_work_unit: WU-STORY-REGISTER-CONSISTENCY
+    progress_fingerprint: MISSING_NONCOMPLIANT_HEALTH_RECORD
+    blocked_reason: REQUIRED_HEARTBEAT_AND_PROGRESS_SIGNALS_ABSENT
+    recovery_action: FAIL_CLOSED_RECOVERY_REJECT_UNVALIDATED_PARTIAL_RELEASE_CLAIM_AND_CAPACITY
+    recovered_at: 2026-08-26T14:17:01+05:30
 work_claims:
-  active:
+  active: []
+  recovered:
     - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0057
       backlog_item: BL-002
       work_unit: WU-STORY-REGISTER-CONSISTENCY
       task_id: STORY-0057-ORPHAN-RECONCILIATION
-      owner_invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-120416IST
-      claimed_at: 2026-08-26T12:04:16+05:30
-      state: EXECUTING
+      prior_owner_invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-120416IST
+      prior_state: EXECUTING
+      recovery_state: RELEASED_AFTER_STALE_OWNER_RECOVERY
+      partial_output_acceptance: REJECTED_UNLESS_ALREADY_DURABLY_VALIDATED_OUTSIDE_STALE_INVOCATION
+      recovered_at: 2026-08-26T14:17:01+05:30
 locks:
   shared_ssot_write:
     capacity: 1
@@ -46,9 +77,7 @@ locks:
 rules:
   - each invocation owns only its own workspace, lane logs and executor processes
   - each work claim is globally unique across active invocations
-  - a new trigger may start while another invocation is active when capacity remains
-  - completed executor capacity is refilled immediately without waiting for sibling executors
-  - at about 30 minutes an invocation stops starting new work but lets already-running tasks finish
-  - accumulation begins only after tasks started by that invocation reach terminal executor states
-  - accumulation does not wait for unrelated overlapping invocations
+  - every RUNNING invocation must carry compliant heartbeat/progress health fields
+  - a RUNNING flag or legacy lease alone never proves liveness
+  - stale/stuck owners are recovered fail-closed before capacity or duplicate-work decisions
   - shared SSOT merge and BL-008 database writes remain globally serialized
