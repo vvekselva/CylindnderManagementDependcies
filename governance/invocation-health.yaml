@@ -1,0 +1,141 @@
+version: 1
+name: Invocation Health, Heartbeat, Stale and Stuck Recovery Governance
+purpose: >-
+  Determine whether a Cylinder Orchestrator invocation is genuinely active, temporarily idle but healthy,
+  blocked, stale, stuck, recovering, or complete. A lease/registry RUNNING flag alone never proves liveness.
+
+authority:
+  applies_to: [MANUAL_PRODUCTION_FIRE, SCHEDULED_PRODUCTION_FIRE]
+  architecture: architecture/invocation-health-and-recovery.md
+  invocation_registry: backlog/runtime/invocation-registry.yaml
+  legacy_lease_projection: backlog/runtime/invocation-lease.yaml
+
+health_signals:
+  required:
+    - invocation_id
+    - execution_state
+    - health_state
+    - heartbeat_at
+    - last_progress_at
+    - last_lane_activity_at
+    - active_lane_count
+    - coordinator_phase
+    - current_backlog_item
+    - current_work_unit
+    - progress_fingerprint
+    - blocked_reason
+    - recovery_action
+  lease_or_running_flag_is_liveness_proof: false
+
+heartbeat:
+  interval_seconds: 60
+  stale_after_seconds: 300
+  requirements:
+    - Primary Orchestrator refreshes heartbeat while it owns active work or is performing aggregation, synchronization, recovery or governed waiting.
+    - Worker heartbeat does not substitute for the Primary Orchestrator heartbeat.
+    - Every heartbeat update records coordinator_phase and active_lane_count.
+
+progress_detection:
+  progress_fingerprint_sources:
+    - accepted durable result count
+    - work-unit state
+    - executor terminal result count
+    - canonical matrix/story/database requirement checkpoint
+    - synchronization state
+    - blocker state
+  meaningful_progress_updates_last_progress_at: true
+  heartbeat_without_progress_does_not_update_last_progress_at: true
+  stuck_after_seconds_without_meaningful_progress: 600
+  stuck_evaluation_requires_fresh_heartbeat: true
+
+health_states:
+  ACTIVE:
+    condition: HEARTBEAT_FRESH_AND_MEANINGFUL_WORK_OR_PROGRESS_RECENT
+  IDLE_BUT_HEALTHY:
+    condition: HEARTBEAT_FRESH_AND_ZERO_ACTIVE_LANES_AND_COORDINATOR_IN_GOVERNED_NON_WORKER_PHASE
+    allowed_phases: [PLANNING, AGGREGATING, VALIDATING, SYNCHRONIZING, REPLANNING, RECOVERING]
+    maximum_seconds_without_progress: 600
+  BLOCKED:
+    condition: ALL_OWNED_WORK_HAS_EXPLICIT_DURABLE_BLOCKERS_AND_NO_ELIGIBLE_UNCLAIMED_WORK_FOR_THIS_INVOCATION
+  STALE:
+    condition: HEARTBEAT_AGE_EXCEEDS_300_SECONDS
+  STUCK:
+    condition: HEARTBEAT_FRESH_AND_NO_MEANINGFUL_PROGRESS_FOR_600_SECONDS_AND_NOT_EXPLICITLY_BLOCKED
+  RECOVERING:
+    condition: FAIL_CLOSED_RECOVERY_IN_PROGRESS
+  COMPLETE:
+    condition: INVOCATION_TERMINAL_CHECKPOINT_PERSISTED_AND_WORK_CLAIMS_RELEASED
+
+zero_lane_rule:
+  zero_active_lanes_is_not_by_itself_stale_or_stuck: true
+  required_interpretation:
+    - If heartbeat is fresh and coordinator_phase is governed, classify IDLE_BUT_HEALTHY.
+    - If heartbeat is stale, classify STALE.
+    - If heartbeat is fresh but no progress exceeds stuck threshold and no durable blocker exists, classify STUCK.
+    - If all work has durable blockers and no other eligible work exists, classify BLOCKED and terminate cleanly.
+
+recovery:
+  STALE:
+    action: FAIL_CLOSED_RECOVERY
+    steps:
+      - verify owner heartbeat is stale
+      - verify no live worker/executor still owns the claimed task
+      - preserve completed durable evidence
+      - reject incomplete partial output
+      - release stale claims only after recovery evidence is persisted
+      - mark old invocation RECOVERED_STALE
+      - permit new invocation to claim eligible recovered work
+  STUCK:
+    action: FAIL_CLOSED_DIAGNOSE_THEN_RECOVER
+    steps:
+      - persist stuck diagnosis with last progress fingerprint
+      - do not duplicate currently claimed work
+      - terminate or close only executor/task proven non-progressing
+      - preserve healthy sibling executors
+      - release/reclaim task only after recovery checkpoint
+      - if root cause is external blocker, convert to BLOCKED instead of repeatedly restarting
+  BLOCKED:
+    action: CLEAN_TERMINATION
+    steps:
+      - persist blocker and evidence
+      - synchronize runtime state
+      - release work claims and invocation capacity
+      - do not wait artificially to reach productive-window duration
+
+trigger_preflight:
+  before_noop_or_parallel_start:
+    - read invocation registry and/or lease projection
+    - evaluate heartbeat age
+    - evaluate last progress age
+    - evaluate active lanes and coordinator phase
+    - classify every RUNNING invocation using this governance
+  rules:
+    - RUNNING plus ACTIVE or IDLE_BUT_HEALTHY: respect concurrency/work-claim governance
+    - RUNNING plus STALE: perform stale recovery before treating it as live capacity
+    - RUNNING plus STUCK: perform fail-closed stuck diagnosis/recovery before duplicate work is allowed
+    - RUNNING plus BLOCKED: finalize and release capacity; do not leave zombie RUNNING state
+    - COMPLETE: never blocks a new trigger
+
+observability:
+  status_report_must_include:
+    - invocation_id
+    - execution_state
+    - health_state
+    - heartbeat_age_seconds
+    - seconds_since_progress
+    - active_lane_count
+    - coordinator_phase
+    - current_backlog_item
+    - current_work_unit
+    - blocker_or_recovery_action
+  forbidden_status_claims:
+    - "RUNNING" without health classification
+    - "ACTIVE" based only on lease state
+    - "stale" based only on elapsed total runtime
+
+safety:
+  fail_closed: true
+  duplicate_work_during_uncertain_health_forbidden: true
+  healthy_long_running_task_must_not_be_killed_only_for_exceeding_30_minutes: true
+  stale_detection_uses_heartbeat_not_total_runtime: true
+  stuck_detection_uses_fresh_heartbeat_plus_no_progress: true
