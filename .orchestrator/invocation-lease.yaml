@@ -1,7 +1,7 @@
 holder: Primary Cylinder Automation Tool
-acquired_at: 2026-08-26T12:27:49+05:30
-released_at: 2026-08-26T12:31:00+05:30
-status: RELEASED
+acquired_at: 2026-08-26T13:27:16+05:30
+released_at: null
+status: ACQUIRED
 scope:
   - BL-008
   - BL-001
@@ -10,4 +10,4 @@ policy:
   overlap: NOOP
   shared_ssot_single_writer: true
   bl008_database_write_parallelism: 1
-result: BLOCKED_WITH_DURABLE_EVIDENCE
+result: IN_PROGRESS
