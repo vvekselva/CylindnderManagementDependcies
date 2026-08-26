@@ -1,18 +1,18 @@
 local_execution:
-  version: 24
+  version: 25
   backlog_item: BL-002
-  state: RELEASE_1_FIELD_LEVEL_REWORK_IN_PROGRESS_NEXT_ASSIGNMENT_SELECTED
-  execution_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260826-105438IST
-  dispatch_fingerprint: WORK_DRIVEN_REPLAN_STORY_BATCH_0053_0056
+  state: RELEASE_1_FIELD_LEVEL_REWORK_PARTIAL_REGISTER_RECONCILIATION
+  execution_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
+  dispatch_fingerprint: STORY0066_REGISTER_CROSSMAP_RECONCILIATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: CANONICAL_BL001_MATRIX_ONLY
-  phase: ORCHESTRATOR_REPLAN_AFTER_EXECUTOR_COMPLETION
-  worker_state: EXECUTOR_COMPLETED_AND_EXITED
+  phase: PRIMARY_ORCHESTRATOR_VALIDATION_AND_SYNC
+  worker_state: NO_LOCAL_WORKER_REQUIRED_DURABLE_RECONCILIATION
   workers_started_this_assignment: 0
   transient_lane_logs_created: 0
   residual_transient_lane_logs: 0
   validation_state: VALIDATED_FAIL_CLOSED_FIELD_LEVEL_NO_INVENTION
-  sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR
+  sync_state: PARTIAL_DURABLE_SYNC
   incremental_scope:
     canonical_bl001_rows_eligible: 123
     pending_bl001_atomic_projection_rows_excluded: 11
@@ -20,42 +20,32 @@ local_execution:
     release_2_assigned: 46
     release_1_work_allowed: true
     release_2_work_allowed: false
-    story_dispositions_registered: 56
+    story_dispositions_registered: 65
+    story_artifacts_materialized: 66
     story_candidates_ready_for_review: 45
-    story_candidates_needs_clarification: 11
+    story_candidates_needs_clarification_registered: 20
     story_candidates_approved: 0
-  reconciled_prior_batch:
-    story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
-    result: ALREADY_AUTHORITATIVE_IN_NEWER_STORY_REGISTER
-    state: READY_FOR_USER_REVIEW
-  completed_assignment:
-    story_ids: [STORY-0053, STORY-0054, STORY-0055, STORY-0056]
-    matrix_rows:
-      - GET /party-custody-traceability
-      - GET /reconciliation-command-center
-      - GET /reconciliation-command-center/details
-      - GET /ownership-dashboard
-    result: MATERIALIZED_AND_REGISTER_SYNCHRONIZED
-    disposition: NEEDS_CLARIFICATION
-    reason: Accepted BL-001 evidence proves backend chains and terminal views but not every page-field/component to model/view-column mapping required by the BL-002 field-level contract.
-  executor_handoff:
-    executor_state: COMPLETED
-    assigned_executor_work_remaining: false
-    orchestrator_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
-    return_control_to: PRIMARY_ORCHESTRATOR
-    orchestrator_validation: PASS
-    synchronization: PASS
-  orchestrator_replan:
-    state: NEXT_ASSIGNMENT_SELECTED
-    next_story_rows:
-      - GET /ownership-dashboard/yard
-      - GET /ownership-dashboard/customer
-      - GET /ownership-dashboard/supplier
-      - GET /ownership-dashboard/logistics
-    source_evidence: logs/runs/PRODUCTION-FIRE-20260824-181810.md
-    rule: Create the next executor only for this assigned work; do not keep the completed executor alive.
+  current_assignment:
+    story_id: STORY-0066
+    matrix_row: POST /ingestYardStockCheck
+    release: RELEASE_1
+    story_artifact_state: NEEDS_CLARIFICATION
+    story_artifact_materialized: true
+    story_fingerprint: 440b6696ad978eece771a41c520270253cef1fc8da560235095c45c29a0188c8
+    cross_traceability_sync: PASS
+    story_register_sync: PENDING
+    reason: >-
+      Accepted canonical BL-001 evidence proves the controller, cylinder-state validation read, header/line persistence tables
+      and terminal paths, but not the complete required field-level datatype, required/optional, normalization/default,
+      validation, accepted-rule, invalid-behavior, exact persistence-column and per-field side-effect contract. No meaning is inferred.
   approval_boundary:
     owner: USER
     auto_approval_allowed: false
+    story_0066_approval_state: NOT_READY_FOR_APPROVAL
     usecase_generation_allowed: false
-  next_action: Execute the selected ownership-detail Story assignment, then require EXECUTOR_COMPLETED_REPLAN_REQUIRED and replan again.
+  blocker:
+    exact: STORY_REGISTER_ROW_NOT_YET_ATOMICALLY_MERGED
+    safe_state: STORY_0066_ARTIFACT_AND_CROSS_MAP_DURABLE_REGISTER_COUNT_REMAINS_65
+  next_action: >-
+    Atomically merge STORY-0066 into stories/story-register.yaml preserving all existing Story IDs/fingerprints, then continue
+    Release-1 field-level rework from accepted/materialized/non-stale BL-001 rows only.
