@@ -1,0 +1,30 @@
+backlog_item: BL-001
+invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
+attempted_at: 2026-08-26T19:39:40+05:30
+state: PARTIAL_CONTINUE_REQUIRED
+target_unique_method_path_rows: 134
+current_materialized_unique_rows: 123
+source_proved_missing_rows: 11
+source_resolution_needed_for_missing_rows: 0
+source_evidence: backlog/runtime/BL-001/atomic-projection-checkpoint-20260826-1258IST.yaml
+claim: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+atomic_artifacts_required:
+  - traceability/controller-traceability.md
+  - traceability/matrix-progress.yaml
+  - traceability/explorer/traceability-matrix.json
+  - traceability/explorer/matrix-data.js
+integrity_rule: ALL_FOUR_MUST_MOVE_TO_THE_SAME_134_ROW_KEYSET_OR_NONE_MAY_MOVE
+attempt_result: ATOMIC_RECONSTRUCTION_EXECUTOR_NOT_AVAILABLE_IN_THIS_AUTOMATION_RUNTIME
+existing_executor_review:
+  file: automation/consolidate-traceability-explorer.py
+  capability: CONSOLIDATES_EXPLORER_JSON_AND_BROWSER_JS_FROM_DELTA_FILES
+  insufficient_for_atomic_projection: true
+  reason: DOES_NOT_RECONSTRUCT_CONTROLLER_TRACEABILITY_MARKDOWN_OR_MATRIX_PROGRESS_FROM_THE_123_PLUS_11_ACCEPTED_MODEL
+partial_canonical_write_performed: false
+reason: >-
+  All eleven missing HTTP-method/path rows are source-proved, but this run could not safely reconstruct and validate the
+  complete 134-row canonical model across all four authoritative artifacts as one atomic checkpoint. Updating only the
+  Explorer or only matrix-progress would create a false split-brain state, so fail-closed atomicity was preserved.
+next_action: >-
+  Materialize or execute a deterministic 123-plus-11 accepted-model reconstruction that produces all four canonical artifacts,
+  verify exactly 134 unique HTTP-method/path keys and zero duplicates, then commit the four-file projection together.
