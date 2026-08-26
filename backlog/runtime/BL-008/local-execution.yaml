@@ -1,15 +1,37 @@
 backlog_item: BL-008
-version: 1
-state: INITIALIZED_NOT_STARTED
+version: 2
+state: DISCOVERY_BLOCKED_LIVE_NEON_IDENTITY_NOT_VISIBLE
 execution_backend: LOCAL_PROCESS_POOL
 max_workers: 10
 shared_ssot_single_writer: true
 execution_journal_required: true
-dispatch_fingerprint: null
-last_execution_id: null
-sync_state: SYNCHRONIZED_BOOTSTRAP
+dispatch_fingerprint: BL008-DISCOVERY-MAIN-V170-LIVE-NEON-IDENTITY
+last_execution_id: CYLINDER-PRIMARY-20260826-0302Z
+sync_state: SYNCHRONIZED_DISCOVERY_CHECKPOINT
 transient_lane_logs: 0
 idempotency:
   same_closed_fingerprint: NOOP
   pending_sync: RETRY_SYNC_ONLY
   interrupted_mutation: FAIL_CLOSED_AND_RECOVER_FROM_VALIDATED_CHECKPOINT
+current_invocation:
+  source_inventory:
+    branch: main
+    commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+    migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
+    flyway_head: V170
+    state: PASS
+  neon_discovery:
+    organization: selvakumar
+    organization_id: org-spring-mode-70853603
+    visible_projects: 0
+    requested_project: neon-for-cylinder-db
+    historical_project_id: holy-glitter-02245694
+    project_verified: false
+    database_verified: false
+  active_database_requirement: null
+  database_write_parallelism: 1
+  database_write_attempted: false
+  neon_branch_created: false
+  manual_sql_used: false
+  outcome: FAIL_CLOSED_BEFORE_REQUIREMENT_SELECTION
+next_action: RESTORE_LIVE_NEON_PROJECT_VISIBILITY_THEN_VERIFY_MAIN_DATABASE_AND_FLYWAY_SCHEMA_HISTORY_BEFORE_SELECTING_ONE_REQUIREMENT
