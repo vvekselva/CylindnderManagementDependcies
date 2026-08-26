@@ -1,0 +1,30 @@
+story:
+  story_id: STORY-0065
+  title: Yard stock check - Form
+  state: NEEDS_CLARIFICATION
+  fingerprint: f59c56ebfd100c9a58880ca094e327038c305d332773917cec8cea8e209a7ca8
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /ingestYardStockCheck"]
+  controller: YardStockCheckIngestionController.doGet
+  endpoint: "GET /ingestYardStockCheck"
+  business_purpose: Display the yard stock-check ingestion form with source-proved cylinder-state reference data.
+  accepted_backend_chain:
+    - YardStockCheckIngestionController.doGet
+    - LookupDataCache or CylinderStateFetchByPageService
+    - CylinderStateJpaDao
+    - CylinderStateDo
+    - public.tbl_cylinder_states
+    - final-version-1/YardStockCheckIngestion
+  data_reads_and_writes:
+    - READ public.tbl_cylinder_states on the cache-refresh branch.
+    - No persistence write is proved for this GET flow.
+  field_level_evidence:
+    state: INCOMPLETE
+    not_proved:
+      - exact page fields/components and model attributes
+      - exact cylinder-state columns rendered or selectable
+      - datatype/required/default rules for form inputs
+      - exact cache-hit versus refresh field behavior
+  disposition_reason: The page chain and reference-data table are proved, but the field-level form contract is incomplete.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-203431.md]
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
