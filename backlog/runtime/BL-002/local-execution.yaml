@@ -1,28 +1,38 @@
 local_execution:
+  version: 21
   backlog_item: BL-002
-  state: WAITING_FOR_USER_STORY_APPROVAL_AND_CLARIFICATION
-  execution_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-061700IST
-  dispatch_fingerprint: STORY_0048_FROM_ACCEPTED_CANONICAL_POST_WIZARD_VEHICLE_TRIP_LOAD_SAVE
+  state: WAITING_FOR_USER_RELEASE_CLASSIFICATION_AND_STORY_APPROVAL
+  execution_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-015827Z
+  dispatch_fingerprint: NO_NEW_STORY_DISPATCH_USER_GATE_DEC-BL002-005
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: CANONICAL_BL001_MATRIX_ONLY
-  phase: USER_STORY_APPROVAL_AND_INCREMENTAL_STORY_GENERATION
-  worker_state: NO_LOCAL_PROCESS_WORKER_REQUIRED_FOR_SINGLE_CANONICAL_STORY_PROJECTION
+  phase: USER_RELEASE_CLASSIFICATION_BEFORE_ADDITIONAL_STORY_GENERATION
+  worker_state: NO_WORKER_DISPATCH_USER_DECISION_GATE
   workers_started_this_invocation: 0
   transient_lane_logs_created: 0
   residual_transient_lane_logs: 0
-  validation_state: PASS_41_STORIES_READY_FOR_USER_REVIEW_AND_7_NEED_CLARIFICATION
+  validation_state: PASS_EXISTING_REGISTER_RECONCILED; NEW_GENERATION_PAUSED
   sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR_CHECKPOINT
-  recovery_state: RUNTIME_RECONCILED_TO_STORY_REGISTER_VERSION_20
+  recovery_state: RUNTIME_RECONCILED_TO_DEC-BL002-005_AND_STORY_REGISTER_VERSION_20
   incremental_scope:
-    canonical_bl001_rows_eligible: 123
+    canonical_bl001_rows_eligible_if_pause_released: 123
     pending_bl001_atomic_projection_rows_excluded: 11
-    story_dispositions: 48
+    story_dispositions_registered: 48
     story_candidates_ready_for_review: 41
     story_candidates_needs_clarification: 7
     story_candidates_approved: 0
-    newly_generated_this_invocation: [STORY-0048]
+    newly_generated_this_invocation: []
+  release_classification_boundary:
+    owner: USER
+    decision: DEC-BL002-005
+    state: WAITING_FOR_USER
+    target_traceability_items: 134
+    classified_items: 0
+    rule: >-
+      No additional Story generation until the USER classifies the complete 134-item traceability inventory into Release 1 and Release 2. Complete Release 1 Story rework to its configured review/approval boundary before starting Release 2 Story work.
   approval_boundary:
     owner: USER
+    gate: QG-STORY-006
     state: WAITING_FOR_USER
     exact_story_ids_and_fingerprints_required: true
     usecase_generation_allowed: false
@@ -31,4 +41,5 @@ local_execution:
     state: OPEN
     story_ids: [STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0032, STORY-0046, STORY-0048]
     reason: ACCEPTED_MATRIX_PROVES_TECHNICAL_CHAINS_BUT_REQUIRED_REQUEST_VALIDATION_RESPONSE_OR_MUTATION_SEMANTICS_REMAIN_UNPROVED_FOR_THESE_STORIES
-  next_action: CONTINUE_INCREMENTAL_STORY_DISPOSITIONS_FROM_REMAINING_ACCEPTED_CANONICAL_ROWS_WHILE_AWAITING_EXPLICIT_APPROVAL; DO_NOT_FORM_USE_CASES BEFORE_APPROVAL
+  next_action: >-
+    Wait for the user's complete 134-item Release 1 / Release 2 classification. Do not generate STORY-0049+ into the authoritative register while DEC-BL002-005 is open. BL-001 may continue independently.
