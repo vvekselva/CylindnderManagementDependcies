@@ -1,5 +1,5 @@
 backlog:
-  version: 9
+  version: 10
   target_repository: vvekselva/CylinderManagement
   run_config: backlog/orchestrator-run-config.yaml
   quality_gate_governance: governance/quality-gates.yaml
@@ -14,7 +14,7 @@ backlog:
   note: >-
     backlog.yaml is the authoritative Level 1 Backlog Master SSOT. PLAN/REPLAN is fail-closed until Level 1, Level 2
     and Level 3 are complete. BL-001, BL-002 and BL-008 may execute as coordinated parallel workstreams when their own
-    gates pass; database mutation remains serialized under BL-008.
+    gates pass. BL-008 uses the separate Neon test environment on main only and processes one database requirement at a time.
 
   states: [YET_TO_DO, WAITING_FOR_DEPENDENCY, READY, ANALYZING, PLANNED, EXECUTING, PARTIAL, BLOCKED, WAITING_FOR_DECISION, FAILED, VALIDATING, WAITING_FOR_USER_VERIFICATION, VERIFIED, CLOSED]
 
@@ -63,7 +63,7 @@ backlog:
     - id: BL-008
       name: Migration of the Database to the Ownership Model
       type: DATABASE_MIGRATION
-      purpose: Migrate the governed Neon CylinderManagement database through Flyway to the ownership-model target and prove ownership/data integrity.
+      purpose: Migrate the separate Neon test environment through Flyway to the ownership-model target and prove ownership/data integrity one database requirement at a time.
       priority: P2_CRITICAL_PATH
       state: READY
       item_definition: backlog/items/BL-008-database-ownership-migration.yaml
@@ -115,6 +115,10 @@ backlog:
       phase: DISCOVER_AND_INVENTORY
       current_work_unit: WU-BL008-001
       runtime: backlog/runtime/BL-008/
-      mutation_rule: VALIDATION_BRANCH_BEFORE_PRODUCTION
-    last_attempt_result: GOVERNANCE_BOOTSTRAP_COMPLETE
+      environment_role: SEPARATE_NEON_TEST_ENVIRONMENT
+      neon_branch: main
+      branch_creation: FORBIDDEN
+      database_requirement_parallelism: 1
+      mutation_rule: ONE_REQUIREMENT_AT_A_TIME_THROUGH_FLYWAY_ON_NEON_MAIN
+    last_attempt_result: MANUAL_PRODUCTION_FIRE_POLICY_RECONCILIATION
     next_action: CONTINUE_BL001_BL002_BL008_WITH_INDEPENDENT_GATES_AND_SHARED_WORKER_POOL
