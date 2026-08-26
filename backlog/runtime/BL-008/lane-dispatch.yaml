@@ -1,0 +1,6 @@
+backlog_item: BL-008
+version: 1
+state: EMPTY_READY_FOR_PLANNING
+dispatch_generation: null
+tasks: []
+rule: Only safe-independent read-only discovery/integrity tasks may be dispatched in parallel. Database mutation stages are Primary-Orchestrator serialized operations.
