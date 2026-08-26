@@ -1,5 +1,5 @@
 completion_path:
-  id: CP-BL-008-v1
+  id: CP-BL-008-v2
   backlog_item: BL-008
   type: DATABASE_MIGRATION
   name: Ownership Model Database Migration Completion Path
@@ -11,67 +11,74 @@ completion_path:
     - id: DISCOVER_AND_INVENTORY
       owner: ORCHESTRATOR
       actions:
-        - verify target Neon project/production branch/database from database-dependency-neon.md
-        - inventory exact Flyway migration files and checksums through V176
+        - verify Neon project and main branch identity
+        - discover exact database name on Neon main
+        - inventory ordered Flyway/database requirements from authoritative source
         - inspect ownership-model source roots and derive source-proved integrity checks
       gate: QG-DBMIG-001
-    - id: ESTABLISH_RECOVERY_POINT
+    - id: SELECT_NEXT_REQUIREMENT
       owner: ORCHESTRATOR
       actions:
-        - create or verify isolated migration validation branch from production
-        - capture pre-migration schema/history/critical-row-count evidence
+        - select exactly one next pending database requirement in migration order
+        - prove its source file/version/checksum and prerequisites
+        - ensure no other database requirement is ACTIVE or EXECUTING
       gate: QG-DBMIG-002
-    - id: VALIDATE_MIGRATIONS
+    - id: VALIDATE_REQUIREMENT
       owner: ORCHESTRATOR
       actions:
-        - run Flyway validate against validation branch
-        - reject duplicate/out-of-order/checksum-invalid migration sets
+        - run Flyway/source validation for the selected requirement against Neon main
+        - reject duplicate, missing, ambiguous, out-of-order or checksum-invalid requirement evidence
       gate: QG-DBMIG-003
-    - id: MIGRATE_VALIDATION_BRANCH
+    - id: APPLY_REQUIREMENT_TO_MAIN
       owner: ORCHESTRATOR
       actions:
-        - run Flyway migrate through V176
-        - verify flyway_schema_history
-        - validate schema/referential integrity/ownership rules/critical data
+        - apply only the selected database requirement to Neon main using Flyway
+        - create no Neon branch
+        - use no ad-hoc SQL substitution
       gate: QG-DBMIG-004
-    - id: PROMOTE_TO_PRODUCTION
+    - id: VALIDATE_REQUIREMENT_RESULT
       owner: ORCHESTRATOR
       actions:
-        - reverify production target identity and pre-state
-        - run the identical validated Flyway source through V176 on production
-        - do not use ad-hoc SQL repair
+        - verify flyway_schema_history for the selected requirement
+        - validate schema and referential integrity
+        - validate ownership invariants where applicable
+        - validate critical cylinder, state, custody, logistics and audit relationships
       gate: QG-DBMIG-005
-    - id: POST_PRODUCTION_VALIDATE
+    - id: RECORD_REQUIREMENT
       owner: ORCHESTRATOR
       actions:
-        - validate flyway_schema_history
-        - validate ownership invariants
-        - validate critical cylinder, state, custody, logistics and audit integrity
-        - compare required pre/post counts and constraints
+        - update database-dependency-neon.md with selected requirement status and evidence
+        - synchronize BL-008 runtime and log checkpoint
+        - mark the selected requirement COMPLETE only after evidence is durable
       gate: QG-DBMIG-006
-    - id: RECORD_AND_VERIFY
+    - id: REPLAN_NEXT_REQUIREMENT
       owner: ORCHESTRATOR
       actions:
-        - update database-dependency-neon.md migration status and evidence
-        - synchronize BL-008 runtime and logs
+        - if another database requirement remains, return to SELECT_NEXT_REQUIREMENT
+        - if none remain, perform final ownership/integrity reconciliation
       gate: QG-DBMIG-007
     - id: CLOSE
       owner: ORCHESTRATOR
       actions:
-        - move to VERIFIED only after all configured gates pass
+        - move to VERIFIED only after all required sequential requirements and gates pass
         - wait for explicit user acceptance before CLOSED
   parallelism:
-    max_parallel_work_units: 10
-    safe_parallel_work:
-      - migration source inventory/checksum verification
-      - read-only ownership-model source analysis
-      - independent post-migration integrity queries
+    database_requirement_parallelism: 1
+    safe_parallel_read_only_work:
+      - source inventory/checksum verification for the currently selected requirement
+      - read-only ownership-model source analysis for the currently selected requirement
+      - independent read-only integrity queries after the selected requirement is applied
     serialized_work:
-      - validation-branch Flyway migrate
-      - production Flyway migrate
-      - shared database ledger updates
+      - database requirement selection
+      - Flyway migration/write execution on Neon main
+      - database ledger updates
+  forbidden:
+    - NEON_BRANCH_CREATION
+    - MULTIPLE_ACTIVE_DATABASE_REQUIREMENTS
+    - DIRECT_EXTERNAL_PRODUCTION_MUTATION
+    - MANUAL_SQL_SUBSTITUTION_FOR_FLYWAY
   completion_conditions:
-    - V176 reached successfully under Flyway on validation and production targets
+    - every required database requirement completed sequentially on Neon main
     - ownership and integrity gates pass
-    - database-dependency-neon.md synchronized
+    - database-dependency-neon.md synchronized after each requirement
     - explicit user acceptance obtained before CLOSED
