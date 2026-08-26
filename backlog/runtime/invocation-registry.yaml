@@ -1,23 +1,25 @@
-version: 6
+version: 7
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations:
+active_invocations: []
+recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-    execution_state: RUNNING
-    health_state: ACTIVE
+    execution_state: TERMINAL_CHECKPOINTED
+    health_state: COMPLETE
     started_at: 2026-08-26T15:13:12+05:30
-    heartbeat_at: 2026-08-26T15:13:12+05:30
-    last_progress_at: 2026-08-26T15:13:12+05:30
+    completed_at: 2026-08-26T15:20:35+05:30
+    heartbeat_at: 2026-08-26T15:20:35+05:30
+    last_progress_at: 2026-08-26T15:20:35+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: PLANNING
+    coordinator_phase: SYNCHRONIZED_TERMINAL
     current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
-    current_work_unit: PREFLIGHT_AND_CLAIM
-    progress_fingerprint: PREFLIGHT_REGISTERED_BL008_REVALIDATION_BL001_ATOMIC_RECOVERY_BL002_STORY0066_SYNC
-    blocked_reason: null
+    current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
+    progress_fingerprint: BL008_TARGET_REVALIDATED_PLUS_BL001_IDEMPOTENT_ATOMIC_BLOCKER_PLUS_BL002_STORY0066_CROSSMAP_SYNC
+    blocked_reason: BL008_MAIN_TARGET_NOT_VISIBLE; BL001_ATOMIC_MODEL_NOT_PROCESS_READABLE; BL002_STORY0066_REGISTER_ATOMIC_MERGE_PENDING
     recovery_action: NONE
-recent_completed_invocations:
+    outcome: PARTIAL_CHECKPOINT_SYNCHRONIZED
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-145821IST
     execution_state: TERMINAL_CHECKPOINTED
     health_state: COMPLETE
@@ -42,7 +44,6 @@ recent_completed_invocations:
     heartbeat_at: 2026-08-26T14:19:54+05:30
     last_progress_at: 2026-08-26T14:19:54+05:30
     last_lane_activity_at: null
-    active_lane_count: 0
     coordinator_phase: SYNCHRONIZED_TERMINAL
     current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
     current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
@@ -81,29 +82,38 @@ recent_completed_invocations:
     recovery_action: FAIL_CLOSED_RECOVERY_REJECT_UNVALIDATED_PARTIAL_RELEASE_CLAIM_AND_CAPACITY
     recovered_at: 2026-08-26T14:17:01+05:30
 work_claims:
-  active:
+  active: []
+  recovered:
     - claim_key: BL-008|WU-BL008-001|LIVE-MAIN-TARGET-REVALIDATION
       backlog_item: BL-008
       work_unit: WU-BL008-001
       task_id: LIVE-MAIN-TARGET-REVALIDATION
-      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-      state: CLAIMED
-      claimed_at: 2026-08-26T15:13:12+05:30
+      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
+      prior_state: CLAIMED
+      recovery_state: RELEASED_AFTER_VALIDATED_BLOCKER_CHECKPOINT
+      durable_state_found: MAIN_NOT_VISIBLE_PRODUCTION_ONLY_NO_DB_MUTATION
+      partial_output_acceptance: NONE
+      recovered_at: 2026-08-26T15:20:35+05:30
     - claim_key: BL-001|WU-BL001-001|TARGETED-UNIQUE-KEY-RECOVERY
       backlog_item: BL-001
       work_unit: WU-BL001-001
       task_id: TARGETED-UNIQUE-KEY-RECOVERY
-      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-      state: CLAIMED
-      claimed_at: 2026-08-26T15:13:12+05:30
+      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
+      prior_state: CLAIMED
+      recovery_state: RELEASED_AFTER_SAFE_CHECKPOINT
+      durable_state_found: NO_NEW_CANONICAL_ROW_ACCEPTED_MATRIX_REMAINS_123_OF_134
+      partial_output_acceptance: NONE
+      recovered_at: 2026-08-26T15:20:35+05:30
     - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0066
       backlog_item: BL-002
       work_unit: WU-STORY-REGISTER-CONSISTENCY
       task_id: STORY-0066-REGISTER-AND-CROSS-MAP-SYNC
-      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-      state: CLAIMED
-      claimed_at: 2026-08-26T15:13:12+05:30
-  recovered:
+      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
+      prior_state: CLAIMED
+      recovery_state: RELEASED_AFTER_PARTIAL_DURABLE_SYNC
+      durable_state_found: STORY_0066_ARTIFACT_EXISTS_CROSS_MAP_SYNCED_REGISTER_ROW_PENDING
+      partial_output_acceptance: PRESERVE_DURABLE_STORY_AND_CROSS_MAP_ONLY
+      recovered_at: 2026-08-26T15:20:35+05:30
     - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0057
       backlog_item: BL-002
       work_unit: WU-STORY-REGISTER-CONSISTENCY
