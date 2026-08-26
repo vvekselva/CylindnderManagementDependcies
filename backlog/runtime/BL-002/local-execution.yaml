@@ -1,45 +1,54 @@
 local_execution:
-  version: 21
+  version: 22
   backlog_item: BL-002
-  state: WAITING_FOR_USER_RELEASE_CLASSIFICATION_AND_STORY_APPROVAL
-  execution_id: CYLINDER-PRODUCTION-FIRE-PARALLEL-20260826-015827Z
-  dispatch_fingerprint: NO_NEW_STORY_DISPATCH_USER_GATE_DEC-BL002-005
+  state: RELEASE_1_FIELD_LEVEL_REWORK_READY
+  execution_id: CYLINDER-PRIMARY-20260826-0302Z
+  dispatch_fingerprint: RELEASE_CLASSIFICATION_88_46_FIELD_LEVEL_REWORK
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   source_provider: CANONICAL_BL001_MATRIX_ONLY
-  phase: USER_RELEASE_CLASSIFICATION_BEFORE_ADDITIONAL_STORY_GENERATION
-  worker_state: NO_WORKER_DISPATCH_USER_DECISION_GATE
+  phase: RELEASE_1_FIELD_LEVEL_STORY_REWORK
+  worker_state: NO_WORKER_DISPATCH_THIS_CHECKPOINT
   workers_started_this_invocation: 0
   transient_lane_logs_created: 0
   residual_transient_lane_logs: 0
-  validation_state: PASS_EXISTING_REGISTER_RECONCILED; NEW_GENERATION_PAUSED
+  validation_state: PASS_RELEASE_CLASSIFICATION_RECONCILED
   sync_state: SYNCHRONIZED_BY_PRIMARY_ORCHESTRATOR_CHECKPOINT
-  recovery_state: RUNTIME_RECONCILED_TO_DEC-BL002-005_AND_STORY_REGISTER_VERSION_20
+  recovery_state: RUNTIME_RECONCILED_TO_RELEASE_CLASSIFICATION_VERSION_2
   incremental_scope:
-    canonical_bl001_rows_eligible_if_pause_released: 123
+    canonical_bl001_rows_eligible: 123
     pending_bl001_atomic_projection_rows_excluded: 11
+    release_1_assigned: 88
+    release_2_assigned: 46
+    release_1_work_allowed: true
+    release_2_work_allowed: false
     story_dispositions_registered: 48
     story_candidates_ready_for_review: 41
     story_candidates_needs_clarification: 7
     story_candidates_approved: 0
-    newly_generated_this_invocation: []
+    materialized_story_artifacts: 52
+    pending_registration_sync_story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
   release_classification_boundary:
     owner: USER
-    decision: DEC-BL002-005
-    state: WAITING_FOR_USER
+    state: SATISFIED
     target_traceability_items: 134
-    classified_items: 0
-    rule: >-
-      No additional Story generation until the USER classifies the complete 134-item traceability inventory into Release 1 and Release 2. Complete Release 1 Story rework to its configured review/approval boundary before starting Release 2 Story work.
+    classified_items: 134
+    release_1: 88
+    release_2: 46
+    rule: COMPLETE_RELEASE_1_FIELD_LEVEL_STORY_REWORK_BEFORE_RELEASE_2
+  field_level_contract:
+    display_mapping: PAGE_FIELD_OR_COMPONENT_TO_MODEL_DTO_TO_CONTROLLER_TO_SERVICE_TO_DAO_REPOSITORY_TO_ENTITY_VIEW_FIELD_TO_DATABASE_TABLE_VIEW_COLUMN
+    static_ui_disposition: STATIC_UI_NO_DATABASE_MAPPING
+    input_required_attributes: [datatype, required_or_optional, normalization_or_default, validation, accepted_values_or_rules, invalid_behavior, persistence_destination, state_or_side_effect]
+    no_invention_rule: UNPROVED_MEANING_IS_NEEDS_CLARIFICATION
+  pending_story_sync:
+    story_ids: [STORY-0049, STORY-0050, STORY-0051, STORY-0052]
+    state: MATERIALIZED_NOT_AUTHORITATIVE
+    rule: Revalidate each artifact against the current field-level contract and synchronize story-register.yaml plus controller-story-usecase-map.yaml together before downstream use. Do not auto-approve.
   approval_boundary:
     owner: USER
     gate: QG-STORY-006
-    state: WAITING_FOR_USER
+    state: WAITING_FOR_USER_AFTER_FIELD_LEVEL_REWORK
     exact_story_ids_and_fingerprints_required: true
     usecase_generation_allowed: false
-  clarification_boundary:
-    owner: USER_OR_FURTHER_ACCEPTED_SOURCE_EVIDENCE
-    state: OPEN
-    story_ids: [STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0032, STORY-0046, STORY-0048]
-    reason: ACCEPTED_MATRIX_PROVES_TECHNICAL_CHAINS_BUT_REQUIRED_REQUEST_VALIDATION_RESPONSE_OR_MUTATION_SEMANTICS_REMAIN_UNPROVED_FOR_THESE_STORIES
   next_action: >-
-    Wait for the user's complete 134-item Release 1 / Release 2 classification. Do not generate STORY-0049+ into the authoritative register while DEC-BL002-005 is open. BL-001 may continue independently.
+    Revalidate and synchronize STORY-0049 through STORY-0052 without approval, then continue Release 1 field-level Story rework using only accepted materialized non-stale canonical BL-001 rows. Keep Release 2 blocked until the Release 1 boundary is reached.
