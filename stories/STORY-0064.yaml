@@ -1,0 +1,29 @@
+story:
+  story_id: STORY-0064
+  title: Supplier registration - Submit
+  state: NEEDS_CLARIFICATION
+  fingerprint: 2c963408c22418d11f03cb3c4223f2afbb8e86fe9bcfa7e14614087ae01dff15
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["POST /ingestSupplier"]
+  controller: SupplierIngestionController.doPost
+  endpoint: "POST /ingestSupplier"
+  business_purpose: Validate and persist supplier registration data through the accepted BL-001 flow.
+  accepted_backend_chain:
+    - SupplierIngestionController.doPost
+    - city/state/country reads
+    - supplier/address/phone persistence
+    - success redirect or supplier-ingestion error view
+  data_reads_and_writes:
+    - READ city/state/country reference data.
+    - WRITE supplier/address/phone persistence objects.
+  field_level_evidence:
+    state: INCOMPLETE
+    not_proved:
+      - exact input field datatypes and required/optional contract
+      - normalization/default behavior per field
+      - exact accepted values and validation rules per field
+      - exact invalid-value behavior per field
+      - exact entity-field to database-column mapping for every input
+  disposition_reason: Branching persistence behavior is proved, but the required field-level input and column contract is incomplete.
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-191248.md]
+  approval: {owner: USER, state: NOT_READY_FOR_APPROVAL}
