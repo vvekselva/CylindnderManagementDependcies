@@ -1,0 +1,33 @@
+story:
+  story_id: STORY-0052
+  title: Search countries by name text
+  state: READY_FOR_USER_REVIEW
+  fingerprint: 385002c2e8dc6643c621c462fd76e26025c5ec3ca33c09a1ef6299573e0b97db
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  matrix_row_keys: ["GET /search/country/{searchText}"]
+  controller: RestfulCountryServices.getCountries
+  endpoint: "GET /search/country/{searchText}"
+  business_purpose: Return country records whose country name matches caller search text through the accepted search chain.
+  trigger_and_context: A caller invokes GET /search/country/{searchText}.
+  inputs: [searchText is supplied in the URL and passed through the search request DTO.]
+  normalization_and_defaults: [No request normalization/defaulting is proved.]
+  validations: [SearchRequestValidator.validate is invoked before DAO access; exact rejection predicates are not preserved by accepted evidence.]
+  invalid_value_paths: [Service exceptions return an empty CountrySearchResponsesDto; exact validation messages or HTTP-status changes are not proved.]
+  main_flow:
+    - RestfulCountryServices.getCountries receives searchText and calls the typed search service.
+    - CountrySearchService is the source-proved active implementation.
+    - CountrySearchService invokes SearchRequestValidator.validate.
+    - The service calls CountryJpaDao.findByCountryNameContainingIgnoreCase.
+    - CountryJpaDao is JpaRepository<CountryDo, Long>.
+    - CountryDo maps to public.tbl_country.
+    - Matched rows are mapped to CountrySearchResponsesDto JSON.
+  component_flow: [RestfulCountryServices.getCountries, CountrySearchService.searchWithText, SearchRequestValidator.validate, CountryJpaDao.findByCountryNameContainingIgnoreCase, CountryDo, public.tbl_country, country mapper, CountrySearchResponsesDto JSON]
+  data_reads_and_writes: [READ public.tbl_country., No persistence write is proved.]
+  side_effects_and_state_changes: [No persistent state change is proved.]
+  alternate_and_error_flows: [Service exceptions return an empty response DTO; no additional behavior is invented.]
+  output_and_postconditions: [Returns CountrySearchResponsesDto JSON from matched country rows or the proved empty DTO exception outcome.]
+  evidence: [traceability/controller-traceability.md, logs/runs/PRODUCTION-FIRE-20260824-233707.md]
+  downstream_test_assertions:
+    - classification: BOTH
+      assertion: The endpoint validates the search request, queries public.tbl_country through CountrySearchService and CountryJpaDao, maps results, and performs no persistence write.
+  approval: {owner: USER, state: PENDING_USER_DECISION, fingerprint: 385002c2e8dc6643c621c462fd76e26025c5ec3ca33c09a1ef6299573e0b97db}
