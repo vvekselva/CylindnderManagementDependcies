@@ -1,4 +1,4 @@
-version: 38
+version: 39
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
@@ -7,16 +7,16 @@ active_invocations:
     execution_state: RUNNING
     health_state: ACTIVE
     started_at: 2026-08-27T13:15:36+05:30
-    heartbeat_at: 2026-08-27T13:20:10+05:30
-    last_progress_at: 2026-08-27T13:20:10+05:30
-    last_lane_activity_at: 2026-08-27T13:20:10+05:30
+    heartbeat_at: 2026-08-27T13:23:36+05:30
+    last_progress_at: 2026-08-27T13:23:36+05:30
+    last_lane_activity_at: 2026-08-27T13:23:36+05:30
     active_lane_count: 1
-    coordinator_phase: REPLANNING
+    coordinator_phase: SYNCHRONIZING
     current_backlog_item: BL-002
     current_work_unit: WU-STORY-REGISTER-CONSISTENCY
-    progress_fingerprint: BL001_ATOMIC_BLOCKER_VALIDATED_STORY0067_SYNC_CLAIMED
+    progress_fingerprint: STORY0067_REGISTERED_CROSSMAP_SYNC_IN_PROGRESS
     blocked_reason: BL001_COMPLETE_PROCESS_READABLE_SNAPSHOT_UNAVAILABLE
-    recovery_action: CONTINUE_INDEPENDENT_BL002_WORK
+    recovery_action: COMPLETE_STORY0067_CROSSMAP_AND_RUNTIME_SYNC
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-121715IST
     execution_state: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
@@ -55,7 +55,7 @@ work_claims:
       work_unit: WU-STORY-REGISTER-CONSISTENCY
       task_id: STORY-0067-REGISTER-AND-CROSS-MAP-SYNC
       owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
-      state: CLAIMED
+      state: EXECUTING
       claimed_at: 2026-08-27T13:20:10+05:30
       source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   completed:
@@ -76,7 +76,7 @@ work_claims:
       durable_state_found: NO_CANONICAL_CHANGE_PROCESS_SCAN_PROVED_NO_LIVE_BL001_EXECUTOR
       recovered_at: 2026-08-27T10:13:29+05:30
 locks:
-  shared_ssot_write: {capacity: 1, owner_invocation_id: null}
+  shared_ssot_write: {capacity: 1, owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST}
   git_checkpoint: {capacity: 1, owner_invocation_id: null}
   bl008_database_write: {capacity: 1, owner_invocation_id: null}
 bootstrap_control:
