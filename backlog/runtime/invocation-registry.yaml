@@ -1,8 +1,28 @@
-version: 27
+version: 28
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations: []
+active_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-111454IST
+    execution_state: RUNNING
+    health_state: IDLE_BUT_HEALTHY
+    started_at: 2026-08-27T11:14:54+05:30
+    heartbeat_at: 2026-08-27T11:14:54+05:30
+    last_progress_at: 2026-08-27T11:14:54+05:30
+    last_lane_activity_at: null
+    active_lane_count: 0
+    coordinator_phase: BOOTSTRAPPING
+    current_backlog_item: null
+    current_work_unit: null
+    progress_fingerprint: INVOCATION_START_PERSISTED
+    blocked_reason: null
+    recovery_action: null
+    workers_started: 0
+    claims_created: 0
+    canonical_bl001_delta: 0
+    bootstrap_acknowledged: false
+    transient_lane_logs_remaining: 0
+    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-111454IST.md
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-101213IST
     execution_state: PARTIAL_CONTINUE_REQUIRED
