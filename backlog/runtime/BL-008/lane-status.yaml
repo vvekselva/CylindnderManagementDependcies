@@ -1,14 +1,25 @@
-backlog_item: BL-008
-version: 1
-summary: {configured: 10, active: 0, idle: 10}
-lanes:
-  - {id: LANE-01, state: IDLE, task: null}
-  - {id: LANE-02, state: IDLE, task: null}
-  - {id: LANE-03, state: IDLE, task: null}
-  - {id: LANE-04, state: IDLE, task: null}
-  - {id: LANE-05, state: IDLE, task: null}
-  - {id: LANE-06, state: IDLE, task: null}
-  - {id: LANE-07, state: IDLE, task: null}
-  - {id: LANE-08, state: IDLE, task: null}
-  - {id: LANE-09, state: IDLE, task: null}
-  - {id: LANE-10, state: IDLE, task: null}
+lane_status:
+  backlog_item: BL-008
+  version: 2
+  summary:
+    total_lanes: 10
+    idle: 10
+    assigned: 0
+    initializing: 0
+    working: 0
+    blocked: 0
+    waiting: 0
+    closing: 0
+    stale: 0
+    active_lane_count: 0
+  lanes:
+    LANE-01: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-02: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-03: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-04: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-05: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-06: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-07: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-08: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-09: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
+    LANE-10: {state: IDLE, work_unit: null, task: null, run_id: null, last_heartbeat: null, blocker: null}
