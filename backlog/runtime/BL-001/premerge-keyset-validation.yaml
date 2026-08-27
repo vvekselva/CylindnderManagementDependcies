@@ -1,0 +1,46 @@
+premerge_keyset_validation:
+  id: BL001-PREMERGE-KEYSET-VALIDATION
+  backlog_item: BL-001
+  owner: CHATGPT_PRIMARY_ORCHESTRATOR
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  state: PASS_123_PLUS_11_ZERO_OVERLAP_TARGET_134
+  current_canonical_checkpoint:
+    artifact: traceability/controller-traceability.md
+    physical_rows_reported: 123
+    materialized_unique_method_path_keys: 123
+    full_file_ranges_read:
+      - 1-55
+      - 56-85
+      - 86-115
+      - 116-160
+  recovery_candidate:
+    artifact: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+    rows: 11
+    unique_method_path_pairs: 11
+    distinct_path_strings: 10
+    keys:
+      - {method: GET, path: /reconciliation-dashboard}
+      - {method: POST, path: /reconciliation-dashboard/search}
+      - {method: GET, path: /vehicle-load/fetch}
+      - {method: GET, path: /lookup}
+      - {method: GET, path: /lookupManagement}
+      - {method: POST, path: /lookupManagement/addressType/save}
+      - {method: POST, path: /lookupManagement/country/save}
+      - {method: POST, path: /lookupManagement/state/save}
+      - {method: POST, path: /lookupManagement/city/save}
+      - {method: GET, path: /addVechileTrip}
+      - {method: POST, path: /addVechileTrip}
+  overlap_validation:
+    overlap_with_current_123: 0
+    duplicate_pairs_inside_recovery_set: 0
+    post_merge_unique_key_arithmetic: 123 + 11 = 134
+    expected_post_merge_unique_keys: 134
+  canonical_publication:
+    attempted: false
+    materialized_unique_keys_before: 123
+    materialized_unique_keys_after: 123
+  remaining_gate: STRUCTURED_EFFECTIVE_MODEL_ASSEMBLY_AND_SYNCHRONIZED_SERIALIZATION
+  next_action: >-
+    Assemble the full effective structured Explorer model from the base plus 42 ordered deltas, require the assembled
+    current model to contain exactly the same 123 canonical method/path keys, merge the eleven source-proved records,
+    validate complete row structure and zero duplicates at 134, then stage and atomically publish every canonical projection.

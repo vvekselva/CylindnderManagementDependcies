@@ -4,7 +4,7 @@ result:
   verified: false
   closed: false
   canonical_source_check_result_accepted: false
-  canonical_source_check_result_state: SOURCE_PROOF_COMPLETE_MODEL_ASSEMBLY_PENDING
+  canonical_source_check_result_state: SOURCE_PROOF_COMPLETE_KEYSET_VALIDATED_MODEL_ASSEMBLY_PENDING
   matrix_state: INCREMENTAL_PARTIAL_ATOMIC_PROJECTION_PENDING
   sync_state: SYNCHRONIZED_CURRENT_123_CANONICAL
   pending_sync_artifact: null
@@ -38,17 +38,22 @@ result:
     materialized_unique_method_path_rows: 123
     confirmed_missing_canonical_keys: 11
     fully_source_proved_awaiting_atomic_projection: 11
+    candidate_post_merge_unique_method_path_coverage_proved: true
+    candidate_overlap_with_current_123: 0
+    candidate_duplicate_pairs: 0
+    candidate_expected_unique_keys_after_merge: 134
     unresolved: 0
     recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
     projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
     projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
     connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
     atomic_publication_capability: backlog/runtime/BL-001/atomic-publication-capability.yaml
-    progress_this_fire: ALL_11_SOURCE_PROVED_ATOMIC_GIT_COMMIT_TRANSPORT_AVAILABLE
+    premerge_keyset_validation: backlog/runtime/BL-001/premerge-keyset-validation.yaml
+    progress_this_fire: ALL_11_SOURCE_PROVED_ATOMIC_GIT_TRANSPORT_AVAILABLE_PREMERGE_KEYSET_VALIDATED
 
   current_work_unit:
     id: WU-BL001-001
-    state: SOURCE_PROOF_COMPLETE_MODEL_ASSEMBLY_PENDING
+    state: KEYSET_VALIDATED_STRUCTURED_MODEL_ASSEMBLY_PENDING
     name: Controller Traceability Unique-Key Recovery and Atomic Projection Assembly
     source_read_allowed: true
     frozen_source_only: true
@@ -61,11 +66,11 @@ result:
 
   unresolved_items:
     - id: BL001-UNIQUE-KEY-RECOVERY
-      state: MODEL_ASSEMBLY_PENDING
-      description: All 11 missing canonical HTTP-method/path keys are fully source-proved. Canonical coverage remains 123 until the effective Explorer model is assembled, merged and atomically serialized to exactly 134 unique keys.
+      state: STRUCTURED_MODEL_ASSEMBLY_PENDING
+      description: All 11 missing canonical HTTP-method/path keys are source-proved and validated as non-overlapping with the 123 current canonical keys. Candidate key arithmetic is exactly 134; canonical coverage remains 123 until the complete structured model is assembled and atomically serialized.
     - id: BL001-RAW-COUNTER-INTEGRITY
-      state: AUDIT_ONLY_PENDING_UNIQUE_KEY_PROOF
-      description: Accumulated 134 counters include proven duplicate acceptance/recount events and remain audit-only until deterministic unique-key projection proves exactly 134 unique method/path keys.
+      state: AUDIT_ONLY_SUPERSEDED_BY_CANDIDATE_KEYSET_VALIDATION
+      description: Accumulated 134 counters include proven duplicate acceptance/recount events and remain audit-only. Independent current-123 plus recovery-11 keyset validation has now proved zero overlap and a 134-key candidate set.
 
   atomic_publication_gate:
     state: TRANSPORT_AVAILABLE_CANONICAL_PUBLICATION_NOT_YET_ATTEMPTED
@@ -83,12 +88,14 @@ result:
   final_outputs: []
   close_allowed: false
   next_action: >-
-    Assemble the effective Explorer model from matrix-data.js plus all 42 ordered deltas using the browser
-    HTTP_METHOD_PLUS_PATH upsert rule and prove exactly 123 unique current keys. Merge the eleven already source-proved
-    corrected recovery rows, prove exactly 134 unique keys with zero duplicates, stage and cross-validate Markdown,
-    unresolved ledger, matrix-progress, structured Explorer JSON, browser matrix-data.js and Level-3 runtime, write a
-    projection SHA-256 manifest, then publish all synchronized artifacts through one Git tree/commit/ref update.
+    Assemble the effective structured Explorer model from matrix-data.js plus all 42 ordered deltas using the browser
+    HTTP_METHOD_PLUS_PATH upsert rule and confirm its keyset equals the validated current 123. Merge the eleven already
+    source-proved corrected recovery rows, validate complete row structure and exactly 134 unique keys with zero duplicates,
+    stage and cross-validate Markdown, unresolved ledger, matrix-progress, structured Explorer JSON, browser matrix-data.js
+    and Level-3 runtime, write a projection SHA-256 manifest, then publish all synchronized artifacts through one Git
+    tree/commit/ref update.
   note: >-
-    Source proof is complete for all eleven recovery keys. The prior Level-3 result that reported only five source-proved
-    rows was stale and has been reconciled to matrix-progress.yaml and blockers.yaml. The canonical matrix intentionally
-    remains at 123 unique rows until deterministic model assembly and atomic projection validation pass.
+    Source proof is complete for all eleven recovery keys. The full current 123-row Markdown matrix was read in complete
+    ranges and none of the eleven recovery method/path pairs is present; the recovery set itself contains eleven unique
+    pairs. The candidate post-merge keyset is therefore exactly 134 with zero overlap, but the canonical matrix intentionally
+    remains at 123 until structured model assembly and atomic projection validation pass.
