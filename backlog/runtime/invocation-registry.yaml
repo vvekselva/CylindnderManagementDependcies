@@ -1,25 +1,25 @@
-version: 44
+version: 45
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
 active_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-161554IST
     execution_state: RUNNING
-    health_state: IDLE_BUT_HEALTHY
+    health_state: ACTIVE
     started_at: 2026-08-27T16:15:54+05:30
-    heartbeat_at: 2026-08-27T16:15:54+05:30
-    last_progress_at: 2026-08-27T16:15:54+05:30
+    heartbeat_at: 2026-08-27T16:16:59+05:30
+    last_progress_at: 2026-08-27T16:16:59+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: BOOTSTRAPPING
-    current_backlog_item: null
-    current_work_unit: null
-    progress_fingerprint: START_REGISTRY_PERSISTED_AFTER_STALE_RECOVERY
+    coordinator_phase: ORCHESTRATOR_STARTED
+    current_backlog_item: BL-001
+    current_work_unit: WU-BL001-001
+    progress_fingerprint: BOOTSTRAP_ACK_AND_BL001_ATOMIC_CLAIM_PERSISTED
     blocked_reason: null
     recovery_action: RECOVERED_PRIOR_STALE_BOOTSTRAP_INVOCATION
     workers_started: 0
-    claims_created: 0
-    bootstrap_acknowledged: false
+    claims_created: 1
+    bootstrap_acknowledged: true
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-160133IST
     execution_state: RECOVERED_STALE
@@ -60,7 +60,15 @@ recent_completed_invocations:
     outcome: PARTIAL_CONTINUE_REQUIRED
     bootstrap_acknowledged: true
 work_claims:
-  active: []
+  active:
+    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+      backlog_item: BL-001
+      work_unit: WU-BL001-001
+      task_id: ATOMIC-134-PROJECTION
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-161554IST
+      state: CLAIMED
+      claimed_at: 2026-08-27T16:16:59+05:30
+      heartbeat_required: true
   completed:
     - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0067
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
@@ -83,7 +91,7 @@ bootstrap_control:
   governance: governance/orchestrator-bootstrap-gate.yaml
   scheduler_fire_is_orchestrator_start: false
   bootstrap_ack_required: true
-  latest_successful_bootstrap_ack_at: 2026-08-27T13:16:40+05:30
+  latest_successful_bootstrap_ack_at: 2026-08-27T16:16:59+05:30
   next_required_BL001_claim: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
 rules:
   - each work claim is globally unique across active invocations
