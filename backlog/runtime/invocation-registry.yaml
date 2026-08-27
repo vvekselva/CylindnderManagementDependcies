@@ -1,27 +1,31 @@
-version: 18
+version: 19
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations:
+active_invocations: []
+recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-081758IST
-    execution_state: RUNNING
-    health_state: ACTIVE
+    execution_state: PARTIAL_CONTINUE_REQUIRED
+    health_state: TERMINAL_HANDOFF
     started_at: 2026-08-27T08:17:58+05:30
-    heartbeat_at: 2026-08-27T08:20:30+05:30
-    last_progress_at: 2026-08-27T08:20:30+05:30
+    completed_at: 2026-08-27T08:22:07+05:30
+    heartbeat_at: 2026-08-27T08:22:07+05:30
+    last_progress_at: 2026-08-27T08:22:07+05:30
     last_lane_activity_at: 2026-08-27T08:20:30+05:30
-    active_lane_count: 1
-    coordinator_phase: ORCHESTRATOR_STARTED
-    current_backlog_item: BL-001
-    current_work_unit: WU-BL001-001
-    progress_fingerprint: BOOTSTRAP_ACK_PASS_CLAIM_READBACK_VERIFIED_EXECUTING_ATOMIC_134_PROJECTION
-    blocked_reason: null
-    recovery_action: NONE
+    active_lane_count: 0
+    coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
+    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
+    current_work_unit: PARTIAL_CONTINUE_REQUIRED
+    progress_fingerprint: BOOTSTRAP_REPAIRED_AND_ACKNOWLEDGED_BL001_ATOMIC_EXECUTOR_ATTEMPTED_CONNECTOR_SNAPSHOT_FALLBACK_REQUIRED
+    blocked_reason: BL001_PROCESS_SIDE_GITHUB_DNS_UNAVAILABLE_COMPLETE_CONNECTOR_STAGED_SNAPSHOT_REQUIRED; BL002_RELEASE1_WORK_REMAINS; BL008_FLYWAY_EXECUTOR_REQUIRED
+    recovery_action: NEXT_FIRE_RESUME_BL001_ATOMIC_134_PROJECTION_FROM_COMPLETE_CONNECTOR_STAGED_SNAPSHOT_AND_CONTINUE_INDEPENDENT_STREAMS
+    outcome: PARTIAL_CONTINUE_REQUIRED
     workers_started: 1
     claims_created: 1
     canonical_bl001_delta: 0
     bootstrap_acknowledged: true
-recent_completed_invocations:
+    transient_lane_logs_remaining: 0
+    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-081758IST.md
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-070139IST
     execution_state: RECOVERED_TERMINAL
     health_state: STALE_RECOVERED
@@ -80,16 +84,16 @@ recent_completed_invocations:
     transient_lane_logs_remaining: 0
     durable_log: logs/runs/MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST.md
 work_claims:
-  active:
+  active: []
+  completed:
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       backlog_item: BL-001
       work_unit: WU-BL001-001
       task_id: ATOMIC-134-PROJECTION
-      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-081758IST
-      state: CLAIMED
-      claimed_at: 2026-08-27T08:20:00+05:30
-      executor: automation/bl001-canonical-projection-engine.py
-  completed:
+      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-081758IST
+      state: RELEASED_FOR_CONTINUATION
+      durable_state_found: BOOTSTRAP_ACK_PASS_EXECUTOR_ATTEMPTED_PROCESS_GITHUB_DNS_FAILED_CONNECTOR_SNAPSHOT_FALLBACK_PARTIAL_NO_CANONICAL_PUBLICATION
+      completed_at: 2026-08-27T08:22:07+05:30
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       backlog_item: BL-001
       work_unit: WU-BL001-001
@@ -122,6 +126,7 @@ bootstrap_control:
   scheduler_fire_is_orchestrator_start: false
   bootstrap_ack_required: true
   stale_bootstrap_recovery_completed_at: 2026-08-27T08:02:34+05:30
+  latest_successful_bootstrap_ack_at: 2026-08-27T08:20:30+05:30
   next_required_BL001_claim: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
 rules:
   - each invocation owns only its own workspace, lane logs and executor processes
