@@ -1,0 +1,114 @@
+version: 1
+name: Orchestrator Bootstrap Acknowledgement Gate
+purpose: >-
+  Close the gap between a scheduler fire and a genuinely running Cylinder Orchestrator. A scheduler last_run_time proves
+  only that the scheduled task was invoked. Production execution is acknowledged only after the Orchestrator durably
+  registers itself, writes and verifies its heartbeat, reconciles stale prior invocations, and claims executable work.
+
+authority:
+  applies_to: [SCHEDULED_PRODUCTION_FIRE, MANUAL_PRODUCTION_FIRE]
+  authoritative_control_repository: vvekselva/CylindnderManagementDependcies
+  authoritative_control_branch: chore/rename-dependency-files
+  invocation_registry: backlog/runtime/invocation-registry.yaml
+  invocation_health: governance/invocation-health.yaml
+  production_progress_guarantee: governance/production-fire-progress-guarantee.yaml
+
+bootstrap_contract:
+  scheduler_fire_is_orchestrator_start: false
+  bootstrap_ack_timeout_seconds: 120
+  required_order:
+    - PIN_AUTHORITATIVE_CONTROL_BRANCH
+    - GENERATE_UNIQUE_INVOCATION_ID
+    - PERSIST_INVOCATION_START_IN_REGISTRY
+    - PERSIST_START_LOG
+    - WRITE_INITIAL_HEARTBEAT
+    - READ_BACK_REGISTRY_AND_VERIFY_OWN_START
+    - READ_BACK_HEARTBEAT_AND_VERIFY_FRESHNESS
+    - CLASSIFY_AND_RECOVER_STALE_OR_STUCK_PRIOR_INVOCATIONS
+    - SELECT_ELIGIBLE_WORK
+    - PERSIST_GLOBAL_WORK_CLAIM_OR_CLEAN_NO_WORK_TERMINAL
+    - READ_BACK_WORK_CLAIM
+    - SET_COORDINATOR_PHASE_ORCHESTRATOR_STARTED
+  production_execution_acknowledged_only_after:
+    - own_start_record_verified
+    - own_initial_heartbeat_verified
+    - stale_prior_invocations_reconciled
+    - work_claim_verified_or_clean_no_work_terminal_verified
+  forbidden_acknowledgements:
+    - scheduler_last_run_time_only
+    - start_record_without_readback
+    - heartbeat_without_readback
+    - running_flag_without_fresh_heartbeat
+    - orchestrator_started_without_claim_when_eligible_work_exists
+
+readback_gate:
+  registry_start:
+    required_fields: [invocation_id, started_at, execution_state, health_state, heartbeat_at, coordinator_phase]
+    invocation_id_must_match_current_fire: true
+  heartbeat:
+    maximum_age_seconds_at_ack: 60
+    must_belong_to_current_invocation: true
+  claim:
+    required_when_eligible_work_exists: true
+    global_key_format: BACKLOG_ITEM_PLUS_WORK_UNIT_PLUS_TASK_ID
+    must_be_owned_by_current_invocation: true
+  on_readback_failure:
+    classification: SCHEDULER_TO_ORCHESTRATOR_START_FAILURE
+    production_success_claim_forbidden: true
+    backlog_execution_forbidden: true
+
+stale_recovery_before_claim:
+  required: true
+  stale_after_seconds_without_heartbeat: 300
+  steps:
+    - verify stale heartbeat age
+    - verify no live worker or executor remains for the old invocation
+    - preserve completed durable evidence
+    - reject incomplete partial output
+    - persist recovery result
+    - release only stale claims proven safe to release
+    - move old invocation out of active_invocations
+  zombie_running_state_forbidden: true
+
+initial_claim_priority:
+  when_BL001_123_plus_11_projection_is_pending:
+    claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+    executor: automation/bl001-canonical-projection-engine.py
+    priority: CRITICAL
+  otherwise:
+    rule: HIGHEST_PRIORITY_ELIGIBLE_UNCLAIMED_WORK
+
+failure_classification:
+  scheduler_fired_no_new_start: SCHEDULER_TO_ORCHESTRATOR_START_FAILURE
+  start_written_no_heartbeat: ORCHESTRATOR_BOOTSTRAP_HEARTBEAT_FAILURE
+  start_and_heartbeat_not_readback_verified: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
+  stale_prior_invocation_not_recovered: ORCHESTRATOR_BOOTSTRAP_RECOVERY_FAILURE
+  eligible_work_exists_no_claim: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
+  claim_written_not_readback_verified: ORCHESTRATOR_BOOTSTRAP_CLAIM_ACK_FAILURE
+
+terminal_rules:
+  bootstrap_failure_must_not_be_reported_as_production_success: true
+  bootstrap_failure_does_not_change_BL001_canonical_count: true
+  successful_bootstrap_must_continue_into_execution_loop: true
+  if_work_remains_at_window_end: PARTIAL_CONTINUE_REQUIRED
+
+observability:
+  report_fields:
+    - scheduler_fire_observed
+    - invocation_id
+    - start_persisted
+    - start_readback_verified
+    - heartbeat_persisted
+    - heartbeat_readback_verified
+    - stale_invocations_recovered
+    - selected_work
+    - claim_key
+    - claim_readback_verified
+    - coordinator_phase
+    - bootstrap_outcome
+
+safety:
+  fail_closed: true
+  no_duplicate_claims: true
+  no_backlog_execution_before_bootstrap_ack: true
+  one_failed_stream_does_not_block_independent_streams_after_successful_bootstrap: true
