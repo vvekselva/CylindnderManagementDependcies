@@ -1,4 +1,4 @@
-version: 49
+version: 50
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
@@ -8,18 +8,18 @@ active_invocations:
     health_state: ACTIVE
     started_at: 2026-08-27T18:00:00+05:30
     completed_at: null
-    heartbeat_at: 2026-08-27T18:00:00+05:30
-    last_progress_at: 2026-08-27T18:00:00+05:30
+    heartbeat_at: 2026-08-27T18:01:00+05:30
+    last_progress_at: 2026-08-27T18:01:00+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: BOOTSTRAPPING
-    current_backlog_item: null
-    current_work_unit: null
-    progress_fingerprint: START_REGISTRY_PERSISTED
+    coordinator_phase: PLANNING
+    current_backlog_item: BL-001
+    current_work_unit: WU-BL001-001
+    progress_fingerprint: START_LOG_HEARTBEAT_OK_BL001_CLAIMED
     blocked_reason: null
     recovery_action: NONE
     workers_started: 0
-    claims_created: 0
+    claims_created: 1
     canonical_progress_delta: 0
     bootstrap_acknowledged: false
 recent_completed_invocations:
@@ -90,7 +90,12 @@ recent_completed_invocations:
     outcome: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
     bootstrap_acknowledged: false
 work_claims:
-  active: []
+  active:
+    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST
+      state: CLAIMED
+      claimed_at: 2026-08-27T18:01:00+05:30
+      heartbeat_required: true
   completed:
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-161554IST
