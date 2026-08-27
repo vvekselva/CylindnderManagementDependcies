@@ -1,64 +1,22 @@
-version: 23
+version: 24
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
 active_invocations:
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
-    execution_state: RUNNING
-    health_state: STALE_PENDING_RECOVERY_VERIFICATION
-    started_at: 2026-08-27T08:59:38+05:30
-    heartbeat_at: 2026-08-27T09:01:30+05:30
-    last_progress_at: 2026-08-27T09:01:30+05:30
-    last_lane_activity_at: 2026-08-27T09:01:30+05:30
-    active_lane_count: 1
-    coordinator_phase: EXECUTING
-    current_backlog_item: BL-001
-    current_work_unit: WU-BL001-001/ATOMIC-134-PROJECTION
-    progress_fingerprint: BOOTSTRAP_ACKNOWLEDGED_BL001_ATOMIC_134_CLAIM_PERSISTED
-    blocked_reason: HEARTBEAT_STALE_LIVE_EXECUTOR_NOT_YET_PROVED_ABSENT
-    recovery_action: VERIFY_NO_LIVE_EXECUTOR_BEFORE_RELEASING_CLAIM
-    outcome: RUNNING
-    workers_started: 1
-    claims_created: 1
-    canonical_bl001_delta: 0
-    bootstrap_acknowledged: true
-    transient_lane_logs_remaining: 0
-    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-085938IST.md
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-091431IST
-    execution_state: STARTING
-    health_state: ACTIVE
-    started_at: 2026-08-27T09:14:31+05:30
-    heartbeat_at: 2026-08-27T09:14:31+05:30
-    last_progress_at: 2026-08-27T09:14:31+05:30
-    last_lane_activity_at: null
-    active_lane_count: 0
-    coordinator_phase: STARTUP_HANDSHAKE
-    current_backlog_item: null
-    current_work_unit: null
-    progress_fingerprint: START_PERSISTED_INITIAL_HEARTBEAT
-    blocked_reason: null
-    recovery_action: CLASSIFY_AND_RECOVER_STALE_PRIOR_INVOCATION
-    outcome: STARTING
-    workers_started: 0
-    claims_created: 0
-    canonical_bl001_delta: 0
-    bootstrap_acknowledged: false
-    transient_lane_logs_remaining: 0
-    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-091431IST.md
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-101213IST
     execution_state: STARTING
-    health_state: ACTIVE
+    health_state: IDLE_BUT_HEALTHY
     started_at: 2026-08-27T10:12:13+05:30
-    heartbeat_at: 2026-08-27T10:12:13+05:30
-    last_progress_at: 2026-08-27T10:12:13+05:30
+    heartbeat_at: 2026-08-27T10:13:29+05:30
+    last_progress_at: 2026-08-27T10:13:29+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: STARTUP_HANDSHAKE
+    coordinator_phase: RECOVERING
     current_backlog_item: null
     current_work_unit: null
-    progress_fingerprint: START_PERSISTED_INITIAL_HEARTBEAT
+    progress_fingerprint: START_READBACK_VERIFIED_STALE_PRIORS_RECOVERED
     blocked_reason: null
-    recovery_action: CLASSIFY_AND_RECOVER_STALE_PRIOR_INVOCATIONS
+    recovery_action: SELECT_AND_CLAIM_HIGHEST_PRIORITY_ELIGIBLE_WORK
     outcome: STARTING
     workers_started: 0
     claims_created: 0
@@ -67,6 +25,47 @@ active_invocations:
     transient_lane_logs_remaining: 0
     durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-101213IST.md
 recent_completed_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
+    execution_state: RECOVERED_TERMINAL
+    health_state: STALE_RECOVERED
+    started_at: 2026-08-27T08:59:38+05:30
+    completed_at: 2026-08-27T10:13:29+05:30
+    heartbeat_at: 2026-08-27T09:01:30+05:30
+    last_progress_at: 2026-08-27T09:01:30+05:30
+    active_lane_count: 0
+    coordinator_phase: RECOVERY_CLOSE
+    current_backlog_item: BL-001
+    current_work_unit: WU-BL001-001/ATOMIC-134-PROJECTION
+    progress_fingerprint: STALE_OWNER_EXECUTOR_ABSENCE_PROVED_NO_DURABLE_CANONICAL_CHANGE
+    blocked_reason: HEARTBEAT_STALE_OVER_300_SECONDS
+    recovery_action: RELEASE_ATOMIC_134_CLAIM_AFTER_PROCESS_ABSENCE_PROOF
+    outcome: STALE_RECOVERED_CLAIM_RELEASED_NO_CANONICAL_CHANGE
+    workers_started: 1
+    claims_created: 1
+    canonical_bl001_delta: 0
+    bootstrap_acknowledged: true
+    transient_lane_logs_remaining: 0
+    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-085938IST.md
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-091431IST
+    execution_state: RECOVERED_TERMINAL
+    health_state: STALE_RECOVERED
+    started_at: 2026-08-27T09:14:31+05:30
+    completed_at: 2026-08-27T10:13:29+05:30
+    heartbeat_at: 2026-08-27T09:14:31+05:30
+    last_progress_at: 2026-08-27T09:14:31+05:30
+    active_lane_count: 0
+    coordinator_phase: RECOVERY_CLOSE
+    current_backlog_item: null
+    current_work_unit: null
+    progress_fingerprint: STALE_BOOTSTRAP_NO_START_LOG_NO_CLAIM_NO_WORK
+    blocked_reason: HEARTBEAT_STALE_OVER_300_SECONDS_AND_START_LOG_ABSENT
+    recovery_action: REJECT_INCOMPLETE_BOOTSTRAP_AND_RELEASE_CAPACITY
+    outcome: STALE_RECOVERED_NO_WORK_DISPATCHED
+    workers_started: 0
+    claims_created: 0
+    canonical_bl001_delta: 0
+    bootstrap_acknowledged: false
+    transient_lane_logs_remaining: 0
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-081758IST
     execution_state: PARTIAL_CONTINUE_REQUIRED
     health_state: TERMINAL_HANDOFF
@@ -102,15 +101,7 @@ recent_completed_invocations:
     outcome: PARTIAL_CONTINUE_REQUIRED
     durable_log: logs/runs/MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST.md
 work_claims:
-  active:
-    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-      backlog_item: BL-001
-      work_unit: WU-BL001-001
-      task_id: ATOMIC-134-PROJECTION
-      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
-      state: CLAIMED_STALE_OWNER_PENDING_SAFE_RECOVERY
-      claimed_at: 2026-08-27T09:01:30+05:30
-      heartbeat_at: 2026-08-27T09:01:30+05:30
+  active: []
   completed:
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-081758IST
@@ -126,7 +117,13 @@ work_claims:
       prior_owner_invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
       state: RELEASED_FOR_CONTINUATION
       completed_at: 2026-08-26T19:41:30+05:30
-  recovered: []
+  recovered:
+    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
+      state: RELEASED_AFTER_STALE_OWNER_RECOVERY
+      durable_state_found: NO_CANONICAL_CHANGE_PROCESS_SCAN_PROVED_NO_LIVE_BL001_EXECUTOR
+      partial_output_acceptance: NONE
+      recovered_at: 2026-08-27T10:13:29+05:30
 locks:
   shared_ssot_write: {capacity: 1, owner_invocation_id: null}
   git_checkpoint: {capacity: 1, owner_invocation_id: null}
