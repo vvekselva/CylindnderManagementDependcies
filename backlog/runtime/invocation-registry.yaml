@@ -1,21 +1,30 @@
-version: 13
+version: 14
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations:
+active_invocations: []
+recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-070139IST
-    execution_state: RUNNING
-    health_state: ACTIVE
+    execution_state: RECOVERED_TERMINAL
+    health_state: STALE_RECOVERED
     started_at: 2026-08-27T07:01:39+05:30
+    completed_at: 2026-08-27T08:02:34+05:30
     heartbeat_at: 2026-08-27T07:01:39+05:30
     last_progress_at: 2026-08-27T07:01:39+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: STARTING
+    coordinator_phase: RECOVERY_CLOSE
     current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
     current_work_unit: STARTUP_HANDSHAKE
-    progress_fingerprint: START_RECORD_PERSISTED_AFTER_STALE_RECOVERY
-recent_completed_invocations:
+    progress_fingerprint: START_RECORD_ONLY_NO_BOOTSTRAP_ACK_NO_CLAIM
+    blocked_reason: PRIMARY_HEARTBEAT_STALE_AND_BOOTSTRAP_NEVER_ADVANCED_BEYOND_STARTUP_HANDSHAKE
+    recovery_action: TERMINALIZED_STALE_BOOTSTRAP_INVOCATION_AND_RELEASED_CAPACITY
+    outcome: STALE_RECOVERED_NO_WORK_DISPATCHED_NO_CANONICAL_CHANGE
+    workers_started: 0
+    claims_created: 0
+    canonical_bl001_delta: 0
+    bootstrap_acknowledged: false
+    recovery_governance: governance/orchestrator-bootstrap-gate.yaml
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-201420IST
     execution_state: RECOVERED_TERMINAL
     health_state: STALE_RECOVERED
@@ -98,10 +107,18 @@ locks:
   bl008_database_write:
     capacity: 1
     owner_invocation_id: null
+bootstrap_control:
+  governance: governance/orchestrator-bootstrap-gate.yaml
+  scheduler_fire_is_orchestrator_start: false
+  bootstrap_ack_required: true
+  stale_bootstrap_recovery_completed_at: 2026-08-27T08:02:34+05:30
+  next_required_BL001_claim: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
 rules:
   - each invocation owns only its own workspace, lane logs and executor processes
   - each work claim is globally unique across active invocations
   - every RUNNING invocation must carry compliant heartbeat/progress health fields
-  - a RUNNING flag or legacy lease alone never proves liveness
+  - a RUNNING flag or scheduler last_run_time alone never proves Orchestrator liveness
+  - START and initial heartbeat must be read back before ORCHESTRATOR_STARTED
+  - eligible work requires a persisted and read-back-verified work claim before dispatch
   - stale/stuck owners are recovered fail-closed before capacity or duplicate-work decisions
   - shared SSOT merge and BL-008 database writes remain globally serialized
