@@ -1,4 +1,4 @@
-run_time: 2026-08-27T07:31:30+05:30
+run_time: 2026-08-27T08:31:30+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: FULLY_BLOCKED
 policy:
@@ -14,7 +14,7 @@ policy:
 lease:
   overlap_detected: false
   status: ACQUIRED
-  acquired_commit: 4afb8034b9569e7aceb4600fabd1960bdd15202d
+  acquired_commit: c2dfe04876b74f8700af1170b8e8399269ba77e6
 bl008:
   status: BLOCKED_BEFORE_DATABASE_ACCESS
   authoritative_flyway_source:
