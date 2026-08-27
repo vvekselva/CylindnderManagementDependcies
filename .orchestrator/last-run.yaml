@@ -1,4 +1,4 @@
-run_time: 2026-08-27T16:31:00+05:30
+run_time: 2026-08-27T17:31:00+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: FULLY_BLOCKED
 policy:
@@ -14,7 +14,7 @@ policy:
 lease:
   overlap_detected: false
   status: ACQUIRED
-  acquired_commit: c3f24eeb14f55cdab50dd6ecb338d5d1a135d2c5
+  acquired_commit: acce27eca276451d6cf9edb466d4fdc63cbb2423
 bl008:
   status: BLOCKED_BEFORE_DATABASE_ACCESS
   authoritative_flyway_source:
@@ -57,8 +57,6 @@ bl008:
 bl001:
   status: BLOCKED
   target_unique_method_path_rows: 134
-  source_repository_verified: true
-  source_repository: vvekselva/CylinderManagement
   control_repository_tree_verified: true
   live_control_paths:
     - .orchestrator/invocation-lease.yaml
@@ -68,7 +66,7 @@ bl001:
     - usecases/Readme.md
   accepted_materialized_non_stale_rows_available: false
   atomic_matrix_explorer_consolidation_performed: false
-  blocker: "Authoritative control main contains no BL-001 manifest/recovery/matrix/Explorer artifacts and no accepted/materialized/non-stale source-proof row set. Source repository is reachable but there is no authoritative recovery/materialization state from which to safely continue the 134-row consolidation."
+  blocker: "Authoritative control main contains no BL-001 manifest/recovery/matrix/Explorer artifacts and no accepted/materialized/non-stale source-proof row set."
   exact_missing_condition: "Restore or materialize the authoritative BL-001 recovery/manifest/matrix/Explorer artifacts with accepted non-stale source-proof rows."
 bl002:
   status: BLOCKED
