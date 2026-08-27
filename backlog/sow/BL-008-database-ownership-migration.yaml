@@ -1,14 +1,32 @@
 statement_of_work:
   backlog_item: BL-008
-  version: 2
+  version: 3
   title: Migrate CylinderManagement Database to Ownership Model
   status: APPROVED_FOR_EXECUTION_AFTER_GATES
   objective: >-
     Execute CylinderManagement database migration requirements against the separate Neon test environment on branch main only,
     one database requirement at a time, using Flyway and proving ownership-model and data integrity after each completed requirement.
+  problem_statement: >-
+    The verified Neon main/neondb test database is empty and the authoritative migration source is known, but ownership-model
+    migration cannot advance safely unless each migration is selected in exact Flyway order, executed by a real Flyway runtime,
+    verified in flyway_schema_history, and followed by schema/data integrity checks before the next requirement is selected.
+  scope:
+    in_scope:
+      - verified Neon project neon-for-cylinder-db, branch main, database neondb
+      - authoritative Flyway migrations from the frozen CylinderManagement source
+      - exactly one active migration requirement at a time
+      - Flyway info, validation, migration, history verification and post-migration integrity checks
+      - ownership-model invariants and database-dependency-neon.md evidence
+    out_of_scope:
+      - Neon branch creation
+      - direct external production deployment
+      - parallel database migration requirements
+      - manual SQL substitution
+      - persistence of credentials or full connection strings
   authoritative_sources:
     dependency_ledger: database-dependency-neon.md
     flyway_repository: vvekselva/CylinderManagement
+    frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
     flyway_path: cylinder.datascripts/src/main/resources/db/migration/
     ownership_reference_roots: [NewOwnerShipModelv3/, cmas.database.operations/]
   execution_requirements:
@@ -51,6 +69,12 @@ statement_of_work:
     - ownership invariants and critical integrity checks pass after each requirement
     - no manual SQL substitution occurs
     - explicit user acceptance is obtained before CLOSED
+  completion_definition: >-
+    BL-008 is complete only after every authoritative migration requirement has passed Flyway execution and verification in order,
+    the ownership/data-integrity gates pass, the dependency ledger is synchronized, and explicit user acceptance is recorded.
+  execution_authorization:
+    sow_required: true
+    structurally_valid: true
+    placeholders_present: false
+    authorization_basis: USER_DIRECTIVE_2026-08-26_NEON_MAIN_ONLY_SEQUENTIAL_DB_REQUIREMENTS
   user_authorization_basis: USER_DIRECTIVE_2026-08-26_NEON_MAIN_ONLY_SEQUENTIAL_DB_REQUIREMENTS
-  structurally_valid: true
-  placeholders_present: false
