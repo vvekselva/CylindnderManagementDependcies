@@ -1,5 +1,5 @@
 story_register:
-  version: 26
+  version: 27
   backlog_item: BL-002
   state: INCREMENTAL_CANONICAL_ROW_STORY_GENERATION
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -18,13 +18,13 @@ story_register:
   counts:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
-    story_dispositions: 66
+    story_dispositions: 67
     draft: 0
     technically_validated: 0
     ready_for_user_review: 45
     approved: 0
     rejected: 0
-    needs_clarification: 21
+    needs_clarification: 22
     not_applicable: 0
     stale_review_required: 0
   stories:
@@ -33,7 +33,7 @@ story_register:
     - {story_id: STORY-0003, matrix_row_keys: ["GET /cylinderDelivery"], state: READY_FOR_USER_REVIEW, fingerprint: 03ebb235a749d5867ad38b79849d738124e7ab283afaceb2db9dce2cdac18d3d, structured: stories/STORY-0003.yaml, human_readable: stories/STORY-0003.md}
     - {story_id: STORY-0004, matrix_row_keys: ["GET /walkin-sale"], state: READY_FOR_USER_REVIEW, fingerprint: 9d3ea0526fd00ed34ae346a87aa384c6864be62819db08e9873eb4f3f193da5c, structured: stories/STORY-0004.yaml, human_readable: stories/STORY-0004.md}
     - {story_id: STORY-0005, matrix_row_keys: ["GET /customer-address-location/upload"], state: READY_FOR_USER_REVIEW, fingerprint: b7fc11260c26f85a28abbc33f5540674cd05084e92f9dd0de58f4b2e535a2b0d, structured: stories/STORY-0005.yaml, human_readable: stories/STORY-0005.md}
-    - {story_id: STORY-0006, matrix_row_keys: ["GET /offline-map/style.json"], state: READY_FOR_USER_REVIEW, fingerprint: 8de2952b18665432b67386fa6de5da875ebdc5297e35d9141090aae03cb21fa5, structured: stories/STORY-0006.yaml, human_readable: stories/STORY-0006.md}
+    - {story_id: STORY-0006, matrix_row_keys: ["GET /offline-map/style.json"], state: READY_FOR_USER_REVIEW, fingerprint: 8de2952b18665432b67386fa6de5da875ebdc5297e35d9141090aae03cb21fa5f, structured: stories/STORY-0006.yaml, human_readable: stories/STORY-0006.md}
     - {story_id: STORY-0007, matrix_row_keys: ["GET /offline-map/status-json"], state: READY_FOR_USER_REVIEW, fingerprint: 6861a33eef06f56360008bca455a5aa78bd38718cacc6567fb12868e9f4d9a5f, structured: stories/STORY-0007.yaml, human_readable: stories/STORY-0007.md}
     - {story_id: STORY-0008, matrix_row_keys: ["GET /challan-page-photo/{challanPagePhotoId}"], state: READY_FOR_USER_REVIEW, fingerprint: 4f33f3f68b8797e03962b8775008ee72f6848e98784f5de754d86fec344f550a, structured: stories/STORY-0008.yaml, human_readable: stories/STORY-0008.md}
     - {story_id: STORY-0009, matrix_row_keys: ["GET /offline-map/status"], state: READY_FOR_USER_REVIEW, fingerprint: 5d111354ae77e342dec07b2eb1c127eba3b363e7e8fb19a5fa06e3aa98c4e3d1, structured: stories/STORY-0009.yaml, human_readable: stories/STORY-0009.md}
@@ -94,5 +94,6 @@ story_register:
     - {story_id: STORY-0064, matrix_row_keys: ["POST /ingestSupplier"], state: NEEDS_CLARIFICATION, fingerprint: 2c963408c22418d11f03cb3c4223f2afbb8e86fe9bcfa7e14614087ae01dff15, structured: stories/STORY-0064.yaml, human_readable: stories/STORY-0064.md}
     - {story_id: STORY-0065, matrix_row_keys: ["GET /ingestYardStockCheck"], state: NEEDS_CLARIFICATION, fingerprint: f59c56ebfd100c9a58880ca094e327038c305d332773917cec8cea8e209a7ca8, structured: stories/STORY-0065.yaml, human_readable: stories/STORY-0065.md}
     - {story_id: STORY-0066, matrix_row_keys: ["POST /ingestYardStockCheck"], state: NEEDS_CLARIFICATION, fingerprint: 440b6696ad978eece771a41c520270253cef1fc8da560235095c45c29a0188c8, structured: stories/STORY-0066.yaml, human_readable: stories/STORY-0066.md}
+    - {story_id: STORY-0067, matrix_row_keys: ["POST /trip-review/{vehicleTripId}/close-review"], state: NEEDS_CLARIFICATION, fingerprint: d6e63227683821f1ad2ec045d1804db74ec2501e6697680e12b194fd67fb49dd, structured: stories/STORY-0067.yaml, human_readable: stories/STORY-0067.md}
   invariant: >-
     Only Primary-Orchestrator-accepted, materialized, non-stale canonical BL-001 rows are eligible. Pending atomic-projection rows remain excluded. No Story becomes downstream-authoritative before explicit user approval of its exact fingerprint.
