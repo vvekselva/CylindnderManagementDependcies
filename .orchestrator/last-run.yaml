@@ -1,4 +1,4 @@
-run_time: 2026-08-27T08:31:30+05:30
+run_time: 2026-08-27T16:31:00+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: FULLY_BLOCKED
 policy:
@@ -14,13 +14,18 @@ policy:
 lease:
   overlap_detected: false
   status: ACQUIRED
-  acquired_commit: c2dfe04876b74f8700af1170b8e8399269ba77e6
+  acquired_commit: c3f24eeb14f55cdab50dd6ecb338d5d1a135d2c5
 bl008:
   status: BLOCKED_BEFORE_DATABASE_ACCESS
   authoritative_flyway_source:
     repository: vvekselva/CylinderManagement
     branch: main
     migration_path: cylinder.datascripts/src/main/resources/db/migration
+  dependency_ledger:
+    file: database-dependency.md
+    current_required_target: V176
+    status: STALE_FOR_CURRENT_TEST_POLICY
+    reason: "Ledger still names neon-for-cylinder-db / production as authoritative target, while current orchestration policy requires cylinder_db_for_testing / main."
   neon_project:
     name: cylinder_db_for_testing
     project_id: weathered-heart-89789162
@@ -36,7 +41,7 @@ bl008:
     main_present: false
   requirement_selection:
     status: BLOCKED_SAME_REQUIREMENT
-    reason: "Required TEST branch main does not exist. Policy forbids branch creation and forbids substituting production; exact permitted database identity and Flyway state cannot be proven."
+    reason: "Required TEST branch main does not exist. Policy forbids branch creation and forbids substituting production; exact permitted database identity, Flyway version/order/checksum/prerequisites and current flyway_schema_history cannot be proven."
   database_actions:
     database_access_on_production_branch: NOT_ATTEMPTED
     flyway_validate: NOT_ATTEMPTED
@@ -52,6 +57,8 @@ bl008:
 bl001:
   status: BLOCKED
   target_unique_method_path_rows: 134
+  source_repository_verified: true
+  source_repository: vvekselva/CylinderManagement
   control_repository_tree_verified: true
   live_control_paths:
     - .orchestrator/invocation-lease.yaml
@@ -61,7 +68,8 @@ bl001:
     - usecases/Readme.md
   accepted_materialized_non_stale_rows_available: false
   atomic_matrix_explorer_consolidation_performed: false
-  blocker: "Authoritative control main contains no BL-001 manifest/recovery/matrix/Explorer artifacts and no accepted/materialized/non-stale source-proof row set."
+  blocker: "Authoritative control main contains no BL-001 manifest/recovery/matrix/Explorer artifacts and no accepted/materialized/non-stale source-proof row set. Source repository is reachable but there is no authoritative recovery/materialization state from which to safely continue the 134-row consolidation."
+  exact_missing_condition: "Restore or materialize the authoritative BL-001 recovery/manifest/matrix/Explorer artifacts with accepted non-stale source-proof rows."
 bl002:
   status: BLOCKED
   expected_release_1_assignments: 88
@@ -76,6 +84,7 @@ bl002:
     needs_clarification_on_unproved_meaning: true
     auto_approve: false
   blocker: "release-classification.yaml is absent from authoritative control main and BL-001 has no consumable accepted/materialized/non-stale rows."
+  exact_missing_condition: "Add authoritative release-classification.yaml with 88 RELEASE_1 and 46 RELEASE_2 assignments after BL-001 consumable rows are restored/materialized."
 backlog_closed: []
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
