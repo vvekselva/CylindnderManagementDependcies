@@ -7,11 +7,15 @@ execution_statistics:
       ready_for_user_review: 41
       needs_clarification: 6
       approved_stories: 0
+      distinct_lanes_used: 0
+      lane_utilization_percentage: 0.0
     current_or_latest_run:
       story_dispositions: 48
       ready_for_user_review: 41
       needs_clarification: 7
       approved_stories: 0
+      distinct_lanes_used: 0
+      lane_utilization_percentage: 0.0
   story_metrics:
     canonical_matrix_rows_currently_eligible: 123
     final_matrix_target_rows: 134
