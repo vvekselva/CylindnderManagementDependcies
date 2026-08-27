@@ -1,21 +1,36 @@
-version: 12
+version: 13
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
 active_invocations:
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-201420IST
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-070139IST
     execution_state: RUNNING
     health_state: ACTIVE
-    started_at: 2026-08-26T20:14:20+05:30
-    heartbeat_at: 2026-08-26T20:14:20+05:30
-    last_progress_at: 2026-08-26T20:14:20+05:30
+    started_at: 2026-08-27T07:01:39+05:30
+    heartbeat_at: 2026-08-27T07:01:39+05:30
+    last_progress_at: 2026-08-27T07:01:39+05:30
     last_lane_activity_at: null
     active_lane_count: 0
     coordinator_phase: STARTING
     current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
     current_work_unit: STARTUP_HANDSHAKE
-    progress_fingerprint: START_RECORD_PERSISTED
+    progress_fingerprint: START_RECORD_PERSISTED_AFTER_STALE_RECOVERY
 recent_completed_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-201420IST
+    execution_state: RECOVERED_TERMINAL
+    health_state: STALE_RECOVERED
+    started_at: 2026-08-26T20:14:20+05:30
+    completed_at: 2026-08-27T07:01:39+05:30
+    heartbeat_at: 2026-08-26T20:14:20+05:30
+    last_progress_at: 2026-08-26T20:14:20+05:30
+    active_lane_count: 0
+    coordinator_phase: RECOVERY_CLOSE
+    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
+    current_work_unit: STARTUP_HANDSHAKE
+    progress_fingerprint: STALE_STARTUP_INVOCATION_RECOVERED_FAIL_CLOSED
+    blocked_reason: HEARTBEAT_STALE_OVER_5_MINUTES_WITH_NO_LANE_ACTIVITY
+    recovery_action: TERMINALIZED_AND_CAPACITY_RELEASED
+    outcome: STALE_RECOVERED_NO_WORK_DISPATCHED
   - invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
     execution_state: PARTIAL_CONTINUE_REQUIRED
     health_state: TERMINAL_HANDOFF
