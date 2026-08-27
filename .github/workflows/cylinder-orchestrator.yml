@@ -21,6 +21,9 @@ jobs:
     name: Governed Cylinder Production Fire
     runs-on: ubuntu-24.04
     timeout-minutes: 35
+    env:
+      CYLINDER_INVOCATION_ID: CYLINDER-HOSTED-RUNNER-${{ github.run_id }}-${{ github.run_attempt }}
+      GITHUB_RUN_ID_VALUE: ${{ github.run_id }}
 
     steps:
       - name: Checkout control repository
@@ -70,8 +73,31 @@ jobs:
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Persist bootstrap START and claims locally
+        shell: bash
+        env:
+          CYLINDER_SOURCE_CREDENTIAL_DECLARED: ${{ steps.source-auth.outputs.available }}
+          NEON_JDBC_URL: ${{ secrets.NEON_JDBC_URL }}
+          NEON_DB_USER: ${{ secrets.NEON_DB_USER }}
+          NEON_DB_PASSWORD: ${{ secrets.NEON_DB_PASSWORD }}
+        run: python automation/github-runner-orchestrator.py --repo-root "$GITHUB_WORKSPACE" --phase bootstrap
+
+      - name: Commit bootstrap checkpoint and prove remote readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add backlog/runtime/invocation-registry.yaml logs/runs
+          git commit -m "orchestrator: persist START and claims $CYLINDER_INVOCATION_ID"
+          git pull --rebase origin chore/rename-dependency-files
+          git push origin HEAD:chore/rename-dependency-files
+          git fetch origin chore/rename-dependency-files
+          git show origin/chore/rename-dependency-files:backlog/runtime/invocation-registry.yaml | grep -F "$CYLINDER_INVOCATION_ID"
+          git show "origin/chore/rename-dependency-files:logs/runs/$CYLINDER_INVOCATION_ID.md" | grep -F "bootstrap_acknowledged: true"
+
       - name: Checkout frozen CylinderManagement source
+        id: source-checkout
         if: steps.source-auth.outputs.available == 'true'
+        continue-on-error: true
         uses: actions/checkout@v4
         with:
           repository: vvekselva/CylinderManagement
@@ -81,7 +107,9 @@ jobs:
           fetch-depth: 1
 
       - name: Verify frozen source identity
-        if: steps.source-auth.outputs.available == 'true'
+        id: source-verify
+        if: steps.source-checkout.outcome == 'success'
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -89,16 +117,16 @@ jobs:
           test "$ACTUAL_SHA" = "3ae6e61442132d94a307275b08dd65fcef228d89"
 
       - name: Execute governed orchestrator cycle
+        shell: bash
         env:
-          CYLINDER_SOURCE_AVAILABLE: ${{ steps.source-auth.outputs.available }}
+          CYLINDER_SOURCE_AVAILABLE: ${{ steps.source-verify.outcome == 'success' }}
           CYLINDER_SOURCE_ROOT: ${{ github.workspace }}/.orchestrator-source/CylinderManagement
           NEON_JDBC_URL: ${{ secrets.NEON_JDBC_URL }}
           NEON_DB_USER: ${{ secrets.NEON_DB_USER }}
           NEON_DB_PASSWORD: ${{ secrets.NEON_DB_PASSWORD }}
-          GITHUB_RUN_ID_VALUE: ${{ github.run_id }}
-        run: python automation/github-runner-orchestrator.py --repo-root "$GITHUB_WORKSPACE"
+        run: python automation/github-runner-orchestrator.py --repo-root "$GITHUB_WORKSPACE" --phase execute
 
-      - name: Persist durable execution result
+      - name: Persist durable terminal execution result
         if: always()
         shell: bash
         run: |
@@ -109,6 +137,6 @@ jobs:
             echo "No durable repository changes to persist."
             exit 0
           fi
-          git commit -m "orchestrator: persist hosted runner execution $GITHUB_RUN_ID"
+          git commit -m "orchestrator: persist terminal hosted execution $GITHUB_RUN_ID"
           git pull --rebase origin chore/rename-dependency-files
           git push origin HEAD:chore/rename-dependency-files
