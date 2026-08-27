@@ -1,0 +1,48 @@
+backlog_item: BL-002
+analysis_id: STORY-0068-POST-STOP
+release: RELEASE_1
+canonical_row:
+  method: POST
+  path: /stop
+  controller: CustomerStopSelectionController.processStopIngestion
+  accepted_materialized_bl001_row: true
+  upstream_state: COMPLETE
+  upstream_trace_shape: FULL_BRANCHING
+  terminal_type: POSTGRES_TABLES_AND_TERMINAL_REDIRECT
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  accepted_evidence: logs/runs/PRODUCTION-FIRE-20260824-230001.md
+proved_scope:
+  - customer delivery branch
+  - customer empty-pickup branch
+  - supplier empty-dropoff branch
+  - supplier refill-pickup branch
+  - logistics and trip-stop branches
+  - optional challan ledger/link branches
+  - challan-photo guard or vehicle-load redirect terminal behavior
+analysis_state: UI_SOURCE_ANALYSIS_REQUIRED
+story_generation_state: BLOCKED_UNTIL_FIELD_LEVEL_SOURCE_PROOF
+missing_field_level_contract:
+  - exact submitted page/component field names
+  - datatype for every submitted field
+  - required versus optional rule for every submitted field
+  - normalization and default behavior
+  - validation rules and accepted values
+  - invalid-value behavior and user-visible error path
+  - model or DTO field binding for each input
+  - exact controller parameter or request-object binding
+  - service method and branch-specific input transformation
+  - DAO or repository call for each persisted field
+  - entity or view field mapping
+  - exact database table/view column mapping per field
+  - exact state transition or side effect per accepted branch
+rules:
+  no_invention: true
+  pending_atomic_bl001_rows_forbidden: true
+  story_auto_approval_forbidden: true
+  needs_clarification_is_final_only_after_ui_source_analysis: true
+outcome: >-
+  POST /stop is a valid accepted/materialized Release-1 BL-001 input for BL-002, but the accepted trace proves branch destinations
+  and terminal dependencies rather than the full page-field-to-database-column contract. No STORY-0068 Story artifact is promoted
+  from this checkpoint. The next execution must inspect the exact UI/controller/request/service/DAO/entity source chain and either
+  materialize the field-level Story or persist precise NEEDS_CLARIFICATION evidence for fields that remain unproved.
+next_action: STAGE_EXACT_UI_AND_CONTROLLER_SOURCE_FOR_POST_STOP_AND_COMPLETE_FIELD_LEVEL_MAPPING
