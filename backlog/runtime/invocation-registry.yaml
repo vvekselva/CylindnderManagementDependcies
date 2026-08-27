@@ -1,30 +1,30 @@
-version: 57
+version: 58
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 1
-active_invocations:
+active_invocations: []
+recent_completed_invocations:
 - invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
-  execution_state: RUNNING
-  health_state: ACTIVE
+  execution_state: PARTIAL_CONTINUE_REQUIRED
+  health_state: TERMINAL_HANDOFF
   started_at: 2026-08-28 04:24:47+05:30
-  completed_at: null
-  heartbeat_at: 2026-08-28 04:24:47+05:30
-  last_progress_at: 2026-08-28 04:24:47+05:30
+  completed_at: 2026-08-28 04:32:38+05:30
+  heartbeat_at: 2026-08-28 04:32:38+05:30
+  last_progress_at: 2026-08-28 04:32:38+05:30
   last_lane_activity_at: null
   active_lane_count: 0
-  coordinator_phase: BOOTSTRAP_CLAIMED
+  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
   current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: WU-BL001-001
-  progress_fingerprint: CHATGPT_ENV_START_REGISTRY_HEARTBEAT_CLAIMS_PERSISTED
-  blocked_reason: null
-  recovery_action: null
+  current_work_unit: PARTIAL_CONTINUE_REQUIRED
+  progress_fingerprint: CHATGPT_ENV_BOOTSTRAP_PASS_BL001_RECONCILIATION_HELD_BL002_FIELD_PROOF_PENDING_BL008_FLYWAY_BLOCKED
+  blocked_reason: BL001_ATOMIC_PROJECTION_RECONCILIATION_NOT_REEXECUTED_NO_SAFE_PUBLICATION; BL002_POST_STOP_FIELD_LEVEL_SOURCE_PROOF_PENDING; BL008_FLYWAY_RUNTIME_UNAVAILABLE; NEON_CONNECTOR_ARGUMENT_SCHEMA_MISMATCH
+  recovery_action: CONTINUE_NEXT_CHATGPT_FIRE_FROM_DURABLE_CHECKPOINT
   workers_started: 0
   claims_created: 3
   canonical_progress_delta: 0
-  bootstrap_acknowledged: false
+  bootstrap_acknowledged: true
   transient_lane_logs_remaining: 0
-  outcome: null
-recent_completed_invocations:
+  outcome: PARTIAL_CONTINUE_REQUIRED
 - invocation_id: CYLINDER-PRODUCTION-FIRE-20260828-041619IST
   execution_state: PARTIAL_CONTINUE_REQUIRED
   health_state: TERMINAL_HANDOFF
@@ -219,20 +219,23 @@ recent_completed_invocations:
   outcome: RECOVERED_STALE
   bootstrap_acknowledged: false
 work_claims:
-  active:
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
-    state: CLAIMED
-    claimed_at: 2026-08-28 04:24:47+05:30
-  - claim_key: BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP-FIELD-PROOF
-    owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
-    state: CLAIMED
-    claimed_at: 2026-08-28 04:24:47+05:30
-  - claim_key: BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT
-    owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
-    state: CLAIMED
-    claimed_at: 2026-08-28 04:24:47+05:30
+  active: []
   completed:
+  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+    prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
+    state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
+    completed_at: 2026-08-28 04:32:38+05:30
+    durable_state_found: CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION_CHATGPT_FIRE
+  - claim_key: BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP-FIELD-PROOF
+    prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
+    state: RELEASED_AFTER_SOURCE_PROOF_BLOCKED_COMPLETION
+    completed_at: 2026-08-28 04:32:38+05:30
+    durable_state_found: STORY_0068_POST_STOP_FIELD_PROOF_STILL_PENDING
+  - claim_key: BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT
+    prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
+    state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
+    completed_at: 2026-08-28 04:32:38+05:30
+    durable_state_found: CHATGPT_ENV_MAVEN_FLYWAY_UNAVAILABLE_NO_DB_MUTATION_NEON_READONLY_VERIFY_SCHEMA_MISMATCH
   - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
     prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260828-041619IST
     state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
@@ -296,7 +299,7 @@ bootstrap_control:
   governance: governance/orchestrator-bootstrap-gate.yaml
   scheduler_fire_is_orchestrator_start: false
   bootstrap_ack_required: true
-  latest_successful_bootstrap_ack_at: '2026-08-28T04:17:35+05:30'
+  latest_successful_bootstrap_ack_at: '2026-08-28T04:24:47+05:30'
   next_required_BL001_claim: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
 rules:
 - each work claim is globally unique across active invocations
