@@ -1,4 +1,4 @@
-version: 18
+version: 19
 purpose: >-
   Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
   workstreams when independently eligible. GitHub is VCS/durable persistence; the Primary Automation Tool owns planning,
@@ -233,14 +233,38 @@ execution_recovery_contract:
   database_mutation_failure: FAIL_CLOSED_ON_CURRENT_REQUIREMENT_NO_MANUAL_PATCH_NO_ADVANCE
 
 backlog_items:
-  BL-001: {name: Controller Traceability, run_enabled: true, runtime: backlog/runtime/BL-001/, quality_gate_approved: true}
-  BL-002: {name: Controller Dependency Matrix to Human-Readable Stories, run_enabled: true, runtime: backlog/runtime/BL-002/, quality_gate_approved: true}
+  BL-001:
+    name: Controller Traceability
+    run_enabled: true
+    item_definition: backlog/items/BL-001-controller-traceability.yaml
+    statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
+    runtime: backlog/runtime/BL-001/
+    completion_path: backlog/paths/BL-001-traceability.yaml
+    quality_gate: backlog/gates/BL-001-traceability.yaml
+    quality_gate_approved: true
+  BL-002:
+    name: Controller Dependency Matrix to Human-Readable Stories
+    run_enabled: true
+    item_definition: backlog/items/BL-002-controller-story-usecase.yaml
+    statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml
+    runtime: backlog/runtime/BL-002/
+    completion_path: backlog/paths/BL-002-controller-story-usecase.yaml
+    quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml
+    quality_gate_approved: true
   BL-003: {name: Unit Test Completion, run_enabled: false}
   BL-004: {name: Integration Test Completion, run_enabled: false}
   BL-005: {name: Code Coverage Report, run_enabled: false}
   BL-006: {name: ArchUnit Architecture Test, run_enabled: false}
   BL-007: {name: Requirements Traceability and Gap Analysis, run_enabled: false}
-  BL-008: {name: Migration of the Database to the Ownership Model, run_enabled: true, runtime: backlog/runtime/BL-008/, quality_gate_approved: true}
+  BL-008:
+    name: Migration of the Database to the Ownership Model
+    run_enabled: true
+    item_definition: backlog/items/BL-008-database-ownership-migration.yaml
+    statement_of_work: backlog/sow/BL-008-database-ownership-migration.yaml
+    runtime: backlog/runtime/BL-008/
+    completion_path: backlog/paths/BL-008-database-ownership-migration.yaml
+    quality_gate: backlog/gates/BL-008-database-ownership-migration.yaml
+    quality_gate_approved: true
   BL-009: {name: Supplier Owned Customer Owned and Company Owned Cylinder Model, run_enabled: false}
   BL-010: {name: Physical Challan Book Location, run_enabled: false}
   BL-011: {name: Ownership Dashboard Changes, run_enabled: false}
@@ -256,7 +280,7 @@ backlog_items:
   BL-021: {name: Customer Data Dashboard, run_enabled: false}
 
 scheduled_run_rules:
-  - read authoritative control branch and v18 run-config before work
+  - read authoritative control branch and current run-config before work
   - scheduled ChatGPT task is a trigger/observer, not the deterministic process host
   - persist a unique invocation START record and initial heartbeat before analysis
   - atomically claim work before dispatch
