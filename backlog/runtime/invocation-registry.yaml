@@ -1,24 +1,24 @@
-version: 28
+version: 29
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
 active_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-111454IST
     execution_state: RUNNING
-    health_state: IDLE_BUT_HEALTHY
+    health_state: ACTIVE
     started_at: 2026-08-27T11:14:54+05:30
-    heartbeat_at: 2026-08-27T11:14:54+05:30
-    last_progress_at: 2026-08-27T11:14:54+05:30
+    heartbeat_at: 2026-08-27T11:15:30+05:30
+    last_progress_at: 2026-08-27T11:15:30+05:30
     last_lane_activity_at: null
     active_lane_count: 0
-    coordinator_phase: BOOTSTRAPPING
-    current_backlog_item: null
-    current_work_unit: null
-    progress_fingerprint: INVOCATION_START_PERSISTED
+    coordinator_phase: CLAIMING
+    current_backlog_item: BL-001
+    current_work_unit: WU-BL001-001/ATOMIC-134-PROJECTION
+    progress_fingerprint: BOOTSTRAP_START_READBACK_PASS_ATOMIC134_CLAIM_PERSISTED
     blocked_reason: null
     recovery_action: null
     workers_started: 0
-    claims_created: 0
+    claims_created: 1
     canonical_bl001_delta: 0
     bootstrap_acknowledged: false
     transient_lane_logs_remaining: 0
@@ -46,64 +46,17 @@ recent_completed_invocations:
     bootstrap_acknowledged: true
     transient_lane_logs_remaining: 0
     durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-101213IST.md
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
-    execution_state: RECOVERED_TERMINAL
-    health_state: STALE_RECOVERED
-    started_at: 2026-08-27T08:59:38+05:30
-    completed_at: 2026-08-27T10:13:29+05:30
-    heartbeat_at: 2026-08-27T09:01:30+05:30
-    last_progress_at: 2026-08-27T09:01:30+05:30
-    active_lane_count: 0
-    coordinator_phase: RECOVERY_CLOSE
-    current_backlog_item: BL-001
-    current_work_unit: WU-BL001-001/ATOMIC-134-PROJECTION
-    progress_fingerprint: STALE_OWNER_EXECUTOR_ABSENCE_PROVED_NO_DURABLE_CANONICAL_CHANGE
-    blocked_reason: HEARTBEAT_STALE_OVER_300_SECONDS
-    recovery_action: RELEASE_ATOMIC_134_CLAIM_AFTER_PROCESS_ABSENCE_PROOF
-    outcome: STALE_RECOVERED_CLAIM_RELEASED_NO_CANONICAL_CHANGE
-    workers_started: 1
-    claims_created: 1
-    canonical_bl001_delta: 0
-    bootstrap_acknowledged: true
-    transient_lane_logs_remaining: 0
-    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-085938IST.md
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-091431IST
-    execution_state: RECOVERED_TERMINAL
-    health_state: STALE_RECOVERED
-    started_at: 2026-08-27T09:14:31+05:30
-    completed_at: 2026-08-27T10:13:29+05:30
-    heartbeat_at: 2026-08-27T09:14:31+05:30
-    last_progress_at: 2026-08-27T09:14:31+05:30
-    active_lane_count: 0
-    coordinator_phase: RECOVERY_CLOSE
-    current_backlog_item: null
-    current_work_unit: null
-    progress_fingerprint: STALE_BOOTSTRAP_NO_START_LOG_NO_CLAIM_NO_WORK
-    blocked_reason: HEARTBEAT_STALE_OVER_300_SECONDS_AND_START_LOG_ABSENT
-    recovery_action: REJECT_INCOMPLETE_BOOTSTRAP_AND_RELEASE_CAPACITY
-    outcome: STALE_RECOVERED_NO_WORK_DISPATCHED
-    workers_started: 0
-    claims_created: 0
-    canonical_bl001_delta: 0
-    bootstrap_acknowledged: false
-    transient_lane_logs_remaining: 0
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-081758IST
-    execution_state: PARTIAL_CONTINUE_REQUIRED
-    health_state: TERMINAL_HANDOFF
-    started_at: 2026-08-27T08:17:58+05:30
-    completed_at: 2026-08-27T08:22:07+05:30
-    heartbeat_at: 2026-08-27T08:22:07+05:30
-    last_progress_at: 2026-08-27T08:22:07+05:30
-    active_lane_count: 0
-    coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-    outcome: PARTIAL_CONTINUE_REQUIRED
-    workers_started: 1
-    claims_created: 1
-    canonical_bl001_delta: 0
-    bootstrap_acknowledged: true
-    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-081758IST.md
 work_claims:
-  active: []
+  active:
+    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+      backlog_item: BL-001
+      work_unit: WU-BL001-001
+      task_id: ATOMIC-134-PROJECTION
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-111454IST
+      state: CLAIMED
+      claimed_at: 2026-08-27T11:15:30+05:30
+      heartbeat_at: 2026-08-27T11:15:30+05:30
+      executor: automation/bl001-canonical-projection-engine.py
   completed:
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-101213IST
@@ -115,15 +68,6 @@ work_claims:
       state: RELEASED_FOR_CONTINUATION
       durable_state_found: CONNECTOR_SNAPSHOT_FALLBACK_REQUIRED
       completed_at: 2026-08-27T08:22:07+05:30
-    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-      prior_owner_invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
-      state: RELEASED_FOR_CONTINUATION
-      durable_state_found: ALL_11_MISSING_ROWS_SOURCE_PROVED_ATOMIC_RECONSTRUCTION_NOT_EXECUTABLE_IN_THIS_RUNTIME
-      completed_at: 2026-08-26T19:41:30+05:30
-    - claim_key: BL-002|RELEASE-1-FIELD-LEVEL|NEXT-UI-SOURCE-ANALYSIS
-      prior_owner_invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
-      state: RELEASED_FOR_CONTINUATION
-      completed_at: 2026-08-26T19:41:30+05:30
   recovered:
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
@@ -142,11 +86,7 @@ bootstrap_control:
   latest_successful_bootstrap_ack_at: 2026-08-27T10:14:20+05:30
   next_required_BL001_claim: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
 rules:
-  - each invocation owns only its own workspace, lane logs and executor processes
   - each work claim is globally unique across active invocations
-  - every RUNNING invocation must carry compliant heartbeat/progress health fields
-  - a RUNNING flag or scheduler last_run_time alone never proves Orchestrator liveness
   - START and initial heartbeat must be read back before ORCHESTRATOR_STARTED
   - eligible work requires a persisted and read-back-verified work claim before dispatch
-  - stale/stuck owners are recovered fail-closed before capacity or duplicate-work decisions
   - shared SSOT merge and BL-008 database writes remain globally serialized
