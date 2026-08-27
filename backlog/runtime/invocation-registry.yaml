@@ -1,8 +1,29 @@
-version: 56
+version: 57
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 1
-active_invocations: []
+active_invocations:
+- invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
+  execution_state: RUNNING
+  health_state: ACTIVE
+  started_at: 2026-08-28 04:24:47+05:30
+  completed_at: null
+  heartbeat_at: 2026-08-28 04:24:47+05:30
+  last_progress_at: 2026-08-28 04:24:47+05:30
+  last_lane_activity_at: null
+  active_lane_count: 0
+  coordinator_phase: BOOTSTRAP_CLAIMED
+  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
+  current_work_unit: WU-BL001-001
+  progress_fingerprint: CHATGPT_ENV_START_REGISTRY_HEARTBEAT_CLAIMS_PERSISTED
+  blocked_reason: null
+  recovery_action: null
+  workers_started: 0
+  claims_created: 3
+  canonical_progress_delta: 0
+  bootstrap_acknowledged: false
+  transient_lane_logs_remaining: 0
+  outcome: null
 recent_completed_invocations:
 - invocation_id: CYLINDER-PRODUCTION-FIRE-20260828-041619IST
   execution_state: PARTIAL_CONTINUE_REQUIRED
@@ -170,6 +191,7 @@ recent_completed_invocations:
   completed_at: 2026-08-27 16:19:03+05:30
   heartbeat_at: 2026-08-27 16:19:03+05:30
   last_progress_at: 2026-08-27 16:19:03+05:30
+  last_lane_activity_at: 2026-08-27 16:19:03+05:30
   active_lane_count: 0
   coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
   current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
@@ -197,7 +219,19 @@ recent_completed_invocations:
   outcome: RECOVERED_STALE
   bootstrap_acknowledged: false
 work_claims:
-  active: []
+  active:
+  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+    owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
+    state: CLAIMED
+    claimed_at: 2026-08-28 04:24:47+05:30
+  - claim_key: BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP-FIELD-PROOF
+    owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
+    state: CLAIMED
+    claimed_at: 2026-08-28 04:24:47+05:30
+  - claim_key: BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT
+    owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
+    state: CLAIMED
+    claimed_at: 2026-08-28 04:24:47+05:30
   completed:
   - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
     prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260828-041619IST
