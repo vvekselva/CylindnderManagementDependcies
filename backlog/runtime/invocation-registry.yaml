@@ -1,20 +1,20 @@
-version: 35
+version: 36
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
 active_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
-    execution_state: BOOTSTRAPPING
+    execution_state: RUNNING
     health_state: ACTIVE
     started_at: 2026-08-27T13:15:36+05:30
-    heartbeat_at: 2026-08-27T13:16:20+05:30
-    last_progress_at: 2026-08-27T13:16:20+05:30
-    last_lane_activity_at: null
-    active_lane_count: 0
-    coordinator_phase: CLAIMING
+    heartbeat_at: 2026-08-27T13:16:40+05:30
+    last_progress_at: 2026-08-27T13:16:40+05:30
+    last_lane_activity_at: 2026-08-27T13:16:40+05:30
+    active_lane_count: 1
+    coordinator_phase: ORCHESTRATOR_STARTED
     current_backlog_item: BL-001
     current_work_unit: WU-BL001-001
-    progress_fingerprint: BL001_ATOMIC_134_CLAIM_PERSISTED_PENDING_READBACK
+    progress_fingerprint: BOOTSTRAP_ACK_VERIFIED_BL001_ATOMIC_CLAIM_OWNED
     blocked_reason: null
     recovery_action: null
 recent_completed_invocations:
@@ -55,7 +55,7 @@ work_claims:
       work_unit: WU-BL001-001
       task_id: ATOMIC-134-PROJECTION
       owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
-      state: CLAIMED
+      state: EXECUTING
       claimed_at: 2026-08-27T13:16:20+05:30
       executor: automation/bl001-canonical-projection-engine.py
       source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -79,7 +79,7 @@ bootstrap_control:
   governance: governance/orchestrator-bootstrap-gate.yaml
   scheduler_fire_is_orchestrator_start: false
   bootstrap_ack_required: true
-  latest_successful_bootstrap_ack_at: 2026-08-27T11:15:30+05:30
+  latest_successful_bootstrap_ack_at: 2026-08-27T13:16:40+05:30
   next_required_BL001_claim: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
 rules:
   - each work claim is globally unique across active invocations
