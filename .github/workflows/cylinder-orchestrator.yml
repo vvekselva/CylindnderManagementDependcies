@@ -39,12 +39,21 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Set up Java 21 and Maven
-        uses: actions/setup-java@v4
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
-          cache: maven
+
+      - name: Prove hosted process runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python --version
+          java -version
+          mvn -version
+          node --version
+          git --version
 
       - name: Install orchestrator Python dependencies
         run: python -m pip install --disable-pip-version-check pyyaml
@@ -71,6 +80,14 @@ jobs:
           path: .orchestrator-source/CylinderManagement
           fetch-depth: 1
 
+      - name: Verify frozen source identity
+        if: steps.source-auth.outputs.available == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA="$(git -C .orchestrator-source/CylinderManagement rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "3ae6e61442132d94a307275b08dd65fcef228d89"
+
       - name: Execute governed orchestrator cycle
         env:
           CYLINDER_SOURCE_AVAILABLE: ${{ steps.source-auth.outputs.available }}
@@ -85,6 +102,7 @@ jobs:
         if: always()
         shell: bash
         run: |
+          set -euo pipefail
           rm -rf .orchestrator-source
           git add -A
           if git diff --cached --quiet; then
