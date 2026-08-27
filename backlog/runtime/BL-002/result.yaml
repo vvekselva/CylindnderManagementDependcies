@@ -20,17 +20,17 @@ result:
     release_3: WHATSAPP_INTEGRATION_DATE_TBD
     rule: COMPLETE_RELEASE_1_FIELD_LEVEL_STORY_REWORK_BEFORE_RELEASE_2
   story_result:
-    registered_story_dispositions: 66
+    registered_story_dispositions: 67
     ready_for_user_review_in_existing_register: 45
-    needs_clarification_in_existing_register: 21
+    needs_clarification_in_existing_register: 22
     approved: 0
     materialized_story_artifacts: 67
-    pending_registration_sync_story_ids: [STORY-0067]
-    synchronized_story_ids_this_fire: []
-    materialized_story_ids_this_fire: [STORY-0067]
-    human_readable_materialized_this_fire: [STORY-0067]
-    story_register_synchronized_through: STORY-0066
-    cross_traceability_map_synchronized_through: STORY-0066
+    pending_registration_sync_story_ids: []
+    synchronized_story_ids_this_fire: [STORY-0067]
+    materialized_story_ids_this_fire: []
+    human_readable_materialized_this_fire: []
+    story_register_synchronized_through: STORY-0067
+    cross_traceability_map_synchronized_through: STORY-0067
     cross_traceability_map: traceability/controller-story-usecase-map.yaml
     shallow_story_generation_allowed: false
     release_1_field_level_rework_allowed: true
@@ -51,13 +51,11 @@ result:
     - RELEASE_1_FIELD_LEVEL_STORY_REWORK_REQUIRED
     - BL001_FINAL_VALIDATED_134_UNIQUE_ROWS_REQUIRED_FOR_FINAL_BL002_VERIFICATION
     - ALL_RELEASE_1_CANONICAL_ROWS_REQUIRE_FIELD_LEVEL_STORY_DISPOSITION
-    - STORY_0067_REGISTER_AND_CROSS_MAP_SYNC_REQUIRED
     - STORY_USER_APPROVAL_REQUIRED
     - USECASE_USER_APPROVAL_REQUIRED
   current_outcome: >-
-    STORY-0067 for POST /trip-review/{vehicleTripId}/close-review was materialized from an accepted, materialized,
-    non-stale BL-001 Release-1 row. Its YAML and human-readable Story exist and remain NEEDS_CLARIFICATION because the exact
-    service/DAO/entity/database-column transition contract and validation semantics are not fully source-proved. The
-    authoritative register remains synchronized through STORY-0066 until STORY-0067 can be atomically registered and mapped.
-    No Story was auto-approved and no pending BL-001 atomic-projection row was consumed. Release 2 remains blocked.
-  next_action: ATOMICALLY_REGISTER_AND_CROSS_MAP_STORY_0067_THEN_CONTINUE_RELEASE_1_FIELD_LEVEL_REWORK
+    STORY-0067 for POST /trip-review/{vehicleTripId}/close-review is now atomically represented in the Story register and
+    Matrix-to-Story traceability map. It remains NEEDS_CLARIFICATION because the exact service/DAO/entity/database-column
+    transition contract and validation semantics are not fully source-proved. No Story was auto-approved and no pending BL-001
+    atomic-projection row was consumed. Release 2 remains blocked.
+  next_action: CONTINUE_RELEASE_1_FIELD_LEVEL_REWORK_FROM_ACCEPTED_MATERIALIZED_NON_STALE_ROWS
