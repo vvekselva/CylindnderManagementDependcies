@@ -1,4 +1,4 @@
-version: 33
+version: 34
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
@@ -7,14 +7,14 @@ active_invocations:
     execution_state: BOOTSTRAPPING
     health_state: IDLE_BUT_HEALTHY
     started_at: 2026-08-27T13:15:36+05:30
-    heartbeat_at: null
+    heartbeat_at: 2026-08-27T13:15:50+05:30
     last_progress_at: 2026-08-27T13:15:36+05:30
     last_lane_activity_at: null
     active_lane_count: 0
     coordinator_phase: BOOTSTRAPPING
     current_backlog_item: null
     current_work_unit: null
-    progress_fingerprint: INVOCATION_START_PERSISTED
+    progress_fingerprint: START_LOG_AND_INITIAL_HEARTBEAT_PERSISTED
     blocked_reason: null
     recovery_action: null
 recent_completed_invocations:
