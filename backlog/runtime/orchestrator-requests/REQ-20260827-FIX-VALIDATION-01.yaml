@@ -1,0 +1,16 @@
+request_id: REQ-20260827-FIX-VALIDATION-01
+requested_at: 2026-08-27T20:27:00+05:30
+mode: MANUAL
+streams:
+  - BL-001
+  - BL-002
+  - BL-008
+purpose: VALIDATE_REPAIRED_HOSTED_RUNNER_AND_ADVANCE_ELIGIBLE_WORK
+constraints:
+  frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  max_primary_invocations: 1
+  max_safe_workers: 10
+  bl008_neon_branch: main
+  bl008_branch_creation_forbidden: true
+  bl008_flyway_only: true
+  bl008_database_requirement_parallelism: 1
