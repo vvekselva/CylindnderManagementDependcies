@@ -1,6 +1,6 @@
-invocation_id: CYLINDER-HOSTED-RUNNER-33088732001-1
-started_at: '2026-08-27T15:36:59Z'
-completed_at: '2026-08-27T15:37:10Z'
+invocation_id: CYLINDER-HOSTED-RUNNER-33088967867-1
+started_at: '2026-08-27T15:39:13Z'
+completed_at: '2026-08-27T15:39:16Z'
 outcome: PARTIAL_CONTINUE_REQUIRED
 workers_started: 1
 claims_created: 1
@@ -18,38 +18,10 @@ stream_outcomes:
     - --dry-run
     returncode: 2
     stdout: ''
-    stderr: 'FAIL_CLOSED: Expected 123 pre-projection or 134 idempotent unique rows, found 115; RECONCILIATION_DIAGNOSTIC={"base_unique_count":
-      11, "effective_duplicates": [], "effective_missing_from_json": ["GET /add-stop", "GET /challan-entry-aging-dashboard", "GET /challan-heatmap",
-      "GET /challan-page-photo/{challanPagePhotoId}", "GET /customer-address-location/import-whatsapp-export", "GET /customer-address-location/missing",
-      "GET /customer-address-location/planning-map", "GET /customer-address-location/points.geojson", "GET /customer-address-location/upload",
-      "GET /customer-consumption", "GET /customer-consumption/", "GET /customer-consumption/api/dashboard", "GET /customer-consumption/dashboard",
-      "GET /customer-demands", "GET /customer-spot-cylinder-check/fetch", "GET /cylinderDelivery", "GET /delivery-planning", "GET /delivery-planning/customer-coverage.geojson",
-      "GET /delivery-planning/customer-density-bubble-map", "GET /delivery-planning/customer-density-bubbles.geojson", "GET /delivery-planning/dashboard",
-      "GET /delivery-planning/demand-bubbles.geojson", "GET /delivery-planning/demand-points.geojson", "GET /delivery-planning/stops", "GET /delivery-planning/stops.geojson",
-      "GET /delivery-planning/stops/manage", "GET /delivery-planning/stops/manage/", "GET /delivery-planning/stops/{stopId}/nearby-customers",
-      "GET /delivery-planning/weekly-forecast", "GET /displayCustomer", "GET /domainLookup", "GET /fetchCustomerByPage", "GET /fetchSupplierByPage",
-      "GET /find/Driver-by-Id/{driverId}", "GET /find/Vehicle-by-Id/{vehicleId}", "GET /logistics/challan-books/add-form", "GET /ownership-dashboard",
-      "GET /ownership-dashboard/customer", "GET /ownership-dashboard/logistics", "GET /ownership-dashboard/supplier", "GET /ownership-dashboard/yard",
-      "GET /ownership-obligation-dashboard", "GET /party-custody-traceability", "GET /reconciliation-command-center", "GET /reconciliation-command-center/details",
-      "GET /registerCustomer", "GET /search/address/customer-address/{customerId}", "GET /search/addresstype/{searchText}", "GET /search/challantype/{searchText}",
-      "GET /search/city/{searchText}", "GET /search/country/{searchText}", "GET /search/customer/{searchText}", "GET /search/cylinder/{searchText}",
-      "GET /search/driver/{searchText}", "GET /search/product-category/{searchText}", "GET /search/product-uom/{searchText}", "GET /search/product/{searchText}",
-      "GET /search/state/{searchText}", "GET /search/supplier/{searchText}", "GET /search/vehicle/{searchText}", "GET /trip-return", "GET /trip-review",
-      "GET /trip-review/{vehicleTripId}", "GET /vehicle-loads/all-list", "GET /vehicle-loads/list", "GET /vehicle-trips/list", "GET /walkin-sale",
-      "GET /wizard/vehicle-trip-load", "GET /yard-audit-dashboard", "GET /yard-location/points.geojson", "GET /yard-location/upload", "POST /add-stop/challan-page-photo/delete-ajax",
-      "POST /add-stop/challan-page-photo/upload", "POST /add-stop/challan-page-photo/upload-ajax", "POST /customer-address-location/import-whatsapp-export",
-      "POST /customer-address-location/upload", "POST /customer-demands", "POST /customer-demands/{requestId}/mark-delivered", "POST /customer-spot-cylinder-check/submit",
-      "POST /cylinderDelivery", "POST /delivery-planning/stops/manage/remove", "POST /delivery-planning/stops/manage/save", "POST /delivery-planning/stops/manage/save-selected",
-      "POST /domainLookup/cylinder/save", "POST /domainLookup/driver/save", "POST /domainLookup/product/save", "POST /domainLookup/productCategory/save",
-      "POST /domainLookup/productUom/save", "POST /domainLookup/vehicle/save", "POST /logistics/challan-books/save", "POST /registerCustomer",
-      "POST /search/cylinder/by-customer", "POST /search/cylinder/by-serial-and-state", "POST /search/cylinder/by-state", "POST /search/cylinder/by-supplier",
-      "POST /search/cylinder/on-vehicle", "POST /search/cylinder/ownership/by-state", "POST /stop", "POST /trip-return", "POST /trip-review/{vehicleTripId}/close-review",
-      "POST /updateCustomer", "POST /walkin-sale", "POST /wizard/vehicle-trip-load/save", "POST /yard-location/upload"], "effective_missing_from_markdown":
-      [], "effective_physical_count": 115, "effective_unique_count": 115, "json_missing_from_effective": [], "json_unique_count": 11, "markdown_missing_from_effective":
-      ["GET /ingestSupplier", "GET /ingestYardStockCheck", "GET /vehicleLoad", "POST /ingestSupplier", "POST /ingestYardStockCheck", "POST /setCustomerActive",
-      "POST /setCustomerInactive", "POST /vehicleLoad"], "markdown_unique_count": 123, "ordered_delta_count": 42}
-
-      '
+    stderr: "FAIL_CLOSED: Staged canonical reconstruction failed: FAIL_CLOSED: while parsing a flow sequence\n  in \"<unicode string>\", line\
+      \ 99, column 23:\n          terminal_paths: [redirect:/lookupManagement?tab= ... \n                          ^\nexpected ',' or ']', but\
+      \ got '?'\n  in \"<unicode string>\", line 99, column 50:\n     ... ths: [redirect:/lookupManagement?tab=addressType, final-version- ...\
+      \ \n                                         ^\n"
   BL-002:
     state: SOURCE_RUNTIME_UNAVAILABLE
     next_action: CONTINUE_RELEASE_1_UI_SOURCE_ANALYSIS_WITH_PRIMARY_AUTOMATION_TOOL
