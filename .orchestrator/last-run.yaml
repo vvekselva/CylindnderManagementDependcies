@@ -1,4 +1,4 @@
-run_time: 2026-08-27T21:27:48+05:30
+run_time: 2026-08-28T04:32:15+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: FULLY_BLOCKED
 policy:
@@ -14,7 +14,7 @@ policy:
 lease:
   overlap_detected: false
   status: ACQUIRED
-  acquired_commit: 99372245cf4d82ee827e0616942b5671e30d58cf
+  acquired_commit: 92f06c677c5b09b81f0f99dcf850cf5ad586d9ac
 bl008:
   status: BLOCKED_BEFORE_DATABASE_ACCESS
   authoritative_flyway_source:
@@ -22,11 +22,6 @@ bl008:
     branch: main
     migration_path: cylinder.datascripts/src/main/resources/db/migration
     migration_directory_reachable: true
-  dependency_ledger:
-    file: database-dependency.md
-    current_required_target: V176
-    status: STALE_FOR_CURRENT_TEST_POLICY
-    reason: "Ledger still names neon-for-cylinder-db / production as authoritative target, while current orchestration policy requires cylinder_db_for_testing / main."
   neon_project:
     name: cylinder_db_for_testing
     project_id: weathered-heart-89789162
