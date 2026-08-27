@@ -9,7 +9,14 @@
   const deltas = Array.isArray(window.TRACEABILITY_DELTAS) ? window.TRACEABILITY_DELTAS : [];
 
   for (const delta of deltas) {
-    const checkpoint = delta && delta.checkpoint ? delta.checkpoint : {};
+    // Two durable delta schemas exist in the repository:
+    //   legacy: { checkpoint: "INVOCATION", metadata: {...}, upserts: [...] }
+    //   current: { checkpoint: {...}, endpoints: [...] }
+    // Both represent accepted canonical evidence and must assemble identically.
+    const checkpoint = (delta && typeof delta.checkpoint === 'object' && delta.checkpoint !== null)
+      ? delta.checkpoint
+      : ((delta && delta.metadata && typeof delta.metadata === 'object') ? delta.metadata : {});
+
     const metadataMap = {
       canonicalEndpointInventory: 'canonicalEndpointInventory',
       canonicalAcceptedExamined: 'canonicalAcceptedExamined',
@@ -25,11 +32,21 @@
     for (const [sourceKey, targetKey] of Object.entries(metadataMap)) {
       if (checkpoint[sourceKey] !== undefined) data.metadata[targetKey] = checkpoint[sourceKey];
     }
-    if (checkpoint.invocation) data.metadata.latestInvocation = checkpoint.invocation;
+
+    if (checkpoint.invocation) {
+      data.metadata.latestInvocation = checkpoint.invocation;
+    } else if (delta && typeof delta.checkpoint === 'string' && delta.checkpoint) {
+      data.metadata.latestInvocation = delta.checkpoint;
+    }
+
     data.metadata.status = 'INCREMENTAL_PARTIAL';
     data.metadata.projectionState = 'BASE_PLUS_ORDERED_DELTAS_CURRENT';
 
-    for (const row of (delta.endpoints || [])) {
+    const rows = Array.isArray(delta && delta.endpoints)
+      ? delta.endpoints
+      : (Array.isArray(delta && delta.upserts) ? delta.upserts : []);
+
+    for (const row of rows) {
       const key = endpointKey(row);
       const index = data.endpoints.findIndex(existing => endpointKey(existing) === key);
       if (index >= 0) data.endpoints[index] = row;
