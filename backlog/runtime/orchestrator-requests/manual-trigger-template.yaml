@@ -1,7 +1,0 @@
-request_id: REPLACE_WITH_UNIQUE_ID
-requested_at: REPLACE_WITH_ISO_TIMESTAMP
-mode: MANUAL
-streams:
-  - BL-001
-  - BL-002
-  - BL-008
