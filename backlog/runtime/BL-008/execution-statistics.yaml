@@ -1,13 +1,17 @@
-backlog_item: BL-008
-version: 1
-state: INITIALIZED
-runs: 0
-work_units_total: 7
-work_units_complete: 0
-work_units_remaining: 7
-migration_target: V176
-validation_branch_migrated: false
-production_migrated: false
-ownership_integrity_pass: false
-transient_lane_logs: 0
-last_meaningful_progress: GOVERNANCE_BOOTSTRAP
+execution_statistics:
+  backlog_item: BL-008
+  version: 2
+  state: BLOCKED_FLYWAY_RUNTIME_UNAVAILABLE
+  comparison_window: {}
+  database_metrics:
+    authoritative_source_head: V170
+    active_requirement: V1__DailyLogin.sql
+    completed_requirements: 0
+    public_table_count: 0
+    flyway_schema_history_exists: false
+    database_write_attempted: false
+    manual_sql_fallback_used: false
+  staleness:
+    consecutive_no_progress_cycles: 0
+    stale: false
+    reason: null
