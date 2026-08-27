@@ -1,4 +1,4 @@
-run_time: 2026-08-26T23:31:34+05:30
+run_time: 2026-08-27T07:31:30+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: FULLY_BLOCKED
 policy:
@@ -14,22 +14,19 @@ policy:
 lease:
   overlap_detected: false
   status: ACQUIRED
-  acquired_commit: afb071eda7203de4fc43f321da675130b540c154
+  acquired_commit: 4afb8034b9569e7aceb4600fabd1960bdd15202d
 bl008:
   status: BLOCKED_BEFORE_DATABASE_ACCESS
   authoritative_flyway_source:
     repository: vvekselva/CylinderManagement
     branch: main
     migration_path: cylinder.datascripts/src/main/resources/db/migration
-  control_repository_conflict:
-    file: database-dependency.md
-    observed_state: "ledger still points to neon-for-cylinder-db / production and conflicts with current TEST-main-only policy"
-    execution_effect: "not consumed as executable target"
   neon_project:
     name: cylinder_db_for_testing
     project_id: weathered-heart-89789162
     postgres_version: 18
     branches_count: 1
+    default_branch: production
     observed_branches:
       - name: production
         id: br-holy-scene-ax0ddw93
@@ -49,14 +46,19 @@ bl008:
   integrity_verification:
     flyway_schema_history: NOT_ATTEMPTED
     ownership_schema_data_integrity: NOT_ATTEMPTED
+  database_writes: 0
   blocker: "Existing Neon TEST branch named main is missing."
   exact_missing_condition: "An existing branch named main must exist in project weathered-heart-89789162; orchestrator must not create it."
 bl001:
   status: BLOCKED
   target_unique_method_path_rows: 134
   control_repository_tree_verified: true
-  live_control_usecases_entries:
-    - Readme.md
+  live_control_paths:
+    - .orchestrator/invocation-lease.yaml
+    - .orchestrator/last-run.yaml
+    - Task-Status,md
+    - database-dependency.md
+    - usecases/Readme.md
   accepted_materialized_non_stale_rows_available: false
   atomic_matrix_explorer_consolidation_performed: false
   blocker: "Authoritative control main contains no BL-001 manifest/recovery/matrix/Explorer artifacts and no accepted/materialized/non-stale source-proof row set."
