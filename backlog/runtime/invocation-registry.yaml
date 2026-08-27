@@ -4,6 +4,26 @@ authoritative: true
 max_concurrent_invocations: 1
 active_invocations: []
 recent_completed_invocations:
+- invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152907Z-33088039264
+  execution_state: PARTIAL_CONTINUE_REQUIRED
+  health_state: TERMINAL_HANDOFF
+  started_at: '2026-08-27T15:29:07Z'
+  completed_at: '2026-08-27T15:29:07Z'
+  heartbeat_at: '2026-08-27T15:29:07Z'
+  last_progress_at: '2026-08-27T15:29:07Z'
+  last_lane_activity_at: '2026-08-27T15:29:07Z'
+  active_lane_count: 0
+  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
+  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
+  current_work_unit: HOSTED_RUNTIME_PREFLIGHT
+  progress_fingerprint: HOSTED_RUNNER_workers_0_claims_0_delta_0
+  blocked_reason: BL001_PRIVATE_FROZEN_SOURCE_CHECKOUT_UNAVAILABLE; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
+  recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE
+  workers_started: 0
+  claims_created: 0
+  canonical_progress_delta: 0
+  bootstrap_acknowledged: true
+  outcome: PARTIAL_CONTINUE_REQUIRED
 - invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152848Z-33088014464
   execution_state: PARTIAL_CONTINUE_REQUIRED
   health_state: TERMINAL_HANDOFF
