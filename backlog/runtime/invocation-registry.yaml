@@ -1,4 +1,4 @@
-version: 36
+version: 37
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
@@ -7,16 +7,16 @@ active_invocations:
     execution_state: RUNNING
     health_state: ACTIVE
     started_at: 2026-08-27T13:15:36+05:30
-    heartbeat_at: 2026-08-27T13:16:40+05:30
-    last_progress_at: 2026-08-27T13:16:40+05:30
+    heartbeat_at: 2026-08-27T13:19:15+05:30
+    last_progress_at: 2026-08-27T13:19:15+05:30
     last_lane_activity_at: 2026-08-27T13:16:40+05:30
     active_lane_count: 1
-    coordinator_phase: ORCHESTRATOR_STARTED
+    coordinator_phase: SOURCE_RESOLUTION
     current_backlog_item: BL-001
     current_work_unit: WU-BL001-001
-    progress_fingerprint: BOOTSTRAP_ACK_VERIFIED_BL001_ATOMIC_CLAIM_OWNED
-    blocked_reason: null
-    recovery_action: null
+    progress_fingerprint: CONNECTOR_FALLBACK_PROVED_42_ORDERED_EXPLORER_DELTAS_AND_TRANSACTIONAL_EXECUTOR_INPUTS
+    blocked_reason: LOCAL_GIT_DNS_UNAVAILABLE_CONNECTOR_STAGING_IN_PROGRESS
+    recovery_action: MATERIALIZE_PROCESS_READABLE_CONNECTOR_SNAPSHOT
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-121715IST
     execution_state: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
