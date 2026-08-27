@@ -1,0 +1,26 @@
+invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152848Z-33088014464
+started_at: '2026-08-27T15:28:48Z'
+completed_at: '2026-08-27T15:28:48Z'
+outcome: PARTIAL_CONTINUE_REQUIRED
+workers_started: 0
+claims_created: 0
+canonical_progress_delta: 0
+blockers:
+- BL001_PRIVATE_FROZEN_SOURCE_CHECKOUT_UNAVAILABLE
+- BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
+stream_outcomes:
+  BL-001:
+    state: BLOCKED_SOURCE_RUNTIME_CREDENTIAL
+    required_secret: CYLINDER_SOURCE_TOKEN
+  BL-002:
+    state: SOURCE_RUNTIME_UNAVAILABLE
+    next_action: CONTINUE_RELEASE_1_UI_SOURCE_ANALYSIS_WITH_PRIMARY_AUTOMATION_TOOL
+    auto_approval: false
+  BL-008:
+    state: BLOCKED_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
+    missing_secret_names:
+    - CYLINDER_SOURCE_TOKEN
+    - NEON_JDBC_URL
+    - NEON_DB_USER
+    - NEON_DB_PASSWORD
+    manual_sql_fallback_used: false
