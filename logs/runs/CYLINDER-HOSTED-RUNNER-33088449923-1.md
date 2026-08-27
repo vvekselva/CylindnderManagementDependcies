@@ -5,3 +5,11 @@
 - bootstrap_acknowledged: true
 - claims:
   - BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+- END: 2026-08-27T15:33:33Z
+- outcome: PARTIAL_CONTINUE_REQUIRED
+- workers_started: 1
+- claims_created: 1
+- canonical_progress_delta: 0
+- blockers:
+  - BL001_ATOMIC_DRY_RUN_FAILED
+  - BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE

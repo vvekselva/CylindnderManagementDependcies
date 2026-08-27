@@ -1,17 +1,26 @@
-invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152907Z-33088039264
-started_at: '2026-08-27T15:29:07Z'
-completed_at: '2026-08-27T15:29:07Z'
+invocation_id: CYLINDER-HOSTED-RUNNER-33088449923-1
+started_at: '2026-08-27T15:33:29Z'
+completed_at: '2026-08-27T15:33:33Z'
 outcome: PARTIAL_CONTINUE_REQUIRED
-workers_started: 0
-claims_created: 0
+workers_started: 1
+claims_created: 1
 canonical_progress_delta: 0
 blockers:
-- BL001_PRIVATE_FROZEN_SOURCE_CHECKOUT_UNAVAILABLE
+- BL001_ATOMIC_DRY_RUN_FAILED
 - BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
 stream_outcomes:
-  BL-001:
-    state: BLOCKED_SOURCE_RUNTIME_CREDENTIAL
-    required_secret: CYLINDER_SOURCE_TOKEN
+  BL-001_dry_run:
+    command:
+    - /opt/hostedtoolcache/Python/3.12.14/x64/bin/python
+    - automation/bl001-canonical-projection-engine.py
+    - --repo-root
+    - /home/runner/work/CylindnderManagementDependcies/CylindnderManagementDependcies
+    - --dry-run
+    returncode: 2
+    stdout: ''
+    stderr: 'FAIL_CLOSED: Expected 123 pre-projection or 134 idempotent rows, found 115
+
+      '
   BL-002:
     state: SOURCE_RUNTIME_UNAVAILABLE
     next_action: CONTINUE_RELEASE_1_UI_SOURCE_ANALYSIS_WITH_PRIMARY_AUTOMATION_TOOL
