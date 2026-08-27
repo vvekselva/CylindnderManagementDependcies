@@ -1,7 +1,7 @@
 work_units:
   WU-BL001-001:
-    state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_BLOCKED
-    execution_mode: PRIMARY_ORCHESTRATOR_DIRECT_FROZEN_SOURCE_PLUS_SELF_RELIANT_STAGED_SOURCE
+    state: SOURCE_PROOF_COMPLETE_MODEL_ASSEMBLY_PENDING
+    execution_mode: CHATGPT_PRIMARY_ORCHESTRATOR_WITH_GITHUB_CONNECTOR
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
     reported_checkpoint: {total_endpoints: 134, examined_counter: 134, complete_counter: 134, unresolved: 0, blocked: 0, failed: 0}
     canonical_unique_checkpoint:
@@ -10,30 +10,36 @@ work_units:
       pending_unique_keys: 11
       fully_source_proved_pending_atomic_projection: 11
       unique_method_path_coverage_proved: false
-    uniqueness_status: ALL_MISSING_KEYS_SOURCE_PROVED_ATOMIC_PROJECTION_CONSOLIDATION_BLOCKED
+    uniqueness_status: ALL_11_MISSING_KEYS_SOURCE_PROVED_MODEL_ASSEMBLY_PENDING
     recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
     projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
-    latest_recovery_checkpoint: logs/runs/PRODUCTION-FIRE-20260825-140218-SCHEDULER.md
+    projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
+    connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
+    atomic_publication_capability: backlog/runtime/BL-001/atomic-publication-capability.yaml
     active_blocker: GB-BL001-UNIQUE-PROJECTION-001
     worker_generation_replay_required: false
     direct_frozen_source_revalidation_allowed: true
+    github_actions_required: false
+    github_hosted_runner_required: false
+    atomic_git_publication_transport: AVAILABLE
     residual_transient_lane_logs: 0
     next_action: >-
-      Consolidate the accepted Explorer base plus ordered deltas, append the eleven source-proved recovery keys,
-      regenerate traceability-matrix.json and matrix-data.js from the same accepted model, then atomically synchronize
-      Markdown, unresolved ledger, matrix-progress and Level-3 runtime. Do not promote partial projections.
+      Reconstruct the effective Explorer base plus all 42 index-ordered deltas under HTTP_METHOD_PLUS_PATH upsert
+      semantics, assert exactly 123 unique current keys, merge the eleven source-proved corrected recovery rows,
+      assert exactly 134 unique keys with zero duplicates, regenerate every canonical projection from that single
+      accepted model, hash the staged outputs and publish them through one Git tree/commit/ref update.
   WU-BL001-002:
-    state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
+    state: BLOCKED_WAITING_FOR_TRUE_134_UNIQUE_KEY_MATERIALIZATION
     name: Final Matrix Reconciliation
     dependency: WU-BL001-001
-    dependency_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_BLOCKED
-    matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
+    dependency_state: SOURCE_PROOF_COMPLETE_MODEL_ASSEMBLY_PENDING
+    matrix_state: INCREMENTAL_PARTIAL_ATOMIC_PROJECTION_PENDING
     materialized_matrix_rows: 123
     confirmed_missing_canonical_keys: 11
     fully_source_proved_missing_keys: 11
     canonical_endpoint_inventory_target: 134
     reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ_NO_INVENTED_CHAINS
-    next_action: Wait until reopened WU-BL001-001 atomically materializes exactly 134 unique keys.
+    next_action: Wait until WU-BL001-001 atomically materializes exactly 134 unique keys.
   WU-BL001-003:
     state: BLOCKED_WAITING_FOR_RECONCILIATION
     dependency: WU-BL001-002

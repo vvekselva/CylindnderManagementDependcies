@@ -4,9 +4,9 @@ result:
   verified: false
   closed: false
   canonical_source_check_result_accepted: false
-  canonical_source_check_result_state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
-  matrix_state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
-  sync_state: SYNCHRONIZED
+  canonical_source_check_result_state: SOURCE_PROOF_COMPLETE_MODEL_ASSEMBLY_PENDING
+  matrix_state: INCREMENTAL_PARTIAL_ATOMIC_PROJECTION_PENDING
+  sync_state: SYNCHRONIZED_CURRENT_123_CANONICAL
   pending_sync_artifact: null
   pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -18,7 +18,7 @@ result:
 
   source_gate:
     id: QG-SOURCE-001
-    state: PASS_FROZEN_BASELINE_TARGETED_RECOVERY_ALLOWED
+    state: PASS_FROZEN_BASELINE_ALL_11_RECOVERY_KEYS_SOURCE_PROVED
     source_provider: PRIMARY_ORCHESTRATOR_EXACT_FROZEN_SOURCE
     latest_worker_execution: E2E-STAGED-20260823-161214
     old_generation_replay_required: false
@@ -37,48 +37,58 @@ result:
     unique_method_path_coverage_proved: false
     materialized_unique_method_path_rows: 123
     confirmed_missing_canonical_keys: 11
-    fully_source_proved_awaiting_atomic_projection: 5
+    fully_source_proved_awaiting_atomic_projection: 11
     unresolved: 0
-    recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260826-1202.yaml
-    prior_recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
-    prior_reconciliation_integrity_audit: backlog/runtime/BL-001/reconciliation-integrity-audit-20260825.yaml
-    prior_gap_inventory: backlog/runtime/BL-001/reconciliation-gap-inventory-20260825-061110.yaml
-    progress_this_fire: GET_/vehicle-load/fetch_FULL_FROZEN_SOURCE_CHAIN_REVALIDATED
+    recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
+    projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+    projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
+    connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
+    atomic_publication_capability: backlog/runtime/BL-001/atomic-publication-capability.yaml
+    progress_this_fire: ALL_11_SOURCE_PROVED_ATOMIC_GIT_COMMIT_TRANSPORT_AVAILABLE
 
   current_work_unit:
     id: WU-BL001-001
-    state: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY
-    name: Controller Source Check Unique-Key Recovery
+    state: SOURCE_PROOF_COMPLETE_MODEL_ASSEMBLY_PENDING
+    name: Controller Traceability Unique-Key Recovery and Atomic Projection Assembly
     source_read_allowed: true
     frozen_source_only: true
+    worker_generation_replay_required: false
 
   blocked_work_unit:
     id: WU-BL001-002
-    state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
+    state: BLOCKED_WAITING_FOR_TRUE_134_UNIQUE_KEY_MATERIALIZATION
     source_read_allowed: false
 
   unresolved_items:
     - id: BL001-UNIQUE-KEY-RECOVERY
-      state: IN_PROGRESS
-      description: 11 exact canonical HTTP-method/path keys are outside the materialized matrix; five are fully source-proved and await atomic projection, while remaining downstream chains are being revalidated.
+      state: MODEL_ASSEMBLY_PENDING
+      description: All 11 missing canonical HTTP-method/path keys are fully source-proved. Canonical coverage remains 123 until the effective Explorer model is assembled, merged and atomically serialized to exactly 134 unique keys.
     - id: BL001-RAW-COUNTER-INTEGRITY
-      state: BLOCKING_FINAL_RECONCILIATION
-      description: Accumulated 134 counters include proven duplicate acceptance/recount events and are retained for audit only.
+      state: AUDIT_ONLY_PENDING_UNIQUE_KEY_PROOF
+      description: Accumulated 134 counters include proven duplicate acceptance/recount events and remain audit-only until deterministic unique-key projection proves exactly 134 unique method/path keys.
+
+  atomic_publication_gate:
+    state: TRANSPORT_AVAILABLE_CANONICAL_PUBLICATION_NOT_YET_ATTEMPTED
+    method: GIT_BLOBS_TREE_COMMIT_SINGLE_FAST_FORWARD_REF_UPDATE
+    github_actions_required: false
+    github_hosted_runner_required: false
+    force_ref_update_allowed: false
 
   execution_backend:
     owner: AUTOMATION_TOOL
-    type: PRIMARY_ORCHESTRATOR_DIRECT_FROZEN_SOURCE_WITH_OPTIONAL_LOCAL_PROCESS_POOL
+    type: CHATGPT_PRIMARY_ORCHESTRATOR_WITH_GITHUB_CONNECTOR
     max_workers: 10
     github_actions_required: false
 
   final_outputs: []
   close_allowed: false
   next_action: >-
-    Finish the downstream chain proof for POST /addVechileTrip and the remaining LookupManagement routes at frozen commit
-    3ae6e61442132d94a307275b08dd65fcef228d89. Then regenerate and promote recovered rows only when Markdown, unresolved
-    ledger, matrix progress, structured Explorer JSON, browser data and runtime can move atomically. Resume WU-BL001-002
-    only at true 134/134 unique-key coverage.
+    Assemble the effective Explorer model from matrix-data.js plus all 42 ordered deltas using the browser
+    HTTP_METHOD_PLUS_PATH upsert rule and prove exactly 123 unique current keys. Merge the eleven already source-proved
+    corrected recovery rows, prove exactly 134 unique keys with zero duplicates, stage and cross-validate Markdown,
+    unresolved ledger, matrix-progress, structured Explorer JSON, browser matrix-data.js and Level-3 runtime, write a
+    projection SHA-256 manifest, then publish all synchronized artifacts through one Git tree/commit/ref update.
   note: >-
-    This fire revalidated GET /vehicle-load/fetch to the complete frozen-source chain, increasing the source-proved pending
-    set from four to five. The canonical matrix intentionally remains at 123 unique rows because atomic projection has not
-    yet occurred. No pending recovery row was exposed to BL-002 as materialized evidence and transient lane logs remain zero.
+    Source proof is complete for all eleven recovery keys. The prior Level-3 result that reported only five source-proved
+    rows was stale and has been reconciled to matrix-progress.yaml and blockers.yaml. The canonical matrix intentionally
+    remains at 123 unique rows until deterministic model assembly and atomic projection validation pass.

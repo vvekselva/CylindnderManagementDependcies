@@ -1,0 +1,31 @@
+atomic_publication_capability:
+  id: BL001-ATOMIC-PUBLICATION-CAPABILITY
+  backlog_item: BL-001
+  owner: CHATGPT_PRIMARY_ORCHESTRATOR
+  authoritative_branch: chore/rename-dependency-files
+  parent_head_verified: 7773205360b80e5982364e4297454d2ab439294c
+  execution_environment: CHATGPT
+  github_actions_used: false
+  github_hosted_runner_used: false
+  connector_write_path:
+    create_blob: AVAILABLE
+    create_tree: AVAILABLE
+    create_commit: AVAILABLE
+    update_ref: AVAILABLE
+  atomicity_model: >-
+    Build every changed file as a Git blob, create one tree from the current authoritative base tree,
+    create one commit with the current branch head as its single parent, and advance the branch ref once
+    with force=false. If the branch moves concurrently the ref update must fail rather than overwrite it.
+  capability_state: READY_FOR_ATOMIC_MULTI_ARTIFACT_PUBLICATION
+  checkpoint_scope:
+    canonical_projection_attempted: false
+    canonical_unique_keys_before: 123
+    canonical_unique_keys_after: 123
+    source_proved_recovery_keys: 11
+    target_unique_keys: 134
+  remaining_blocker: EFFECTIVE_123_MODEL_ASSEMBLY_AND_134_SERIALIZATION_VALIDATION
+  next_action: >-
+    Reconstruct the effective Explorer model from matrix-data.js plus the 42 index-ordered deltas under
+    HTTP_METHOD_PLUS_PATH upsert semantics, prove exactly 123 unique current keys, merge the eleven corrected
+    recovery records, prove exactly 134 unique keys with zero duplicates, stage every canonical projection,
+    hash the staged outputs, then publish them through one Git tree/commit/ref update.
