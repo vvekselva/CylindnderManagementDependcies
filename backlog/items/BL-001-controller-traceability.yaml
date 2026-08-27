@@ -1,13 +1,13 @@
 backlog_definition:
   id: BL-001
-  version: 1
+  version: 2
   name: Controller Traceability
   type: TRACEABILITY
 
   purpose: >-
-    Establish a trusted endpoint-to-final-dependency traceability baseline for the frozen
-    CylinderManagement source version so every exposed HTTP endpoint is accounted for with
-    source-proved dependency evidence or an explicit unresolved/blocked/failed result.
+    Establish a trusted endpoint-to-final-dependency traceability baseline for the frozen CylinderManagement source version.
+    Every exposed HTTP endpoint must then be accounted for with source-proved dependency evidence or an explicit
+    unresolved, blocked, or failed result.
 
   statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
 
