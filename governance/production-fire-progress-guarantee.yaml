@@ -1,9 +1,10 @@
-version: 1
+version: 2
 name: Production Fire Progress Guarantee
 purpose: >-
-  Prevent a scheduled or manual Cylinder production fire from being treated as successful merely because it checked status.
-  Every fire must register itself durably, classify health, convert recoverable evidence gaps into executable work,
-  keep assigning eligible work while capacity and execution budget remain, and terminate with a truthful terminal state.
+  Prevent a scheduled or manual Cylinder production fire from being treated as successful merely because it checked status
+  or because the scheduler recorded a last_run_time. Every fire must complete the Orchestrator Bootstrap Acknowledgement
+  Gate, register itself durably, classify health, convert recoverable evidence gaps into executable work, keep assigning
+  eligible work while capacity and execution budget remain, and terminate with a truthful terminal state.
 
 authority:
   applies_to: [MANUAL_PRODUCTION_FIRE, SCHEDULED_PRODUCTION_FIRE]
@@ -12,18 +13,24 @@ authority:
   invocation_registry: backlog/runtime/invocation-registry.yaml
   invocation_health: governance/invocation-health.yaml
   invocation_concurrency: governance/invocation-concurrency.yaml
+  orchestrator_bootstrap_gate: governance/orchestrator-bootstrap-gate.yaml
 
 startup_handshake:
   mandatory: true
+  scheduler_fire_is_orchestrator_start: false
   order:
     - PIN_AUTHORITATIVE_CONTROL_BRANCH
     - GENERATE_UNIQUE_INVOCATION_ID
     - PERSIST_INVOCATION_START_IN_REGISTRY
     - PERSIST_START_LOG
     - WRITE_INITIAL_HEARTBEAT
+    - READ_BACK_AND_VERIFY_OWN_START
+    - READ_BACK_AND_VERIFY_OWN_HEARTBEAT
     - CLASSIFY_EXISTING_RUNNING_INVOCATIONS
     - APPLY_RECOVERY_IF_REQUIRED
-    - CLAIM_ELIGIBLE_WORK
+    - CLAIM_ELIGIBLE_WORK_OR_PERSIST_CLEAN_NO_WORK_TERMINAL
+    - READ_BACK_AND_VERIFY_WORK_CLAIM
+    - SET_COORDINATOR_PHASE_ORCHESTRATOR_STARTED
   start_record_required_before_analysis: true
   start_record_fields:
     - invocation_id
@@ -37,15 +44,28 @@ startup_handshake:
     - current_backlog_item
     - current_work_unit
     - progress_fingerprint
+  bootstrap_ack_required_before_backlog_execution: true
+  bootstrap_ack_requires:
+    - own_start_record_readback_verified
+    - own_initial_heartbeat_readback_verified
+    - stale_or_stuck_prior_invocations_reconciled
+    - work_claim_readback_verified_when_eligible_work_exists
+  bootstrap_ack_timeout_seconds: 120
   failure_before_start_record:
     terminal_state: SCHEDULER_TO_ORCHESTRATOR_START_FAILURE
     must_be_persisted_if_repository_write_is_available: true
     scheduler_success_must_not_be_reported_as_production_success: true
+  failure_after_start_before_ack:
+    terminal_state: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
+    production_success_claim_forbidden: true
+    backlog_mutation_forbidden: true
 
 heartbeat:
   required: true
   maximum_interval_seconds: 60
+  initial_heartbeat_readback_required: true
   refresh_during:
+    - BOOTSTRAPPING
     - PLANNING
     - SOURCE_RESOLUTION
     - EXECUTING
@@ -65,6 +85,7 @@ productive_execution:
   mandatory_action_when_terminal_forbidden:
     - REPLAN
     - CLAIM_ELIGIBLE_UNCLAIMED_WORK
+    - READ_BACK_CLAIM_OWNERSHIP
     - DISPATCH
   refill_free_worker_slot_immediately: true
   max_safe_workers_per_invocation: 10
@@ -85,10 +106,11 @@ work_conversion_rules:
     permitted_sources: [PAGE_TEMPLATE, REQUEST_MODEL, DTO, CONTROLLER, VALIDATOR, SERVICE, REPOSITORY, ENTITY]
     unresolved_after_source_analysis: NEEDS_CLARIFICATION
   atomic_projection_ready:
-    priority: HIGH
+    priority: CRITICAL
     rule: >-
-      Accepted/source-proved BL-001 rows waiting only for atomic projection across Markdown matrix, unresolved ledger,
-      matrix progress, Explorer JSON/browser data and runtime must be projected before repeating already-proved discovery.
+      When BL-001 remains at 123 canonical unique keys plus 11 source-proved recovery keys, the bootstrap claim must prefer
+      BL-001|WU-BL001-001|ATOMIC-134-PROJECTION and execute automation/bl001-canonical-projection-engine.py before repeating
+      already-proved discovery.
 
 anti_repeat:
   same_task_same_progress_fingerprint_same_result:
@@ -112,49 +134,79 @@ stream_rules:
     remaining_unique_key_recovery_is_actionable_work: true
     fully_proved_rows_waiting_atomic_projection_are_actionable_work: true
     missing_chain_proof_becomes_source_resolution_task: true
+    first_claim_when_123_plus_11_pending: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+    projection_executor: automation/bl001-canonical-projection-engine.py
   BL-002:
     release_1_before_release_2: true
     accepted_non_stale_BL001_rows_only: true
     missing_field_contract_becomes_ui_source_analysis_task_before_final_needs_clarification: true
 
+stale_recovery_guard:
+  stale_after_seconds_without_primary_heartbeat: 300
+  stale_running_invocation_must_be_recovered_before_new_claim: true
+  zombie_running_state_forbidden: true
+  recovery_requires:
+    - stale_heartbeat_proof
+    - no_live_worker_or_executor_ownership
+    - durable_evidence_preservation
+    - incomplete_partial_output_rejection
+    - recovery_record_persisted
+    - safe_claim_release
+
 terminal_state_rules:
   COMPLETE:
     allowed_only_when:
+      - bootstrap_ack_completed
       - invocation_terminal_checkpoint_persisted
       - all_work_claims_released
       - no_eligible_or_recoverable_unclaimed_work_remains_for_this_invocation
       - all_remaining_owned_work_is_validated_complete_or_durably_blocked
   PARTIAL_CONTINUE_REQUIRED:
     required_when:
+      - bootstrap_ack_completed
       - canonical_progress_may_be_zero
       - eligible_or_recoverable_unclaimed_work_still_exists
       - productive_window_or_other_execution_limit_prevents_more_dispatch
   BLOCKED:
     allowed_only_when:
+      - bootstrap_ack_completed
       - every_remaining_owned_work_item_has_explicit_durable_blocker
       - no_other_eligible_unclaimed_work_exists_across_enabled_streams
   NOOP_CONCURRENCY_LIMIT_WITH_EVIDENCE:
     allowed_only_when:
+      - bootstrap_start_and_heartbeat_acknowledged
       - max_concurrent_invocations_reached_by_healthy_or_recovering_invocations
   forbidden_terminal_claims:
     - COMPLETE_AFTER_STATUS_CHECK_ONLY
     - COMPLETE_WHILE_ELIGIBLE_WORK_EXISTS
     - COMPLETE_WITHOUT_INVOCATION_REGISTRY_ENTRY
+    - PRODUCTION_SUCCESS_FROM_SCHEDULER_LAST_RUN_TIME_ONLY
+    - ORCHESTRATOR_STARTED_WITHOUT_BOOTSTRAP_ACK
 
 persistence_and_observability:
   registry_and_log_must_reconcile: true
   invocation_start_must_exist_in_registry: true
+  initial_heartbeat_must_be_readback_verified: true
+  work_claim_must_be_readback_verified_when_eligible_work_exists: true
   terminal_record_must_exist_in_registry: true
   durable_log_required: true
   report_fields:
+    - scheduler_fire_observed
     - invocation_id
+    - start_persisted
+    - start_readback_verified
+    - heartbeat_persisted
+    - heartbeat_readback_verified
+    - stale_invocations_recovered
+    - work_claims_created
+    - claim_readback_verified
+    - bootstrap_outcome
     - execution_state
     - health_state
     - started_at
     - completed_at
     - active_lane_count
     - workers_started
-    - work_claims_created
     - backlog_items_touched
     - canonical_progress_delta
     - blocker_changes
@@ -165,13 +217,17 @@ persistence_and_observability:
     action: RECONCILE_REGISTRY_FROM_DURABLE_LOG_BEFORE_NEXT_FIRE
 
 acceptance_test_for_each_fire:
-  pass_if_any:
+  bootstrap_pass_required: true
+  pass_if_any_after_bootstrap:
     - canonical_progress_delta_greater_than_zero
     - validated_blocker_state_changed
     - recoverable_work_was_claimed_and_attempted_with_durable_evidence
     - no_eligible_work_existed_and_clean_blocked_or_noop_state_was_persisted
   fail_if:
     - scheduler_fired_but_no_invocation_start_record
+    - invocation_start_or_heartbeat_not_readback_verified
+    - stale_prior_invocation_left_as_zombie_running
+    - eligible_work_existed_but_no_verified_claim
     - status_checked_only_while_eligible_work_existed
     - free_worker_capacity_existed_but_no_replan_or_dispatch_was_attempted
     - invocation_log_and_registry_do_not_reconcile
@@ -179,6 +235,7 @@ acceptance_test_for_each_fire:
 safety:
   fail_closed_on_unproved_source: true
   never_duplicate_claimed_work: true
+  never_execute_backlog_before_bootstrap_ack: true
   never_invent_story_or_traceability_meaning: true
   never_create_neon_branch: true
   never_run_parallel_BL008_database_writes: true
