@@ -1,6 +1,6 @@
 backlog_item: BL-008
-version: 16
-state: READY_TARGET_VERIFIED
+version: 17
+state: BLOCKED_FLYWAY_RUNTIME_UNAVAILABLE
 verified: false
 closed: false
 governance_bootstrap: COMPLETE
@@ -15,13 +15,16 @@ environment:
   live_main_branch_id: br-delicate-mountain-ayzs1f3l
   database: neondb
   target_user: neondb_owner
-  postgres_version: "18.6"
+  live_postgres_version: "17.5"
+  prior_recorded_postgres_version: "18.6"
+  version_disposition: LIVE_20260827_QUERY_SUPERSEDES_PRIOR_RECORDED_OBSERVATION_FOR_THIS_CHECKPOINT
   credentials: RUNTIME_ONLY_NOT_PERSISTED
 execution_policy:
   migration_mechanism: FLYWAY_ONLY
   database_requirements: ONE_AT_A_TIME
   database_write_parallelism: 1
   advance_rule: CURRENT_REQUIREMENT_MUST_PASS_AND_SYNC_BEFORE_NEXT
+  manual_sql_substitution: FORBIDDEN
 source_inventory:
   current_main_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
@@ -31,7 +34,8 @@ source_inventory:
   previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
   reconciliation_required: false
 live_neon_discovery:
-  verified_on: 2026-08-26
+  verified_on: 2026-08-27
+  verified_at: 2026-08-27T18:03:00+05:30
   target_project_match_verified: true
   visible_target_project_id: small-bread-22546365
   visible_target_project_name: neon-for-cylinder-db
@@ -40,25 +44,27 @@ live_neon_discovery:
   exact_main_database_identity_verified: true
   current_database: neondb
   current_user: neondb_owner
-  server_version: "18.6"
+  server_version: "17.5"
   public_table_count: 0
   flyway_schema_history_checked: true
   flyway_schema_history_exists: false
   branch_creation_attempted: false
+  sql_read_only_discovery_attempted: true
   database_write_attempted: false
-  prior_blocker: BLK-BL008-006
-  prior_blocker_state: RESOLVED
+  prior_target_visibility_blocker_state: RESOLVED
 database_requirement:
   active_requirement: null
-  selection_state: READY_TO_SELECT_INITIAL_REQUIREMENT_FROM_AUTHORITATIVE_FLYWAY_SOURCE
+  selection_state: INITIAL_TARGET_READY_BUT_FLYWAY_EXECUTOR_UNAVAILABLE
   reason: >-
-    The permitted Neon main branch and exact neondb database are reachable. The public schema has zero tables and
-    flyway_schema_history is absent, so this is a fresh baseline target. Select the initial source-proved Flyway
-    requirement, prove version/order/checksum/prerequisites, validate it, and then apply exactly one requirement.
+    Live read-only verification proves the governed Neon main branch and exact neondb database are reachable and fresh: zero public
+    tables and no flyway_schema_history. The prior target-visibility blocker is therefore closed. However this automation runtime does
+    not expose a Flyway executor capable of validating and applying the authoritative initial migration. Direct run_sql substitution
+    is forbidden. The first requirement must not be marked applied or advanced without real Flyway execution and post-migration proof.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  The prior target-visibility blocker is resolved. BL-008 is not complete; it is ready to begin the governed initial
-  Flyway baseline sequence on Neon main, one requirement at a time.
-next_action: SELECT_INITIAL_AUTHORITATIVE_FLYWAY_REQUIREMENT_PROVE_VERSION_ORDER_CHECKSUM_VALIDATE_THEN_APPLY_EXACTLY_ONE_REQUIREMENT_TO_NEON_MAIN
+  The 18:00 IST production fire materially narrowed BL-008. Exact Neon main/neondb identity is proved and the target is empty.
+  No Neon branch was created and no SQL mutation or manual migration was performed. BL-008 is now blocked specifically on obtaining
+  the governed Flyway execution path for the initial authoritative migration requirement, not on Neon target visibility.
+next_action: EXECUTE_INITIAL_AUTHORITATIVE_MIGRATION_THROUGH_REAL_FLYWAY_RUNTIME_ON_VERIFIED_MAIN_NEONDB_THEN_VERIFY_FLYWAY_SCHEMA_HISTORY_AND_INTEGRITY
 user_acceptance_required_before_close: true
