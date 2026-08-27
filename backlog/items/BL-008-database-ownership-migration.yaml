@@ -1,22 +1,25 @@
 backlog_definition:
   id: BL-008
-  version: 2
+  version: 3
   name: Migration of the Database to the Ownership Model
   type: DATABASE_MIGRATION
   purpose: >-
-    Apply CylinderManagement database requirements to the separate Neon test environment through the approved Flyway sequence,
-    one database requirement at a time, and validate ownership-model schema/data rules for COMPANY_OWNED, SUPPLIER_OWNED and
-    CUSTOMER_OWNED cylinders without manual SQL substitution.
+    Migrate the separate Neon test environment through Flyway to the ownership-model target and prove ownership/data integrity one database requirement at a time.
+    Apply only authoritative CylinderManagement migrations to the verified Neon main database, preserve fail-closed execution,
+    and never substitute manual SQL for Flyway.
   statement_of_work: backlog/sow/BL-008-database-ownership-migration.yaml
   target:
     application_repository: vvekselva/CylinderManagement
     dependency_repository: vvekselva/CylindnderManagementDependcies
+    frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
     flyway_path: cylinder.datascripts/src/main/resources/db/migration/
     database_platform: Neon Serverless PostgreSQL
     project: neon-for-cylinder-db
-    project_id: holy-glitter-02245694
+    project_id: small-bread-22546365
     neon_branch: main
-    database: VERIFY_FROM_NEON_BEFORE_WRITE
+    main_branch_id: br-delicate-mountain-ayzs1f3l
+    database: neondb
+    database_user: neondb_owner
     database_dependency_ssot: database-dependency-neon.md
     environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
     ownership_source_roots:
@@ -43,7 +46,9 @@ backlog_definition:
       - rewriting already-applied migrations on the controlled Neon main test database
       - destructive cleanup without source-proved migration intent and recovery evidence
       - exposing database credentials or connection strings
-  dependencies: []
+  dependencies:
+    backlog_items: []
+    dependency_rule: NONE
   deliverables:
     - database-dependency-neon.md
     - backlog/runtime/BL-008/analysis.yaml
