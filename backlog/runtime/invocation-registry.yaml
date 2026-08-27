@@ -1,23 +1,32 @@
-version: 39
+version: 40
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations:
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
-    execution_state: RUNNING
-    health_state: ACTIVE
-    started_at: 2026-08-27T13:15:36+05:30
-    heartbeat_at: 2026-08-27T13:23:36+05:30
-    last_progress_at: 2026-08-27T13:23:36+05:30
-    last_lane_activity_at: 2026-08-27T13:23:36+05:30
-    active_lane_count: 1
-    coordinator_phase: SYNCHRONIZING
-    current_backlog_item: BL-002
-    current_work_unit: WU-STORY-REGISTER-CONSISTENCY
-    progress_fingerprint: STORY0067_REGISTERED_CROSSMAP_SYNC_IN_PROGRESS
-    blocked_reason: BL001_COMPLETE_PROCESS_READABLE_SNAPSHOT_UNAVAILABLE
-    recovery_action: COMPLETE_STORY0067_CROSSMAP_AND_RUNTIME_SYNC
+active_invocations: []
 recent_completed_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
+    execution_state: PARTIAL_CONTINUE_REQUIRED
+    health_state: TERMINAL_HANDOFF
+    started_at: 2026-08-27T13:15:36+05:30
+    completed_at: 2026-08-27T13:26:00+05:30
+    heartbeat_at: 2026-08-27T13:26:00+05:30
+    last_progress_at: 2026-08-27T13:26:00+05:30
+    active_lane_count: 0
+    coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
+    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
+    current_work_unit: PARTIAL_CONTINUE_REQUIRED
+    progress_fingerprint: BOOTSTRAP_PASS_BL001_ATOMIC_FAIL_CLOSED_STORY0067_REGISTER_AND_CROSSMAP_SYNCED
+    blocked_reason: BL001_COMPLETE_PROCESS_READABLE_CONTROL_TREE_UNAVAILABLE; BL008_RUNTIME_RECONCILIATION_PENDING
+    recovery_action: NEXT_FIRE_RECLAIM_BL001_ATOMIC_THEN_CONTINUE_INDEPENDENT_ELIGIBLE_STREAMS
+    outcome: PARTIAL_CONTINUE_REQUIRED
+    workers_started: 0
+    claims_created: 2
+    canonical_bl001_delta: 0
+    bl002_story_disposition_delta: 1
+    bl008_database_writes: 0
+    bootstrap_acknowledged: true
+    transient_lane_logs_remaining: 0
+    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-131536IST.md
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-121715IST
     execution_state: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
     health_state: TERMINAL_HANDOFF
@@ -27,18 +36,7 @@ recent_completed_invocations:
     last_progress_at: 2026-08-27T12:17:15+05:30
     active_lane_count: 0
     coordinator_phase: BOOTSTRAP_FAILED
-    current_backlog_item: BL-001
-    current_work_unit: WU-BL001-001
-    progress_fingerprint: START_AND_LOG_PERSISTED_CLAIM_WRITE_REJECTED
-    blocked_reason: GLOBAL_WORK_CLAIM_PERSISTENCE_REJECTED_BY_REPOSITORY_SAFETY_LAYER
-    recovery_action: RETRY_BOOTSTRAP_CLAIM_ON_NEXT_FIRE
     outcome: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
-    workers_started: 0
-    claims_created: 0
-    canonical_bl001_delta: 0
-    bootstrap_acknowledged: false
-    transient_lane_logs_remaining: 0
-    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-121715IST.md
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-111454IST
     execution_state: PARTIAL_CONTINUE_REQUIRED
     health_state: TERMINAL_HANDOFF
@@ -49,16 +47,13 @@ recent_completed_invocations:
     coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
     outcome: PARTIAL_CONTINUE_REQUIRED
 work_claims:
-  active:
-    - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0067
-      backlog_item: BL-002
-      work_unit: WU-STORY-REGISTER-CONSISTENCY
-      task_id: STORY-0067-REGISTER-AND-CROSS-MAP-SYNC
-      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
-      state: EXECUTING
-      claimed_at: 2026-08-27T13:20:10+05:30
-      source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  active: []
   completed:
+    - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0067
+      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
+      state: RELEASED_AFTER_VALIDATED_SYNC
+      durable_state_found: STORY0067_REGISTERED_CROSSMAP_SYNCED_RUNTIME_RECONCILED
+      completed_at: 2026-08-27T13:26:00+05:30
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
       state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
@@ -76,7 +71,7 @@ work_claims:
       durable_state_found: NO_CANONICAL_CHANGE_PROCESS_SCAN_PROVED_NO_LIVE_BL001_EXECUTOR
       recovered_at: 2026-08-27T10:13:29+05:30
 locks:
-  shared_ssot_write: {capacity: 1, owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST}
+  shared_ssot_write: {capacity: 1, owner_invocation_id: null}
   git_checkpoint: {capacity: 1, owner_invocation_id: null}
   bl008_database_write: {capacity: 1, owner_invocation_id: null}
 bootstrap_control:
