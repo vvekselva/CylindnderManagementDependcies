@@ -2,16 +2,13 @@
 
 This repository is the authoritative control plane for backlog-driven automation against `vvekselva/CylinderManagement`.
 
-GitHub is the Version Control System and durable persistence layer. The Primary Automation Tool owns planning and semantic analysis; hosted execution may be used as the real process runtime for deterministic Python/Maven/Flyway work when the chat scheduler cannot provide a persistent process host.
+GitHub is used only as the Version Control System and durable repository/persistence layer. The Primary Automation Tool executes planning, analysis, validation and deterministic backlog work in the ChatGPT environment. GitHub Actions and GitHub-hosted runners are not execution hosts for Cylinder work.
 
 Static framework files must be explicitly catalogued. Generated runtime, execution, traceability, Story, Use Case and quality evidence is controlled through declared dynamic paths.
 
 ## Static catalogue
 
 <!-- CATALOGUE-FILES:START -->
-.github/workflows/catalogue-gate.yml
-.github/workflows/cylinder-orchestrator.yml
-.github/workflows/ssot-gate.yml
 TaskStatus.md
 architecture/bl001-canonical-projection-engine.md
 architecture/execution-engine-architecture.md
@@ -26,7 +23,6 @@ automation/consolidate-traceability-explorer.py
 automation/execution-model.md
 automation/fire-local-lanes.ps1
 automation/generate-automation-story.py
-automation/github-runner-orchestrator.py
 automation/local-lane-executor.py
 automation/local-lane-worker.py
 automation/staged-lane-executor-v3.py
@@ -34,6 +30,7 @@ automation/staged-lane-executor.py
 automation/staged-lane-worker-v3.py
 automation/staged-lane-worker.py
 automation/task-contract.md
+automation/validate-catalogue.py
 automation/validate-ssot.py
 automation/worker-component-contract.md
 automation/worker-service-contract.md
@@ -145,4 +142,4 @@ logs/runs/*.md
 
 ## Gate rule
 
-`.github/workflows/catalogue-gate.yml` compares `git ls-files` with this catalogue. Any unlisted static framework file fails the gate. Runtime evidence is permitted only under the dynamic paths above.
+`automation/validate-catalogue.py` compares `git ls-files` with this catalogue. The Primary Orchestrator runs this validator in the ChatGPT execution environment. Any unlisted static framework file fails the gate. Runtime evidence is permitted only under the dynamic paths above.
