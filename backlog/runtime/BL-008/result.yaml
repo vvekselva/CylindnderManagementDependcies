@@ -1,5 +1,5 @@
 backlog_item: BL-008
-version: 17
+version: 18
 state: BLOCKED_FLYWAY_RUNTIME_UNAVAILABLE
 verified: false
 closed: false
@@ -15,9 +15,7 @@ environment:
   live_main_branch_id: br-delicate-mountain-ayzs1f3l
   database: neondb
   target_user: neondb_owner
-  live_postgres_version: "17.5"
-  prior_recorded_postgres_version: "18.6"
-  version_disposition: LIVE_20260827_QUERY_SUPERSEDES_PRIOR_RECORDED_OBSERVATION_FOR_THIS_CHECKPOINT
+  live_postgres_version: "18.6 (3484359)"
   credentials: RUNTIME_ONLY_NOT_PERSISTED
 execution_policy:
   migration_mechanism: FLYWAY_ONLY
@@ -30,12 +28,16 @@ source_inventory:
   migration_tree_sha: c2b6e219cfc8b0d23e0208d46cd634271bf39356
   current_main_head: V170
   current_main_inventory_complete: true
-  previous_expected_head_from_ledger: V176
-  previous_expected_head_disposition: SUPERSEDED_BY_LIVE_GITHUB_MAIN_INVENTORY
-  reconciliation_required: false
+  first_authoritative_requirement:
+    version: V1
+    filename: V1__DailyLogin.sql
+    git_blob_sha: 8de82dbd5118c32a74b1ecd4e013db45ebac76d9
+    size_bytes: 541
+    source_proven: true
+    flyway_checksum: PENDING_REAL_FLYWAY_RUNTIME
 live_neon_discovery:
   verified_on: 2026-08-27
-  verified_at: 2026-08-27T18:03:00+05:30
+  verified_at: 2026-08-27T18:43:05+05:30
   target_project_match_verified: true
   visible_target_project_id: small-bread-22546365
   visible_target_project_name: neon-for-cylinder-db
@@ -44,7 +46,7 @@ live_neon_discovery:
   exact_main_database_identity_verified: true
   current_database: neondb
   current_user: neondb_owner
-  server_version: "17.5"
+  server_version: "18.6 (3484359)"
   public_table_count: 0
   flyway_schema_history_checked: true
   flyway_schema_history_exists: false
@@ -52,19 +54,34 @@ live_neon_discovery:
   sql_read_only_discovery_attempted: true
   database_write_attempted: false
   prior_target_visibility_blocker_state: RESOLVED
+flyway_runtime_attempt:
+  attempted_on: 2026-08-27
+  attempted_at: 2026-08-27T18:43:05+05:30
+  java_21_available: true
+  local_maven_available: false
+  local_flyway_cli_available: false
+  local_flyway_jar_available: false
+  repository_maven_wrapper_available: false
+  repository_gradle_wrapper_available: false
+  isolated_maven_distribution_download_attempted: true
+  isolated_flyway_cli_download_attempted: true
+  external_runtime_download_result: FAILED_EXECUTION_ENVIRONMENT_DOWNLOAD_OR_NETWORK_UNAVAILABLE
+  manual_sql_fallback_used: false
+  database_mutation_attempted: false
 database_requirement:
-  active_requirement: null
-  selection_state: INITIAL_TARGET_READY_BUT_FLYWAY_EXECUTOR_UNAVAILABLE
+  active_requirement: V1__DailyLogin.sql
+  selection_state: SELECTED_AND_SOURCE_PROVED_EXECUTION_BLOCKED
   reason: >-
-    Live read-only verification proves the governed Neon main branch and exact neondb database are reachable and fresh: zero public
-    tables and no flyway_schema_history. The prior target-visibility blocker is therefore closed. However this automation runtime does
-    not expose a Flyway executor capable of validating and applying the authoritative initial migration. Direct run_sql substitution
-    is forbidden. The first requirement must not be marked applied or advanced without real Flyway execution and post-migration proof.
+    The authoritative migration tree proves V1__DailyLogin.sql as the first migration requirement. The governed Neon main/neondb
+    target is reachable and remains fresh with zero public tables and no flyway_schema_history. A real Flyway execution runtime is
+    still unavailable in this automation execution environment. Local Maven/Flyway binaries and Flyway jars are absent, repository
+    wrappers are absent, and attempts to bootstrap isolated Maven/Flyway distributions could not download the runtime. Direct SQL
+    execution is not an allowed substitute for Flyway, so no database mutation was performed.
 database_mutation_authorized: false
 ownership_integrity: NOT_EVALUATED
 current_outcome: >-
-  The 18:00 IST production fire materially narrowed BL-008. Exact Neon main/neondb identity is proved and the target is empty.
-  No Neon branch was created and no SQL mutation or manual migration was performed. BL-008 is now blocked specifically on obtaining
-  the governed Flyway execution path for the initial authoritative migration requirement, not on Neon target visibility.
-next_action: EXECUTE_INITIAL_AUTHORITATIVE_MIGRATION_THROUGH_REAL_FLYWAY_RUNTIME_ON_VERIFIED_MAIN_NEONDB_THEN_VERIFY_FLYWAY_SCHEMA_HISTORY_AND_INTEGRITY
+  Immediate BL-008 execution was attempted. Requirement selection advanced from unknown to the exact authoritative V1 migration,
+  and the live Neon target was reverified unchanged. The migration itself was not applied because a real Flyway runtime could not be
+  started. No Neon branch was created, no manual SQL migration was used, and the database remains untouched.
+next_action: PROVIDE_OR_EXPOSE_A_REAL_FLYWAY_EXECUTION_RUNTIME_WITH_DEPENDENCY_ACCESS_THEN_RUN_ONLY_V1_ON_VERIFIED_MAIN_NEONDB_AND_VERIFY_FLYWAY_SCHEMA_HISTORY_AND_SCHEMA_INTEGRITY
 user_acceptance_required_before_close: true
