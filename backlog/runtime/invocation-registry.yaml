@@ -1,24 +1,40 @@
-version: 43
+version: 44
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
 active_invocations:
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-160133IST
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-161554IST
     execution_state: RUNNING
-    health_state: ACTIVE
-    started_at: 2026-08-27T16:01:33+05:30
-    heartbeat_at: 2026-08-27T16:01:33+05:30
-    last_progress_at: 2026-08-27T16:01:33+05:30
+    health_state: IDLE_BUT_HEALTHY
+    started_at: 2026-08-27T16:15:54+05:30
+    heartbeat_at: 2026-08-27T16:15:54+05:30
+    last_progress_at: 2026-08-27T16:15:54+05:30
     last_lane_activity_at: null
     active_lane_count: 0
     coordinator_phase: BOOTSTRAPPING
     current_backlog_item: null
     current_work_unit: null
-    progress_fingerprint: START_REGISTRY_PERSISTED
+    progress_fingerprint: START_REGISTRY_PERSISTED_AFTER_STALE_RECOVERY
+    blocked_reason: null
+    recovery_action: RECOVERED_PRIOR_STALE_BOOTSTRAP_INVOCATION
     workers_started: 0
     claims_created: 0
     bootstrap_acknowledged: false
 recent_completed_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-160133IST
+    execution_state: RECOVERED_STALE
+    health_state: STALE
+    started_at: 2026-08-27T16:01:33+05:30
+    completed_at: 2026-08-27T16:15:54+05:30
+    heartbeat_at: 2026-08-27T16:01:33+05:30
+    last_progress_at: 2026-08-27T16:01:33+05:30
+    active_lane_count: 0
+    coordinator_phase: RECOVERY_CLOSE
+    progress_fingerprint: START_REGISTRY_PERSISTED_NO_CLAIM_NO_EXECUTOR
+    blocked_reason: HEARTBEAT_STALE_BOOTSTRAP_NEVER_ACKNOWLEDGED
+    recovery_action: FAIL_CLOSED_RECOVERY_NO_ACTIVE_CLAIM_NO_EXECUTOR_TO_TERMINATE
+    outcome: RECOVERED_STALE
+    bootstrap_acknowledged: false
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-141337IST
     execution_state: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
     health_state: TERMINAL_HANDOFF
