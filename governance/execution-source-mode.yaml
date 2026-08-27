@@ -1,8 +1,31 @@
-version: 2
+version: 3
 purpose: >-
-  Control whether the Primary Orchestrator must expect repository changes while a production invocation is running.
-  This separates runtime source reads from GitHub persistence, prevents repeated repository-tree discovery when the
-  source is stable, and batches durable Git writes so scheduling is never gated by one commit per executor.
+  Define the separation between Cylinder execution and repository persistence. The Primary Orchestrator executes only
+  inside the ChatGPT environment. GitHub is used only as a source/version-control repository and durable SSOT/evidence
+  store; GitHub Actions or any other GitHub-hosted runner must not execute Cylinder backlog or database work.
+
+execution_authority:
+  primary_execution_host: CHATGPT_ENVIRONMENT
+  github_role: REPOSITORY_ONLY
+  github_actions_as_orchestrator_executor: FORBIDDEN
+  github_hosted_runner_for_backlog_work: FORBIDDEN
+  repository_request_file_as_execution_trigger: FORBIDDEN
+  manual_fire_execution_host: CHATGPT_ENVIRONMENT
+  scheduled_fire_execution_host: CHATGPT_ENVIRONMENT
+  allowed_github_uses:
+    - READ_SOURCE_AND_CONTROL_ARTIFACTS
+    - VERSION_CONTROL
+    - STORE_SSOT
+    - STORE_VALIDATED_RESULTS
+    - STORE_LOGS_AND_CHECKPOINTS
+    - REPOSITORY_CONTENT_VALIDATION_ONLY
+  prohibited_github_uses:
+    - EXECUTE_BL001_BL002_OR_BL008_WORK
+    - RUN_PRIMARY_ORCHESTRATOR
+    - RUN_FLYWAY_FOR_CYLINDER
+    - PROVIDE_MAVEN_OR_PYTHON_RUNTIME_FOR_CYLINDER_EXECUTION
+  missing_chatgpt_runtime_capability_action: FAIL_CLOSED_WITH_EXACT_EVIDENCE_AND_CONTINUE_OTHER_ELIGIBLE_WORK
+  runtime_offload_to_github_when_blocked: false
 
 runtime_source_mode:
   repository_tree_snapshot:
@@ -12,7 +35,7 @@ runtime_source_mode:
     snapshot_identity_required: true
     use_snapshot_for_path_resolution: true
   source_content:
-    primary_provider_after_start: LOCAL_OR_STAGED_SNAPSHOT
+    primary_provider_after_start: CHATGPT_LOCAL_OR_STAGED_SNAPSHOT
     github_direct_reads_by_workers: false
     github_direct_reads_by_executor: false
     github_direct_reads_by_orchestrator_after_snapshot: false
@@ -23,14 +46,15 @@ repository_change_expectation:
   external_commits_expected: false
   effective_until: 2026-08-30T23:59:59+05:30
   user_statement: >-
-    No external commits are expected through Sunday. Commits may occur only when the Primary Orchestrator deliberately
-    persists validated orchestration/control artifacts.
+    Git is a repository and persistence layer only. Cylinder execution is performed in the ChatGPT environment.
+    Commits may occur only when the Primary Orchestrator deliberately persists validated source-control, SSOT,
+    execution evidence, logs or checkpoints.
   when_false:
     poll_remote_during_execution: false
     refresh_repository_tree_after_executor_completion: false
     refresh_repository_tree_before_replan: false
     compare_remote_head_before_each_assignment: false
-    source_of_truth_for_runtime_reads: INVOCATION_START_LOCAL_OR_STAGED_SNAPSHOT
+    source_of_truth_for_runtime_reads: INVOCATION_START_CHATGPT_LOCAL_OR_STAGED_SNAPSHOT
   when_true:
     remote_change_detection_required: true
     refresh_only_after_change_signal: true
@@ -43,8 +67,8 @@ orchestrator_generated_commits:
   update_local_control_state_immediately: true
   require_repository_tree_refetch: false
   reason: >-
-    The Primary Orchestrator already knows exactly which control files it changed. It updates its local control snapshot
-    directly instead of rediscovering the whole repository tree.
+    The Primary Orchestrator already knows exactly which control files it changed in the ChatGPT execution environment.
+    GitHub receives validated persistence checkpoints; it is not the machine performing the work.
 
 git_persistence_mode:
   mode: BATCHED_CHECKPOINT_ONLY
@@ -67,6 +91,7 @@ git_persistence_mode:
     - ONE_COMMIT_PER_EXECUTOR
     - ONE_COMMIT_PER_STORY
     - TREE_REFETCH_AFTER_SELF_COMMIT
+    - COMMIT_TO_TRIGGER_EXECUTION
 
 executor_completion_scheduling:
   completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
@@ -80,6 +105,8 @@ executor_completion_scheduling:
 
 next_invocation_rule:
   always_take_new_tree_snapshot_at_start: true
+  execution_host: CHATGPT_ENVIRONMENT
   reason: >-
-    A new invocation gets one fresh repository view. Within that invocation the view remains stable unless the explicit
-    git_changes_expected_during_execution flag is changed to true or a change signal is received.
+    A new invocation obtains one fresh repository view into the ChatGPT execution environment. Within that invocation
+    the view remains stable unless the explicit git_changes_expected_during_execution flag is changed to true or a
+    repository-change signal is received.
