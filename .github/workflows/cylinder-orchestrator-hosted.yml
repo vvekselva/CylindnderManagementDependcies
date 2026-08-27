@@ -1,0 +1,107 @@
+name: Cylinder Hosted Orchestrator
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Validate execution without applying BL-008 migration
+        required: false
+        default: true
+        type: boolean
+  push:
+    branches:
+      - chore/rename-dependency-files
+    paths:
+      - 'backlog/runtime/orchestrator-requests/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cylinder-hosted-orchestrator
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    name: Hosted Cylinder Orchestrator
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout control repository
+        uses: actions/checkout@v4
+        with:
+          ref: chore/rename-dependency-files
+          fetch-depth: 0
+
+      - name: Checkout frozen Cylinder source
+        uses: actions/checkout@v4
+        with:
+          repository: vvekselva/CylinderManagement
+          ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+          token: ${{ secrets.CYLINDER_SOURCE_TOKEN }}
+          path: source/CylinderManagement
+          fetch-depth: 1
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Prove hosted runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 --version
+          node --version
+          java -version
+          mvn -version
+          git --version
+          test "$(git -C source/CylinderManagement rev-parse HEAD)" = "3ae6e61442132d94a307275b08dd65fcef228d89"
+
+      - name: Run governed hosted execution
+        id: execute
+        shell: bash
+        env:
+          CYLINDER_INVOCATION_ID: HOSTED-${{ github.run_id }}-${{ github.run_attempt }}
+          NEON_JDBC_URL: ${{ secrets.NEON_JDBC_URL }}
+          NEON_DB_USER: ${{ secrets.NEON_DB_USER }}
+          NEON_DB_PASSWORD: ${{ secrets.NEON_DB_PASSWORD }}
+        run: |
+          set -euo pipefail
+          ARGS=(
+            --control-root .
+            --source-root source/CylinderManagement
+            --mode manual
+            --bl001
+            --bl002
+            --bl008
+          )
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS+=(--dry-run)
+          fi
+          python3 automation/orchestrator-entrypoint.py "${ARGS[@]}" | tee hosted-orchestrator-result.json
+
+      - name: Persist validated control changes
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Cylinder Hosted Orchestrator"
+          git config user.email "actions@users.noreply.github.com"
+
+          mkdir -p backlog/runtime/hosted-runs
+          cp hosted-orchestrator-result.json \
+            "backlog/runtime/hosted-runs/run-${{ github.run_id }}-${{ github.run_attempt }}.json" 2>/dev/null || true
+
+          git add traceability backlog/runtime stories usecases logs 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No governed changes staged."
+            exit 0
+          fi
+
+          git commit -m "orchestrator: persist hosted run ${{ github.run_id }} attempt ${{ github.run_attempt }}"
+          git push origin HEAD:chore/rename-dependency-files
