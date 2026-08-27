@@ -1,0 +1,17 @@
+request_id: REQ-20260827-FIX-VALIDATION-02
+requested_at: 2026-08-27T20:31:00+05:30
+mode: MANUAL
+streams:
+  - BL-001
+  - BL-002
+  - BL-008
+purpose: VALIDATE_DURABLE_BOOTSTRAP_CLAIM_READBACK_AND_ATTEMPT_BL001_ATOMIC_PROJECTION
+constraints:
+  frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  max_primary_invocations: 1
+  max_safe_workers: 10
+  bl001_projection_requires_atomic_validation: true
+  bl008_neon_branch: main
+  bl008_branch_creation_forbidden: true
+  bl008_flyway_only: true
+  bl008_database_requirement_parallelism: 1
