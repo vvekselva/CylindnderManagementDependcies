@@ -2,7 +2,27 @@ version: 53
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 1
-active_invocations: []
+active_invocations:
+- invocation_id: CYLINDER-HOSTED-RUNNER-33088449923-1
+  execution_state: RUNNING
+  health_state: ACTIVE
+  started_at: '2026-08-27T15:33:29Z'
+  completed_at: null
+  heartbeat_at: '2026-08-27T15:33:29Z'
+  last_progress_at: '2026-08-27T15:33:29Z'
+  last_lane_activity_at: '2026-08-27T15:33:29Z'
+  active_lane_count: 0
+  coordinator_phase: ORCHESTRATOR_STARTED
+  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
+  current_work_unit: HOSTED_RUNTIME_PREFLIGHT
+  progress_fingerprint: HOSTED_RUNNER_START_CLAIMS_PERSISTED
+  blocked_reason: null
+  recovery_action: null
+  workers_started: 0
+  claims_created: 1
+  canonical_progress_delta: 0
+  bootstrap_acknowledged: true
+  outcome: null
 recent_completed_invocations:
 - invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152907Z-33088039264
   execution_state: PARTIAL_CONTINUE_REQUIRED
@@ -116,7 +136,11 @@ recent_completed_invocations:
   outcome: RECOVERED_STALE
   bootstrap_acknowledged: false
 work_claims:
-  active: []
+  active:
+  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+    owner_invocation_id: CYLINDER-HOSTED-RUNNER-33088449923-1
+    state: CLAIMED
+    claimed_at: '2026-08-27T15:33:29Z'
   completed:
   - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
     prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST
