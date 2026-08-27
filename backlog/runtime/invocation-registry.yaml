@@ -1,4 +1,4 @@
-version: 37
+version: 38
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
@@ -7,16 +7,16 @@ active_invocations:
     execution_state: RUNNING
     health_state: ACTIVE
     started_at: 2026-08-27T13:15:36+05:30
-    heartbeat_at: 2026-08-27T13:19:15+05:30
-    last_progress_at: 2026-08-27T13:19:15+05:30
-    last_lane_activity_at: 2026-08-27T13:16:40+05:30
+    heartbeat_at: 2026-08-27T13:20:10+05:30
+    last_progress_at: 2026-08-27T13:20:10+05:30
+    last_lane_activity_at: 2026-08-27T13:20:10+05:30
     active_lane_count: 1
-    coordinator_phase: SOURCE_RESOLUTION
-    current_backlog_item: BL-001
-    current_work_unit: WU-BL001-001
-    progress_fingerprint: CONNECTOR_FALLBACK_PROVED_42_ORDERED_EXPLORER_DELTAS_AND_TRANSACTIONAL_EXECUTOR_INPUTS
-    blocked_reason: LOCAL_GIT_DNS_UNAVAILABLE_CONNECTOR_STAGING_IN_PROGRESS
-    recovery_action: MATERIALIZE_PROCESS_READABLE_CONNECTOR_SNAPSHOT
+    coordinator_phase: REPLANNING
+    current_backlog_item: BL-002
+    current_work_unit: WU-STORY-REGISTER-CONSISTENCY
+    progress_fingerprint: BL001_ATOMIC_BLOCKER_VALIDATED_STORY0067_SYNC_CLAIMED
+    blocked_reason: BL001_COMPLETE_PROCESS_READABLE_SNAPSHOT_UNAVAILABLE
+    recovery_action: CONTINUE_INDEPENDENT_BL002_WORK
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-121715IST
     execution_state: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
@@ -50,16 +50,20 @@ recent_completed_invocations:
     outcome: PARTIAL_CONTINUE_REQUIRED
 work_claims:
   active:
-    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-      backlog_item: BL-001
-      work_unit: WU-BL001-001
-      task_id: ATOMIC-134-PROJECTION
+    - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0067
+      backlog_item: BL-002
+      work_unit: WU-STORY-REGISTER-CONSISTENCY
+      task_id: STORY-0067-REGISTER-AND-CROSS-MAP-SYNC
       owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
-      state: EXECUTING
-      claimed_at: 2026-08-27T13:16:20+05:30
-      executor: automation/bl001-canonical-projection-engine.py
+      state: CLAIMED
+      claimed_at: 2026-08-27T13:20:10+05:30
       source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   completed:
+    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
+      state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
+      durable_state_found: NO_CANONICAL_CHANGE_EFFECTIVE_123_DEPENDS_ON_42_ORDERED_DELTAS_COMPLETE_PROCESS_READABLE_TREE_UNAVAILABLE
+      completed_at: 2026-08-27T13:20:10+05:30
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-111454IST
       state: RELEASED_FOR_CONTINUATION
