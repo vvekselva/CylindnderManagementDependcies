@@ -81,15 +81,12 @@ support/github-actions-startup-investigation.md
 sync/source-artifact-sync-register.yaml
 tests/self-reliant-e2e-validation-2026-08-23.md
 traceability/README.md
-traceability/controller-inventory.md
 traceability/controller-story-usecase-map.yaml
 traceability/controller-trace-template.md
 traceability/controller-traceability-design.md
 traceability/controller-traceability.md
-traceability/endpoint-inventory.md
 traceability/matrix-progress.yaml
 traceability/release-classification.yaml
-traceability/source-repository-check.md
 traceability/unresolved-traceability.md
 usecases/Readme.md
 usecases/usecase-schema.yaml
@@ -121,6 +118,9 @@ worker/evidence/LOCAL-BL*/*.yaml
 worker/evidence/LOCAL-BL*/*.md
 workflows/WF-001-controller-traceability/runtime/*.yaml
 workflows/WF-001-controller-traceability/evidence/*.yaml
+traceability/source-repository-check.md
+traceability/controller-inventory.md
+traceability/endpoint-inventory.md
 traceability/controllers/*.md
 traceability/explorer/*
 stories/story-register.yaml
