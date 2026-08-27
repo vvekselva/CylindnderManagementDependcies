@@ -1,8 +1,29 @@
-version: 19
+version: 20
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations: []
+active_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
+    execution_state: RUNNING
+    health_state: ACTIVE
+    started_at: 2026-08-27T08:59:38+05:30
+    heartbeat_at: 2026-08-27T08:59:38+05:30
+    last_progress_at: 2026-08-27T08:59:38+05:30
+    last_lane_activity_at: null
+    active_lane_count: 0
+    coordinator_phase: STARTUP_HANDSHAKE
+    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
+    current_work_unit: STARTUP_HANDSHAKE
+    progress_fingerprint: START_REGISTRY_AND_START_LOG_PERSISTED_INITIAL_HEARTBEAT
+    blocked_reason: null
+    recovery_action: CONTINUE_BOOTSTRAP_ACK_THEN_CLAIM_BL001_ATOMIC_134_PROJECTION
+    outcome: RUNNING
+    workers_started: 0
+    claims_created: 0
+    canonical_bl001_delta: 0
+    bootstrap_acknowledged: false
+    transient_lane_logs_remaining: 0
+    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-085938IST.md
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-081758IST
     execution_state: PARTIAL_CONTINUE_REQUIRED
@@ -33,20 +54,11 @@ recent_completed_invocations:
     completed_at: 2026-08-27T08:02:34+05:30
     heartbeat_at: 2026-08-27T07:01:39+05:30
     last_progress_at: 2026-08-27T07:01:39+05:30
-    last_lane_activity_at: null
     active_lane_count: 0
     coordinator_phase: RECOVERY_CLOSE
-    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
     current_work_unit: STARTUP_HANDSHAKE
-    progress_fingerprint: START_RECORD_ONLY_NO_BOOTSTRAP_ACK_NO_CLAIM
-    blocked_reason: PRIMARY_HEARTBEAT_STALE_AND_BOOTSTRAP_NEVER_ADVANCED_BEYOND_STARTUP_HANDSHAKE
-    recovery_action: TERMINALIZED_STALE_BOOTSTRAP_INVOCATION_AND_RELEASED_CAPACITY
     outcome: STALE_RECOVERED_NO_WORK_DISPATCHED_NO_CANONICAL_CHANGE
-    workers_started: 0
-    claims_created: 0
-    canonical_bl001_delta: 0
     bootstrap_acknowledged: false
-    recovery_governance: governance/orchestrator-bootstrap-gate.yaml
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-201420IST
     execution_state: RECOVERED_TERMINAL
     health_state: STALE_RECOVERED
@@ -56,11 +68,6 @@ recent_completed_invocations:
     last_progress_at: 2026-08-26T20:14:20+05:30
     active_lane_count: 0
     coordinator_phase: RECOVERY_CLOSE
-    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-    current_work_unit: STARTUP_HANDSHAKE
-    progress_fingerprint: STALE_STARTUP_INVOCATION_RECOVERED_FAIL_CLOSED
-    blocked_reason: HEARTBEAT_STALE_OVER_5_MINUTES_WITH_NO_LANE_ACTIVITY
-    recovery_action: TERMINALIZED_AND_CAPACITY_RELEASED
     outcome: STALE_RECOVERED_NO_WORK_DISPATCHED
   - invocation_id: MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST
     execution_state: PARTIAL_CONTINUE_REQUIRED
@@ -71,16 +78,10 @@ recent_completed_invocations:
     last_progress_at: 2026-08-26T19:41:30+05:30
     active_lane_count: 0
     coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-    current_work_unit: PARTIAL_CONTINUE_REQUIRED
-    progress_fingerprint: PRIOR_1800_REGISTRY_RECONCILED_PLUS_BL001_ALL_11_SOURCE_PROVED_ATOMIC_EXECUTOR_BLOCKED_PLUS_BL002_STORY0066_RUNTIME_RECONCILED_UI_SOURCE_ANALYSIS
-    blocked_reason: BL001_ATOMIC_RECONSTRUCTION_EXECUTOR_NOT_AVAILABLE_IN_AUTOMATION_RUNTIME; BL008_MAIN_BRANCH_BLOCKER_CACHED; BL002_ADDITIONAL_RELEASE1_WORK_REMAINS
-    recovery_action: NEXT_FIRE_RESUME_ATOMIC_134_PROJECTION_AND_RELEASE1_UI_SOURCE_ANALYSIS
     outcome: PARTIAL_CONTINUE_REQUIRED
     workers_started: 0
     claims_created: 2
     canonical_bl001_delta: 0
-    bl002_runtime_consistency_repairs: 2
     transient_lane_logs_remaining: 0
     durable_log: logs/runs/MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST.md
 work_claims:
@@ -112,15 +113,9 @@ work_claims:
       completed_at: 2026-08-26T19:41:30+05:30
   recovered: []
 locks:
-  shared_ssot_write:
-    capacity: 1
-    owner_invocation_id: null
-  git_checkpoint:
-    capacity: 1
-    owner_invocation_id: null
-  bl008_database_write:
-    capacity: 1
-    owner_invocation_id: null
+  shared_ssot_write: {capacity: 1, owner_invocation_id: null}
+  git_checkpoint: {capacity: 1, owner_invocation_id: null}
+  bl008_database_write: {capacity: 1, owner_invocation_id: null}
 bootstrap_control:
   governance: governance/orchestrator-bootstrap-gate.yaml
   scheduler_fire_is_orchestrator_start: false
