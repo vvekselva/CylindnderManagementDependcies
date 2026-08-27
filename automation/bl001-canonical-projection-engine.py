@@ -22,6 +22,7 @@ from typing import Any
 import yaml
 
 TARGET = 134
+PRE_PROJECTION_TARGET = 123
 TARGETS = (
     "traceability/controller-traceability.md",
     "traceability/unresolved-traceability.md",
@@ -101,7 +102,7 @@ def validate(repo: Path) -> tuple[set[str], dict[str, str]]:
     return set(json_keys), contents
 
 
-def effective_count(repo: Path) -> int:
+def effective_model(repo: Path) -> tuple[dict[str, Any], list[str]]:
     explorer = repo / "traceability/explorer"
     index = (explorer / "index.html").read_text(encoding="utf-8")
     delta_names = re.findall(r'<script\s+src="(matrix-delta-[^"]+\.js)"', index)
@@ -111,12 +112,46 @@ const dir=process.argv[1], deltas=JSON.parse(process.argv[2]), ctx={window:{}};
 vm.createContext(ctx);
 const run=n=>vm.runInContext(fs.readFileSync(path.join(dir,n),'utf8'),ctx,{filename:n});
 run('matrix-data.js'); for(const n of deltas) run(n); if(deltas.length) run('apply-deltas.js');
-process.stdout.write(String((ctx.window.TRACEABILITY_DATA.endpoints||[]).length));
+process.stdout.write(JSON.stringify(ctx.window.TRACEABILITY_DATA || {metadata:{},endpoints:[],unresolved:[]}));
 '''
     proc = subprocess.run(["node", "-e", node, str(explorer), json.dumps(delta_names)], capture_output=True, text=True)
     if proc.returncode != 0:
         fail(f"Cannot assemble effective Explorer model: {proc.stderr.strip()}")
-    return int(proc.stdout.strip())
+    try:
+        return json.loads(proc.stdout), delta_names
+    except json.JSONDecodeError as exc:
+        fail(f"Cannot decode effective Explorer model: {exc}")
+
+
+def reconciliation_diagnostic(repo: Path, model: dict[str, Any], delta_names: list[str]) -> dict[str, Any]:
+    effective_rows = model.get("endpoints") or []
+    effective_keys = [key(row) for row in effective_rows]
+    effective_set = set(effective_keys)
+
+    md_text = (repo / "traceability/controller-traceability.md").read_text(encoding="utf-8")
+    md_keys = markdown_keys(md_text)
+    md_set = set(md_keys)
+
+    json_doc = json.loads((repo / "traceability/explorer/traceability-matrix.json").read_text(encoding="utf-8"))
+    json_keys = [key(row) for row in (json_doc.get("endpoints") or [])]
+    json_set = set(json_keys)
+
+    base_doc = parse_js((repo / "traceability/explorer/matrix-data.js").read_text(encoding="utf-8"))
+    base_keys = [key(row) for row in (base_doc.get("endpoints") or [])]
+
+    return {
+        "effective_unique_count": len(effective_set),
+        "effective_physical_count": len(effective_keys),
+        "effective_duplicates": sorted(k for k in set(effective_keys) if effective_keys.count(k) > 1),
+        "base_unique_count": len(set(base_keys)),
+        "ordered_delta_count": len(delta_names),
+        "markdown_unique_count": len(md_set),
+        "json_unique_count": len(json_set),
+        "markdown_missing_from_effective": sorted(md_set - effective_set),
+        "effective_missing_from_markdown": sorted(effective_set - md_set),
+        "json_missing_from_effective": sorted(json_set - effective_set),
+        "effective_missing_from_json": sorted(effective_set - json_set),
+    }
 
 
 def write_manifest(stage: Path, keys: set[str], contents: dict[str, str]) -> None:
@@ -172,14 +207,19 @@ def main() -> int:
     args = ap.parse_args()
     repo = Path(args.repo_root).resolve()
 
-    count = effective_count(repo)
+    model, delta_names = effective_model(repo)
+    count = len({key(row) for row in (model.get("endpoints") or [])})
     if count == TARGET:
         keys, contents = validate(repo)
         state = "NOOP_ALREADY_VALID_134"
         print(json.dumps({"state": state, "unique_rows": len(keys), "duplicates": 0}, indent=2))
         return 0
-    if count != 123:
-        fail(f"Expected 123 pre-projection or 134 idempotent rows, found {count}")
+    if count != PRE_PROJECTION_TARGET:
+        diagnostic = reconciliation_diagnostic(repo, model, delta_names)
+        fail(
+            f"Expected {PRE_PROJECTION_TARGET} pre-projection or {TARGET} idempotent unique rows, found {count}; "
+            f"RECONCILIATION_DIAGNOSTIC={json.dumps(diagnostic, sort_keys=True)}"
+        )
 
     stage_parent = Path(tempfile.mkdtemp(prefix="bl001-projection-", dir=str(repo.parent)))
     stage = stage_parent / "repo"
