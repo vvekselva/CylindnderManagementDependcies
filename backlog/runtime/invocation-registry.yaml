@@ -1,8 +1,23 @@
-version: 42
+version: 43
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
-active_invocations: []
+active_invocations:
+  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-160133IST
+    execution_state: RUNNING
+    health_state: ACTIVE
+    started_at: 2026-08-27T16:01:33+05:30
+    heartbeat_at: 2026-08-27T16:01:33+05:30
+    last_progress_at: 2026-08-27T16:01:33+05:30
+    last_lane_activity_at: null
+    active_lane_count: 0
+    coordinator_phase: BOOTSTRAPPING
+    current_backlog_item: null
+    current_work_unit: null
+    progress_fingerprint: START_REGISTRY_PERSISTED
+    workers_started: 0
+    claims_created: 0
+    bootstrap_acknowledged: false
 recent_completed_invocations:
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-141337IST
     execution_state: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
@@ -11,23 +26,11 @@ recent_completed_invocations:
     completed_at: 2026-08-27T14:14:28+05:30
     heartbeat_at: null
     last_progress_at: 2026-08-27T14:13:37+05:30
-    last_lane_activity_at: null
     active_lane_count: 0
     coordinator_phase: BOOTSTRAP_FAILED
-    current_backlog_item: null
-    current_work_unit: null
     progress_fingerprint: START_REGISTRY_PERSISTED_START_LOG_REJECTED
-    blocked_reason: DURABLE_START_LOG_PERSISTENCE_REJECTED_BY_REPOSITORY_WRITE_SAFETY
-    recovery_action: RETRY_BOOTSTRAP_ON_NEXT_FIRE_BEFORE_ANY_BACKLOG_EXECUTION
     outcome: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
-    workers_started: 0
-    claims_created: 0
-    canonical_bl001_delta: 0
-    bl002_story_disposition_delta: 0
-    bl008_database_writes: 0
     bootstrap_acknowledged: false
-    transient_lane_logs_remaining: 0
-    durable_log: NOT_CREATED_WRITE_REJECTED
   - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
     execution_state: PARTIAL_CONTINUE_REQUIRED
     health_state: TERMINAL_HANDOFF
@@ -37,62 +40,24 @@ recent_completed_invocations:
     last_progress_at: 2026-08-27T13:26:00+05:30
     active_lane_count: 0
     coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-    current_work_unit: PARTIAL_CONTINUE_REQUIRED
     progress_fingerprint: BOOTSTRAP_PASS_BL001_ATOMIC_FAIL_CLOSED_STORY0067_REGISTER_AND_CROSSMAP_SYNCED
-    blocked_reason: BL001_COMPLETE_PROCESS_READABLE_CONTROL_TREE_UNAVAILABLE; BL008_RUNTIME_RECONCILIATION_PENDING
-    recovery_action: NEXT_FIRE_RECLAIM_BL001_ATOMIC_THEN_CONTINUE_INDEPENDENT_ELIGIBLE_STREAMS
     outcome: PARTIAL_CONTINUE_REQUIRED
-    workers_started: 0
-    claims_created: 2
-    canonical_bl001_delta: 0
-    bl002_story_disposition_delta: 1
-    bl008_database_writes: 0
     bootstrap_acknowledged: true
-    transient_lane_logs_remaining: 0
-    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260827-131536IST.md
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-121715IST
-    execution_state: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
-    health_state: TERMINAL_HANDOFF
-    started_at: 2026-08-27T12:17:15+05:30
-    completed_at: 2026-08-27T12:18:20+05:30
-    heartbeat_at: 2026-08-27T12:17:15+05:30
-    last_progress_at: 2026-08-27T12:17:15+05:30
-    active_lane_count: 0
-    coordinator_phase: BOOTSTRAP_FAILED
-    outcome: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-111454IST
-    execution_state: PARTIAL_CONTINUE_REQUIRED
-    health_state: TERMINAL_HANDOFF
-    started_at: 2026-08-27T11:14:54+05:30
-    completed_at: 2026-08-27T11:17:20+05:30
-    heartbeat_at: 2026-08-27T11:17:20+05:30
-    active_lane_count: 0
-    coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-    outcome: PARTIAL_CONTINUE_REQUIRED
 work_claims:
   active: []
   completed:
     - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0067
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
       state: RELEASED_AFTER_VALIDATED_SYNC
-      durable_state_found: STORY0067_REGISTERED_CROSSMAP_SYNCED_RUNTIME_RECONCILED
       completed_at: 2026-08-27T13:26:00+05:30
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
       state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
-      durable_state_found: NO_CANONICAL_CHANGE_EFFECTIVE_123_DEPENDS_ON_42_ORDERED_DELTAS_COMPLETE_PROCESS_READABLE_TREE_UNAVAILABLE
       completed_at: 2026-08-27T13:20:10+05:30
-    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-      prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-111454IST
-      state: RELEASED_FOR_CONTINUATION
-      durable_state_found: NO_CANONICAL_CHANGE_COMPLETE_PROCESS_READABLE_CONTROL_TREE_UNAVAILABLE
-      completed_at: 2026-08-27T11:17:20+05:30
   recovered:
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
       state: RELEASED_AFTER_STALE_OWNER_RECOVERY
-      durable_state_found: NO_CANONICAL_CHANGE_PROCESS_SCAN_PROVED_NO_LIVE_BL001_EXECUTOR
       recovered_at: 2026-08-27T10:13:29+05:30
 locks:
   shared_ssot_write: {capacity: 1, owner_invocation_id: null}
