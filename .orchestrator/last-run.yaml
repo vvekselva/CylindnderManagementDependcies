@@ -1,4 +1,4 @@
-run_time: 2026-08-27T17:31:00+05:30
+run_time: 2026-08-27T21:27:48+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: FULLY_BLOCKED
 policy:
@@ -14,13 +14,14 @@ policy:
 lease:
   overlap_detected: false
   status: ACQUIRED
-  acquired_commit: acce27eca276451d6cf9edb466d4fdc63cbb2423
+  acquired_commit: 99372245cf4d82ee827e0616942b5671e30d58cf
 bl008:
   status: BLOCKED_BEFORE_DATABASE_ACCESS
   authoritative_flyway_source:
     repository: vvekselva/CylinderManagement
     branch: main
     migration_path: cylinder.datascripts/src/main/resources/db/migration
+    migration_directory_reachable: true
   dependency_ledger:
     file: database-dependency.md
     current_required_target: V176
