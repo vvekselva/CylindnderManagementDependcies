@@ -1,9 +1,10 @@
-version: 17
+version: 18
 purpose: >-
   Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
   workstreams when independently eligible. GitHub is VCS/durable persistence; the Primary Automation Tool owns planning,
-  source staging, execution, validation, recovery and synchronization. Shared SSOT writes are serialized and BL-008
-  database mutation is always one requirement at a time.
+  semantic analysis, validation, recovery and synchronization. Deterministic Python/Maven/Flyway execution may use the
+  hosted Cylinder Orchestrator Runner when the chat scheduler cannot provide a persistent process host. Shared SSOT writes
+  are serialized and BL-008 database mutation is always one requirement at a time.
 
 authority:
   control_repository: vvekselva/CylindnderManagementDependcies
@@ -40,14 +41,16 @@ selection:
 execution_engine:
   owner: AUTOMATION_TOOL
   architecture: architecture/self-reliant-e2e-execution.md
-  backend: LOCAL_PROCESS_POOL
+  primary_backend: HOSTED_RUNNER_BRIDGE
+  worker_backend: LOCAL_PROCESS_POOL
   max_parallel_workers_per_invocation: 10
   worker_pool_allocation: EVENT_DRIVEN_DYNAMIC_REFILL
   starvation_forbidden: true
   shared_ssot_single_writer: true
-  github_role: START_SNAPSHOT_AND_BATCHED_DURABLE_PERSISTENCE_ONLY
-  github_actions_required: false
-  external_worker_service_required: false
+  github_role: START_SNAPSHOT_BATCHED_DURABLE_PERSISTENCE_AND_HOSTED_PROCESS_RUNTIME
+  hosted_runner_workflow: .github/workflows/cylinder-orchestrator.yml
+  hosted_runner_entrypoint: automation/github-runner-orchestrator.py
+  hosted_runner_trigger_path: backlog/runtime/orchestrator-requests/
   source_provider_governance: governance/source-provider.yaml
   execution_source_mode: governance/execution-source-mode.yaml
   source_layout: repository/source-layout.yaml
@@ -58,9 +61,9 @@ execution_engine:
   executor_completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
 
 invocation_concurrency_contract:
-  singleton_invocation_required: false
-  overlapping_invocations_allowed: true
-  max_concurrent_invocations: 2
+  singleton_invocation_required: true
+  overlapping_invocations_allowed: false
+  max_concurrent_invocations: 1
   each_invocation_has_unique_id: true
   each_invocation_has_independent_workspace: true
   each_invocation_has_independent_source_snapshot: true
@@ -68,7 +71,7 @@ invocation_concurrency_contract:
   global_work_claim_scope: BACKLOG_ITEM_PLUS_WORK_UNIT_PLUS_TASK_ID
   duplicate_work_claim_action: SELECT_DIFFERENT_ELIGIBLE_WORK
   running_invocation_must_not_be_cancelled_by_new_trigger: true
-  new_trigger_when_capacity_available: START_PARALLEL_INVOCATION
+  new_trigger_when_capacity_available: START_INVOCATION
   new_trigger_when_concurrency_limit_reached: NOOP_CONCURRENCY_LIMIT_WITH_EVIDENCE
   shared_ssot_write_lock_capacity: 1
   bl008_database_write_lock_capacity: 1
@@ -97,7 +100,7 @@ production_fire_progress_contract:
 repository_snapshot_contract:
   fetch_repository_tree_once_at_invocation_start: true
   repository_tree_reuse_scope: SINGLE_INVOCATION
-  independent_snapshot_per_overlapping_invocation: true
+  independent_snapshot_per_overlapping_invocation: false
   git_changes_expected_during_execution: false
   runtime_reads_after_start: LOCAL_OR_STAGED_SNAPSHOT_ONLY
   workers_may_fetch_repository_tree: false
@@ -117,6 +120,11 @@ production_source_contract:
     every_worker_verifies_file_before_read: true
     workers_access_github_directly: false
     executor_accesses_github_directly: false
+  hosted_runner_private_source:
+    required_secret_name: CYLINDER_SOURCE_TOKEN
+    access: READ_ONLY_SOURCE_CHECKOUT
+    frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+    source_must_not_be_copied_into_public_control_repository: true
   local_git_fallback:
     frozen_commit_must_exist_locally: true
     active_checkout_is_not_switched: true
@@ -151,6 +159,7 @@ bl001_traceability_contract:
     required_post_projection_unique_rows: 134
     duplicates_allowed: 0
     atomic_projection_required: true
+    executor: automation/bl001-canonical-projection-engine.py
 
 bl002_story_usecase_contract:
   workflow: workflows/WF-003-controller-story-usecase.yaml
@@ -166,6 +175,8 @@ bl002_story_usecase_contract:
   usecase_user_approval_required: true
   auto_approval_forbidden: true
   field_level_story_required: true
+  semantic_analysis_owner: PRIMARY_AUTOMATION_TOOL
+  hosted_runner_role: SOURCE_RUNTIME_ONLY
   display_mapping_chain: PAGE_FIELD_OR_COMPONENT_TO_MODEL_DTO_TO_CONTROLLER_TO_SERVICE_TO_DAO_REPOSITORY_TO_ENTITY_VIEW_FIELD_TO_DB_TABLE_VIEW_COLUMN
   static_ui_disposition: STATIC_UI_NO_DATABASE_MAPPING
   input_field_attributes: [datatype, required_or_optional, normalization_or_default, validation, accepted_values_or_rules, invalid_behavior, persistence_destination, state_or_side_effect]
@@ -179,7 +190,6 @@ bl008_database_migration_contract:
   frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   flyway_path: cylinder.datascripts/src/main/resources/db/migration/
   current_source_inventory_head: V170
-  ownership_source_roots: [NewOwnerShipModelv3/, cmas.database.operations/]
   target_project: neon-for-cylinder-db
   target_project_id: small-bread-22546365
   neon_branch: main
@@ -191,7 +201,6 @@ bl008_database_migration_contract:
   verified_public_table_count: 0
   flyway_schema_history_exists: false
   target_state: READY_TARGET_VERIFIED
-  resolved_blocker: BLK-BL008-006
   environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
   migration_mechanism: FLYWAY_ONLY
   manual_sql_substitution: FORBIDDEN
@@ -199,13 +208,13 @@ bl008_database_migration_contract:
   database_requirement_parallelism: 1
   global_database_write_lock_across_overlapping_invocations: true
   selected_requirement_rule: EXACTLY_ONE_ACTIVE_REQUIREMENT_IN_AUTHORITATIVE_ORDER
-  initial_requirement_selection_state: READY
-  database_mutation_owner: PRIMARY_ORCHESTRATOR_SERIAL_STAGE
-  ownership_types: [COMPANY_OWNED, SUPPLIER_OWNED, CUSTOMER_OWNED]
+  initial_requirement: V1__DailyLogin.sql
+  database_mutation_owner: HOSTED_RUNNER_SERIAL_STAGE
+  required_hosted_secrets: [NEON_JDBC_URL, NEON_DB_USER, NEON_DB_PASSWORD]
   require_pre_post_integrity_checks: true
   require_ledger_sync_before_next_requirement: true
   failure_rule: FAIL_CLOSED_ON_CURRENT_REQUIREMENT_DO_NOT_ADVANCE
-  next_action: SELECT_INITIAL_REQUIREMENT_PROVE_VERSION_ORDER_CHECKSUM_VALIDATE_APPLY_ONE_VERIFY_HISTORY_AND_INTEGRITY
+  next_action: RUN_ONLY_V1_THROUGH_REAL_FLYWAY_RUNTIME_VERIFY_HISTORY_AND_INTEGRITY
 
 execution_recovery_contract:
   execution_journal_required: true
@@ -247,23 +256,17 @@ backlog_items:
   BL-021: {name: Customer Data Dashboard, run_enabled: false}
 
 scheduled_run_rules:
-  - read authoritative control branch and v17 run-config before work
+  - read authoritative control branch and v18 run-config before work
+  - scheduled ChatGPT task is a trigger/observer, not the deterministic process host
   - persist a unique invocation START record and initial heartbeat before analysis
-  - classify all recorded RUNNING invocations from heartbeat and progress evidence
-  - recover STALE/STUCK invocations fail-closed before duplicate work
-  - atomically claim work before dispatch and never assign work already claimed by another live invocation
+  - atomically claim work before dispatch
   - execute BL-001, BL-002 and BL-008 independently when eligible; one blocked stream must not stop another
-  - share up to 10 workers per invocation dynamically without starvation
-  - on executor completion validate, release slot, replan and refill immediately while productive window remains open
-  - if eligible unclaimed work exists and active lanes are zero, terminal checkpoint is forbidden
-  - do not repeatedly recheck an unchanged external blocker within the same invocation when other work exists
+  - share up to 10 safe-independent workers inside the single Primary Orchestrator invocation
   - BL-001 projection must reconcile exactly 134 unique HTTP method/path keys with zero duplicates
   - BL-002 executes Release 1 field-level Story rework before Release 2 and never auto-approves
-  - BL-008 uses verified Neon project small-bread-22546365 branch main br-delicate-mountain-ayzs1f3l database neondb
-  - BL-008 creates no Neon branches, uses Flyway only and completes exactly one database requirement before selecting the next
-  - BL-008 database writes use a global lock of capacity 1 across overlapping invocations
+  - BL-008 uses Neon main only, creates no Neon branches, uses Flyway only, and completes exactly one database requirement before selecting the next
   - retry PENDING_SYNC without restarting completed work
   - leave zero transient lane logs for the finishing invocation
-  - synchronize only validated durable state using batched checkpoint persistence
+  - synchronize only validated durable state
   - COMPLETE is allowed only when no eligible or recoverable unclaimed work remains; otherwise use PARTIAL_CONTINUE_REQUIRED
   - never mark any Backlog Item CLOSED without explicit user acceptance where configured
