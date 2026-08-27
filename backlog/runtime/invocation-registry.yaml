@@ -1,4 +1,4 @@
-version: 16
+version: 17
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 2
@@ -8,17 +8,17 @@ active_invocations:
     health_state: IDLE_BUT_HEALTHY
     started_at: 2026-08-27T08:17:58+05:30
     heartbeat_at: 2026-08-27T08:19:03+05:30
-    last_progress_at: 2026-08-27T08:17:58+05:30
+    last_progress_at: 2026-08-27T08:20:00+05:30
     last_lane_activity_at: null
     active_lane_count: 0
     coordinator_phase: BOOTSTRAPPING
-    current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-    current_work_unit: STARTUP_HANDSHAKE
-    progress_fingerprint: START_AND_LOG_PERSISTED_INITIAL_HEARTBEAT_WRITTEN_PENDING_READBACK_AND_CLAIM
+    current_backlog_item: BL-001
+    current_work_unit: WU-BL001-001
+    progress_fingerprint: BOOTSTRAP_READBACK_PASS_ATOMIC_134_CLAIM_PERSISTED_PENDING_CLAIM_READBACK
     blocked_reason: null
     recovery_action: NONE
     workers_started: 0
-    claims_created: 0
+    claims_created: 1
     canonical_bl001_delta: 0
     bootstrap_acknowledged: false
 recent_completed_invocations:
@@ -79,24 +79,16 @@ recent_completed_invocations:
     bl002_runtime_consistency_repairs: 2
     transient_lane_logs_remaining: 0
     durable_log: logs/runs/MANUAL-CYLINDER-FIRE-FIXED-20260826-193250IST.md
-  - invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-1800IST
-    execution_state: TERMINAL_CHECKPOINTED
-    health_state: COMPLETE_WITH_REGISTRY_RECONCILIATION_REQUIRED
-    started_at: 2026-08-26T18:00:00+05:30
-    completed_at: 2026-08-26T18:08:10+05:30
-    heartbeat_at: 2026-08-26T18:08:10+05:30
-    last_progress_at: 2026-08-26T18:08:10+05:30
-    active_lane_count: 0
-    coordinator_phase: SYNCHRONIZED_TERMINAL
-    current_backlog_item: MULTI_STREAM_BL008_BL001_BL002
-    current_work_unit: PARTIAL_CHECKPOINT_SYNCHRONIZED
-    progress_fingerprint: BL008_BLOCKER_REVALIDATED_BL001_123_OF_134_NO_PROMOTION_BL002_STORY0066_REVALIDATED
-    blocked_reason: BL008_MAIN_NOT_VISIBLE; BL001_BINDING_PROOF_GAP; BL002_FIELD_PROOF_GAPS
-    recovery_action: RECONCILED_BY_MANUAL_CYLINDER_FIRE_FIXED_20260826_193250IST
-    outcome: PARTIAL_CONTINUE_REQUIRED
-    durable_log: logs/runs/CYLINDER-PRODUCTION-FIRE-20260826-1800IST.md
 work_claims:
-  active: []
+  active:
+    - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
+      backlog_item: BL-001
+      work_unit: WU-BL001-001
+      task_id: ATOMIC-134-PROJECTION
+      owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-081758IST
+      state: CLAIMED
+      claimed_at: 2026-08-27T08:20:00+05:30
+      executor: automation/bl001-canonical-projection-engine.py
   completed:
     - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
       backlog_item: BL-001
