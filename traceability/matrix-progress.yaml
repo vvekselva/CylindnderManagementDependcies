@@ -1,4 +1,4 @@
-version: 49
+version: 50
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -30,7 +30,9 @@ unique_key_recovery:
   recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
   projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
   projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
-  consolidation_executor: automation/consolidate-traceability-explorer.py
+  deterministic_transformer: automation/consolidate-traceability-explorer.py
+  consolidation_executor: automation/bl001-canonical-projection-engine.py
+  projection_architecture: architecture/bl001-canonical-projection-engine.md
   connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
   target_unique_keys: 134
   materialized_unique_keys: 123
@@ -40,6 +42,10 @@ unique_key_recovery:
   frozen_source_only: true
   worker_generation_replay_required: false
   atomic_projection_required: true
+  staging_before_publication_required: true
+  rollback_on_publication_failure: true
+  projection_manifest_required: true
+  idempotent_134_noop_required: true
   pre_projection_assertion: EXACTLY_123_UNIQUE_KEYS
   post_projection_assertion: EXACTLY_134_UNIQUE_KEYS_ZERO_DUPLICATES
   base_blob_full_read: PASS
@@ -66,19 +72,20 @@ accepted_changes_this_checkpoint:
   corrected_full_chain_records: 4
   connector_base_blob_materialized: true
   connector_ordered_deltas_verified: 42
+  canonical_projection_engine_added: true
   unresolved_changes: 0
   worker_generation_started: false
   transient_lane_logs_created: 0
 update_rule: >-
-  A recovered key is not canonical until the Primary Orchestrator regenerates and synchronizes every required matrix and
-  Explorer projection together. The already retrieved base and all 42 deltas must be assembled in the exact index.html
-  order with HTTP_METHOD_PLUS_PATH replacement semantics. Fail closed on a pre-count other than 123, any overlap or
-  duplicate recovery key, or a post-count other than 134.
+  A recovered key is not canonical until automation/bl001-canonical-projection-engine.py stages and validates every required
+  matrix, Explorer and Level-3 runtime projection against the same HTTP_METHOD_PLUS_PATH keyset. The engine must fail closed
+  on a pre-count other than 123 or a valid idempotent 134, any overlap or duplicate recovery key, or a post-count other than
+  134. Partial publication is forbidden and publication failure must restore the previous authoritative state.
 next_action: >-
-  Assemble the connector-materialized Explorer base plus all 42 ordered deltas, prove exactly 123 unique current keys,
-  merge the eleven corrected recovery rows, prove exactly 134 unique keys with zero duplicates, and atomically synchronize
-  controller-traceability.md, unresolved-traceability.md, matrix-progress.yaml, traceability-matrix.json, matrix-data.js,
-  index.html and Level-3 runtime. Then and only then hand off to WU-BL001-002.
+  Execute automation/bl001-canonical-projection-engine.py against the authoritative control snapshot. It must assemble the
+  effective Explorer base plus all 42 ordered deltas, prove exactly 123 unique current keys, merge the eleven corrected
+  recovery rows, prove exactly 134 unique keys with zero duplicates, stage and cross-validate every projection, write the
+  canonical projection SHA-256 manifest, then publish the synchronized artifacts. Only after that hand off to WU-BL001-002.
 finalization_condition: >-
   Exactly 134 unique caller-visible HTTP method/path keys are represented once with accepted full-chain frozen-source
   evidence and all Markdown/JSON/browser/runtime artifacts reconcile before WU-BL001-002 may resume.
