@@ -1,0 +1,13 @@
+# File Restore Instructions
+
+The complete 374 KB files are in commit: cdf92263f14abac48dfb5acfa1c565d7e16dc2cc
+
+BlobSha:
+- traceability-matrix.json: e5707645d4c41b5263f05943c4c7f323a91e4cc8
+- matrix-data.js: b7eba4816c196d9b419d57a9301d6bb20df295dc
+
+To restore, use:
+```bash
+git show cdf92263f14abac48dfb5acfa1c565d7e16dc2cc:Releases/bl001-traceability-20260828-134/traceability-matrix.json > releases/tag/bl001-traceability-20260828-134/traceability-matrix.json
+git show cdf92263f14abac48dfb5acfa1c565d7e16dc2cc:Releases/bl001-traceability-20260828-134/matrix-data.js > releases/tag/bl001-traceability-20260828-134/matrix-data.js
+```
