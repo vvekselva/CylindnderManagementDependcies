@@ -1,4 +1,4 @@
-version: 59
+version: 60
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 1
@@ -7,14 +7,14 @@ active_invocations:
   execution_state: RUNNING
   health_state: ACTIVE
   started_at: 2026-08-29 03:57:36+05:30
-  heartbeat_at: 2026-08-29 03:57:36+05:30
+  heartbeat_at: 2026-08-29 03:59:02+05:30
   last_progress_at: 2026-08-29 03:57:36+05:30
   last_lane_activity_at: null
   active_lane_count: 0
   coordinator_phase: BOOTSTRAPPING
   current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: START_HANDSHAKE
-  progress_fingerprint: START_REGISTRY_PERSISTED_PENDING_START_LOG_HEARTBEAT_READBACK
+  current_work_unit: HEARTBEAT_ACK
+  progress_fingerprint: START_LOG_PERSISTED_INITIAL_HEARTBEAT_WRITTEN_PENDING_READBACK
   blocked_reason: null
   recovery_action: null
   workers_started: 0
