@@ -17,8 +17,7 @@ This is a reconstruction, not a recovery of the missing historical story files. 
 
 ## Reconstruction rules
 
-1. Story numbering is regenerated one-to-one from the classification `No` field:
-   `1 -> STORY-0001` through `134 -> STORY-0134`.
+1. Story numbering is regenerated one-to-one from the classification `No` field: `1 -> STORY-0001` through `134 -> STORY-0134`.
 2. The exact HTTP method + path is the traceability key.
 3. R1 is review priority 1; R2 is review priority 2.
 4. Story auto-approval is forbidden.
@@ -46,6 +45,7 @@ Each is flagged because BL-001 records `PARTIAL_INTERMEDIATE_HOPS`; no missing d
 
 ## Artifacts
 
-- `story-register.csv` — canonical 134-row story register and review state.
-- `STORIES-R1.md` — Release 1 human-readable story drafts (review first).
-- `STORIES-R2.md` — Release 2 human-readable story drafts.
+- `story-register.csv` — canonical 134-row story register, release priority, review state, approval state, and traceability state.
+- `STORY-DEFINITION.md` — deterministic human-readable rendering and common acceptance contract for every story-register row.
+
+The register plus the rendering contract are the canonical BL-002 story SSOT. They define all 134 human-readable drafts without copying or inventing the missing historical story wording.
