@@ -1,4 +1,4 @@
-version: 61
+version: 62
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 1
@@ -7,20 +7,20 @@ active_invocations:
   execution_state: RUNNING
   health_state: ACTIVE
   started_at: 2026-08-29 03:57:36+05:30
-  heartbeat_at: 2026-08-29 03:59:55+05:30
-  last_progress_at: 2026-08-29 03:59:55+05:30
-  last_lane_activity_at: 2026-08-29 03:59:55+05:30
+  heartbeat_at: 2026-08-29 04:01:00+05:30
+  last_progress_at: 2026-08-29 04:01:00+05:30
+  last_lane_activity_at: 2026-08-29 04:01:00+05:30
   active_lane_count: 3
-  coordinator_phase: CLAIMING
+  coordinator_phase: ORCHESTRATOR_STARTED
   current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: CLAIM_READBACK_PENDING
-  progress_fingerprint: START_AND_HEARTBEAT_ACK_THREE_ELIGIBLE_CLAIMS_PERSISTED_PENDING_READBACK
+  current_work_unit: DISPATCHING_CLAIMED_WORK
+  progress_fingerprint: BOOTSTRAP_ACK_START_LOG_HEARTBEAT_AND_THREE_CLAIMS_READBACK_VERIFIED
   blocked_reason: null
   recovery_action: null
   workers_started: 0
   claims_created: 3
   canonical_progress_delta: 0
-  bootstrap_acknowledged: false
+  bootstrap_acknowledged: true
   transient_lane_logs_remaining: 0
 recent_completed_invocations:
 - invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
@@ -330,7 +330,7 @@ bootstrap_control:
   governance: governance/orchestrator-bootstrap-gate.yaml
   scheduler_fire_is_orchestrator_start: false
   bootstrap_ack_required: true
-  latest_successful_bootstrap_ack_at: '2026-08-28T04:24:47+05:30'
+  latest_successful_bootstrap_ack_at: '2026-08-29T04:01:00+05:30'
   next_required_BL001_claim: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
 rules:
 - each work claim is globally unique across active invocations
