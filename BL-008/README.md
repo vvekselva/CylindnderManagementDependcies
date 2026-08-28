@@ -1,32 +1,30 @@
 # BL-008 — Database Migration Execution Status
 
-Latest governed continuation: `CYLINDER-MANUAL-SOURCE-RECON-20260829-043848IST`.
+Latest governed continuation: `CYLINDER-MANUAL-FLYWAY-BOOTSTRAP-20260829-045929IST`.
 
 ## Target policy
 
-- Current explicitly approved provider evaluation target: **Supabase** project `xipkywwvzvrwcqnkifuv`.
+- Current explicitly approved target: **Supabase** project `xipkywwvzvrwcqnkifuv`.
 - Database: `postgres`.
 - PostgreSQL version observed: `17.6`.
 - Database write parallelism: `1`.
-- Migration mechanism: **Flyway only**.
+- Migration mechanism: **genuine Flyway only**.
 - Frozen project declares Flyway `10.0.0`.
-- Manual SQL substitution for Flyway migrations is **FORBIDDEN**.
-- Supabase-native `apply_migration` or raw SQL execution must **not** be used to replay frozen Flyway migration files as a substitute for Flyway.
+- Manual/raw SQL replay and Supabase-native `apply_migration` are forbidden as substitutes for Flyway.
 - Full automation remains ChatGPT-owned; GitHub is version control/durable evidence only and GitHub runners are forbidden.
-- No destructive project/branch operation is authorized by this flow.
+- No user terminal work, local bridge or external worker runtime is permitted by the current automation policy.
+- Never invoke `flyway clean`.
 
 ## Target database read-only proof
 
-Current read-only inspection succeeded:
+Current target inspection proves:
 
 - database: `postgres`
 - connected role: `postgres`
 - PostgreSQL: `17.6`
 - `public.flyway_schema_history` exists: **NO**
 - public table count: **0**
-- database writes by this governed continuation: **0**
-
-The target is therefore still empty from the perspective of public tables and Flyway history.
+- database writes by the Orchestrator so far in the current migration flow: **0**
 
 ## Frozen-source reconciliation — PASS
 
@@ -35,80 +33,75 @@ Frozen commit: `3ae6e61442132d94a307275b08dd65fcef228d89`
 Migration path: `cylinder.datascripts/src/main/resources/db/migration`  
 POM: `cylinder.datascripts/pom.xml`
 
-The frozen POM proves:
+The frozen POM proves Flyway `10.0.0`, migration location `filesystem:src/main/resources/db/migration`, and target schema `public`.
 
-- Flyway version: `10.0.0`
-- migration location: `filesystem:src/main/resources/db/migration`
-- schema: `public`
+The old control inventory filenames were incorrect. `BL-008/migration-inventory.txt` now binds the actual frozen V1-V17 filenames to their immutable Git blob SHA-1 values. Git blob SHA-1 is source-binding evidence only; genuine Flyway must calculate/validate Flyway checksums.
 
-The previous V1-V17 filenames in the control inventory were incorrect. The exact frozen files have now been read successfully from the immutable commit and rebound to their Git blob SHA-1 values in `BL-008/migration-inventory.txt`.
+`BL008_FROZEN_MIGRATION_SOURCE_MISMATCH` is **RESOLVED for governed V1-V17 scope**.
 
-Correct governed V1-V17 sequence:
-
-1. `V1__DailyLogin.sql`
-2. `V2__ProductCategory.sql`
-3. `V3__ProductUom.sql`
-4. `V4__City.sql`
-5. `V5__State.sql`
-6. `V6__Country.sql`
-7. `V7__Address.sql`
-8. `V8__AddressType.sql`
-9. `V9__PhoneNumber.sql`
-10. `V10__Customer.sql`
-11. `V11__CustomerPhoneNumber.sql`
-12. `V12__CustomerAddress.sql`
-13. `V13__Product.sql`
-14. `V14__CustomerProductRate.sql`
-15. `V15__CylinderStates.sql`
-16. `V16__Cylinder.sql`
-17. `V17__Driver.sql`
-
-`BL008_FROZEN_MIGRATION_SOURCE_MISMATCH` is therefore **RESOLVED for governed scope V1-V17**.
-
-`V1__DailyLogin.sql` is the first frozen **source-order candidate**. It has not been declared Flyway-selected or applied because a genuine Flyway runtime has not connected to the target yet.
+First frozen source-order candidate: `V1__DailyLogin.sql`. It is not yet Flyway-selected or applied.
 
 ## Current primary blocker
 
 `BL008_CHATGPT_NATIVE_FLYWAY_PATH_UNAVAILABLE`
 
-Latest execution-image evidence:
+Subreason: `RUNTIME_BOOTSTRAP_NETWORK_AND_BINARY_PATH_UNAVAILABLE`.
+
+Latest ChatGPT-native bootstrap evidence:
 
 - Java 21.0.11: available.
+- `javac` / `jshell`: available.
 - Maven executable: unavailable.
 - Flyway CLI executable: unavailable.
 - Gradle executable: unavailable.
-- user Maven dependency cache: unavailable.
-- `/usr/share/maven-repo` contains no Flyway jars and no PostgreSQL JDBC jar.
-- direct DNS resolution from the ChatGPT execution container failed for Maven Central endpoints.
-- direct DNS resolution failed for Redgate's Flyway download endpoint.
-- direct DNS resolution failed for the Supabase PostgreSQL host.
-- connected Supabase SQL access works, but it is not Flyway and therefore cannot substitute for Flyway execution.
+- PostgreSQL `psql`: unavailable.
+- Docker/Podman/Buildah/Nerdctl: unavailable.
+- no usable local Flyway 10.0.0 + PostgreSQL JDBC artifact set was found.
+- package-manager bootstrap could not complete because outbound package-network access is unavailable.
+- direct Flyway 10.0.0 download could not be reached from the execution container.
+- Maven Central and Redgate download routes could not be reached from the execution container.
+- an IP-pinned Maven Central connectivity probe also failed, proving the problem is not DNS alone.
+- direct PostgreSQL route from the execution container to the Supabase database remains unavailable.
+- no installed Flyway/Redgate execution plugin is available.
 
-The source gate is now clear; the Flyway runtime/connectivity gate is the active blocker.
+Connected Supabase SQL access works, but it is not Flyway.
+
+## Supabase Edge Function investigation
+
+Official Supabase documentation proves that hosted Edge Functions:
+
+- run in a Deno/TypeScript Edge Runtime;
+- receive `SUPABASE_DB_URL` as a default database connection secret;
+- can connect to PostgreSQL from the hosted runtime;
+- support NPM modules and WebAssembly.
+
+This creates a potentially useful **database-connected execution location**, but it does not yet prove a genuine Flyway 10.0.0 process. Documentation/repository searches in this run did not establish a supported hosted arbitrary-subprocess route capable of launching genuine Flyway.
+
+Dimension: `SUPABASE_EDGE_DB_CONNECTIVITY_AVAILABLE_BUT_GENUINE_FLYWAY_EXECUTION_UNPROVEN`.
+
+A TypeScript Flyway-compatible reimplementation, raw SQL replay, or Supabase-native migration is not accepted as genuine Flyway and was not used.
 
 ## Safety result
 
-- `flyway_schema_history`: **PROVED ABSENT ON CURRENT SUPABASE TARGET**
-- public tables: **0**
-- first source-order candidate: `V1__DailyLogin.sql`
 - Flyway `info`: **NOT PERFORMED**
 - Flyway `validate`: **NOT PERFORMED**
 - Flyway `migrate`: **NOT PERFORMED**
-- provider-native migration replay: **NOT PERFORMED**
-- manual SQL migration: **NOT PERFORMED**
+- `V1__DailyLogin.sql`: **NOT APPLIED**
+- Supabase-native migration replay: **NOT PERFORMED**
+- raw/manual SQL migration: **NOT PERFORMED**
 - database writes: **0**
 - destructive project/branch changes: **0**
 
 ## Governed next flow
 
 1. Keep the corrected immutable V1-V17 source binding fixed.
-2. Obtain a genuine ChatGPT-native Flyway 10.0.0 execution path that can reach the Supabase PostgreSQL endpoint with runtime-only credentials.
-3. Run genuine Flyway `info` against the target.
-4. Confirm the first pending migration reported by Flyway matches the frozen source-order candidate.
+2. On each governed attempt, re-check only ChatGPT-native capabilities that could materially change the Flyway blocker: a genuine Flyway-capable installed tool/runtime, an execution image with required dependency/network access, or a proven ChatGPT-invokable hosted runtime capable of executing genuine Flyway 10.0.0 and reaching the target.
+3. When that path becomes available, run genuine Flyway `info` first.
+4. Confirm Flyway's pending migration against the frozen source binding.
 5. Run genuine Flyway `validate`.
-6. Apply exactly one migration through Flyway only.
-7. Re-read `flyway_schema_history`, verify the created schema objects and integrity, persist evidence, then stop before considering the next migration.
-8. Never invoke `flyway clean` and never substitute provider-native SQL/migration actions for Flyway.
-9. A blocked BL-008 stream must not stop independently eligible BL-002 work.
+6. Apply exactly one migration through Flyway.
+7. Re-read `flyway_schema_history`, verify schema/integrity, persist evidence, and stop before considering the next migration.
+8. Do not ask the user to run commands, and do not substitute provider-native migrations/raw SQL.
+9. BL-002 may continue independently while BL-008 remains blocked.
 
-Detailed evidence: `BL-008/evidence/CYLINDER-MANUAL-SOURCE-RECON-20260829-043848IST.md`.
+Detailed latest evidence: `BL-008/evidence/CYLINDER-MANUAL-FLYWAY-BOOTSTRAP-20260829-045929IST.md`.
