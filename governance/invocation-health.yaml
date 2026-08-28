@@ -1,34 +1,28 @@
-version: 2
+version: 3
 name: Invocation Health, Heartbeat, Stale and Stuck Recovery Governance
 purpose: >-
-  Determine whether a Cylinder Orchestrator invocation is genuinely active, temporarily idle but healthy,
-  blocked, stale, stuck, recovering, or complete. A lease/registry RUNNING flag alone never proves liveness.
-  Every scheduled/manual production fire must also create a durable invocation START record before analysis and
-  must not report COMPLETE while eligible or recoverable work still exists.
+  Determine whether a Cylinder Orchestrator invocation is genuinely active, idle but healthy, blocked, stale, stuck,
+  recovering, or complete. Shared GitHub registry writes are not required before analysis. Invocation health is tracked in
+  the execution runtime and projected to durable shared files during END_OF_ORCHESTRATION_RECONCILIATION.
 
 authority:
   applies_to: [MANUAL_PRODUCTION_FIRE, SCHEDULED_PRODUCTION_FIRE]
   architecture: architecture/invocation-health-and-recovery.md
   invocation_registry: backlog/runtime/invocation-registry.yaml
-  legacy_lease_projection: backlog/runtime/invocation-lease.yaml
   production_progress_guarantee: governance/production-fire-progress-guarantee.yaml
   authoritative_control_branch: chore/rename-dependency-files
 
-startup_registration:
-  mandatory_before_analysis: true
+startup_health:
+  mandatory_shared_start_record_before_analysis: false
   required_order:
     - PIN_AUTHORITATIVE_CONTROL_BRANCH
     - GENERATE_UNIQUE_INVOCATION_ID
-    - PERSIST_INVOCATION_START_IN_REGISTRY
-    - PERSIST_START_LOG
-    - WRITE_INITIAL_HEARTBEAT
-    - HEALTH_CLASSIFICATION_AND_WORK_SELECTION
-  missing_start_record_after_scheduler_fire:
-    classification: SCHEDULER_TO_ORCHESTRATOR_START_FAILURE
-    production_success_claim_forbidden: true
-  invocation_log_exists_but_registry_entry_missing:
-    classification: REGISTRY_RECONCILIATION_DEFECT
-    action: RECONCILE_REGISTRY_FROM_DURABLE_LOG_BEFORE_NEXT_FIRE
+    - READ_PRIOR_DURABLE_INVOCATION_EVIDENCE
+    - CLASSIFY_PRIOR_NONTERMINAL_INVOCATIONS
+    - BUILD_IN_MEMORY_EXECUTION_PLAN
+    - BUILD_END_UPDATE_SET
+  registry_is_startup_gate: false
+  registry_role: END_STATE_INDEX_AND_HISTORY
 
 health_signals:
   required:
@@ -45,23 +39,25 @@ health_signals:
     - progress_fingerprint
     - blocked_reason
     - recovery_action
-  lease_or_running_flag_is_liveness_proof: false
+  running_flag_is_liveness_proof: false
 
 heartbeat:
   interval_seconds: 60
   stale_after_seconds: 300
+  runtime_first: true
+  github_write_each_interval_required: false
+  durable_terminal_projection_required: true
   requirements:
-    - Primary Orchestrator refreshes heartbeat while it owns active work or is performing aggregation, synchronization, recovery or governed waiting.
+    - Primary Orchestrator refreshes runtime heartbeat while it owns active work or is performing aggregation, validation, synchronization or recovery.
     - Worker heartbeat does not substitute for the Primary Orchestrator heartbeat.
-    - Every heartbeat update records coordinator_phase and active_lane_count.
-    - The initial heartbeat is written immediately after the invocation START record.
+    - Every heartbeat state records coordinator_phase and active_lane_count in the execution journal.
 
 progress_detection:
   progress_fingerprint_sources:
-    - accepted durable result count
+    - accepted result count
     - work-unit state
     - executor terminal result count
-    - canonical matrix/story/database requirement checkpoint
+    - canonical matrix/story/database checkpoint
     - synchronization state
     - blocker state
   meaningful_progress_updates_last_progress_at: true
@@ -74,7 +70,7 @@ health_states:
     condition: HEARTBEAT_FRESH_AND_MEANINGFUL_WORK_OR_PROGRESS_RECENT
   IDLE_BUT_HEALTHY:
     condition: HEARTBEAT_FRESH_AND_ZERO_ACTIVE_LANES_AND_COORDINATOR_IN_GOVERNED_NON_WORKER_PHASE
-    allowed_phases: [PLANNING, AGGREGATING, VALIDATING, SYNCHRONIZING, REPLANNING, RECOVERING]
+    allowed_phases: [PLANNING, AGGREGATING, VALIDATING, END_OF_ORCHESTRATION_RECONCILIATION, REPLANNING, RECOVERING]
     maximum_seconds_without_progress: 600
   BLOCKED:
     condition: ALL_OWNED_WORK_HAS_EXPLICIT_DURABLE_BLOCKERS_AND_NO_ELIGIBLE_UNCLAIMED_WORK_FOR_THIS_INVOCATION
@@ -85,9 +81,9 @@ health_states:
   RECOVERING:
     condition: FAIL_CLOSED_RECOVERY_IN_PROGRESS
   COMPLETE:
-    condition: INVOCATION_TERMINAL_CHECKPOINT_PERSISTED_AND_WORK_CLAIMS_RELEASED_AND_NO_ELIGIBLE_OR_RECOVERABLE_UNCLAIMED_WORK_REMAINS
+    condition: END_RECONCILIATION_PERSISTED_AND_LOCKS_RELEASED_AND_NO_ELIGIBLE_OR_RECOVERABLE_UNCLAIMED_WORK_REMAINS
   PARTIAL_CONTINUE_REQUIRED:
-    condition: EXECUTION_LIMIT_REACHED_OR_CHECKPOINT_REQUIRED_WHILE_ELIGIBLE_OR_RECOVERABLE_UNCLAIMED_WORK_REMAINS
+    condition: EXECUTION_LIMIT_OR_RECONCILIATION_FAILURE_WHILE_WORK_REMAINS
 
 zero_lane_rule:
   zero_active_lanes_is_not_by_itself_stale_or_stuck: true
@@ -95,8 +91,8 @@ zero_lane_rule:
     - If heartbeat is fresh and coordinator_phase is governed, classify IDLE_BUT_HEALTHY.
     - If heartbeat is stale, classify STALE.
     - If heartbeat is fresh but no progress exceeds stuck threshold and no durable blocker exists, classify STUCK.
-    - If all work has durable blockers and no other eligible work exists, classify BLOCKED and terminate cleanly.
-    - If eligible unclaimed work exists while execution budget is open, zero lanes requires REPLAN_AND_DISPATCH; terminal checkpoint is forbidden.
+    - If all work has durable blockers and no other eligible work exists, classify BLOCKED.
+    - If eligible unclaimed work exists while execution budget is open, zero lanes requires REPLAN_AND_DISPATCH.
 
 productive_completion_guard:
   terminal_checkpoint_forbidden_when:
@@ -109,63 +105,53 @@ productive_completion_guard:
   complete_while_eligible_work_exists_forbidden: true
 
 recovery:
-  STALE:
-    action: FAIL_CLOSED_RECOVERY
+  prior_nonterminal_evidence:
+    action: FAIL_CLOSED_RECOVERY_ANALYSIS
     steps:
-      - verify owner heartbeat is stale
-      - verify no live worker/executor still owns the claimed task
+      - verify latest durable heartbeat or terminal evidence
+      - verify no live worker or executor still owns the task
       - preserve completed durable evidence
       - reject incomplete partial output
-      - release stale claims only after recovery evidence is persisted
-      - mark old invocation RECOVERED_STALE
-      - permit new invocation to claim eligible recovered work
-  STUCK:
-    action: FAIL_CLOSED_DIAGNOSE_THEN_RECOVER
-    steps:
-      - persist stuck diagnosis with last progress fingerprint
-      - do not duplicate currently claimed work
-      - terminate or close only executor/task proven non-progressing
-      - preserve healthy sibling executors
-      - release/reclaim task only after recovery checkpoint
-      - if root cause is external blocker, convert to BLOCKED instead of repeatedly restarting
+      - add required recovery corrections to the end update set
+      - do not rewrite the shared registry during startup only to record recovery
   BLOCKED:
     action: CLEAN_TERMINATION
     steps:
-      - persist blocker and evidence
-      - synchronize runtime state
-      - release work claims and invocation capacity
+      - persist blocker in final reconciliation
+      - release execution locks
       - do not wait artificially to reach productive-window duration
-      - confirm no other eligible unclaimed work exists in another enabled stream before terminal BLOCKED
+      - confirm no other eligible unclaimed work exists before terminal BLOCKED
 
 trigger_preflight:
-  before_noop_or_parallel_start:
+  before_starting_execution:
     - pin authoritative control branch chore/rename-dependency-files
-    - create this fires own durable invocation START record and initial heartbeat
-    - read invocation registry and/or lease projection
-    - evaluate heartbeat age
-    - evaluate last progress age
-    - evaluate active lanes and coordinator phase
-    - classify every other RUNNING invocation using this governance
+    - create invocation identity in execution memory
+    - read authoritative registry and terminal logs as evidence
+    - evaluate prior heartbeat age where durable evidence exists
+    - classify prior nonterminal invocations
+    - build execution plan and end update set
   rules:
-    - RUNNING plus ACTIVE or IDLE_BUT_HEALTHY: respect concurrency/work-claim governance
-    - RUNNING plus STALE: perform stale recovery before treating it as live capacity
-    - RUNNING plus STUCK: perform fail-closed stuck diagnosis/recovery before duplicate work is allowed
-    - RUNNING plus BLOCKED: finalize and release capacity; do not leave zombie RUNNING state
+    - ACTIVE or IDLE_BUT_HEALTHY prior live owner: respect singleton/concurrency governance
+    - STALE: recover ownership before duplicate work
+    - STUCK: diagnose and recover before duplicate work
+    - BLOCKED zombie: schedule final correction and release capacity
     - COMPLETE: never blocks a new trigger
 
 terminal_persistence:
+  shared_updates_phase: END_OF_ORCHESTRATION_RECONCILIATION
   registry_terminal_record_required: true
-  durable_log_required: true
+  durable_terminal_log_required: true
   registry_and_log_must_reconcile: true
   COMPLETE_requires:
-    - invocation_terminal_checkpoint_persisted
-    - work_claims_released
-    - no_eligible_or_recoverable_unclaimed_work_remains
+    - final reconciliation persisted
+    - execution locks released
+    - no eligible or recoverable unclaimed work remains
   PARTIAL_CONTINUE_REQUIRED_requires:
-    - eligible_or_recoverable_unclaimed_work_remains
-    - execution_limit_or_safe_checkpoint_prevents_more_dispatch_in_this_fire
-  if_registry_and_log_do_not_reconcile:
+    - eligible or recoverable unclaimed work remains
+    - execution limit or safe checkpoint prevents more dispatch
+  reconciliation_failure:
     health_state: RECOVERING
+    terminal_state: PARTIAL_CONTINUE_REQUIRED
     production_success_claim_forbidden: true
 
 observability:
@@ -183,11 +169,7 @@ observability:
     - eligible_unclaimed_work_count
     - workers_started
     - canonical_progress_delta
-  forbidden_status_claims:
-    - "RUNNING" without health classification
-    - "ACTIVE" based only on lease state
-    - "stale" based only on elapsed total runtime
-    - "COMPLETE" after status-check-only execution while eligible work exists
+    - reconciliation_outcome
 
 safety:
   fail_closed: true
@@ -195,4 +177,4 @@ safety:
   healthy_long_running_task_must_not_be_killed_only_for_exceeding_30_minutes: true
   stale_detection_uses_heartbeat_not_total_runtime: true
   stuck_detection_uses_fresh_heartbeat_plus_no_progress: true
-  complete_requires_truthful_work_exhaustion_or_durable_blocking: true
+  complete_requires_truthful_work_exhaustion_and_successful_end_reconciliation: true
