@@ -1,0 +1,17 @@
+release_storage_checkpoint:
+  backlog_item: BL-001
+  state: READY_FOR_GITHUB_RELEASE_ASSET_UPLOAD
+  release_tag: bl001-traceability-20260828-134
+  candidate_unique_keys: 134
+  duplicates: 0
+  unresolved: 0
+  canonical_repository_materialized_keys: 123
+  canonical_pending_keys: 11
+  canonical_count_changed: false
+  github_actions_used: false
+  execution_owner: CHATGPT_PRIMARY_ORCHESTRATOR
+  next_action: >-
+    Place the validated traceability-matrix.json and matrix-data.js beside the committed checksum and release notes,
+    run automation/publish-bl001-release.ps1 locally to create a draft release, verify SHA-256, upload the three release
+    assets, read back the asset names, and publish the release. After the published release is visible, the Primary
+    Orchestrator must verify the release and then atomically advance the lightweight repository manifest/runtime state.
