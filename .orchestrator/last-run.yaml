@@ -1,9 +1,9 @@
-run_id: CYLINDER-MANUAL-FIRE-20260829-042152IST
-started_at: 2026-08-29T04:21:52+05:30
-completed_at: 2026-08-29T04:26:29+05:30
-heartbeat_at: 2026-08-29T04:26:29+05:30
+run_id: CYLINDER-MANUAL-SOURCE-RECON-20260829-043848IST
+started_at: 2026-08-29T04:38:48+05:30
+completed_at: null
+heartbeat_at: 2026-08-29T04:38:48+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: PARTIAL_PROGRESS_BLOCKED
+result: RUNNING
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -17,61 +17,22 @@ policy:
   shared_ssot_single_writer: true
 lease:
   overlap_detected: false
-  acquired_at: 2026-08-29T04:21:52+05:30
-  release_expected_after_evidence_commit: true
+  acquired_at: 2026-08-29T04:38:48+05:30
+  status: ACQUIRED
 bl001:
   status: COMPLETE_134_OF_134
-  downstream_gate: PASS
 bl002:
-  status: BLOCKED_STORY_0049_UNIQUE_KEY_MISMATCH
-  work_performed_this_fire: NONE
-  approved: 0
+  status: NOT_IN_SCOPE_THIS_RUN
 bl008:
-  status: BLOCKED_FROZEN_MIGRATION_SOURCE_MISMATCH
+  status: SOURCE_RECONCILIATION_RUNNING
   provider:
     name: Supabase
     project_ref: xipkywwvzvrwcqnkifuv
     database_name: postgres
-    postgres_version: "17.6"
-    project_health: ACTIVE_HEALTHY
-  database_visibility:
-    chatgpt_supabase_sql_path: PASS
-    flyway_schema_history_exists: false
-    public_tables: 0
-    supabase_migrations: 0
-  source_validation:
-    declared_source_repository: vvekselva/CylinderManagement
+  database_writes: 0
+  source_reconciliation:
     declared_frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
-    declared_path: cylinder.datascripts/src/main/resources/db/migration
-    control_inventory: BL-008/migration-inventory.txt
-    control_inventory_claim: V1_THROUGH_V17
-    exact_v1_file_at_frozen_source: NOT_FOUND_404
-    v100_file_at_frozen_source: PRESENT
-    result: FAIL_MISMATCH
-  runtime:
-    java_21: PRESENT
-    maven: ABSENT
-    flyway_cli: ABSENT
-    direct_postgres_dns: BLOCKED
-    supabase_connector_sql: PASS
-  database_actions:
-    exact_next_migration_selected: false
-    flyway_validate: NOT_PERFORMED
-    flyway_migrate: NOT_PERFORMED
-    supabase_native_migration_substitution: false
-    manual_sql_substitution: false
-    database_writes: 0
-blockers:
-  - id: BL008_FROZEN_MIGRATION_SOURCE_MISMATCH
-    scope: BL-008
-    effect: The control inventory claims V1 through V17 at the frozen commit/path, but exact Git inspection cannot find the claimed V1 file while V100-era files are present. Version, filename, checksum, order and prerequisites cannot be proved, so migration selection is fail-closed.
-  - id: BL008_CHATGPT_NATIVE_FLYWAY_PATH_UNAVAILABLE
-    scope: BL-008
-    effect: Supabase SQL access is available from ChatGPT, but the current ChatGPT execution image has no Maven or Flyway CLI and direct PostgreSQL DNS is unavailable. Supabase SQL/native migrations cannot substitute for Flyway.
-backlog_progress:
-  BL-001: COMPLETE
-  BL-002: BLOCKED_STORY_0049_UNIQUE_KEY_MISMATCH
-  BL-008: BLOCKED_FROZEN_MIGRATION_SOURCE_MISMATCH
+    declared_inventory: V1_THROUGH_V17
+    investigation: HISTORICAL_GIT_SOURCE_AND_PAYLOAD
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
-new_database_branches_created: 0
