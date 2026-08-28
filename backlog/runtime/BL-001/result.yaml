@@ -4,11 +4,11 @@ result:
   verified: false
   closed: false
   canonical_source_check_result_accepted: false
-  canonical_source_check_result_state: SOURCE_PROOF_COMPLETE_KEYSET_VALIDATED_MODEL_ASSEMBLY_PENDING
+  canonical_source_check_result_state: SOURCE_PROOF_COMPLETE_KEYSET_VALIDATED_RECOVERY_STRUCTURE_STAGED_FULL_MODEL_ASSEMBLY_PENDING
   matrix_state: INCREMENTAL_PARTIAL_ATOMIC_PROJECTION_PENDING
-  sync_state: SYNCHRONIZED_CURRENT_123_CANONICAL
-  pending_sync_artifact: null
-  pending_sync_behavior: RETRY_SYNC_ONLY_NO_WORKER_RESTART
+  sync_state: SYNCHRONIZED_CURRENT_123_CANONICAL_PLUS_NON_CANONICAL_STAGED_RECOVERY
+  pending_sync_artifact: traceability/explorer/staged-bl001-recovery-20260828.js
+  pending_sync_behavior: STAGED_ONLY_DO_NOT_LOAD_OR_PROMOTE_UNTIL_FULL_MODEL_VALIDATES
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
 
   lifecycle_gate:
@@ -23,13 +23,6 @@ result:
     latest_worker_execution: E2E-STAGED-20260823-161214
     old_generation_replay_required: false
 
-  lane_utilization_gate:
-    id: QG-LANE-001
-    state: PRIMARY_ORCHESTRATOR_DIRECT_RECOVERY
-    configured_lanes: 10
-    worker_generation_started_this_checkpoint: false
-    residual_lane_logs: 0
-
   unique_key_recovery_checkpoint:
     canonical_endpoint_inventory_target: 134
     raw_accumulated_examined_counter: 134
@@ -42,18 +35,23 @@ result:
     candidate_overlap_with_current_123: 0
     candidate_duplicate_pairs: 0
     candidate_expected_unique_keys_after_merge: 134
+    staged_recovery_rows: 11
+    staged_recovery_unique_keys: 11
+    staged_recovery_malformed_rows: 0
+    staged_recovery_git_blob_sha1: 133f354b52929bc771de40adc9d5324121c6be69
+    staged_recovery_sha256: d60797a8727dc14a5dc25fe4f00e7de090cc40caaa9296bd47dfeb718fc6b641
     unresolved: 0
     recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
     projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
     projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
     connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
-    atomic_publication_capability: backlog/runtime/BL-001/atomic-publication-capability.yaml
     premerge_keyset_validation: backlog/runtime/BL-001/premerge-keyset-validation.yaml
-    progress_this_fire: ALL_11_SOURCE_PROVED_ATOMIC_GIT_TRANSPORT_AVAILABLE_PREMERGE_KEYSET_VALIDATED
+    staged_recovery_validation: backlog/runtime/BL-001/staged-recovery-validation-20260828.yaml
+    progress_this_fire: RECOVERY_11_STRUCTURE_STAGED_AND_BYTE_IDENTITY_VALIDATED_CANONICAL_REMAINS_123
 
   current_work_unit:
     id: WU-BL001-001
-    state: KEYSET_VALIDATED_STRUCTURED_MODEL_ASSEMBLY_PENDING
+    state: RECOVERY_STRUCTURE_STAGED_FULL_123_MODEL_ASSEMBLY_PENDING
     name: Controller Traceability Unique-Key Recovery and Atomic Projection Assembly
     source_read_allowed: true
     frozen_source_only: true
@@ -65,12 +63,19 @@ result:
     source_read_allowed: false
 
   unresolved_items:
-    - id: BL001-UNIQUE-KEY-RECOVERY
-      state: STRUCTURED_MODEL_ASSEMBLY_PENDING
-      description: All 11 missing canonical HTTP-method/path keys are source-proved and validated as non-overlapping with the 123 current canonical keys. Candidate key arithmetic is exactly 134; canonical coverage remains 123 until the complete structured model is assembled and atomically serialized.
-    - id: BL001-RAW-COUNTER-INTEGRITY
-      state: AUDIT_ONLY_SUPERSEDED_BY_CANDIDATE_KEYSET_VALIDATION
-      description: Accumulated 134 counters include proven duplicate acceptance/recount events and remain audit-only. Independent current-123 plus recovery-11 keyset validation has now proved zero overlap and a 134-key candidate set.
+    - id: BL001-STRUCTURED-MODEL-ASSEMBLY
+      state: IN_PROGRESS_PLATFORM_BOUNDARY
+      description: >-
+        The eleven recovery rows are now fully structured and validated as a non-canonical staged delta. The remaining
+        work is reconstructing the existing effective 123-row structured Explorer model from the old base plus 42 ordered
+        deltas inside the ChatGPT execution environment, applying the staged recovery delta, and serializing all canonical
+        projections together.
+    - id: BL001-LOCAL-REPOSITORY-MATERIALIZATION
+      state: EXECUTION_ENVIRONMENT_LIMITATION
+      description: >-
+        GitHub connector reads succeed, but connector file content is not directly mountable into the ChatGPT container;
+        the container also has no outbound GitHub network path. This does not move execution to GitHub and does not permit
+        partial publication. Connector reads remain repository access only.
 
   atomic_publication_gate:
     state: TRANSPORT_AVAILABLE_CANONICAL_PUBLICATION_NOT_YET_ATTEMPTED
@@ -78,6 +83,13 @@ result:
     github_actions_required: false
     github_hosted_runner_required: false
     force_ref_update_allowed: false
+
+  staging_gate:
+    state: PASS_RECOVERY_11_NON_CANONICAL
+    artifact: traceability/explorer/staged-bl001-recovery-20260828.js
+    validation: backlog/runtime/BL-001/staged-recovery-validation-20260828.yaml
+    loaded_by_index: false
+    canonical_count_changed: false
 
   execution_backend:
     owner: AUTOMATION_TOOL
@@ -88,14 +100,12 @@ result:
   final_outputs: []
   close_allowed: false
   next_action: >-
-    Assemble the effective structured Explorer model from matrix-data.js plus all 42 ordered deltas using the browser
-    HTTP_METHOD_PLUS_PATH upsert rule and confirm its keyset equals the validated current 123. Merge the eleven already
-    source-proved corrected recovery rows, validate complete row structure and exactly 134 unique keys with zero duplicates,
-    stage and cross-validate Markdown, unresolved ledger, matrix-progress, structured Explorer JSON, browser matrix-data.js
-    and Level-3 runtime, write a projection SHA-256 manifest, then publish all synchronized artifacts through one Git
-    tree/commit/ref update.
+    Continue connector-native reconstruction of the full current Explorer projection. The base is 11 rows and index.html
+    defines 42 ordered deltas under HTTP_METHOD_PLUS_PATH upsert semantics. Reconstruct all 123 effective rows, cross-check
+    its keyset against controller-traceability.md, apply the validated staged 11-row recovery delta, require exactly 134
+    unique well-formed rows, regenerate Markdown/JSON/browser/runtime artifacts, write the projection manifest, and publish
+    the entire canonical set atomically.
   note: >-
-    Source proof is complete for all eleven recovery keys. The full current 123-row Markdown matrix was read in complete
-    ranges and none of the eleven recovery method/path pairs is present; the recovery set itself contains eleven unique
-    pairs. The candidate post-merge keyset is therefore exactly 134 with zero overlap, but the canonical matrix intentionally
-    remains at 123 until structured model assembly and atomic projection validation pass.
+    This step did not change canonical coverage. The new staged recovery artifact is deliberately absent from index.html and
+    cannot affect the live Explorer. Its 11 endpoint records passed local Node validation with zero duplicates and zero
+    malformed row structures, and the repository Git blob SHA exactly matches the locally computed Git blob SHA.
