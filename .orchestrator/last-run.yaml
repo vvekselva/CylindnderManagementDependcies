@@ -1,7 +1,7 @@
 run_id: CYLINDER-MANUAL-FIRE-20260829-040046IST
 started_at: 2026-08-29T04:00:46+05:30
 completed_at: null
-heartbeat_at: 2026-08-29T04:00:46+05:30
+heartbeat_at: 2026-08-29T04:01:41+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: RUNNING
 policy:
@@ -33,14 +33,19 @@ bl008:
     migration_path: cylinder.datascripts/src/main/resources/db/migration
     discovered_versions: V1_THROUGH_V17
   execution_paths:
-    neon_mcp_management_path: PENDING
-    neon_mcp_sql_path: PENDING
-    direct_postgres_path: PENDING
-    automated_flyway_runtime: PENDING
+    neon_mcp_management_path: PASS_PROJECT_DISCOVERY
+    neon_mcp_sql_path: BLOCKED_OBSERVED_ARGUMENT_VALIDATION
+    direct_postgres_path: BLOCKED_OUTBOUND_DNS
+    automated_flyway_runtime: DISCOVERY_IN_PROGRESS
+  evidence:
+    neon_project_discovery: PASS
+    neon_sql_error_fingerprint: MCP_-32602_PROJECT_ID_ARGUMENT_VALIDATION
+    direct_dns_error: Temporary failure in name resolution
+    vendor_root_cause: UNDETERMINED
   database_actions:
-    flyway_schema_history_read: NOT_YET
-    flyway_validate: NOT_YET
-    flyway_migrate: NOT_YET
+    flyway_schema_history_read: NOT_PERFORMED
+    flyway_validate: NOT_PERFORMED
+    flyway_migrate: NOT_PERFORMED
     database_writes: 0
     branch_created: false
 transient_lane_logs_remaining: 0
