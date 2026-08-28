@@ -1,9 +1,9 @@
 local_execution:
-  version: 70
+  version: 71
   backlog_item: BL-001
   work_unit: WU-BL001-001
-  state: TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED_ON_PROCESS_READABLE_AUTHORITATIVE_MODEL_ASSEMBLY
-  backend: LOCAL_PROCESS_POOL
+  state: RELEASE_134_UNIQUE_PROVED_REPOSITORY_PROJECTION_RECONCILIATION_PENDING
+  backend: PRIMARY_AUTOMATION_TOOL_IN_SESSION
   source_repository: vvekselva/CylinderManagement
   source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
   configured_lanes: 10
@@ -17,45 +17,54 @@ local_execution:
     individual_lane_logs_remaining: 0
     trace_evidence_auto_accepted: false
   current_invocation:
-    invocation_id: CYLINDER-PRODUCTION-FIRE-20260826-151312IST
-    owner: PRIMARY_ORCHESTRATOR
-    work_unit: WU-BL001-001
-    idempotency_decision: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION_THEN_REPLAN_INVOCATION
+    invocation_id: CYLINDER-MANUAL-PRODUCTION-FIRE-20260829-023639IST
+    owner: CHATGPT_PRIMARY_ORCHESTRATOR
+    trigger_mode: MANUAL_PRODUCTION_FIRE
+    scheduler_event: NOT_APPLICABLE_MANUAL_TRIGGER
+    orchestrator_started: true
+    hosted_runner_started: false
     worker_generation_started: false
     workers_started: 0
     transient_lane_logs_created: 0
     residual_transient_lane_logs: 0
-    source_reads_allowed: true
-    source_reads_frozen_baseline_only: true
-    connector_native_base_and_42_deltas_materialized_durably: true
-    projection_corrections_revalidated: true
-    consolidation_executor: automation/consolidate-traceability-explorer.py
-    consolidation_executor_validation: PASS_FAIL_CLOSED_123_PLUS_11_EQUALS_134_ZERO_DUPLICATES
-    model_assembly_execution: BLOCKED_NO_SINGLE_PROCESS_READABLE_AUTHORITATIVE_CONTROL_TREE
-    canonical_rows_added: 0
-    materialized_rows_after: 123
-    pending_unique_keys_after: 11
-    exact_134_unique_key_proof: NOT_PROVED
-    outcome: NO_WORKER_REPLAY_ATOMIC_PROJECTION_NOT_EXECUTED
+    release_tag: bl001-traceability-20260828-134
+    release_assets_verified: true
+    traceability_matrix_size_bytes: 374150
+    traceability_matrix_sha256: 9b34cf2f0631e0c36bdecdc7ee715e8176291517f87266a0e3d7a292074368b6
+    matrix_data_size_bytes: 374178
+    matrix_data_sha256: b99cc24de3547e9509885a6552b1c7d247892fa90f2ab1448876999a6ea405b1
+    release_model_rows: 134
+    release_model_unique_method_path_keys: 134
+    release_model_duplicates: 0
+    release_model_unresolved: 0
+    json_browser_equivalent: true
+    exact_134_unique_key_proof: PASS_RELEASE_ASSETS_VERIFIED
+    canonical_rows_added_to_control_branch_this_invocation: 0
+    control_branch_projection_keys_at_start: 123
+    control_branch_projection_pending_keys: 11
+    outcome: MATERIAL_PROGRESS_RELEASE_VERIFIED_REPOSITORY_PROJECTION_SYNC_PENDING
   recovery_and_idempotency:
     gate: QG-RECOVERY-001
     state: PASS_VALIDATED_STATE_MACHINE
-    already_closed_synced: NOOP_ALREADY_COMMITTED_FOR_THAT_GENERATION_THEN_REPLAN_INVOCATION
+    already_closed_synced: NOOP_ALREADY_COMMITTED_FOR_PRIOR_WORKER_GENERATION
   unique_recovery_state:
     canonical_endpoint_inventory_target: 134
-    materialized_unique_method_path_keys: 123
-    pending_unique_keys: 11
-    fully_source_proved_pending_atomic_projection: 11
-    unique_method_path_coverage_proved: false
+    release_backed_unique_method_path_keys: 134
+    release_backed_duplicates: 0
+    release_backed_unresolved: 0
+    release_unique_method_path_coverage_proved: true
+    control_branch_materialized_unique_method_path_keys: 123
+    control_branch_pending_unique_keys: 11
+    repository_projection_reconciliation_required: true
     projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
     projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
   work_unit_handoff:
-    WU-BL001-001: IN_PROGRESS_TARGETED_UNIQUE_KEY_RECOVERY_ATOMIC_PROJECTION_EXECUTION_BLOCKED
-    WU-BL001-002: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
+    WU-BL001-001: IN_PROGRESS_RELEASE_134_PROVED_REPOSITORY_PROJECTION_SYNC_PENDING
+    WU-BL001-002: BLOCKED_WAITING_FOR_CONTROL_BRANCH_PROJECTION_RECONCILIATION
     WU-BL001-003: BLOCKED_WAITING_FOR_RECONCILIATION
     WU-BL001-004: WAITING_FOR_DEPENDENCY
     close_allowed: false
   next_action: >-
-    Present the authoritative control repository as one process-readable tree, assemble the accepted base plus all 42 ordered
-    deltas with HTTP_METHOD_PLUS_PATH upsert semantics, prove exactly 123 pre-recovery unique keys, merge the eleven corrected
-    source-proved rows, require exactly 134 unique keys with zero duplicates, and regenerate matrix/explorer/runtime atomically.
+    Use the verified GitHub Release model as the immutable 134-row reference and synchronize the control-branch Markdown,
+    Explorer JSON/browser data and Level-3 runtime projections. Require exact HTTP_METHOD_PLUS_PATH equality, zero duplicates,
+    zero unresolved rows and cross-artifact consistency before handing off to WU-BL001-002. Do not close BL-001 yet.
