@@ -1,17 +1,39 @@
 release_storage_checkpoint:
   backlog_item: BL-001
-  state: READY_FOR_GITHUB_RELEASE_ASSET_UPLOAD
+  state: RELEASE_ASSETS_VERIFIED_REPOSITORY_RECONCILIATION_PENDING
   release_tag: bl001-traceability-20260828-134
-  candidate_unique_keys: 134
-  duplicates: 0
-  unresolved: 0
-  canonical_repository_materialized_keys: 123
-  canonical_pending_keys: 11
-  canonical_count_changed: false
+  release_url: https://github.com/vvekselva/CylindnderManagementDependcies/releases/tag/bl001-traceability-20260828-134
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  release_model:
+    unique_method_path_keys: 134
+    duplicates: 0
+    unresolved: 0
+    json_browser_equivalent: true
+  assets:
+    traceability_matrix_json:
+      name: traceability-matrix.json
+      state: uploaded
+      size_bytes: 374150
+      sha256: 9b34cf2f0631e0c36bdecdc7ee715e8176291517f87266a0e3d7a292074368b6
+    matrix_data_js:
+      name: matrix-data.js
+      state: uploaded
+      size_bytes: 374178
+      sha256: b99cc24de3547e9509885a6552b1c7d247892fa90f2ab1448876999a6ea405b1
+    checksum:
+      name: bl001-traceability-sha256.txt
+      state: uploaded
+      size_bytes: 172
+  canonical_repository_materialized_keys_at_invocation_start: 123
+  canonical_repository_pending_keys_at_invocation_start: 11
+  release_backed_unique_key_proof: PASS_134_UNIQUE_ZERO_DUPLICATES_ZERO_UNRESOLVED
+  release_asset_upload_blocker: CLEARED
+  repository_projection_reconciliation_required: true
+  canonical_close_allowed: false
   github_actions_used: false
   execution_owner: CHATGPT_PRIMARY_ORCHESTRATOR
+  verification_invocation: CYLINDER-MANUAL-PRODUCTION-FIRE-20260829-023639IST
   next_action: >-
-    Place the validated traceability-matrix.json and matrix-data.js beside the committed checksum and release notes,
-    run automation/publish-bl001-release.ps1 locally to create a draft release, verify SHA-256, upload the three release
-    assets, read back the asset names, and publish the release. After the published release is visible, the Primary
-    Orchestrator must verify the release and then atomically advance the lightweight repository manifest/runtime state.
+    Reconcile the control-branch Markdown, Explorer and Level-3 runtime projections to the verified 134-row Release model.
+    Require exact HTTP_METHOD_PLUS_PATH equality, zero duplicates, zero unresolved rows and matching JSON/browser data before
+    advancing WU-BL001-002 and the final traceability gates. Do not close BL-001 from Release publication alone.
