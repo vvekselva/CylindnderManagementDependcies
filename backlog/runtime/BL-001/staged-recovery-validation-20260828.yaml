@@ -1,0 +1,40 @@
+staged_recovery_validation:
+  id: BL001-STAGED-RECOVERY-VALIDATION-20260828
+  backlog_item: BL-001
+  owner: CHATGPT_PRIMARY_ORCHESTRATOR
+  execution_host: CHATGPT_ENVIRONMENT
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  state: PASS_STAGED_NON_CANONICAL_RECOVERY_STRUCTURE
+  staged_artifact: traceability/explorer/staged-bl001-recovery-20260828.js
+  repository_git_blob_sha1: 133f354b52929bc771de40adc9d5324121c6be69
+  locally_computed_git_blob_sha1: 133f354b52929bc771de40adc9d5324121c6be69
+  local_sha256: d60797a8727dc14a5dc25fe4f00e7de090cc40caaa9296bd47dfeb718fc6b641
+  bytes: 18970
+  validation:
+    delta_objects: 1
+    endpoint_rows: 11
+    unique_method_path_keys: 11
+    duplicate_method_path_keys: 0
+    malformed_rows: 0
+    all_rows_have_paths: true
+    all_paths_have_nodes: true
+    lookup_post_corrections_applied: 4
+  keyset_relation:
+    current_canonical_unique_keys: 123
+    staged_recovery_unique_keys: 11
+    overlap_with_current_canonical: 0
+    expected_unique_keys_after_full_merge: 134
+  publication:
+    canonical: false
+    loaded_by_explorer_index: false
+    canonical_count_changed: false
+    canonical_unique_keys_after_this_step: 123
+  evidence:
+    - backlog/runtime/BL-001/premerge-keyset-validation.yaml
+    - backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+    - backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
+  next_action: >-
+    Reconstruct the full effective 123-row structured Explorer model from the base plus all 42 ordered deltas,
+    assert that its method/path keyset equals the already validated canonical 123, apply this staged 11-row delta,
+    require exactly 134 unique well-formed rows, regenerate every canonical projection, and publish them through
+    one Git tree/commit/ref update.
