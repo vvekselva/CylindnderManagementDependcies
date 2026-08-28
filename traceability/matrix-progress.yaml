@@ -1,4 +1,4 @@
-version: 50
+version: 51
 backlog_item: BL-001
 matrix_workflow: workflows/WF-002-incremental-traceability-matrix.yaml
 matrix_artifact: traceability/controller-traceability.md
@@ -6,8 +6,8 @@ structured_matrix_artifact: traceability/explorer/traceability-matrix.json
 browser_data_artifact: traceability/explorer/matrix-data.js
 viewer_entrypoint: traceability/explorer/index.html
 source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
-state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
-projection_state: CONNECTOR_NATIVE_BASE_AND_ALL_ORDERED_DELTAS_MATERIALIZED_MODEL_ASSEMBLY_PENDING
+state: RELEASE_134_VERIFIED_CONTROL_BRANCH_PROJECTION_SYNC_PENDING
+projection_state: RELEASE_CANONICAL_134_CONTROL_MIRROR_PENDING
 reported_source_check:
   canonical_endpoint_inventory_target: 134
   accumulated_examined_counter: 134
@@ -15,17 +15,18 @@ reported_source_check:
   unresolved: 0
   blocked: 0
   failed: 0
-  unique_method_path_coverage_proved: false
-  materialized_unique_method_path_keys: 123
-  pending_unique_method_path_keys: 11
-  fully_source_proved_pending_atomic_projection: 11
+  release_unique_method_path_coverage_proved: true
+  release_materialized_unique_method_path_keys: 134
+  release_duplicates: 0
+  release_unresolved: 0
+  control_branch_materialized_unique_method_path_keys_at_manual_fire_start: 123
+  control_branch_pending_projection_keys: 11
   reason: >-
-    Historical aggregate counters remain audit-only because duplicate acceptance events were proven. All eleven exact
-    recovery keys have source-proved full chains. The full Explorer base and all 42 ordered delta artifacts are now
-    readable through the connector in the exact index.html order. Canonical unique coverage remains 123 until those
-    contents are assembled under the browser upsert rule and all canonical artifacts are serialized atomically.
+    The published GitHub Release is now the verified immutable 134-row reference. Its JSON and browser JS contain exactly
+    134 unique HTTP method/path keys with zero duplicates and zero unresolved rows and match their published SHA-256 digests.
+    The control branch still needs its Markdown, Explorer and Level-3 runtime projections reconciled to that Release.
 unique_key_recovery:
-  state: CONNECTOR_NATIVE_CONTENT_RECONSTRUCTION_COMPLETE_MODEL_ASSEMBLY_PENDING
+  state: RELEASE_134_PROVED_CONTROL_BRANCH_PROJECTION_SYNC_PENDING
   work_unit: WU-BL001-001
   recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
   projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
@@ -33,59 +34,54 @@ unique_key_recovery:
   deterministic_transformer: automation/consolidate-traceability-explorer.py
   consolidation_executor: automation/bl001-canonical-projection-engine.py
   projection_architecture: architecture/bl001-canonical-projection-engine.md
-  connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
   target_unique_keys: 134
-  materialized_unique_keys: 123
-  pending_unique_keys: 11
-  fully_source_proved_keys: 11
-  source_reads_allowed: true
-  frozen_source_only: true
+  release_materialized_unique_keys: 134
+  release_pending_unique_keys: 0
+  release_unique_method_path_coverage_proved: true
+  control_branch_materialized_unique_keys_at_manual_fire_start: 123
+  control_branch_pending_projection_keys: 11
   worker_generation_replay_required: false
   atomic_projection_required: true
-  staging_before_publication_required: true
-  rollback_on_publication_failure: true
-  projection_manifest_required: true
-  idempotent_134_noop_required: true
-  pre_projection_assertion: EXACTLY_123_UNIQUE_KEYS
-  post_projection_assertion: EXACTLY_134_UNIQUE_KEYS_ZERO_DUPLICATES
-  base_blob_full_read: PASS
-  ordered_delta_files_total: 42
-  ordered_delta_files_full_read: 42
-  ordered_delta_files_remaining: 0
-  exact_delta_order_verified: true
-  browser_upsert_semantics_verified: true
+  repository_projection_reconciliation_required: true
+  post_release_assertion: EXACTLY_134_UNIQUE_KEYS_ZERO_DUPLICATES_ZERO_UNRESOLVED
+  release_assertion_state: PASS
+release_verification:
+  invocation: CYLINDER-MANUAL-PRODUCTION-FIRE-20260829-023639IST
+  tag: bl001-traceability-20260828-134
+  traceability_matrix_json:
+    size_bytes: 374150
+    sha256: 9b34cf2f0631e0c36bdecdc7ee715e8176291517f87266a0e3d7a292074368b6
+  matrix_data_js:
+    size_bytes: 374178
+    sha256: b99cc24de3547e9509885a6552b1c7d247892fa90f2ab1448876999a6ea405b1
+  checksum_asset_present: true
+  json_browser_equivalent: true
 matrix_reconciliation_history:
   corrected_pre_backfill_physical_markdown_rows: 114
-  materialized_matrix_rows: 123
+  prior_control_branch_materialized_matrix_rows: 123
+  verified_release_materialized_matrix_rows: 134
   historical_rows_promoted_total: 9
-  confirmed_missing_canonical_keys: 11
-  reconciliation_work_unit_state: BLOCKED_WAITING_FOR_TRUE_UNIQUE_SOURCE_CHECK_COMPLETION
-proven_duplicate_acceptance_keys:
-  - {method: GET, path: /search/product-category/{searchText}}
-  - {method: GET, path: /search/product-uom/{searchText}}
-  - {method: GET, path: /search/state/{searchText}}
-  - {method: GET, path: /search/supplier/{searchText}}
+  release_confirmed_missing_canonical_keys: 0
+  control_branch_projection_keys_remaining_to_reconcile: 11
+  reconciliation_work_unit_state: BLOCKED_WAITING_FOR_CONTROL_BRANCH_PROJECTION_RECONCILIATION
 accepted_changes_this_checkpoint:
-  new_endpoint_rows: 0
-  historical_rows_promoted: 0
-  recovery_keys_source_proved: 11
-  corrected_full_chain_records: 4
-  connector_base_blob_materialized: true
-  connector_ordered_deltas_verified: 42
-  canonical_projection_engine_added: true
+  release_assets_verified: 3
+  release_hash_manifest_corrected: true
+  release_storage_checkpoint_advanced: true
+  local_runtime_state_advanced: true
+  work_unit_status_advanced: true
+  gate_status_advanced: true
   unresolved_changes: 0
   worker_generation_started: false
   transient_lane_logs_created: 0
 update_rule: >-
-  A recovered key is not canonical until automation/bl001-canonical-projection-engine.py stages and validates every required
-  matrix, Explorer and Level-3 runtime projection against the same HTTP_METHOD_PLUS_PATH keyset. The engine must fail closed
-  on a pre-count other than 123 or a valid idempotent 134, any overlap or duplicate recovery key, or a post-count other than
-  134. Partial publication is forbidden and publication failure must restore the previous authoritative state.
+  The verified Release model is the immutable 134-row reference for this checkpoint. Control-branch projections may advance
+  only by exact HTTP_METHOD_PLUS_PATH reconciliation to that model. Any mismatch, duplicate, unresolved row or JSON/browser
+  difference must fail closed. Release publication alone does not authorize BL-001 closure.
 next_action: >-
-  Execute automation/bl001-canonical-projection-engine.py against the authoritative control snapshot. It must assemble the
-  effective Explorer base plus all 42 ordered deltas, prove exactly 123 unique current keys, merge the eleven corrected
-  recovery rows, prove exactly 134 unique keys with zero duplicates, stage and cross-validate every projection, write the
-  canonical projection SHA-256 manifest, then publish the synchronized artifacts. Only after that hand off to WU-BL001-002.
+  Synchronize traceability/controller-traceability.md, traceability/explorer/traceability-matrix.json,
+  traceability/explorer/matrix-data.js and the remaining Level-3 runtime projections to the verified Release model, then
+  rerun QG-TRC-006, QG-TRC-010 and QG-TRC-012 before WU-BL001-002 resumes.
 finalization_condition: >-
   Exactly 134 unique caller-visible HTTP method/path keys are represented once with accepted full-chain frozen-source
   evidence and all Markdown/JSON/browser/runtime artifacts reconcile before WU-BL001-002 may resume.
