@@ -1,96 +1,114 @@
 # BL-008 — Database Migration Execution Status
 
-Latest governed fire: `CYLINDER-MANUAL-FIRE-20260829-042152IST`.
+Latest governed continuation: `CYLINDER-MANUAL-SOURCE-RECON-20260829-043848IST`.
 
 ## Target policy
 
 - Current explicitly approved provider evaluation target: **Supabase** project `xipkywwvzvrwcqnkifuv`.
-- Supabase database discovered by ChatGPT: `postgres`.
-- PostgreSQL version: `17.6`.
+- Database: `postgres`.
+- PostgreSQL version observed: `17.6`.
 - Database write parallelism: `1`.
-- Migration mechanism remains **Flyway only**.
+- Migration mechanism: **Flyway only**.
+- Frozen project declares Flyway `10.0.0`.
 - Manual SQL substitution for Flyway migrations is **FORBIDDEN**.
-- Supabase-native `apply_migration` or raw SQL execution must **not** be used to replay the frozen Flyway migration files as a substitute for Flyway.
-- Full automation is mandatory and all automation must come from ChatGPT's own available execution/tooling environment.
-- Do not require user-run terminal commands, a local bridge, an external worker runtime, or GitHub Actions.
-- Neon is retained as prior provider evidence/alternate only; this evaluation does not delete or modify the existing Neon project.
+- Supabase-native `apply_migration` or raw SQL execution must **not** be used to replay frozen Flyway migration files as a substitute for Flyway.
+- Full automation remains ChatGPT-owned; GitHub is version control/durable evidence only and GitHub runners are forbidden.
+- No destructive project/branch operation is authorized by this flow.
 
-## Supabase connectivity result
+## Target database read-only proof
 
-ChatGPT-side Supabase database access is working.
+Current read-only inspection succeeded:
 
-- Project: `xipkywwvzvrwcqnkifuv`
-- Project health: `ACTIVE_HEALTHY`
-- Database identity read: **PASS**
+- database: `postgres`
+- connected role: `postgres`
 - PostgreSQL: `17.6`
-- Database: `postgres`
-- Connected role: `postgres`
 - `public.flyway_schema_history` exists: **NO**
-- Public tables returned by the Supabase project inspection: **0**
-- Supabase migration history entries: **0**
-- Database writes performed by the Orchestrator in this flow: **0**
+- public table count: **0**
+- database writes by this governed continuation: **0**
 
-This resolves the prior ChatGPT-to-database visibility problem for the Supabase evaluation target. It does **not** by itself prove that a compliant Flyway runtime is available.
+The target is therefore still empty from the perspective of public tables and Flyway history.
 
-## Control inventory currently recorded
+## Frozen-source reconciliation — PASS
 
-The control SSOT currently declares this frozen source:
-
-Repository: `vvekselva/CylinderManagement`  
+Frozen repository: `vvekselva/CylinderManagement`  
 Frozen commit: `3ae6e61442132d94a307275b08dd65fcef228d89`  
-Path: `cylinder.datascripts/src/main/resources/db/migration`
+Migration path: `cylinder.datascripts/src/main/resources/db/migration`  
+POM: `cylinder.datascripts/pom.xml`
 
-`migration-inventory.txt` currently claims V1 through V17 at that exact source/path.
+The frozen POM proves:
 
-## Frozen-source validation result — FAIL CLOSED
+- Flyway version: `10.0.0`
+- migration location: `filesystem:src/main/resources/db/migration`
+- schema: `public`
 
-Direct inspection of the exact frozen Git commit/path does **not** match the control inventory:
+The previous V1-V17 filenames in the control inventory were incorrect. The exact frozen files have now been read successfully from the immutable commit and rebound to their Git blob SHA-1 values in `BL-008/migration-inventory.txt`.
 
-- `V1__create_initial_schema_and_master_data.sql` at the declared frozen commit/path returned **404 / Not Found**.
-- At the same declared frozen commit/path, `V100__StateMachineMigrationFixes.sql` is present and readable.
-- Therefore the control inventory claiming V1 through V17 is not currently proven against the exact frozen source binding.
+Correct governed V1-V17 sequence:
 
-The Orchestrator must not silently replace the declared V1–V17 set with V100+ files, must not infer V1 merely because the Supabase database is empty, and must not choose any migration until the frozen-source binding is reconciled.
+1. `V1__DailyLogin.sql`
+2. `V2__ProductCategory.sql`
+3. `V3__ProductUom.sql`
+4. `V4__City.sql`
+5. `V5__State.sql`
+6. `V6__Country.sql`
+7. `V7__Address.sql`
+8. `V8__AddressType.sql`
+9. `V9__PhoneNumber.sql`
+10. `V10__Customer.sql`
+11. `V11__CustomerPhoneNumber.sql`
+12. `V12__CustomerAddress.sql`
+13. `V13__Product.sql`
+14. `V14__CustomerProductRate.sql`
+15. `V15__CylinderStates.sql`
+16. `V16__Cylinder.sql`
+17. `V17__Driver.sql`
+
+`BL008_FROZEN_MIGRATION_SOURCE_MISMATCH` is therefore **RESOLVED for governed scope V1-V17**.
+
+`V1__DailyLogin.sql` is the first frozen **source-order candidate**. It has not been declared Flyway-selected or applied because a genuine Flyway runtime has not connected to the target yet.
 
 ## Current primary blocker
 
-`BL008_FROZEN_MIGRATION_SOURCE_MISMATCH`
-
-Effect: the required version + filename + checksum + ordering source cannot be proved from the currently declared frozen commit/path, so no migration can be selected or validated safely.
-
-## Secondary execution blocker
-
 `BL008_CHATGPT_NATIVE_FLYWAY_PATH_UNAVAILABLE`
 
-Current ChatGPT execution image evidence remains:
+Latest execution-image evidence:
 
-- Java 21: available.
-- Maven: not installed.
-- Flyway CLI: not installed.
-- Direct outbound PostgreSQL/DNS from the ChatGPT execution container is unavailable.
-- Supabase connector SQL access works, but Supabase connector SQL/native migration actions are not Flyway and therefore cannot substitute for the required Flyway execution mechanism.
+- Java 21.0.11: available.
+- Maven executable: unavailable.
+- Flyway CLI executable: unavailable.
+- Gradle executable: unavailable.
+- user Maven dependency cache: unavailable.
+- `/usr/share/maven-repo` contains no Flyway jars and no PostgreSQL JDBC jar.
+- direct DNS resolution from the ChatGPT execution container failed for Maven Central endpoints.
+- direct DNS resolution failed for Redgate's Flyway download endpoint.
+- direct DNS resolution failed for the Supabase PostgreSQL host.
+- connected Supabase SQL access works, but it is not Flyway and therefore cannot substitute for Flyway execution.
 
-The source mismatch is the first gate and must be resolved before the runtime blocker can become the active migration gate.
+The source gate is now clear; the Flyway runtime/connectivity gate is the active blocker.
 
 ## Safety result
 
-- `flyway_schema_history`: **PROVED ABSENT ON SUPABASE TARGET**
-- Exact next Flyway migration: **NOT SELECTED**
-- Flyway validate: **NOT PERFORMED**
-- Flyway migrate: **NOT PERFORMED**
-- Supabase native migration replay of Flyway files: **NOT PERFORMED**
-- Manual SQL migration: **NOT PERFORMED**
-- Database writes: **0**
-- Supabase project/branch destructive changes: **0**
-- Existing Neon project destructive changes: **0**
+- `flyway_schema_history`: **PROVED ABSENT ON CURRENT SUPABASE TARGET**
+- public tables: **0**
+- first source-order candidate: `V1__DailyLogin.sql`
+- Flyway `info`: **NOT PERFORMED**
+- Flyway `validate`: **NOT PERFORMED**
+- Flyway `migrate`: **NOT PERFORMED**
+- provider-native migration replay: **NOT PERFORMED**
+- manual SQL migration: **NOT PERFORMED**
+- database writes: **0**
+- destructive project/branch changes: **0**
 
 ## Governed next flow
 
-1. Reconcile `BL-008/migration-inventory.txt` with an exact, immutable Git source that actually contains the intended migrations.
-2. Prove every selected migration's version, filename, checksum, order and prerequisites from that exact source.
-3. Keep the Supabase target read-only until the source binding is valid.
-4. Re-check for a genuine ChatGPT-native Flyway-capable execution path.
-5. Only when both source binding and Flyway runtime are valid, run Flyway validation and apply exactly one requirement.
-6. Re-read Flyway history and verify schema/ownership/integrity before considering another requirement.
-7. Never substitute Supabase raw SQL or Supabase-native migration execution for Flyway.
-8. A blocked BL-008 stream must not stop independently eligible BL-002 work.
+1. Keep the corrected immutable V1-V17 source binding fixed.
+2. Obtain a genuine ChatGPT-native Flyway 10.0.0 execution path that can reach the Supabase PostgreSQL endpoint with runtime-only credentials.
+3. Run genuine Flyway `info` against the target.
+4. Confirm the first pending migration reported by Flyway matches the frozen source-order candidate.
+5. Run genuine Flyway `validate`.
+6. Apply exactly one migration through Flyway only.
+7. Re-read `flyway_schema_history`, verify the created schema objects and integrity, persist evidence, then stop before considering the next migration.
+8. Never invoke `flyway clean` and never substitute provider-native SQL/migration actions for Flyway.
+9. A blocked BL-008 stream must not stop independently eligible BL-002 work.
+
+Detailed evidence: `BL-008/evidence/CYLINDER-MANUAL-SOURCE-RECON-20260829-043848IST.md`.
