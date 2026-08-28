@@ -1,0 +1,26 @@
+schema_version: 1
+status: USER_APPROVED_CLASSIFICATION
+source:
+  repository_file: release-classification.csv
+  original_filename: Cylinder_Traceability_Release_Classification(1).csv
+  original_sha256: 1bc73fa571190978a638fe408a692851797a7b6bd111a303968d5d5c1bad7f0f
+  validated_rows: 134
+counts:
+  total: 134
+  release_1: 88
+  release_2: 46
+policy:
+  classification_authority: USER_APPROVED_CSV
+  auto_reclassification: FORBIDDEN
+  story_auto_approval: FORBIDDEN
+  unclear_meaning: NEEDS_CLARIFICATION
+consumption:
+  bl001_source: Releases/bl001-traceability-20260828-134/traceability-matrix.json
+  key: HTTP_METHOD_AND_PATH
+  fail_closed_on_missing_or_duplicate_key: true
+  required_exact_row_count: 134
+  release_1_story_target: 88
+  release_2_story_target: 46
+run:
+  published_by: CYLINDER-MANUAL-FIRE-20260829-024227IST
+  csv_commit: fa4f45ba187697b2108919afa3a404823efe582a
