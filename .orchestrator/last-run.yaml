@@ -1,9 +1,9 @@
 run_id: CYLINDER-MANUAL-SOURCE-RECON-20260829-043848IST
 started_at: 2026-08-29T04:38:48+05:30
-completed_at: null
-heartbeat_at: 2026-08-29T04:49:59+05:30
+completed_at: 2026-08-29T04:55:13+05:30
+heartbeat_at: 2026-08-29T04:55:13+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: RUNNING
+result: PARTIAL_PROGRESS_BLOCKED
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -18,21 +18,47 @@ policy:
 lease:
   overlap_detected: false
   acquired_at: 2026-08-29T04:38:48+05:30
-  status: ACQUIRED
+  status: RELEASE_PENDING
 bl001:
   status: COMPLETE_134_OF_134
 bl002:
   status: NOT_IN_SCOPE_THIS_RUN
 bl008:
-  status: SOURCE_RECONCILIATION_RUNNING
+  status: SOURCE_RECONCILED_BLOCKED_FLYWAY_RUNTIME
   provider:
     name: Supabase
     project_ref: xipkywwvzvrwcqnkifuv
     database_name: postgres
-  database_writes: 0
+    postgres_version: '17.6'
+  target_read_only_proof:
+    flyway_schema_history_exists: false
+    public_table_count: 0
   source_reconciliation:
-    declared_frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
-    declared_inventory: V1_THROUGH_V17
-    investigation: HISTORICAL_GIT_SOURCE_AND_PAYLOAD
+    status: PASS_V1_THROUGH_V17
+    frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+    migration_path: cylinder.datascripts/src/main/resources/db/migration
+    flyway_version: 10.0.0
+    first_source_order_candidate: V1__DailyLogin.sql
+    flyway_selected_next_migration: false
+    inventory_commit: 444c75f871bafe81416bf14b3e482d5f43ae98a4
+    inventory_blob: 5f7172e983b4830f71218e61948f7319e0e8daa4
+  blocker:
+    code: BL008_CHATGPT_NATIVE_FLYWAY_PATH_UNAVAILABLE
+    java_21_available: true
+    maven_available: false
+    flyway_cli_available: false
+    gradle_available: false
+    local_flyway_jars_available: false
+    direct_dns_to_maven_central: false
+    direct_dns_to_redgate_download: false
+    direct_dns_to_supabase_postgres: false
+  flyway_info: NOT_RUN
+  flyway_validate: NOT_RUN
+  flyway_migrate: NOT_RUN
+  provider_native_migration_replay: NOT_RUN
+  manual_sql_migration: NOT_RUN
+  database_writes: 0
+  evidence_commit: 7888350f76629c62b96131b586a94b131d61464f
+  readme_commit: e0b211cbffca9b21cc8dc10dd275276ba36a41f0
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
