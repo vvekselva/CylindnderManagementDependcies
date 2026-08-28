@@ -1,12 +1,11 @@
 holder: Primary Cylinder Automation Tool
-run_id: CYLINDER-MANUAL-FIRE-20260829-024227IST
-acquired_at: 2026-08-29T02:42:27+05:30
-released_at: 2026-08-29T02:49:42+05:30
-status: RELEASED
+run_id: CYLINDER-MANUAL-FIRE-20260829-025819IST
+acquired_at: 2026-08-29T02:58:19+05:30
+released_at: null
+status: ACQUIRED
 scope:
-  - BL-008
-  - BL-001
   - BL-002
+  - BL-008
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -14,5 +13,5 @@ policy:
   overlap: NOOP
   shared_ssot_single_writer: true
   bl008_database_write_parallelism: 1
-result: PARTIAL_PROGRESS_BLOCKED
+result: RUNNING
 evidence: .orchestrator/last-run.yaml
