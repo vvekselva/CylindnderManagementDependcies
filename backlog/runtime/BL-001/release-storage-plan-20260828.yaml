@@ -1,0 +1,33 @@
+release_storage_plan:
+  id: BL001-GITHUB-RELEASE-STORAGE-20260828
+  backlog_item: BL-001
+  repository: vvekselva/CylindnderManagementDependcies
+  branch: chore/rename-dependency-files
+  execution_owner: CHATGPT_PRIMARY_ORCHESTRATOR
+  github_role: ARTIFACT_STORAGE_AND_VERSION_CONTROL_ONLY
+  github_actions_allowed: false
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  release:
+    tag: bl001-traceability-20260828-134
+    title: BL-001 Traceability Matrix - 134 Endpoint Snapshot
+    lifecycle: DRAFT_UPLOAD_VERIFY_THEN_PUBLISH
+    status: PENDING_ASSET_UPLOAD
+  validation:
+    candidate_unique_keys: 134
+    duplicates: 0
+    malformed_rows: 0
+    unresolved: 0
+    markdown_json_browser_keysets_equal: true
+  assets:
+    - name: traceability-matrix.json
+      sha256: 0285af7d4d8aaf90c27005f42c6ca7a384ea03009501542c5233847003562331
+    - name: matrix-data.js
+      sha256: 211af64b99d69fb95c889c236403ffc4b81327bdf4ba74b6ccf5c86d60e95613
+    - name: bl001-traceability-sha256.txt
+      purpose: CHECKSUM_MANIFEST
+  canonical_repository_state_before_release: 123_MATERIALIZED_PLUS_11_PENDING
+  canonical_count_change_this_step: false
+  publication_rule: >-
+    Do not advance the repository/runtime canonical count to 134 merely because a release exists. First verify the
+    published release tag, required asset names and SHA-256 values, then atomically update the lightweight repository
+    manifest and BL-001 runtime/progress artifacts. Final BL-001 reconciliation and gates remain required after that.
