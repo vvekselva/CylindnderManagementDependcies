@@ -1,9 +1,9 @@
-run_id: CYLINDER-MANUAL-FLYWAY-JAVA-20260829-051420IST
-started_at: 2026-08-29T05:14:20+05:30
-completed_at: 2026-08-29T05:19:32+05:30
-heartbeat_at: 2026-08-29T05:19:32+05:30
+run_id: CYLINDER-MANUAL-FLYWAY-JAVA-TEST-20260829-052725IST
+started_at: 2026-08-29T05:27:25+05:30
+completed_at: null
+heartbeat_at: 2026-08-29T05:27:25+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: PARTIAL_PROGRESS_BLOCKED
+result: RUNNING
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -18,16 +18,14 @@ policy:
   flyway_execution_mode: JAVA_API
 lease:
   overlap_detected: false
-  acquired_at: 2026-08-29T05:14:20+05:30
-  released_at: 2026-08-29T05:19:32+05:30
-  release_commit: cb08841834f5ec53d28f535a536f7109f95d786c
-  status: RELEASED
+  acquired_at: 2026-08-29T05:27:25+05:30
+  status: ACQUIRED
 bl001:
   status: COMPLETE_134_OF_134
 bl002:
   status: NOT_IN_SCOPE_THIS_RUN
 bl008:
-  status: JAVA_API_PLAN_ADOPTED_BLOCKED_RUNTIME
+  status: JAVA_API_TEST_RUNNING
   provider:
     name: Supabase
     project_ref: xipkywwvzvrwcqnkifuv
@@ -42,27 +40,7 @@ bl008:
     flyway_selected_next_migration: false
   java_flyway:
     runner_path: BL-008/java/FlywayJavaRunner.java
-    runner_commit: e6fc0602353ee439b1182fa698cb6cd7ef50b1d1
-    java_21_available: true
-    javac_available: true
-    jshell_available: true
-    flyway_cli_required: false
-    flyway_class_on_classpath: false
-    required_artifacts_local: false
-    direct_artifact_download_egress: false
-    direct_jdbc_network_to_supabase: false
-  blocker:
-    code: BL008_CHATGPT_JAVA_FLYWAY_RUNTIME_UNAVAILABLE
-    subreason: JAVA_API_DEPENDENCY_AND_JDBC_ROUTE_UNAVAILABLE
-  flyway_java_info: NOT_RUN
-  flyway_java_validate: NOT_RUN
-  flyway_java_migrate: NOT_RUN
-  v1_applied: false
-  provider_native_migration_replay: NOT_RUN
-  manual_sql_migration: NOT_RUN
+    test_mode: PREWRITE_RUNTIME_TEST
   database_writes: 0
-  evidence_commit: 193afd7d7c674dc7b095c10d9b499ccfc533c9d9
-  readme_commit: 6292a3f44d3ebdb913634f083f42426937584607
-automation_policy_updated: true
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
