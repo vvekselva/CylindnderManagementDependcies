@@ -1,94 +1,47 @@
-run_id: CYLINDER-MANUAL-FIRE-20260829-025819IST
-started_at: 2026-08-29T02:58:19+05:30
-completed_at: 2026-08-29T03:07:20+05:30
+run_id: CYLINDER-MANUAL-FIRE-20260829-040046IST
+started_at: 2026-08-29T04:00:46+05:30
+completed_at: null
+heartbeat_at: 2026-08-29T04:00:46+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: PARTIAL_PROGRESS_BLOCKED
+result: RUNNING
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
   github_runner: forbidden
   github_runner_used: false
-  neon_environment: TEST
+  full_automation_required: true
+  manual_user_execution: forbidden
+  neon_first: true
   create_neon_branches: false
   manual_sql_substitution: forbidden
   bl008_write_parallelism: 1
   shared_ssot_single_writer: true
 lease:
   overlap_detected: false
-  acquired_at: 2026-08-29T02:58:19+05:30
-  release_expected_after_evidence_commit: true
+  acquired_at: 2026-08-29T04:00:46+05:30
+  status: ACQUIRED
 bl001:
   status: COMPLETE_134_OF_134
-  canonical_matrix: Releases/bl001-traceability-20260828-134/traceability-matrix.json
-  canonical_matrix_git_blob: e5707645d4c41b5263f05943c4c7f323a91e4cc8
-  downstream_gate: PASS
 bl002:
   status: RECONSTRUCTED_134_OF_134_WITH_3_CLARIFICATIONS
-  reconstruction_mode: AUTHORITATIVE_REGENERATION_NOT_HISTORICAL_RECOVERY
-  classification_source: release-classification.csv
-  classification_policy: release-classification.yaml
-  total_story_drafts: 134
-  release_1_story_drafts: 88
-  release_2_story_drafts: 46
-  ready_for_user_review: 131
-  needs_clarification: 3
-  approved: 0
-  story_auto_approval: false
-  story_numbering: STORY-0001_THROUGH_STORY-0134_BY_CLASSIFICATION_NO
-  canonical_register: BL-002/story-register.csv
-  canonical_story_definition: BL-002/STORY-DEFINITION.md
-  artifacts:
-    register_commit: f1f1e594d11c7ebed19d694c7bff43553c5b91fb
-    story_definition_commit: b21bed23605438b272f46366d1634f9af090153b
-    manifest_final_commit: 66b686b20700c838c19dd1c8c6e07cd6c78ca618
-  clarification_story_ids:
-    - STORY-0011
-    - STORY-0035
-    - STORY-0036
-  downstream_use_case_grouping: BLOCKED_PENDING_EXPLICIT_USER_STORY_APPROVAL
+  review_state: AWAITING_USER_REVIEW
 bl008:
-  status: BLOCKED_CHATGPT_DB_NETWORK_PATH
+  status: RUNNING_AUTOMATED_EXECUTION_PROBE
   authoritative_flyway_source:
     repository: vvekselva/CylinderManagement
     frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
     migration_path: cylinder.datascripts/src/main/resources/db/migration
     discovered_versions: V1_THROUGH_V17
-    inventory: BL-008/migration-inventory.txt
-  connection_execution:
-    user_supplied_postgresql_uri_used_runtime_only: true
-    credentials_persisted: false
-    direct_postgresql_probe: BLOCKED_OUTBOUND_NETWORK_DNS
-    direct_probe_error: Temporary failure in name resolution
-    independent_outbound_https_probe: FAILED
-    neon_management_project_lookup: PASS
-    neon_sql_wrapper_probe: BLOCKED_WRAPPER_BACKEND_ARGUMENT_SCHEMA
-    note: Wrapper schema observation is not asserted to be a Neon public REST API or SDK defect.
+  execution_paths:
+    neon_mcp_management_path: PENDING
+    neon_mcp_sql_path: PENDING
+    direct_postgres_path: PENDING
+    automated_flyway_runtime: PENDING
   database_actions:
-    flyway_schema_history_read: NOT_PERFORMED_NETWORK_UNREACHABLE
-    flyway_validate: NOT_PERFORMED
-    flyway_migrate: NOT_PERFORMED
-    manual_sql_substitution: false
+    flyway_schema_history_read: NOT_YET
+    flyway_validate: NOT_YET
+    flyway_migrate: NOT_YET
     database_writes: 0
     branch_created: false
-  artifacts:
-    status_commit: 4098bd0c4df23b6824dbcb1a0826fdcb972b1ce7
-    migration_inventory_commit: f7402a12513fdb02a23ca9e0c3882f969300a940
-blockers:
-  - id: BL008-CHATGPT-DB-NETWORK-PATH
-    scope: BL-008
-    effect: ChatGPT execution container cannot reach the supplied PostgreSQL endpoint, so flyway_schema_history cannot be safely inspected and Flyway cannot be run.
-review_gates:
-  - id: BL002-USER-STORY-APPROVAL
-    scope: BL-002
-    effect: Expected governance gate; reconstructed stories must be reviewed/approved before use-case grouping.
-  - id: BL002-3-TRACE-CLARIFICATIONS
-    scope: BL-002
-    effect: STORY-0011, STORY-0035, and STORY-0036 require resolution of BL-001 partial intermediate hops before approval.
-backlog_progress:
-  BL-001: COMPLETE
-  BL-002_CLASSIFICATION: COMPLETE
-  BL-002_STORY_RECONSTRUCTION: COMPLETE_134_OF_134
-  BL-002_STORY_REVIEW: AWAITING_USER_REVIEW
-  BL-008_DATABASE_MIGRATION: BLOCKED_EXECUTION_NETWORK_PATH
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
