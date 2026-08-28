@@ -1,9 +1,11 @@
-version: 1
-name: Orchestrator Bootstrap Acknowledgement Gate
+version: 2
+name: Orchestrator Bootstrap and Deferred Reconciliation Gate
 purpose: >-
-  Close the gap between a scheduler fire and a genuinely running Cylinder Orchestrator. A scheduler last_run_time proves
-  only that the scheduled task was invoked. Production execution is acknowledged only after the Orchestrator durably
-  registers itself, writes and verifies its heartbeat, reconciles stale prior invocations, and claims executable work.
+  Separate scheduler invocation from productive Orchestrator execution without requiring shared GitHub runtime files to be
+  rewritten before work can start. At invocation start the Primary Orchestrator reads authoritative truth, creates an in-memory
+  execution plan, determines the exact durable files that may require synchronization at the end, classifies prior health, and
+  reserves only the minimum execution locks required for safety. Shared SSOT, registry, status and reporting files are updated
+  during END_OF_ORCHESTRATION_RECONCILIATION after worker results are validated.
 
 authority:
   applies_to: [SCHEDULED_PRODUCTION_FIRE, MANUAL_PRODUCTION_FIRE]
@@ -15,100 +17,123 @@ authority:
 
 bootstrap_contract:
   scheduler_fire_is_orchestrator_start: false
-  bootstrap_ack_timeout_seconds: 120
+  shared_repository_mutation_required_before_analysis: false
+  shared_registry_start_write_required_before_analysis: false
   required_order:
     - PIN_AUTHORITATIVE_CONTROL_BRANCH
     - GENERATE_UNIQUE_INVOCATION_ID
-    - PERSIST_INVOCATION_START_IN_REGISTRY
-    - PERSIST_START_LOG
-    - WRITE_INITIAL_HEARTBEAT
-    - READ_BACK_REGISTRY_AND_VERIFY_OWN_START
-    - READ_BACK_HEARTBEAT_AND_VERIFY_FRESHNESS
-    - CLASSIFY_AND_RECOVER_STALE_OR_STUCK_PRIOR_INVOCATIONS
+    - READ_AUTHORITATIVE_GOVERNANCE_AND_SSOT
+    - CLASSIFY_PRIOR_INVOCATION_HEALTH_FROM_DURABLE_EVIDENCE
+    - BUILD_IN_MEMORY_EXECUTION_PLAN
+    - BUILD_END_OF_ORCHESTRATION_UPDATE_SET
     - SELECT_ELIGIBLE_WORK
-    - PERSIST_GLOBAL_WORK_CLAIM_OR_CLEAN_NO_WORK_TERMINAL
-    - READ_BACK_WORK_CLAIM
+    - ACQUIRE_ONLY_REQUIRED_EXECUTION_LOCKS
     - SET_COORDINATOR_PHASE_ORCHESTRATOR_STARTED
   production_execution_acknowledged_only_after:
-    - own_start_record_verified
-    - own_initial_heartbeat_verified
-    - stale_prior_invocations_reconciled
-    - work_claim_verified_or_clean_no_work_terminal_verified
+    - authoritative_inputs_read_successfully
+    - prior_health_classification_complete
+    - execution_plan_complete
+    - end_update_set_complete
+    - required_execution_locks_acquired
   forbidden_acknowledgements:
     - scheduler_last_run_time_only
-    - start_record_without_readback
-    - heartbeat_without_readback
-    - running_flag_without_fresh_heartbeat
-    - orchestrator_started_without_claim_when_eligible_work_exists
+    - running_flag_without_health_classification
+    - orchestrator_started_without_execution_plan
+    - orchestrator_started_without_known_end_update_set
 
-readback_gate:
-  registry_start:
-    required_fields: [invocation_id, started_at, execution_state, health_state, heartbeat_at, coordinator_phase]
-    invocation_id_must_match_current_fire: true
-  heartbeat:
-    maximum_age_seconds_at_ack: 60
-    must_belong_to_current_invocation: true
-  claim:
-    required_when_eligible_work_exists: true
-    global_key_format: BACKLOG_ITEM_PLUS_WORK_UNIT_PLUS_TASK_ID
-    must_be_owned_by_current_invocation: true
-  on_readback_failure:
-    classification: SCHEDULER_TO_ORCHESTRATOR_START_FAILURE
-    production_success_claim_forbidden: true
-    backlog_execution_forbidden: true
-
-stale_recovery_before_claim:
+end_update_set:
   required: true
+  generated_before_dispatch: true
+  persisted_to_shared_repository_at_start: false
+  must_list:
+    - backlog_item
+    - work_unit
+    - candidate_output_files
+    - shared_ssot_files_to_reconcile
+    - runtime_status_files_to_reconcile
+    - logs_or_evidence_files_to_reconcile
+    - lock_or_claim_cleanup_required
+  may_expand_during_execution_only_when:
+    - newly discovered valid output requires durable synchronization
+    - expansion is recorded in the in-memory execution journal
+  shared_files_are_not_rewritten_merely_to_record_startup: true
+
+execution_lock_policy:
+  general_shared_status_lock_required_at_start: false
+  work_claim_strategy: IN_MEMORY_FOR_SINGLETON_INVOCATION
+  singleton_invocation_source: governance/invocation-concurrency.yaml
+  bl008_database_write_lock:
+    required_immediately_before_database_mutation: true
+    capacity: 1
+    scope: GLOBAL
+    release_after: DATABASE_RESULT_VALIDATED_OR_FAILED_CLOSED
+  if_singleton_invocation_is_later_relaxed:
+    durable_atomic_claim_mechanism_must_be_added_before_overlap_is_enabled: true
+
+stale_recovery:
+  required_before_dispatch_when_prior_nonterminal_evidence_exists: true
   stale_after_seconds_without_heartbeat: 300
   steps:
-    - verify stale heartbeat age
-    - verify no live worker or executor remains for the old invocation
+    - inspect durable prior terminal/runtime evidence
+    - verify no live worker or executor remains
     - preserve completed durable evidence
     - reject incomplete partial output
-    - persist recovery result
-    - release only stale claims proven safe to release
-    - move old invocation out of active_invocations
-  zombie_running_state_forbidden: true
+    - schedule stale-state correction in the end update set
+  startup_must_not_rewrite_shared_registry_only_to_mark_recovery: true
 
-initial_claim_priority:
-  when_BL001_123_plus_11_projection_is_pending:
-    claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    executor: automation/bl001-canonical-projection-engine.py
-    priority: CRITICAL
-  otherwise:
-    rule: HIGHEST_PRIORITY_ELIGIBLE_UNCLAIMED_WORK
+end_of_orchestration_reconciliation:
+  mandatory: true
+  phase: END_OF_ORCHESTRATION_RECONCILIATION
+  order:
+    - STOP_NEW_DISPATCH
+    - COLLECT_WORKER_RESULTS
+    - VALIDATE_RESULTS_AND_GATES
+    - REJECT_INVALID_OR_PARTIAL_OUTPUT
+    - BUILD_FINAL_CANONICAL_UPDATE_SET
+    - ACQUIRE_SHARED_SSOT_SINGLE_WRITER_LOCK
+    - APPLY_SHARED_FILE_UPDATES
+    - UPDATE_INVOCATION_REGISTRY_WITH_FINAL_INVOCATION_RECORD
+    - UPDATE_RUNTIME_STATUS_AND_EXECUTION_STATISTICS
+    - WRITE_DURABLE_RUN_LOG
+    - RELEASE_SHARED_LOCKS_AND_BL008_LOCK
+    - READ_BACK_AND_VERIFY_UPDATED_FILES
+    - CONFIRM_ZERO_TRANSIENT_LANE_LOGS
+    - TERMINALIZE
+  all_shared_updates_must_derive_from_validated_results: true
+  partial_shared_reconciliation_forbidden: true
+  failure_behavior: PRESERVE_LAST_VALID_SHARED_STATE_AND_RETURN_PARTIAL_CONTINUE_REQUIRED
 
 failure_classification:
-  scheduler_fired_no_new_start: SCHEDULER_TO_ORCHESTRATOR_START_FAILURE
-  start_written_no_heartbeat: ORCHESTRATOR_BOOTSTRAP_HEARTBEAT_FAILURE
-  start_and_heartbeat_not_readback_verified: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
-  stale_prior_invocation_not_recovered: ORCHESTRATOR_BOOTSTRAP_RECOVERY_FAILURE
-  eligible_work_exists_no_claim: ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE
-  claim_written_not_readback_verified: ORCHESTRATOR_BOOTSTRAP_CLAIM_ACK_FAILURE
+  authoritative_read_failure: ORCHESTRATOR_BOOTSTRAP_READ_FAILURE
+  execution_plan_failure: ORCHESTRATOR_BOOTSTRAP_PLAN_FAILURE
+  required_lock_failure: ORCHESTRATOR_EXECUTION_LOCK_FAILURE
+  reconciliation_failure: ORCHESTRATOR_END_RECONCILIATION_FAILURE
+  terminal_readback_failure: ORCHESTRATOR_TERMINAL_ACK_FAILURE
 
 terminal_rules:
   bootstrap_failure_must_not_be_reported_as_production_success: true
-  bootstrap_failure_does_not_change_BL001_canonical_count: true
   successful_bootstrap_must_continue_into_execution_loop: true
+  complete_requires_successful_end_reconciliation: true
   if_work_remains_at_window_end: PARTIAL_CONTINUE_REQUIRED
 
 observability:
   report_fields:
     - scheduler_fire_observed
     - invocation_id
-    - start_persisted
-    - start_readback_verified
-    - heartbeat_persisted
-    - heartbeat_readback_verified
-    - stale_invocations_recovered
+    - bootstrap_read_complete
+    - execution_plan_complete
+    - planned_end_update_file_count
     - selected_work
-    - claim_key
-    - claim_readback_verified
+    - required_locks
     - coordinator_phase
-    - bootstrap_outcome
+    - workers_started
+    - canonical_progress_delta
+    - reconciliation_outcome
+    - terminal_state
 
 safety:
   fail_closed: true
-  no_duplicate_claims: true
-  no_backlog_execution_before_bootstrap_ack: true
-  one_failed_stream_does_not_block_independent_streams_after_successful_bootstrap: true
+  no_shared_registry_rewrite_as_startup_prerequisite: true
+  shared_truth_updates_after_validation_only: true
+  one_failed_stream_does_not_block_independent_streams: true
+  never_run_parallel_bl008_database_writes: true
