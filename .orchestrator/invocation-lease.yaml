@@ -1,11 +1,10 @@
-holder: null
-run_id: null
-acquired_at: 2026-08-29T04:11:00+05:30
-released_at: 2026-08-29T04:19:06+05:30
-status: RELEASED
+holder: Primary Cylinder Automation Tool
+run_id: CYLINDER-MANUAL-FIRE-20260829-042152IST
+acquired_at: 2026-08-29T04:21:52+05:30
+released_at: null
+status: ACQUIRED
 scope:
   - BL-008
-  - BL-001
   - BL-002
 policy:
   execution_host: ChatGPT
@@ -14,5 +13,8 @@ policy:
   shared_ssot_single_writer: true
   bl008_database_write_parallelism: 1
   full_automation_required: true
-result: COMPLETED_WITH_BLOCKERS
+  manual_user_execution: forbidden
+  external_worker_runtime: forbidden
+  database_provider_under_evaluation: Supabase
+result: RUNNING
 evidence: .orchestrator/last-run.yaml
