@@ -1,84 +1,94 @@
-run_time: 2026-08-28T04:32:15+05:30
+run_id: CYLINDER-MANUAL-FIRE-20260829-024227IST
+started_at: 2026-08-29T02:42:27+05:30
+completed_at: 2026-08-29T02:49:42+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: FULLY_BLOCKED
+result: PARTIAL_PROGRESS_BLOCKED
 policy:
+  execution_host: ChatGPT
+  github_role: repository_storage_only
+  github_runner: forbidden
+  github_runner_used: false
   neon_environment: TEST
   neon_project_name: cylinder_db_for_testing
   neon_project_id: weathered-heart-89789162
-  neon_branch_required: main
   create_neon_branches: false
-  direct_external_production_deployment: false
   manual_sql_substitution: forbidden
   bl008_write_parallelism: 1
   shared_ssot_single_writer: true
 lease:
   overlap_detected: false
-  status: ACQUIRED
-  acquired_commit: 92f06c677c5b09b81f0f99dcf850cf5ad586d9ac
+  acquired_at: 2026-08-29T02:42:27+05:30
+  release_expected_after_evidence_commit: true
+bl001:
+  status: COMPLETED_REPAIRED_134_OF_134
+  target_unique_method_path_rows: 134
+  accepted_rows: 134
+  complete_rows: 134
+  unresolved_rows: 0
+  canonical_artifact_directory: Releases/bl001-traceability-20260828-134
+  canonical_matrix: Releases/bl001-traceability-20260828-134/traceability-matrix.json
+  canonical_matrix_bytes: 374150
+  canonical_matrix_git_blob: e5707645d4c41b5263f05943c4c7f323a91e4cc8
+  recovery_source_commit: cdf92263f14abac48dfb5acfa1c565d7e16dc2cc
+  canonical_restore_commit: 776046ad1c3332348c585e864256e8a02a50e3d9
+  legacy_alias_alignment_commit: 0fada2d99da4553c92c9aaa0de6b62412f9279c7
+  legacy_aliases_aligned_to_verified_full_blobs: true
+  downstream_gate: PASS
+bl002:
+  status: CLASSIFICATION_COMPLETED_STORY_CONTINUATION_BLOCKED
+  classification_source: release-classification.csv
+  classification_policy: release-classification.yaml
+  total_assignments: 134
+  release_1_assignments: 88
+  release_2_assignments: 46
+  classification_csv_commit: fa4f45ba187697b2108919afa3a404823efe582a
+  classification_yaml_commit: 9380175314a64533690235217e8d27248ef41800
+  classification_authority: USER_APPROVED_CSV
+  auto_reclassification: false
+  story_auto_approval: false
+  story_continuation:
+    status: BLOCKED
+    historical_next_story: STORY-0067
+    blocker: Actual durable BL-002 story register/story artifacts needed to continue from STORY-0067 were not found in the current control repository or Library.
+    safety_action: No story content, disposition, or approval was fabricated.
 bl008:
-  status: BLOCKED_BEFORE_DATABASE_ACCESS
+  status: BLOCKED_NEON_CONNECTOR_SCHEMA
   authoritative_flyway_source:
     repository: vvekselva/CylinderManagement
-    branch: main
+    frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
     migration_path: cylinder.datascripts/src/main/resources/db/migration
-    migration_directory_reachable: true
-  neon_project:
-    name: cylinder_db_for_testing
+  neon_target:
+    project_name: cylinder_db_for_testing
     project_id: weathered-heart-89789162
-    postgres_version: 18
     branches_count: 1
-    default_branch: production
-    observed_branches:
-      - name: production
-        id: br-holy-scene-ax0ddw93
-        primary: true
-        default: true
-        state: ready
-    main_present: false
-  requirement_selection:
-    status: BLOCKED_SAME_REQUIREMENT
-    reason: "Required TEST branch main does not exist. Policy forbids branch creation and forbids substituting production; exact permitted database identity, Flyway version/order/checksum/prerequisites and current flyway_schema_history cannot be proven."
+    existing_default_branch_name: production
+    existing_default_branch_id: br-holy-scene-ax0ddw93
+    branch_created: false
+  connector_validation:
+    project_lookup: PASS
+    branch_inventory: PASS
+    sql_read_only_probe: BLOCKED_TOOL_SCHEMA
+    branch_description: BLOCKED_TOOL_SCHEMA
+    blocker: Neon connector actions expose incompatible projectId/branchId versus project_id/branch_id parameter expectations, preventing safe SQL validation in this fire.
   database_actions:
-    database_access_on_production_branch: NOT_ATTEMPTED
-    flyway_validate: NOT_ATTEMPTED
-    flyway_migrate: NOT_ATTEMPTED
-    sql: NOT_ATTEMPTED
+    flyway_validate: NOT_PERFORMED
+    flyway_migrate: NOT_PERFORMED
     manual_sql_substitution: false
+    database_writes: 0
   integrity_verification:
-    flyway_schema_history: NOT_ATTEMPTED
-    ownership_schema_data_integrity: NOT_ATTEMPTED
-  database_writes: 0
-  blocker: "Existing Neon TEST branch named main is missing."
-  exact_missing_condition: "An existing branch named main must exist in project weathered-heart-89789162; orchestrator must not create it."
-bl001:
-  status: BLOCKED
-  target_unique_method_path_rows: 134
-  control_repository_tree_verified: true
-  live_control_paths:
-    - .orchestrator/invocation-lease.yaml
-    - .orchestrator/last-run.yaml
-    - Task-Status,md
-    - database-dependency.md
-    - usecases/Readme.md
-  accepted_materialized_non_stale_rows_available: false
-  atomic_matrix_explorer_consolidation_performed: false
-  blocker: "Authoritative control main contains no BL-001 manifest/recovery/matrix/Explorer artifacts and no accepted/materialized/non-stale source-proof row set."
-  exact_missing_condition: "Restore or materialize the authoritative BL-001 recovery/manifest/matrix/Explorer artifacts with accepted non-stale source-proof rows."
-bl002:
-  status: BLOCKED
-  expected_release_1_assignments: 88
-  expected_release_2_assignments: 46
-  release_classification_found: false
-  consumable_bl001_rows_available: false
-  stories_auto_approved: 0
-  stories_materialized: 0
-  backlog_items_closed: 0
-  policy:
-    release_1_first: true
-    needs_clarification_on_unproved_meaning: true
-    auto_approve: false
-  blocker: "release-classification.yaml is absent from authoritative control main and BL-001 has no consumable accepted/materialized/non-stale rows."
-  exact_missing_condition: "Add authoritative release-classification.yaml with 88 RELEASE_1 and 46 RELEASE_2 assignments after BL-001 consumable rows are restored/materialized."
-backlog_closed: []
+    flyway_schema_history: NOT_VERIFIED_DUE_CONNECTOR_SCHEMA_BLOCKER
+    migration_apply_status: NOT_ASSERTED
+blockers:
+  - id: BL008-NEON-CONNECTOR-SCHEMA
+    scope: BL-008
+    effect: Safe database validation and Flyway execution could not proceed.
+  - id: BL002-STORY-STATE-MISSING
+    scope: BL-002
+    effect: Story generation/verification could not safely continue from the historical STORY-0067 synchronization point.
+backlog_progress:
+  BL-001: COMPLETE
+  BL-002_CLASSIFICATION: COMPLETE
+  BL-002_STORIES: BLOCKED
+  BL-008_DATABASE_MIGRATION: BLOCKED
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
