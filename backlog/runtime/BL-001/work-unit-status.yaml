@@ -1,53 +1,53 @@
 work_units:
   WU-BL001-001:
-    state: KEYSET_VALIDATED_STRUCTURED_MODEL_ASSEMBLY_PENDING
+    state: IN_PROGRESS_RELEASE_134_PROVED_REPOSITORY_PROJECTION_SYNC_PENDING
     execution_mode: CHATGPT_PRIMARY_ORCHESTRATOR_WITH_GITHUB_CONNECTOR
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
     reported_checkpoint: {total_endpoints: 134, examined_counter: 134, complete_counter: 134, unresolved: 0, blocked: 0, failed: 0}
-    canonical_unique_checkpoint:
+    release_canonical_checkpoint:
+      release_tag: bl001-traceability-20260828-134
       target_method_path_keys: 134
-      materialized_unique_keys: 123
+      verified_unique_keys: 134
+      duplicates: 0
+      unresolved: 0
+      json_browser_equivalent: true
+      traceability_matrix_sha256: 9b34cf2f0631e0c36bdecdc7ee715e8176291517f87266a0e3d7a292074368b6
+      matrix_data_sha256: b99cc24de3547e9509885a6552b1c7d247892fa90f2ab1448876999a6ea405b1
+      release_verification: PASS
+    control_branch_projection_checkpoint:
+      materialized_unique_keys_at_manual_fire_start: 123
       pending_unique_keys: 11
-      fully_source_proved_pending_atomic_projection: 11
-      unique_method_path_coverage_proved: false
-      candidate_post_merge_unique_keys: 134
-      candidate_overlap_with_current: 0
-      candidate_duplicate_pairs: 0
-      premerge_keyset_validation: PASS
-    uniqueness_status: CANDIDATE_134_KEYSET_PROVED_CANONICAL_SERIALIZATION_PENDING
+      exact_release_to_repository_projection_reconciliation: PENDING
+    uniqueness_status: RELEASE_134_KEYSET_PROVED_CONTROL_BRANCH_PROJECTION_SYNC_PENDING
     recovery_plan: backlog/runtime/BL-001/unique-key-recovery-20260825-0809.yaml
     projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
     projection_corrections: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z-corrections.yaml
     connector_materialization_manifest: backlog/runtime/BL-001/connector-materialization-20260825-1402Z.yaml
     atomic_publication_capability: backlog/runtime/BL-001/atomic-publication-capability.yaml
     premerge_keyset_validation_artifact: backlog/runtime/BL-001/premerge-keyset-validation.yaml
-    active_blocker: GB-BL001-UNIQUE-PROJECTION-001
+    release_asset_blocker: CLEARED
+    active_blocker: GB-BL001-CONTROL-PROJECTION-SYNC-001
     worker_generation_replay_required: false
     direct_frozen_source_revalidation_allowed: true
     github_actions_required: false
     github_hosted_runner_required: false
-    atomic_git_publication_transport: AVAILABLE
     residual_transient_lane_logs: 0
     next_action: >-
-      Reconstruct the effective structured Explorer base plus all 42 index-ordered deltas under
-      HTTP_METHOD_PLUS_PATH upsert semantics, assert that the assembled current keyset equals the validated 123,
-      merge the eleven source-proved corrected recovery rows, validate complete row structure and exactly 134
-      unique keys with zero duplicates, regenerate every canonical projection from that single accepted model,
-      hash the staged outputs and publish them through one Git tree/commit/ref update.
+      Reconcile the control-branch Markdown, Explorer JSON/browser data and Level-3 runtime projection to the verified
+      134-row Release model. Require exact HTTP_METHOD_PLUS_PATH equality, zero duplicates and zero unresolved rows.
   WU-BL001-002:
-    state: BLOCKED_WAITING_FOR_TRUE_134_UNIQUE_KEY_MATERIALIZATION
+    state: BLOCKED_WAITING_FOR_CONTROL_BRANCH_PROJECTION_RECONCILIATION
     name: Final Matrix Reconciliation
     dependency: WU-BL001-001
-    dependency_state: KEYSET_VALIDATED_STRUCTURED_MODEL_ASSEMBLY_PENDING
-    matrix_state: INCREMENTAL_PARTIAL_ATOMIC_PROJECTION_PENDING
-    materialized_matrix_rows: 123
-    confirmed_missing_canonical_keys: 11
-    fully_source_proved_missing_keys: 11
-    validated_candidate_unique_keys: 134
-    validated_candidate_overlap: 0
+    dependency_state: IN_PROGRESS_RELEASE_134_PROVED_REPOSITORY_PROJECTION_SYNC_PENDING
+    release_matrix_state: VERIFIED_134_UNIQUE_ZERO_DUPLICATES_ZERO_UNRESOLVED
+    control_branch_matrix_state: STALE_123_PLUS_11_PENDING_AT_MANUAL_FIRE_START
+    release_unique_keys: 134
+    control_branch_materialized_unique_keys_at_manual_fire_start: 123
+    pending_control_branch_projection_keys: 11
     canonical_endpoint_inventory_target: 134
     reconciliation_rule: DURABLE_ACCEPTED_EVIDENCE_ONLY_NO_SOURCE_READ_NO_INVENTED_CHAINS
-    next_action: Wait until WU-BL001-001 atomically materializes exactly 134 unique keys.
+    next_action: Resume only after WU-BL001-001 proves exact cross-artifact equality with the verified Release model.
   WU-BL001-003:
     state: BLOCKED_WAITING_FOR_RECONCILIATION
     dependency: WU-BL001-002
