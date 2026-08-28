@@ -1,9 +1,9 @@
-version: 3
-name: Hosted-Runner Stabilization Invocation Concurrency
+version: 4
+name: Singleton Invocation Concurrency with Deferred Shared Reconciliation
 purpose: >-
-  Serialize Primary Cylinder Orchestrator invocations while the hosted process-runtime bridge is stabilized, while preserving
-  up to ten safe-independent workers inside the single active invocation. This removes cross-invocation registry, claim,
-  shared-SSOT and database-write races without reducing worker-level parallelism.
+  Keep one Primary Cylinder Orchestrator invocation active at a time while allowing up to ten safe-independent workers inside
+  that invocation. Shared GitHub status/SSOT files are not mutated during startup merely to establish ownership. The invocation
+  plans its final update set first, performs work, validates results, then serializes durable shared updates at the end.
 
 authority:
   applies_to: [MANUAL_PRODUCTION_FIRE, SCHEDULED_PRODUCTION_FIRE, HOSTED_RUNNER_PRODUCTION_FIRE]
@@ -16,35 +16,66 @@ invocation_concurrency:
   max_concurrent_invocations: 1
   unique_invocation_id_required: true
   max_safe_workers_per_invocation: 10
+  startup_shared_registry_claim_required: false
   new_trigger_behavior:
     no_active_invocation: START_NEW_INVOCATION
     active_healthy_invocation: NOOP_CONCURRENCY_LIMIT_WITH_EVIDENCE
     stale_invocation_detected: RECOVER_STALE_BEFORE_NEW_INVOCATION
     stuck_invocation_detected: FAIL_CLOSED_DIAGNOSE_BEFORE_NEW_INVOCATION
-    blocked_zombie_detected: FINALIZE_BLOCKED_AND_RELEASE_CAPACITY
+    blocked_zombie_detected: FINALIZE_BLOCKED_AT_END_RECONCILIATION
   existing_invocation_behavior_on_new_trigger: CONTINUE_UNINTERRUPTED_IF_ACTIVE_OR_IDLE_BUT_HEALTHY
 
 work_claims:
-  required_before_dispatch: true
-  scope: GLOBAL
-  claim_key: BACKLOG_ITEM_PLUS_WORK_UNIT_PLUS_TASK_ID
-  atomic_claim_required: true
-  duplicate_claim_action: REJECT_DUPLICATE_AND_REPLAN
-  release_on: [VALIDATED_COMPLETION, VALIDATED_BLOCKED_COMPLETION, RECOVERY_CLOSE]
+  general_claim_mode: IN_MEMORY_WITHIN_SINGLETON_INVOCATION
+  durable_shared_claim_required_before_dispatch: false
+  duplicate_prevention_basis: SINGLETON_INVOCATION_PLUS_EXECUTION_PLAN
+  if_overlap_is_reenabled:
+    durable_atomic_global_claim_required_before_dispatch: true
+    claim_key: BACKLOG_ITEM_PLUS_WORK_UNIT_PLUS_TASK_ID
+    overlap_must_remain_disabled_until_atomic_claim_mechanism_is_proved: true
 
 shared_state:
-  shared_ssot_write_lock: {capacity: 1, scope: GLOBAL, hold_only_for_atomic_merge: true}
-  git_checkpoint_lock: {capacity: 1, mode: BATCHED_CHECKPOINT_ONLY}
-  bl008_database_write_lock: {capacity: 1, scope: GLOBAL, requirement_claim_required: true}
+  startup_shared_write_lock_required: false
+  shared_ssot_write_lock:
+    capacity: 1
+    scope: GLOBAL
+    acquire_phase: END_OF_ORCHESTRATION_RECONCILIATION
+    hold_only_for_atomic_merge: true
+  git_checkpoint_lock:
+    capacity: 1
+    mode: END_RECONCILIATION_BATCHED_CHECKPOINT_ONLY
+  bl008_database_write_lock:
+    capacity: 1
+    scope: GLOBAL
+    acquire_immediately_before_database_mutation: true
+    one_requirement_at_a_time: true
+    release_after: VALIDATED_DATABASE_RESULT_OR_FAILED_CLOSED
 
 worker_parallelism:
   backend: LOCAL_PROCESS_POOL_ON_HOSTED_RUNNER
   max_workers: 10
   dynamic_refill: true
   one_blocked_stream_must_not_stop_other_eligible_streams: true
+  workers_do_not_write_shared_canonical_files_directly: true
+
+end_reconciliation:
+  required: true
+  expected_update_set_built_before_dispatch: true
+  one_shared_writer: true
+  update_sequence:
+    - canonical backlog artifacts
+    - Level-3 runtime artifacts
+    - invocation registry final record
+    - execution statistics
+    - durable run log
+  validate_before_write: true
+  readback_after_write: true
+  partial_shared_merge_forbidden: true
 
 health_and_recovery:
   heartbeat_interval_seconds: 60
+  heartbeat_runtime_first: true
+  github_heartbeat_write_each_interval_required: false
   stale_after_seconds_without_orchestrator_heartbeat: 300
   stuck_after_seconds_without_meaningful_progress: 600
   total_runtime_alone_is_stale_signal: false
@@ -52,20 +83,21 @@ health_and_recovery:
   incomplete_partial_output_must_be_rejected: true
 
 stabilization_exit_criteria:
-  minimum_consecutive_clean_hosted_fires: 3
+  minimum_consecutive_clean_fires: 3
   required_for_each_fire:
-    - durable START and terminal registry records reconcile with log
-    - heartbeat and claim ownership are read-back verified
-    - no duplicate claims
+    - startup completed without mandatory shared registry mutation
+    - execution plan and end update set were built
+    - no duplicate work
     - zero residual lane logs
     - catalogue gate passes
     - three-level SSOT gate passes
+    - final registry and durable log reconcile
     - no shared-SSOT race
     - no duplicate BL-008 database write
   after_exit: REASSESS_MAX_CONCURRENT_INVOCATIONS_EXPLICITLY
 
 safety:
-  never_duplicate_claimed_work: true
+  never_duplicate_work: true
   never_allow_two_bl008_database_writes: true
   never_force_push_control_repository: true
   never_close_backlog_item_without_required_user_acceptance: true
