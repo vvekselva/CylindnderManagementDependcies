@@ -1,22 +1,35 @@
-Frozen source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-Path: cylinder.datascripts/src/main/resources/db/migration
+BL-008 governed migration inventory
 
-V1__create_initial_schema_and_master_data.sql
-V2__create_cylinder_tables.sql
-V3__create_cylinder_history_table.sql
-V4__create_address_location_history_table.sql
-V5__create_customer_registration_table.sql
-V6__create_shipment_and_add_constraint.sql
-V7__drop_customer_registration_table.sql
-V8__create_party_custody_balance_table.sql
-V9__create_trip_return_history_and_snapshot_tables.sql
-V10__create_wizard_configuration_tables.sql
-V11__cylinder_add_client_reference_external_uuid.sql
-V12__create_domain_data_seed_config.sql
-V13__create_automation_and_route_configuration.sql
-V14__create_shipment_history_table.sql
-V15__create_cylinder_financial_ledger.sql
-V16__create_user_persona_and_functional_area_config.sql
-V17__create_analytics_kpi_definition.sql
+Frozen source repository: vvekselva/CylinderManagement
+Frozen commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+Frozen path: cylinder.datascripts/src/main/resources/db/migration
+Project POM: cylinder.datascripts/pom.xml
+Flyway version declared by frozen POM: 10.0.0
+Flyway location declared by frozen POM: filesystem:src/main/resources/db/migration
+Target schema declared by frozen POM: public
 
-Selection rule: DO NOT infer the next migration from this inventory alone. Read the target database flyway_schema_history first, validate applied versions/checksums against this frozen source, then allow Flyway to determine the exact next migration.
+Inventory scope: governed V1 through V17 only. This file does NOT claim that the frozen directory ends at V17.
+Source checksum binding: immutable Git blob SHA-1 from the exact frozen commit. Flyway's own migration checksum must be produced/validated by a genuine Flyway runtime and is not fabricated here.
+
+VERSION | FILENAME | GIT_BLOB_SHA1
+V1 | V1__DailyLogin.sql | 8de82dbd5118c32a74b1ecd4e013db45ebac76d9
+V2 | V2__ProductCategory.sql | 325db4f9c259df3c385f552d9ccbbb234015e9c3
+V3 | V3__ProductUom.sql | 8b05fbc58db26f8effedd1c2adb2c1944d9f95db
+V4 | V4__City.sql | 9332e7df907042e2b3d80f0ccabf686dfdcb4768
+V5 | V5__State.sql | be1c9406e8b8539696e53b4b4d6afb9f30c40958
+V6 | V6__Country.sql | b3765135aea66c5fc8674ea7213d492dd87f2509
+V7 | V7__Address.sql | c75ee7ecf66afb2196283b5b733609e72bf73f4b
+V8 | V8__AddressType.sql | 55700ab85e2f1f7d659f44c849dca39946cd02fc
+V9 | V9__PhoneNumber.sql | 022222e8b48fa876ca72fff8d792774c615a0aa6
+V10 | V10__Customer.sql | 94202cea6ab01a8a1f21feee9569d21a68f214cd
+V11 | V11__CustomerPhoneNumber.sql | b2922f4a7271c55d97f834851265920732d351c8
+V12 | V12__CustomerAddress.sql | 7a33a0839e5fa135b49545b7e60e3f945babb6fb
+V13 | V13__Product.sql | f76cf3cc0bc0ea19b15506ef959adc5a346a126d
+V14 | V14__CustomerProductRate.sql | 11b1a5fe6bfd94092802e9af7611c6e066d801b1
+V15 | V15__CylinderStates.sql | d456d25e28f43960cde8f5f6b2bf7d6f9c1a8ba2
+V16 | V16__Cylinder.sql | 07954b18de1d3be80f1d629b5d33e54f3eafe394
+V17 | V17__Driver.sql | fd02d910bd46f2cd13a2ccb494da09b0aa100ecb
+
+Ordering proof for this governed scope: version order is V1 < V2 < ... < V17 and every listed filename was read successfully from the exact frozen commit/path.
+
+Selection rule: DO NOT infer the next migration from this inventory alone. Read the target database flyway_schema_history first. If history is absent, also prove the target schema is appropriate for a fresh migration. Then use a genuine Flyway runtime to run info/validate and determine/apply exactly one governed requirement. Never replay these SQL files through raw SQL or a provider-native migration action as a substitute for Flyway.
