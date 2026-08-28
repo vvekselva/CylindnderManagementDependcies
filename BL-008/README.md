@@ -1,85 +1,96 @@
 # BL-008 — Database Migration Execution Status
 
-Latest governed fire: `CYLINDER-MANUAL-FIRE-20260829-040620IST`.
+Latest governed fire: `CYLINDER-MANUAL-FIRE-20260829-042152IST`.
 
 ## Target policy
 
-- Environment: Neon TEST database.
-- Database: `neondb` unless live authoritative discovery proves otherwise.
-- Neon is the first-choice provider.
-- No new Neon branches may be created.
+- Current explicitly approved provider evaluation target: **Supabase** project `xipkywwvzvrwcqnkifuv`.
+- Supabase database discovered by ChatGPT: `postgres`.
+- PostgreSQL version: `17.6`.
 - Database write parallelism: `1`.
-- Migration mechanism: **Flyway only**.
-- Manual SQL substitution for Flyway migrations: **FORBIDDEN**.
+- Migration mechanism remains **Flyway only**.
+- Manual SQL substitution for Flyway migrations is **FORBIDDEN**.
+- Supabase-native `apply_migration` or raw SQL execution must **not** be used to replay the frozen Flyway migration files as a substitute for Flyway.
 - Full automation is mandatory and all automation must come from ChatGPT's own available execution/tooling environment.
-- Do not require user-run terminal commands, a local bridge, TRIGGERcmd, an external worker runtime, or GitHub Actions.
-- User-supplied PostgreSQL credentials are runtime-only and must not be persisted in this repository.
+- Do not require user-run terminal commands, a local bridge, an external worker runtime, or GitHub Actions.
+- Neon is retained as prior provider evidence/alternate only; this evaluation does not delete or modify the existing Neon project.
 
-## Frozen migration source
+## Supabase connectivity result
+
+ChatGPT-side Supabase database access is working.
+
+- Project: `xipkywwvzvrwcqnkifuv`
+- Project health: `ACTIVE_HEALTHY`
+- Database identity read: **PASS**
+- PostgreSQL: `17.6`
+- Database: `postgres`
+- Connected role: `postgres`
+- `public.flyway_schema_history` exists: **NO**
+- Public tables returned by the Supabase project inspection: **0**
+- Supabase migration history entries: **0**
+- Database writes performed by the Orchestrator in this flow: **0**
+
+This resolves the prior ChatGPT-to-database visibility problem for the Supabase evaluation target. It does **not** by itself prove that a compliant Flyway runtime is available.
+
+## Control inventory currently recorded
+
+The control SSOT currently declares this frozen source:
 
 Repository: `vvekselva/CylinderManagement`  
 Frozen commit: `3ae6e61442132d94a307275b08dd65fcef228d89`  
 Path: `cylinder.datascripts/src/main/resources/db/migration`
 
-The frozen tree contains V1 through V17. See `migration-inventory.txt`.
+`migration-inventory.txt` currently claims V1 through V17 at that exact source/path.
 
-## Latest ChatGPT-native manual fire
+## Frozen-source validation result — FAIL CLOSED
 
-The Orchestrator acquired the singleton lease, persisted START + heartbeat, and ran the Neon-first execution probes.
+Direct inspection of the exact frozen Git commit/path does **not** match the control inventory:
 
-Observed execution paths:
+- `V1__create_initial_schema_and_master_data.sql` at the declared frozen commit/path returned **404 / Not Found**.
+- At the same declared frozen commit/path, `V100__StateMachineMigrationFixes.sql` is present and readable.
+- Therefore the control inventory claiming V1 through V17 is not currently proven against the exact frozen source binding.
 
-1. `NEON_MCP_MANAGEMENT_PATH = PASS_PROJECT_DISCOVERY`
-   - The installed Neon Postgres/MCP-backed management integration successfully enumerated the connected organization and the current Cylinder TEST project.
-   - The discovered project is PostgreSQL 18.
-2. `NEON_MCP_SQL_PATH = BLOCKED_OBSERVED_ARGUMENT_VALIDATION`
-   - A read-only `run_sql` probe was attempted using the action contract exposed to ChatGPT.
-   - The action returned MCP error `-32602`: the backend required `project_id` while the exposed contract accepted `projectId` / `databaseName`.
-   - This is runtime observation only. Vendor root cause remains `UNDETERMINED`.
-3. `DIRECT_POSTGRES_PATH = BLOCKED_OUTBOUND_DNS`
-   - The ChatGPT execution container attempted DNS resolution for the current Neon PostgreSQL endpoint and received `Temporary failure in name resolution`.
-4. `CHATGPT_FLYWAY_RUNTIME = UNAVAILABLE_IN_CURRENT_EXECUTION_IMAGE`
-   - Java 21 is present in the ChatGPT execution image.
-   - Maven is not installed in the current execution image.
-   - Flyway CLI is not installed in the current execution image.
-   - Even if a Flyway binary were present, the current direct PostgreSQL path is still blocked by DNS.
+The Orchestrator must not silently replace the declared V1–V17 set with V100+ files, must not infer V1 merely because the Supabase database is empty, and must not choose any migration until the frozen-source binding is reconciled.
 
-## Safety result
+## Current primary blocker
 
-Because `flyway_schema_history` could not be read, the Orchestrator did not infer the next migration and did not execute a migration.
+`BL008_FROZEN_MIGRATION_SOURCE_MISMATCH`
 
-- `flyway_schema_history`: **NOT READ**
-- Flyway validate: **NOT PERFORMED**
-- Flyway migrate: **NOT PERFORMED**
-- Manual SQL migration: **NOT PERFORMED**
-- Database writes: **0**
-- New Neon branch created: **NO**
+Effect: the required version + filename + checksum + ordering source cannot be proved from the currently declared frozen commit/path, so no migration can be selected or validated safely.
 
-## Current blocker classification
-
-Primary blocker:
+## Secondary execution blocker
 
 `BL008_CHATGPT_NATIVE_FLYWAY_PATH_UNAVAILABLE`
 
-Supporting evidence:
+Current ChatGPT execution image evidence remains:
 
-- `DIRECT_POSTGRES_PATH = BLOCKED_OUTBOUND_DNS`
-- `NEON_MCP_MANAGEMENT_PATH = PASS_PROJECT_DISCOVERY`
-- `NEON_MCP_SQL_PATH = BLOCKED_OBSERVED_ARGUMENT_VALIDATION`
-- `CHATGPT_FLYWAY_RUNTIME = UNAVAILABLE_IN_CURRENT_EXECUTION_IMAGE`
-- `NEON_VENDOR_ROOT_CAUSE = UNDETERMINED`
-- `CHATGPT_WRAPPER_ROOT_CAUSE = UNDETERMINED`
+- Java 21: available.
+- Maven: not installed.
+- Flyway CLI: not installed.
+- Direct outbound PostgreSQL/DNS from the ChatGPT execution container is unavailable.
+- Supabase connector SQL access works, but Supabase connector SQL/native migration actions are not Flyway and therefore cannot substitute for the required Flyway execution mechanism.
 
-## Retry policy
+The source mismatch is the first gate and must be resolved before the runtime blocker can become the active migration gate.
 
-On each governed BL-008 fire:
+## Safety result
 
-1. Rediscover the live Neon target through ChatGPT-side management tools.
-2. Attempt one read-only Neon SQL/history probe for each distinct error fingerprint.
-3. Retry the direct PostgreSQL path only once per distinct runtime/network state.
-4. Re-check whether a ChatGPT-native Flyway-capable runtime is available.
-5. Only after `flyway_schema_history` is successfully read may the Orchestrator select the exact next migration.
-6. Apply exactly one migration at a time through Flyway, then verify history/schema/ownership/integrity.
-7. Never replay migration SQL manually through `run_sql` as a Flyway substitute.
-8. If ChatGPT-native execution remains unavailable, persist the blocker and continue independently eligible BL-002 work.
-9. Do not switch providers automatically. Any future provider evaluation requires explicit user approval and must also be fully automatable through ChatGPT-side tools.
+- `flyway_schema_history`: **PROVED ABSENT ON SUPABASE TARGET**
+- Exact next Flyway migration: **NOT SELECTED**
+- Flyway validate: **NOT PERFORMED**
+- Flyway migrate: **NOT PERFORMED**
+- Supabase native migration replay of Flyway files: **NOT PERFORMED**
+- Manual SQL migration: **NOT PERFORMED**
+- Database writes: **0**
+- Supabase project/branch destructive changes: **0**
+- Existing Neon project destructive changes: **0**
+
+## Governed next flow
+
+1. Reconcile `BL-008/migration-inventory.txt` with an exact, immutable Git source that actually contains the intended migrations.
+2. Prove every selected migration's version, filename, checksum, order and prerequisites from that exact source.
+3. Keep the Supabase target read-only until the source binding is valid.
+4. Re-check for a genuine ChatGPT-native Flyway-capable execution path.
+5. Only when both source binding and Flyway runtime are valid, run Flyway validation and apply exactly one requirement.
+6. Re-read Flyway history and verify schema/ownership/integrity before considering another requirement.
+7. Never substitute Supabase raw SQL or Supabase-native migration execution for Flyway.
+8. A blocked BL-008 stream must not stop independently eligible BL-002 work.
