@@ -1,8 +1,9 @@
 run_id: CYLINDER-MANUAL-FIRE-20260829-040620IST
 started_at: 2026-08-29T04:06:20+05:30
-heartbeat_at: 2026-08-29T04:06:20+05:30
+completed_at: 2026-08-29T04:09:11+05:30
+heartbeat_at: 2026-08-29T04:09:11+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: RUNNING
+result: PARTIAL_PROGRESS_BLOCKED
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -10,6 +11,7 @@ policy:
   github_runner_used: false
   full_automation_required: true
   manual_user_execution: forbidden
+  external_worker_runtime: forbidden
   neon_first: true
   create_neon_branches: false
   manual_sql_substitution: forbidden
@@ -18,29 +20,67 @@ policy:
 lease:
   overlap_detected: false
   acquired_at: 2026-08-29T04:06:20+05:30
+  release_expected_after_evidence_commit: true
 bl001:
   status: COMPLETE_134_OF_134
+  downstream_gate: PASS
 bl002:
   status: RECONSTRUCTED_134_OF_134_WITH_3_CLARIFICATIONS
   review_state: AWAITING_USER_REVIEW
-  work_performed_this_fire: PENDING
+  work_performed_this_fire: ENRICHED_ONE_R1_STORY
+  enriched_story_id: STORY-0048
+  enriched_story_artifact: BL-002/stories/STORY-0048.md
+  enriched_story_commit: 5cecfe88c4903e876eead3489b4d0bbc8e6c90db
+  enrichment_progress_artifact: BL-002/enrichment-progress.yaml
+  enrichment_progress_commit: 0dfc55e9144243f9f31e1411a202ca602669adc9
+  approval_status_changed: false
+  approved: 0
+  note: Canonical trace chain and HTTP terminals were materialized into a detailed human-readable story; exact request-field and deactivation-column contract remains source-detail review before approval.
 bl008:
-  status: RUNNING_CHATGPT_NATIVE_NEON_PROBE
+  status: BLOCKED_CHATGPT_NATIVE_FLYWAY_PATH_UNAVAILABLE
   authoritative_flyway_source:
     repository: vvekselva/CylinderManagement
     frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
     migration_path: cylinder.datascripts/src/main/resources/db/migration
     discovered_versions: V1_THROUGH_V17
+    inventory: BL-008/migration-inventory.txt
   execution_paths:
-    neon_mcp_management_path: PENDING
-    neon_mcp_sql_path: PENDING
-    direct_postgres_path: PENDING
-    chatgpt_flyway_runtime: PENDING
+    neon_mcp_management_path: PASS_PROJECT_DISCOVERY
+    neon_mcp_sql_path: BLOCKED_OBSERVED_ARGUMENT_VALIDATION
+    direct_postgres_path: BLOCKED_OUTBOUND_DNS
+    chatgpt_flyway_runtime: UNAVAILABLE_IN_CURRENT_EXECUTION_IMAGE
+  evidence:
+    neon_project_discovery: PASS
+    neon_sql_error_fingerprint: MCP_-32602_PROJECT_ID_ARGUMENT_VALIDATION
+    direct_dns_error: Temporary failure in name resolution
+    java_runtime: JAVA_21_PRESENT
+    maven_runtime: NOT_INSTALLED
+    flyway_cli_runtime: NOT_INSTALLED
+    vendor_root_cause: UNDETERMINED
+    chatgpt_wrapper_root_cause: UNDETERMINED
   database_actions:
-    flyway_schema_history_read: NOT_YET
-    flyway_validate: NOT_YET
-    flyway_migrate: NOT_YET
+    flyway_schema_history_read: NOT_PERFORMED
+    flyway_validate: NOT_PERFORMED
+    flyway_migrate: NOT_PERFORMED
+    manual_sql_substitution: false
     database_writes: 0
     branch_created: false
+  artifacts:
+    status_file: BL-008/README.md
+    status_commit: 9a3bb62594600bdadc6d0b05a4a6ff1b7cce7d93
+blockers:
+  - id: BL008_CHATGPT_NATIVE_FLYWAY_PATH_UNAVAILABLE
+    scope: BL-008
+    effect: ChatGPT-side Neon SQL/history access is blocked by the current MCP argument-validation behavior; direct PostgreSQL DNS is unavailable; Maven and Flyway CLI are absent from the current ChatGPT execution image, so a compliant Flyway migration cannot run.
+review_gates:
+  - id: BL002-USER-STORY-APPROVAL
+    scope: BL-002
+    effect: Story approval remains explicit-user-only; this fire enriched STORY-0048 but did not approve it.
+backlog_progress:
+  BL-001: COMPLETE
+  BL-002_STORY_ENRICHMENT: PROGRESSED_1_R1_STORY
+  BL-002_STORY_REVIEW: AWAITING_USER_REVIEW
+  BL-008_DATABASE_MIGRATION: BLOCKED_CHATGPT_NATIVE_FLYWAY_PATH_UNAVAILABLE
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
+new_neon_branches_created: 0
