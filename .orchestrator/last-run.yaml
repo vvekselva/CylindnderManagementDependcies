@@ -1,104 +1,43 @@
-run_id: CYLINDER-MANUAL-FIRE-20260829-041100IST
-started_at: 2026-08-29T04:11:00+05:30
-completed_at: 2026-08-29T04:19:06+05:30
-heartbeat_at: 2026-08-29T04:19:06+05:30
+run_id: CYLINDER-MANUAL-FIRE-20260829-042152IST
+started_at: 2026-08-29T04:21:52+05:30
+completed_at: null
+heartbeat_at: 2026-08-29T04:21:52+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: COMPLETED_WITH_BLOCKERS
+result: RUNNING
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
   github_runner: forbidden
   github_runner_used: false
   full_automation_required: true
-  create_neon_branches: false
+  manual_user_execution: forbidden
+  external_worker_runtime: forbidden
   manual_sql_substitution: forbidden
   bl008_write_parallelism: 1
   shared_ssot_single_writer: true
 lease:
   overlap_detected: false
-  acquired_at: 2026-08-29T04:11:00+05:30
-  release_expected_after_evidence_commit: true
+  acquired_at: 2026-08-29T04:21:52+05:30
+  status: ACQUIRED
 bl001:
   status: COMPLETE_134_OF_134
-  canonical_manifest: BL-001-TRACEABILITY-MANIFEST.md
-  canonical_release: Releases/bl001-traceability-20260828-134
-  frozen_source_repository: vvekselva/CylinderManagement
-  frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
-  unique_http_method_path_rows: 134
-  complete_rows: 134
-  unresolved_rows: 0
-  release_1_rows: 88
-  release_2_rows: 46
-  downstream_gate: PASS
-  work_performed_this_fire: NO_MUTATION_REQUIRED
 bl002:
-  status: IN_PROGRESS_BLOCKED_AT_STORY_0049_UNIQUE_KEY
-  release_order:
-    - RELEASE_1
-    - RELEASE_2
-  release_1:
-    total_stories: 88
-    fully_enriched: 48
-    remaining: 40
-    next_story_id: STORY-0049
-  release_2:
-    total_stories: 46
-    fully_enriched: 0
-  classification_artifact: release-classification.yaml
-  enrichment_progress_artifact: BL-002/enrichment-progress.yaml
-  story_register_artifact: BL-002/story-register.csv
-  story_0049:
-    register_unique_key: "POST /challan-page-photo/upload"
-    canonical_bl001_unique_key: "POST /add-stop/challan-page-photo/upload"
-    frozen_source_proof:
-      source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
-      controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java
-      mapping: '@PostMapping("/add-stop/challan-page-photo/upload")'
-    decision: FAIL_CLOSED_NO_CANDIDATE_MATERIALIZED
-    reason: BL-002 may consume only exact accepted canonical BL-001 rows; the register key does not equal the canonical/source-proved method-path key and no authoritative alias-normalization rule was proved.
-  approvals_changed: false
-  auto_approved: 0
-  use_cases_generated: 0
-  test_scenarios_generated: 0
+  status: IN_PROGRESS
+  known_blocker: STORY-0049_UNIQUE_KEY_MISMATCH
 bl008:
-  status: BLOCKED_REQUIRED_NEON_MAIN_BRANCH_ABSENT
-  test_environment:
-    neon_project_name: cylinder_db_for_testing
-    neon_project_id: weathered-heart-89789162
-    postgres_version: 18
-    required_branch: main
-    observed_branches:
-      - production
-    observed_production_branch_id: br-holy-scene-ax0ddw93
-  decision: FAIL_CLOSED_BEFORE_DATABASE_ACCESS
+  status: RUNNING_SUPABASE_FLOW
+  provider:
+    name: Supabase
+    project_ref: xipkywwvzvrwcqnkifuv
   database_actions:
-    flyway_schema_history_read: NOT_PERFORMED
-    flyway_validate: NOT_PERFORMED
-    flyway_migrate: NOT_PERFORMED
-    manual_sql_substitution: false
+    database_identity_read: PASS
+    postgres_version: 17.6
+    flyway_schema_history_exists: false
+    public_tables: 0
+    supabase_migrations: 0
+    flyway_validate: NOT_YET
+    flyway_migrate: NOT_YET
     database_writes: 0
-    branch_created: false
-  reason: The policy requires an already-existing Neon TEST branch named main, forbids branch creation, and forbids substituting production.
-blockers:
-  - id: BL008_REQUIRED_MAIN_BRANCH_ABSENT
-    scope: BL-008
-    effect: No Flyway/database operation is eligible until an existing main branch is present in cylinder_db_for_testing.
-  - id: BL002_STORY_0049_UNIQUE_KEY_MISMATCH
-    scope: BL-002
-    effect: STORY-0049 cannot be technically materialized or fingerprinted until the authoritative BL-002 key is reconciled to the exact canonical BL-001/source-proved key without inference.
-review_gates:
-  - id: BL002-USER-STORY-APPROVAL
-    scope: BL-002
-    effect: No story was auto-approved; explicit user approval remains mandatory for technically validated candidates.
-backlog_progress:
-  BL-001: COMPLETE
-  BL-002_STORY_ENRICHMENT: BLOCKED_AT_STORY_0049_UNIQUE_KEY
-  BL-002_STORY_REVIEW: AWAITING_USER_REVIEW_FOR_EXISTING_CANDIDATES
-  BL-008_DATABASE_MIGRATION: BLOCKED_REQUIRED_NEON_MAIN_BRANCH_ABSENT
+  source_validation: IN_PROGRESS
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
-new_neon_branches_created: 0
-backlog_items_closed: []
-next_actions:
-  - Provision or expose the already-existing Neon TEST branch main externally; the orchestrator must not create it.
-  - Reconcile the BL-002 STORY-0049 authoritative unique key to the exact canonical BL-001/source-proved key through controlled artifact correction before story materialization.
