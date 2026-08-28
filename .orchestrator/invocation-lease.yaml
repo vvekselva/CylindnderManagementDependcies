@@ -1,10 +1,9 @@
 holder: Primary Cylinder Automation Tool
-run_id: CYLINDER-MANUAL-FIRE-20260829-025819IST
-acquired_at: 2026-08-29T02:58:19+05:30
-released_at: 2026-08-29T03:07:52+05:30
-status: RELEASED
+run_id: CYLINDER-MANUAL-FIRE-20260829-040046IST
+acquired_at: 2026-08-29T04:00:46+05:30
+released_at: null
+status: ACQUIRED
 scope:
-  - BL-002
   - BL-008
 policy:
   execution_host: ChatGPT
@@ -13,5 +12,7 @@ policy:
   overlap: NOOP
   shared_ssot_single_writer: true
   bl008_database_write_parallelism: 1
-result: PARTIAL_PROGRESS_BLOCKED
+  full_automation_required: true
+  manual_user_execution: forbidden
+result: RUNNING
 evidence: .orchestrator/last-run.yaml
