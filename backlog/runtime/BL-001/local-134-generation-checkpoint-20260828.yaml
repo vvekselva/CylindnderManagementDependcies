@@ -1,0 +1,18 @@
+local_execution_checkpoint:
+  backlog_item: BL-001
+  work_unit: WU-BL001-001
+  state: LOCAL_134_GENERATION_COMPLETE_PUBLICATION_BLOCKED
+  execution_host: CHATGPT_ENVIRONMENT
+  candidate_rows: 134
+  candidate_unique_keys: 134
+  candidate_duplicates: 0
+  candidate_unresolved: 0
+  canonical_rows_before: 123
+  canonical_rows_after: 123
+  canonical_changed: false
+  workers_started: 0
+  github_actions_used: false
+  partial_publication_performed: false
+  blocked_reason: CHATGPT_LOCAL_FILE_TO_GITHUB_CONNECTOR_LARGE_BLOB_PAYLOAD_BRIDGE_UNAVAILABLE
+  next_action: Resume atomic publication only when the generated large blobs can be
+    transferred intact to GitHub connector storage.

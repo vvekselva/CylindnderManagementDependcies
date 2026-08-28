@@ -1,0 +1,33 @@
+version: 51
+backlog_item: BL-001
+state: INCREMENTAL_PARTIAL_UNIQUE_KEY_RECOVERY
+projection_state: LOCAL_134_CANDIDATE_VALIDATED_CANONICAL_PUBLICATION_BLOCKED
+source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+reported_source_check:
+  canonical_endpoint_inventory_target: 134
+  accumulated_examined_counter: 134
+  accumulated_complete_counter: 134
+  unresolved: 0
+  blocked: 0
+  failed: 0
+  unique_method_path_coverage_proved: false
+  materialized_unique_method_path_keys: 123
+  pending_unique_method_path_keys: 11
+  fully_source_proved_pending_atomic_projection: 11
+local_candidate_validation:
+  state: PASS
+  candidate_unique_method_path_keys: 134
+  duplicates: 0
+  malformed_rows: 0
+  unresolved: 0
+  markdown_json_browser_keysets_equal: true
+  candidate_manifest: backlog/runtime/BL-001/canonical-projection-manifest-20260828.yaml
+atomic_publication:
+  state: BLOCKED_BEFORE_PUBLICATION
+  partial_publication_performed: false
+  blocked_reason: CHATGPT_LOCAL_FILE_TO_GITHUB_CONNECTOR_LARGE_BLOB_PAYLOAD_BRIDGE_UNAVAILABLE
+  git_atomic_primitives_available: true
+next_action: Provide a connector/runtime path that can transmit the locally generated
+  large canonical JSON/browser artifacts as Git blobs without GitHub-hosted execution;
+  then create one tree/commit and fast-forward the branch ref. Canonical remains 123
+  until that succeeds.

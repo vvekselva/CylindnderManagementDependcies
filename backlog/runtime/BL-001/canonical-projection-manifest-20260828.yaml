@@ -1,0 +1,29 @@
+projection_manifest:
+  id: BL001-LOCAL-134-CANDIDATE-20260828
+  backlog_item: BL-001
+  execution_host: CHATGPT_ENVIRONMENT
+  repository_role: PERSISTENCE_ONLY
+  source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+  local_generation_state: PASS_134_CROSS_ARTIFACT_VALIDATION
+  pre_projection_unique_keys: 123
+  recovery_unique_keys: 11
+  candidate_unique_keys: 134
+  candidate_duplicates: 0
+  candidate_unresolved: 0
+  markdown_json_browser_keysets_equal: true
+  historical_delta_scripts_removed_from_candidate_index: true
+  hash_algorithm: SHA-256
+  candidate_artifacts:
+    traceability/controller-traceability.md: bd44845f7014e4e910637441e4cda20d90294e57d0794c3dd96e45b6ea849761
+    traceability/explorer/traceability-matrix.json: 0285af7d4d8aaf90c27005f42c6ca7a384ea03009501542c5233847003562331
+    traceability/explorer/matrix-data.js: 211af64b99d69fb95c889c236403ffc4b81327bdf4ba74b6ccf5c86d60e95613
+    traceability/explorer/index.html: 1b89d1e6848a2d64e625687f38aab8e2ab665eaecfd3ac90b91f246e23687f5a
+    traceability/unresolved-traceability.md: 6bee682edbd2f9c66585f80c4ddeccde4f16b4689a1ffafd84878284c67e5d0c
+    traceability/matrix-progress.yaml: 1b2c65c92d590fe9eb219ad1391e1865a319a62213bae839e1a6b20910033e99
+    backlog/runtime/BL-001/local-execution.yaml: fd32489167984c6a8ed837671f8b615b7136acef78efeb5e3a73ed07eaab0da9
+    backlog/runtime/BL-001/result.yaml: 93c4814b67f79113e209709c5c1ac19d672b9ea1ddc1aa0f70fc09582213e99f
+  canonical_repository_state: UNCHANGED_123_PLUS_11_PENDING
+  publication_state: BLOCKED_BEFORE_REF_UPDATE_NO_PARTIAL_PUBLICATION
+  blocked_reason: CHATGPT_LOCAL_FILE_TO_GITHUB_CONNECTOR_LARGE_BLOB_PAYLOAD_BRIDGE_UNAVAILABLE
+  atomic_transport_state: GIT_BLOB_TREE_COMMIT_REF_PRIMITIVES_AVAILABLE
+  force_ref_update_allowed: false
