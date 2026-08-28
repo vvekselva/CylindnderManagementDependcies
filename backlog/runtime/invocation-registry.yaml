@@ -1,331 +1,65 @@
-version: 62
+version: 63
 mode: OVERLAP_SAFE_MULTI_INVOCATION
 authoritative: true
 max_concurrent_invocations: 1
-active_invocations:
-- invocation_id: CYLINDER-PRODUCTION-FIRE-20260829-035736IST
-  execution_state: RUNNING
-  health_state: ACTIVE
-  started_at: 2026-08-29 03:57:36+05:30
-  heartbeat_at: 2026-08-29 04:01:00+05:30
-  last_progress_at: 2026-08-29 04:01:00+05:30
-  last_lane_activity_at: 2026-08-29 04:01:00+05:30
-  active_lane_count: 3
-  coordinator_phase: ORCHESTRATOR_STARTED
-  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: DISPATCHING_CLAIMED_WORK
-  progress_fingerprint: BOOTSTRAP_ACK_START_LOG_HEARTBEAT_AND_THREE_CLAIMS_READBACK_VERIFIED
-  blocked_reason: null
-  recovery_action: null
-  workers_started: 0
-  claims_created: 3
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  transient_lane_logs_remaining: 0
+active_invocations: []
 recent_completed_invocations:
-- invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
+- invocation_id: CYLINDER-PRODUCTION-FIRE-20260829-035736IST
   execution_state: PARTIAL_CONTINUE_REQUIRED
   health_state: TERMINAL_HANDOFF
-  started_at: 2026-08-28 04:24:47+05:30
-  completed_at: 2026-08-28 04:32:38+05:30
-  heartbeat_at: 2026-08-28 04:32:38+05:30
-  last_progress_at: 2026-08-28 04:32:38+05:30
-  last_lane_activity_at: null
+  started_at: 2026-08-29 03:57:36+05:30
+  completed_at: 2026-08-29 04:09:00+05:30
+  heartbeat_at: 2026-08-29 04:09:00+05:30
+  last_progress_at: 2026-08-29 04:09:00+05:30
+  last_lane_activity_at: 2026-08-29 04:09:00+05:30
   active_lane_count: 0
   coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
   current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
   current_work_unit: PARTIAL_CONTINUE_REQUIRED
-  progress_fingerprint: CHATGPT_ENV_BOOTSTRAP_PASS_BL001_RECONCILIATION_HELD_BL002_FIELD_PROOF_PENDING_BL008_FLYWAY_BLOCKED
-  blocked_reason: BL001_ATOMIC_PROJECTION_RECONCILIATION_NOT_REEXECUTED_NO_SAFE_PUBLICATION; BL002_POST_STOP_FIELD_LEVEL_SOURCE_PROOF_PENDING; BL008_FLYWAY_RUNTIME_UNAVAILABLE; NEON_CONNECTOR_ARGUMENT_SCHEMA_MISMATCH
-  recovery_action: CONTINUE_NEXT_CHATGPT_FIRE_FROM_DURABLE_CHECKPOINT
+  progress_fingerprint: BOOTSTRAP_PASS_THREE_CLAIMS_RELEASE134_RECONCILED_BL002_134_REGISTER_RECONCILED_BL008_RUNTIME_BLOCKED
+  blocked_reason: BL001_CONTROL_BRANCH_PROJECTIONS_INCONSISTENT_WITH_VERIFIED_RELEASE_134; BL002_LEGACY_YAML_REGISTER_STALE_VS_CANONICAL_134_CSV; BL008_AUTOMATED_FLYWAY_RUNTIME_REQUIRED
+  recovery_action: ATOMICALLY_RECONCILE_BL001_CONTROL_PROJECTIONS_THEN_SYNC_BL002_LEGACY_REGISTER_AND_PROVISION_FLYWAY_RUNTIME
   workers_started: 0
   claims_created: 3
   canonical_progress_delta: 0
   bootstrap_acknowledged: true
   transient_lane_logs_remaining: 0
   outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-PRODUCTION-FIRE-20260828-041619IST
-  execution_state: PARTIAL_CONTINUE_REQUIRED
-  health_state: TERMINAL_HANDOFF
-  started_at: 2026-08-28 04:16:19+05:30
-  completed_at: 2026-08-28 04:21:18+05:30
-  heartbeat_at: 2026-08-28 04:21:18+05:30
-  last_progress_at: 2026-08-28 04:21:18+05:30
-  last_lane_activity_at: null
-  active_lane_count: 0
-  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: PARTIAL_CONTINUE_REQUIRED
-  progress_fingerprint: BOOTSTRAP_PASS_BL001_HOSTED_DRYRUN_RECONCILIATION_DIAGNOSIS
-  blocked_reason: BL001_ATOMIC_DRY_RUN_RECONCILIATION_DIAGNOSTIC; BL008_FLYWAY_ONLY_NO_EXECUTION_THIS_FIRE
-  recovery_action: CONTINUE_NEXT_FIRE_FROM_DURABLE_CHECKPOINT
-  workers_started: 0
-  claims_created: 1
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  transient_lane_logs_remaining: 0
-  outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-HOSTED-RUNNER-33088967867-1
-  execution_state: PARTIAL_CONTINUE_REQUIRED
-  health_state: TERMINAL_HANDOFF
-  started_at: '2026-08-27T15:39:13Z'
-  completed_at: '2026-08-27T15:39:16Z'
-  heartbeat_at: '2026-08-27T15:39:16Z'
-  last_progress_at: '2026-08-27T15:39:16Z'
-  last_lane_activity_at: '2026-08-27T15:39:16Z'
-  active_lane_count: 0
-  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-  current_backlog_item: BL-001
-  current_work_unit: WU-BL001-001
-  progress_fingerprint: HOSTED_RUNNER_workers_1_claims_1_delta_0
-  blocked_reason: BL001_ATOMIC_DRY_RUN_FAILED; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
-  recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE
-  workers_started: 1
-  claims_created: 1
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-HOSTED-RUNNER-33088732001-1
-  execution_state: PARTIAL_CONTINUE_REQUIRED
-  health_state: TERMINAL_HANDOFF
-  started_at: '2026-08-27T15:36:59Z'
-  completed_at: '2026-08-27T15:37:10Z'
-  heartbeat_at: '2026-08-27T15:37:10Z'
-  last_progress_at: '2026-08-27T15:37:10Z'
-  last_lane_activity_at: '2026-08-27T15:37:10Z'
-  active_lane_count: 0
-  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-  current_backlog_item: BL-001
-  current_work_unit: WU-BL001-001
-  progress_fingerprint: HOSTED_RUNNER_workers_1_claims_1_delta_0
-  blocked_reason: BL001_ATOMIC_DRY_RUN_FAILED; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
-  recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE
-  workers_started: 1
-  claims_created: 1
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-HOSTED-RUNNER-33088449923-1
-  execution_state: PARTIAL_CONTINUE_REQUIRED
-  health_state: TERMINAL_HANDOFF
-  started_at: '2026-08-27T15:33:29Z'
-  completed_at: '2026-08-27T15:33:33Z'
-  heartbeat_at: '2026-08-27T15:33:33Z'
-  last_progress_at: '2026-08-27T15:33:33Z'
-  last_lane_activity_at: '2026-08-27T15:33:33Z'
-  active_lane_count: 0
-  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-  current_backlog_item: BL-001
-  current_work_unit: WU-BL001-001
-  progress_fingerprint: HOSTED_RUNNER_workers_1_claims_1_delta_0
-  blocked_reason: BL001_ATOMIC_DRY_RUN_FAILED; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
-  recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE
-  workers_started: 1
-  claims_created: 1
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152907Z-33088039264
-  execution_state: PARTIAL_CONTINUE_REQUIRED
-  health_state: TERMINAL_HANDOFF
-  started_at: '2026-08-27T15:29:07Z'
-  completed_at: '2026-08-27T15:29:07Z'
-  heartbeat_at: '2026-08-27T15:29:07Z'
-  last_progress_at: '2026-08-27T15:29:07Z'
-  last_lane_activity_at: '2026-08-27T15:29:07Z'
-  active_lane_count: 0
-  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: HOSTED_RUNTIME_PREFLIGHT
-  progress_fingerprint: HOSTED_RUNNER_workers_0_claims_0_delta_0
-  blocked_reason: BL001_PRIVATE_FROZEN_SOURCE_CHECKOUT_UNAVAILABLE; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
-  recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE
-  workers_started: 0
-  claims_created: 0
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152848Z-33088014464
-  execution_state: PARTIAL_CONTINUE_REQUIRED
-  health_state: TERMINAL_HANDOFF
-  started_at: '2026-08-27T15:28:48Z'
-  completed_at: '2026-08-27T15:28:48Z'
-  heartbeat_at: '2026-08-27T15:28:48Z'
-  last_progress_at: '2026-08-27T15:28:48Z'
-  last_lane_activity_at: '2026-08-27T15:28:48Z'
-  active_lane_count: 0
-  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: HOSTED_RUNTIME_PREFLIGHT
-  progress_fingerprint: HOSTED_RUNNER_workers_0_claims_0_delta_0
-  blocked_reason: BL001_PRIVATE_FROZEN_SOURCE_CHECKOUT_UNAVAILABLE; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE
-  recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE
-  workers_started: 0
-  claims_created: 0
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST
-  execution_state: PARTIAL_CONTINUE_REQUIRED
-  health_state: TERMINAL_HANDOFF
-  started_at: 2026-08-27 18:00:00+05:30
-  completed_at: 2026-08-27 18:13:52+05:30
-  heartbeat_at: 2026-08-27 18:13:52+05:30
-  last_progress_at: 2026-08-27 18:13:52+05:30
-  last_lane_activity_at: 2026-08-27 18:13:52+05:30
-  active_lane_count: 0
-  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: PARTIAL_CONTINUE_REQUIRED
-  progress_fingerprint: BOOTSTRAP_PASS_3_CLAIMS_BL002_UI_ANALYSIS_BL008_MAIN_VERIFIED_BL001_ATOMIC_RUNTIME_BLOCKED
-  blocked_reason: BL001_PROCESS_READABLE_FROZEN_SNAPSHOT_EXECUTOR_UNAVAILABLE; BL002_POST_STOP_FIELD_LEVEL_SOURCE_PROOF_PENDING; BL008_FLYWAY_RUNTIME_UNAVAILABLE
-  recovery_action: CONTINUE_NEXT_FIRE_FROM_DURABLE_CHECKPOINT
-  workers_started: 3
-  claims_created: 3
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  transient_lane_logs_remaining: 0
-  outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-171821IST
-  execution_state: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
-  health_state: TERMINAL_HANDOFF
-  started_at: 2026-08-27 17:18:21+05:30
-  completed_at: 2026-08-27 17:19:12+05:30
-  heartbeat_at: null
-  last_progress_at: 2026-08-27 17:18:21+05:30
-  active_lane_count: 0
-  coordinator_phase: BOOTSTRAP_FAILED
-  progress_fingerprint: START_REGISTRY_PERSISTED_START_LOG_REJECTED
-  blocked_reason: DURABLE_START_LOG_CREATION_REJECTED_BY_REPOSITORY_SAFETY_LAYER
-  recovery_action: FAIL_CLOSED_NO_BACKLOG_MUTATION
-  workers_started: 0
-  claims_created: 0
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: false
-  outcome: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE
-- invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-161554IST
-  execution_state: PARTIAL_CONTINUE_REQUIRED
-  health_state: TERMINAL_HANDOFF
-  started_at: 2026-08-27 16:15:54+05:30
-  completed_at: 2026-08-27 16:19:03+05:30
-  heartbeat_at: 2026-08-27 16:19:03+05:30
-  last_progress_at: 2026-08-27 16:19:03+05:30
-  last_lane_activity_at: 2026-08-27 16:19:03+05:30
-  active_lane_count: 0
-  coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF
-  current_backlog_item: MULTI_STREAM_BL001_BL002_BL008
-  current_work_unit: PARTIAL_CONTINUE_REQUIRED
-  progress_fingerprint: BOOTSTRAP_PASS_STALE_RECOVERY_BL001_ATOMIC_EXECUTION_BLOCKED_BL002_NEXT_STORY_ANALYZED_BL008_FLYWAY_RUNTIME_BLOCKED
-  blocked_reason: BL001_COMPLETE_PROCESS_READABLE_SNAPSHOT_UNAVAILABLE; BL002_BATCHED_SHARED_SSOT_WRITE_PATH_UNAVAILABLE_FOR_NEXT_STORY; BL008_FLYWAY_RUNTIME_UNAVAILABLE
-  recovery_action: RELEASE_BL001_CLAIM_AFTER_VALIDATED_BLOCKED_COMPLETION
-  workers_started: 0
-  claims_created: 1
-  canonical_progress_delta: 0
-  bootstrap_acknowledged: true
-  outcome: PARTIAL_CONTINUE_REQUIRED
-- invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-160133IST
-  execution_state: RECOVERED_STALE
-  health_state: STALE
-  started_at: 2026-08-27 16:01:33+05:30
-  completed_at: 2026-08-27 16:15:54+05:30
-  heartbeat_at: 2026-08-27 16:01:33+05:30
-  last_progress_at: 2026-08-27 16:01:33+05:30
-  active_lane_count: 0
-  coordinator_phase: RECOVERY_CLOSE
-  progress_fingerprint: START_REGISTRY_PERSISTED_NO_CLAIM_NO_EXECUTOR
-  blocked_reason: HEARTBEAT_STALE_BOOTSTRAP_NEVER_ACKNOWLEDGED
-  recovery_action: FAIL_CLOSED_RECOVERY_NO_ACTIVE_CLAIM_NO_EXECUTOR_TO_TERMINATE
-  outcome: RECOVERED_STALE
-  bootstrap_acknowledged: false
+- {invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-28 04:24:47+05:30', completed_at: '2026-08-28 04:32:38+05:30', heartbeat_at: '2026-08-28 04:32:38+05:30', last_progress_at: '2026-08-28 04:32:38+05:30', last_lane_activity_at: null, active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: MULTI_STREAM_BL001_BL002_BL008, current_work_unit: PARTIAL_CONTINUE_REQUIRED, progress_fingerprint: CHATGPT_ENV_BOOTSTRAP_PASS_BL001_RECONCILIATION_HELD_BL002_FIELD_PROOF_PENDING_BL008_FLYWAY_BLOCKED, blocked_reason: 'BL001_ATOMIC_PROJECTION_RECONCILIATION_NOT_REEXECUTED_NO_SAFE_PUBLICATION; BL002_POST_STOP_FIELD_LEVEL_SOURCE_PROOF_PENDING; BL008_FLYWAY_RUNTIME_UNAVAILABLE; NEON_CONNECTOR_ARGUMENT_SCHEMA_MISMATCH', recovery_action: CONTINUE_NEXT_CHATGPT_FIRE_FROM_DURABLE_CHECKPOINT, workers_started: 0, claims_created: 3, canonical_progress_delta: 0, bootstrap_acknowledged: true, transient_lane_logs_remaining: 0, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-PRODUCTION-FIRE-20260828-041619IST, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-28 04:16:19+05:30', completed_at: '2026-08-28 04:21:18+05:30', heartbeat_at: '2026-08-28 04:21:18+05:30', last_progress_at: '2026-08-28 04:21:18+05:30', last_lane_activity_at: null, active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: MULTI_STREAM_BL001_BL002_BL008, current_work_unit: PARTIAL_CONTINUE_REQUIRED, progress_fingerprint: BOOTSTRAP_PASS_BL001_HOSTED_DRYRUN_RECONCILIATION_DIAGNOSIS, blocked_reason: 'BL001_ATOMIC_DRY_RUN_RECONCILIATION_DIAGNOSTIC; BL008_FLYWAY_ONLY_NO_EXECUTION_THIS_FIRE', recovery_action: CONTINUE_NEXT_FIRE_FROM_DURABLE_CHECKPOINT, workers_started: 0, claims_created: 1, canonical_progress_delta: 0, bootstrap_acknowledged: true, transient_lane_logs_remaining: 0, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-HOSTED-RUNNER-33088967867-1, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-27T15:39:13Z', completed_at: '2026-08-27T15:39:16Z', heartbeat_at: '2026-08-27T15:39:16Z', last_progress_at: '2026-08-27T15:39:16Z', last_lane_activity_at: '2026-08-27T15:39:16Z', active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: BL-001, current_work_unit: WU-BL001-001, progress_fingerprint: HOSTED_RUNNER_workers_1_claims_1_delta_0, blocked_reason: 'BL001_ATOMIC_DRY_RUN_FAILED; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE', recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE, workers_started: 1, claims_created: 1, canonical_progress_delta: 0, bootstrap_acknowledged: true, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-HOSTED-RUNNER-33088732001-1, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-27T15:36:59Z', completed_at: '2026-08-27T15:37:10Z', heartbeat_at: '2026-08-27T15:37:10Z', last_progress_at: '2026-08-27T15:37:10Z', last_lane_activity_at: '2026-08-27T15:37:10Z', active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: BL-001, current_work_unit: WU-BL001-001, progress_fingerprint: HOSTED_RUNNER_workers_1_claims_1_delta_0, blocked_reason: 'BL001_ATOMIC_DRY_RUN_FAILED; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE', recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE, workers_started: 1, claims_created: 1, canonical_progress_delta: 0, bootstrap_acknowledged: true, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-HOSTED-RUNNER-33088449923-1, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-27T15:33:29Z', completed_at: '2026-08-27T15:33:33Z', heartbeat_at: '2026-08-27T15:33:33Z', last_progress_at: '2026-08-27T15:33:33Z', last_lane_activity_at: '2026-08-27T15:33:33Z', active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: BL-001, current_work_unit: WU-BL001-001, progress_fingerprint: HOSTED_RUNNER_workers_1_claims_1_delta_0, blocked_reason: 'BL001_ATOMIC_DRY_RUN_FAILED; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE', recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE, workers_started: 1, claims_created: 1, canonical_progress_delta: 0, bootstrap_acknowledged: true, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152907Z-33088039264, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-27T15:29:07Z', completed_at: '2026-08-27T15:29:07Z', heartbeat_at: '2026-08-27T15:29:07Z', last_progress_at: '2026-08-27T15:29:07Z', last_lane_activity_at: '2026-08-27T15:29:07Z', active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: MULTI_STREAM_BL001_BL002_BL008, current_work_unit: HOSTED_RUNTIME_PREFLIGHT, progress_fingerprint: HOSTED_RUNNER_workers_0_claims_0_delta_0, blocked_reason: 'BL001_PRIVATE_FROZEN_SOURCE_CHECKOUT_UNAVAILABLE; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE', recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE, workers_started: 0, claims_created: 0, canonical_progress_delta: 0, bootstrap_acknowledged: true, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-HOSTED-RUNNER-20260827T152848Z-33088014464, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-27T15:28:48Z', completed_at: '2026-08-27T15:28:48Z', heartbeat_at: '2026-08-27T15:28:48Z', last_progress_at: '2026-08-27T15:28:48Z', last_lane_activity_at: '2026-08-27T15:28:48Z', active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: MULTI_STREAM_BL001_BL002_BL008, current_work_unit: HOSTED_RUNTIME_PREFLIGHT, progress_fingerprint: HOSTED_RUNNER_workers_0_claims_0_delta_0, blocked_reason: 'BL001_PRIVATE_FROZEN_SOURCE_CHECKOUT_UNAVAILABLE; BL008_HOSTED_RUNTIME_SECRETS_UNAVAILABLE', recovery_action: RESOLVE_RECORDED_RUNTIME_BLOCKERS_THEN_REFIRE, workers_started: 0, claims_created: 0, canonical_progress_delta: 0, bootstrap_acknowledged: true, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-27 18:00:00+05:30', completed_at: '2026-08-27 18:13:52+05:30', heartbeat_at: '2026-08-27 18:13:52+05:30', last_progress_at: '2026-08-27 18:13:52+05:30', last_lane_activity_at: '2026-08-27 18:13:52+05:30', active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: MULTI_STREAM_BL001_BL002_BL008, current_work_unit: PARTIAL_CONTINUE_REQUIRED, progress_fingerprint: BOOTSTRAP_PASS_3_CLAIMS_BL002_UI_ANALYSIS_BL008_MAIN_VERIFIED_BL001_ATOMIC_RUNTIME_BLOCKED, blocked_reason: 'BL001_PROCESS_READABLE_FROZEN_SNAPSHOT_EXECUTOR_UNAVAILABLE; BL002_POST_STOP_FIELD_LEVEL_SOURCE_PROOF_PENDING; BL008_FLYWAY_RUNTIME_UNAVAILABLE', recovery_action: CONTINUE_NEXT_FIRE_FROM_DURABLE_CHECKPOINT, workers_started: 3, claims_created: 3, canonical_progress_delta: 0, bootstrap_acknowledged: true, transient_lane_logs_remaining: 0, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-171821IST, execution_state: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE, health_state: TERMINAL_HANDOFF, started_at: '2026-08-27 17:18:21+05:30', completed_at: '2026-08-27 17:19:12+05:30', heartbeat_at: null, last_progress_at: '2026-08-27 17:18:21+05:30', active_lane_count: 0, coordinator_phase: BOOTSTRAP_FAILED, progress_fingerprint: START_REGISTRY_PERSISTED_START_LOG_REJECTED, blocked_reason: DURABLE_START_LOG_CREATION_REJECTED_BY_REPOSITORY_SAFETY_LAYER, recovery_action: FAIL_CLOSED_NO_BACKLOG_MUTATION, workers_started: 0, claims_created: 0, canonical_progress_delta: 0, bootstrap_acknowledged: false, outcome: ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE}
+- {invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-161554IST, execution_state: PARTIAL_CONTINUE_REQUIRED, health_state: TERMINAL_HANDOFF, started_at: '2026-08-27 16:15:54+05:30', completed_at: '2026-08-27 16:19:03+05:30', heartbeat_at: '2026-08-27 16:19:03+05:30', last_progress_at: '2026-08-27 16:19:03+05:30', last_lane_activity_at: '2026-08-27 16:19:03+05:30', active_lane_count: 0, coordinator_phase: SYNCHRONIZED_TERMINAL_HANDOFF, current_backlog_item: MULTI_STREAM_BL001_BL002_BL008, current_work_unit: PARTIAL_CONTINUE_REQUIRED, progress_fingerprint: BOOTSTRAP_PASS_STALE_RECOVERY_BL001_ATOMIC_EXECUTION_BLOCKED_BL002_NEXT_STORY_ANALYZED_BL008_FLYWAY_RUNTIME_BLOCKED, blocked_reason: 'BL001_COMPLETE_PROCESS_READABLE_SNAPSHOT_UNAVAILABLE; BL002_BATCHED_SHARED_SSOT_WRITE_PATH_UNAVAILABLE_FOR_NEXT_STORY; BL008_FLYWAY_RUNTIME_UNAVAILABLE', recovery_action: RELEASE_BL001_CLAIM_AFTER_VALIDATED_BLOCKED_COMPLETION, workers_started: 0, claims_created: 1, canonical_progress_delta: 0, bootstrap_acknowledged: true, outcome: PARTIAL_CONTINUE_REQUIRED}
+- {invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-160133IST, execution_state: RECOVERED_STALE, health_state: STALE, started_at: '2026-08-27 16:01:33+05:30', completed_at: '2026-08-27 16:15:54+05:30', heartbeat_at: '2026-08-27 16:01:33+05:30', last_progress_at: '2026-08-27 16:01:33+05:30', active_lane_count: 0, coordinator_phase: RECOVERY_CLOSE, progress_fingerprint: START_REGISTRY_PERSISTED_NO_CLAIM_NO_EXECUTOR, blocked_reason: HEARTBEAT_STALE_BOOTSTRAP_NEVER_ACKNOWLEDGED, recovery_action: FAIL_CLOSED_RECOVERY_NO_ACTIVE_CLAIM_NO_EXECUTOR_TO_TERMINATE, outcome: RECOVERED_STALE, bootstrap_acknowledged: false}
 work_claims:
-  active:
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260829-035736IST
-    state: CLAIMED
-    claimed_at: 2026-08-29 03:59:55+05:30
-  - claim_key: BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP-FIELD-PROOF
-    owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260829-035736IST
-    state: CLAIMED
-    claimed_at: 2026-08-29 03:59:55+05:30
-  - claim_key: BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT
-    owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260829-035736IST
-    state: CLAIMED
-    claimed_at: 2026-08-29 03:59:55+05:30
+  active: []
   completed:
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
-    state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
-    completed_at: 2026-08-28 04:32:38+05:30
-    durable_state_found: CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION_CHATGPT_FIRE
-  - claim_key: BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP-FIELD-PROOF
-    prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
-    state: RELEASED_AFTER_SOURCE_PROOF_BLOCKED_COMPLETION
-    completed_at: 2026-08-28 04:32:38+05:30
-    durable_state_found: STORY_0068_POST_STOP_FIELD_PROOF_STILL_PENDING
-  - claim_key: BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT
-    prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST
-    state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
-    completed_at: 2026-08-28 04:32:38+05:30
-    durable_state_found: CHATGPT_ENV_MAVEN_FLYWAY_UNAVAILABLE_NO_DB_MUTATION_NEON_READONLY_VERIFY_SCHEMA_MISMATCH
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260828-041619IST
-    state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
-    completed_at: 2026-08-28 04:21:18+05:30
-    durable_state_found: BL001_HOSTED_DRYRUN_RECONCILIATION_DIAGNOSIS_CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    prior_owner_invocation_id: CYLINDER-HOSTED-RUNNER-33088967867-1
-    state: RELEASED_AFTER_HOSTED_EXECUTION
-    completed_at: '2026-08-27T15:39:16Z'
-    durable_state_found: BL001_ATOMIC_DRY_RUN_FAILED_WITH_EVIDENCE
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    prior_owner_invocation_id: CYLINDER-HOSTED-RUNNER-33088732001-1
-    state: RELEASED_AFTER_HOSTED_EXECUTION
-    completed_at: '2026-08-27T15:37:10Z'
-    durable_state_found: BL001_ATOMIC_DRY_RUN_FAILED_WITH_EVIDENCE
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    prior_owner_invocation_id: CYLINDER-HOSTED-RUNNER-33088449923-1
-    state: RELEASED_AFTER_HOSTED_EXECUTION
-    completed_at: '2026-08-27T15:33:33Z'
-    durable_state_found: BL001_ATOMIC_DRY_RUN_FAILED_WITH_EVIDENCE
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST
-    state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
-    completed_at: 2026-08-27 18:13:52+05:30
-    durable_state_found: CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION
-  - claim_key: BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP
-    prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST
-    state: RELEASED_AFTER_UI_SOURCE_ANALYSIS
-    completed_at: 2026-08-27 18:13:52+05:30
-    durable_state_found: backlog/runtime/BL-002/ui-source-analysis/STORY-0068-POST-stop.yaml
-  - claim_key: BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT
-    prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST
-    state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
-    completed_at: 2026-08-27 18:13:52+05:30
-    durable_state_found: VERIFIED_MAIN_NEONDB_EMPTY_FLYWAY_RUNTIME_UNAVAILABLE
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-161554IST
-    state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION
-    completed_at: 2026-08-27 16:19:03+05:30
-    durable_state_found: CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION
-  - claim_key: BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0067
-    prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST
-    state: RELEASED_AFTER_VALIDATED_SYNC
-    completed_at: 2026-08-27 13:26:00+05:30
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260829-035736IST, state: RELEASED_AFTER_RECONCILIATION_DIAGNOSTIC, completed_at: '2026-08-29 04:09:00+05:30', durable_state_found: RELEASE_134_VERIFIED_CONTROL_BRANCH_PROJECTIONS_STILL_INCONSISTENT_NO_PARTIAL_PUBLICATION}
+  - {claim_key: 'BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP-FIELD-PROOF', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260829-035736IST, state: RELEASED_AFTER_RECONCILIATION, completed_at: '2026-08-29 04:09:00+05:30', durable_state_found: CANONICAL_CSV_134_STORIES_3_CLARIFICATIONS_LEGACY_YAML_STALE_67}
+  - {claim_key: 'BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260829-035736IST, state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION, completed_at: '2026-08-29 04:09:00+05:30', durable_state_found: AUTOMATED_FLYWAY_RUNTIME_REQUIRED_ZERO_DATABASE_WRITES}
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST, state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION, completed_at: '2026-08-28 04:32:38+05:30', durable_state_found: CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION_CHATGPT_FIRE}
+  - {claim_key: 'BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP-FIELD-PROOF', prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST, state: RELEASED_AFTER_SOURCE_PROOF_BLOCKED_COMPLETION, completed_at: '2026-08-28 04:32:38+05:30', durable_state_found: STORY_0068_POST_STOP_FIELD_PROOF_STILL_PENDING}
+  - {claim_key: 'BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT', prior_owner_invocation_id: CYLINDER-MANUAL-FIRE-20260828-042447IST, state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION, completed_at: '2026-08-28 04:32:38+05:30', durable_state_found: CHATGPT_ENV_MAVEN_FLYWAY_UNAVAILABLE_NO_DB_MUTATION_NEON_READONLY_VERIFY_SCHEMA_MISMATCH}
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260828-041619IST, state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION, completed_at: '2026-08-28 04:21:18+05:30', durable_state_found: BL001_HOSTED_DRYRUN_RECONCILIATION_DIAGNOSTIC_CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION}
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-HOSTED-RUNNER-33088967867-1, state: RELEASED_AFTER_HOSTED_EXECUTION, completed_at: '2026-08-27T15:39:16Z', durable_state_found: BL001_ATOMIC_DRY_RUN_FAILED_WITH_EVIDENCE}
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-HOSTED-RUNNER-33088732001-1, state: RELEASED_AFTER_HOSTED_EXECUTION, completed_at: '2026-08-27T15:37:10Z', durable_state_found: BL001_ATOMIC_DRY_RUN_FAILED_WITH_EVIDENCE}
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-HOSTED-RUNNER-33088449923-1, state: RELEASED_AFTER_HOSTED_EXECUTION, completed_at: '2026-08-27T15:33:33Z', durable_state_found: BL001_ATOMIC_DRY_RUN_FAILED_WITH_EVIDENCE}
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST, state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION, completed_at: '2026-08-27 18:13:52+05:30', durable_state_found: CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION}
+  - {claim_key: 'BL-002|RELEASE-1-STORY|STORY-0068-POST-STOP', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST, state: RELEASED_AFTER_UI_SOURCE_ANALYSIS, completed_at: '2026-08-27 18:13:52+05:30', durable_state_found: backlog/runtime/BL-002/ui-source-analysis/STORY-0068-POST-stop.yaml}
+  - {claim_key: 'BL-008|WU-BL008-001|INITIAL-FLYWAY-REQUIREMENT', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-180000IST, state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION, completed_at: '2026-08-27 18:13:52+05:30', durable_state_found: VERIFIED_MAIN_NEONDB_EMPTY_FLYWAY_RUNTIME_UNAVAILABLE}
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-161554IST, state: RELEASED_AFTER_VALIDATED_BLOCKED_COMPLETION, completed_at: '2026-08-27 16:19:03+05:30', durable_state_found: CANONICAL_123_PENDING_11_NO_PARTIAL_PUBLICATION}
+  - {claim_key: 'BL-002|WU-STORY-REGISTER-CONSISTENCY|STORY-0067', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-131536IST, state: RELEASED_AFTER_VALIDATED_SYNC, completed_at: '2026-08-27 13:26:00+05:30'}
   recovered:
-  - claim_key: BL-001|WU-BL001-001|ATOMIC-134-PROJECTION
-    prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST
-    state: RELEASED_AFTER_STALE_OWNER_RECOVERY
-    recovered_at: 2026-08-27 10:13:29+05:30
+  - {claim_key: 'BL-001|WU-BL001-001|ATOMIC-134-PROJECTION', prior_owner_invocation_id: CYLINDER-PRODUCTION-FIRE-20260827-085938IST, state: RELEASED_AFTER_STALE_OWNER_RECOVERY, recovered_at: '2026-08-27 10:13:29+05:30'}
 locks:
-  shared_ssot_write:
-    capacity: 1
-    owner_invocation_id: null
-  git_checkpoint:
-    capacity: 1
-    owner_invocation_id: null
-  bl008_database_write:
-    capacity: 1
-    owner_invocation_id: null
+  shared_ssot_write: {capacity: 1, owner_invocation_id: null}
+  git_checkpoint: {capacity: 1, owner_invocation_id: null}
+  bl008_database_write: {capacity: 1, owner_invocation_id: null}
 bootstrap_control:
   governance: governance/orchestrator-bootstrap-gate.yaml
   scheduler_fire_is_orchestrator_start: false
