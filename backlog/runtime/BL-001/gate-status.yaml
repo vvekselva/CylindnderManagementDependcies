@@ -9,44 +9,56 @@ quality_gate_status:
   common_dependency_gate: {id: QG-DEP-001, state: PASS}
   execution_source_gate:
     id: QG-SOURCE-001
-    state: PASS_FROZEN_BASELINE_ALL_11_RECOVERY_KEYS_SOURCE_PROVED
+    state: PASS_FROZEN_BASELINE_RELEASE_134_UNIQUE_VERIFIED
     source_provider: PRIMARY_ORCHESTRATOR_EXACT_FROZEN_SOURCE
     source_baseline: 3ae6e61442132d94a307275b08dd65fcef228d89
+    release_tag: bl001-traceability-20260828-134
+    release_unique_method_path_keys: 134
+    release_duplicates: 0
+    release_unresolved: 0
     latest_worker_generation: E2E-STAGED-20260823-161214
     latest_worker_generation_state: CLOSED_SYNCHRONIZED
     old_generation_replay_required: false
   execution_lifecycle_logging_gate: {id: QG-LOG-001, state: PASS, post_aggregate_individual_lane_logs: 0}
-  execution_recovery_gate: {id: QG-RECOVERY-001, state: PASS_TARGETED_PREREQUISITE_RECOVERY, prior_generation_decision: CLOSED_SYNCHRONIZED_NOOP, replayed: false}
-  real_lane_utilization_gate: {id: QG-LANE-001, state: NOT_APPLICABLE_THIS_RECOVERY_CHECKPOINT_NO_WORKER_FIRE, configured_lanes: 10, worker_generation_started_this_checkpoint: false}
+  execution_recovery_gate: {id: QG-RECOVERY-001, state: PASS_RELEASE_ASSET_BLOCKER_CLEARED_REPOSITORY_SYNC_REQUIRED, prior_generation_decision: CLOSED_SYNCHRONIZED_NOOP, replayed: false}
+  real_lane_utilization_gate: {id: QG-LANE-001, state: NOT_APPLICABLE_THIS_MANUAL_RECONCILIATION_FIRE_NO_WORKER_GENERATION, configured_lanes: 10, worker_generation_started_this_checkpoint: false}
   gates:
     QG-TRC-001: {name: Source Baseline Integrity, state: PASS}
-    QG-TRC-002: {name: Complete Source Check, state: IN_PROGRESS_ATOMIC_UNIQUE_KEY_PROJECTION_123_OF_134_CANONICAL}
-    QG-TRC-003: {name: Controller Inventory Completeness, state: RECOVERY_SOURCE_PROOF_COMPLETE_4_FAMILIES}
-    QG-TRC-004: {name: Endpoint Inventory Completeness, state: RECOVERY_SOURCE_PROOF_COMPLETE_11_EXACT_KEYS}
-    QG-TRC-005: {name: Source Check Output Validity, state: SOURCE_PROOF_COMPLETE_CANONICAL_PROJECTION_PENDING}
-    QG-TRC-006: {name: Endpoint To Trace Completeness, state: BLOCKED_UNTIL_134_UNIQUE_ROWS_MATERIALIZED}
-    QG-TRC-007: {name: Call Path Evidence, state: PASS_FOR_ALL_11_RECOVERY_KEYS}
-    QG-TRC-008: {name: Final Dependency Evidence, state: PASS_FOR_ALL_11_RECOVERY_KEYS}
-    QG-TRC-009: {name: No Guessing And Unresolved Quality, state: PASS_FAIL_CLOSED_STALE_KEYS_REJECTED}
-    QG-TRC-010: {name: Matrix Coverage, state: IN_PROGRESS_123_OF_134_CANONICAL_11_READY}
+    QG-TRC-002: {name: Complete Source Check, state: PASS_RELEASE_MODEL_134_OF_134_UNIQUE}
+    QG-TRC-003: {name: Controller Inventory Completeness, state: PASS_RELEASE_MODEL_VERIFIED}
+    QG-TRC-004: {name: Endpoint Inventory Completeness, state: PASS_134_UNIQUE_KEYS}
+    QG-TRC-005: {name: Source Check Output Validity, state: PASS_RELEASE_JSON_JS_VALIDATED}
+    QG-TRC-006: {name: Endpoint To Trace Completeness, state: IN_PROGRESS_CONTROL_BRANCH_PROJECTION_SYNC_REQUIRED}
+    QG-TRC-007: {name: Call Path Evidence, state: PASS_RELEASE_MODEL_SOURCE_PROVED}
+    QG-TRC-008: {name: Final Dependency Evidence, state: PASS_RELEASE_MODEL_SOURCE_PROVED}
+    QG-TRC-009: {name: No Guessing And Unresolved Quality, state: PASS_ZERO_UNRESOLVED}
+    QG-TRC-010: {name: Matrix Coverage, state: IN_PROGRESS_RELEASE_134_VERIFIED_CONTROL_BRANCH_MIRROR_PENDING}
     QG-TRC-011: {name: Resolution Accounting, state: PASS_ZERO_UNRESOLVED_REPORTED}
-    QG-TRC-012: {name: Artifact Consistency, state: BLOCKED_BASE_PLUS_ORDERED_DELTA_CONSOLIDATION_REQUIRED_BEFORE_ATOMIC_PROJECTION}
-    QG-TRC-013: {name: Source Artifact Registration, state: WAITING}
-    QG-TRC-014: {name: Execution Closure, state: WAITING}
+    QG-TRC-012: {name: Artifact Consistency, state: IN_PROGRESS_RELEASE_JSON_JS_CONSISTENT_CONTROL_BRANCH_PROJECTIONS_PENDING}
+    QG-TRC-013: {name: Source Artifact Registration, state: PASS_RELEASE_ASSETS_REGISTERED_AND_DIGEST_VERIFIED}
+    QG-TRC-014: {name: Execution Closure, state: WAITING_FOR_QG_TRC_006_010_012}
     QG-TRC-015: {name: User Acceptance, state: WAITING, owner: USER, automatic: false}
+  release_verification:
+    invocation: CYLINDER-MANUAL-PRODUCTION-FIRE-20260829-023639IST
+    release_tag: bl001-traceability-20260828-134
+    traceability_matrix_json: {size_bytes: 374150, sha256: 9b34cf2f0631e0c36bdecdc7ee715e8176291517f87266a0e3d7a292074368b6, state: VERIFIED}
+    matrix_data_js: {size_bytes: 374178, sha256: b99cc24de3547e9509885a6552b1c7d247892fa90f2ab1448876999a6ea405b1, state: VERIFIED}
+    checksum_asset: {size_bytes: 172, state: VERIFIED_PRESENT}
+    model: {rows: 134, unique_method_path_keys: 134, duplicates: 0, unresolved: 0, json_browser_equivalent: true}
   unique_key_recovery:
-    state: ALL_11_SOURCE_PROVED_ATOMIC_PROJECTION_PENDING
+    state: RELEASE_134_PROVED_CONTROL_BRANCH_PROJECTION_SYNC_PENDING
     work_unit: WU-BL001-001
     target_unique_keys: 134
-    materialized_unique_rows: 123
-    pending_unique_keys: 11
-    fully_source_proved_ready_for_atomic_projection: 11
-    projection_candidate: backlog/runtime/BL-001/pending-atomic-projection-20260825-0811Z.yaml
+    release_materialized_unique_rows: 134
+    control_branch_materialized_unique_rows_at_manual_fire_start: 123
+    pending_control_branch_projection_keys: 11
+    release_unique_method_path_coverage_proved: true
     source_reads_in_wu001_allowed: true
     source_reads_in_wu002_allowed: false
-    atomic_projection_required: true
+    repository_projection_reconciliation_required: true
   close_allowed: false
   reason: >-
-    Every one of the eleven missing exact HTTP method/path keys now has complete frozen-source call-path and final-dependency
-    evidence. Canonical coverage is deliberately held at 123 because the accepted Explorer is represented by a stale base
-    plus ordered delta history; QG-TRC-012 requires consolidation and one atomic regeneration before 134/134 can be asserted.
+    The published GitHub Release now proves exactly 134 unique HTTP method/path rows with zero duplicates and zero unresolved
+    rows, and its JSON/JS SHA-256 digests are verified. BL-001 remains open because the control-branch Markdown, Explorer and
+    runtime projections still need exact reconciliation to that verified Release model before artifact-consistency and
+    execution-closure gates can pass.
