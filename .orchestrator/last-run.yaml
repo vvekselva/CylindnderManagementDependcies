@@ -1,9 +1,9 @@
 run_id: CYLINDER-MANUAL-FIRE-20260829-040046IST
 started_at: 2026-08-29T04:00:46+05:30
-completed_at: null
-heartbeat_at: 2026-08-29T04:01:41+05:30
+completed_at: 2026-08-29T04:02:50+05:30
+heartbeat_at: 2026-08-29T04:02:50+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: RUNNING
+result: BLOCKED_WITH_EVIDENCE
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -19,34 +19,55 @@ policy:
 lease:
   overlap_detected: false
   acquired_at: 2026-08-29T04:00:46+05:30
-  status: ACQUIRED
+  release_expected_after_evidence_commit: true
 bl001:
   status: COMPLETE_134_OF_134
 bl002:
   status: RECONSTRUCTED_134_OF_134_WITH_3_CLARIFICATIONS
   review_state: AWAITING_USER_REVIEW
+  work_performed_this_fire: NONE_BL008_SCOPED_FIRE
 bl008:
-  status: RUNNING_AUTOMATED_EXECUTION_PROBE
+  status: BLOCKED_AUTOMATED_FLYWAY_RUNTIME_REQUIRED
   authoritative_flyway_source:
     repository: vvekselva/CylinderManagement
     frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
     migration_path: cylinder.datascripts/src/main/resources/db/migration
     discovered_versions: V1_THROUGH_V17
+    inventory: BL-008/migration-inventory.txt
   execution_paths:
     neon_mcp_management_path: PASS_PROJECT_DISCOVERY
     neon_mcp_sql_path: BLOCKED_OBSERVED_ARGUMENT_VALIDATION
     direct_postgres_path: BLOCKED_OUTBOUND_DNS
-    automated_flyway_runtime: DISCOVERY_IN_PROGRESS
+    automated_flyway_runtime: NOT_CONNECTED
   evidence:
     neon_project_discovery: PASS
     neon_sql_error_fingerprint: MCP_-32602_PROJECT_ID_ARGUMENT_VALIDATION
     direct_dns_error: Temporary failure in name resolution
     vendor_root_cause: UNDETERMINED
+    chatgpt_wrapper_root_cause: UNDETERMINED
+    unattended_runtime_candidate_discovered: TRIGGERcmd
+    unattended_runtime_candidate_connected: false
   database_actions:
     flyway_schema_history_read: NOT_PERFORMED
     flyway_validate: NOT_PERFORMED
     flyway_migrate: NOT_PERFORMED
+    manual_sql_substitution: false
     database_writes: 0
     branch_created: false
+  artifacts:
+    status_file: BL-008/README.md
+    status_commit: 02e02775fe1ce70ed86ef505d2b1bc88c0f8e71d
+blockers:
+  - id: BL008_AUTOMATED_FLYWAY_RUNTIME_REQUIRED
+    scope: BL-008
+    effect: Full unattended execution cannot proceed because ChatGPT direct PostgreSQL networking is blocked, Neon MCP SQL is not executable through the exposed argument contract, and no external unattended Flyway command runtime is currently connected.
+  - id: BL008_PROVIDER_FALLBACK_NOT_YET_AUTHORIZED
+    scope: BL-008
+    effect: Neon remains first choice; provider switch is not attempted in this fire.
+next_action:
+  type: ONE_TIME_RUNTIME_CONNECTION
+  description: Connect/provision an unattended command runtime that ChatGPT can invoke for a fixed audited Flyway job; after one-time authorization, the Orchestrator performs all migration steps automatically without user terminal work.
+  candidate: TRIGGERcmd
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
+new_neon_branches_created: 0
