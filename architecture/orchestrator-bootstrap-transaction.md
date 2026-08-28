@@ -1,88 +1,154 @@
-# Cylinder Orchestrator Bootstrap Transaction
+# Cylinder Orchestrator Startup and End-of-Orchestration Reconciliation
 
 ## Problem fixed
 
-A scheduled task can report a new `last_run_time` even when the Cylinder Orchestrator never reaches backlog execution. The scheduler trigger and the Orchestrator execution loop are therefore separate states. Previously the framework required START and heartbeat, but did not require the running task to read those writes back and prove a work claim before declaring the Orchestrator started.
+The earlier bootstrap design required the Primary Orchestrator to rewrite `backlog/runtime/invocation-registry.yaml`, write a durable START log, write an initial GitHub heartbeat, and read those writes back before any backlog analysis or execution could begin.
 
-The failure observed on 27 Aug 2026 demonstrated the gap: a START record remained at `STARTUP_HANDSHAKE`, its heartbeat never advanced, there were zero active lanes and no work claim, while a later scheduler fire was still recorded by the task system.
+That rule correctly separated `SCHEDULER_FIRED` from `ORCHESTRATOR_STARTED`, but it created a new bottleneck: if the shared invocation registry could not be safely rewritten, the Production Fire stopped before doing useful BL-001, BL-002 or BL-008 work.
 
-## New rule
+The shared registry is now removed from the critical START path.
 
-`SCHEDULER_FIRED` is not `ORCHESTRATOR_STARTED`.
+## New lifecycle
 
-The bootstrap is a transaction:
+The Primary Orchestrator follows this lifecycle:
 
 ```text
-Scheduler fire
-    |
-    v
-Pin chore/rename-dependency-files
-    |
-    v
-Generate unique invocation ID
-    |
-    v
-Persist START + durable START log + initial heartbeat
-    |
-    v
-READ BACK and verify own START + fresh heartbeat
-    |
-    v
-Recover stale/stuck prior invocations
-    |
-    v
-Select eligible work
-    |
-    v
-Persist work claim
-    |
-    v
-READ BACK and verify claim ownership
-    |
-    v
+Scheduler / Manual fire
+        |
+        v
+Pin authoritative branch
+        |
+        v
+Read governance + Level 1/2/3 SSOT + prior durable evidence
+        |
+        v
+Generate invocation ID in execution memory
+        |
+        v
+Classify prior health / recoverable ownership
+        |
+        v
+Build execution plan
+        |
+        v
+Build END UPDATE SET
+(list every shared file expected to change at the end)
+        |
+        v
+Select eligible BL-001 / BL-002 / BL-008 work
+        |
+        v
+Acquire only execution-critical locks
+(BL-008 DB lock immediately before DB mutation)
+        |
+        v
 ORCHESTRATOR_STARTED
-    |
-    v
-Dispatch / validate / replan / refill
+        |
+        v
+PLAN -> EXECUTE -> VALIDATE -> REPLAN -> REFILL
+        |
+        v
+END_OF_ORCHESTRATION_RECONCILIATION
+        |
+        v
+Update shared canonical files + runtime + registry + durable log
+        |
+        v
+Read back final files -> release locks -> terminalize
 ```
 
-If any mandatory bootstrap step fails, the fire is classified as a bootstrap/start failure and must not be reported as production progress.
+## What happens at the beginning
 
-## BL-001 fast path
+Startup is read/plan/classify work. The Orchestrator must know, before dispatch, which files are expected to be updated at the end.
 
-While the 123 + 11 canonical projection remains pending, the first eligible BL-001 claim is:
+The in-memory End Update Set contains, at minimum:
 
-`BL-001|WU-BL001-001|ATOMIC-134-PROJECTION`
+- backlog item and work unit;
+- candidate output files;
+- canonical SSOT files that may change;
+- Level-3 runtime files that may change;
+- status / statistics files that may change;
+- durable log/evidence files that may change;
+- locks or claims that must be released;
+- expected validation/read-back checks.
 
-The executor is:
+The End Update Set is not itself required to be written to GitHub before execution. It is part of the invocation execution journal.
 
-`automation/bl001-canonical-projection-engine.py`
+## What is not written at startup
 
-After a verified claim, the run executes the transactional 134-key projection and proceeds to WU-BL001-002 and WU-BL001-003 as the remaining execution window and gates permit.
+The Orchestrator does **not** rewrite the following merely to prove that it started:
 
-## Stale invocation recovery
+- `backlog/runtime/invocation-registry.yaml`;
+- shared backlog status files;
+- matrix/story shared progress files;
+- execution statistics;
+- durable run summary logs.
 
-A previous invocation whose Primary Orchestrator heartbeat is older than 300 seconds is not allowed to remain an active RUNNING owner. Before a new work claim is accepted, the new invocation must prove the old owner is stale, prove that no worker/executor still owns its claimed work, preserve durable completed evidence, reject incomplete partial output, persist the recovery, and release only claims proven safe to release.
+This prevents a large shared bookkeeping file from blocking productive work.
 
-## Bootstrap acknowledgement
+## Runtime heartbeat
 
-The Orchestrator can set `coordinator_phase: ORCHESTRATOR_STARTED` only after all of these are true:
+The Primary Orchestrator still maintains a heartbeat at least every 60 seconds while it owns execution. The heartbeat is runtime-first. GitHub does not need a heartbeat commit every minute.
 
-- its own START record was read back from the authoritative registry;
-- its initial heartbeat was read back and is fresh;
-- stale/stuck prior invocations were reconciled;
-- if eligible work exists, its global work claim was read back and is owned by the same invocation;
-- if no eligible work exists, a clean terminal state was durably verified instead.
+The final health/terminal projection is written during end reconciliation.
 
-This prevents the scheduler UI and the backlog runtime from reporting contradictory states.
+## Concurrency and claims
+
+Current invocation concurrency is singleton: one Primary Orchestrator invocation at a time. Therefore normal work ownership is maintained inside the invocation execution plan and does not require a shared GitHub claim before every dispatch.
+
+If overlapping invocations are re-enabled later, a proven atomic durable claim mechanism must be implemented before overlap is allowed.
+
+BL-008 remains stricter: the global database-write lock has capacity 1 and must be acquired immediately before a database mutation. Exactly one Flyway requirement is active at a time.
+
+## End-of-Orchestration Reconciliation
+
+After productive work stops, the Primary Orchestrator performs one governed reconciliation phase:
+
+1. Stop new dispatch.
+2. Collect all worker/executor terminal results.
+3. Validate evidence and item gates.
+4. Reject invalid or incomplete partial output.
+5. Build the final canonical update set.
+6. Acquire the shared SSOT single-writer lock.
+7. Apply validated canonical updates.
+8. Update Level-3 runtime state.
+9. Update backlog status only where derived truth changed.
+10. Append/update the final invocation record in `backlog/runtime/invocation-registry.yaml`.
+11. Update execution statistics.
+12. Write the durable run log.
+13. Release locks/claims.
+14. Read back every updated shared file.
+15. Verify transient lane logs are zero.
+16. Terminalize.
+
+If final reconciliation cannot be completed safely, the last valid shared state is preserved and the invocation returns `PARTIAL_CONTINUE_REQUIRED` with `ORCHESTRATOR_END_RECONCILIATION_FAILURE`.
+
+## Production progress rule
+
+A successful Production Fire is not one that merely checked status. If eligible work exists and there is free worker capacity, the Orchestrator must continue:
+
+`REPLAN -> SELECT -> DISPATCH -> VALIDATE`
+
+until the productive window closes or no eligible/recoverable work remains.
+
+## BL-001
+
+BL-001 must reconcile exactly 134 unique HTTP method/path keys with zero duplicates. Validated canonical projection artifacts are synchronized together in the end reconciliation transaction.
+
+## BL-002
+
+BL-002 consumes only accepted/materialized/non-stale BL-001 evidence. Release 1 remains before Release 2. Missing field contracts go through `UI_SOURCE_ANALYSIS`; unproved meaning remains `NEEDS_CLARIFICATION`. Stories and Use Cases are never auto-approved.
+
+## BL-008
+
+BL-008 uses Neon TEST `main` only, creates no Neon branch, uses Flyway only, performs exactly one database requirement at a time, and keeps database write parallelism at 1.
 
 ## Failure classes
 
-- `SCHEDULER_TO_ORCHESTRATOR_START_FAILURE`: scheduler fire but no durable current invocation START.
-- `ORCHESTRATOR_BOOTSTRAP_HEARTBEAT_FAILURE`: START exists but initial heartbeat is missing.
-- `ORCHESTRATOR_BOOTSTRAP_ACK_FAILURE`: START/heartbeat cannot be read back consistently.
-- `ORCHESTRATOR_BOOTSTRAP_RECOVERY_FAILURE`: stale prior ownership cannot be safely reconciled.
-- `ORCHESTRATOR_BOOTSTRAP_CLAIM_FAILURE`: eligible work exists but no claim can be persisted.
-- `ORCHESTRATOR_BOOTSTRAP_CLAIM_ACK_FAILURE`: a claim write cannot be read back and verified.
+- `ORCHESTRATOR_BOOTSTRAP_READ_FAILURE`: authoritative startup inputs cannot be read safely.
+- `ORCHESTRATOR_BOOTSTRAP_PLAN_FAILURE`: an executable plan or End Update Set cannot be built.
+- `ORCHESTRATOR_EXECUTION_LOCK_FAILURE`: a lock required for the specific operation cannot be acquired.
+- `ORCHESTRATOR_END_RECONCILIATION_FAILURE`: validated work exists but shared durable reconciliation cannot be completed safely.
+- `ORCHESTRATOR_TERMINAL_ACK_FAILURE`: final shared files were written but read-back verification failed.
 
-All bootstrap failures are fail-closed for backlog mutation and are not production success.
+The old `SCHEDULER_TO_ORCHESTRATOR_START_FAILURE` caused only by inability to rewrite the shared invocation registry before analysis is superseded by this lifecycle.
