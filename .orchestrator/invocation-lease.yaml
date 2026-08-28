@@ -1,8 +1,8 @@
 holder: Primary Cylinder Automation Tool
-run_id: CYLINDER-MANUAL-FLYWAY-BOOTSTRAP-20260829-045929IST
-acquired_at: 2026-08-29T04:59:29+05:30
-released_at: 2026-08-29T05:08:02+05:30
-status: RELEASED
+run_id: CYLINDER-MANUAL-FLYWAY-JAVA-20260829-051420IST
+acquired_at: 2026-08-29T05:14:20+05:30
+released_at: null
+status: ACQUIRED
 scope:
   - BL-008
 policy:
@@ -15,6 +15,7 @@ policy:
   manual_user_execution: forbidden
   external_worker_runtime: forbidden
   database_provider_under_evaluation: Supabase
-result: PARTIAL_PROGRESS_BLOCKED
+  flyway_execution_mode: JAVA_API
+result: RUNNING
 evidence: .orchestrator/last-run.yaml
-heartbeat_at: 2026-08-29T05:08:02+05:30
+heartbeat_at: 2026-08-29T05:14:20+05:30
