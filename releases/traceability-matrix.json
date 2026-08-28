@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 2,
+  "metadata": {
+    "backlogItem": "BL-001",
+    "status": "READY_FOR_FINAL_RECONCILIATION",
+    "sourceBaseline": "3ae6e61442132d94a307275b08dd65fcef228d89",
+    "canonicalEndpointInventory": 134,
+    "canonicalAcceptedExamined": 134,
+    "canonicalComplete": 134,
+    "canonicalUnresolved": 0,
+    "canonicalBlocked": 0,
+    "canonicalFailed": 0,
+    "canonicalNotYetExamined": 0,
+    "materializedMatrixRows": 134,
+    "historicalAcceptedRowsPendingBackfill": 0,
+    "latestMaterializedFromInvocation": "PRODUCTION-FIRE-20260824-080301",
+    "latestInvocation": "RECONCILIATION-FIRE-20260825-020007Z",
+    "projectionState": "CONSOLIDATED_CANONICAL_134"
+  },
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/add-stop",
+      "controller": "AddStopController",
+      "controllerMethod": "showStopPage",
+      "state": "COMPLETE",
+      "chainCompleteness": "FULL_BRANCHING",
+      "paths": [
+        {
+          "label": "Trip status guard",
+          "nodes": [
+            {
+              "type": "CONTROLLER",
+              "name": "AddStopController",
+              "method": "showStopPage"
+            },
+            {
+              "type": "SERVICE",
+              "name": "TripReturnWorkflowService",
+              "method": "getTripStatusByVehicleLoadId"
+            },
+            {
+              "type": "DAO",
+              "name": "VehicleLoadJpaDao",
+              "method": "findById"
+            },
+            {
+              "type": "ENTITY",
+              "name": "VehicleLoadDo"
+            },
+            {
+              "type": "POSTGRES_TABLE",
+              "name": "public.tbl_vehicle_load"
+            },
+            {
+              "type": "ENTITY",
+              "name": "VehicleTripDo"
+            },
+            {
+              "type": "POSTGRES_TABLE",
+              "name": "public.tbl_vehicle_trip"
+            },
+            {
+              "type": "ENTITY",
+              "name": "VehicleTripStatusDo"
+            },
+            {
+              "type": "POSTGRES_TABLE",
+              "name": "public.tbl_trip_status"
+            },
+            {
+              "type": "TERMINAL_VIEW",
+              "name": "redirect:/vehicle-load/fetch?vehicleLoadId=..."
+            }
+          ]
+        },
+        {
+          "label": "Customer stop heatmap",
+          "nodes": [
+            {
+              "type": "CONTROLLER",
+              "name": "AddStopController",
+              "method": "showStopPage"
+            },
+            {
+              "type": "SERVICE",
+              "name": "ChallanHeatmapFetchService",
+              "method": "processRequest"
+            },
+            {
+              "type": "DAO",
+              "name": "TripChallanBookAssignmentViewJpaDao"
+            },
+            {
+              "type": "VIEW_ENTITY",
+              "name": "TripChallanBookAssignmentViewDo"
+            },
+            {
+              "type": "DATABASE_VIEW",
+              "name": "public.vw_trip_challan_book_assignments"
+            },
+            {
+              "type": "DAO",
+              "name": "ChallanPageAuditLedgerJpaDao"
+            },
+            {
+              "type": "ENTITY",
+              "name": "ChallanPageAuditLedgerDo"
+            },
+            {
+              "type": "POSTGRES_TABLE",
+              "name": "public.tbl_challan_page_audit_ledger"
+            },
+            {
+              "type": "DAO",
+              "name": "ChallanPagePhotoJpaDao"
+            },
+            {
+              "type": "ENTITY",
+              "name": "ChallanPagePhotoDo"
+            },
+            {
+              "type": "POSTGRES_TABLE",
+              "name": "public.tbl_challan_page_photo"
+            },
+            {
+              "type": "TERMINAL_VIEW",
+              "name": "with-menu/Customerstopselectionpage-withoutAutoChallanUpdate"
+            }
+          ]
+        }
+      ],
+      "finalDependencies": [
+        "public.tbl_vehicle_load",
+        "public.tbl_vehicle_trip",
+        "public.tbl_trip_status",
+        "public.vw_trip_challan_book_assignments",
+        "public.tbl_challan_page_audit_ledger",
+        "public.tbl_challan_page_photo",
+        "Customer/Supplier stop views",
+        "guard redirect"
+      ],
+      "evidence": [
+        "logs/runs/PRODUCTION-FIRE-20260824-181810.md"
+      ]
+    }
+  ]
+}
