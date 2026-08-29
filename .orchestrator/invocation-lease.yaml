@@ -1,8 +1,8 @@
 holder: Primary Cylinder Automation Tool
 run_id: CYLINDER-MANUAL-FLYWAY-JAVA-REMEDIATION-20260829-053558IST
 acquired_at: 2026-08-29T05:35:58+05:30
-released_at: null
-status: ACQUIRED
+released_at: 2026-08-29T05:50:33+05:30
+status: RELEASED
 scope:
   - BL-008
 policy:
@@ -16,6 +16,6 @@ policy:
   external_worker_runtime: forbidden
   database_provider_under_evaluation: Supabase
   flyway_execution_mode: JAVA_API
-result: RUNNING
+result: REMEDIATION_BLOCKED_NO_WRITE
 evidence: .orchestrator/last-run.yaml
-heartbeat_at: 2026-08-29T05:35:58+05:30
+heartbeat_at: 2026-08-29T05:50:33+05:30
