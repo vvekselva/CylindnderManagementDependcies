@@ -1,9 +1,10 @@
-updated_by_run: CYLINDER-MANUAL-FIRE-20260829-112500IST
-updated_at: 2026-08-29T11:29:30+05:30
+updated_by_run: CYLINDER-RECOVERY-20260829-145648IST
+updated_at: 2026-08-29T14:56:48+05:30
 policy:
   release_order: R1_FIRST
   auto_approval: false
   invent_missing_behavior: false
+  strict_field_ui_required_for_completion: true
 stories:
   STORY-0048:
     artifact: BL-002/stories/STORY-0048.md
@@ -89,4 +90,28 @@ stories:
       - exact pagination/sort semantics passed to fetchPage
       - exact model attribute names assembled for the dashboard view
       - exact empty/error/button-state/reset behavior
+interrupted_run_reconciliation:
+  source_run: CYLINDER-MANUAL-FIRE-20260829-112500IST
+  stale_lease_recovered_at: 2026-08-29T14:56:48+05:30
+  last_durable_progress_at: 2026-08-29T11:31:40+05:30
+  materialized_source_detail_gap_files:
+    - STORY-0054
+    - STORY-0055
+    - STORY-0056
+    - STORY-0057
+    - STORY-0058
+    - STORY-0059
+    - STORY-0060
+    - STORY-0061
+    - STORY-0062
+    - STORY-0063
+    - STORY-0067
+    - STORY-0068
+  skipped_r2_due_release_order:
+    - STORY-0064
+    - STORY-0065
+    - STORY-0066
+  strict_field_ui_completed_from_interrupted_run: 0
+  rule: Materialization with a recorded source-detail gap does not advance strict field/UI completion.
 next_eligible_story: STORY-0054
+next_eligible_work: STRICT_FIELD_UI_SOURCE_COMPLETION
