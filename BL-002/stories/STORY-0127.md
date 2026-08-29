@@ -4,7 +4,16 @@
 - Endpoint: `GET /lookup`
 - Controller: `LookupManagementController.legacyRedirect`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: SOURCE_ANALYZED_WAITING_EARLIEST_STRICT_CURSOR
+- Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
-The frozen controller maps `/lookup` to a parameterless legacy redirect. It logs the redirect and returns `redirect:/lookupManagement`; it does not read or persist domain data. The visible outcome is navigation to the managed Lookup screen. This source evidence is materialized for reuse, but strict completion is deliberately withheld because STORY-0126 remains the earliest incomplete R1 strict unit. Approval remains pending.
+## Strict contract
+The exact frozen handler is the parameterless `LookupManagementController.legacyRedirect`, mapped by `@GetMapping("/lookup")`. There are no request parameters, form fields, DTOs, service/DAO calls, local validation, browser debounce/minimum-length behavior, or persistence operations applicable to this endpoint. The handler logs the legacy navigation and returns `redirect:/lookupManagement`.
+
+The redirect target is proved in the same frozen controller: `GET /lookupManagement` accepts optional query parameter `tab` with default `addressType`, creates view `final-version-1/LookupManagement`, exposes `activeTab`, and reads cached address types, countries, states and cities through `LookupDataCache`. Those target-screen reads are context for the visible redirect outcome; `/lookup` itself does not mutate them.
+
+## Visible outcome and error/reset boundary
+A browser requesting the legacy `/lookup` route is redirected to the managed Lookup screen. There is no branch or error handler in `legacyRedirect`, no hidden field propagation, and no endpoint-specific reset/invalidation behavior. Because this story is a redirect-only GET, the applicable strict field/UI contract is fully proved without inventing non-applicable input or persistence behavior.
+
+## Approval boundary
+No approval occurred. Strict enrichment completion is not business approval.
