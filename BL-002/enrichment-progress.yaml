@@ -1,10 +1,15 @@
-updated_by_run: CYLINDER-RECOVERY-20260829-145648IST
-updated_at: 2026-08-29T14:56:48+05:30
+updated_by_run: CYLINDER-MANUAL-FIRE-20260829-162006IST
+updated_at: 2026-08-29T16:27:30+05:30
 policy:
   release_order: R1_FIRST
   auto_approval: false
   invent_missing_behavior: false
   strict_field_ui_required_for_completion: true
+metrics:
+  register_ready: 131
+  clarification: 3
+  approvals: 0
+  strict_field_ui_completed_in_current_run: 1
 stories:
   STORY-0048:
     artifact: BL-002/stories/STORY-0048.md
@@ -47,49 +52,18 @@ stories:
     enrichment_state: TRACE_CHAIN_ENRICHED
     approval_status: PENDING_USER_APPROVAL
     source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
-    proved_chain:
-      - TripReturnController.returnTripAndBooks
-      - TripReturnWorkflowService.returnTripAndBooks
-      - ChallanPageAuditLedgerJpaDao -> public.tbl_challan_page_audit_ledger
-      - TripChallanBookAssignmentJpaDao -> TripChallanBookAssignmentDo -> public.tbl_trip_challan_book_assignment
-      - ChallanBookRegistryJpaDao -> ChallanBookRegistryDo -> public.tbl_challan_book_registry
-      - VehicleTripJpaDao -> public.tbl_vehicle_trip
-      - public.tbl_trip_status
-    proved_terminals:
-      - redirect:/vehicle-loads/list
-      - final-version-1/TripReturnChallanBookReview
-    remaining_before_field_contract_complete:
-      - exact submitted field identities, datatypes and requiredness
-      - exact normalization/default and per-field validation behavior
-      - exact challan-page state values written
-      - exact assignment returned-at/value mutation
-      - exact trip-status transition value
-      - terminal-selection condition
   STORY-0054:
     artifact: BL-002/stories/STORY-0054.md
     release: R1
     endpoint: GET /customer-demands
-    enrichment_state: TRACE_CHAIN_ENRICHED_SOURCE_DETAIL_GAP_RECORDED
+    enrichment_state: STRICT_FIELD_UI_COMPLETE
     approval_status: PENDING_USER_APPROVAL
-    source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
-    proved_chain:
-      - CustomerDemandController.dashboard
-      - CustomerDemandService.fetchPage -> CustomerDemandDashboardViewJpaDao -> public.vw_customer_demand_dashboard
-      - CustomerDemandService.fetchMetrics -> CustomerDemandJpaDao -> public.tbl_customer_order_request
-      - CustomerDemandDailyProductMetricsViewJpaDao -> public.vw_customer_demand_daily_product_metrics
-      - CustomerJpaDao -> public.tbl_customer
-      - CustomerAddressJpaDao -> public.tbl_customer_address
-      - ProductJpaDao -> public.tbl_product
-    proved_terminals:
-      - final-version-1/CustomerDemandDashboard
-    remaining_before_field_contract_complete:
-      - exact dashboard request/filter/query parameter names, datatypes, defaults and requiredness
-      - exact visible control and HTML input names or IDs
-      - exact browser events and dependent lookup calls
-      - exact selected customer/address/product ID propagation
-      - exact pagination/sort semantics passed to fetchPage
-      - exact model attribute names assembled for the dashboard view
-      - exact empty/error/button-state/reset behavior
+    source_field_contract: STRICT_FIELD_UI_COMPLETE
+    strict_completed_by_run: CYLINDER-MANUAL-FIRE-20260829-162006IST
+    source_controller: CustomerDemandController.showDashboard
+    source_view: final-version-1/CustomerDemandDashboard
+    read_identity: public.vw_customer_demand_dashboard.customer_demand_id
+    write_effect: NONE_FOR_GET
 interrupted_run_reconciliation:
   source_run: CYLINDER-MANUAL-FIRE-20260829-112500IST
   stale_lease_recovered_at: 2026-08-29T14:56:48+05:30
@@ -113,5 +87,5 @@ interrupted_run_reconciliation:
     - STORY-0066
   strict_field_ui_completed_from_interrupted_run: 0
   rule: Materialization with a recorded source-detail gap does not advance strict field/UI completion.
-next_eligible_story: STORY-0054
+next_eligible_story: STORY-0055
 next_eligible_work: STRICT_FIELD_UI_SOURCE_COMPLETION
