@@ -1,0 +1,41 @@
+version: 2
+name: SELF_EXPIRING_SINGLETON_LEASE
+stale_after_minutes: 15
+heartbeat_policy:
+  required_for_active_owner: true
+  authoritative_field: heartbeat_at
+  expires_at_field: lease_expires_at
+  refresh_rule: lease_expires_at = heartbeat_at + stale_after_minutes
+ownership_rules:
+  - ACTIVE lease with current time before lease_expires_at is authoritative and blocks a second writer.
+  - ACTIVE lease with current time at or after lease_expires_at is logically EXPIRED even if status was never rewritten.
+  - An expired lease has no execution authority and must not cause indefinite NOOP behavior.
+  - The next invocation must reconcile durable evidence only, persist RECOVERED_STALE_INVOCATION, clear stale claims, and then acquire a new lease using the current blob SHA.
+  - If the recovery write fails because the blob SHA changed, refetch and re-evaluate liveness before retrying; never overwrite a fresh owner.
+  - If the recovery write fails for a transient connector error and the lease remains expired, retry within the same invocation before declaring a global blocker.
+  - Shared SSOT remains single-writer and BL-008 database-write parallelism remains 1.
+acquisition_rules:
+  optimistic_concurrency: true
+  require_current_blob_sha: true
+  read_back_after_write: true
+  new_lease_fields:
+    - run_id
+    - acquired_at
+    - heartbeat_at
+    - lease_expires_at
+    - status
+    - claims
+release_rules:
+  clear_claims: true
+  set_status: RELEASED
+  set_released_at: true
+  read_back_after_write: true
+interruption_rules:
+  completed_at_must_not_be_invented: true
+  preserve_only_durable_evidence: true
+  stale_classification: RECOVERED_STALE_INVOCATION
+  runtime_termination_does_not_extend_lease: true
+github_role:
+  purpose: durable_control_and_audit_persistence
+  github_actions: forbidden
+  external_worker_runtime: forbidden
