@@ -1,13 +1,12 @@
-holder: Primary Cylinder Automation Tool
+holder: null
 run_id: CYLINDER-PRODUCTION-FIRE-20260829-231249IST
 acquired_at: 2026-08-29T23:12:49+05:30
-released_at: null
-status: ACTIVE
+released_at: 2026-08-29T23:17:29+05:30
+status: RELEASED
 scope:
   - BL-002
   - BL-008
-claims:
-  - STORY-0126
+claims: []
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -18,9 +17,22 @@ policy:
   flyway_execution_mode: JAVA_API
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-29T23:12:49+05:30
+heartbeat_at: 2026-08-29T23:17:29+05:30
 lease_expires_at: null
-result: RUNNING
+result: RUNTIME_WINDOW_FORCED_STOP
 recovery:
   classification: CLEAN_START_FROM_RELEASED_LEASE
   durable_evidence_reconciled: true
+progress:
+  work_units_attempted: 23
+  work_units_completed_strict: 23
+  strict_field_ui_completion_delta: 23
+  materialization_delta: 16
+  approval_delta: 0
+  bl008_migration_write_delta: 0
+  next_eligible_strict_unit: STORY-0002
+  transient_lane_logs_remaining: 0
+notes:
+  - Runtime window ended before the 30-minute productive minimum; this is not normal completion.
+  - All register-ready R1 work through STORY-0134 was exhausted before R2 selection.
+  - BL-008 blocker unchanged; identical probes were not repeated and writes remained zero.
