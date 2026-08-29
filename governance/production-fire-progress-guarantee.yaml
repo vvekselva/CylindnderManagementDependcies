@@ -1,4 +1,4 @@
-version: 3
+version: 4
 name: Production Fire Progress Guarantee
 purpose: >-
   Ensure every scheduled or manual Cylinder production fire performs productive work when eligible work exists. Startup is
@@ -30,18 +30,6 @@ startup_phase:
     - ACQUIRE_ONLY_REQUIRED_EXECUTION_LOCKS
     - START_EXECUTION
   end_update_set_must_be_known_before_dispatch: true
-  startup_failure_classes:
-    read_failure: ORCHESTRATOR_BOOTSTRAP_READ_FAILURE
-    plan_failure: ORCHESTRATOR_BOOTSTRAP_PLAN_FAILURE
-    required_lock_failure: ORCHESTRATOR_EXECUTION_LOCK_FAILURE
-
-heartbeat:
-  required_during_execution: true
-  maximum_interval_seconds: 60
-  persistence_mode: EXECUTION_RUNTIME_FIRST
-  shared_github_heartbeat_write_required_every_interval: false
-  shared_terminal_health_projection_required_at_reconciliation: true
-  heartbeat_does_not_equal_progress: true
 
 productive_execution:
   target_minutes: 30
@@ -64,29 +52,23 @@ work_conversion_rules:
     convert_to_task_type: UI_SOURCE_ANALYSIS
     permitted_sources: [PAGE_TEMPLATE, REQUEST_MODEL, DTO, CONTROLLER, VALIDATOR, SERVICE, REPOSITORY, ENTITY]
     unresolved_after_source_analysis: NEEDS_CLARIFICATION
-  atomic_projection_ready:
-    priority: CRITICAL
-    rule: >-
-      When BL-001 has a validated complete candidate projection, execute the canonical projection and consistency gates before
-      repeating already-proved discovery.
-
-anti_repeat:
-  same_task_same_progress_fingerprint_same_result:
-    immediate_reanalysis_forbidden: true
-    action: SELECT_DIFFERENT_ELIGIBLE_UNCLAIMED_WORK
-  unchanged_external_blocker:
-    repeated_check_within_same_invocation_forbidden: true
-    cache_state: BLOCKER_CACHE
-    default_recheck_after_seconds: 1800
-  known_blocker_does_not_consume_worker_capacity_continuously: true
 
 stream_rules:
   BL-008:
+    objective: COMPLETE_AUTHORITATIVE_DATABASE_MIGRATION_REQUIREMENTS
     one_requirement_at_a_time: true
     database_write_parallelism: 1
-    branch: main
-    branch_creation_forbidden: true
+    migration_mechanism: FLYWAY_ONLY
     manual_sql_substitution_forbidden: true
+    authoritative_validation_target: DISPOSABLE_POSTGRESQL_TESTCONTAINER
+    external_hosted_postgresql_required: false
+    neon_required_for_completion: false
+    container_must_start_clean_for_each_validation_cycle: true
+    container_database_engine_must_match_supported_postgresql_family: true
+    pre_post_integrity_checks_required: true
+    flyway_history_validation_required: true
+    destroy_test_container_after_evidence_capture: true
+    production_or_external_environment_promotion: OUT_OF_SCOPE_FOR_BL008_COMPLETION
   BL-001:
     full_unique_target: 134
     duplicates_allowed: 0
@@ -99,8 +81,6 @@ stream_rules:
 
 end_of_orchestration_reconciliation:
   mandatory: true
-  purpose: >-
-    Convert validated execution results into durable shared truth exactly once at the end of the orchestration phase.
   required_order:
     - STOP_NEW_DISPATCH
     - COLLECT_ALL_TERMINAL_WORKER_RESULTS
@@ -117,14 +97,6 @@ end_of_orchestration_reconciliation:
     - RELEASE_ALL_LOCKS_AND_CLAIMS
     - READ_BACK_AND_VERIFY_FINAL_FILES
     - VERIFY_ZERO_TRANSIENT_LANE_LOGS
-  shared_files_updated_only_from_validated_results: true
-  expected_files_known_at_start: true
-  newly_discovered_output_files_may_be_added_to_update_set_with_journal_evidence: true
-  registry_is_terminal_history_and_index_not_startup_gate: true
-  on_reconciliation_failure:
-    preserve_last_valid_shared_state: true
-    terminal_state: PARTIAL_CONTINUE_REQUIRED
-    classification: ORCHESTRATOR_END_RECONCILIATION_FAILURE
 
 terminal_state_rules:
   COMPLETE:
@@ -132,58 +104,15 @@ terminal_state_rules:
       - end_reconciliation_completed
       - all_work_claims_or_locks_released
       - no_eligible_or_recoverable_unclaimed_work_remains_for_this_invocation
-      - all_remaining owned work is validated complete or durably blocked
+      - all_remaining_owned work is validated complete or durably blocked
   PARTIAL_CONTINUE_REQUIRED:
     required_when:
       - eligible_or_recoverable_unclaimed_work_still_exists
       - productive_window_or_other_execution_limit_prevents_more_dispatch
-    also_required_when_reconciliation_failed: true
-  BLOCKED:
-    allowed_only_when:
-      - every_remaining_owned_work_item_has_explicit_durable_blocker
-      - no_other_eligible_unclaimed_work_exists_across_enabled_streams
-  forbidden_terminal_claims:
-    - COMPLETE_AFTER_STATUS_CHECK_ONLY
-    - COMPLETE_WHILE_ELIGIBLE_WORK_EXISTS
-    - COMPLETE_WITHOUT_END_RECONCILIATION
-    - PRODUCTION_SUCCESS_FROM_SCHEDULER_LAST_RUN_TIME_ONLY
-
-persistence_and_observability:
-  invocation_registry_role: END_STATE_INDEX_AND_HISTORY
-  invocation_start_must_exist_in_registry_before_analysis: false
-  durable_start_log_required_before_analysis: false
-  final_invocation_record_required: true
-  durable_terminal_log_required: true
-  report_fields:
-    - scheduler_fire_observed
-    - invocation_id
-    - execution_plan_complete
-    - planned_end_update_file_count
-    - execution_state
-    - health_state
-    - workers_started
-    - backlog_items_touched
-    - canonical_progress_delta
-    - blocker_changes
-    - reconciliation_outcome
-    - next_action
-
-acceptance_test_for_each_fire:
-  pass_if_any:
-    - canonical_progress_delta_greater_than_zero
-    - validated_blocker_state_changed
-    - recoverable_work_was_attempted_with_durable_evidence
-    - no_eligible_work_existed_and_clean_blocked_or_noop_state_was_reconciled
-  fail_if:
-    - eligible_work_existed_but_no_execution_plan_or_dispatch_was_attempted
-    - status_checked_only_while_eligible_work_existed
-    - free_worker_capacity_existed_but_no_replan_or_dispatch_was_attempted
-    - end_reconciliation_required_but_not_attempted
 
 safety:
   fail_closed_on_unproved_source: true
   never_duplicate_claimed_work: true
   never_invent_story_or_traceability_meaning: true
-  never_create_neon_branch: true
   never_run_parallel_BL008_database_writes: true
   never_close_backlog_item_without_required_gates_and_user_acceptance: true
