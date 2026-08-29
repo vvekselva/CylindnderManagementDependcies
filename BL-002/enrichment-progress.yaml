@@ -1,5 +1,5 @@
-updated_by_run: CYLINDER-PRODUCTION-FIRE-20260829-111533IST
-updated_at: 2026-08-29T11:18:20+05:30
+updated_by_run: CYLINDER-MANUAL-FIRE-20260829-112500IST
+updated_at: 2026-08-29T11:29:30+05:30
 policy:
   release_order: R1_FIRST
   auto_approval: false
@@ -64,4 +64,29 @@ stories:
       - exact assignment returned-at/value mutation
       - exact trip-status transition value
       - terminal-selection condition
+  STORY-0054:
+    artifact: BL-002/stories/STORY-0054.md
+    release: R1
+    endpoint: GET /customer-demands
+    enrichment_state: TRACE_CHAIN_ENRICHED_SOURCE_DETAIL_GAP_RECORDED
+    approval_status: PENDING_USER_APPROVAL
+    source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
+    proved_chain:
+      - CustomerDemandController.dashboard
+      - CustomerDemandService.fetchPage -> CustomerDemandDashboardViewJpaDao -> public.vw_customer_demand_dashboard
+      - CustomerDemandService.fetchMetrics -> CustomerDemandJpaDao -> public.tbl_customer_order_request
+      - CustomerDemandDailyProductMetricsViewJpaDao -> public.vw_customer_demand_daily_product_metrics
+      - CustomerJpaDao -> public.tbl_customer
+      - CustomerAddressJpaDao -> public.tbl_customer_address
+      - ProductJpaDao -> public.tbl_product
+    proved_terminals:
+      - final-version-1/CustomerDemandDashboard
+    remaining_before_field_contract_complete:
+      - exact dashboard request/filter/query parameter names, datatypes, defaults and requiredness
+      - exact visible control and HTML input names or IDs
+      - exact browser events and dependent lookup calls
+      - exact selected customer/address/product ID propagation
+      - exact pagination/sort semantics passed to fetchPage
+      - exact model attribute names assembled for the dashboard view
+      - exact empty/error/button-state/reset behavior
 next_eligible_story: STORY-0054
