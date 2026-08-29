@@ -1,9 +1,8 @@
-version: 20
+version: 21
 purpose: >-
   Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
-  workstreams when independently eligible. Startup is read/plan/classify work. The Primary Automation Tool determines the
-  complete expected end-update set before dispatch, performs productive execution, validates results, and updates shared
-  GitHub SSOT/runtime/status files during END_OF_ORCHESTRATION_RECONCILIATION.
+  workstreams when independently eligible. BL-008 completion is requirement-driven and uses disposable PostgreSQL
+  Testcontainers for authoritative Flyway validation; an external hosted PostgreSQL service is not required.
 
 authority:
   control_repository: vvekselva/CylindnderManagementDependcies
@@ -18,29 +17,14 @@ selection:
   mode: ENABLED_ELIGIBLE_BACKLOG_ITEMS_WITH_SAFE_PARALLELISM
   max_active_backlog_items: 3
   coordinated_streams: [BL-001, BL-002, BL-008]
-  choose_from_enabled_items_by: HIGHEST_PRIORITY_ELIGIBLE_ITEMS
   require_three_level_ssot_gate: true
   require_statement_of_work_gate: true
   require_common_dependency_gate: true
   require_item_specific_quality_gate: true
   require_item_quality_gate_approved_by_user: true
-  eligibility_order: [run_enabled, QG-SSOT-001, QG-SOW-001, QG-DEP-001, item_specific_quality_gate, work_unit_dependencies]
-  rules:
-    BL-001_BL-002:
-      allowed: true
-      BL-002_incremental_input: ACCEPTED_MATERIALIZED_NON_STALE_CANONICAL_BL001_ROWS_ONLY
-      forbidden_BL-002_input: [RAW_WORKER_EVIDENCE, UNACCEPTED_CANDIDATES, STALE_FINGERPRINTS]
-    BL-008:
-      allowed_in_parallel_with: [BL-001, BL-002]
-      database_mutation_serialized: true
-      database_requirement_parallelism: 1
-      neon_environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
-      neon_branch: main
-      neon_branch_creation_forbidden: true
 
 execution_engine:
   owner: AUTOMATION_TOOL
-  architecture: architecture/self-reliant-e2e-execution.md
   lifecycle: PLAN_CLAIM_EXECUTE_VALIDATE_RECONCILE_COMMIT_TERMINALIZE
   primary_backend: HOSTED_RUNNER_BRIDGE
   worker_backend: LOCAL_PROCESS_POOL
@@ -49,15 +33,8 @@ execution_engine:
   starvation_forbidden: true
   shared_ssot_single_writer: true
   workers_write_shared_canonical_files_directly: false
-  github_role: AUTHORITATIVE_READ_SOURCE_AND_END_RECONCILIATION_DURABLE_PERSISTENCE
   hosted_runner_workflow: .github/workflows/cylinder-orchestrator.yml
   hosted_runner_entrypoint: automation/github-runner-orchestrator.py
-  source_provider_governance: governance/source-provider.yaml
-  execution_source_mode: governance/execution-source-mode.yaml
-  source_layout: repository/source-layout.yaml
-  staged_executor: automation/staged-lane-executor-v3.py
-  staged_worker: automation/staged-lane-worker-v3.py
-  executor_completion_signal: EXECUTOR_COMPLETED_REPLAN_REQUIRED
 
 startup_contract:
   shared_repository_mutation_required_before_analysis: false
@@ -73,92 +50,28 @@ startup_contract:
     - select eligible work
     - acquire only operation-specific execution locks
     - start dispatch
-  end_update_set_required_before_dispatch: true
-  end_update_set_fields:
-    - backlog_item
-    - work_unit
-    - candidate_output_files
-    - canonical_shared_files
-    - runtime_shared_files
-    - status_and_statistics_files
-    - durable_log_files
-    - locks_to_release
-    - readback_validations
 
 invocation_concurrency_contract:
   singleton_invocation_required: true
   overlapping_invocations_allowed: false
   max_concurrent_invocations: 1
-  each_invocation_has_unique_id: true
-  each_invocation_has_independent_workspace: true
-  each_invocation_has_independent_source_snapshot: true
   general_work_claim_mode: IN_MEMORY_WITHIN_SINGLETON_INVOCATION
-  shared_registry_claim_required_before_dispatch: false
-  duplicate_work_claim_action: SELECT_DIFFERENT_ELIGIBLE_WORK
-  running_invocation_must_not_be_cancelled_by_new_trigger: true
-  new_trigger_when_capacity_available: START_INVOCATION
-  new_trigger_when_concurrency_limit_reached: NOOP_CONCURRENCY_LIMIT_WITH_EVIDENCE
   shared_ssot_write_lock_capacity: 1
   shared_ssot_lock_acquire_phase: END_OF_ORCHESTRATION_RECONCILIATION
   bl008_database_write_lock_capacity: 1
   bl008_database_lock_acquire_phase: IMMEDIATELY_BEFORE_DATABASE_MUTATION
-  overlap_reenable_requires_proven_atomic_durable_claims: true
-
-invocation_health_contract:
-  shared_registry_start_before_analysis: false
-  heartbeat_interval_seconds: 60
-  heartbeat_mode: EXECUTION_RUNTIME_FIRST
-  github_heartbeat_write_each_interval_required: false
-  stale_after_seconds_without_heartbeat: 300
-  stuck_after_seconds_without_meaningful_progress_with_fresh_heartbeat: 600
-  running_flag_alone_proves_liveness: false
-  health_states: [ACTIVE, IDLE_BUT_HEALTHY, BLOCKED, STALE, STUCK, RECOVERING]
-  stale_or_stuck_recovery: FAIL_CLOSED_BEFORE_DUPLICATE_WORK
-  durable_health_projection_phase: END_OF_ORCHESTRATION_RECONCILIATION
 
 production_fire_progress_contract:
   terminal_checkpoint_forbidden_when_eligible_work_and_free_capacity: true
   mandatory_action_when_free_capacity_and_eligible_work: REPLAN_CLAIM_DISPATCH
   blocked_stream_does_not_block_independent_streams: true
-  unchanged_external_blocker_recheck_policy: CACHE_WITHIN_INVOCATION_AND_CONTINUE_OTHER_ELIGIBLE_WORK
   complete_allowed_only_when_no_eligible_or_recoverable_unclaimed_work: true
   work_remaining_at_stop_state: PARTIAL_CONTINUE_REQUIRED
-  status_check_alone_is_production_completion: false
   target_productive_window_minutes: 30
-  running_long_tasks_may_exceed_target: true
-
-end_of_orchestration_reconciliation_contract:
-  mandatory: true
-  shared_updates_only_after_result_validation: true
-  final_update_set_derived_from_start_plan_plus_validated_discoveries: true
-  order:
-    - STOP_NEW_DISPATCH
-    - COLLECT_TERMINAL_RESULTS
-    - VALIDATE_RESULTS_AND_GATES
-    - REJECT_INVALID_OR_PARTIAL_OUTPUT
-    - FINALIZE_CANONICAL_UPDATE_SET
-    - ACQUIRE_SHARED_SSOT_SINGLE_WRITER_LOCK
-    - UPDATE_CANONICAL_ARTIFACTS
-    - UPDATE_LEVEL_3_RUNTIME
-    - UPDATE_BACKLOG_DERIVED_STATUS
-    - UPDATE_INVOCATION_REGISTRY_FINAL_RECORD
-    - UPDATE_EXECUTION_STATISTICS
-    - WRITE_DURABLE_RUN_LOG
-    - RELEASE_ALL_LOCKS
-    - READ_BACK_VERIFY_ALL_UPDATED_FILES
-    - VERIFY_ZERO_TRANSIENT_LANE_LOGS
-    - TERMINALIZE
-  invocation_registry_role: TERMINAL_HISTORY_AND_INDEX
-  invocation_registry_is_startup_gate: false
-  partial_shared_merge_forbidden: true
-  reconciliation_failure_state: PARTIAL_CONTINUE_REQUIRED
-  reconciliation_failure_classification: ORCHESTRATOR_END_RECONCILIATION_FAILURE
-  preserve_last_valid_shared_state_on_failure: true
 
 repository_snapshot_contract:
   fetch_repository_tree_once_at_invocation_start: true
   repository_tree_reuse_scope: SINGLE_INVOCATION
-  independent_snapshot_per_overlapping_invocation: false
   runtime_reads_after_start: LOCAL_OR_STAGED_SNAPSHOT_ONLY
   workers_may_fetch_repository_tree: false
   executor_may_fetch_repository_tree: false
@@ -166,51 +79,20 @@ repository_snapshot_contract:
 production_source_contract:
   gate: QG-SOURCE-001
   fail_closed: true
-  staged_snapshot:
-    owner: PRIMARY_ORCHESTRATOR
-    repository: vvekselva/CylinderManagement
-    baseline: MUST_MATCH_SELECTED_BACKLOG_BASELINE
-    manifest_required: true
-    every_materialized_file_requires_git_blob_sha: true
-    every_worker_verifies_file_before_read: true
-    workers_access_github_directly: false
-  hosted_runner_private_source:
-    required_secret_name: CYLINDER_SOURCE_TOKEN
-    access: READ_ONLY_SOURCE_CHECKOUT
-    frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
-    source_must_not_be_copied_into_public_control_repository: true
-  common_preflight:
-    - read authoritative governance and SSOT
-    - classify prior invocation health
-    - build execution plan and end update set
-    - selected backlog items and work units are eligible
-    - capture one immutable repository snapshot for the invocation
-    - required source and SSOT inputs are available
-    - transient lane logs start at zero or recovery cleans them first
+  frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
 
 bl001_traceability_contract:
   workflow: workflows/WF-002-incremental-traceability-matrix.yaml
   frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
-  matrix_artifact: traceability/controller-traceability.md
-  unresolved_artifact: traceability/unresolved-traceability.md
-  progress_artifact: traceability/matrix-progress.yaml
-  structured_matrix: traceability/explorer/traceability-matrix.json
-  browser_data: traceability/explorer/matrix-data.js
-  viewer: traceability/explorer/index.html
   row_key: HTTP_METHOD_PLUS_PATH
   final_unique_row_requirement: 134
   duplicates_allowed: 0
-  full_chain_required: CONTROLLER_SERVICE_MEDIATOR_ADDITIONAL_SERVICES_DAO_REPOSITORY_ENTITY_VIEW_FINAL_DEPENDENCY
-  branching_paths_preserved_separately: true
-  worker_direct_matrix_write_allowed: false
-  canonical_projection_executor: automation/bl001-canonical-projection-engine.py
   projection_outputs_reconciled_together_at_end: true
 
 bl002_story_usecase_contract:
   workflow: workflows/WF-003-controller-story-usecase.yaml
   dependency: BL-001
   dependency_rule: INCREMENTAL_ACCEPTED_CANONICAL_ROWS
-  release_classification: traceability/release-classification.yaml
   release_1_items: 88
   release_2_items: 46
   execution_order: RELEASE_1_BEFORE_RELEASE_2
@@ -219,10 +101,6 @@ bl002_story_usecase_contract:
   usecase_user_approval_required: true
   auto_approval_forbidden: true
   field_level_story_required: true
-  semantic_analysis_owner: PRIMARY_AUTOMATION_TOOL
-  display_mapping_chain: PAGE_FIELD_OR_COMPONENT_TO_MODEL_DTO_TO_CONTROLLER_TO_SERVICE_TO_DAO_REPOSITORY_TO_ENTITY_VIEW_FIELD_TO_DB_TABLE_VIEW_COLUMN
-  static_ui_disposition: STATIC_UI_NO_DATABASE_MAPPING
-  input_field_attributes: [datatype, required_or_optional, normalization_or_default, validation, accepted_values_or_rules, invalid_behavior, persistence_destination, state_or_side_effect]
   no_invention_rule: UNPROVED_MEANING_IS_NEEDS_CLARIFICATION
 
 bl008_database_migration_contract:
@@ -232,62 +110,34 @@ bl008_database_migration_contract:
   source_repository: vvekselva/CylinderManagement
   frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   flyway_path: cylinder.datascripts/src/main/resources/db/migration/
-  target_project: neon-for-cylinder-db
-  target_project_id: small-bread-22546365
-  neon_branch: main
-  main_branch_id: br-delicate-mountain-ayzs1f3l
-  database: neondb
-  database_user: neondb_owner
-  database_identity_verified: true
-  target_state: READY_TARGET_VERIFIED
-  environment_role: SEPARATE_TEST_ENVIRONMENT_NOT_DIRECT_PRODUCTION
+  objective: COMPLETE_AUTHORITATIVE_MIGRATION_REQUIREMENTS
+  environment_role: DISPOSABLE_LOCAL_OR_HOSTED_RUNNER_TEST_ENVIRONMENT
+  authoritative_validation_target: POSTGRESQL_TESTCONTAINER
+  external_postgresql_service_required: false
+  neon_required: false
   migration_mechanism: FLYWAY_ONLY
   manual_sql_substitution: FORBIDDEN
-  neon_branch_creation: FORBIDDEN
   database_requirement_parallelism: 1
   selected_requirement_rule: EXACTLY_ONE_ACTIVE_REQUIREMENT_IN_AUTHORITATIVE_ORDER
   database_mutation_owner: HOSTED_RUNNER_SERIAL_STAGE
+  clean_database_per_validation_cycle: true
   require_pre_post_integrity_checks: true
+  require_flyway_schema_history_validation: true
   require_ledger_sync_before_next_requirement: true
+  capture_container_image_and_postgresql_version: true
+  destroy_container_after_evidence_capture: true
+  promotion_to_neon_or_production: OUT_OF_SCOPE_SEPARATE_ACTIVITY
   failure_rule: FAIL_CLOSED_ON_CURRENT_REQUIREMENT_DO_NOT_ADVANCE
-
-execution_recovery_contract:
-  execution_journal_required: true
-  journal_persistence_during_execution: LOCAL_RUNTIME_OR_WORKSPACE
-  executor_completion_always_returns_control_to_orchestrator: true
-  immediate_refill_after_each_executor_completion: true
-  do_not_wait_for_peer_executors: true
-  stale_claim_recovery_requires_missing_or_stale_owner_heartbeat: true
-  same_fingerprint_pending_sync: RETRY_END_RECONCILIATION_ONLY_NO_WORKER_RESTART
-  interrupted_running_without_live_workers: RECOVER_REJECT_PARTIAL_AND_CLEAN_BOUNDARY
-  already_closed_synced: NOOP_THEN_REPLAN_INVOCATION
-  github_sync_failure: PRESERVE_VALIDATED_RESULT_LOCALLY_AND_RETURN_PARTIAL_CONTINUE_REQUIRED
-  database_mutation_failure: FAIL_CLOSED_ON_CURRENT_REQUIREMENT_NO_MANUAL_PATCH_NO_ADVANCE
 
 backlog_items:
   BL-001:
     name: Controller Traceability
     run_enabled: true
-    item_definition: backlog/items/BL-001-controller-traceability.yaml
-    statement_of_work: backlog/sow/BL-001-controller-traceability.yaml
-    runtime: backlog/runtime/BL-001/
-    completion_path: backlog/paths/BL-001-traceability.yaml
-    quality_gate: backlog/gates/BL-001-traceability.yaml
     quality_gate_approved: true
   BL-002:
     name: Controller Dependency Matrix to Human-Readable Stories
     run_enabled: true
-    item_definition: backlog/items/BL-002-controller-story-usecase.yaml
-    statement_of_work: backlog/sow/BL-002-controller-story-usecase.yaml
-    runtime: backlog/runtime/BL-002/
-    completion_path: backlog/paths/BL-002-controller-story-usecase.yaml
-    quality_gate: backlog/gates/BL-002-controller-story-usecase.yaml
     quality_gate_approved: true
-  BL-003: {name: Unit Test Completion, run_enabled: false}
-  BL-004: {name: Integration Test Completion, run_enabled: false}
-  BL-005: {name: Code Coverage Report, run_enabled: false}
-  BL-006: {name: ArchUnit Architecture Test, run_enabled: false}
-  BL-007: {name: Requirements Traceability and Gap Analysis, run_enabled: false}
   BL-008:
     name: Migration of the Database to the Ownership Model
     run_enabled: true
@@ -297,32 +147,16 @@ backlog_items:
     completion_path: backlog/paths/BL-008-database-ownership-migration.yaml
     quality_gate: backlog/gates/BL-008-database-ownership-migration.yaml
     quality_gate_approved: true
-  BL-009: {name: Supplier Owned Customer Owned and Company Owned Cylinder Model, run_enabled: false}
-  BL-010: {name: Physical Challan Book Location, run_enabled: false}
-  BL-011: {name: Ownership Dashboard Changes, run_enabled: false}
-  BL-012: {name: CRUD Services for All Tables, run_enabled: false}
-  BL-013: {name: On Spot Cylinder Checks, run_enabled: false}
-  BL-014: {name: Correction Management, run_enabled: false}
-  BL-015: {name: Invoice Generation and Check in Tally, run_enabled: false}
-  BL-016: {name: Attendance Management, run_enabled: false}
-  BL-017: {name: Trip Planning for the Customers, run_enabled: false}
-  BL-018: {name: CEO Dashboard, run_enabled: false}
-  BL-019: {name: Restoring the Logical Backup, run_enabled: false}
-  BL-020: {name: Task Management, run_enabled: false}
-  BL-021: {name: Customer Data Dashboard, run_enabled: false}
 
 scheduled_run_rules:
   - read authoritative control branch and current run-config before work
-  - scheduler is a trigger; it is not production completion evidence
-  - startup must be read/plan/classify and must build the expected end-update set
-  - do not rewrite invocation-registry.yaml merely to prove startup
-  - execute BL-001, BL-002 and BL-008 independently when eligible; one blocked stream must not stop another
+  - execute BL-001, BL-002 and BL-008 independently when eligible
   - share up to 10 safe-independent workers inside the singleton Primary Orchestrator invocation
   - BL-001 must reconcile exactly 134 unique HTTP method/path keys with zero duplicates
-  - BL-002 executes Release 1 field-level Story work before Release 2 and never auto-approves
-  - BL-008 uses Neon main only, creates no Neon branches, uses Flyway only, and completes exactly one database requirement before selecting the next
+  - BL-002 executes Release 1 before Release 2 and never auto-approves
+  - BL-008 uses a clean PostgreSQL Testcontainer, Flyway only, one authoritative requirement at a time, and database write parallelism of 1
+  - BL-008 does not require Neon or another external hosted PostgreSQL service for completion
+  - capture and validate migration evidence before advancing to the next BL-008 requirement
   - update shared canonical/runtime/status files only from validated results during END_OF_ORCHESTRATION_RECONCILIATION
-  - update the invocation registry with the final invocation record at end reconciliation
   - leave zero transient lane logs
   - COMPLETE is allowed only when no eligible or recoverable unclaimed work remains; otherwise use PARTIAL_CONTINUE_REQUIRED
-  - never mark any Backlog Item CLOSED without explicit user acceptance where configured
