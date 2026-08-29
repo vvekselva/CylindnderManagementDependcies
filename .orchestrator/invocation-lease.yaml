@@ -1,8 +1,8 @@
 holder: Primary Cylinder Automation Tool
 run_id: CYLINDER-MANUAL-RUNTIME-EGRESS-MITIGATION-20260829-070653IST
 acquired_at: 2026-08-29T07:06:53+05:30
-released_at: null
-status: ACQUIRED
+released_at: 2026-08-29T07:12:34+05:30
+status: RELEASED
 scope:
   - BL-008
 policy:
@@ -14,6 +14,6 @@ policy:
   flyway_execution_mode: JAVA_API
   manual_user_execution: forbidden
   external_worker_runtime: forbidden
-result: RUNNING
-evidence: .orchestrator/last-run.yaml
-heartbeat_at: 2026-08-29T07:06:53+05:30
+result: RUNTIME_EGRESS_CONFIRMED_BLOCKED_NO_WRITE
+evidence: BL-008/evidence/20260829-070653-runtime-egress-mitigation.md
+heartbeat_at: 2026-08-29T07:12:34+05:30
