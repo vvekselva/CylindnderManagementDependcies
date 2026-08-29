@@ -1,12 +1,13 @@
 holder: Primary Cylinder Automation Tool
-run_id: CYLINDER-MANUAL-FIRE-20260829-150432IST
-acquired_at: 2026-08-29T15:04:32+05:30
-released_at: 2026-08-29T16:17:15+05:30
-status: RELEASED
+run_id: CYLINDER-MANUAL-FIRE-20260829-162006IST
+acquired_at: 2026-08-29T16:20:06+05:30
+released_at: null
+status: ACTIVE
 scope:
   - BL-002
   - BL-008
-claims: []
+claims:
+  - BL-002|STORY-0054|STRICT-FIELD-UI-SOURCE-COMPLETION
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -19,12 +20,6 @@ policy:
   minimum_productive_minutes: 30
   stale_after_minutes: 15
   lease_expiry_authoritative: true
-heartbeat_at: 2026-08-29T15:04:32+05:30
-lease_expires_at: 2026-08-29T15:19:32+05:30
-result: RECOVERED_STALE_INVOCATION
-recovery:
-  detected_at: 2026-08-29T16:17:15+05:30
-  reason: STALE_HEARTBEAT_WITHOUT_NEWER_DURABLE_LIVENESS
-  original_completion_time_proved: false
-  resolution: RELEASE_STALE_LEASE_CLEAR_CLAIMS_AND_ENABLE_EXPIRING_LEASE_POLICY
-  recovery_mode: SELF_EXPIRING_LEASE_V2
+heartbeat_at: 2026-08-29T16:20:06+05:30
+lease_expires_at: 2026-08-29T16:35:06+05:30
+result: IN_PROGRESS
