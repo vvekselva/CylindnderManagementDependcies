@@ -1,39 +1,32 @@
-version: 11
+version: 12
 backlog_id: BL-002
-updated_at: 2026-08-29T21:06:04+05:30
+updated_at: 2026-08-29T21:44:00+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-210423IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-211538IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 42
-  strict_field_ui_complete: 48
+  materialized_story_files: 55
+  strict_field_ui_complete: 61
   use_case_grouped: 0
   testing_ready: 0
 reconciliation:
   baseline_strict_count: 48
-  current_run_strict_delta: {count: 0, stories: []}
-  current_run_materialization_delta: {count: 0, stories: []}
+  current_run_strict_delta: {count: 13, stories: [STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109]}
+  current_run_materialization_delta: {count: 13, stories: [STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109]}
   source_detail_review_required: []
   r2_skipped_for_priority: [STORY-0064, STORY-0065, STORY-0066, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
 cursor:
-  last_strict_r1_story: STORY-0096
-  next_eligible_strict_r1_story: STORY-0097
+  last_strict_r1_story: STORY-0109
+  next_eligible_strict_r1_story: STORY-0110
   trace_proxy_cursor: STORY-0063
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
-  validation_runtime: TESTCONTAINERS_POSTGRESQL
-  blocker: BL008_TESTCONTAINERS_CONTAINER_RUNTIME_UNAVAILABLE_IN_CHATGPT_EXECUTION_HOST
-  persistent_target_secondary_blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
+  blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
   parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
   subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
-  testcontainer_started: false
-  flyway_info_against_testcontainer: NOT_RUN
-  flyway_validate_against_testcontainer: NOT_RUN
-  flyway_migrate_against_testcontainer: NOT_RUN
-  migrations_applied_testcontainer: 0
   migrations_applied_persistent_target: 0
   migration_write_delta: 0
   repeated_network_probe_performed: false
