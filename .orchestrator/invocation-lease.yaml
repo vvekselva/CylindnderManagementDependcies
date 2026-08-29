@@ -1,8 +1,8 @@
 holder: Primary Cylinder Automation Tool
 run_id: CYLINDER-MANUAL-FLYWAY-SESSION-POOLER-TEST-20260829-065851IST
 acquired_at: 2026-08-29T06:58:51+05:30
-released_at: null
-status: ACQUIRED
+released_at: 2026-08-29T07:00:30+05:30
+status: RELEASED
 scope:
   - BL-008
 policy:
@@ -11,12 +11,7 @@ policy:
   github_runner: forbidden
   shared_ssot_single_writer: true
   bl008_database_write_parallelism: 1
-  full_automation_required: true
-  manual_user_execution: forbidden
-  external_worker_runtime: forbidden
-  database_provider_under_evaluation: Supabase
   flyway_execution_mode: JAVA_API
-  credentials_runtime_only: true
-result: RUNNING
-evidence: .orchestrator/last-run.yaml
-heartbeat_at: 2026-08-29T06:58:51+05:30
+result: TEST_BLOCKED_JDBC_ROUTE_NO_WRITE
+evidence: BL-008/evidence/20260829-065851-session-pooler-jdbc-test.md
+heartbeat_at: 2026-08-29T07:00:30+05:30
