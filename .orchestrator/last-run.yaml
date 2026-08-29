@@ -1,9 +1,9 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260829-071419IST
 started_at: 2026-08-29T07:14:19+05:30
-completed_at: null
-heartbeat_at: 2026-08-29T07:14:19+05:30
+completed_at: 2026-08-29T07:16:30+05:30
+heartbeat_at: 2026-08-29T07:16:30+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: IN_PROGRESS
+result: PARTIAL_CONTINUE_REQUIRED
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -18,13 +18,47 @@ policy:
 lease:
   overlap_detected: false
   acquired_at: 2026-08-29T07:14:19+05:30
-  released_at: null
-  status: ACTIVE
+  released_at: 2026-08-29T07:16:30+05:30
+  status: RELEASED
 bl001:
   status: COMPLETE_134_OF_134_READ_ONLY
 bl002:
-  status: CLAIMED_STORY_0049_UNIQUE_KEY_RECONCILIATION
+  status: PROGRESSED
+  story_0049:
+    prior_blocker: STORY-0049_UNIQUE_KEY_MISMATCH
+    blocker_state: RESOLVED_BY_EXACT_METHOD_PATH_MATCH
+    endpoint: POST /add-stop/challan-page-photo/upload
+    artifact: BL-002/stories/STORY-0049.md
+    enrichment_state: TRACE_CHAIN_ENRICHED_UNIQUE_KEY_RECONCILED
+    approval_status: PENDING_USER_APPROVAL
+    auto_approved: false
+  story_register_changed: false
+  story_register_reason: existing STORY-0049 row already matched canonical method+path and remained READY_FOR_USER_REVIEW/PENDING_USER_APPROVAL
 bl008:
-  status: CLAIMED_READONLY_RUNTIME_CAPABILITY_CHECK
+  status: BLOCKED_NO_WRITE
+  provider:
+    name: Supabase
+    project_ref: xipkywwvzvrwcqnkifuv
+    database_name: postgres
+    postgres_version: '17.6'
+  target_read_only_proof:
+    flyway_schema_history_exists: false
+    public_table_count: 0
+  java_execution_image:
+    java_version: 21.0.11
+    javac_version: 21.0.11
+    verified_dependency_bundle_mounted_this_image: false
+    prior_dependency_gate_pass_preserved: true
+    proxy_environment_materially_changed: false
+  blocker:
+    code: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
+    parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
+    subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
+  identical_network_probes_repeated: false
+  flyway_java_info: NOT_RUN
+  flyway_java_validate: NOT_RUN
+  flyway_java_migrate: NOT_RUN
+  database_writes: 0
+  evidence: BL-008/evidence/20260829-071419-chatgpt-native-opportunity-check.md
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
