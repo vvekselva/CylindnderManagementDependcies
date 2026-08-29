@@ -1,9 +1,9 @@
-run_id: CYLINDER-MANUAL-FLYWAY-JAVA-TEST-20260829-052725IST
-started_at: 2026-08-29T05:27:25+05:30
-completed_at: 2026-08-29T05:31:22+05:30
-heartbeat_at: 2026-08-29T05:31:22+05:30
+run_id: CYLINDER-MANUAL-FLYWAY-JAVA-REMEDIATION-20260829-053558IST
+started_at: 2026-08-29T05:35:58+05:30
+completed_at: 2026-08-29T05:50:33+05:30
+heartbeat_at: 2026-08-29T05:50:33+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: TEST_BLOCKED_NO_WRITE
+result: REMEDIATION_BLOCKED_NO_WRITE
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -18,20 +18,17 @@ policy:
   flyway_execution_mode: JAVA_API
 lease:
   overlap_detected: false
-  acquired_at: 2026-08-29T05:27:25+05:30
-  released_at: 2026-08-29T05:31:22+05:30
-  release_commit: 6b05e3219571c959f384e58ed576b537d8d72c25
-  status: RELEASED
+  acquired_at: 2026-08-29T05:35:58+05:30
+  status: RELEASE_PENDING
 bl001:
   status: COMPLETE_134_OF_134
 bl002:
   status: NOT_IN_SCOPE_THIS_RUN
 bl008:
-  status: JAVA_API_TEST_BLOCKED_PREWRITE
+  status: JAVA_API_REMEDIATION_BLOCKED_PREWRITE
   provider:
     name: Supabase
     project_ref: xipkywwvzvrwcqnkifuv
-    region: ap-southeast-2
     database_name: postgres
     postgres_version: '17.6'
   target_read_only_proof:
@@ -46,17 +43,23 @@ bl008:
     flyway_selected_next_migration: false
   java_flyway:
     runner_path: BL-008/java/FlywayJavaRunner.java
-    java_version: 21.0.11
-    javac_version: 21.0.11
-    flyway_class_present: false
-    postgresql_driver_class_present: false
-    runner_compile_exit: 1
-    compile_failure: MISSING_FLYWAY_DEPENDENCY_PACKAGES
+    java_21_available: true
+    javac_available: true
+    local_jars_scanned: 740
+    flyway_class_jar_hits: 0
+    postgresql_driver_jar_hits: 0
     required_artifacts_local: false
     artifact_download_route_available: false
-    direct_db_host_dns: false
-    session_pooler_dns: false
-    transaction_pooler_dns: false
+    ip_pinned_outbound_https_available: false
+    direct_jdbc_network_to_supabase: false
+  library_recovery:
+    accessible_archives_inspected: 3
+    flyway_jars_recovered: 0
+    postgresql_jdbc_jars_recovered: 0
+    m2_repository_recovered: false
+    embedded_maven_runtime_recovered: false
+    original_backup_materialization: BLOCKED_HTTP_403
+    historical_dependency_graph_recovered: true
   blocker:
     code: BL008_CHATGPT_JAVA_FLYWAY_RUNTIME_UNAVAILABLE
     subreason: JAVA_API_DEPENDENCY_AND_JDBC_ROUTE_UNAVAILABLE
@@ -67,6 +70,6 @@ bl008:
   provider_native_migration_replay: NOT_RUN
   manual_sql_migration: NOT_RUN
   database_writes: 0
-  evidence_commit: 77a16e0952a6f39bdc0eca7fcb43af28e4e3a7d0
+  evidence_commit: 709fc447350c65363d8296eee5daeb490fafd634
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
