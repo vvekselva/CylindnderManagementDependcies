@@ -1,9 +1,9 @@
 run_id: CYLINDER-MANUAL-FLYWAY-JDBC-TEST-20260829-064455IST
 started_at: 2026-08-29T06:44:55+05:30
-completed_at: null
-heartbeat_at: 2026-08-29T06:44:55+05:30
+completed_at: 2026-08-29T06:47:52+05:30
+heartbeat_at: 2026-08-29T06:47:52+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: RUNNING
+result: TEST_BLOCKED_JDBC_ROUTE_NO_WRITE
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -19,22 +19,61 @@ policy:
 lease:
   overlap_detected: false
   acquired_at: 2026-08-29T06:44:55+05:30
-  status: ACQUIRED
+  status: RELEASE_PENDING
 bl001:
   status: COMPLETE_134_OF_134
 bl002:
   status: NOT_IN_SCOPE_THIS_RUN
 bl008:
-  status: JAVA_API_JDBC_TEST_RUNNING
+  status: JAVA_API_DEPENDENCY_PASS_BLOCKED_JDBC_ROUTE
   provider:
     name: Supabase
     project_ref: xipkywwvzvrwcqnkifuv
+    region: ap-southeast-2
+    project_status: ACTIVE_HEALTHY
     database_name: postgres
     postgres_version: '17.6'
-  java_flyway:
-    dependency_source: USER_UPLOADED_FLYWAY_LIB_ZIP
+  target_read_only_proof:
+    flyway_schema_history_exists: false
+    public_table_count: 0
+  source_reconciliation:
+    status: PASS_V1_THROUGH_V17
+    frozen_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+    migration_path: cylinder.datascripts/src/main/resources/db/migration
     flyway_version: 10.0.0
-    postgresql_driver_version: 42.7.2
+    first_source_order_candidate: V1__DailyLogin.sql
+    flyway_selected_next_migration: false
+  java_flyway:
+    dependency_bundle: USER_UPLOADED_FLYWAY_LIB_ZIP
+    java_version: 21.0.11
+    javac_version: 21.0.11
+    required_jars_present: 11
+    flyway_class_load: PASS
+    postgresql_driver_class_load: PASS
+    flyway_configure_load: PASS
+    dependency_path: PASS
+  jdbc_test:
+    direct_endpoint: UNKNOWN_HOST
+    session_pooler_endpoint: UNKNOWN_HOST
+    transaction_pooler_endpoint: UNKNOWN_HOST
+    direct_sqlstate: '08001'
+    outbound_tcp_probe_1_1_1_1_443: CONNECTION_REFUSED
+    outbound_tcp_probe_8_8_8_8_53: CONNECTION_REFUSED
+    real_db_credentials_exercised: false
+  blocker:
+    code: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
+    subreason: OUTBOUND_DNS_AND_TCP_EGRESS_UNAVAILABLE
+  flyway_java_info:
+    attempted: true
+    reached_database: false
+    failure: UnknownHostException
+  flyway_java_validate: NOT_RUN
+  flyway_java_migrate: NOT_RUN
+  v1_applied: false
+  provider_native_migration_replay: NOT_RUN
+  manual_sql_migration: NOT_RUN
   database_writes: 0
+  evidence_commit: bda21c4d918d554131854d40b7674191379b3faf
+  readme_commit: 5b9cd67b7cef76f8c59520d5d633e763c0cde49e
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
