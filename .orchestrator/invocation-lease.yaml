@@ -1,8 +1,8 @@
-holder: null
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-210423IST
-acquired_at: 2026-08-29T21:04:23+05:30
-released_at: 2026-08-29T21:06:36+05:30
-status: RELEASED
+holder: Primary Cylinder Automation Tool
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-211600IST
+acquired_at: 2026-08-29T21:16:00+05:30
+released_at: null
+status: ACTIVE
 scope:
   - BL-002
   - BL-008
@@ -22,13 +22,13 @@ policy:
   minimum_productive_minutes: 30
   stale_after_minutes: 15
   lease_expiry_authoritative: true
-heartbeat_at: 2026-08-29T21:06:36+05:30
-lease_expires_at: null
-result: RUNTIME_WINDOW_FORCED_STOP
+heartbeat_at: 2026-08-29T21:16:00+05:30
+lease_expires_at: 2026-08-29T21:31:00+05:30
+result: RUNNING
 progress:
-  work_units_attempted: 1
+  work_units_attempted: 0
   work_units_completed_strict: 0
-  attempted_ids: [BL008-TESTCONTAINERS-RUNTIME-GATE]
+  attempted_ids: []
   strict_field_ui_completion_delta: 0
   materialization_delta: 0
   approval_delta: 0
@@ -37,9 +37,5 @@ progress:
   transient_lane_logs_remaining: 0
 notes:
   - Manual Production Trigger requested by user.
-  - Testcontainers PostgreSQL validation lane was attempted independently.
-  - Java 21.0.11 is available, but no Docker-compatible local container runtime is exposed in the ChatGPT execution host.
-  - BL-008 blocker: BL008_TESTCONTAINERS_CONTAINER_RUNTIME_UNAVAILABLE_IN_CHATGPT_EXECUTION_HOST.
-  - No Supabase network probe was repeated; no SQL/Flyway migration was run; DB writes remained zero.
-  - BL-002 remained eligible at STORY-0097 but was not executed before the current ChatGPT interaction execution window ended.
-  - Forced stop is explicit and non-voluntary; eligible work remains for the next Production Fire.
+  - BL-002 proceeds independently from STORY-0097.
+  - BL-008 remains fail-closed at BL008_REMOTE_TESTCONTAINERS_EXECUTION_SURFACE_NOT_CONNECTED; identical probes must not be repeated.
