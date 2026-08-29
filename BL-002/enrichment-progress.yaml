@@ -1,27 +1,31 @@
-version: 13
+version: 14
 backlog_id: BL-002
-updated_at: 2026-08-29T22:20:12+05:30
+updated_at: 2026-08-29T23:17:29+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-221749IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-231249IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 67
-  strict_field_ui_complete: 66
+  materialized_story_files: 83
+  strict_field_ui_complete: 89
   use_case_grouped: 0
   testing_ready: 0
 reconciliation:
-  baseline_strict_count: 61
-  current_run_strict_delta: {count: 5, stories: [STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114]}
-  current_run_materialization_delta: {count: 12, stories: [STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]}
-  source_detail_review_required: [STORY-0126]
-  source_analyzed_waiting_cursor: [STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
-  r2_skipped_for_priority: [STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0121, STORY-0122, STORY-0123, STORY-0124, STORY-0125]
+  baseline_strict_count: 66
+  current_run_strict_delta:
+    count: 23
+    stories: [STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132, STORY-0133, STORY-0134, STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0121, STORY-0122, STORY-0123, STORY-0124, STORY-0125, STORY-0064, STORY-0065, STORY-0066]
+  current_run_materialization_delta:
+    count: 16
+    stories: [STORY-0133, STORY-0134, STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0121, STORY-0122, STORY-0123, STORY-0124, STORY-0125, STORY-0064, STORY-0065, STORY-0066]
+  source_detail_review_required: []
+  source_analyzed_waiting_cursor: []
 cursor:
-  last_strict_r1_story: STORY-0114
-  next_eligible_strict_r1_story: STORY-0126
+  last_strict_r1_story: STORY-0134
+  next_eligible_strict_r1_story: null
+  next_eligible_strict_unit: STORY-0002
   trace_proxy_cursor: STORY-0063
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
