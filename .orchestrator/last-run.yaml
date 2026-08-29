@@ -1,17 +1,15 @@
-run_id: CYLINDER-MANUAL-FIRE-20260829-112500IST
-started_at: 2026-08-29T11:25:00+05:30
+run_id: CYLINDER-MANUAL-FIRE-20260829-150432IST
+started_at: 2026-08-29T15:04:32+05:30
 completed_at: null
-recovered_at: 2026-08-29T14:56:48+05:30
-heartbeat_at: 2026-08-29T11:25:00+05:30
-last_durable_progress_at: 2026-08-29T11:31:40+05:30
+recovered_at: 2026-08-29T16:17:15+05:30
+heartbeat_at: 2026-08-29T15:04:32+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: STALE_INVOCATION_RECOVERED
 terminalization:
   normal_completion_proved: false
-  reason: STALE_HEARTBEAT_WITHOUT_TERMINAL_CHECKPOINT
-  runtime_compliance: FAIL_EXCEPTION_UNPROVED
+  reason: STALE_HEARTBEAT_WITHOUT_NEWER_DURABLE_LIVENESS
   required_minimum_productive_minutes: 30
-  recovery_action: RELEASED_STALE_LEASE_AND_PRESERVED_ONLY_DURABLE_EVIDENCE
+  recovery_action: RELEASED_STALE_LEASE_CLEARED_CLAIMS_ENABLED_SELF_EXPIRING_LEASE_V2
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -24,55 +22,35 @@ policy:
   shared_ssot_single_writer: true
   flyway_execution_mode: JAVA_API
   minimum_productive_minutes: 30
+  stale_after_minutes: 15
+  lease_expiry_authoritative: true
 lease:
-  overlap_detected: false
-  acquired_at: 2026-08-29T11:25:00+05:30
-  released_at: 2026-08-29T14:56:48+05:30
+  acquired_at: 2026-08-29T15:04:32+05:30
+  heartbeat_at: 2026-08-29T15:04:32+05:30
+  lease_expires_at: 2026-08-29T15:19:32+05:30
+  released_at: 2026-08-29T16:17:15+05:30
   status: RELEASED
-  recovery_commit: 49efb9fa1f8a0dd240c34c8ba14f0ea4fe2fdf6f
+  recovery_commit: 774fef38dd2075d690d6fa52936642ac0d1abc99
+  policy_commit: 9c6e4b49fdc6c539b9d53fae07d252d64aac7163
+  policy_file: .orchestrator/lease-policy.yaml
 bl001:
   status: COMPLETE_134_OF_134_READ_ONLY
 bl002:
-  status: PARTIAL_PROGRESS_RECONCILED
-  durable_story_files_materialized_count: 12
-  durable_story_files_materialized:
-    - STORY-0054
-    - STORY-0055
-    - STORY-0056
-    - STORY-0057
-    - STORY-0058
-    - STORY-0059
-    - STORY-0060
-    - STORY-0061
-    - STORY-0062
-    - STORY-0063
-    - STORY-0067
-    - STORY-0068
-  skipped_by_release_order:
-    - STORY-0064
-    - STORY-0065
-    - STORY-0066
-  strict_field_ui_completed_delta: 0
+  status: READY_TO_RESUME
+  strict_field_ui_completed_delta_from_recovered_invocation: 0
   approval_delta: 0
   next_strict_eligible_story: STORY-0054
-  note: Materialized source-detail-gap files are not equivalent to strict field/UI completion.
+  note: Existing materialization remains SOURCE_DETAIL_REVIEW_REQUIRED and is not strict-complete.
 bl008:
   status: BLOCKED_NO_WRITE_EVIDENCE
-  provider:
-    name: Supabase
-    project_ref: xipkywwvzvrwcqnkifuv
-    database_name: postgres
-    postgres_version: '17.6'
   blocker:
     code: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
     parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
     subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
-  flyway_java_info: NOT_RUN_IN_DURABLE_EVIDENCE
-  flyway_java_validate: NOT_RUN_IN_DURABLE_EVIDENCE
-  flyway_java_migrate: NOT_RUN_IN_DURABLE_EVIDENCE
   migration_write_evidence: NONE_FOUND
 transient_lane_logs_remaining: 0
 reconciliation:
-  source_last_durable_commit: 59dacd50b27a7f8a227cd44b8ba682bb9d12791b
-  source_last_durable_commit_message: BL-002 materialize STORY-0068 with source-detail gap
-  canonical_completion_time_not_invented: true
+  original_completion_time_not_invented: true
+  stale_claims_cleared: true
+  indefinite_noop_prevention_enabled: true
+  next_invocation_rule: expired ACTIVE lease has no execution authority; recover durably and acquire with optimistic concurrency
