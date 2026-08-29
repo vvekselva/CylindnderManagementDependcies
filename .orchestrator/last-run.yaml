@@ -1,36 +1,37 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-211538IST
-started_at: 2026-08-29T21:15:38+05:30
-completed_at: 2026-08-29T21:46:12+05:30
-elapsed_seconds: 1834
-elapsed_minutes: 30.5667
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-221749IST
+started_at: 2026-08-29T22:17:49+05:30
+completed_at: 2026-08-29T22:20:12+05:30
+elapsed_seconds: 143
+elapsed_minutes: 2.3833
 minimum_productive_minutes_required: 30
-minimum_productive_window_satisfied: true
-terminal_classification: PARTIAL_CONTINUE_REQUIRED
+minimum_productive_window_satisfied: false
+terminal_classification: RUNTIME_WINDOW_FORCED_STOP
 voluntary_early_stop: false
 eligible_work_remaining: true
+forced_stop_reason: CHATGPT_AUTOMATION_EXECUTION_WINDOW_ENDED
 lease:
   acquired: true
   readback_verified: true
   released: true
   claims_released: true
-  stale_recovery_performed: true
-  recovered_stale_run_id: CYLINDER-PRODUCTION-FIRE-20260829-211600IST
+  stale_recovery_performed: false
 work:
-  attempted_count: 13
-  attempted_ids: [STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109]
-  completed_strict_count: 13
-  completed_strict_ids: [STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109]
-  materialized_count: 13
-  materialized_ids: [STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109]
-  strict_field_ui_completion_delta: 13
-  trace_materialization_delta: 13
+  attempted_count: 12
+  attempted_ids: [STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  completed_strict_count: 5
+  completed_strict_ids: [STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114]
+  materialized_count: 12
+  materialized_ids: [STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  strict_field_ui_completion_delta: 5
+  trace_materialization_delta: 12
   approvals_delta: 0
-  next_eligible_strict_unit: STORY-0110
+  next_eligible_strict_unit: STORY-0126
+  source_detail_review_required: [STORY-0126]
 metrics_after:
   register_ready: 131
   clarification: 3
-  materialized_story_files: 55
-  strict_field_ui_complete: 61
+  materialized_story_files: 67
+  strict_field_ui_complete: 66
   approved: 0
   use_case_grouped: 0
   testing_ready: 0
@@ -44,7 +45,8 @@ bl008:
   database_write_delta: 0
 transient_logs_remaining: 0
 notes:
-  - Startup recovery inputs were read before backlog work.
-  - A later ACTIVE lease with a heartbeat older than 15 minutes was found during terminal reconciliation and recovered using durable evidence as RECOVERED_STALE_INVOCATION.
-  - BL-008 remained unchanged and did not block independent BL-002 progress.
-  - Thirteen consecutive R1 stories were strictly enriched from frozen authoritative source; no story was auto-approved.
+  - Mandatory startup recovery inputs were read before backlog work; prior lease was RELEASED.
+  - STORY-0110 through STORY-0114 were strictly enriched from frozen authoritative source.
+  - STORY-0126 was materialized SOURCE_DETAIL_REVIEW_REQUIRED because its exact frozen handler chain could not yet be resolved; it remains the strict cursor.
+  - STORY-0127 through STORY-0132 were source-analyzed and materialized for reuse but deliberately not promoted past the STORY-0126 strict cursor.
+  - BL-008 blocker was unchanged; no identical network probe and zero database/Flyway writes occurred.
