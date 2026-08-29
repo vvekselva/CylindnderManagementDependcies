@@ -7,7 +7,7 @@ scope:
   - BL-002
   - BL-008
 claims:
-  - STORY-0086
+  - STORY-0089
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -20,16 +20,16 @@ policy:
   minimum_productive_minutes: 30
   stale_after_minutes: 15
   lease_expiry_authoritative: true
-heartbeat_at: 2026-08-29T20:27:00+05:30
-lease_expires_at: 2026-08-29T20:42:00+05:30
+heartbeat_at: 2026-08-29T20:34:00+05:30
+lease_expires_at: 2026-08-29T20:49:00+05:30
 result: IN_PROGRESS
 progress:
-  work_units_attempted: 1
-  work_units_completed_strict: 1
-  attempted_ids: [STORY-0085]
-  strict_field_ui_completion_delta: 1
-  materialization_delta: 0
+  work_units_attempted: 4
+  work_units_completed_strict: 4
+  attempted_ids: [STORY-0085, STORY-0086, STORY-0087, STORY-0088]
+  strict_field_ui_completion_delta: 4
+  materialization_delta: 3
   approval_delta: 0
   bl008_migration_write_delta: 0
-  next_eligible_strict_r1_story: STORY-0086
+  next_eligible_strict_r1_story: STORY-0089
   transient_lane_logs_remaining: 0
