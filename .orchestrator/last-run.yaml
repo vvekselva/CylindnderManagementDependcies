@@ -1,56 +1,55 @@
-run_id: CYLINDER-MANUAL-FIRE-20260829-150432IST
-started_at: 2026-08-29T15:04:32+05:30
-completed_at: null
-recovered_at: 2026-08-29T16:17:15+05:30
-heartbeat_at: 2026-08-29T15:04:32+05:30
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-181328IST
+started_at: 2026-08-29T18:13:28+05:30
+completed_at: 2026-08-29T18:20:02+05:30
+elapsed_seconds: 394
+elapsed_minutes: 6.57
 orchestrator: Primary Cylinder Automation Tool
-result: STALE_INVOCATION_RECOVERED
+result: RUNTIME_WINDOW_FORCED_STOP
 terminalization:
   normal_completion_proved: false
-  reason: STALE_HEARTBEAT_WITHOUT_NEWER_DURABLE_LIVENESS
-  required_minimum_productive_minutes: 30
-  recovery_action: RELEASED_STALE_LEASE_CLEARED_CLAIMS_ENABLED_SELF_EXPIRING_LEASE_V2
-policy:
-  execution_host: ChatGPT
-  github_role: repository_storage_only
-  github_runner: forbidden
-  full_automation_required: true
-  manual_user_execution: forbidden
-  external_worker_runtime: forbidden
-  manual_sql_substitution: forbidden
-  bl008_write_parallelism: 1
-  shared_ssot_single_writer: true
-  flyway_execution_mode: JAVA_API
-  minimum_productive_minutes: 30
-  stale_after_minutes: 15
-  lease_expiry_authoritative: true
-lease:
-  acquired_at: 2026-08-29T15:04:32+05:30
-  heartbeat_at: 2026-08-29T15:04:32+05:30
-  lease_expires_at: 2026-08-29T15:19:32+05:30
-  released_at: 2026-08-29T16:17:15+05:30
-  status: RELEASED
-  recovery_commit: 774fef38dd2075d690d6fa52936642ac0d1abc99
-  policy_commit: 9c6e4b49fdc6c539b9d53fae07d252d64aac7163
-  policy_file: .orchestrator/lease-policy.yaml
+  minimum_productive_minutes_required: 30
+  minimum_productive_minutes_satisfied: false
+  voluntary_early_stop: false
+  reason: RUNTIME_WINDOW_FORCED_STOP
+  eligible_work_remaining: true
+startup_recovery:
+  stale_run_id: CYLINDER-MANUAL-FIRE-20260829-162006IST
+  classification: RECOVERED_STALE_INVOCATION
+  stale_heartbeat_at: 2026-08-29T16:40:22+05:30
+  stale_lease_expires_at: 2026-08-29T16:55:22+05:30
+  original_completion_time_known: false
+  original_completed_at: null
+  recovery_time: 2026-08-29T18:13:28+05:30
+  durable_last_progress_story: STORY-0063
 bl001:
   status: COMPLETE_134_OF_134_READ_ONLY
 bl002:
-  status: READY_TO_RESUME
-  strict_field_ui_completed_delta_from_recovered_invocation: 0
+  status: PARTIAL_CONTINUE_REQUIRED
+  work_units_attempted: 11
+  work_units_completed: 11
+  attempted_story_ids: [STORY-0067, STORY-0068, STORY-0069, STORY-0070, STORY-0078, STORY-0079, STORY-0080, STORY-0081, STORY-0082, STORY-0083, STORY-0084]
+  completed_story_ids: [STORY-0067, STORY-0068, STORY-0069, STORY-0070, STORY-0078, STORY-0079, STORY-0080, STORY-0081, STORY-0082, STORY-0083, STORY-0084]
+  strict_field_ui_completion_delta: 11
+  trace_proxy_delta: 0
+  materialization_delta: 9
   approval_delta: 0
-  next_strict_eligible_story: STORY-0054
-  note: Existing materialization remains SOURCE_DETAIL_REVIEW_REQUIRED and is not strict-complete.
+  use_case_grouping_delta: 0
+  testing_readiness_delta: 0
+  reconciled_strict_field_ui_complete: 36
+  reconciled_materialized_story_files: 30
+  next_eligible_strict_unit: STORY-0085
+  r1_priority_preserved: true
 bl008:
-  status: BLOCKED_NO_WRITE_EVIDENCE
+  status: BLOCKED_ZERO_WRITES
+  blocker_changed: false
   blocker:
     code: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
     parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
     subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
-  migration_write_evidence: NONE_FOUND
+  repeated_identical_network_probe_performed: false
+  migration_write_delta: 0
+  migration_success_delta: 0
+lease:
+  release_required: true
+  claims_after_release: []
 transient_lane_logs_remaining: 0
-reconciliation:
-  original_completion_time_not_invented: true
-  stale_claims_cleared: true
-  indefinite_noop_prevention_enabled: true
-  next_invocation_rule: expired ACTIVE lease has no execution authority; recover durably and acquire with optimistic concurrency
