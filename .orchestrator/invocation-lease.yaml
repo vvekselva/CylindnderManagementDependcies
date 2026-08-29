@@ -1,13 +1,12 @@
-holder: Primary Cylinder Automation Tool
+holder: null
 run_id: CYLINDER-PRODUCTION-FIRE-20260829-221749IST
 acquired_at: 2026-08-29T22:17:49+05:30
-released_at: null
-status: ACTIVE
+released_at: 2026-08-29T22:20:12+05:30
+status: RELEASED
 scope:
   - BL-002
   - BL-008
-claims:
-  - STORY-0110
+claims: []
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -18,18 +17,24 @@ policy:
   flyway_execution_mode: JAVA_API
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-29T22:17:49+05:30
+heartbeat_at: 2026-08-29T22:20:12+05:30
 lease_expires_at: null
-result: IN_PROGRESS
+result: RUNTIME_WINDOW_FORCED_STOP
 recovery:
   classification: CLEAN_START_FROM_RELEASED_LEASE
   durable_evidence_reconciled: true
 progress:
-  baseline_strict_field_ui_complete: 61
-  baseline_materialized_story_files: 55
-  next_eligible_strict_r1_story: STORY-0110
+  work_units_attempted: 12
+  work_units_completed_strict: 5
+  attempted_ids: [STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  strict_field_ui_completion_delta: 5
+  materialization_delta: 12
+  approval_delta: 0
+  bl008_migration_write_delta: 0
+  next_eligible_strict_r1_story: STORY-0126
   transient_lane_logs_remaining: 0
 notes:
-  - Mandatory startup recovery inputs read before backlog work.
-  - Previous lease was RELEASED; no stale recovery required at startup.
-  - BL-008 blocker unchanged; no identical network probe and zero migration writes.
+  - Runtime window ended before the 30-minute productive minimum; this is not normal completion.
+  - STORY-0126 remains SOURCE_DETAIL_REVIEW_REQUIRED and is the strict cursor.
+  - Later source analysis was materialized without bypassing the strict cursor.
+  - BL-008 blocker unchanged; identical probes were not repeated and writes remained zero.
