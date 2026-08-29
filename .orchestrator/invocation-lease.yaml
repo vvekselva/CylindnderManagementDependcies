@@ -1,13 +1,13 @@
 holder: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-101343IST
-acquired_at: 2026-08-29T10:13:43+05:30
-released_at: 2026-08-29T10:15:10+05:30
-status: RELEASED
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-111533IST
+acquired_at: 2026-08-29T11:15:33+05:30
+released_at: null
+status: ACTIVE
 scope:
   - BL-002
   - BL-008
 claims:
-  - BL-002|STORY-0052|RELEASE-1-ENRICHMENT
+  - BL-002|STORY-0053|RELEASE-1-ENRICHMENT
   - BL-008|READONLY-RUNTIME-CAPABILITY-CHECK
 policy:
   execution_host: ChatGPT
@@ -18,5 +18,5 @@ policy:
   flyway_execution_mode: JAVA_API
   manual_user_execution: forbidden
   external_worker_runtime: forbidden
-heartbeat_at: 2026-08-29T10:15:10+05:30
-result: PARTIAL_CONTINUE_REQUIRED
+heartbeat_at: 2026-08-29T11:15:33+05:30
+result: IN_PROGRESS
