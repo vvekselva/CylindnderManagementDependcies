@@ -1,8 +1,8 @@
-holder: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-211600IST
-acquired_at: 2026-08-29T21:16:00+05:30
-released_at: null
-status: ACTIVE
+holder: null
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-211538IST
+acquired_at: 2026-08-29T21:15:38+05:30
+released_at: 2026-08-29T21:46:12+05:30
+status: RELEASED
 scope:
   - BL-002
   - BL-008
@@ -12,30 +12,31 @@ policy:
   github_role: repository_storage_only
   github_runner: forbidden
   shared_ssot_single_writer: true
-  lane_lock_scope: work_unit_local
   independent_backlog_units: true
   bl008_database_write_parallelism: 1
   flyway_execution_mode: JAVA_API
-  bl008_validation_runtime: TESTCONTAINERS_POSTGRESQL
-  manual_user_execution: forbidden
-  external_worker_runtime: forbidden
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-  lease_expiry_authoritative: true
-heartbeat_at: 2026-08-29T21:16:00+05:30
-lease_expires_at: 2026-08-29T21:31:00+05:30
-result: RUNNING
+heartbeat_at: 2026-08-29T21:46:12+05:30
+lease_expires_at: null
+result: PARTIAL_CONTINUE_REQUIRED
+recovery:
+  classification: RECOVERED_STALE_INVOCATION
+  stale_run_id: CYLINDER-PRODUCTION-FIRE-20260829-211600IST
+  stale_heartbeat_at: 2026-08-29T21:16:00+05:30
+  recovered_at: 2026-08-29T21:46:12+05:30
+  durable_evidence_reconciled: true
 progress:
-  work_units_attempted: 0
-  work_units_completed_strict: 0
-  attempted_ids: []
-  strict_field_ui_completion_delta: 0
-  materialization_delta: 0
+  work_units_attempted: 13
+  work_units_completed_strict: 13
+  attempted_ids: [STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109]
+  strict_field_ui_completion_delta: 13
+  materialization_delta: 13
   approval_delta: 0
   bl008_migration_write_delta: 0
-  next_eligible_strict_r1_story: STORY-0097
+  next_eligible_strict_r1_story: STORY-0110
   transient_lane_logs_remaining: 0
 notes:
-  - Manual Production Trigger requested by user.
-  - BL-002 proceeds independently from STORY-0097.
-  - BL-008 remains fail-closed at BL008_REMOTE_TESTCONTAINERS_EXECUTION_SURFACE_NOT_CONNECTED; identical probes must not be repeated.
+  - A concurrently materialized lease was found ACTIVE with heartbeat older than 15 minutes and no newer durable heartbeat proving it alive; it was recovered as stale.
+  - BL-008 outbound PostgreSQL blocker was unchanged; identical probes were not repeated and writes remained zero.
+  - Minimum productive window was satisfied and eligible BL-002 work remains.
