@@ -1,26 +1,26 @@
-version: 7
+version: 8
 backlog_id: BL-002
-updated_at: 2026-08-29T19:25:00+05:30
+updated_at: 2026-08-29T20:27:00+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-191719IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-201632IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
   materialized_story_files: 31
-  strict_field_ui_complete: 36
+  strict_field_ui_complete: 37
   use_case_grouped: 0
   testing_ready: 0
 reconciliation:
   baseline_strict_count: 36
-  current_run_strict_delta: {count: 0, stories: []}
-  current_run_materialization_delta: {count: 1, stories: [STORY-0085]}
-  source_detail_review_required: [STORY-0085]
+  current_run_strict_delta: {count: 1, stories: [STORY-0085]}
+  current_run_materialization_delta: {count: 0, stories: []}
+  source_detail_review_required: []
   r2_skipped_for_priority: [STORY-0064, STORY-0065, STORY-0066, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
 cursor:
-  last_strict_r1_story: STORY-0084
-  next_eligible_strict_r1_story: STORY-0085
+  last_strict_r1_story: STORY-0085
+  next_eligible_strict_r1_story: STORY-0086
   trace_proxy_cursor: STORY-0063
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
