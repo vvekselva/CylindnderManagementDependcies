@@ -1,8 +1,8 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-001729IST
-started_at: 2026-08-30T00:17:29+05:30
-completed_at: 2026-08-30T00:29:00+05:30
-elapsed_seconds: 691
-elapsed_minutes: 11.5167
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-021341IST
+started_at: 2026-08-30T02:13:41+05:30
+completed_at: 2026-08-30T02:21:00+05:30
+elapsed_seconds: 439
+elapsed_minutes: 7.3167
 minimum_productive_minutes_required: 30
 minimum_productive_window_satisfied: false
 terminal_classification: RUNTIME_WINDOW_FORCED_STOP
@@ -16,13 +16,13 @@ lease:
   claims_released: true
   stale_recovery_performed: false
 work:
-  attempted_count: 18
-  attempted_ids: [STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0017, STORY-0018, STORY-0019, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
-  completed_strict_count: 18
-  completed_strict_ids: [STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0017, STORY-0018, STORY-0019, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
-  materialized_count: 18
-  strict_field_ui_completion_delta: 18
-  trace_materialization_delta: 18
+  attempted_count: 1
+  attempted_ids: [STORY-0020]
+  completed_strict_count: 0
+  completed_strict_ids: []
+  materialized_count: 0
+  strict_field_ui_completion_delta: 0
+  trace_materialization_delta: 0
   approvals_delta: 0
   next_eligible_strict_unit: STORY-0020
 metrics_after:
@@ -43,5 +43,5 @@ transient_logs_remaining: 0
 notes:
   - Mandatory startup recovery inputs were read before backlog work; prior lease was RELEASED.
   - New singleton lease was acquired and read back before R2 work.
-  - Frozen authoritative source proved Offline Map, Predefined Delivery Trip, Customer Location and Delivery Planning API contracts.
-  - BL-008 blocker was unchanged; no identical network probe and zero database/Flyway writes occurred.
+  - STORY-0020 analysis found frozen YardLocationDto and YardLocationMapper evidence, but exact controller/UI behavior for /yard-location/upload was not located before the runtime window ended; story was not promoted.
+  - BL-008 blocker unchanged; no identical network probe and zero database/Flyway writes occurred.
