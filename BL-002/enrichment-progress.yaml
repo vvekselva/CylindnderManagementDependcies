@@ -1,91 +1,81 @@
-updated_by_run: CYLINDER-MANUAL-FIRE-20260829-162006IST
-updated_at: 2026-08-29T16:27:30+05:30
-policy:
-  release_order: R1_FIRST
-  auto_approval: false
-  invent_missing_behavior: false
-  strict_field_ui_required_for_completion: true
+version: 5
+backlog_id: BL-002
+updated_at: 2026-08-29T18:27:40+05:30
+updated_by: Primary Cylinder Automation Tool
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-181328IST
+
+scope:
+  total_stories: 134
+  r1_stories: 88
+  r2_stories: 46
+  processing_order: R1_THEN_R2
+
 metrics:
   register_ready: 131
   clarification: 3
-  approvals: 0
-  strict_field_ui_completed_in_current_run: 1
-stories:
-  STORY-0048:
-    artifact: BL-002/stories/STORY-0048.md
-    release: R1
-    endpoint: POST /add-stop/challan-page-photo/delete-ajax
-    enrichment_state: TRACE_CHAIN_ENRICHED
-    approval_status: PENDING_USER_APPROVAL
-  STORY-0049:
-    artifact: BL-002/stories/STORY-0049.md
-    release: R1
-    endpoint: POST /add-stop/challan-page-photo/upload
-    enrichment_state: TRACE_CHAIN_ENRICHED_UNIQUE_KEY_RECONCILED
-    approval_status: PENDING_USER_APPROVAL
-    prior_blocker: STORY-0049_UNIQUE_KEY_MISMATCH
-    blocker_state: RESOLVED_BY_EXACT_METHOD_PATH_MATCH
-  STORY-0050:
-    artifact: BL-002/stories/STORY-0050.md
-    release: R1
-    endpoint: POST /add-stop/challan-page-photo/upload-ajax
-    enrichment_state: TRACE_CHAIN_ENRICHED
-    approval_status: PENDING_USER_APPROVAL
-  STORY-0051:
-    artifact: BL-002/stories/STORY-0051.md
-    release: R1
-    endpoint: GET /add-stop
-    enrichment_state: TRACE_CHAIN_ENRICHED
-    approval_status: PENDING_USER_APPROVAL
-    source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
-  STORY-0052:
-    artifact: BL-002/stories/STORY-0052.md
-    release: R1
-    endpoint: GET /trip-return
-    enrichment_state: TRACE_CHAIN_ENRICHED
-    approval_status: PENDING_USER_APPROVAL
-    source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
-  STORY-0053:
-    artifact: BL-002/stories/STORY-0053.md
-    release: R1
-    endpoint: POST /trip-return
-    enrichment_state: TRACE_CHAIN_ENRICHED
-    approval_status: PENDING_USER_APPROVAL
-    source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
-  STORY-0054:
-    artifact: BL-002/stories/STORY-0054.md
-    release: R1
-    endpoint: GET /customer-demands
-    enrichment_state: STRICT_FIELD_UI_COMPLETE
-    approval_status: PENDING_USER_APPROVAL
-    source_field_contract: STRICT_FIELD_UI_COMPLETE
-    strict_completed_by_run: CYLINDER-MANUAL-FIRE-20260829-162006IST
-    source_controller: CustomerDemandController.showDashboard
-    source_view: final-version-1/CustomerDemandDashboard
-    read_identity: public.vw_customer_demand_dashboard.customer_demand_id
-    write_effect: NONE_FOR_GET
-interrupted_run_reconciliation:
-  source_run: CYLINDER-MANUAL-FIRE-20260829-112500IST
-  stale_lease_recovered_at: 2026-08-29T14:56:48+05:30
-  last_durable_progress_at: 2026-08-29T11:31:40+05:30
-  materialized_source_detail_gap_files:
-    - STORY-0054
-    - STORY-0055
-    - STORY-0056
-    - STORY-0057
-    - STORY-0058
-    - STORY-0059
-    - STORY-0060
-    - STORY-0061
-    - STORY-0062
-    - STORY-0063
-    - STORY-0067
-    - STORY-0068
-  skipped_r2_due_release_order:
+  approved: 0
+  materialized_story_files: 25
+  strict_field_ui_complete: 31
+  use_case_grouped: 0
+  testing_ready: 0
+
+reconciliation:
+  baseline_strict_count: 16
+  recovered_prior_invocation_strict_delta:
+    count: 9
+    stories:
+      - STORY-0055
+      - STORY-0056
+      - STORY-0057
+      - STORY-0058
+      - STORY-0059
+      - STORY-0060
+      - STORY-0061
+      - STORY-0062
+      - STORY-0063
+  current_run_strict_delta:
+    count: 6
+    stories:
+      - STORY-0067
+      - STORY-0068
+      - STORY-0069
+      - STORY-0070
+      - STORY-0078
+      - STORY-0079
+  current_run_materialization_delta:
+    count: 4
+    stories:
+      - STORY-0069
+      - STORY-0070
+      - STORY-0078
+      - STORY-0079
+  r2_skipped_for_priority:
     - STORY-0064
     - STORY-0065
     - STORY-0066
-  strict_field_ui_completed_from_interrupted_run: 0
-  rule: Materialization with a recorded source-detail gap does not advance strict field/UI completion.
-next_eligible_story: STORY-0055
-next_eligible_work: STRICT_FIELD_UI_SOURCE_COMPLETION
+    - STORY-0071
+    - STORY-0072
+    - STORY-0073
+    - STORY-0074
+    - STORY-0075
+    - STORY-0076
+    - STORY-0077
+
+cursor:
+  last_strict_r1_story: STORY-0079
+  next_eligible_strict_r1_story: STORY-0080
+  trace_proxy_cursor: STORY-0063
+  note: >-
+    R1 remains priority. Later R2 materializations do not bypass the earliest incomplete R1 strict story.
+
+approval_policy:
+  auto_approve: false
+  approvals_delta: 0
+
+bl008:
+  blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
+  parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
+  subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
+  migration_write_delta: 0
+  repeated_network_probe_performed: false
+  note: Existing blocker evidence unchanged; no identical DNS/TCP/proxy probe repeated.
