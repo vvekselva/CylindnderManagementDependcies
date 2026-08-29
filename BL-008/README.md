@@ -1,16 +1,17 @@
 # BL-008 — Database Migration Execution Status
 
-Latest governed continuation: `CYLINDER-MANUAL-FLYWAY-JDBC-TEST-20260829-064455IST`.
+Latest governed continuation: `CYLINDER-MANUAL-RUNTIME-EGRESS-MITIGATION-20260829-070653IST`.
 
 ## Target policy
 
-- Current explicitly approved target: **Supabase** project `xipkywwvzvrwcqnkifuv`.
+- Current approved target: **Supabase** project `xipkywwvzvrwcqnkifuv`.
 - Database: `postgres`.
-- PostgreSQL version observed: `17.6`.
+- PostgreSQL observed: `17.6`.
 - Database write parallelism: `1`.
-- Migration mechanism: **genuine Flyway 10.0.0 Java API**.
+- Migration mechanism: **genuine Flyway 10.0.0 Java API only**.
 - Manual/raw SQL replay and Supabase-native `apply_migration` are forbidden as substitutes for Flyway.
 - GitHub is durable SSOT/version control only; GitHub runners are forbidden.
+- Current governance also forbids an external worker runtime.
 - Never invoke `clean` / `flyway clean`.
 
 ## Frozen-source reconciliation — PASS
@@ -20,16 +21,11 @@ Frozen commit: `3ae6e61442132d94a307275b08dd65fcef228d89`
 Migration path: `cylinder.datascripts/src/main/resources/db/migration`  
 POM: `cylinder.datascripts/pom.xml`
 
-The corrected inventory in `BL-008/migration-inventory.txt` binds the exact frozen V1-V17 filenames to immutable Git blob SHA-1 values. First source-order candidate remains `V1__DailyLogin.sql`; it is not yet Flyway-selected or applied.
+`BL-008/migration-inventory.txt` binds the governed V1-V17 filenames to immutable Git blob SHA-1 values. First source-order candidate remains `V1__DailyLogin.sql`; it is not yet Flyway-selected or applied.
 
 ## Flyway Java dependency path — PASS
 
-The user-supplied `flyway-lib.zip` was tested in the ChatGPT execution container and contains the complete required runtime set used by the governed Java path, including:
-
-- `flyway-core-10.0.0.jar`
-- `flyway-database-postgresql-10.0.0.jar`
-- `postgresql-42.7.2.jar`
-- required Gson, Jackson, Commons and Checker Qual dependencies.
+The user-supplied `flyway-lib.zip` is usable from the ChatGPT execution container and contains the required Flyway/PostgreSQL runtime set.
 
 Verified with Java 21.0.11:
 
@@ -42,43 +38,68 @@ Verified with Java 21.0.11:
 
 `JAVA_API_DEPENDENCY_PATH = PASS`.
 
-The previous dependency/classpath portion of `BL008_CHATGPT_JAVA_FLYWAY_RUNTIME_UNAVAILABLE` is resolved.
+## Supabase connection details — CONFIRMED
+
+Exact Dashboard Session Pooler details supplied for this project:
+
+- host: `aws-0-ap-southeast-2.pooler.supabase.com`
+- port: `5432`
+- database: `postgres`
+- user: `postgres.xipkywwvzvrwcqnkifuv`
+- SSL: `sslmode=require`
+
+No database password is persisted in SSOT.
+
+The exact Session Pooler test still failed before authentication with SQLSTATE `08001` / `UnknownHostException`.
+
+## Current primary blocker — CONFIRMED RUNTIME EGRESS
+
+Refined blocker:
+
+`BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE`
+
+Parent continuity blocker:
+
+`BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME`
+
+Subreason:
+
+`SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY`
+
+Latest mitigation evidence proves:
+
+- `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` and lowercase equivalents are unset.
+- no SOCKS/JVM proxy is exposed.
+- the container resolver is `168.63.129.16`, but direct DNS queries to it time out.
+- direct DNS queries to `8.8.8.8` and `1.1.1.1` also time out.
+- name resolution fails not only for Supabase but also for unrelated public hosts such as GitHub, PyPI and Maven Central.
+- PostgreSQL JDBC tests using literal IPv4 diagnostic candidates bypassed DNS but failed with SQLSTATE `08001` / `java.net.ConnectException: Connection refused` on ports 5432 and 6543.
+- an independent literal public IPv4 TCP test also failed immediately.
+
+Therefore this is no longer merely a hostname/DNS hypothesis. The current ChatGPT execution container does not expose a usable public DNS or raw outbound TCP route to the Java process.
 
 ## Current target read-only state
 
-Connector verification during the latest test:
+Latest independent connector verification remains:
 
-- project status: `ACTIVE_HEALTHY`
 - database: `postgres`
 - PostgreSQL: `17.6`
 - `public.flyway_schema_history` exists: **NO**
 - public table count: **0**
-- database writes in the migration flow: **0**
+- migration-flow database writes: **0**
 
-## Current primary blocker
+## Alternative execution surface investigation
 
-`BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME`
+The installable plugin catalog was searched for Java/JVM/container/remote execution and TCP/proxy/tunnel capabilities.
 
-Subreason: `OUTBOUND_DNS_AND_TCP_EGRESS_UNAVAILABLE`.
-
-The PostgreSQL JDBC driver was genuinely used for pre-auth connection probes. Non-secret dummy credentials were used because the purpose was only to test the network path; no real database credential was persisted or exercised.
-
-Results:
-
-- direct `db.xipkywwvzvrwcqnkifuv.supabase.co:5432` -> SQLSTATE `08001`, `UnknownHostException`
-- session pooler candidate `aws-0-ap-southeast-2.pooler.supabase.com:5432` -> SQLSTATE `08001`, `UnknownHostException`
-- transaction pooler candidate `aws-0-ap-southeast-2.pooler.supabase.com:6543` -> SQLSTATE `08001`, `UnknownHostException`
-- Java socket `1.1.1.1:443` -> connection refused
-- Java socket `8.8.8.8:53` -> connection refused
-
-A genuine Flyway 10.0.0 Java API `info()` connectivity test was also attempted against all three Supabase routes. Flyway initialized correctly, but each attempt stopped before authentication with `UnknownHostException`.
-
-Therefore the remaining problem is no longer Flyway installation or JDBC-driver availability. It is the ChatGPT Java execution container's outbound network route to Supabase.
+External hosted runtime candidates exist, but none is a currently installed ChatGPT-native arbitrary Java/TCP surface. Current governance explicitly says `external_worker_runtime: forbidden`, so no external runtime was installed or invoked.
 
 ## Safety result
 
 - Flyway Java runtime: **PASS**
 - PostgreSQL JDBC driver: **PASS**
+- exact Supabase Session Pooler URL shape: **PASS**
+- authentication reached: **NO**
 - Flyway Java `info()` reached database: **NO**
 - Flyway Java `validateWithResult()`: **NOT RUN**
 - Flyway Java `migrate()`: **NOT RUN**
@@ -90,14 +111,22 @@ Therefore the remaining problem is no longer Flyway installation or JDBC-driver 
 
 ## Governed next flow
 
-1. Keep the working uploaded Flyway Java dependency bundle available for the current ChatGPT execution path.
-2. Re-test only ChatGPT-native network/JDBC capabilities that could change the active route blocker; do not repeat resolved dependency discovery.
-3. When a Java JDBC route to the Supabase target becomes available, execute genuine Flyway `info()` first using runtime-only credentials.
-4. Confirm Flyway's first pending migration against the frozen source binding.
-5. Run `validateWithResult()`.
-6. Run `migrate()` with exact target version `1` only if Flyway proves V1 is first pending.
-7. Re-read `flyway_schema_history`, verify expected V1 schema objects/integrity, persist evidence, and stop before V2.
-8. Never substitute Supabase-native/raw SQL migration replay for Flyway.
-9. BL-002 may continue independently while the JDBC route remains blocked.
+Within the current policy boundary there is no remaining in-container networking workaround to try.
 
-Latest evidence: `BL-008/evidence/CYLINDER-MANUAL-FLYWAY-JDBC-TEST-20260829-064455IST.md`.
+Execution can resume when either:
+
+1. the ChatGPT Java execution runtime exposes working public DNS and outbound TCP to the Supabase Session Pooler; or
+2. governance is explicitly changed to permit a **ChatGPT-controlled external compute runtime** with Java 21 and outbound TCP, while keeping the user hands-off and retaining genuine Flyway Java execution.
+
+Once a compliant JDBC route exists:
+
+1. run genuine Flyway Java `info()`;
+2. prove the first pending migration against frozen source;
+3. run `validateWithResult()`;
+4. migrate exactly V1 only;
+5. verify `SUCCESS`, `flyway_schema_history`, schema objects and integrity;
+6. persist evidence and stop before V2.
+
+BL-002 may continue independently while BL-008 remains fail-closed.
+
+Latest evidence: `BL-008/evidence/20260829-070653-runtime-egress-mitigation.md`.
