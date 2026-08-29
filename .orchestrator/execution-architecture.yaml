@@ -1,0 +1,128 @@
+version: 1
+name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
+status: ACTIVE
+policy_ref: .orchestrator/lease-policy.yaml
+
+execution_model:
+  coordinator_role: plan_reconcile_dispatch_aggregate
+  global_mutex: false
+  concurrency_basis:
+    - dependency_graph
+    - write_set_collision
+    - database_write_semaphore
+  maximum_safe_independent_workers: 10
+
+run_scope_contract:
+  required_fields:
+    - run_id
+    - mode
+    - requested_backlogs
+    - requested_units
+  modes:
+    TARGETED:
+      fallthrough_to_unrequested_backlog: false
+    CONTINUOUS:
+      fallthrough_to_other_eligible_backlogs: true
+    RECOVERY:
+      fallthrough_to_normal_backlog_work: false
+
+worker_contract:
+  before_dispatch:
+    - determine_read_set
+    - determine_write_set
+    - verify_dependencies
+    - acquire_resource_claim
+  while_running:
+    - refresh_only_own_claim_heartbeat
+    - do_not_mutate_unclaimed_shared_aggregate
+  after_unit:
+    - persist_unit_local_evidence
+    - release_resource_claim
+    - notify_or_trigger_aggregate_reconciliation_in_same_invocation_when_available
+    - replan
+
+resource_claim_file:
+  path_pattern: .orchestrator/claims/<backlog>/<claim-id>.yaml
+  required_fields:
+    - claim_id
+    - backlog
+    - unit
+    - run_id
+    - status
+    - read_set
+    - write_set
+    - acquired_at
+    - heartbeat_at
+    - lease_expires_at
+  statuses:
+    - ACTIVE
+    - RELEASED
+    - RECOVERED_STALE_CLAIM
+  collision_rule: Two ACTIVE claims conflict only when write sets intersect, or when one write set intersects the other's required immutable read target in a way that invalidates its evidence.
+
+aggregation:
+  strategy: unit_local_first
+  global_summary_authoritative_for_locking: false
+  files:
+    .orchestrator/last-run.yaml:
+      purpose: compatibility aggregate summary
+      direct_worker_writes: false
+    BL-002/enrichment-progress.yaml:
+      purpose: BL-002 aggregate projection
+      direct_story_worker_writes: false
+  lost_update_prevention:
+    - refetch_current_blob_before_aggregate_write
+    - optimistic_concurrency_sha
+    - recompute_from_durable_unit_evidence_after_conflict
+
+BL-002:
+  release_gate: R1_FIRST
+  candidate_pool: all unfinished safe-independent R1 strict-field-UI units
+  parallel_story_execution: true
+  per_story_output: BL-002/stories/<story-id>.md
+  per_story_status: BL-002/work-status/<story-id>.yaml
+  shared_progress_update: aggregator_only
+  approvals:
+    automatic: false
+    user_required: true
+  strict_completion:
+    requires_full_applicable_source_contract: true
+    source_detail_review_required_is_complete: false
+    recorded_source_detail_gap_is_complete: false
+  scheduling_rule: Story numbering alone is not a dependency; only proven dependency edges serialize stories.
+
+BL-008:
+  targeted_recovery_can_run_with_BL-002: true
+  read_only_parallelism: true
+  database_write_parallelism: 1
+  database_write_claim: BL-008|DB-WRITE-SLOT|SUPABASE:xipkywwvzvrwcqnkifuv:postgres
+  flyway:
+    required: true
+    version: 10.0.0
+    api: JAVA_API
+    one_target_at_a_time: true
+    clean: forbidden
+    manual_sql: forbidden
+    supabase_native_migration_replay: forbidden
+  blocker_recovery_units:
+    - runtime_capability_inventory
+    - jdbc_route_capability_check_when_environment_materially_changes
+    - frozen_source_integrity_check
+    - flyway_runner_integrity_check
+    - target_read_only_identity_history_check_when_compliant_route_exists
+  isolation: BL-008 blocker cannot reserve or block unrelated BL-002 resources.
+
+legacy_transition:
+  invocation_lease_file: .orchestrator/invocation-lease.yaml
+  treatment: compatibility_only
+  explicit_claims_only: true
+  broad_scope_is_not_lock: true
+  new_runs_should_use_resource_claims: true
+  retirement_condition: all production-fire prompts and checkpoints reference resource-scoped claims
+
+safety:
+  github_actions: forbidden
+  external_worker_runtime: forbidden
+  user_manual_execution: forbidden
+  credentials_in_git: forbidden
+  zero_transient_logs_at_terminal: true
