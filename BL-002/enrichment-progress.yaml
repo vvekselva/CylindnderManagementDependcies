@@ -1,6 +1,6 @@
-version: 9
+version: 10
 backlog_id: BL-002
-updated_at: 2026-08-29T20:34:00+05:30
+updated_at: 2026-08-29T20:44:00+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260829-201632IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
@@ -8,19 +8,19 @@ metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 34
-  strict_field_ui_complete: 40
+  materialized_story_files: 42
+  strict_field_ui_complete: 48
   use_case_grouped: 0
   testing_ready: 0
 reconciliation:
   baseline_strict_count: 36
-  current_run_strict_delta: {count: 4, stories: [STORY-0085, STORY-0086, STORY-0087, STORY-0088]}
-  current_run_materialization_delta: {count: 3, stories: [STORY-0086, STORY-0087, STORY-0088]}
+  current_run_strict_delta: {count: 12, stories: [STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]}
+  current_run_materialization_delta: {count: 11, stories: [STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]}
   source_detail_review_required: []
   r2_skipped_for_priority: [STORY-0064, STORY-0065, STORY-0066, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
 cursor:
-  last_strict_r1_story: STORY-0088
-  next_eligible_strict_r1_story: STORY-0089
+  last_strict_r1_story: STORY-0096
+  next_eligible_strict_r1_story: STORY-0097
   trace_proxy_cursor: STORY-0063
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
