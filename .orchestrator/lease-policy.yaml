@@ -1,41 +1,106 @@
-version: 2
-name: SELF_EXPIRING_SINGLETON_LEASE
-stale_after_minutes: 15
-heartbeat_policy:
-  required_for_active_owner: true
-  authoritative_field: heartbeat_at
-  expires_at_field: lease_expires_at
-  refresh_rule: lease_expires_at = heartbeat_at + stale_after_minutes
-ownership_rules:
-  - ACTIVE lease with current time before lease_expires_at is authoritative and blocks a second writer.
-  - ACTIVE lease with current time at or after lease_expires_at is logically EXPIRED even if status was never rewritten.
-  - An expired lease has no execution authority and must not cause indefinite NOOP behavior.
-  - The next invocation must reconcile durable evidence only, persist RECOVERED_STALE_INVOCATION, clear stale claims, and then acquire a new lease using the current blob SHA.
-  - If the recovery write fails because the blob SHA changed, refetch and re-evaluate liveness before retrying; never overwrite a fresh owner.
-  - If the recovery write fails for a transient connector error and the lease remains expired, retry within the same invocation before declaring a global blocker.
-  - Shared SSOT remains single-writer and BL-008 database-write parallelism remains 1.
-acquisition_rules:
-  optimistic_concurrency: true
-  require_current_blob_sha: true
-  read_back_after_write: true
-  new_lease_fields:
-    - run_id
-    - acquired_at
+version: 3
+name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
+supersedes:
+  - version: 2
+    name: SELF_EXPIRING_SINGLETON_LEASE
+principles:
+  - No global backlog lock.
+  - Concurrency is decided by dependency and write-set collision, not backlog number.
+  - Independent work units in the same backlog may execute concurrently.
+  - Different backlogs may execute concurrently.
+  - Same writable resource is single-writer.
+  - BL-008 database-write parallelism is exactly 1.
+  - GitHub is durable control/audit persistence only; GitHub Actions/runners remain forbidden.
+  - External worker runtimes remain forbidden unless governance is explicitly changed.
+run_scope:
+  required: true
+  modes:
+    TARGETED:
+      rule: Work only on explicitly requested backlog/work units; do not fall through to unrelated backlogs when blocked.
+    CONTINUOUS:
+      rule: Replan across all eligible backlogs and independent work units.
+    RECOVERY:
+      rule: Work only on blocker, stale-state, reconciliation, or architecture recovery units explicitly in scope.
+resource_claims:
+  claim_granularity: writable_resource_or_irreducible_work_unit
+  claim_identity_examples:
+    - BL-002|STORY-0054|BL-002/stories/STORY-0054.md
+    - BL-002|STORY-0055|BL-002/stories/STORY-0055.md
+    - BL-008|DB-WRITE-SLOT|SUPABASE:xipkywwvzvrwcqnkifuv:postgres
+  compatibility_rule: Two claims may coexist only when their write sets do not intersect and neither depends on incomplete output owned by the other.
+  read_only_parallelism: allowed
+  same_file_parallel_writers: forbidden
+  dependency_rule: A dependent unit is not dispatchable until its prerequisite durable evidence is satisfied.
+claim_storage:
+  preferred_layout: .orchestrator/claims/<backlog>/<claim-id>.yaml
+  one_claim_per_file: true
+  shared_claim_registry_for_runtime_locking: forbidden
+  rationale: Avoid turning the claim registry itself into a global mutex.
+claim_liveness:
+  stale_after_minutes: 15
+  authoritative_fields:
     - heartbeat_at
     - lease_expires_at
-    - status
-    - claims
-release_rules:
-  clear_claims: true
-  set_status: RELEASED
-  set_released_at: true
-  read_back_after_write: true
-interruption_rules:
-  completed_at_must_not_be_invented: true
-  preserve_only_durable_evidence: true
-  stale_classification: RECOVERED_STALE_INVOCATION
-  runtime_termination_does_not_extend_lease: true
+  rule: ACTIVE claim is authoritative only before lease_expires_at.
+  expired_rule: Expired claims have no execution authority and cannot indefinitely block another claimant.
+  stale_recovery:
+    - Reconcile durable evidence only.
+    - Persist RECOVERED_STALE_INVOCATION or RECOVERED_STALE_CLAIM evidence on the affected resource.
+    - Never invent original completion time.
+    - If optimistic-concurrency SHA changed, refetch and re-evaluate before retry.
+legacy_singleton_transition:
+  file: .orchestrator/invocation-lease.yaml
+  status: DEPRECATED_AS_GLOBAL_MUTEX
+  rule: A fresh legacy invocation lease protects only the resources explicitly listed in its claims; its broad scope field does not block unrelated resources.
+  migration_rule: Existing active legacy lease must not be rewritten by an unrelated architecture/BL-008 run unless one of its explicit claimed resources conflicts.
+  retirement: Stop creating new global singleton leases after all orchestrator prompts adopt v3 resource claims.
+shared_aggregate_state:
+  files:
+    - .orchestrator/last-run.yaml
+    - BL-002/enrichment-progress.yaml
+  role: aggregate_or_checkpoint_only
+  direct_worker_write_rule: Workers should persist unit-local evidence first; aggregate files are updated by a dedicated aggregator/checkpointer using optimistic concurrency.
+  authority_rule: Unit-local durable evidence is authoritative for completed work; aggregate cursor lag must not erase completed unit evidence.
+BL-002:
+  parallelism:
+    independent_R1_units: allowed
+    R2_before_R1_gate: forbidden
+    auto_approval: forbidden
+  unit_outputs:
+    story_file_pattern: BL-002/stories/STORY-*.md
+    status_file_pattern: BL-002/work-status/STORY-*.yaml
+  aggregate_file: BL-002/enrichment-progress.yaml
+  aggregate_single_writer: true
+  completion_rule: SOURCE_DETAIL_REVIEW_REQUIRED or a recorded source-detail gap is not strict field/UI completion.
+BL-008:
+  independent_read_only_units_parallel: allowed
+  database_write_semaphore:
+    identity: BL-008|DB-WRITE-SLOT|SUPABASE:xipkywwvzvrwcqnkifuv:postgres
+    capacity: 1
+  migration_execution:
+    mode: FLYWAY_10_JAVA_API_ONLY
+    manual_sql: forbidden
+    supabase_native_replay: forbidden
+    clean: forbidden
+  blocker_isolation_rule: A BL-008 blocker must not block BL-002 unless the run scope is TARGETED to BL-008, in which case unrelated BL-002 work must not be substituted.
+  target_scope_rule: A TARGETED BL-008 recovery run may proceed concurrently with BL-002 when its write set does not intersect the active BL-002 claim set.
+planning:
+  algorithm:
+    - RECONCILE durable unit evidence.
+    - BUILD dependency graph and write sets.
+    - SELECT all eligible safe-independent units up to available worker capacity.
+    - CLAIM resources independently.
+    - DISPATCH concurrently.
+    - Persist worker-local evidence.
+    - Aggregate shared progress with optimistic concurrency.
+    - REPLAN immediately after every completion or blocker.
+  max_safe_independent_workers: 10
+minimum_productive_run:
+  minutes: 30
+  rule: Applies per invocation scope; never idle merely to satisfy the clock.
+  targeted_blocked_exception: A TARGETED run may terminate early only when its scoped work has a hard unrecoverable blocker and no other in-scope recovery/read-only unit remains.
 github_role:
   purpose: durable_control_and_audit_persistence
   github_actions: forbidden
+  github_runner: forbidden
   external_worker_runtime: forbidden
