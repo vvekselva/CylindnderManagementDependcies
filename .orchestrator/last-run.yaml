@@ -1,7 +1,7 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-091404IST
-started_at: 2026-08-29T09:14:04+05:30
-completed_at: 2026-08-29T09:16:45+05:30
-heartbeat_at: 2026-08-29T09:16:45+05:30
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-101343IST
+started_at: 2026-08-29T10:13:43+05:30
+completed_at: 2026-08-29T10:15:10+05:30
+heartbeat_at: 2026-08-29T10:15:10+05:30
 orchestrator: Primary Cylinder Automation Tool
 result: PARTIAL_CONTINUE_REQUIRED
 policy:
@@ -17,31 +17,28 @@ policy:
   flyway_execution_mode: JAVA_API
 lease:
   overlap_detected: false
-  acquired_at: 2026-08-29T09:14:04+05:30
-  released_at: 2026-08-29T09:16:45+05:30
+  acquired_at: 2026-08-29T10:13:43+05:30
+  released_at: 2026-08-29T10:15:10+05:30
   status: RELEASED
 bl001:
   status: COMPLETE_134_OF_134_READ_ONLY
 bl002:
   status: PROGRESSED
-  story_0051:
-    endpoint: GET /add-stop
-    artifact: BL-002/stories/STORY-0051.md
+  story_0052:
+    endpoint: GET /trip-return
+    artifact: BL-002/stories/STORY-0052.md
     enrichment_state: TRACE_CHAIN_ENRICHED
     approval_status: PENDING_USER_APPROVAL
     exact_method_path_match: true
     auto_approved: false
     proved_branches:
-      - TRIP_STATUS_GUARD
-      - CUSTOMER_STOP_HEATMAP
-      - SUPPLIER_STOP_HEATMAP
+      - TRIP_HEADER
+      - RETURNED_CHALLAN_BOOKS
     proved_terminals:
-      - GUARD_REDIRECT_VEHICLE_LOAD_FETCH
-      - CUSTOMER_STOP_SELECTION_VIEW
-      - SUPPLIER_STOP_SELECTION_VIEW
+      - TRIP_RETURN_CHALLAN_BOOK_REVIEW_VIEW
   story_register_changed: false
-  story_register_reason: existing STORY-0051 row already matched canonical GET /add-stop and remains READY_FOR_USER_REVIEW/PENDING_USER_APPROVAL
-  next_eligible_story: STORY-0052
+  story_register_reason: existing STORY-0052 row already matched canonical GET /trip-return and remains READY_FOR_USER_REVIEW/PENDING_USER_APPROVAL
+  next_eligible_story: STORY-0053
 bl008:
   status: BLOCKED_NO_WRITE
   provider:
