@@ -1,5 +1,5 @@
-updated_by_run: CYLINDER-MANUAL-FIRE-20260829-040620IST
-updated_at: 2026-08-29T04:06:20+05:30
+updated_by_run: CYLINDER-PRODUCTION-FIRE-20260829-071419IST
+updated_at: 2026-08-29T07:16:00+05:30
 policy:
   release_order: R1_FIRST
   auto_approval: false
@@ -27,3 +27,32 @@ stories:
       - datatype and requiredness
       - exact persisted deactivation column or columns
       - any source-proved validation guards not represented in the canonical chain
+  STORY-0049:
+    artifact: BL-002/stories/STORY-0049.md
+    release: R1
+    endpoint: POST /add-stop/challan-page-photo/upload
+    enrichment_state: TRACE_CHAIN_ENRICHED_UNIQUE_KEY_RECONCILED
+    approval_status: PENDING_USER_APPROVAL
+    prior_blocker: STORY-0049_UNIQUE_KEY_MISMATCH
+    blocker_state: RESOLVED_BY_EXACT_METHOD_PATH_MATCH
+    source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
+    proved_chain:
+      - AddStopController.uploadChallanPagePhoto -> uploadChallanPhotoInternal
+      - ChallanPagePhotoUploadService.processRequest
+      - ChallanPageAuditLedgerJpaDao.findPageByFullNumber
+      - ChallanPageAuditLedgerDo
+      - public.tbl_challan_page_audit_ledger
+      - public.tbl_challan_book_registry
+      - ChallanPagePhotoJpaDao.deactivateActivePhotosForPage
+      - ChallanPagePhotoJpaDao.save
+      - ChallanPagePhotoDo
+      - public.tbl_challan_page_photo
+    proved_terminals:
+      - REDIRECT_ADD_STOP_FLASH_SUCCESS
+      - REDIRECT_ADD_STOP_FLASH_ERROR
+    remaining_before_field_contract_complete:
+      - exact multipart and request parameter identities
+      - datatype, requiredness, size and content-type constraints
+      - exact persisted photo and active-state columns
+      - exact file or blob storage behavior
+      - source-proved validation guards not represented in the canonical chain
