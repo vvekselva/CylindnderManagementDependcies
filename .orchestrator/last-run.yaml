@@ -19,7 +19,9 @@ policy:
 lease:
   overlap_detected: false
   acquired_at: 2026-08-29T05:27:25+05:30
-  status: RELEASE_PENDING
+  released_at: 2026-08-29T05:31:22+05:30
+  release_commit: 6b05e3219571c959f384e58ed576b537d8d72c25
+  status: RELEASED
 bl001:
   status: COMPLETE_134_OF_134
 bl002:
