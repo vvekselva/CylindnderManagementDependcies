@@ -1,8 +1,8 @@
 holder: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260829-091404IST
 acquired_at: 2026-08-29T09:14:04+05:30
-released_at: null
-status: ACTIVE
+released_at: 2026-08-29T09:16:45+05:30
+status: RELEASED
 scope:
   - BL-002
   - BL-008
@@ -18,5 +18,5 @@ policy:
   flyway_execution_mode: JAVA_API
   manual_user_execution: forbidden
   external_worker_runtime: forbidden
-heartbeat_at: 2026-08-29T09:14:04+05:30
-result: IN_PROGRESS
+heartbeat_at: 2026-08-29T09:16:45+05:30
+result: PARTIAL_CONTINUE_REQUIRED
