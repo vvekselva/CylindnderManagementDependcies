@@ -1,12 +1,13 @@
-holder: null
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-021341IST
-acquired_at: 2026-08-30T02:13:41+05:30
-released_at: 2026-08-30T02:21:00+05:30
-status: RELEASED
+holder: Primary Cylinder Automation Tool
+run_id: CYLINDER-LEASE-RECOVERY-20260830-050837IST
+acquired_at: 2026-08-30T05:08:37+05:30
+released_at: null
+status: ACTIVE
 scope:
   - BL-002
   - BL-008
-claims: []
+claims:
+  - STORY-0020
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -17,14 +18,14 @@ policy:
   flyway_execution_mode: JAVA_API
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T02:21:00+05:30
-lease_expires_at: null
-result: RUNTIME_WINDOW_FORCED_STOP
+heartbeat_at: 2026-08-30T05:08:37+05:30
+lease_expires_at: 2026-08-30T05:23:37+05:30
+result: ROOT_CAUSE_RECOVERY_VALIDATION
 recovery:
-  classification: CLEAN_START_FROM_RELEASED_LEASE
+  classification: CURRENT_GITHUB_DIRECT_WRITE_PATH_VALIDATION
   durable_evidence_reconciled: true
 progress:
-  work_units_attempted: 1
+  work_units_attempted: 0
   work_units_completed_strict: 0
   strict_field_ui_completion_delta: 0
   materialization_delta: 0
@@ -33,5 +34,5 @@ progress:
   next_eligible_strict_unit: STORY-0020
   transient_lane_logs_remaining: 0
 notes:
-  - STORY-0020 source analysis located YardLocationDto/YardLocationMapper evidence but did not locate the exact /yard-location controller/UI contract in the frozen source before runtime end; no strict-complete promotion was made.
-  - BL-008 blocker unchanged; identical network probes were not repeated and writes remained zero.
+  - Purpose: validate that the current ChatGPT direct GitHub contents write path can acquire and persist the singleton lease after the prior execution-path safety-gate failure.
+  - No BL-002 story mutation or BL-008 database write is performed by this validation step.
