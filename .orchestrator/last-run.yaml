@@ -16,11 +16,12 @@ policy:
   bl008_write_parallelism: 1
   shared_ssot_single_writer: true
   flyway_execution_mode: JAVA_API
-  credentials_runtime_only: true
 lease:
   overlap_detected: false
   acquired_at: 2026-08-29T06:58:51+05:30
-  status: ACQUIRED_PENDING_RELEASE
+  released_at: 2026-08-29T07:00:30+05:30
+  release_commit: 97c79da8b38fef05a4df031b3097bea927eae8a2
+  status: RELEASED
 bl001:
   status: COMPLETE_134_OF_134
 bl002:
@@ -39,7 +40,7 @@ bl008:
     database: postgres
     user: postgres.xipkywwvzvrwcqnkifuv
     sslmode: require
-    password_persisted: false
+    secret_persisted: false
   target_read_only_proof_after_test:
     flyway_schema_history_exists: false
     public_table_count: 0
@@ -65,9 +66,8 @@ bl008:
     sqlstate: '08001'
     root_cause: java.net.UnknownHostException
     authentication_reached: false
-    real_db_credentials_exercised_pre_auth: true
     credential_validity_proved: false
-    credential_persisted: false
+    secret_persisted: false
   blocker:
     code: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
     subreason: OUTBOUND_DNS_AND_TCP_EGRESS_UNAVAILABLE
