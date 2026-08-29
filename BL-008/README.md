@@ -1,6 +1,6 @@
 # BL-008 — Database Migration Execution Status
 
-Latest governed continuation: `CYLINDER-MANUAL-FLYWAY-JAVA-20260829-051420IST`.
+Latest governed continuation: `CYLINDER-MANUAL-FLYWAY-JDBC-TEST-20260829-064455IST`.
 
 ## Target policy
 
@@ -9,22 +9,9 @@ Latest governed continuation: `CYLINDER-MANUAL-FLYWAY-JAVA-20260829-051420IST`.
 - PostgreSQL version observed: `17.6`.
 - Database write parallelism: `1`.
 - Migration mechanism: **genuine Flyway 10.0.0 Java API**.
-- Flyway CLI is no longer required by the BL-008 plan.
 - Manual/raw SQL replay and Supabase-native `apply_migration` are forbidden as substitutes for Flyway.
-- Full automation remains ChatGPT-owned; GitHub is version control/durable evidence only and GitHub runners are forbidden.
-- No user terminal work, local bridge or external worker runtime is permitted by the current automation policy.
+- GitHub is durable SSOT/version control only; GitHub runners are forbidden.
 - Never invoke `clean` / `flyway clean`.
-
-## Target database read-only proof
-
-Current target inspection already proves:
-
-- database: `postgres`
-- connected role: `postgres`
-- PostgreSQL: `17.6`
-- `public.flyway_schema_history` exists: **NO**
-- public table count: **0**
-- database writes by the Orchestrator so far in the current migration flow: **0**
 
 ## Frozen-source reconciliation — PASS
 
@@ -33,86 +20,84 @@ Frozen commit: `3ae6e61442132d94a307275b08dd65fcef228d89`
 Migration path: `cylinder.datascripts/src/main/resources/db/migration`  
 POM: `cylinder.datascripts/pom.xml`
 
-The frozen POM proves Flyway `10.0.0`, migration location `filesystem:src/main/resources/db/migration`, and target schema `public`.
+The corrected inventory in `BL-008/migration-inventory.txt` binds the exact frozen V1-V17 filenames to immutable Git blob SHA-1 values. First source-order candidate remains `V1__DailyLogin.sql`; it is not yet Flyway-selected or applied.
 
-`BL-008/migration-inventory.txt` binds the actual frozen V1-V17 filenames to immutable Git blob SHA-1 values. Git blob SHA-1 is source-binding evidence only; genuine Flyway must calculate/validate Flyway checksums.
+## Flyway Java dependency path — PASS
 
-`BL008_FROZEN_MIGRATION_SOURCE_MISMATCH` is **RESOLVED for governed V1-V17 scope**.
+The user-supplied `flyway-lib.zip` was tested in the ChatGPT execution container and contains the complete required runtime set used by the governed Java path, including:
 
-First frozen source-order candidate: `V1__DailyLogin.sql`. It is not yet Flyway-selected or applied.
+- `flyway-core-10.0.0.jar`
+- `flyway-database-postgresql-10.0.0.jar`
+- `postgresql-42.7.2.jar`
+- required Gson, Jackson, Commons and Checker Qual dependencies.
 
-## Java API execution design — ADOPTED
+Verified with Java 21.0.11:
 
-BL-008 now runs Flyway programmatically through Java instead of depending on the Flyway CLI.
+- `org.flywaydb.core.Flyway` class load: PASS
+- `org.postgresql.Driver` class load: PASS
+- `Flyway.configure()` / `.load()`: PASS
+- `cleanDisabled(true)`: configured
+- `baselineOnMigrate(false)`: configured
+- `outOfOrder(false)`: configured
 
-Governed runner source:
+`JAVA_API_DEPENDENCY_PATH = PASS`.
 
-`BL-008/java/FlywayJavaRunner.java`
+The previous dependency/classpath portion of `BL008_CHATGPT_JAVA_FLYWAY_RUNTIME_UNAVAILABLE` is resolved.
 
-Required core runtime libraries:
+## Current target read-only state
 
-- `org.flywaydb:flyway-core:10.0.0`
-- `org.flywaydb:flyway-database-postgresql:10.0.0`
-- `org.postgresql:postgresql:42.7.2`
-- Flyway's required transitive runtime dependencies
+Connector verification during the latest test:
 
-The runner is designed to use `Flyway.configure()` with:
-
-- runtime-only JDBC URL/user/password;
-- `public` schema;
-- `cleanDisabled(true)`;
-- `baselineOnMigrate(false)`;
-- `outOfOrder(false)`;
-- frozen filesystem migration location;
-- explicit `TARGET_VERSION` for `migrate-one`;
-- a preflight check that the exact target is the first Flyway `PENDING` migration;
-- `validateWithResult()` before migrate;
-- exactly one migration executed;
-- post-migrate Flyway `info()` verification that the target state is `SUCCESS`.
-
-Flyway 10.0.0 source was checked to confirm the Java API contains `FluentConfiguration.target(MigrationVersion)`, `MigrationState.PENDING`, `MigrationState.SUCCESS`, `MigrationInfo`, `ValidateResult`, and `MigrateResult` used by this harness.
+- project status: `ACTIVE_HEALTHY`
+- database: `postgres`
+- PostgreSQL: `17.6`
+- `public.flyway_schema_history` exists: **NO**
+- public table count: **0**
+- database writes in the migration flow: **0**
 
 ## Current primary blocker
 
-`BL008_CHATGPT_JAVA_FLYWAY_RUNTIME_UNAVAILABLE`
+`BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME`
 
-Subreason: `JAVA_API_DEPENDENCY_AND_JDBC_ROUTE_UNAVAILABLE`.
+Subreason: `OUTBOUND_DNS_AND_TCP_EGRESS_UNAVAILABLE`.
 
-Latest Java-path evidence:
+The PostgreSQL JDBC driver was genuinely used for pre-auth connection probes. Non-secret dummy credentials were used because the purpose was only to test the network path; no real database credential was persisted or exercised.
 
-- Java 21.0.11: available.
-- `javac`: available.
-- `jshell`: available.
-- Flyway CLI absence is **not** a blocker anymore.
-- `org.flywaydb.core.Flyway` is not present on the current Java runtime classpath; JShell reports `package org.flywaydb.core does not exist`.
-- required Flyway/PostgreSQL jars are not locally available.
-- direct package-download egress from the execution container is unavailable.
-- an IP-pinned HTTPS probe to Maven Central also failed, so the artifact-download problem is not DNS-only.
-- direct JDBC-capable PostgreSQL network access from the Java execution container to Supabase is unavailable.
-- connected Supabase SQL access works, but it is not a JDBC connection usable by the Java Flyway process and is not a Flyway substitute.
+Results:
+
+- direct `db.xipkywwvzvrwcqnkifuv.supabase.co:5432` -> SQLSTATE `08001`, `UnknownHostException`
+- session pooler candidate `aws-0-ap-southeast-2.pooler.supabase.com:5432` -> SQLSTATE `08001`, `UnknownHostException`
+- transaction pooler candidate `aws-0-ap-southeast-2.pooler.supabase.com:6543` -> SQLSTATE `08001`, `UnknownHostException`
+- Java socket `1.1.1.1:443` -> connection refused
+- Java socket `8.8.8.8:53` -> connection refused
+
+A genuine Flyway 10.0.0 Java API `info()` connectivity test was also attempted against all three Supabase routes. Flyway initialized correctly, but each attempt stopped before authentication with `UnknownHostException`.
+
+Therefore the remaining problem is no longer Flyway installation or JDBC-driver availability. It is the ChatGPT Java execution container's outbound network route to Supabase.
 
 ## Safety result
 
-- Flyway Java `info()`: **NOT PERFORMED**
-- Flyway Java `validateWithResult()`: **NOT PERFORMED**
-- Flyway Java `migrate()`: **NOT PERFORMED**
+- Flyway Java runtime: **PASS**
+- PostgreSQL JDBC driver: **PASS**
+- Flyway Java `info()` reached database: **NO**
+- Flyway Java `validateWithResult()`: **NOT RUN**
+- Flyway Java `migrate()`: **NOT RUN**
 - `V1__DailyLogin.sql`: **NOT APPLIED**
-- Supabase-native migration replay: **NOT PERFORMED**
-- raw/manual SQL migration: **NOT PERFORMED**
+- provider-native migration replay: **NOT RUN**
+- raw/manual SQL migration: **NOT RUN**
 - database writes: **0**
-- destructive project/branch changes: **0**
+- secrets persisted: **0**
 
 ## Governed next flow
 
-1. Keep the corrected immutable V1-V17 source binding fixed.
-2. Use the Java API runner as the only Flyway execution design; do not wait for or require a Flyway CLI executable.
-3. Re-check ChatGPT-native availability of the Flyway 10.0.0 Java dependency set and a JDBC-capable route to Supabase.
-4. When available, run Java `info()` first.
-5. Confirm Flyway's first pending migration against the frozen source binding.
-6. Run Java `validateWithResult()`.
-7. Run Java `migrate()` with an exact target so only one migration can execute.
-8. Re-read `flyway_schema_history`, verify Flyway state/schema/integrity, persist evidence, and stop before the next migration.
-9. Do not ask the user to run commands, and do not substitute provider-native migrations/raw SQL.
-10. BL-002 may continue independently while BL-008 remains blocked.
+1. Keep the working uploaded Flyway Java dependency bundle available for the current ChatGPT execution path.
+2. Re-test only ChatGPT-native network/JDBC capabilities that could change the active route blocker; do not repeat resolved dependency discovery.
+3. When a Java JDBC route to the Supabase target becomes available, execute genuine Flyway `info()` first using runtime-only credentials.
+4. Confirm Flyway's first pending migration against the frozen source binding.
+5. Run `validateWithResult()`.
+6. Run `migrate()` with exact target version `1` only if Flyway proves V1 is first pending.
+7. Re-read `flyway_schema_history`, verify expected V1 schema objects/integrity, persist evidence, and stop before V2.
+8. Never substitute Supabase-native/raw SQL migration replay for Flyway.
+9. BL-002 may continue independently while the JDBC route remains blocked.
 
-Governed Java runner commit: `e6fc0602353ee439b1182fa698cb6cd7ef50b1d1`.
+Latest evidence: `BL-008/evidence/CYLINDER-MANUAL-FLYWAY-JDBC-TEST-20260829-064455IST.md`.
