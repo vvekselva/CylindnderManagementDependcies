@@ -1,5 +1,5 @@
-updated_by_run: CYLINDER-PRODUCTION-FIRE-20260829-101343IST
-updated_at: 2026-08-29T10:15:45+05:30
+updated_by_run: CYLINDER-PRODUCTION-FIRE-20260829-111533IST
+updated_at: 2026-08-29T11:18:20+05:30
 policy:
   release_order: R1_FIRST
   auto_approval: false
@@ -32,26 +32,6 @@ stories:
     enrichment_state: TRACE_CHAIN_ENRICHED
     approval_status: PENDING_USER_APPROVAL
     source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
-    proved_chain:
-      - AddStopController.showStopPage
-      - TripReturnWorkflowService.getTripStatusByVehicleLoadId
-      - VehicleLoadJpaDao.findById
-      - VehicleLoadDo -> public.tbl_vehicle_load
-      - VehicleTripDo -> public.tbl_vehicle_trip
-      - VehicleTripStatusDo -> public.tbl_trip_status
-      - ChallanHeatmapFetchService.processRequest
-      - TripChallanBookAssignmentViewJpaDao -> public.vw_trip_challan_book_assignments
-      - ChallanPageAuditLedgerJpaDao -> public.tbl_challan_page_audit_ledger
-      - ChallanPagePhotoJpaDao -> public.tbl_challan_page_photo
-    proved_terminals:
-      - redirect:/vehicle-load/fetch?vehicleLoadId=...
-      - with-menu/Customerstopselectionpage-withoutAutoChallanUpdate
-      - with-menu/Supplierstopselectionpage
-    remaining_before_field_contract_complete:
-      - exact request parameter identities and requiredness
-      - precise trip-status guard predicate
-      - exact customer-versus-supplier branch selection rule
-      - exact view-model field contract not represented in canonical BL-001
   STORY-0052:
     artifact: BL-002/stories/STORY-0052.md
     release: R1
@@ -59,22 +39,29 @@ stories:
     enrichment_state: TRACE_CHAIN_ENRICHED
     approval_status: PENDING_USER_APPROVAL
     source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
+  STORY-0053:
+    artifact: BL-002/stories/STORY-0053.md
+    release: R1
+    endpoint: POST /trip-return
+    enrichment_state: TRACE_CHAIN_ENRICHED
+    approval_status: PENDING_USER_APPROVAL
+    source_field_contract: SOURCE_DETAIL_REVIEW_REQUIRED
     proved_chain:
-      - TripReturnController.showReturnPage
-      - TripReturnWorkflowService.loadReturnPage
-      - VehicleLoadJpaDao -> public.tbl_vehicle_load
-      - VehicleTripDo -> public.tbl_vehicle_trip
-      - VehicleTripStatusDo -> public.tbl_trip_status
-      - VehicleDo -> public.tbl_vehicle
-      - DriverDo -> public.tbl_driver
-      - TripChallanBookAssignmentViewJpaDao -> public.vw_trip_challan_book_assignments
+      - TripReturnController.returnTripAndBooks
+      - TripReturnWorkflowService.returnTripAndBooks
       - ChallanPageAuditLedgerJpaDao -> public.tbl_challan_page_audit_ledger
-      - ChallanPagePhotoJpaDao -> public.tbl_challan_page_photo
+      - TripChallanBookAssignmentJpaDao -> TripChallanBookAssignmentDo -> public.tbl_trip_challan_book_assignment
+      - ChallanBookRegistryJpaDao -> ChallanBookRegistryDo -> public.tbl_challan_book_registry
+      - VehicleTripJpaDao -> public.tbl_vehicle_trip
+      - public.tbl_trip_status
     proved_terminals:
+      - redirect:/vehicle-loads/list
       - final-version-1/TripReturnChallanBookReview
     remaining_before_field_contract_complete:
-      - exact request parameter identities and requiredness
-      - precise eligibility or guard rules for opening the return page
-      - exact view-model field contract assembled by loadReturnPage
-      - missing or invalid trip/load identifier behavior
-next_eligible_story: STORY-0053
+      - exact submitted field identities, datatypes and requiredness
+      - exact normalization/default and per-field validation behavior
+      - exact challan-page state values written
+      - exact assignment returned-at/value mutation
+      - exact trip-status transition value
+      - terminal-selection condition
+next_eligible_story: STORY-0054
