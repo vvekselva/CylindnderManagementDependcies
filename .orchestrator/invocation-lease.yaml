@@ -1,8 +1,8 @@
-holder: null
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-201632IST
-acquired_at: 2026-08-29T20:16:32+05:30
-released_at: 2026-08-29T20:47:00+05:30
-status: RELEASED
+holder: Primary Cylinder Automation Tool
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-210423IST
+acquired_at: 2026-08-29T21:04:23+05:30
+released_at: null
+status: ACTIVE
 scope:
   - BL-002
   - BL-008
@@ -12,23 +12,30 @@ policy:
   github_role: repository_storage_only
   github_runner: forbidden
   shared_ssot_single_writer: true
+  lane_lock_scope: work_unit_local
+  independent_backlog_units: true
   bl008_database_write_parallelism: 1
   flyway_execution_mode: JAVA_API
+  bl008_validation_runtime: TESTCONTAINERS_POSTGRESQL
   manual_user_execution: forbidden
   external_worker_runtime: forbidden
   minimum_productive_minutes: 30
   stale_after_minutes: 15
   lease_expiry_authoritative: true
-heartbeat_at: 2026-08-29T20:47:00+05:30
-lease_expires_at: null
-result: PARTIAL_CONTINUE_REQUIRED
+heartbeat_at: 2026-08-29T21:04:23+05:30
+lease_expires_at: 2026-08-29T21:19:23+05:30
+result: RUNNING
 progress:
-  work_units_attempted: 12
-  work_units_completed_strict: 12
-  attempted_ids: [STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]
-  strict_field_ui_completion_delta: 12
-  materialization_delta: 11
+  work_units_attempted: 0
+  work_units_completed_strict: 0
+  attempted_ids: []
+  strict_field_ui_completion_delta: 0
+  materialization_delta: 0
   approval_delta: 0
   bl008_migration_write_delta: 0
   next_eligible_strict_r1_story: STORY-0097
   transient_lane_logs_remaining: 0
+notes:
+  - Manual Production Trigger requested by user.
+  - Individual lane locks are local; independent eligible backlog units may proceed concurrently when gates do not conflict.
+  - BL-008 validation path changed to PostgreSQL Testcontainers using genuine Flyway Java API.
