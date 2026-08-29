@@ -1,9 +1,17 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-111533IST
-started_at: 2026-08-29T11:15:33+05:30
-completed_at: 2026-08-29T11:19:05+05:30
-heartbeat_at: 2026-08-29T11:19:05+05:30
+run_id: CYLINDER-MANUAL-FIRE-20260829-112500IST
+started_at: 2026-08-29T11:25:00+05:30
+completed_at: null
+recovered_at: 2026-08-29T14:56:48+05:30
+heartbeat_at: 2026-08-29T11:25:00+05:30
+last_durable_progress_at: 2026-08-29T11:31:40+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: PARTIAL_CONTINUE_REQUIRED
+result: STALE_INVOCATION_RECOVERED
+terminalization:
+  normal_completion_proved: false
+  reason: STALE_HEARTBEAT_WITHOUT_TERMINAL_CHECKPOINT
+  runtime_compliance: FAIL_EXCEPTION_UNPROVED
+  required_minimum_productive_minutes: 30
+  recovery_action: RELEASED_STALE_LEASE_AND_PRESERVED_ONLY_DURABLE_EVIDENCE
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -15,51 +23,56 @@ policy:
   bl008_write_parallelism: 1
   shared_ssot_single_writer: true
   flyway_execution_mode: JAVA_API
+  minimum_productive_minutes: 30
 lease:
   overlap_detected: false
-  acquired_at: 2026-08-29T11:15:33+05:30
-  released_at: 2026-08-29T11:19:05+05:30
+  acquired_at: 2026-08-29T11:25:00+05:30
+  released_at: 2026-08-29T14:56:48+05:30
   status: RELEASED
+  recovery_commit: 49efb9fa1f8a0dd240c34c8ba14f0ea4fe2fdf6f
 bl001:
   status: COMPLETE_134_OF_134_READ_ONLY
 bl002:
-  status: PROGRESSED
-  story_0053:
-    endpoint: POST /trip-return
-    artifact: BL-002/stories/STORY-0053.md
-    enrichment_state: TRACE_CHAIN_ENRICHED
-    approval_status: PENDING_USER_APPROVAL
-    exact_method_path_match: true
-    auto_approved: false
-    proved_branches:
-      - CHALLAN_PAGE_STATE_UPDATES
-      - BOOK_ASSIGNMENT_RETURN
-      - TRIP_STATUS_TRANSITION
-    proved_terminals:
-      - redirect:/vehicle-loads/list
-      - final-version-1/TripReturnChallanBookReview
-  story_register_changed: false
-  story_register_reason: existing STORY-0053 row already matched canonical POST /trip-return and remains READY_FOR_USER_REVIEW/PENDING_USER_APPROVAL
-  next_eligible_story: STORY-0054
+  status: PARTIAL_PROGRESS_RECONCILED
+  durable_story_files_materialized_count: 12
+  durable_story_files_materialized:
+    - STORY-0054
+    - STORY-0055
+    - STORY-0056
+    - STORY-0057
+    - STORY-0058
+    - STORY-0059
+    - STORY-0060
+    - STORY-0061
+    - STORY-0062
+    - STORY-0063
+    - STORY-0067
+    - STORY-0068
+  skipped_by_release_order:
+    - STORY-0064
+    - STORY-0065
+    - STORY-0066
+  strict_field_ui_completed_delta: 0
+  approval_delta: 0
+  next_strict_eligible_story: STORY-0054
+  note: Materialized source-detail-gap files are not equivalent to strict field/UI completion.
 bl008:
-  status: BLOCKED_NO_WRITE
+  status: BLOCKED_NO_WRITE_EVIDENCE
   provider:
     name: Supabase
     project_ref: xipkywwvzvrwcqnkifuv
     database_name: postgres
     postgres_version: '17.6'
-  target_read_only_proof_preserved:
-    flyway_schema_history_exists: false
-    public_table_count: 0
-  runtime_change_detected: false
   blocker:
     code: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
     parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
     subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
-  identical_dependency_dns_proxy_literal_ip_probes_repeated: false
-  flyway_java_info: NOT_RUN
-  flyway_java_validate: NOT_RUN
-  flyway_java_migrate: NOT_RUN
-  database_writes: 0
+  flyway_java_info: NOT_RUN_IN_DURABLE_EVIDENCE
+  flyway_java_validate: NOT_RUN_IN_DURABLE_EVIDENCE
+  flyway_java_migrate: NOT_RUN_IN_DURABLE_EVIDENCE
+  migration_write_evidence: NONE_FOUND
 transient_lane_logs_remaining: 0
-database_writes_performed: 0
+reconciliation:
+  source_last_durable_commit: 59dacd50b27a7f8a227cd44b8ba682bb9d12791b
+  source_last_durable_commit_message: BL-002 materialize STORY-0068 with source-detail gap
+  canonical_completion_time_not_invented: true
