@@ -1,8 +1,9 @@
-version: 21
+version: 22
 purpose: >-
   Govern backlog-driven CylinderManagement production execution. BL-001, BL-002 and BL-008 may run as coordinated
-  workstreams when independently eligible. BL-008 completion is requirement-driven and uses disposable PostgreSQL
-  Testcontainers for authoritative Flyway validation; an external hosted PostgreSQL service is not required.
+  workstreams when independently eligible. ChatGPT is the sole orchestration execution engine. GitHub is used only as
+  authoritative read source and durable SSOT/evidence storage. BL-008 completion is requirement-driven and uses disposable
+  PostgreSQL Testcontainers for authoritative Flyway validation; an external hosted PostgreSQL service is not required.
 
 authority:
   control_repository: vvekselva/CylindnderManagementDependcies
@@ -24,17 +25,18 @@ selection:
   require_item_quality_gate_approved_by_user: true
 
 execution_engine:
-  owner: AUTOMATION_TOOL
+  owner: CHATGPT_PRIMARY_ORCHESTRATOR
   lifecycle: PLAN_CLAIM_EXECUTE_VALIDATE_RECONCILE_COMMIT_TERMINALIZE
-  primary_backend: HOSTED_RUNNER_BRIDGE
-  worker_backend: LOCAL_PROCESS_POOL
+  primary_backend: CHATGPT_RUNTIME
+  worker_backend: CHATGPT_LOCAL_PROCESS_POOL
   max_parallel_workers_per_invocation: 10
   worker_pool_allocation: EVENT_DRIVEN_DYNAMIC_REFILL
   starvation_forbidden: true
   shared_ssot_single_writer: true
   workers_write_shared_canonical_files_directly: false
-  hosted_runner_workflow: .github/workflows/cylinder-orchestrator.yml
-  hosted_runner_entrypoint: automation/github-runner-orchestrator.py
+  github_role: AUTHORITATIVE_READ_SOURCE_AND_DURABLE_STORAGE_ONLY
+  github_actions_execution_forbidden: true
+  external_orchestration_runner_forbidden: true
 
 startup_contract:
   shared_repository_mutation_required_before_analysis: false
@@ -111,7 +113,7 @@ bl008_database_migration_contract:
   frozen_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   flyway_path: cylinder.datascripts/src/main/resources/db/migration/
   objective: COMPLETE_AUTHORITATIVE_MIGRATION_REQUIREMENTS
-  environment_role: DISPOSABLE_LOCAL_OR_HOSTED_RUNNER_TEST_ENVIRONMENT
+  environment_role: DISPOSABLE_CHATGPT_RUNTIME_TEST_ENVIRONMENT
   authoritative_validation_target: POSTGRESQL_TESTCONTAINER
   external_postgresql_service_required: false
   neon_required: false
@@ -119,7 +121,7 @@ bl008_database_migration_contract:
   manual_sql_substitution: FORBIDDEN
   database_requirement_parallelism: 1
   selected_requirement_rule: EXACTLY_ONE_ACTIVE_REQUIREMENT_IN_AUTHORITATIVE_ORDER
-  database_mutation_owner: HOSTED_RUNNER_SERIAL_STAGE
+  database_mutation_owner: CHATGPT_PRIMARY_ORCHESTRATOR_SERIAL_STAGE
   clean_database_per_validation_cycle: true
   require_pre_post_integrity_checks: true
   require_flyway_schema_history_validation: true
@@ -150,6 +152,8 @@ backlog_items:
 
 scheduled_run_rules:
   - read authoritative control branch and current run-config before work
+  - ChatGPT alone executes orchestration; GitHub is storage and authoritative read source only
+  - GitHub Actions and external hosted runners must not execute orchestration work
   - execute BL-001, BL-002 and BL-008 independently when eligible
   - share up to 10 safe-independent workers inside the singleton Primary Orchestrator invocation
   - BL-001 must reconcile exactly 134 unique HTTP method/path keys with zero duplicates
