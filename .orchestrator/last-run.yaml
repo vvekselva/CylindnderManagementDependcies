@@ -1,16 +1,16 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-191719IST
-started_at: 2026-08-29T19:17:19+05:30
-completed_at: 2026-08-29T19:27:00+05:30
-elapsed_seconds: 581
-elapsed_minutes: 9.683
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-201632IST
+started_at: 2026-08-29T20:16:32+05:30
+completed_at: 2026-08-29T20:47:00+05:30
+elapsed_seconds: 1828
+elapsed_minutes: 30.4667
 minimum_productive_minutes_required: 30
-minimum_productive_window_satisfied: false
-terminal_classification: RUNTIME_WINDOW_FORCED_STOP
-reason: ChatGPT automation execution window ended before the mandated 30-minute productive window; eligible BL-002 work remains and this is not normal completion.
+minimum_productive_window_satisfied: true
+terminal_classification: PARTIAL_CONTINUE_REQUIRED
 startup_recovery:
   mandatory_ssot_read: true
   prior_lease_status: RELEASED
   stale_invocation_recovered: false
+  recovery_evidence: PRIOR_RUN_DURABLY_RELEASED
 lease:
   acquired: true
   readback_verified: true
@@ -19,23 +19,21 @@ lease:
   shared_ssot_single_writer: true
   bl008_db_write_parallelism: 1
 work:
-  attempted_count: 1
-  attempted_ids: [STORY-0085]
-  completed_strict_count: 0
-  completed_strict_ids: []
-  materialized_count: 1
-  materialized_ids: [STORY-0085]
-  strict_field_ui_completion_delta: 0
-  trace_materialization_delta: 1
+  attempted_count: 12
+  attempted_ids: [STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]
+  completed_strict_count: 12
+  completed_strict_ids: [STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]
+  materialized_count: 11
+  materialized_ids: [STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]
+  strict_field_ui_completion_delta: 12
+  trace_materialization_delta: 11
   approvals_delta: 0
-  next_eligible_strict_unit: STORY-0085
-  story_0085_result: SOURCE_DETAIL_REVIEW_REQUIRED
-  story_0085_gap: exact frozen controller/template/service evidence for POST /stop could not be resolved with sufficient precision through the available source interface; no behavior was invented.
+  next_eligible_strict_unit: STORY-0097
 metrics_after:
   register_ready: 131
   clarification: 3
-  materialized_story_files: 31
-  strict_field_ui_complete: 36
+  materialized_story_files: 42
+  strict_field_ui_complete: 48
   approved: 0
   use_case_grouped: 0
   testing_ready: 0
@@ -47,3 +45,6 @@ bl008:
   migration_write_delta: 0
   database_write_delta: 0
 transient_logs_remaining: 0
+notes:
+  - STORY-0085 prior source-detail gap resolved from frozen Customer Stop template, controller, service, DAO/entity path evidence.
+  - R1 priority preserved; no R2 promotion ahead of R1 cursor.
