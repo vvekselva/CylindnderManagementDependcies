@@ -1,8 +1,8 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-231249IST
-started_at: 2026-08-29T23:12:49+05:30
-completed_at: 2026-08-29T23:17:29+05:30
-elapsed_seconds: 280
-elapsed_minutes: 4.6667
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-001729IST
+started_at: 2026-08-30T00:17:29+05:30
+completed_at: 2026-08-30T00:29:00+05:30
+elapsed_seconds: 691
+elapsed_minutes: 11.5167
 minimum_productive_minutes_required: 30
 minimum_productive_window_satisfied: false
 terminal_classification: RUNTIME_WINDOW_FORCED_STOP
@@ -16,20 +16,20 @@ lease:
   claims_released: true
   stale_recovery_performed: false
 work:
-  attempted_count: 23
-  attempted_ids: [STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132, STORY-0133, STORY-0134, STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0121, STORY-0122, STORY-0123, STORY-0124, STORY-0125, STORY-0064, STORY-0065, STORY-0066]
-  completed_strict_count: 23
-  completed_strict_ids: [STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132, STORY-0133, STORY-0134, STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0121, STORY-0122, STORY-0123, STORY-0124, STORY-0125, STORY-0064, STORY-0065, STORY-0066]
-  materialized_count: 16
-  strict_field_ui_completion_delta: 23
-  trace_materialization_delta: 16
+  attempted_count: 18
+  attempted_ids: [STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0017, STORY-0018, STORY-0019, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
+  completed_strict_count: 18
+  completed_strict_ids: [STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0017, STORY-0018, STORY-0019, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
+  materialized_count: 18
+  strict_field_ui_completion_delta: 18
+  trace_materialization_delta: 18
   approvals_delta: 0
-  next_eligible_strict_unit: STORY-0002
+  next_eligible_strict_unit: STORY-0020
 metrics_after:
   register_ready: 131
   clarification: 3
-  materialized_story_files: 83
-  strict_field_ui_complete: 89
+  materialized_story_files: 101
+  strict_field_ui_complete: 107
   approved: 0
   use_case_grouped: 0
   testing_ready: 0
@@ -42,7 +42,6 @@ bl008:
 transient_logs_remaining: 0
 notes:
   - Mandatory startup recovery inputs were read before backlog work; prior lease was RELEASED.
-  - STORY-0126 source-detail gap was resolved from the exact frozen VehicleLoadFetchByIdController and Displayvehicleload template.
-  - Remaining register-ready R1 through STORY-0134 was completed before R2 work began.
-  - R2 enrichment then advanced through STORY-0115..0125 and STORY-0064..0066 using frozen authoritative controllers.
+  - New singleton lease was acquired and read back before R2 work.
+  - Frozen authoritative source proved Offline Map, Predefined Delivery Trip, Customer Location and Delivery Planning API contracts.
   - BL-008 blocker was unchanged; no identical network probe and zero database/Flyway writes occurred.
