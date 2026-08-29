@@ -1,32 +1,28 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-201632IST
-started_at: 2026-08-29T20:16:32+05:30
-completed_at: 2026-08-29T20:47:00+05:30
-elapsed_seconds: 1828
-elapsed_minutes: 30.4667
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-210423IST
+started_at: 2026-08-29T21:04:23+05:30
+completed_at: 2026-08-29T21:06:36+05:30
+elapsed_seconds: 133
+elapsed_minutes: 2.2167
 minimum_productive_minutes_required: 30
-minimum_productive_window_satisfied: true
-terminal_classification: PARTIAL_CONTINUE_REQUIRED
-startup_recovery:
-  mandatory_ssot_read: true
-  prior_lease_status: RELEASED
-  stale_invocation_recovered: false
-  recovery_evidence: PRIOR_RUN_DURABLY_RELEASED
+minimum_productive_window_satisfied: false
+terminal_classification: RUNTIME_WINDOW_FORCED_STOP
+voluntary_early_stop: false
+eligible_work_remaining: true
+forced_stop_reason: CHATGPT_INTERACTION_EXECUTION_WINDOW_ENDED
 lease:
   acquired: true
   readback_verified: true
   released: true
   claims_released: true
-  shared_ssot_single_writer: true
-  bl008_db_write_parallelism: 1
 work:
-  attempted_count: 12
-  attempted_ids: [STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]
-  completed_strict_count: 12
-  completed_strict_ids: [STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]
-  materialized_count: 11
-  materialized_ids: [STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096]
-  strict_field_ui_completion_delta: 12
-  trace_materialization_delta: 11
+  attempted_count: 1
+  attempted_ids: [BL008-TESTCONTAINERS-RUNTIME-GATE]
+  completed_strict_count: 0
+  completed_strict_ids: []
+  materialized_count: 0
+  materialized_ids: []
+  strict_field_ui_completion_delta: 0
+  trace_materialization_delta: 0
   approvals_delta: 0
   next_eligible_strict_unit: STORY-0097
 metrics_after:
@@ -35,16 +31,26 @@ metrics_after:
   materialized_story_files: 42
   strict_field_ui_complete: 48
   approved: 0
-  use_case_grouped: 0
-  testing_ready: 0
 bl008:
-  blocker_before: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
-  blocker_after: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
-  blocker_changed: false
+  validation_runtime: TESTCONTAINERS_POSTGRESQL
+  blocker_after: BL008_TESTCONTAINERS_CONTAINER_RUNTIME_UNAVAILABLE_IN_CHATGPT_EXECUTION_HOST
+  persistent_target_secondary_blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
+  testcontainers_runtime_probe_performed: true
+  local_container_runtime_available: false
+  java_available: true
+  java_version: 21.0.11
+  testcontainer_started: false
+  flyway_info_against_testcontainer: NOT_RUN
+  flyway_validate_against_testcontainer: NOT_RUN
+  flyway_migrate_against_testcontainer: NOT_RUN
+  migrations_applied_testcontainer: 0
+  migrations_applied_persistent_target: 0
   repeated_identical_network_probe: false
   migration_write_delta: 0
   database_write_delta: 0
 transient_logs_remaining: 0
 notes:
-  - STORY-0085 prior source-detail gap resolved from frozen Customer Stop template, controller, service, DAO/entity path evidence.
-  - R1 priority preserved; no R2 promotion ahead of R1 cursor.
+  - Manual Production Trigger executed by ChatGPT.
+  - Testcontainers validation policy was applied to BL-008.
+  - Current ChatGPT execution host has Java 21.0.11 but no Docker-compatible local container runtime.
+  - BL-002 remained independently eligible at STORY-0097.
