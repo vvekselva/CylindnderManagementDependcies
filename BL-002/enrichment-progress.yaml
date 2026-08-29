@@ -1,81 +1,37 @@
-version: 5
+version: 6
 backlog_id: BL-002
-updated_at: 2026-08-29T18:27:40+05:30
+updated_at: 2026-08-29T18:20:02+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260829-181328IST
-
-scope:
-  total_stories: 134
-  r1_stories: 88
-  r2_stories: 46
-  processing_order: R1_THEN_R2
-
+scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 25
-  strict_field_ui_complete: 31
+  materialized_story_files: 30
+  strict_field_ui_complete: 36
   use_case_grouped: 0
   testing_ready: 0
-
 reconciliation:
   baseline_strict_count: 16
   recovered_prior_invocation_strict_delta:
     count: 9
-    stories:
-      - STORY-0055
-      - STORY-0056
-      - STORY-0057
-      - STORY-0058
-      - STORY-0059
-      - STORY-0060
-      - STORY-0061
-      - STORY-0062
-      - STORY-0063
+    stories: [STORY-0055, STORY-0056, STORY-0057, STORY-0058, STORY-0059, STORY-0060, STORY-0061, STORY-0062, STORY-0063]
   current_run_strict_delta:
-    count: 6
-    stories:
-      - STORY-0067
-      - STORY-0068
-      - STORY-0069
-      - STORY-0070
-      - STORY-0078
-      - STORY-0079
+    count: 11
+    stories: [STORY-0067, STORY-0068, STORY-0069, STORY-0070, STORY-0078, STORY-0079, STORY-0080, STORY-0081, STORY-0082, STORY-0083, STORY-0084]
   current_run_materialization_delta:
-    count: 4
-    stories:
-      - STORY-0069
-      - STORY-0070
-      - STORY-0078
-      - STORY-0079
-  r2_skipped_for_priority:
-    - STORY-0064
-    - STORY-0065
-    - STORY-0066
-    - STORY-0071
-    - STORY-0072
-    - STORY-0073
-    - STORY-0074
-    - STORY-0075
-    - STORY-0076
-    - STORY-0077
-
+    count: 9
+    stories: [STORY-0069, STORY-0070, STORY-0078, STORY-0079, STORY-0080, STORY-0081, STORY-0082, STORY-0083, STORY-0084]
+  r2_skipped_for_priority: [STORY-0064, STORY-0065, STORY-0066, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
 cursor:
-  last_strict_r1_story: STORY-0079
-  next_eligible_strict_r1_story: STORY-0080
+  last_strict_r1_story: STORY-0084
+  next_eligible_strict_r1_story: STORY-0085
   trace_proxy_cursor: STORY-0063
-  note: >-
-    R1 remains priority. Later R2 materializations do not bypass the earliest incomplete R1 strict story.
-
-approval_policy:
-  auto_approve: false
-  approvals_delta: 0
-
+approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
   blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
   parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
   subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
   migration_write_delta: 0
   repeated_network_probe_performed: false
-  note: Existing blocker evidence unchanged; no identical DNS/TCP/proxy probe repeated.
