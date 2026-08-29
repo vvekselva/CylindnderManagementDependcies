@@ -1,9 +1,9 @@
-run_id: CYLINDER-MANUAL-FLYWAY-SESSION-POOLER-TEST-20260829-065851IST
-started_at: 2026-08-29T06:58:51+05:30
-completed_at: 2026-08-29T07:00:30+05:30
-heartbeat_at: 2026-08-29T07:00:30+05:30
+run_id: CYLINDER-MANUAL-RUNTIME-EGRESS-MITIGATION-20260829-070653IST
+started_at: 2026-08-29T07:06:53+05:30
+completed_at: 2026-08-29T07:12:34+05:30
+heartbeat_at: 2026-08-29T07:12:34+05:30
 orchestrator: Primary Cylinder Automation Tool
-result: TEST_BLOCKED_JDBC_ROUTE_NO_WRITE
+result: RUNTIME_EGRESS_CONFIRMED_BLOCKED_NO_WRITE
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -18,23 +18,21 @@ policy:
   flyway_execution_mode: JAVA_API
 lease:
   overlap_detected: false
-  acquired_at: 2026-08-29T06:58:51+05:30
-  released_at: 2026-08-29T07:00:30+05:30
-  release_commit: 97c79da8b38fef05a4df031b3097bea927eae8a2
-  status: RELEASED
+  acquired_at: 2026-08-29T07:06:53+05:30
+  released_at: null
+  status: ACQUIRED
 bl001:
   status: COMPLETE_134_OF_134
 bl002:
   status: NOT_IN_SCOPE_THIS_RUN
 bl008:
-  status: JAVA_API_DEPENDENCY_PASS_BLOCKED_EXACT_SESSION_POOLER_ROUTE
+  status: JAVA_API_READY_CONFIRMED_RUNTIME_EGRESS_BLOCKED
   provider:
     name: Supabase
     project_ref: xipkywwvzvrwcqnkifuv
     database_name: postgres
     postgres_version: '17.6'
   exact_session_pooler:
-    source: USER_SUPPLIED_FROM_SUPABASE_DASHBOARD_CONNECT_PANEL
     host: aws-0-ap-southeast-2.pooler.supabase.com
     port: 5432
     database: postgres
@@ -59,30 +57,38 @@ bl008:
     postgresql_driver_class_load: PASS
     flyway_load: PASS
     dependency_path: PASS
-  jdbc_test:
-    exact_session_pooler_dns: UNKNOWN_HOST
-    exact_session_pooler_tcp_5432: NOT_REACHED_DUE_DNS
-    jdbc_connect: FAIL
-    sqlstate: '08001'
-    root_cause: java.net.UnknownHostException
-    authentication_reached: false
-    credential_validity_proved: false
-    secret_persisted: false
+  runtime_egress:
+    http_proxy: UNSET
+    https_proxy: UNSET
+    all_proxy: UNSET
+    socks_proxy: UNAVAILABLE
+    java_proxy_options: UNSET
+    configured_dns_resolver: 168.63.129.16
+    configured_dns_query: TIMEOUT
+    public_dns_google_query: TIMEOUT
+    public_dns_cloudflare_query: TIMEOUT
+    public_hostname_resolution: FAIL_GENERAL
+    literal_ipv4_postgresql_jdbc_5432: CONNECTION_REFUSED
+    literal_ipv4_postgresql_jdbc_6543: CONNECTION_REFUSED
+    independent_public_ipv4_tcp: CONNECTION_REFUSED
+  alternative_execution_surface:
+    installed_chatgpt_native_arbitrary_java_tcp_runtime: false
+    external_runtime_candidates_discovered: true
+    external_runtime_used: false
+    reason_not_used: GOVERNANCE_EXTERNAL_WORKER_RUNTIME_FORBIDDEN
   blocker:
-    code: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
-    subreason: OUTBOUND_DNS_AND_TCP_EGRESS_UNAVAILABLE
+    code: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
+    parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
+    subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
   flyway_java_info:
-    attempted: true
-    flyway_load: PASS
     reached_database: false
-    authentication_reached: false
-    failure: UnknownHostException
   flyway_java_validate: NOT_RUN
   flyway_java_migrate: NOT_RUN
   v1_applied: false
   provider_native_migration_replay: NOT_RUN
   manual_sql_migration: NOT_RUN
   database_writes: 0
-  evidence_commit: d2d51f6dc4e6b24e23c68479ab288bc0d38f9e8b
+  evidence_commit: f25dae36045bfa1350d397d4ef208e5f56cd2aee
+  readme_commit: d9f0160a7e8e2470b2e0c7785a49cb1d46a628eb
 transient_lane_logs_remaining: 0
 database_writes_performed: 0
