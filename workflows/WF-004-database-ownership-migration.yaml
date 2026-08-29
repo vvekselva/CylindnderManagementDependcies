@@ -3,23 +3,34 @@ workflow:
   name: Database Ownership Migration
   backlog_item: BL-008
   owner: PRIMARY_ORCHESTRATOR
-  execution_backend: LOCAL_PROCESS_POOL
+  execution_backend: CHATGPT_LOCAL_PROCESS_POOL
+  github_role: AUTHORITATIVE_STORAGE_ONLY
+  github_actions_execution_forbidden: true
   max_workers: 10
+  database_write_parallelism: 1
   shared_ssot_single_writer: true
   stages:
     - DISCOVER_AND_INVENTORY
-    - ESTABLISH_RECOVERY_POINT
-    - VALIDATE_MIGRATIONS
-    - MIGRATE_VALIDATION_BRANCH
-    - POST_VALIDATE_VALIDATION_BRANCH
-    - PROMOTE_TO_PRODUCTION
-    - POST_VALIDATE_PRODUCTION
+    - ESTABLISH_CLEAN_TESTCONTAINER
+    - VALIDATE_SELECTED_REQUIREMENT
+    - ACQUIRE_DATABASE_WRITE_LOCK
+    - EXECUTE_SELECTED_REQUIREMENT_WITH_FLYWAY
+    - POST_VALIDATE_TESTCONTAINER
+    - CAPTURE_EVIDENCE
+    - DESTROY_TESTCONTAINER
     - RECORD_AND_VERIFY
   rules:
+    - ChatGPT Primary Orchestrator owns planning execution validation recovery and reconciliation
+    - GitHub is used only for authoritative source reads and durable SSOT evidence storage
+    - GitHub Actions and hosted runners must not execute orchestration work
     - all database mutation stages are serialized
-    - read-only source inventory and integrity analysis may use parallel workers
-    - never mutate production before validation-branch gates pass
+    - exactly one authoritative BL-008 requirement is active at a time
+    - read-only source inventory and integrity analysis may use safe parallel workers
+    - use a clean disposable PostgreSQL Testcontainer for authoritative migration validation
+    - external hosted PostgreSQL and Neon are not required for BL-008 completion
     - use Flyway only for migration execution
-    - fail closed on target-identity, checksum, ordering, ownership-integrity or rollback ambiguity
-    - synchronize durable evidence after each accepted stage
+    - manual SQL substitution is forbidden
+    - acquire the BL-008 database lock immediately before Flyway mutation and release after validation/evidence capture
+    - fail closed on checksum ordering ownership-integrity migration or rollback ambiguity
+    - synchronize durable evidence only after accepted validation
     - leave zero transient lane logs at boundaries
