@@ -1,12 +1,13 @@
-holder: null
-run_id: CYLINDER-PRODUCTION-FIRE-20260829-211538IST
-acquired_at: 2026-08-29T21:15:38+05:30
-released_at: 2026-08-29T21:46:12+05:30
-status: RELEASED
+holder: Primary Cylinder Automation Tool
+run_id: CYLINDER-PRODUCTION-FIRE-20260829-221749IST
+acquired_at: 2026-08-29T22:17:49+05:30
+released_at: null
+status: ACTIVE
 scope:
   - BL-002
   - BL-008
-claims: []
+claims:
+  - STORY-0110
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -17,26 +18,18 @@ policy:
   flyway_execution_mode: JAVA_API
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-29T21:46:12+05:30
+heartbeat_at: 2026-08-29T22:17:49+05:30
 lease_expires_at: null
-result: PARTIAL_CONTINUE_REQUIRED
+result: IN_PROGRESS
 recovery:
-  classification: RECOVERED_STALE_INVOCATION
-  stale_run_id: CYLINDER-PRODUCTION-FIRE-20260829-211600IST
-  stale_heartbeat_at: 2026-08-29T21:16:00+05:30
-  recovered_at: 2026-08-29T21:46:12+05:30
+  classification: CLEAN_START_FROM_RELEASED_LEASE
   durable_evidence_reconciled: true
 progress:
-  work_units_attempted: 13
-  work_units_completed_strict: 13
-  attempted_ids: [STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109]
-  strict_field_ui_completion_delta: 13
-  materialization_delta: 13
-  approval_delta: 0
-  bl008_migration_write_delta: 0
+  baseline_strict_field_ui_complete: 61
+  baseline_materialized_story_files: 55
   next_eligible_strict_r1_story: STORY-0110
   transient_lane_logs_remaining: 0
 notes:
-  - A concurrently materialized lease was found ACTIVE with heartbeat older than 15 minutes and no newer durable heartbeat proving it alive; it was recovered as stale.
-  - BL-008 outbound PostgreSQL blocker was unchanged; identical probes were not repeated and writes remained zero.
-  - Minimum productive window was satisfied and eligible BL-002 work remains.
+  - Mandatory startup recovery inputs read before backlog work.
+  - Previous lease was RELEASED; no stale recovery required at startup.
+  - BL-008 blocker unchanged; no identical network probe and zero migration writes.
