@@ -27,30 +27,7 @@ Evidence: `BL-008/evidence/20260830-v171-existing-database-validation-pass.md`.
 
 V171 added the two Customer Order Request compatibility views required by the current Java mappings. Flyway history, view existence, expected columns and data equivalence all passed.
 
-## Full schema audit after V171
-
-V3 single-output audit result:
-
-- total checks: 1322
-- passed: 1313
-- failed: 9
-- result: `BL008_FULL_SCHEMA_AUDIT_FAIL`
-
-Classification evidence: `BL-008/evidence/20260830-full-schema-audit-v3-classification.md`.
-
-### Genuine schema gap — 1
-
-`tbl_cylinder_identifier_replacement_event.fk_party_asset_account`
-
-This column is mapped by `CylinderIdentifierReplacementEventDo` and referenced by V149 `fn_replace_cylinder_primary_identifier()`, but V144 created the table without it.
-
-### Audit false positives — 8
-
-Six failures came from `@JoinTable` nested join columns being incorrectly attributed to the parent tables. The real columns belong to `tbl_challan_transaction_link` and are created by V93.
-
-Two failures came from direct lookup of very long declared JPA sequence names. The affected tables were created with `BIGSERIAL`; the corrected audit validates sequence ownership with `pg_get_serial_sequence(table,column)` to avoid PostgreSQL identifier-length false positives.
-
-## V172 — READY FOR EXISTING-DATABASE APPLY
+## V172 — DATABASE MAPPING CORRECTION APPLIED / COLUMN AUDIT PASS
 
 Migration:
 
@@ -62,32 +39,65 @@ Correction:
 - Adds no speculative foreign key because no authoritative party-asset-account master relation exists in the governed migration corpus.
 - Modifies no historical migration.
 
-Application-source Git commit containing V172: `6b746db9369f903eff700e0a7d4caa4f97429328`.
+Post-V172 V4 audit result:
 
-## Validation after V172
+- expected relations: **119; failures 0**
+- expected explicit columns: **1128; failures 0**
+- V4 sequence-ownership check was not a valid JPA sequence-existence test because most application sequences are explicitly named and need not be owned serial sequences.
 
-Use corrected single-run audit:
+## V5 sequence-name audit
 
-`BL008_Full_Schema_Audit_After_V172_V4.sql`
+Corrected V5 direct JPA-sequence lookup passed 66 of 68 distinct declared sequences and identified exactly two remaining mismatches:
 
-V4 fixes the two audit-model defects:
+1. `public.tbl_yard_inventory_allowed_state_pk_yard_inventory_allowed_state_id_seq`
+2. `public.tbl_yard_inventory_source_type_pk_yard_inventory_source_type_id_seq`
 
-1. nested `@JoinTable` columns are checked against the join table itself;
-2. serial sequence ownership is checked with `pg_get_serial_sequence()` rather than exact long sequence-name lookup.
+Both mappings are declared by the current JPA entity layer. V113 created their PK columns as `BIGSERIAL`. These two Java sequence identifiers exceed PostgreSQL's 63-byte identifier limit, while the BIGSERIAL backing sequences were generated under PostgreSQL's own long-name construction rule, so the JPA-resolved identifiers do not match the existing backing-sequence names.
 
-Decision rule:
+## V173 — READY FOR EXISTING-DATABASE APPLY
 
-- `BL008_FULL_SCHEMA_AUDIT_PASS` -> do not create V173 from static mapping; advance to application/runtime functional smoke testing.
-- `BL008_FULL_SCHEMA_AUDIT_FAIL` -> analyze only the remaining proved failures and author the smallest next delta if required.
+Migration:
+
+`V173__Align_Yard_Inventory_Sequence_Names_With_JPA.sql`
+
+Application-source Git commit containing V173: `f12dcfd5cccf9d53c4e7e564a9e8c8abdaaa9ea7`.
+
+Correction strategy:
+
+- Rename the **existing** BIGSERIAL backing sequences in place.
+- Do not create replacement sequences.
+- Preserve sequence OIDs, current values, ownership and PK column-default dependencies.
+- Rename only to the PostgreSQL-resolved 63-byte identifiers expected by the two JPA `@SequenceGenerator` declarations.
+
+Target resolved names:
+
+- `public.tbl_yard_inventory_allowed_state_pk_yard_inventory_allowed_stat`
+- `public.tbl_yard_inventory_source_type_pk_yard_inventory_source_type_id`
+
+## Validation after V173
+
+Use the one-run validation script:
+
+`BL008_V173_Validation_Single_Run.sql`
+
+Acceptance requires:
+
+- Flyway V173 = PASS.
+- Both JPA-resolved sequence names exist.
+- Each table PK column still resolves through `pg_get_serial_sequence()` to the same sequence OID after rename.
+- V172 `fk_party_asset_account BIGINT` remains present.
+- Overall result = `BL008_V173_VALIDATION_PASS; failed_checks=0`.
 
 ## Current state
 
 - Existing migrations modified: **0**
-- New additive migrations in current handoff: **2** (`V171`, `V172`)
+- New additive migrations in current handoff: **3** (`V171`, `V172`, `V173`)
 - V171 database validation: **PASS**
-- V172 state: **WAITING_FOR_USER_EXISTING_DATABASE_FLYWAY_APPLY_AND_V4_AUDIT**
+- V172 relation/column compatibility: **PASS**
+- Remaining V5 mismatches before V173: **2 sequence-name mismatches**
+- V173 state: **WAITING_FOR_USER_EXISTING_DATABASE_FLYWAY_APPLY_AND_VALIDATION**
 - Database apply target: **EXISTING DATABASE**
 - Existing Flyway history: **PRESERVE**
 - Database writes by ChatGPT: **0**
 
-BL-002 remains independently eligible while BL-008 waits for the user-returned V172/V4 result.
+BL-002 remains independently eligible while BL-008 waits for the user-returned V173 validation result.
