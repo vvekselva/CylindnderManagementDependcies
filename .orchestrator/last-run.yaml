@@ -1,5 +1,5 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
-checkpoint_state: STARTUP_DRIFT_REPAIRED
+checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T05:15:08+05:30
 checkpoint_at: 2026-08-31T05:15:08+05:30
 elapsed_seconds_at_checkpoint: 0
@@ -53,10 +53,10 @@ reconciliation:
   startup_projection_drift_repaired: true
   stale_aggregate: V177_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
   durable_bl008_truth: V180_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  readback_verified_same_run_id: false
-  readback_verified_metrics: false
-  readback_verified_bl008_state: false
-  aggregate_reconciliation_gate: STARTUP_REPAIR_READBACK_PENDING
+  readback_verified_same_run_id: true
+  readback_verified_metrics: true
+  readback_verified_bl008_state: true
+  aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
 notes:
   - Startup repaired stale BL-008 aggregate state using the newer durable BL-008 README.
