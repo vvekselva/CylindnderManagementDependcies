@@ -1,8 +1,9 @@
-version: 30
+version: 31
 backlog_id: BL-002
-updated_at: 2026-08-30T17:13:52+05:30
+updated_at: 2026-08-30T19:23:53+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260830-171352IST
+checkpoint_state: CHECKPOINT_RECONCILED
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -11,6 +12,7 @@ metrics:
   materialized_story_files: 134
   materialization_pending: 0
   strict_field_ui_complete: 120
+  strict_field_ui_remaining: 14
   use_case_grouped: 0
   testing_ready: 0
 materialization:
@@ -30,6 +32,8 @@ reconciliation:
     - Repaired STORY-0001 from frozen LoginController, login template, Spring Security configuration, success handler, DAO, entity and V1 migration evidence.
     - Strict field/UI completion advanced from 119 to 120 without changing physical parity or approval state.
     - Physical Story parity remains 134/134 with zero pending materialization tasks.
+    - Repaired aggregate drift with .orchestrator/last-run.yaml; both now report run CYLINDER-PRODUCTION-FIRE-20260830-171352IST and strict completion 120/134.
+  aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
@@ -38,8 +42,13 @@ cursor:
   trace_proxy_cursor: STORY-0030
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
-  mode: LOCAL_FLYWAY_EXISTING_DATABASE_HANDOFF
-  v171_database_validation: PASS
-  v172_required_for_v171_scope: false
-  full_schema_audit_state: WAITING_FOR_USER_SINGLE_RUN_RESULT
+  state_source: BL-008/README.md
+  execution_mode: USER_LOCAL_FLYWAY_HANDOFF
+  target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
+  last_validated_migration: V174__Enforce_Strict_Cylinder_Ownership_Model.sql
+  v174_validation: CLEAN_DATABASE_VALIDATED_PASS
+  phase2_supplier_customer_lifecycle_analysis: ACTIVE
+  location_exclusivity_customer_supplier_decommissioned: IMPLEMENTED_SOURCE_VALIDATION_PENDING
+  current_state: V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE
+  next_schema_migration: CREATE_ONLY_IF_CONCRETE_DATABASE_MISMATCH_IS_PROVED
   database_write_delta_chatgpt: 0
