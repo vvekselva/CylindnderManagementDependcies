@@ -1,7 +1,7 @@
-version: 8
+version: 9
 name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
 supersedes:
-  - version: 7
+  - version: 8
     name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
 principles:
   - No global backlog lock.
@@ -10,7 +10,7 @@ principles:
   - Same writable resource is single-writer.
   - GitHub is durable control/audit persistence only; GitHub Actions/runners remain forbidden.
   - ChatGPT performs orchestration/source-analysis/authoring work.
-  - BL-008 is an explicit exception allowing the user to run the normal Flyway apply on the existing database and return the result.
+  - BL-008 is an explicit exception allowing the user to run read-only validation and normal Flyway apply on the existing database and return the result.
   - Unit-local durable evidence is persisted before aggregate projections.
   - BL-002 registered Story parity with physical Story files is a governed completion gate.
   - A run-local blocker must not automatically disable the recurring Production Fire scheduler.
@@ -98,15 +98,19 @@ BL-002:
 
 BL-008:
   mode: LOCAL_FLYWAY_EXISTING_DATABASE_HANDOFF
+  active_workstream: OWNERSHIP_MODEL_MIGRATION
   ChatGPT_role:
-    - analyze_source_and_migrations
-    - author_additive_migrations
-    - package_updated_source
-    - analyze_user_returned_flyway_result
-    - author_follow_up_migration_when_additive_repair_is_possible
+    - analyze_ownership_model_source_and_historical_migrations
+    - author_single_run_read_only_baseline_audits
+    - classify_existing_data_against_governed_ownership_rules
+    - author_additive_ownership_migrations_from_proven_evidence
+    - package_delta_only_source
+    - analyze_user_returned_results
   user_role:
-    - run_normal_flyway_migration_on_existing_database
-    - return_flyway_result_or_error
+    - run_single_read_only_ownership_baseline_on_existing_database
+    - return_one_consolidated_result_table
+    - run_normal_flyway_migration_on_existing_database_when_delta_is_authored
+    - return_post_migration_validation
   database_policy:
     target: EXISTING_DATABASE
     preserve_data: true
@@ -120,11 +124,22 @@ BL-008:
     pending_selection: Flyway_existing_history
   migration_policy:
     additive_by_default: true
-    current_authored_migration: V171__Customer_Order_Request_View_Compatibility.sql
+    last_validated_migration: V173__Align_Yard_Inventory_Sequence_Names_With_JPA.sql
+    next_candidate_version: V174
+    current_authored_migration: none
+    authoring_gate: PHASE_1_OWNERSHIP_BASELINE_EVIDENCE_REQUIRED
     historical_rewrite_requires_explicit_user_approval: true
     raw_manual_sql_substitution: forbidden
-  current_state: WAITING_FOR_USER_EXISTING_DATABASE_FLYWAY_RESULT
-  blocker_isolation_rule: Waiting for the user's BL-008 Flyway result must not block BL-002.
+  ownership_model_policy:
+    governed_types: [COMPANY_OWNED, SUPPLIER_OWNED, CUSTOMER_OWNED]
+    company_owned: {company_fleet_asset: true, owner_supplier: null, owner_customer: null}
+    supplier_owned: {company_fleet_asset: false, owner_supplier: required, owner_customer: null}
+    customer_owned: {company_fleet_asset: false, owner_supplier: null, owner_customer: required}
+    both_supplier_and_customer_owner: forbidden
+    baseline_before_enforcement: required
+    invalid_existing_rows: classify_before_correction
+  current_state: OWNERSHIP_MODEL_MIGRATION_STARTED_WAITING_FOR_PHASE1_BASELINE_RESULT
+  blocker_isolation_rule: Waiting for the user's BL-008 ownership baseline result must not block BL-002.
 
 planning:
   algorithm:
@@ -151,4 +166,4 @@ github_role:
   github_runner: forbidden
   external_worker_runtime: forbidden
   user_manual_execution_general: forbidden
-  BL008_existing_database_flyway_handoff: allowed
+  BL008_existing_database_readonly_validation_and_flyway_handoff: allowed
