@@ -38,17 +38,17 @@ The current application ingestion service already:
 
 Historical V144 introduced the ownership schema but its `chk_cylinder_owner_party_consistency` constraint is broader than the current type-specific rules.
 
-## Disposition of the Phase-1 populated-database audit
+## Disposition of the populated-database audit
 
-The earlier baseline audit found 1327 legacy `COMPANY_OWNED` cylinders and zero active primary identifiers. The user clarified that this is a fresh application and those rows will be removed before the clean migration.
+The earlier baseline audit found 1327 legacy `COMPANY_OWNED` cylinders and zero active primary identifiers. The user clarified that this is a fresh application and those rows will be removed before final clean-migration acceptance.
 
 Therefore:
 
 - **no legacy cylinder or identifier backfill migration will be created**;
-- the 1327-row identifier failure is not a blocker for the fresh Ownership Model migration;
+- the 1327-row identifier condition is not a blocker for the fresh Ownership Model migration;
 - V144 backfill statements affect zero rows on the fresh target and need no historical rewrite.
 
-## V174 — AUTHORED / READY FOR CLEAN MIGRATION
+## V174 — OWNERSHIP LOGIC PASS / CLEAN DATABASE RETEST PENDING
 
 `V174__Enforce_Strict_Cylinder_Ownership_Model.sql`
 
@@ -62,11 +62,29 @@ V174:
 4. validates the selected ownership type, active state, correct owner side, company-fleet flag and exchangeable flag without hard-coding lookup IDs;
 5. performs no cylinder-data backfill.
 
-Validation handoff:
+### User-returned V174 validation
 
-`BL008_Ownership_V174_Clean_Migration_Validation.sql`
+The validation was run against the prior populated database, so `FRESH_DATABASE_CYLINDER_COUNT` failed with `tbl_cylinder_count=1327`.
 
-Acceptance requires a clean Flyway migration through V174 and a consolidated validation PASS for the three valid ownership combinations and the governed invalid combinations.
+All V174 ownership enforcement checks passed:
+
+- Flyway V174: **PASS**
+- ownership type master: **PASS**
+- strict owner constraint: **PASS**
+- ownership trigger: **PASS**
+- valid COMPANY_OWNED: **PASS**
+- valid SUPPLIER_OWNED: **PASS**
+- valid CUSTOMER_OWNED: **PASS**
+- company with supplier owner rejected: **PASS**
+- supplier without supplier owner rejected: **PASS**
+- supplier with customer owner rejected: **PASS**
+- customer without customer owner rejected: **PASS**
+- customer with supplier owner rejected: **PASS**
+- ownership flag mismatch rejected: **PASS**
+
+Evidence: `BL-008/evidence/20260830-v174-ownership-logic-pass-clean-db-pending.md`.
+
+Interpretation: **V174 ownership logic is accepted. The only unresolved item is validation on the true fresh database. No V175 is justified by this result.**
 
 ## Current state
 
@@ -76,7 +94,15 @@ Acceptance requires a clean Flyway migration through V174 and a consolidated val
 - Legacy identifier backfill: **CANCELLED / NOT REQUIRED**
 - Historical migration rewrite: **0**
 - Current ownership migration: **V174**
-- V174 state: **WAITING_FOR_USER_CLEAN_FLYWAY_MIGRATION_AND_VALIDATION**
+- V174 ownership enforcement logic: **PASS**
+- V174 clean-database acceptance: **PENDING**
+- Current state: **V174_LOGIC_PASS_WAITING_FOR_TRUE_CLEAN_DATABASE_VALIDATION**
 - Database writes by ChatGPT: **0**
 
-After V174 passes, continue with the next source-proved Ownership Model requirement, including supplier/customer asset lifecycle and supplier-owned count-preservation rules. Do not create later versions merely to advance the number.
+## Next action
+
+Create/use the actual fresh PostgreSQL database, run the complete normal Flyway chain through V174, then rerun `BL008_Ownership_V174_Clean_Migration_Validation.sql` before entering application data.
+
+Acceptance requires `FRESH_DATABASE_CYLINDER_COUNT = PASS` with `tbl_cylinder_count=0` and overall `BL008_OWNERSHIP_V174_VALIDATION_PASS; failed_checks=0`.
+
+After that clean-database PASS, continue with the next source-proved Ownership Model requirement, including supplier/customer asset lifecycle and supplier-owned count-preservation rules. Do not create later versions merely to advance the number.
