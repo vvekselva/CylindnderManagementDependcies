@@ -1,0 +1,14 @@
+claim_id: 20260831-001706-STORY-0043
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-001706IST
+backlog: BL-002
+unit_id: STORY-0043
+status: ACTIVE
+claimed_at: 2026-08-31T00:22:31+05:30
+read_set:
+  - BL-002/stories/STORY-0043.md
+  - BL-002/story-register.csv
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89:cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/VehicleTripLoadWizardController.java
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89:cylindermanagement.web/src/main/resources/templates/final-version-1/VehicleTripLoadWizard.html
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89:cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/cache/LookupDataCache.java
+write_set:
+  - BL-002/stories/STORY-0043.md
