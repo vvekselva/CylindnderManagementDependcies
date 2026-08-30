@@ -1,0 +1,17 @@
+version: 1
+claim_id: 20260831-032131-STORY-0040
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-031440IST
+backlog: BL-002
+unit_id: STORY-0040
+status: ACTIVE
+owner: Primary Cylinder Automation Tool
+claimed_at: 2026-08-31T03:21:31+05:30
+heartbeat_at: 2026-08-31T03:21:31+05:30
+read_set:
+  - BL-002/stories/STORY-0040.md
+  - BL-002/work-status/STORY-0040.yaml
+  - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+write_set:
+  - BL-002/stories/STORY-0040.md
+  - BL-002/work-status/STORY-0040.yaml
+collision_rule: exact_story_unit_only
