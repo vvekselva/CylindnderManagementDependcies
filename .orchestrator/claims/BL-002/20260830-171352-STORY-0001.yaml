@@ -3,7 +3,9 @@ backlog: BL-002
 work_unit: STORY-0001
 claimant: Primary Cylinder Automation Tool
 claimed_at: 2026-08-30T17:13:52+05:30
-state: ACTIVE
+state: RECOVERED_STALE_CLAIM
+recovered_at: 2026-08-30T19:23:51+05:30
+recovery_reason: Prior claim remained ACTIVE more than 15 minutes after STORY-0001 durable strict completion; no heartbeat_at or lease_expires_at execution authority remained.
 read_set:
   - BL-002/story-register.csv
   - BL-002/stories/STORY-0001.md
@@ -13,3 +15,7 @@ write_set:
   - BL-002/enrichment-progress.yaml
   - .orchestrator/last-run.yaml
 purpose: Repair source-integrity mismatch and perform frozen-source strict enrichment for registered GET /login story.
+recovery_evidence:
+  durable_story_state: completed_before_recovery
+  aggregate_strict_count: 120
+  original_completion_time_invented: false
