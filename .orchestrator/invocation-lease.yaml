@@ -7,7 +7,7 @@ scope:
   - BL-002
   - BL-008
 claims:
-  - STORY-0020
+  - STORY-0021
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -18,22 +18,23 @@ policy:
   flyway_execution_mode: JAVA_API
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T05:37:32+05:30
-lease_expires_at: 2026-08-30T05:52:32+05:30
+heartbeat_at: 2026-08-30T05:39:51+05:30
+lease_expires_at: 2026-08-30T05:54:51+05:30
 result: IN_PROGRESS
 recovery:
   classification: CLEAN_START_FROM_RELEASED_LEASE
   durable_evidence_reconciled: true
 progress:
-  work_units_attempted: 0
-  work_units_completed_strict: 0
-  strict_field_ui_completion_delta: 0
-  materialization_delta: 0
+  work_units_attempted: 1
+  work_units_completed_strict: 1
+  strict_field_ui_completion_delta: 1
+  materialization_delta: 1
   approval_delta: 0
   bl008_migration_write_delta: 0
-  next_eligible_strict_unit: STORY-0020
+  next_eligible_strict_unit: STORY-0021
   transient_lane_logs_remaining: 0
 notes:
   - Mandatory startup recovery inputs read before backlog work.
-  - Same invocation heartbeat refreshed during continuous ChatGPT execution; no competing owner observed.
-  - BL-008 blocker unchanged; no redundant network probe planned.
+  - STORY-0020 strict GET screen-entry/UI/browser-preview contract source-proved and persisted.
+  - Replanned immediately to STORY-0021; no competing owner observed.
+  - BL-008 blocker unchanged; no redundant network probe performed.
