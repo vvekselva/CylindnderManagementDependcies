@@ -1,19 +1,21 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-191638IST
-checkpoint_state: IN_PROGRESS_CHECKPOINT
-started_at: 2026-08-30T19:16:38+05:30
-checkpoint_at: 2026-08-30T19:25:57+05:30
-elapsed_seconds_at_checkpoint: 559
-elapsed_minutes_at_checkpoint: 9.32
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-221252IST
+checkpoint_state: CHECKPOINT_RECONCILED
+started_at: 2026-08-30T22:12:52+05:30
+checkpoint_at: 2026-08-30T22:16:31+05:30
+elapsed_seconds_at_checkpoint: 219
+elapsed_minutes_at_checkpoint: 3.65
 productive_runtime_target_minutes: 30
 productive_target_satisfied_at_checkpoint: false
+terminal_classification: PARTIAL_CONTINUE_REQUIRED
+voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   compatibility_invocation_lease_global_mutex: false
   shared_aggregate_single_writer: true
 work:
-  attempted_ids: [STORY-0037]
-  completed_strict_ids: [STORY-0037]
+  attempted_ids: [STORY-0039]
+  completed_strict_ids: [STORY-0039]
   blocked_ids: []
   strict_field_ui_completion_delta: 1
   physical_materialization_delta: 0
@@ -24,8 +26,8 @@ metrics_after:
   clarification: 3
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 121
-  strict_field_ui_remaining: 13
+  strict_field_ui_complete: 122
+  strict_field_ui_remaining: 12
   approved: 0
   use_case_grouped: 0
   testing_ready: 0
@@ -33,22 +35,30 @@ bl008:
   state_source: BL-008/README.md
   execution_mode: USER_LOCAL_FLYWAY_HANDOFF
   target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
-  last_validated_migration: V174__Enforce_Strict_Cylinder_Ownership_Model.sql
+  last_validated_migration: V176__Enforce_Customer_Owned_Custody_Consistency.sql
   v174_validation: CLEAN_DATABASE_VALIDATED_PASS
-  phase2_supplier_customer_lifecycle_analysis: ACTIVE
-  location_exclusivity_customer_supplier_decommissioned: IMPLEMENTED_SOURCE_VALIDATION_PENDING
-  current_state: V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE
-  next_schema_migration: CREATE_ONLY_IF_CONCRETE_DATABASE_MISMATCH_IS_PROVED
+  v175_validation: CLEAN_DATABASE_VALIDATED_PASS
+  v176_validation: CLEAN_DATABASE_VALIDATED_PASS
+  current_authored_migration: V177__Enforce_Cross_Table_Cylinder_Location_Exclusivity.sql
+  v177_validation: AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  phase2: V177_CLEAN_VALIDATION_GATE
+  current_state: V177_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  next_schema_migration: DO_NOT_CREATE_V178_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V177_ACCEPTANCE
   database_write_delta_chatgpt: 0
 claims:
-  stale_claims_recovered: [BL002-STORY-0001-20260830-171352IST]
-  current_claim: BL002-STORY-0037-20260830-192351IST
-  claims_remaining_at_checkpoint: 1
+  created: [BL002-STORY-0039-20260830-221252IST]
+  completed: [BL002-STORY-0039-20260830-221252IST]
+  claims_remaining_at_checkpoint: 0
+reconciliation:
+  startup_projection_drift_detected: true
+  repaired_projection: BL-008 aggregate state advanced from stale V174 to live V176/V177 README state
+  aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
 notes:
-  - Startup reconciliation used live architecture, lease policy, last-run, compatibility lease, BL-002 progress/queue and BL-008 README.
-  - Recovered the expired STORY-0001 claim from durable evidence; no original completion time was invented.
-  - STORY-0037 GET /cylinderDelivery was dynamically selected from the live strict-gap set and completed from frozen controller/template source.
-  - The GET handler only prepares the blank DTO/model and does not invoke mediator/DAO/database; the page-level dependent lookup APIs, hidden propagation, picker gates, validation and visible outcomes are now source-proved.
-  - No Story approval occurred and no database write was performed by ChatGPT.
-  - Further strict BL-002 work remains eligible; continue REPLAN -> CLAIM -> DISPATCH.
+  - Mandatory startup control files were read; compatibility invocation lease is RELEASED and is not a global mutex.
+  - Materialization queue remains empty and physical Story parity remains 134/134.
+  - Live BL-008 README superseded stale aggregate projections: V174/V175/V176 are clean-database validated and V177 is authored waiting for clean validation.
+  - Dynamically selected STORY-0039 GET /vehicleLoad from the strict source-detail gap set.
+  - Frozen controller/template source proved direct and redirect-preselected paths, visible controls, browser request identities, hidden cylinder propagation, purpose distribution validation, submit guards, visible outcomes and adjacent POST handoff.
+  - Strict completion advanced from 121 to 122; no Story approval occurred and ChatGPT performed zero database writes.
+  - Further safe-independent strict BL-002 work remains eligible and must be dynamically reconciled on continuation.
