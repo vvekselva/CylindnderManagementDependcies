@@ -1,214 +1,175 @@
 # CylinderManagement Automation Framework - Self-Reliant E2E
 
-**Consolidated current architecture - 30 August 2026**
+**Consolidated current architecture - 30 August 2026 - Revision 2 (Scheduler Resilience Fix)**
 
-GitHub = durable version control / control-state persistence. ChatGPT = Primary Orchestrator, source analyst, migration author, validator and recovery coordinator. BL-008 has an explicit local execution handoff in which the user applies the authored Flyway migrations to the new PostgreSQL database and returns the result.
+GitHub is durable version control/control-state persistence. ChatGPT is the Primary Orchestrator, execution engine, source analyst, validator and recovery coordinator. All orchestration/automation execution stays inside ChatGPT's available tooling/runtime. GitHub Actions/runners, external worker runtimes, local bridges, agents and user-operated per-run execution are forbidden.
 
-This document is the human-readable source for the current architecture. It supersedes historical bootstrap-first, hosted-runner-bridge, Neon-target, mandatory Testcontainers/Supabase execution, and global-singleton-lock wording. The generated PDF must be rebuilt from this source whenever this architecture changes.
+This document is the human-readable source for the active architecture. It supersedes historical Neon, hosted-runner-bridge, bootstrap-first shared-write barriers, global-singleton-lock wording, and the temporary BL-008 user-local Flyway handoff wording.
 
 ## 1. Authoritative boundary
 
 | Area | Current governed state |
 |---|---|
 | Control repository | `vvekselva/CylindnderManagementDependcies` on `main` |
-| BL-001 frozen source | `vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89` |
-| BL-008 current authoring source | Uploaded `Harinandhan-Cylinder-Backup(20260830-093548).zip` |
-| Primary orchestration host | ChatGPT |
+| Application source | `vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89` |
+| Primary execution host | ChatGPT only |
 | GitHub role | Durable control/audit persistence and version control only |
-| GitHub Actions/runners | Forbidden for orchestration execution |
-| External worker runtime | Forbidden unless governance is explicitly changed |
-| User local execution | Allowed only for the explicit BL-008 Flyway handoff |
+| GitHub Actions/runners | Forbidden |
+| External worker runtime / local bridge / agent | Forbidden |
+| User-operated per-run execution | Forbidden |
 | Maximum safe-independent workers | Up to 10 |
-| BL-008 database writes by ChatGPT | 0 in local-handoff mode |
+| BL-008 target | Supabase project `xipkywwvzvrwcqnkifuv`, DB `postgres`, PostgreSQL 17.6 |
+| BL-008 migration mechanism | Flyway 10.0.0 Java API only |
+| BL-008 DB-write parallelism | Exactly 1 |
+| Productive runtime | 30-minute target; platform-forced shorter runs allowed with evidence |
 
-## 2. Core execution lifecycle
+## 2. Current self-reliant execution lifecycle
 
-`TRIGGER -> READ/RECONCILE -> PLAN -> BUILD DEPENDENCY + READ/WRITE SETS -> CLAIM RESOURCE -> EXECUTE -> VALIDATE -> PERSIST UNIT EVIDENCE -> RELEASE CLAIM -> AGGREGATE/CHECKPOINT -> REPLAN/REFILL -> TERMINALIZE`
+`TRIGGER -> READ/RECONCILE -> PLAN DEPENDENCIES + READ/WRITE SETS -> CLAIM EXACT RESOURCE/UNIT -> EXECUTE -> VALIDATE -> PERSIST UNIT EVIDENCE -> RELEASE CLAIM -> AGGREGATE/CHECKPOINT -> REPLAN/REFILL -> TERMINALIZE WHEN PLATFORM WINDOW ENDS OR NO ELIGIBLE WORK`
 
-There is no global backlog mutex. Work serializes only for a proven dependency, a write-set collision, an immutable-read invalidation risk, or shared aggregate writing. BL-008 local database execution is outside ChatGPT's worker pool and is represented as a governed handoff/result gate.
+Unit-local durable evidence is persisted continuously. Aggregate state must not be deferred entirely until the end of the run.
 
-## 3. Resource-scoped claims
+## 3. Resource-scoped claims and lock hierarchy
 
-Claims are stored as one file per claim under `.orchestrator/claims/<backlog>/<claim-id>.yaml`.
+There is no global backlog mutex. Serialization requires a proven dependency or actual write-set conflict. The legacy `.orchestrator/invocation-lease.yaml` is compatibility-only and cannot block unrelated work.
 
-Each claim identifies the exact backlog unit and read/write set. Two active claims may coexist when their write sets do not conflict and neither depends on incomplete output owned by the other.
+Claims are stored under `.orchestrator/claims/<backlog>/<claim-id>.yaml`. Up to 10 safe-independent claims may execute when write sets do not conflict. Shared aggregates are single-writer. BL-008 database mutation capacity is exactly 1.
 
-The legacy `.orchestrator/invocation-lease.yaml` is compatibility-only and must not be interpreted as a global mutex.
+## 4. Run scopes, concurrency and progress guarantee
 
-## 4. Run scopes
-
-- `TARGETED`: execute only the explicitly requested backlog/work units.
+- `TARGETED`: only explicitly requested backlog/work units.
 - `CONTINUOUS`: replan across all eligible independent backlogs/units.
-- `RECOVERY`: execute only blocker, stale-state, parity, reconciliation or architecture recovery work in scope.
+- `RECOVERY`: blocker, stale-state, parity, reconciliation or architecture recovery work in scope.
 
-## 5. Unit-local evidence first
+Thirty minutes is a productive target, not a correctness minimum. Never idle to satisfy the clock. While eligible in-scope work remains and execution is still available, voluntary termination is forbidden. After every completion or blocker: `REPLAN -> CLAIM -> DISPATCH`.
 
-Workers do not directly own aggregate truth. They persist unit-local evidence first, release their resource claim, and then allow the dedicated aggregator/checkpointer to update shared projections.
+Platform-forced sub-30-minute runs use `RUNTIME_WINDOW_FORCED_STOP` with `voluntary_early_stop: false` and preserved durable evidence.
 
-Aggregate checkpoints are made after completed/blocked units and after dispatch waves when execution time allows. Durable state must not be deferred entirely until terminalization.
+## 5. Three-level SSOT and unit-local evidence
 
-Primary aggregate projections include `.orchestrator/last-run.yaml` and `BL-002/enrichment-progress.yaml`. If an aggregate cursor lags, verified unit-local evidence and physical repository state win.
+- Level 1: authoritative backlog/scope.
+- Level 2: item definition, SOW, dependencies and quality gates.
+- Level 3: claims, unit evidence, blockers, checkpoints and results.
 
-## 6. Productive runtime policy
+Unit-local evidence is authoritative for completed work. Physical repository state is authoritative for Story-file parity. Aggregate YAML is a projection/checkpoint and must be repaired when it lags physical/unit evidence. Fail-closed is local to the affected unit/dependency scope.
 
-Thirty minutes is a productive target, not a correctness minimum. The Orchestrator must use as much productive time as the platform supplies, up to the target, and must never idle merely to satisfy the clock.
+## 6. Source integrity and frozen baseline
 
-While eligible in-scope ChatGPT work remains and execution is still available, voluntary terminalization is forbidden. The loop is `REPLAN -> CLAIM -> DISPATCH` after every completed or blocked unit.
+All Story and trace assertions must be source-proved against the frozen `CylinderManagement` commit `3ae6e61442132d94a307275b08dd65fcef228d89`. Naming alone is not evidence. Missing behavior is recorded as an exact evidence gap and is never invented.
 
-When the platform cuts execution short, use `RUNTIME_WINDOW_FORCED_STOP`, preserve all durable progress, and keep `voluntary_early_stop: false`.
+## 7. BL-001 current traceability state
 
-A BL-008 handoff waiting for the user's local Flyway result is not runnable ChatGPT database work and must not consume execution capacity or block BL-002.
+BL-001 is complete at 134 unique HTTP method/path keys and remains read-only unless a source-integrity regression is proven.
 
-## 7. Three-level SSOT
+## 8. BL-002 Story register and release priority
 
-- Level 1: backlog/master scope and authoritative source bindings.
-- Level 2: item definition, SOW, dependencies, completion path and quality gates.
-- Level 3: runtime work units, claims, evidence, blockers, decisions, checkpoints and results.
+BL-002 contains exactly 134 registered Stories: 88 R1 and 46 R2. R1 has priority 1 and R2 priority 2. Auto-approval is forbidden. Canonical catalogue: `BL-002/story-register.csv`.
 
-Fail-closed is local to the affected dependency or mutation scope. A blocked lane must not stop safe-independent eligible work elsewhere.
+## 9. BL-002 physical Story parity and materialization queue
 
-## 8. BL-001 Controller Traceability
+Mandatory parity gate: `134 registered Story IDs == 134 physical BL-002/stories/STORY-*.md files`.
 
-BL-001 is canonically complete at 134 unique HTTP method/path keys and remains read-only unless a source-integrity regression is proven.
+Before BL-002 selection/replanning, diff the register against the live Story folder, reconcile `BL-002/materialization-task-queue.csv`, and repair aggregate count drift. Missing R1 files are priority 1; missing R2 files are priority 2. `NEEDS_CLARIFICATION` does not waive materialization: create a clarification-aware file recording the exact evidence gap without inventing behavior.
 
-The exact frozen BL-001 application source baseline remains `3ae6e61442132d94a307275b08dd65fcef228d89`.
+Physical materialization completes only at 134 validated Story files and zero pending materialization tasks. It is separate from strict field/UI completion, review state, approval, Use Case grouping and testing readiness.
 
-## 9. BL-002 Story register, physical files and priority
+## 10. BL-002 strict field/UI enrichment
 
-BL-002 contains exactly 134 registered Stories: 88 R1 and 46 R2. R1 is priority 1; R2 is priority 2. R1 work gates R2 work where the release gate applies.
+Strict completion requires the deepest applicable source-proved contract:
 
-Canonical catalogue: `BL-002/story-register.csv`.
-
-Every registered Story must also have exactly one physical review artifact at `BL-002/stories/<story-id>.md`.
-
-The mandatory parity gate is:
-
-`registered Story IDs == physical Story file IDs == 134`
-
-Registration alone is not physical materialization.
-
-## 10. BL-002 materialization task queue
-
-Any registered Story whose physical `.md` file is absent becomes an explicit work unit in `BL-002/materialization-task-queue.csv`.
-
-Queue fields include Story ID, release, priority, task type, status, reason and next action.
-
-Materialization priority:
-
-- R1 -> priority 1
-- R2 -> priority 2
-
-Queue statuses: `PENDING`, `CLAIMED`, `MATERIALIZED`, `VALIDATED`, `BLOCKED`.
-
-Before selecting/replanning BL-002 work, reconcile the register against `BL-002/stories/STORY-*.md`, update the queue, and repair any aggregate materialization-count drift.
-
-A `NEEDS_CLARIFICATION` Story still requires a physical Story file. The file must record the exact missing evidence and must not invent behavior.
-
-BL-002 physical materialization is complete only at 134 validated physical Story files and zero pending materialization tasks.
-
-Physical materialization is a separate metric from strict field/UI enrichment, review state, approval state, Use Case grouping and testing readiness.
-
-## 11. BL-002 strict Story enrichment
-
-A Story is strict-complete only when every applicable source-proved layer is covered:
-
-`screen/user intent -> visible control -> browser event -> exact request/identity -> controller -> DTO/model -> service -> DAO/repository -> entity/view -> database read/write identity -> validation/branch/side effects -> response -> visible outcome`
+`screen/user intent -> visible control/event -> exact request/identity/hidden state -> controller -> DTO/model -> service -> DAO/repository -> entity/view -> exact DB read/write identity -> validation/branch/side effects -> response/visible outcome`
 
 `SOURCE_DETAIL_REVIEW_REQUIRED` or any recorded source-detail gap is not strict completion.
 
-Story numbering alone is not a dependency. Safe-independent Story units may run concurrently when their dependencies and write sets do not conflict.
+## 11. BL-002 review, approval and Use Case workflow
 
-## 12. BL-002 review and approval
+A Story becomes a complete review artifact only when its physical `.md` file exists and is synchronized with governed evidence. Auto-approval is forbidden. Explicit user approval is required before a Story becomes authoritative for downstream Use Case grouping/testing.
 
-Auto-approval is forbidden. Explicit user approval is required.
+## 12. BL-003 / BL-004 dependency boundary
 
-`READY_FOR_USER_REVIEW` means the source trace is sufficiently complete for review. `NEEDS_CLARIFICATION` means missing source-proved behavior must be resolved before approval.
+BL-003 unit tests and BL-004 integration/Use Case tests must not treat unapproved BL-002 Story meaning as authoritative.
 
-A Story is not a complete review artifact until its physical `.md` file exists and is synchronized with governed evidence.
+## 13. BL-008 Supabase / Flyway architecture
 
-Approved Stories may be grouped into Use Cases. Use Cases also require explicit user approval before authoritative downstream testing.
+BL-008 target is Supabase project `xipkywwvzvrwcqnkifuv`, database `postgres`, PostgreSQL 17.6. Governed source is V1-V17 at `vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`, path `cylinder.datascripts/src/main/resources/db/migration`.
 
-## 13. BL-003 / BL-004 dependency boundary
+Execution is genuine Flyway 10.0.0 Java API only via `BL-008/java/FlywayJavaRunner.java`; schema `public`; `cleanDisabled(true)`; `baselineOnMigrate(false)`; `outOfOrder(false)`; exactly one target migration at a time; runtime-only credentials; no clean; no raw/manual SQL; no Supabase-native replay.
 
-BL-003 starts from approved BL-002 Story assertions for unit testing.
+Required sequence when a compliant DB route/backend exists:
 
-BL-004 starts from approved Stories/Use Cases/scenarios for integration and Use Case testing.
+`prove target identity/history -> Flyway info() -> prove first pending -> validateWithResult() -> migrate exactly one target -> Flyway info() -> verify SUCCESS/history/schema/integrity -> persist evidence -> stop before selecting the next migration requirement`
 
-Neither backlog may treat unapproved Story meaning as authoritative.
+## 14. BL-008 blocker isolation and retry policy
 
-## 14. BL-008 migration-authoring / local-apply architecture
+Current blocker fingerprints remain:
 
-BL-008 now operates as an explicit handoff:
+- `BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE`
+- parent `BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME`
+- subreason `SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY`
+- `BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE`
 
-`CHATGPT SOURCE ANALYSIS -> ADDITIVE FLYWAY MIGRATION AUTHORING -> UPDATED ZIP -> USER LOCAL FLYWAY MIGRATE -> USER RETURNS RESULT -> CHATGPT RECONCILES / AUTHORS NEXT CORRECTION`
+Do not repeat identical network or Testcontainers probes while fingerprints are unchanged. Retry only after material execution-environment capability evidence changes. While unchanged, BL-008 migration/database writes are zero and capacity returns immediately to eligible BL-002 work.
 
-Current authoring source is the uploaded `Harinandhan-Cylinder-Backup(20260830-093548).zip`.
+## 15. Checkpointing, aggregation and recovery
 
-Current migration directory is `cylinder.datascripts/src/main/resources/db/migration`.
+Persist work-unit durable evidence, release its resource claim, refetch current aggregate blobs, use optimistic-concurrency SHA updates, recompute from unit evidence on conflict, then replan/refill.
 
-The existing V1-V170 migration history is immutable by default. New changes start at V171 and continue sequentially. Historical migration content is changed only when a fresh-database failure occurs before any later additive migration can run and the user explicitly approves the smallest required historical repair.
+Expired/stale claims are reconciled only from durable evidence and recorded as `RECOVERED_STALE_CLAIM`/`RECOVERED_STALE_INVOCATION`. Never invent the original completion time. Platform cutoffs preserve completed evidence and use `RUNTIME_WINDOW_FORCED_STOP`.
 
-Flyway remains required. Raw/manual SQL replay is not a substitute for the migration chain. `flyway clean` is not part of the governed workflow.
+## 16. Scheduler and watchdog - resilience correction
 
-Current additive migration:
+The **Cylinder Orchestrator Production Fire** is the recurring hourly trigger around `:15` and performs real work. The **Cylinder Run Progress Watchdog** is read-only around `:50` and reports durable evidence only.
 
-`V171__Customer_Order_Request_View_Compatibility.sql`
+### Non-disabling scheduler policy
 
-It addresses the source-proved mismatch where the current Java DAO/entity layer expects `vw_customer_order_request_dashboard` and `vw_customer_order_request_daily_product_metrics`, while the existing migration chain exposes the equivalent legacy `vw_customer_demand_*` relations.
+1. A blocker discovered by one Production Fire is **invocation-local**. It must not disable, pause, delete or permanently suppress the recurring Production Fire scheduler.
+2. A transient GitHub durable-write failure blocks only mutations requiring durable persistence in that invocation. Do not claim unwritten progress. Release/recover claims when possible and let the next scheduled fire independently re-read SSOT and reevaluate the write path.
+3. An unchanged BL-008 network/Testcontainers blocker, a source-detail gap, or a platform-forced runtime cutoff must not pause the recurring Production Fire.
+4. **Automatic scheduler disablement is forbidden as blocker recovery.** The scheduler may be disabled only by explicit user instruction, deliberate replacement/supersession, a proven scheduler-level defect, or a duplicate-fire safety condition. The reason must be recorded.
+5. Production Fire and watchdog lifecycles are independent. A production blocker must not disable the watchdog; a watchdog failure must not disable the Production Fire.
+6. A scheduler firing is not proof of backlog progress. Progress requires durable unit/aggregate evidence.
 
-BL-008 current runtime state is `WAITING_FOR_USER_LOCAL_FLYWAY_RESULT`.
+This section corrects the prior behavior in which a run-local GitHub-write blocker caused the recurring production scheduler to be paused.
 
-Required returned failure evidence, when applicable: failing Flyway migration version, SQLSTATE/database error text, and the relevant Flyway error/stack section.
+## 17. Quality gates
 
-## 15. Lock / handoff hierarchy
+Quality gates include SSOT consistency, SOW executability, dependency satisfaction, exact frozen source, resource ownership, BL-002 parity, strict Story contract, explicit approval, BL-008 one-target apply/integrity, and scheduler resilience.
 
-| Ownership/lock | Capacity | Scope |
-|---|---:|---|
-| Primary invocation ownership | 1 primary | Competing primary invocation only; not a global backlog mutex |
-| Resource/work-unit claims | Up to 10 | Exact ChatGPT unit/write-set only |
-| Aggregate writer | 1 | Shared aggregate checkpoint/update only |
-| BL-008 local DB execution | 1 user-controlled migration run | User's new PostgreSQL database; ChatGPT performs no direct DB write in handoff mode |
+`QG-SCHEDULER`: run-local blockers remain local; recurring scheduler state is not automatically changed; any disablement is explicitly governed and evidenced.
 
-## 16. Scheduler and watchdog
-
-The Production Fire is a trigger for real ChatGPT-executable work, not proof of progress. It runs hourly around `:15` under the active task configuration.
-
-The read-only watchdog runs around `:50`, reads durable evidence and reports actual deltas. It must not execute backlog work or mutate state.
-
-While BL-008 is `WAITING_FOR_USER_LOCAL_FLYWAY_RESULT`, scheduled runs must not repeat Docker/Testcontainers/network probes and must not fabricate database progress. They should continue independently eligible BL-002 work.
-
-Runtime reporting distinguishes strict enrichment, physical materialization, approvals, Use Case grouping, testing readiness and BL-008 local-handoff state/result.
-
-## 17. Current BL-002 physical parity correction
-
-At the 30-Aug architecture reconciliation that introduced the materialization queue, the live `BL-002/stories/` tree contained 111 physical Story files while the register contained 134 Story IDs. Therefore 23 physical Story files were missing.
-
-The durable queue was created with 22 R1 priority-1 tasks and 1 R2 priority-2 task. This snapshot is operational status, not a permanent architecture constant; future invocations must recompute parity dynamically.
-
-## 18. Quality gates
-
-Key gates include SSOT consistency, SOW executability, dependency satisfaction, exact source integrity, lifecycle evidence, traceability, Story physical parity, strict Story enrichment, explicit user approval, and BL-008 migration-source/application consistency plus returned local Flyway execution evidence.
-
-For BL-008, a migration is not considered successfully applied merely because ChatGPT authored it. Applied status requires the user's local Flyway result.
-
-Fail-closed means do not invent, skip, auto-approve or substitute unsafe execution. It does not authorize a blocked unit to globally stop independent eligible work.
-
-## 19. Repository control files
+## 18. Repository control files
 
 - `.orchestrator/execution-architecture.yaml` - machine-readable active architecture.
-- `.orchestrator/lease-policy.yaml` - resource claims, locking, checkpoint and runtime policy.
-- `.orchestrator/architecture-current.md` - this human-readable consolidated source.
-- `.orchestrator/last-run.yaml` - aggregate/latest run checkpoint.
+- `.orchestrator/lease-policy.yaml` - resource claims, scheduler, checkpoint and runtime policy.
+- `.orchestrator/architecture-current.md` - this human-readable consolidated architecture.
+- `.orchestrator/last-run.yaml` - latest aggregate run checkpoint.
 - `BL-002/story-register.csv` - canonical 134-row Story catalogue.
 - `BL-002/STORY-DEFINITION.md` - Story rendering/acceptance contract.
 - `BL-002/stories/` - physical Story review artifacts.
-- `BL-002/materialization-task-queue.csv` - explicit priority queue for missing physical Story files.
+- `BL-002/materialization-task-queue.csv` - priority queue for missing physical Story files.
 - `BL-002/enrichment-progress.yaml` - aggregate BL-002 projection.
-- `BL-008/README.md` - current migration-authoring/local-apply handoff SSOT.
-- `BL-008/` - migration inventory and BL-008 evidence.
+- `BL-008/` - Flyway runner, target governance and blocker evidence.
 
-## 20. Document synchronization rule
+The DOCX and PDF architecture documents must be rebuilt whenever `architecture-current.md`, `execution-architecture.yaml` or `lease-policy.yaml` changes materially.
 
-The PDF architecture document must be generated from this consolidated architecture and must not carry active rules that conflict with `.orchestrator/execution-architecture.yaml` or `.orchestrator/lease-policy.yaml`.
+## 19. Dynamic parity snapshot rule
 
-Historical models may be mentioned only as superseded history. They must not appear in active architecture tables or operating checklists.
+Operational counts are not architecture constants. Every Production Fire must recompute physical Story parity dynamically from the live register, Story folder and durable unit evidence. The materialization queue is the work list; hard-coded Story pointers are forbidden.
+
+## 20. Operating checklist and superseded rules
+
+Before/during execution:
+
+- Read current execution architecture, lease policy, runtime aggregates, BL-002 materialization queue and unit-local evidence.
+- Reconcile Story register IDs against physical Story files before BL-002 selection/replanning.
+- Build dependency graph/read-write sets and acquire only resource-scoped claims.
+- Use up to 10 safe-independent units; do not globally serialize unrelated work.
+- Persist unit-local evidence immediately after durable progress; checkpoint aggregates during the run.
+- Continue `REPLAN -> CLAIM -> DISPATCH` while execution capacity remains.
+- Never auto-approve Stories or invent missing source behavior.
+- BL-008 uses Flyway Java API only and DB writes remain serialized at 1.
+- **Never auto-disable the recurring Production Fire because one invocation encounters GitHub-write, BL-008, source-detail, or platform-runtime blockers.**
+
+Superseded active wording includes: historical `chore/rename-dependency-files` control branch, hosted/local worker bridges, global singleton backlog mutex, end-only durable state synchronization, BL-001 in-progress wording, Neon as current target, user-local BL-008 apply handoff, and absence of an explicit 134/134 physical Story parity queue.
+
+**Effective architecture:** resource-scoped, unit-local-first, dynamically reconciled, scheduler-resilient, physical-Story-parity aware, ChatGPT-executed, GitHub-persisted and fail-closed without global blocking.
