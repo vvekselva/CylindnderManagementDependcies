@@ -3,10 +3,11 @@ claim_id: 20260831-051508-STORY-0040
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
 backlog: BL-002
 unit_id: STORY-0040
-status: ACTIVE
+status: RELEASED
 owner: Primary Cylinder Automation Tool
 claimed_at: 2026-08-31T05:15:08+05:30
 heartbeat_at: 2026-08-31T05:15:08+05:30
+released_reason: unit-local STORY and work-status evidence persisted; remaining downstream source gap recorded
 read_set:
   - BL-002/stories/STORY-0040.md
   - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase01VehicleLoadController.java
