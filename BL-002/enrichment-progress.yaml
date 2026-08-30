@@ -1,8 +1,8 @@
-version: 32
+version: 33
 backlog_id: BL-002
-updated_at: 2026-08-30T19:25:07+05:30
+updated_at: 2026-08-30T22:16:10+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-191638IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-221252IST
 checkpoint_state: CHECKPOINT_RECONCILED
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
@@ -11,8 +11,8 @@ metrics:
   approved: 0
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 121
-  strict_field_ui_remaining: 13
+  strict_field_ui_complete: 122
+  strict_field_ui_remaining: 12
   use_case_grouped: 0
   testing_ready: 0
 materialization:
@@ -23,20 +23,20 @@ materialization:
   reconciliation_rule: REGISTER_MINUS_PHYSICAL_STORY_TREE
   parity_state: COMPLETE_134_OF_134
 reconciliation:
-  current_run_strict_delta: {count: 1, stories: [STORY-0037]}
+  current_run_strict_delta: {count: 1, stories: [STORY-0039]}
   current_run_materialization_delta: {count: 0, stories: []}
-  stale_claim_recovery: [BL002-STORY-0001-20260830-171352IST]
   source_integrity_repairs: []
-  source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
+  projection_drift_repaired:
+    - BL-008 aggregate projection advanced from stale V174 state to live README state with V176 validated and V177 authored/waiting clean validation.
+  source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
   correction:
-    - Preserved the immediately preceding aggregate reconciliation checkpoint and its BL-008 README projection.
-    - Recovered the expired STORY-0001 resource claim after reconciling its already durable strict completion.
-    - Dynamically selected STORY-0037 from the live source-detail gap set.
-    - Frozen Uc02Phase02CylinderDeliveryController and Uc02-Phase02-CylinderDeliveryView source prove the registered GET /cylinderDelivery screen contract.
-    - STORY-0037 now proves exact page model, visible controls, browser events, hidden ID propagation, dependent lookup APIs, in-transit picker gates/payload, client validation and visible outcomes.
-    - GET /cylinderDelivery itself invokes no mediator, DAO, repository or database; deeper POST persistence is not attributed to the GET work unit.
-    - Strict field/UI completion advanced from 120 to 121 without changing physical parity or approval state.
-    - Physical Story parity remains 134/134 with zero pending materialization tasks.
+    - Startup reconciliation detected BL-008 projection drift against live BL-008/README.md and repaired the shared projection.
+    - Materialization queue remains empty and physical parity remains 134/134.
+    - Dynamically selected STORY-0039 from the live strict-gap set after reconciliation.
+    - Frozen Uc02Phase01VehicleLoadController and with-menu/Uc02-Phase01-VehicleLoadView prove the registered GET /vehicleLoad screen contract.
+    - STORY-0039 now proves direct and redirect-preselected branches, form/model binding, exact visible controls, browser events, lookup identities, hidden cylinder propagation, purpose-distribution validation, submit guards and adjacent POST handoff.
+    - GET /vehicleLoad performs lookupDataCache.getVehicleLoadPurposes(); no direct repository/database identity is attributed without further source proof.
+    - Strict field/UI completion advanced from 121 to 122 without changing physical parity or approval state.
   aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
@@ -49,10 +49,13 @@ bl008:
   state_source: BL-008/README.md
   execution_mode: USER_LOCAL_FLYWAY_HANDOFF
   target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
-  last_validated_migration: V174__Enforce_Strict_Cylinder_Ownership_Model.sql
+  last_validated_migration: V176__Enforce_Customer_Owned_Custody_Consistency.sql
   v174_validation: CLEAN_DATABASE_VALIDATED_PASS
-  phase2_supplier_customer_lifecycle_analysis: ACTIVE
-  location_exclusivity_customer_supplier_decommissioned: IMPLEMENTED_SOURCE_VALIDATION_PENDING
-  current_state: V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE
-  next_schema_migration: CREATE_ONLY_IF_CONCRETE_DATABASE_MISMATCH_IS_PROVED
+  v175_validation: CLEAN_DATABASE_VALIDATED_PASS
+  v176_validation: CLEAN_DATABASE_VALIDATED_PASS
+  current_authored_migration: V177__Enforce_Cross_Table_Cylinder_Location_Exclusivity.sql
+  v177_validation: AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  phase2: V177_CLEAN_VALIDATION_GATE
+  current_state: V177_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  next_schema_migration: DO_NOT_CREATE_V178_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V177_ACCEPTANCE
   database_write_delta_chatgpt: 0
