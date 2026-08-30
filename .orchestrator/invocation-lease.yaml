@@ -1,10 +1,10 @@
 holder: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260830-111416IST
 acquired_at: 2026-08-30T11:14:16+05:30
-released_at: null
-status: ACTIVE
+released_at: 2026-08-30T11:15:32+05:30
+status: RELEASED
 scope: [BL-002, BL-008]
-claims: [STORY-0034]
+claims: []
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -13,15 +13,14 @@ policy:
   bl008_database_write_parallelism: 1
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T11:14:16+05:30
-lease_expires_at: 2026-08-30T11:29:16+05:30
-result: IN_PROGRESS
+heartbeat_at: 2026-08-30T11:15:32+05:30
+result: RUNTIME_WINDOW_FORCED_STOP
 recovery:
   classification: FRESH_LEASE_AFTER_RECOVERED_STALE_INVOCATION
   prior_run_id: CYLINDER-BL008-TESTCONTAINERS-20260830-061203IST
   durable_evidence_reconciled: true
 progress:
-  work_units_attempted: 0
+  work_units_attempted: 1
   work_units_completed: 0
   completed_ids: []
   strict_field_ui_completion_delta: 0
@@ -30,3 +29,7 @@ progress:
   bl008_migration_write_delta_persistent_target: 0
   next_eligible_strict_unit: STORY-0034
   transient_lane_logs_remaining: 0
+notes:
+  - STORY-0034 controller/template contract was deepened from frozen source; strict completion withheld pending service/DAO/entity/database trace.
+  - BL-008 environment evidence unchanged; no repeated network/container probe and no database write.
+  - Runtime window ended before the required 30 productive minutes; lease and claim released cleanly.
