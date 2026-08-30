@@ -2,8 +2,11 @@ claim_id: 20260831-001706-STORY-0043
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-001706IST
 backlog: BL-002
 unit_id: STORY-0043
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T00:22:31+05:30
+released_at: 2026-08-31T00:23:07+05:30
+outcome: SOURCE_DETAIL_GAP_REFINED
+strict_completion_delta: 0
 read_set:
   - BL-002/stories/STORY-0043.md
   - BL-002/story-register.csv
@@ -12,3 +15,7 @@ read_set:
   - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89:cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/cache/LookupDataCache.java
 write_set:
   - BL-002/stories/STORY-0043.md
+notes:
+  - Endpoint/template/model/browser/cache and exact challan-book DAO call identities were durably proved.
+  - Strict completion remains blocked because the concrete JPA DAO/view/table source and concrete lookup service implementations are absent from the frozen repository tree available to this run.
+  - Resource-scoped claim released.
