@@ -2,8 +2,11 @@ claim_id: 20260831-001706-STORY-0041
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-001706IST
 backlog: BL-002
 unit_id: STORY-0041
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T00:21:23+05:30
+released_at: 2026-08-31T00:22:02+05:30
+outcome: SOURCE_DETAIL_GAP_REFINED
+strict_completion_delta: 0
 read_set:
   - BL-002/stories/STORY-0041.md
   - BL-002/story-register.csv
@@ -13,4 +16,6 @@ read_set:
 write_set:
   - BL-002/stories/STORY-0041.md
 notes:
-  - Resource-scoped claim only; compatibility invocation lease is not used as a global mutex.
+  - Controller/template/cache behavior was source-proved and durably enriched.
+  - Strict completion remains blocked because the concrete Address Type application-service implementation and downstream DAO/entity/database identity are absent from the frozen repository tree available to this run.
+  - Resource-scoped claim released; no global compatibility lease was used.
