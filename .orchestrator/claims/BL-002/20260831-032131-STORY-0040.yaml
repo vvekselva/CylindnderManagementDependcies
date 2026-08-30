@@ -3,10 +3,13 @@ claim_id: 20260831-032131-STORY-0040
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-031440IST
 backlog: BL-002
 unit_id: STORY-0040
-status: ACTIVE
+status: RECOVERED_STALE_CLAIM
 owner: Primary Cylinder Automation Tool
 claimed_at: 2026-08-31T03:21:31+05:30
 heartbeat_at: 2026-08-31T03:21:31+05:30
+recovered_at: 2026-08-31T05:15:08+05:30
+recovered_by_run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
+recovery_reason: claim exceeded 15-minute liveness window; durable STORY-0040 evidence remained SOURCE_DETAIL_REVIEW_REQUIRED and no work-status file existed
 read_set:
   - BL-002/stories/STORY-0040.md
   - BL-002/work-status/STORY-0040.yaml
