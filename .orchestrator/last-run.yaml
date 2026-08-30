@@ -1,9 +1,9 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-221252IST
-checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-30T22:12:52+05:30
-checkpoint_at: 2026-08-30T22:16:31+05:30
-elapsed_seconds_at_checkpoint: 219
-elapsed_minutes_at_checkpoint: 3.65
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-001706IST
+checkpoint_state: CHECKPOINT_RECONCILIATION_PENDING_READBACK
+started_at: 2026-08-31T00:17:06+05:30
+checkpoint_at: 2026-08-31T00:23:53+05:30
+elapsed_seconds_at_checkpoint: 407
+elapsed_minutes_at_checkpoint: 6.783
 productive_runtime_target_minutes: 30
 productive_target_satisfied_at_checkpoint: false
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
@@ -14,10 +14,11 @@ architecture:
   compatibility_invocation_lease_global_mutex: false
   shared_aggregate_single_writer: true
 work:
-  attempted_ids: [STORY-0039]
-  completed_strict_ids: [STORY-0039]
-  blocked_ids: []
-  strict_field_ui_completion_delta: 1
+  attempted_ids: [STORY-0041, STORY-0043]
+  completed_strict_ids: []
+  blocked_ids: [STORY-0041, STORY-0043]
+  source_detail_refined_ids: [STORY-0041, STORY-0043]
+  strict_field_ui_completion_delta: 0
   physical_materialization_delta: 0
   approvals_delta: 0
   next_dynamically_resolved_eligible_unit: DYNAMIC_RECONCILIATION_REQUIRED
@@ -46,19 +47,21 @@ bl008:
   next_schema_migration: DO_NOT_CREATE_V178_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V177_ACCEPTANCE
   database_write_delta_chatgpt: 0
 claims:
-  created: [BL002-STORY-0039-20260830-221252IST]
-  completed: [BL002-STORY-0039-20260830-221252IST]
+  created:
+    - 20260831-001706-STORY-0041
+    - 20260831-001706-STORY-0043
+  completed:
+    - 20260831-001706-STORY-0041
+    - 20260831-001706-STORY-0043
   claims_remaining_at_checkpoint: 0
 reconciliation:
-  startup_projection_drift_detected: true
-  repaired_projection: BL-008 aggregate state advanced from stale V174 to live V176/V177 README state
-  aggregate_reconciliation_gate: PASS
+  startup_projection_drift_detected: false
+  aggregate_reconciliation_gate: PENDING_READBACK
 transient_logs_remaining: 0
 notes:
-  - Mandatory startup control files were read; compatibility invocation lease is RELEASED and is not a global mutex.
-  - Materialization queue remains empty and physical Story parity remains 134/134.
-  - Live BL-008 README superseded stale aggregate projections: V174/V175/V176 are clean-database validated and V177 is authored waiting for clean validation.
-  - Dynamically selected STORY-0039 GET /vehicleLoad from the strict source-detail gap set.
-  - Frozen controller/template source proved direct and redirect-preselected paths, visible controls, browser request identities, hidden cylinder propagation, purpose distribution validation, submit guards, visible outcomes and adjacent POST handoff.
-  - Strict completion advanced from 121 to 122; no Story approval occurred and ChatGPT performed zero database writes.
-  - Further safe-independent strict BL-002 work remains eligible and must be dynamically reconciled on continuation.
+  - Mandatory startup control files were read and aggregate projections were already aligned at 122/134 strict with 134/134 physical parity.
+  - STORY-0041 source analysis proved the GET /registerCustomer controller/template/cache contract but found the concrete Address Type service-to-database implementation absent from the frozen repository tree; strict completion was not claimed.
+  - STORY-0043 source analysis proved the GET /wizard/vehicle-trip-load model/template/browser/cache and exact active-challan DAO call boundary but found the concrete JPA DAO/view/table source and lookup service implementations absent from the frozen repository tree; strict completion was not claimed.
+  - Both resource-scoped claims were released; no compatibility global mutex was used.
+  - BL-008 remains V177 authored waiting for clean validation; ChatGPT performed zero database writes.
+  - Further strict source-gap reconciliation remains eligible.
