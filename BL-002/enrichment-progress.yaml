@@ -1,9 +1,9 @@
 version: 36
 backlog_id: BL-002
-updated_at: 2026-08-31T03:19:46+05:30
+updated_at: 2026-08-31T03:20:14+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-031440IST
-checkpoint_state: CHECKPOINT_PENDING_READBACK
+checkpoint_state: CHECKPOINT_RECONCILED
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -35,7 +35,8 @@ reconciliation:
     - STORY-0038 remains non-strict because the concrete mediator-to-service-to-DAO/repository-to-entity/database write chain was not resolved from frozen source in this run.
     - No database behavior was invented and no strict percentage was inflated.
     - The STORY-0038 resource-scoped claim was released after unit-local evidence was persisted.
-  aggregate_reconciliation_gate: PENDING_READBACK
+    - Readback verified BL-002 and last-run projections used the same run id, strict count, physical count, pending count, approval count and BL-008 state before reconciliation was promoted.
+  aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
