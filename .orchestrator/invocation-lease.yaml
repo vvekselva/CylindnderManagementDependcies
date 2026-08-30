@@ -1,50 +1,35 @@
-holder: null
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
-acquired_at: 2026-08-30T05:34:48+05:30
-released_at: 2026-08-30T06:11:41+05:30
-status: RELEASED
+holder: Primary Cylinder Automation Tool
+run_id: CYLINDER-BL008-TESTCONTAINERS-20260830-061203IST
+acquired_at: 2026-08-30T06:12:03+05:30
+released_at: null
+status: ACTIVE
 scope:
-  - BL-002
   - BL-008
-claims: []
+claims:
+  - BL008-V1-TESTCONTAINERS-VALIDATION
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
   github_runner: forbidden
   shared_ssot_single_writer: true
-  independent_backlog_units: true
   bl008_database_write_parallelism: 1
   flyway_execution_mode: JAVA_API
+  testcontainers_validation_is_persistent_migration: false
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T05:44:28+05:30
-lease_expires_at: null
-result: RECOVERED_STALE_INVOCATION
+heartbeat_at: 2026-08-30T06:12:03+05:30
+lease_expires_at: 2026-08-30T06:27:03+05:30
+result: IN_PROGRESS
 recovery:
-  classification: RECOVERED_STALE_INVOCATION
-  recovered_at: 2026-08-30T06:11:41+05:30
-  last_durable_progress_at: 2026-08-30T05:44:28+05:30
-  original_completion_time_known: false
+  classification: FRESH_LEASE_AFTER_RECOVERED_STALE_INVOCATION
+  prior_run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
   durable_evidence_reconciled: true
-  recovered_strict_stories:
-    - STORY-0020
-    - STORY-0021
-    - STORY-0022
-    - STORY-0023
-    - STORY-0024
-    - STORY-0025
-    - STORY-0026
 progress:
-  work_units_attempted: 7
-  work_units_completed_strict: 7
-  strict_field_ui_completion_delta: 7
-  materialization_delta: 7
-  approval_delta: 0
-  bl008_migration_write_delta: 0
-  next_eligible_strict_unit: STORY-0027
+  work_units_attempted: 0
+  work_units_completed: 0
+  bl008_testcontainers_validation_delta: 0
+  bl008_migration_write_delta_persistent_target: 0
   transient_lane_logs_remaining: 0
 notes:
-  - ACTIVE lease heartbeat exceeded the 15-minute stale threshold with no newer durable proof of liveness.
-  - Reconciled only BL-002/enrichment-progress.yaml durable evidence through STORY-0026.
-  - STORY-0027 claim released without promotion because no durable strict-completion evidence exists for it.
-  - No BL-008 persistent migration write occurred in the recovered invocation.
+  - Validate governed V1 using genuine Flyway Java API against temporary PostgreSQL Testcontainers runtime.
+  - No Supabase write is authorized by this validation claim.
