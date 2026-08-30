@@ -1,9 +1,9 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-031440IST
-checkpoint_state: CHECKPOINT_PENDING_READBACK
+checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T03:14:40+05:30
-checkpoint_at: 2026-08-31T03:19:46+05:30
-elapsed_seconds_at_checkpoint: 306
-elapsed_minutes_at_checkpoint: 5.1
+checkpoint_at: 2026-08-31T03:20:14+05:30
+elapsed_seconds_at_checkpoint: 334
+elapsed_minutes_at_checkpoint: 5.567
 productive_runtime_target_minutes: 30
 productive_target_satisfied_at_checkpoint: false
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
@@ -52,15 +52,16 @@ claims:
   claims_remaining_at_checkpoint: 0
 reconciliation:
   startup_projection_drift_detected: false
-  readback_verified_same_run_id: false
-  readback_verified_metrics: false
-  readback_verified_bl008_state: false
-  aggregate_reconciliation_gate: PENDING_READBACK
+  readback_verified_same_run_id: true
+  readback_verified_metrics: true
+  readback_verified_bl008_state: true
+  aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
 notes:
   - Mandatory startup control files were read and aggregate projections were aligned at 122/134 strict with 134/134 physical parity.
-  - STORY-0038 source analysis persisted the proved controller/DTO/mediator boundary and the unresolved concrete database write-chain gap.
-  - Strict completion was not claimed because the downstream source proof is incomplete.
+  - STORY-0038 source analysis durably refined the proved controller/DTO/mediator boundary and persisted the unresolved downstream database write-chain gap.
+  - Strict completion was not claimed because the concrete mediator-to-service-to-DAO/repository-to-entity/database proof remains unresolved.
   - The resource-scoped STORY-0038 claim was released; no compatibility global mutex was used.
   - BL-008 remains V177 authored waiting for clean validation; ChatGPT performed zero database writes.
-  - Shared aggregate readback is required before CHECKPOINT_RECONCILED may be recorded.
+  - Shared aggregate readback verified the same run id and metrics before checkpoint state was promoted to CHECKPOINT_RECONCILED.
+  - Further strict source-gap reconciliation remains eligible.
