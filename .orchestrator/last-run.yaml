@@ -1,28 +1,21 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-171352IST
-checkpoint_state: CHECKPOINT_RECONCILED
-checkpoint_repair: true
-reconciled_at: 2026-08-30T19:23:53+05:30
-reconciled_from:
-  - BL-002/enrichment-progress.yaml version 30
-  - BL-008/README.md
-  - .orchestrator/execution-architecture.yaml version 7
-started_at: null
-completed_at: null
-elapsed_seconds: null
-elapsed_minutes: null
-timestamp_note: Exact production-fire start/completion timestamps were not present in the durable evidence used for this repair and were not invented.
-terminal_classification: CHECKPOINT_RECONCILED_FROM_NEWER_DURABLE_EVIDENCE
-voluntary_early_stop: null
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-191638IST
+checkpoint_state: IN_PROGRESS_CHECKPOINT
+started_at: 2026-08-30T19:16:38+05:30
+checkpoint_at: 2026-08-30T19:25:57+05:30
+elapsed_seconds_at_checkpoint: 559
+elapsed_minutes_at_checkpoint: 9.32
+productive_runtime_target_minutes: 30
+productive_target_satisfied_at_checkpoint: false
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   compatibility_invocation_lease_global_mutex: false
   shared_aggregate_single_writer: true
-  aggregate_reconciliation_gate: ACTIVE
-  projection_drift_recovery_applied: true
 work:
-  reconciled_strict_delta_count: 1
-  reconciled_strict_delta_ids: [STORY-0001]
+  attempted_ids: [STORY-0037]
+  completed_strict_ids: [STORY-0037]
+  blocked_ids: []
+  strict_field_ui_completion_delta: 1
   physical_materialization_delta: 0
   approvals_delta: 0
   next_dynamically_resolved_eligible_unit: DYNAMIC_RECONCILIATION_REQUIRED
@@ -31,8 +24,8 @@ metrics_after:
   clarification: 3
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 120
-  strict_field_ui_remaining: 14
+  strict_field_ui_complete: 121
+  strict_field_ui_remaining: 13
   approved: 0
   use_case_grouped: 0
   testing_ready: 0
@@ -48,23 +41,14 @@ bl008:
   next_schema_migration: CREATE_ONLY_IF_CONCRETE_DATABASE_MISMATCH_IS_PROVED
   database_write_delta_chatgpt: 0
 claims:
-  claims_remaining: 0
-  recoverable_claims_remaining: 0
+  stale_claims_recovered: [BL002-STORY-0001-20260830-171352IST]
+  current_claim: BL002-STORY-0037-20260830-192351IST
+  claims_remaining_at_checkpoint: 1
 transient_logs_remaining: 0
-reconciliation:
-  drift_detected:
-    stale_last_run_run_id: CYLINDER-PRODUCTION-FIRE-20260830-161305IST
-    newer_bl002_run_id: CYLINDER-PRODUCTION-FIRE-20260830-171352IST
-    stale_strict_field_ui_complete: 119
-    reconciled_strict_field_ui_complete: 120
-    stale_bl008_state: V171_HANDOFF_STATE
-    reconciled_bl008_state: V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE
-  repair_result: PASS
-  readback_required_by_architecture: true
 notes:
-  - Repaired the stale compatibility aggregate without rolling back newer BL-002 progress.
-  - STORY-0001 strict completion is preserved from the newer BL-002 durable projection.
-  - Physical Story parity remains 134/134 with zero pending materialization tasks.
-  - No approvals were inferred or added.
-  - BL-008 state was reconciled to the newer durable README instead of the older V171 projection.
-  - Future Production Fires must repair aggregate drift before dispatch and read back both aggregate projections before claiming checkpoint success.
+  - Startup reconciliation used live architecture, lease policy, last-run, compatibility lease, BL-002 progress/queue and BL-008 README.
+  - Recovered the expired STORY-0001 claim from durable evidence; no original completion time was invented.
+  - STORY-0037 GET /cylinderDelivery was dynamically selected from the live strict-gap set and completed from frozen controller/template source.
+  - The GET handler only prepares the blank DTO/model and does not invoke mediator/DAO/database; the page-level dependent lookup APIs, hidden propagation, picker gates, validation and visible outcomes are now source-proved.
+  - No Story approval occurred and no database write was performed by ChatGPT.
+  - Further strict BL-002 work remains eligible; continue REPLAN -> CLAIM -> DISPATCH.
