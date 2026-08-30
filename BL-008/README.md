@@ -25,64 +25,59 @@ Existing-database validation: **PASS**.
 
 Evidence: `BL-008/evidence/20260830-v171-existing-database-validation-pass.md`.
 
-V171 added the Customer Order Request compatibility views required by the current Java mappings. Flyway history, view existence, expected columns and data equivalence passed.
-
 ## V172 — PASS
 
 `V172__Add_Party_Asset_Account_To_Identifier_Replacement_Event.sql`
 
-V172 added nullable `BIGINT fk_party_asset_account` to `public.tbl_cylinder_identifier_replacement_event` without inventing a speculative foreign key.
-
-Post-V172 static audit established:
-
-- expected relations: **119; failures 0**
-- expected explicit mapped columns: **1128; failures 0**
+Post-V172 static audit established 119/119 relations and 1128/1128 explicit mapped columns compatible.
 
 ## V173 — PASS
 
 `V173__Align_Yard_Inventory_Sequence_Names_With_JPA.sql`
 
-V173 renamed the two existing yard-inventory BIGSERIAL backing sequences in place to the PostgreSQL-resolved 63-byte names expected by the current JPA `@SequenceGenerator` mappings. Sequence OIDs, values, ownership and column-default dependencies were preserved.
-
-User-returned V173 validation:
-
-- Flyway V173: **PASS**
-- allowed-state JPA-resolved sequence: **PASS**
-- allowed-state backing-sequence identity: **PASS**
-- source-type JPA-resolved sequence: **PASS**
-- source-type backing-sequence identity: **PASS**
-- V172 column regression check: **PASS**
-- overall: **BL008_V173_VALIDATION_PASS; failed_checks=0**
+User-returned V173 validation passed all sequence/backing-sequence checks and the V172 regression check.
 
 Evidence: `BL-008/evidence/20260830-v173-existing-database-validation-pass.md`.
 
 ## Static schema reconciliation conclusion
 
-The current source-to-database static reconciliation is accepted through V173:
+Static application-to-database reconciliation through V173 is complete and accepted.
 
-- all audited runtime/JPA relations exist;
-- all audited explicit mapped columns exist;
-- the remaining JPA sequence-name mismatches were corrected and validated;
-- V171, V172 and V173 are all successfully applied to the existing database;
-- no V174 is justified by the current static schema evidence.
+## Current BL-008 phase — Ownership Model Migration
 
-## Next BL-008 phase — application/runtime validation
+The user explicitly directed BL-008 to resume the **Ownership Model Migration immediately**. General runtime validation is therefore not the next lane.
 
-Do not create another migration merely to advance the version number. The next phase is to start the application against the existing database and validate runtime behavior. Any future V174 must be driven by a concrete runtime/source-proved database defect.
+Phase 1 is a read-only existing-database ownership baseline before any further ownership migration is authored.
 
-Runtime validation should capture application startup, Hibernate/JPA initialization, repository/DAO query execution and focused smoke tests for the database paths corrected in V171-V173.
+Governed ownership types:
+
+- `COMPANY_OWNED`
+- `SUPPLIER_OWNED`
+- `CUSTOMER_OWNED`
+
+Source review found that historical V144 added ownership metadata and a broad `chk_cylinder_owner_party_consistency` check, but the check does not itself enforce the full type-specific ownership rules. The current application ingestion service applies stronger type-specific normalization. Therefore existing data must first be measured against those rules before enabling stronger database enforcement.
+
+Phase-1 control document:
+
+`BL-008/ownership-model/PHASE-1-BASELINE.md`
+
+Phase-1 user handoff script:
+
+`BL008_Ownership_Model_Phase1_Baseline_Audit.sql`
 
 ## Current state
 
 - Existing migrations modified: **0**
-- New additive migrations in current handoff: **3** (`V171`, `V172`, `V173`)
+- Additive migrations already applied in this handoff: **V171, V172, V173**
 - V171 database validation: **PASS**
 - V172 relation/column compatibility: **PASS**
 - V173 sequence compatibility: **PASS**
 - Static schema reconciliation: **COMPLETE**
-- Current state: **STATIC_SCHEMA_RECONCILIATION_COMPLETE_READY_FOR_RUNTIME_VALIDATION**
+- Ownership Model Migration: **STARTED**
+- Ownership Model Phase 1: **WAITING_FOR_USER_BASELINE_AUDIT_RESULT**
+- V174: **NOT YET AUTHORED; requires Phase-1 evidence**
 - Database apply target: **EXISTING DATABASE**
 - Existing Flyway history: **PRESERVE**
 - Database writes by ChatGPT: **0**
 
-BL-002 remains independently eligible while BL-008 proceeds through runtime validation.
+BL-002 remains independently eligible while BL-008 waits for the Phase-1 ownership baseline result.
