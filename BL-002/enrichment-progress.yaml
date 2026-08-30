@@ -1,9 +1,9 @@
-version: 33
+version: 34
 backlog_id: BL-002
-updated_at: 2026-08-30T22:16:10+05:30
+updated_at: 2026-08-31T00:23:53+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-221252IST
-checkpoint_state: CHECKPOINT_RECONCILED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-001706IST
+checkpoint_state: CHECKPOINT_RECONCILIATION_PENDING_READBACK
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -23,21 +23,20 @@ materialization:
   reconciliation_rule: REGISTER_MINUS_PHYSICAL_STORY_TREE
   parity_state: COMPLETE_134_OF_134
 reconciliation:
-  current_run_strict_delta: {count: 1, stories: [STORY-0039]}
+  current_run_strict_delta: {count: 0, stories: []}
   current_run_materialization_delta: {count: 0, stories: []}
   source_integrity_repairs: []
-  projection_drift_repaired:
-    - BL-008 aggregate projection advanced from stale V174 state to live README state with V176 validated and V177 authored/waiting clean validation.
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
+  source_detail_refined_this_run: [STORY-0041, STORY-0043]
+  blocked_this_run: [STORY-0041, STORY-0043]
   correction:
-    - Startup reconciliation detected BL-008 projection drift against live BL-008/README.md and repaired the shared projection.
-    - Materialization queue remains empty and physical parity remains 134/134.
-    - Dynamically selected STORY-0039 from the live strict-gap set after reconciliation.
-    - Frozen Uc02Phase01VehicleLoadController and with-menu/Uc02-Phase01-VehicleLoadView prove the registered GET /vehicleLoad screen contract.
-    - STORY-0039 now proves direct and redirect-preselected branches, form/model binding, exact visible controls, browser events, lookup identities, hidden cylinder propagation, purpose-distribution validation, submit guards and adjacent POST handoff.
-    - GET /vehicleLoad performs lookupDataCache.getVehicleLoadPurposes(); no direct repository/database identity is attributed without further source proof.
-    - Strict field/UI completion advanced from 121 to 122 without changing physical parity or approval state.
-  aggregate_reconciliation_gate: PASS
+    - Startup aggregate reconciliation found BL-002 metrics and BL-008 projection already aligned; no rollback or drift repair was required.
+    - STORY-0041 GET /registerCustomer now durably proves controller/model/template binding, visible Customer Name/GST controls, browser GST upper-casing/max-length behavior, Address Type cache behavior and the injected application-service boundary.
+    - STORY-0041 remains non-strict because the concrete Address Type application-service implementation and downstream DAO/entity/database identity are absent from the frozen repository tree available to this run.
+    - STORY-0043 GET /wizard/vehicle-trip-load now durably proves blank nested DTO setup, template/model identities, one-form wizard browser contract, cache-backed purpose/product reads and exact ActiveChallanBookForTripLoadViewJpaDao.findByBookType calls for four book types.
+    - STORY-0043 remains non-strict because the concrete active-challan JPA DAO/view/table source and concrete lookup-service implementations are absent from the frozen repository tree available to this run.
+    - No strict percentage was inflated from controller/comment-only evidence.
+  aggregate_reconciliation_gate: PENDING_READBACK
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
