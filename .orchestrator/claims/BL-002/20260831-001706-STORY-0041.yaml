@@ -1,0 +1,16 @@
+claim_id: 20260831-001706-STORY-0041
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-001706IST
+backlog: BL-002
+unit_id: STORY-0041
+status: ACTIVE
+claimed_at: 2026-08-31T00:21:23+05:30
+read_set:
+  - BL-002/stories/STORY-0041.md
+  - BL-002/story-register.csv
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89:cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/UC01RegisterCustomerController.java
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89:cylindermanagement.web/src/main/resources/templates/final-version-1/UC01RegisterCustomer.html
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89:cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/cache/LookupDataCache.java
+write_set:
+  - BL-002/stories/STORY-0041.md
+notes:
+  - Resource-scoped claim only; compatibility invocation lease is not used as a global mutex.
