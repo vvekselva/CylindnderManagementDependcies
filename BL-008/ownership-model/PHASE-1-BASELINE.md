@@ -1,67 +1,65 @@
-# BL-008 Ownership Model Migration — Phase 1 Baseline
+# BL-008 Ownership Model Migration — Phase 1 Fresh-Migration Baseline
 
-Status: `OWNERSHIP_MODEL_MIGRATION_STARTED_WAITING_FOR_PHASE1_BASELINE_RESULT`
+Status: `LEGACY_DATA_AUDIT_RETIRED_FRESH_MIGRATION_SELECTED`
 
-## Objective
+## Governing correction
 
-Resume BL-008 with the Ownership Model Migration immediately after V173 static schema reconciliation.
+The populated-database baseline audit was originally used to decide whether existing ownership/identifier rows required corrective backfill before stronger enforcement.
 
-The governed ownership types are:
+The user subsequently clarified that this is a **fresh application**: the populated application data will be removed and a clean Flyway migration will be performed.
 
-- `COMPANY_OWNED`
-- `SUPPLIER_OWNED`
-- `CUSTOMER_OWNED`
+Therefore the populated-database audit is not used as migration input.
 
-## Source-proved current schema state
+## Legacy audit evidence retained for traceability
 
-Production V144 introduced `tbl_asset_ownership_type` and ownership metadata on `tbl_cylinder`: `fk_asset_ownership_type`, `fk_owner_supplier`, `fk_owner_customer`, `is_company_fleet_asset`, and `is_external_exchangeable`.
+The earlier audit reported:
 
-V144 also created `chk_cylinder_owner_party_consistency`, but that check only distinguishes:
+- ownership master definitions: PASS;
+- ownership type/owner-side rules on the existing rows: PASS;
+- 1327 existing cylinders, all `COMPANY_OWNED`;
+- 1327 cylinders with zero active primary identifiers.
 
-- company-fleet rows: both owner FKs must be NULL; or
-- non-company rows: at least one owner FK must be populated.
+The zero-identifier finding does **not** require a backfill migration because these application rows will not exist on the fresh target.
 
-That historical check does **not** prove the stronger type-specific rules required by the current ownership model. In particular, it does not by itself reject both owners being populated, a `SUPPLIER_OWNED` row carrying only a customer owner, a `CUSTOMER_OWNED` row carrying only a supplier owner, or disagreement between `fk_asset_ownership_type` and `is_company_fleet_asset`.
+## Fresh migration behavior
 
-The current application ingestion service normalizes ownership fields by ownership type and sets `is_company_fleet_asset` / `is_external_exchangeable` from the ownership-type master, so direct/migration writes should be audited against the same semantics before adding stronger database enforcement.
+The current migration chain creates no application `tbl_cylinder` rows. Consequently V144 compatibility statements that backfill ownership/identifier metadata process zero rows during a clean migration and remain harmless no-ops.
 
-## Phase 1
+New cylinders are created through the current ingestion service, which creates the active primary identifier and normalizes ownership fields.
 
-Run one read-only existing-database baseline audit before authoring the next Flyway migration.
+## First Ownership Model delta
 
-Audit acceptance rules:
+V174 is the first fresh-target Ownership Model correction:
+
+`V174__Enforce_Strict_Cylinder_Ownership_Model.sql`
+
+It strengthens database enforcement for:
 
 ### COMPANY_OWNED
 
-- `is_company_fleet_asset = TRUE`
-- `fk_owner_supplier IS NULL`
-- `fk_owner_customer IS NULL`
+- company fleet = TRUE
+- external exchangeable = FALSE
+- supplier owner = NULL
+- customer owner = NULL
 
 ### SUPPLIER_OWNED
 
-- `is_company_fleet_asset = FALSE`
-- `fk_owner_supplier IS NOT NULL`
-- `fk_owner_customer IS NULL`
+- company fleet = FALSE
+- external exchangeable = TRUE
+- supplier owner = NOT NULL
+- customer owner = NULL
 
 ### CUSTOMER_OWNED
 
-- `is_company_fleet_asset = FALSE`
-- `fk_owner_customer IS NOT NULL`
-- `fk_owner_supplier IS NULL`
+- company fleet = FALSE
+- external exchangeable = TRUE
+- customer owner = NOT NULL
+- supplier owner = NULL
 
-Additional checks:
+V174 contains no legacy-data backfill.
 
-- both owner FKs are never populated together;
-- ownership type is one of the three governed active types;
-- cylinder ownership flags agree with the ownership-type master;
-- every logical cylinder has exactly one active primary identifier;
-- counts by ownership type, supplier owner, and customer owner are reported for reconciliation.
+## Validation gate
 
-## Next migration decision
+Run the complete Flyway chain against a fresh database through V174, then run `BL008_Ownership_V174_Clean_Migration_Validation.sql`.
 
-Do not create V174 merely to advance the version.
-
-- If Phase 1 passes, author the smallest additive database-enforcement migration for the type-specific ownership invariants and validate it.
-- If Phase 1 finds invalid existing data, classify the rows first and author a corrective data migration before enabling enforcement.
-
-Database target remains the existing PostgreSQL database. Existing data and Flyway history must be preserved. No `flyway clean`, database recreation, history clearing, or re-baselining.
+Only after the clean migration and consolidated validation pass should BL-008 advance to the next Ownership Model lifecycle requirement.
