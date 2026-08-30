@@ -1,15 +1,15 @@
-# BL-008 — Database Migration Authoring / Existing-Database Apply Workflow
+# BL-008 — Database Migration / Ownership Model Workflow
 
-Current governed mode: **ChatGPT authors additive Flyway migration deltas; the user applies them to the existing PostgreSQL database and returns one consolidated validation result.**
+Current governed mode for the Ownership Model phase: **ChatGPT authors additive Flyway migration deltas; the user performs a clean Flyway migration against a fresh PostgreSQL database and returns one consolidated validation result.**
 
 ## Execution boundary
 
-- Existing database data, schema and `flyway_schema_history` are preserved.
-- Flyway determines pending migrations from existing history; already-applied migrations are not rerun.
+- The prior populated database is not an ownership-migration input and its application rows will be discarded.
+- Ownership-model migration validation is performed on a fresh database created by the normal Flyway chain.
 - Delta ZIPs contain only changed/new files, preserving workspace-relative paths.
 - GitHub is durable SSOT/version control only; GitHub Actions/runners are not used for orchestration execution.
-- `flyway clean`, database recreation, history clearing and re-baselining are forbidden for this handoff.
-- Historical migrations are not rewritten unless explicitly approved because an earlier failed migration cannot be repaired by a later migration.
+- Historical migrations remain unchanged by default. Historical compatibility backfill statements that encounter zero application rows on the fresh database are harmless no-ops.
+- No manual/raw SQL is substituted for Flyway migration execution.
 
 ## Current workspace
 
@@ -17,37 +17,11 @@ User workspace snapshot: `Harinandhan-Cylinder-Backup(20260830-100356).zip`.
 
 Migration directory: `cylinder.datascripts/src/main/resources/db/migration`.
 
-## V171 — PASS
+## V171–V173 — prior reconciliation evidence
 
-`V171__Customer_Order_Request_View_Compatibility.sql`
+V171, V172 and V173 passed their user-returned existing-database validations. Those results remain useful source/schema evidence, but the final Ownership Model acceptance target is now a fresh clean migration.
 
-Existing-database validation: **PASS**.
-
-Evidence: `BL-008/evidence/20260830-v171-existing-database-validation-pass.md`.
-
-## V172 — PASS
-
-`V172__Add_Party_Asset_Account_To_Identifier_Replacement_Event.sql`
-
-Post-V172 static audit established 119/119 relations and 1128/1128 explicit mapped columns compatible.
-
-## V173 — PASS
-
-`V173__Align_Yard_Inventory_Sequence_Names_With_JPA.sql`
-
-User-returned V173 validation passed all sequence/backing-sequence checks and the V172 regression check.
-
-Evidence: `BL-008/evidence/20260830-v173-existing-database-validation-pass.md`.
-
-## Static schema reconciliation conclusion
-
-Static application-to-database reconciliation through V173 is complete and accepted.
-
-## Current BL-008 phase — Ownership Model Migration
-
-The user explicitly directed BL-008 to resume the **Ownership Model Migration immediately**. General runtime validation is therefore not the next lane.
-
-Phase 1 is a read-only existing-database ownership baseline before any further ownership migration is authored.
+## Ownership Model Migration — ACTIVE
 
 Governed ownership types:
 
@@ -55,29 +29,54 @@ Governed ownership types:
 - `SUPPLIER_OWNED`
 - `CUSTOMER_OWNED`
 
-Source review found that historical V144 added ownership metadata and a broad `chk_cylinder_owner_party_consistency` check, but the check does not itself enforce the full type-specific ownership rules. The current application ingestion service applies stronger type-specific normalization. Therefore existing data must first be measured against those rules before enabling stronger database enforcement.
+The current application ingestion service already:
 
-Phase-1 control document:
+- resolves one of the three active ownership types;
+- derives `is_company_fleet_asset` and `is_external_exchangeable` from the ownership-type master;
+- sets only the correct owner side for supplier/customer-owned cylinders;
+- creates an active primary cylinder identifier for each newly ingested cylinder.
 
-`BL-008/ownership-model/PHASE-1-BASELINE.md`
+Historical V144 introduced the ownership schema but its `chk_cylinder_owner_party_consistency` constraint is broader than the current type-specific rules.
 
-Phase-1 user handoff script:
+## Disposition of the Phase-1 populated-database audit
 
-`BL008_Ownership_Model_Phase1_Baseline_Audit.sql`
+The earlier baseline audit found 1327 legacy `COMPANY_OWNED` cylinders and zero active primary identifiers. The user clarified that this is a fresh application and those rows will be removed before the clean migration.
+
+Therefore:
+
+- **no legacy cylinder or identifier backfill migration will be created**;
+- the 1327-row identifier failure is not a blocker for the fresh Ownership Model migration;
+- V144 backfill statements affect zero rows on the fresh target and need no historical rewrite.
+
+## V174 — AUTHORED / READY FOR CLEAN MIGRATION
+
+`V174__Enforce_Strict_Cylinder_Ownership_Model.sql`
+
+Application-source commit: `f590dd08b902de9580ba41ab530eed0c238e3736`.
+
+V174:
+
+1. replaces the broad owner-shape check with an exact structural rule that forbids both owners and requires exactly one owner for non-company cylinders;
+2. adds `fn_validate_cylinder_ownership_model()`;
+3. adds `trg_validate_cylinder_ownership_model` on `tbl_cylinder`;
+4. validates the selected ownership type, active state, correct owner side, company-fleet flag and exchangeable flag without hard-coding lookup IDs;
+5. performs no cylinder-data backfill.
+
+Validation handoff:
+
+`BL008_Ownership_V174_Clean_Migration_Validation.sql`
+
+Acceptance requires a clean Flyway migration through V174 and a consolidated validation PASS for the three valid ownership combinations and the governed invalid combinations.
 
 ## Current state
 
-- Existing migrations modified: **0**
-- Additive migrations already applied in this handoff: **V171, V172, V173**
-- V171 database validation: **PASS**
-- V172 relation/column compatibility: **PASS**
-- V173 sequence compatibility: **PASS**
-- Static schema reconciliation: **COMPLETE**
-- Ownership Model Migration: **STARTED**
-- Ownership Model Phase 1: **WAITING_FOR_USER_BASELINE_AUDIT_RESULT**
-- V174: **NOT YET AUTHORED; requires Phase-1 evidence**
-- Database apply target: **EXISTING DATABASE**
-- Existing Flyway history: **PRESERVE**
+- Ownership Model Migration: **ACTIVE**
+- Migration target for Ownership Model: **FRESH DATABASE / CLEAN FLYWAY MIGRATION**
+- Legacy application data preservation: **NOT REQUIRED**
+- Legacy identifier backfill: **CANCELLED / NOT REQUIRED**
+- Historical migration rewrite: **0**
+- Current ownership migration: **V174**
+- V174 state: **WAITING_FOR_USER_CLEAN_FLYWAY_MIGRATION_AND_VALIDATION**
 - Database writes by ChatGPT: **0**
 
-BL-002 remains independently eligible while BL-008 waits for the Phase-1 ownership baseline result.
+After V174 passes, continue with the next source-proved Ownership Model requirement, including supplier/customer asset lifecycle and supplier-owned count-preservation rules. Do not create later versions merely to advance the number.
