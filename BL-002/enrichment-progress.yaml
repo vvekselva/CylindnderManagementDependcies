@@ -1,9 +1,9 @@
-version: 35
+version: 36
 backlog_id: BL-002
-updated_at: 2026-08-31T00:24:44+05:30
+updated_at: 2026-08-31T03:19:46+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-001706IST
-checkpoint_state: CHECKPOINT_RECONCILED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-031440IST
+checkpoint_state: CHECKPOINT_PENDING_READBACK
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -27,17 +27,15 @@ reconciliation:
   current_run_materialization_delta: {count: 0, stories: []}
   source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: [STORY-0041, STORY-0043]
-  blocked_this_run: [STORY-0041, STORY-0043]
+  source_detail_refined_this_run: [STORY-0038]
+  blocked_this_run: [STORY-0038]
   correction:
-    - Startup aggregate reconciliation found BL-002 metrics and BL-008 projection already aligned; no rollback or drift repair was required.
-    - STORY-0041 GET /registerCustomer now durably proves controller/model/template binding, visible Customer Name/GST controls, browser GST upper-casing/max-length behavior, Address Type cache behavior and the injected application-service boundary.
-    - STORY-0041 remains non-strict because the concrete Address Type application-service implementation and downstream DAO/entity/database identity are absent from the frozen repository tree available to this run.
-    - STORY-0043 GET /wizard/vehicle-trip-load now durably proves blank nested DTO setup, template/model identities, one-form wizard browser contract, cache-backed purpose/product reads and exact ActiveChallanBookForTripLoadViewJpaDao.findByBookType calls for four book types.
-    - STORY-0043 remains non-strict because the concrete active-challan JPA DAO/view/table source and concrete lookup-service implementations are absent from the frozen repository tree available to this run.
-    - No strict percentage was inflated from controller/comment-only evidence.
-    - Readback verified BL-002 and last-run shared projections use the same run id, strict count, physical count, pending count, approval count and BL-008 state.
-  aggregate_reconciliation_gate: PASS
+    - Startup reconciliation found aggregate projections aligned at 122/134 strict and 134/134 physical parity.
+    - STORY-0038 POST /cylinderDelivery now durably records the proved controller, DTO, mediator-boundary, validation-error and redirect-success contract.
+    - STORY-0038 remains non-strict because the concrete mediator-to-service-to-DAO/repository-to-entity/database write chain was not resolved from frozen source in this run.
+    - No database behavior was invented and no strict percentage was inflated.
+    - The STORY-0038 resource-scoped claim was released after unit-local evidence was persisted.
+  aggregate_reconciliation_gate: PENDING_READBACK
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
