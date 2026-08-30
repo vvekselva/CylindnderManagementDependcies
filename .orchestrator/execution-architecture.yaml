@@ -1,10 +1,13 @@
-version: 1
+version: 2
 name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
 status: ACTIVE
 policy_ref: .orchestrator/lease-policy.yaml
+human_readable_architecture: .orchestrator/architecture-current.md
 
 execution_model:
+  execution_host: CHATGPT
   coordinator_role: plan_reconcile_dispatch_aggregate
+  github_role: durable_control_and_audit_persistence_only
   global_mutex: false
   concurrency_basis:
     - dependency_graph
@@ -63,6 +66,10 @@ resource_claim_file:
 aggregation:
   strategy: unit_local_first
   global_summary_authoritative_for_locking: false
+  checkpointing:
+    after_every_completed_or_blocked_unit: true
+    after_each_dispatch_wave_when_available: true
+    defer_all_state_until_end_forbidden: true
   files:
     .orchestrator/last-run.yaml:
       purpose: compatibility aggregate summary
@@ -75,13 +82,42 @@ aggregation:
     - optimistic_concurrency_sha
     - recompute_from_durable_unit_evidence_after_conflict
 
+BL-001:
+  canonical_endpoint_count: 134
+  state: COMPLETE_READ_ONLY
+  source_integrity_regression_required_to_reopen: true
+
 BL-002:
+  canonical_story_count: 134
+  release_counts:
+    R1: 88
+    R2: 46
   release_gate: R1_FIRST
-  candidate_pool: all unfinished safe-independent R1 strict-field-UI units
+  candidate_pool: all unfinished safe-independent R1 strict-field-UI units plus all unresolved R1 physical-story materialization gaps
   parallel_story_execution: true
   per_story_output: BL-002/stories/<story-id>.md
   per_story_status: BL-002/work-status/<story-id>.yaml
   shared_progress_update: aggregator_only
+  story_register: BL-002/story-register.csv
+  story_definition: BL-002/STORY-DEFINITION.md
+  materialization:
+    queue: BL-002/materialization-task-queue.csv
+    queue_is_durable_work_ssot: true
+    parity_gate: registered_story_ids_must_equal_physical_story_file_ids
+    required_physical_story_files: 134
+    priority_rule:
+      R1: 1
+      R2: 2
+    statuses:
+      - PENDING
+      - CLAIMED
+      - MATERIALIZED
+      - VALIDATED
+      - BLOCKED
+    reconciliation_rule: Before selecting new BL-002 work, diff story-register.csv against BL-002/stories/STORY-*.md, reconcile the queue, and repair any aggregate count drift.
+    review_rule: A Story cannot be offered as a complete review artifact unless its physical .md file exists and is synchronized with current governed evidence. NEEDS_CLARIFICATION stories must still have a physical clarification-aware Story file that records the evidence gap without inventing behavior.
+    completion_rule: BL-002 physical materialization is complete only at 134/134 validated Story files and zero pending materialization tasks.
+    independence_rule: Materialization status is separate from strict field/UI enrichment, review state, approval status, use-case grouping, and testing readiness.
   approvals:
     automatic: false
     user_required: true
@@ -89,9 +125,17 @@ BL-002:
     requires_full_applicable_source_contract: true
     source_detail_review_required_is_complete: false
     recorded_source_detail_gap_is_complete: false
-  scheduling_rule: Story numbering alone is not a dependency; only proven dependency edges serialize stories.
+  scheduling_rule: Story numbering alone is not a dependency; only proven dependency edges or write-set conflicts serialize stories.
+  next_work_resolution:
+    hardcoded_story_pointer: forbidden
+    rule: Reconcile unit-local evidence, physical-file parity, materialization queue, and aggregate progress before dynamically resolving the next eligible unit.
 
 BL-008:
+  target:
+    provider: SUPABASE
+    project: xipkywwvzvrwcqnkifuv
+    database: postgres
+    postgresql_version: 17.6
   targeted_recovery_can_run_with_BL-002: true
   read_only_parallelism: true
   database_write_parallelism: 1
@@ -110,6 +154,10 @@ BL-008:
     - frozen_source_integrity_check
     - flyway_runner_integrity_check
     - target_read_only_identity_history_check_when_compliant_route_exists
+  blocker_retry_policy:
+    identical_network_probe_when_fingerprint_unchanged: forbidden
+    identical_testcontainers_probe_when_fingerprint_unchanged: forbidden
+    retry_only_after_material_runtime_capability_change: true
   isolation: BL-008 blocker cannot reserve or block unrelated BL-002 resources.
 
 legacy_transition:
@@ -120,9 +168,18 @@ legacy_transition:
   new_runs_should_use_resource_claims: true
   retirement_condition: all production-fire prompts and checkpoints reference resource-scoped claims
 
+productive_runtime:
+  target_minutes: 30
+  hard_minimum_for_correctness: false
+  never_idle_to_reach_target: true
+  voluntary_stop_with_eligible_work: forbidden
+  platform_forced_short_run_classification: RUNTIME_WINDOW_FORCED_STOP
+
 safety:
   github_actions: forbidden
+  github_runner: forbidden
   external_worker_runtime: forbidden
   user_manual_execution: forbidden
   credentials_in_git: forbidden
+  raw_manual_sql: forbidden
   zero_transient_logs_at_terminal: true
