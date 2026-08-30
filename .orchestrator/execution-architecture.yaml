@@ -1,4 +1,4 @@
-version: 3
+version: 4
 name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
 status: ACTIVE
 policy_ref: .orchestrator/lease-policy.yaml
@@ -82,6 +82,30 @@ aggregation:
     - optimistic_concurrency_sha
     - recompute_from_durable_unit_evidence_after_conflict
 
+scheduler_resilience:
+  production_fire_recurring_task:
+    expected_cadence: hourly_around_15
+    performs_real_work: true
+    automatic_disable_for_run_local_blocker: forbidden
+    run_local_blockers_include:
+      - github_durable_write_failure
+      - source_detail_gap
+      - BL008_runtime_capability_blocker
+      - platform_runtime_cutoff
+    next_fire_rule: Re-read live durable state and re-evaluate current capabilities independently on every scheduled invocation.
+  allowed_disable_conditions:
+    - explicit_user_instruction
+    - deliberate_schedule_replacement_or_supersession
+    - proven_scheduler_level_defect
+    - duplicate_fire_safety_condition
+  disable_evidence_required: true
+  durable_write_failure_rule: Do not claim unwritten progress. Keep the blocker invocation-local and leave the recurring scheduler enabled for the next fire.
+  watchdog:
+    expected_cadence: hourly_around_50
+    read_only: true
+    lifecycle_independent_from_production_fire: true
+  cross_disable_rule: Production Fire blockers must not disable the watchdog; watchdog failures must not disable the Production Fire.
+
 BL-001:
   canonical_endpoint_count: 134
   state: COMPLETE_READ_ONLY
@@ -131,35 +155,51 @@ BL-002:
     rule: Reconcile unit-local evidence, physical-file parity, materialization queue, and aggregate progress before dynamically resolving the next eligible unit.
 
 BL-008:
-  execution_mode: CHATGPT_AUTHORS_USER_APPLIES_LOCALLY
-  authoring_owner: CHATGPT
-  apply_owner: USER_LOCAL_MACHINE
-  target: USER_SUPPLIED_FRESH_POSTGRESQL_DATABASE
-  current_state: WAITING_FOR_USER_LOCAL_FLYWAY_RESULT
-  source_package: Harinandhan-Cylinder-Backup(20260830-093548).zip
+  execution_mode: FLYWAY_10_JAVA_API_ONLY
+  execution_owner: CHATGPT
+  provider: SUPABASE
+  project: xipkywwvzvrwcqnkifuv
+  database: postgres
+  postgresql_version: '17.6'
+  persistent_test_target: true
+  direct_external_production: false
+  governed_source_repository: vvekselva/CylinderManagement
+  governed_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
   migration_path: cylinder.datascripts/src/main/resources/db/migration
-  existing_history_policy:
-    V1_through_V170: IMMUTABLE_BY_DEFAULT
-    additive_next_version: V171
-    historical_repair_requires_explicit_user_approval: true
-  flyway:
-    required: true
-    one_target_at_a_time_for_corrective_analysis: true
-    clean: forbidden
-    raw_manual_sql_substitution: forbidden
-  current_additive_migration:
-    version: V171
-    filename: V171__Customer_Order_Request_View_Compatibility.sql
-    purpose: expose current Java-mapped customer order request compatibility views while retaining legacy demand views
-  result_handoff:
-    user_returns:
-      - flyway_result
-      - failing_migration_version_if_any
-      - sqlstate_or_database_error_if_any
-      - relevant_stack_or_error_section
-    chatgpt_action: analyze result and author the next additive migration when possible
-  early_failure_rule: If a fresh-database failure occurs in an historical migration before a later additive migration can execute, do not pretend a later migration can repair it. Identify the smallest historical repair or another recovery path and require explicit user approval before changing historical migration content.
-  isolation: Waiting for the local BL-008 result must not block independently eligible BL-002 work.
+  flyway_version: 10.0.0
+  runner: BL-008/java/FlywayJavaRunner.java
+  schema: public
+  clean_disabled: true
+  baseline_on_migrate: false
+  out_of_order: false
+  one_target_migration_at_a_time: true
+  database_write_parallelism: 1
+  credentials_runtime_only: true
+  raw_manual_sql: forbidden
+  supabase_native_replay: forbidden
+  current_runtime_blockers:
+    outbound_postgres:
+      fingerprint: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
+      parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
+      subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
+    testcontainers:
+      fingerprint: BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE
+  unchanged_runtime_blocker_policy:
+    repeat_identical_network_probe: forbidden
+    repeat_identical_testcontainers_probe: forbidden
+    retry_condition: Retry only after material execution-environment capability evidence changes.
+    migration_write_delta: 0
+    capacity_behavior: Return immediately to other eligible in-scope work.
+  retry_sequence_when_capability_changes:
+    - prove_target_identity_and_history
+    - flyway_info
+    - prove_first_pending
+    - validateWithResult
+    - migrate_exactly_one_target
+    - flyway_info
+    - verify_success_history_schema_integrity
+    - persist_evidence
+    - stop_before_next_migration_requirement
 
 legacy_transition:
   invocation_lease_file: .orchestrator/invocation-lease.yaml
@@ -167,7 +207,6 @@ legacy_transition:
   explicit_claims_only: true
   broad_scope_is_not_lock: true
   new_runs_should_use_resource_claims: true
-  retirement_condition: all production-fire prompts and checkpoints reference resource-scoped claims
 
 productive_runtime:
   target_minutes: 30
@@ -180,7 +219,7 @@ safety:
   github_actions: forbidden
   github_runner: forbidden
   external_worker_runtime: forbidden
-  user_manual_execution: BL008_LOCAL_FLYWAY_HANDOFF_ONLY
+  user_manual_execution: forbidden
   credentials_in_git: forbidden
   raw_manual_sql: forbidden
   zero_transient_logs_at_terminal: true
