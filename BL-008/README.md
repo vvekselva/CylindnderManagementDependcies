@@ -1,6 +1,6 @@
 # BL-008 — Database Migration / Ownership Model Workflow
 
-Current governed mode for the Ownership Model phase: **ChatGPT authors additive Flyway migration deltas; the user performs clean Flyway migration/validation on a fresh PostgreSQL database and returns consolidated results.**
+Current governed mode for the Ownership Model phase: **ChatGPT authors additive Flyway migration deltas/source deltas; the user performs clean Flyway migration/validation on a fresh PostgreSQL database and returns consolidated results.**
 
 ## Execution boundary
 
@@ -34,14 +34,6 @@ Historical V144 introduced the ownership schema. V149 added ownership-aware life
 
 Migration: `V174__Enforce_Strict_Cylinder_Ownership_Model.sql`
 
-V174:
-
-1. replaces the broad owner-shape check with an exact structural rule;
-2. adds `fn_validate_cylinder_ownership_model()`;
-3. adds `trg_validate_cylinder_ownership_model` on `tbl_cylinder`;
-4. validates ownership type, active state, correct owner side and ownership flags without hard-coding lookup IDs;
-5. performs no cylinder-data backfill.
-
 Fresh-database validation result:
 
 - Flyway V174: **PASS**
@@ -49,29 +41,51 @@ Fresh-database validation result:
 - ownership type master: **PASS**
 - strict owner constraint: **PASS**
 - ownership trigger: **PASS**
-- valid COMPANY_OWNED: **PASS**
-- valid SUPPLIER_OWNED: **PASS**
-- valid CUSTOMER_OWNED: **PASS**
-- all tested invalid owner/type/flag combinations rejected: **PASS**
+- valid COMPANY_OWNED / SUPPLIER_OWNED / CUSTOMER_OWNED: **PASS**
+- tested invalid owner/type/flag combinations rejected: **PASS**
 - overall: **BL008_OWNERSHIP_V174_VALIDATION_PASS; failed_checks=0**
 
 Evidence: `BL-008/evidence/20260830-v174-clean-database-validation-pass.md`.
 
 ## Phase 2 — Supplier/Customer Ownership Lifecycle — ACTIVE
 
-Static source/migration review has started.
+Current source/migration evidence:
 
-Current source evidence:
+- New supplier-owned cylinders receive initial `FULL` Yard state with source `SUPPLIER_RETURN`.
+- New customer-owned cylinders receive initial `EMPTY` Yard state with source `CUSTOMER_RETURN`.
+- V149 routes external registration/terminal events to `tbl_external_cylinder_asset_ledger`.
+- External identifier replacement is count-neutral (`delta=0`).
+- Supplier-owned logical asset-count preservation remains under end-to-end validation.
 
-- `CylinderIngestionService` creates the logical cylinder using the governed ownership type and correct owner side.
-- New supplier-owned cylinders receive an initial `FULL` yard state with source type `SUPPLIER_RETURN`.
-- New customer-owned cylinders receive an initial `EMPTY` yard state with source type `CUSTOMER_RETURN`.
-- V149 routes supplier/customer-owned registration and terminal events to `tbl_external_cylinder_asset_ledger`, while company-owned cylinders use the company fleet ledger.
-- Identifier replacement for supplier/customer-owned cylinders is recorded with ledger `delta=0`, preserving logical asset count across identifier changes.
-- The application currently has no Java DAO/entity consuming `tbl_external_cylinder_asset_ledger`; it is presently database-side accounting evidence.
-- `CylinderLocationExclusivityValidator` explicitly states customer/supplier/decommissioned location counts are future extension points, so end-to-end location exclusivity is not yet complete for all ownership lifecycle buckets.
+### Location exclusivity — Customer/Supplier/Decommissioned taken up
 
-The next migration version is **not pre-assigned**. V175 will be authored only if Phase-2 source/database validation proves an additive database correction is required.
+The user explicitly requested completion of the three buckets previously documented as future extension points.
+
+Implemented source delta now evaluates five mutually exclusive buckets for the Yard -> Vehicle precondition:
+
+1. Yard inventory
+2. Vehicle logistics
+3. Customer active custody
+4. Supplier active custody
+5. Decommissioned terminal status
+
+Authoritative sources:
+
+- Customer/Supplier: `tbl_cylinder_party_custody` ACTIVE rows with `exited_at IS NULL`.
+- Decommissioned: latest `tbl_cylinder_state_audit` state resolving to `DECOMMISSIONED`.
+- Legacy `tbl_cylinder_current_status` is not used as the ownership-model decision source.
+
+Application source commits:
+
+- DAO location queries: `38d3555879edafc92eebfeeeff2cf88808942cff`
+- Validator completion: `c74e9011acd3ef27aca352d3933f09ebfa804feb`
+- Focused JUnit test: `ac14d8363871ffe9bf46fa3eddcb2170b5109aa4`
+
+Evidence: `BL-008/evidence/20260830-phase2-location-exclusivity-source-delta.md`.
+
+Validation status: **IMPLEMENTED / FOCUSED JUNIT EXECUTION PENDING**. Maven was unavailable in the ChatGPT execution container, so no runtime test PASS is claimed yet.
+
+No schema change was required for these validator buckets; therefore this work does **not** create V175.
 
 ## Current state
 
@@ -82,9 +96,12 @@ The next migration version is **not pre-assigned**. V175 will be authored only i
 - Historical migration rewrites: **0**
 - V174: **CLEAN_DATABASE_VALIDATED_PASS**
 - Phase 2: **SUPPLIER_CUSTOMER_LIFECYCLE_ANALYSIS_ACTIVE**
-- Current state: **V174_PASS_PHASE2_OWNERSHIP_LIFECYCLE_ACTIVE**
+- Location exclusivity Customer/Supplier/Decommissioned: **IMPLEMENTED_SOURCE_VALIDATION_PENDING**
+- Current state: **V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE**
 - Database writes by ChatGPT: **0**
 
 ## Next action
 
-Validate the supplier-owned and customer-owned lifecycle/accounting contract end to end, including initial state, external-asset registration, identifier replacement count neutrality, terminal event accounting, location exclusivity and the supplier-owned count-preservation requirement. Create V175 only where a concrete source/database mismatch is proven.
+1. Execute the focused `CylinderLocationExclusivityValidatorTest` in the normal Maven/Eclipse project environment.
+2. Continue the supplier-owned/customer-owned lifecycle and external-ledger analysis, especially supplier logical asset-count preservation and terminal-event accounting.
+3. Create V175 only if a concrete database mismatch is proved; do not create it merely to advance the version.
