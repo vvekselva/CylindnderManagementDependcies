@@ -18,6 +18,8 @@ Validated source line through V178 is based on `Harinandhan-Cylinder-Backup(2026
 
 Prepared integrated workspace through V179: `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179.zip`.
 
+Workspace verification after the first V179 validation attempt confirmed that V174, V175, V176, V177, V178 and V179 are all physically present under `cylinder.datascripts/src/main/resources/db/migration` in this integrated ZIP.
+
 Migration directory: `cylinder.datascripts/src/main/resources/db/migration`.
 
 ## Ownership Model Migration — ACTIVE
@@ -62,32 +64,28 @@ A CUSTOMER_OWNED cylinder can open CUSTOMER custody only at its owner customer. 
 
 ### External-asset accounting — V178 PASS
 
-V178 now enforces external-ledger owner shape and validates event family, ownership type, owner party and product against the referenced external cylinder. Customer terminal shrink across CLOSED/LOST/DECOMMISSIONED is one-time/idempotent, and `vw_customer_owned_asset_count_integrity` reconciles active customer external-asset balance. Supplier-owned accounting remains governed by V175 and its stable logical-count integrity view.
+V178 enforces external-ledger owner shape and validates event family, ownership type, owner party and product against the referenced external cylinder. Customer terminal shrink across CLOSED/LOST/DECOMMISSIONED is one-time/idempotent, and `vw_customer_owned_asset_count_integrity` reconciles active customer external-asset balance. Supplier-owned accounting remains governed by V175 and its stable logical-count integrity view.
 
-### Company-fleet accounting — V179 AUTHORED / CLEAN VALIDATION PENDING
-
-Source analysis after V178 proved three remaining company-side accounting gaps:
-
-1. `tbl_cylinder_fleet_ledger` had no one-time terminal-shrink guard, so repeated LOST/DECOMMISSIONED audit bookkeeping could reduce the same COMPANY_OWNED logical cylinder more than once.
-2. The running `fleet_count_before/fleet_count_after` calculation was not serialized across concurrent company fleet events.
-3. The original V58 `vw_cylinder_fleet_summary` still counted all current-status cylinders after V149 moved supplier/customer-owned assets out of the company fleet ledger; additionally, LOST has a historical `Customer Location` state and could inflate active customer-location counts after fleet shrink.
+### Company-fleet accounting — V179 AUTHORED / EXECUTION TARGET MISMATCH TO RESOLVE
 
 V179: `V179__Harden_Company_Fleet_Accounting_Integrity.sql`
 
-V179 adds:
+The first returned V179 validation result is **not classified as a V179 SQL failure**. It showed:
 
-- exact company fleet event/delta semantics (`COMMISSIONED=+1`, `DECOMMISSIONED/LOST_CONFIRMED=-1`);
-- one COMMISSIONED event and at most one terminal shrink per logical company cylinder;
-- `fn_validate_company_fleet_ledger_insert()` with COMPANY_OWNED context validation, transaction-advisory serialization, running-total recalculation and duplicate-terminal idempotence;
-- append-only UPDATE/DELETE protection for `tbl_cylinder_fleet_ledger`;
-- `vw_company_fleet_accounting_integrity` reconciling logical company assets, terminal states, ledger balance and current fleet count;
-- corrected `vw_cylinder_fleet_summary` scoped only to active COMPANY_OWNED fleet assets while preserving its existing nine-column JPA contract and excluding terminal LOST/DECOMMISSIONED from active physical-location totals.
+- `FLYWAY_V179=FAIL`;
+- every V179 object absent;
+- V178, V177, V176, V175 and V174 regression objects also absent;
+- `tbl_cylinder_count=0` and the historical fleet-summary view still present.
 
-V179 status: **AUTHORED / WAITING_FOR_CLEAN_FLYWAY_VALIDATION**.
+Because V174–V178 had already passed clean validation previously, and the integrated V179 workspace has now been independently verified to contain all migrations V174 through V179, this result proves the validation was executed against a database/source run that did not execute the governed ownership migration chain. Classification: **VALIDATION_TARGET_NOT_MIGRATED_THROUGH_V174_V179**.
+
+This is not evidence of V179 transaction rollback because the earlier accepted ownership objects are absent as well.
+
+Before rerunning V179 validation, execute the read-only `BL008_Flyway_174_179_Execution_Diagnostic.sql` against the same database and verify V174–V179 are recorded successfully. Then perform/redo the clean Flyway migration using the integrated V179 workspace if necessary.
 
 ## Test policy / backlog
 
-Postponed UI/unit/runtime cases remain explicit in `BL-008/test-case-backlog.csv` and are non-blocking for clean migration gates. The backlog now includes V179 terminal idempotence, concurrent fleet accounting, mixed-ownership dashboard scope and append-only ledger mutation cases.
+Postponed UI/unit/runtime cases remain explicit in `BL-008/test-case-backlog.csv` and are non-blocking for clean migration gates. The backlog includes V179 terminal idempotence, concurrent fleet accounting, mixed-ownership dashboard scope and append-only ledger mutation cases.
 
 ## Current state
 
@@ -98,20 +96,22 @@ Postponed UI/unit/runtime cases remain explicit in `BL-008/test-case-backlog.csv
 - V176: **CLEAN_DATABASE_VALIDATED_PASS**
 - V177: **CLEAN_DATABASE_VALIDATED_PASS**
 - V178: **CLEAN_DATABASE_VALIDATED_PASS**
-- V179: **AUTHORED_WAITING_FOR_CLEAN_VALIDATION**
+- V179: **AUTHORED / CLEAN_EXECUTION_NOT_YET_PROVED**
+- First V179 validation classification: **VALIDATION_TARGET_NOT_MIGRATED_THROUGH_V174_V179**
+- Integrated V179 workspace migration presence: **V174–V179 VERIFIED_PRESENT**
 - Location exclusivity: **APPLICATION_AND_DATABASE_ENFORCEMENT_COMPLETE / RUNTIME_TEST_BACKLOG**
 - Supplier refill identifier exchange: **IMPLEMENTED / UI_RUNTIME_TEST_POSTPONED**
 - Customer-owned custody consistency: **V176_PASS / UI_RUNTIME_TEST_POSTPONED**
 - External-asset accounting: **V178_PASS / RUNTIME_TEST_BACKLOG**
-- Company-fleet accounting: **V179_AUTHORED / CLEAN_VALIDATION_PENDING / RUNTIME_TEST_BACKLOG**
+- Company-fleet accounting: **V179_AUTHORED / EXECUTION_DIAGNOSTIC_AND_CLEAN_RERUN_PENDING**
 - UI/runtime testing: **POSTPONED_BY_USER / NON_BLOCKING / TRACKED_IN_TEST_CASE_BACKLOG**
-- Phase 2 gate: **V179_CLEAN_VALIDATION_GATE**
+- Phase 2 gate: **V179_EXECUTION_DIAGNOSTIC_GATE**
 - Database writes by ChatGPT: **0**
 
 ## Next action
 
-1. Use `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179.zip` as the migration source.
-2. Perform a fresh clean Flyway migration through V179.
-3. Execute `BL008_Ownership_V179_Company_Fleet_Accounting_Validation.sql` and return its consolidated result table.
-4. Keep V179 runtime/concurrency/dashboard scenarios postponed in the governed backlog.
-5. After V179 acceptance, continue only with the next source-proved Ownership Model requirement; do not create V180 merely to advance the version.
+1. Run `BL008_Flyway_174_179_Execution_Diagnostic.sql` against the exact database used for the failed V179 validation.
+2. Confirm whether V174–V179 were executed; if not, perform a fresh clean Flyway migration using `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179.zip`.
+3. Verify Flyway records V174, V175, V176, V177, V178 and V179 successfully.
+4. Run `BL008_Ownership_V179_Company_Fleet_Accounting_Validation.sql` only after that confirmation.
+5. Return the consolidated V179 result table for acceptance.
