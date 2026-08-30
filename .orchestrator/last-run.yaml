@@ -1,12 +1,12 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
 checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T05:15:08+05:30
-checkpoint_at: 2026-08-31T05:15:08+05:30
-elapsed_seconds_at_checkpoint: 0
-elapsed_minutes_at_checkpoint: 0.0
+checkpoint_at: 2026-08-31T05:17:57+05:30
+elapsed_seconds_at_checkpoint: 169
+elapsed_minutes_at_checkpoint: 2.817
 productive_runtime_target_minutes: 30
 productive_target_satisfied_at_checkpoint: false
-terminal_classification: IN_PROGRESS
+terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
@@ -14,10 +14,10 @@ architecture:
   compatibility_invocation_lease_global_mutex: false
   shared_aggregate_single_writer: true
 work:
-  attempted_ids: []
+  attempted_ids: [STORY-0040]
   completed_strict_ids: []
-  blocked_ids: []
-  source_detail_refined_ids: []
+  blocked_ids: [STORY-0040]
+  source_detail_refined_ids: [STORY-0040]
   strict_field_ui_completion_delta: 0
   physical_materialization_delta: 0
   approvals_delta: 0
@@ -45,8 +45,8 @@ bl008:
   database_write_delta_chatgpt: 0
 claims:
   recovered_stale: [20260831-032131-STORY-0040]
-  created: []
-  completed: []
+  created: [20260831-051508-STORY-0040]
+  completed: [20260831-051508-STORY-0040]
   claims_remaining_at_checkpoint: 0
 reconciliation:
   startup_projection_drift_detected: true
@@ -60,5 +60,7 @@ reconciliation:
 transient_logs_remaining: 0
 notes:
   - Startup repaired stale BL-008 aggregate state using the newer durable BL-008 README.
-  - Expired STORY-0040 resource claim was recovered; broad compatibility invocation lease was not used as a mutex.
-  - BL-002 remains 122/134 strict with 134/134 physical parity and zero pending materialization.
+  - Expired STORY-0040 claim was recovered before new dispatch.
+  - STORY-0040 was safely re-claimed and its controller/request DTO contract was refined from frozen source.
+  - Strict completion remains withheld because the concrete mediator-to-service-to-DAO/repository-to-entity/table chain is unresolved.
+  - No database behavior was invented; ChatGPT database writes remain zero.
