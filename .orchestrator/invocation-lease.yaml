@@ -1,34 +1,32 @@
 holder: Primary Cylinder Automation Tool
-run_id: CYLINDER-BL008-TESTCONTAINERS-20260830-061203IST
-acquired_at: 2026-08-30T06:12:03+05:30
-released_at: 2026-08-30T11:14:16+05:30
-status: RELEASED
-scope:
-  - BL-002
-  - BL-008
-claims: []
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-111416IST
+acquired_at: 2026-08-30T11:14:16+05:30
+released_at: null
+status: ACTIVE
+scope: [BL-002, BL-008]
+claims: [STORY-0034]
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
   github_runner: forbidden
   shared_ssot_single_writer: true
   bl008_database_write_parallelism: 1
+  minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T06:28:25+05:30
-result: RECOVERED_STALE_INVOCATION
+heartbeat_at: 2026-08-30T11:14:16+05:30
+lease_expires_at: 2026-08-30T11:29:16+05:30
+result: IN_PROGRESS
 recovery:
-  classification: RECOVERED_STALE_INVOCATION
-  recovered_at: 2026-08-30T11:14:16+05:30
-  last_durable_progress_at: 2026-08-30T06:28:12+05:30
+  classification: FRESH_LEASE_AFTER_RECOVERED_STALE_INVOCATION
+  prior_run_id: CYLINDER-BL008-TESTCONTAINERS-20260830-061203IST
   durable_evidence_reconciled: true
-  claims_released: [STORY-0034]
 progress:
-  work_units_completed: 4
-  completed_ids: [STORY-0027, STORY-0028, STORY-0029, STORY-0030]
-  strict_field_ui_completion_delta: 4
-  materialization_delta: 4
+  work_units_attempted: 0
+  work_units_completed: 0
+  completed_ids: []
+  strict_field_ui_completion_delta: 0
+  materialization_delta: 0
   approval_delta: 0
-  bl008_testcontainers_validation_delta: 0
   bl008_migration_write_delta_persistent_target: 0
   next_eligible_strict_unit: STORY-0034
   transient_lane_logs_remaining: 0
