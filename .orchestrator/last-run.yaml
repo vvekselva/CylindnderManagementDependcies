@@ -1,8 +1,8 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-121552IST
-started_at: 2026-08-30T12:15:52+05:30
-completed_at: 2026-08-30T12:17:30+05:30
-elapsed_seconds: 98
-elapsed_minutes: 1.63
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-161305IST
+started_at: 2026-08-30T16:13:05+05:30
+completed_at: 2026-08-30T16:14:05+05:30
+elapsed_seconds: 60
+elapsed_minutes: 1.0
 productive_runtime_target_minutes: 30
 productive_target_satisfied: false
 terminal_classification: RUNTIME_WINDOW_FORCED_STOP
@@ -13,41 +13,41 @@ architecture:
   compatibility_invocation_lease_global_mutex: false
   shared_aggregate_single_writer: true
 work:
-  attempted_count: 10
-  attempted_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033]
-  completed_materialization_count: 10
-  completed_materialization_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033]
+  attempted_count: 13
+  attempted_ids: [STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
+  completed_materialization_count: 13
+  completed_materialization_ids: [STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
   completed_strict_count: 0
   completed_strict_ids: []
   strict_field_ui_completion_delta: 0
-  physical_materialization_delta: 10
+  physical_materialization_delta: 13
   approvals_delta: 0
-  next_dynamically_resolved_eligible_unit: STORY-0036
+  next_dynamically_resolved_eligible_unit: DYNAMIC_STRICT_RECONCILIATION_REQUIRED
 metrics_after:
   register_ready: 131
   clarification: 3
-  materialized_story_files: 121
-  materialization_pending: 13
+  materialized_story_files: 134
+  materialization_pending: 0
   strict_field_ui_complete: 119
   approved: 0
   use_case_grouped: 0
   testing_ready: 0
 bl008:
-  blocker_after: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
-  testcontainers_blocker_after: BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE
-  runtime_capability_changed: false
-  repeated_identical_probe: false
-  migrations_applied_persistent_target: 0
-  migration_write_delta: 0
-  database_write_delta: 0
+  mode: LOCAL_FLYWAY_EXISTING_DATABASE_HANDOFF
+  v171_database_validation: PASS
+  v172_required_for_v171_scope: false
+  full_schema_audit_state: WAITING_FOR_USER_SINGLE_RUN_RESULT
+  database_write_delta_chatgpt: 0
 claims:
   resource_scoped_claims_created: 0
   claims_remaining: 0
   recoverable_claims_remaining: 0
 transient_logs_remaining: 0
 notes:
-  - Live physical parity reconciliation was performed before work selection.
-  - Ten missing registered Story files were durably materialized; strict completion was not inflated.
-  - STORY-0011 through STORY-0013 remain clarification-aware with exact unresolved source/controller gaps.
-  - BL-008 blocker fingerprint is unchanged, so no prohibited duplicate network/container probe was performed.
-  - Platform execution window ended before the 30-minute productive target; durable wave checkpoint preserved all completed units.
+  - Mandatory startup SSOT and compatibility lease were read; legacy lease is RELEASED and not a global mutex.
+  - Reconciled the thirteen durable pending materialization tasks against the live Story tree.
+  - Materialized all remaining Story artifacts, reaching governed physical parity 134/134 and zero pending queue tasks.
+  - STORY-0035 and STORY-0036 remain clarification-aware; no missing intermediate behavior was invented.
+  - Strict completion remains 119/134; physical materialization did not inflate strict completion.
+  - BL-008 README proves V171 database validation PASS and now waits for the user's consolidated full-schema-audit result; no ChatGPT database write occurred.
+  - Further strict enrichment remains eligible and must be selected by dynamic reconciliation in the next available execution window.
