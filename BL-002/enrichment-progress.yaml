@@ -1,30 +1,39 @@
-version: 26
+version: 27
 backlog_id: BL-002
-updated_at: 2026-08-30T11:34:36+05:30
-updated_by: ChatGPT corrective orchestration fix
-run_id: CYLINDER-CORRECTIVE-FIX-20260830-113436IST
+updated_at: 2026-08-30T11:50:00+05:30
+updated_by: ChatGPT architecture and parity reconciliation
+run_id: CYLINDER-ARCHITECTURE-SYNC-20260830-115000IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 112
+  materialized_story_files: 111
+  materialization_pending: 23
   strict_field_ui_complete: 119
   use_case_grouped: 0
   testing_ready: 0
+materialization:
+  parity_target: 134
+  queue: BL-002/materialization-task-queue.csv
+  pending_r1_priority_1: 22
+  pending_r2_priority_2: 1
+  reconciliation_rule: REGISTER_MINUS_PHYSICAL_STORY_TREE
 reconciliation:
-  current_run_strict_delta: {count: 1, stories: [STORY-0034]}
+  current_run_strict_delta: {count: 0, stories: []}
   current_run_materialization_delta: {count: 0, stories: []}
   source_detail_review_required: []
   source_analyzed_waiting_cursor: []
   correction:
-    - STORY-0034 frozen service/DAO/entity/database trace completed and its stale source-detail blocker removed.
-    - STORY-0034 is R2 per story-register/release metadata; it must never be represented as an R1 candidate.
-    - The next unfinished strict unit must be dynamically reconciled from unit-local evidence; a hard-coded replacement story is intentionally not written here.
+    - Physical Git tree reconciliation found 111 Story .md files, not the stale aggregate value 112.
+    - Added explicit materialization task queue for 23 registered Story IDs without physical Story files.
+    - Physical materialization is now a separate governed metric and completion gate from strict field/UI enrichment.
+    - STORY-0034 remains strict-complete from the prior corrective run.
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
   next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
+  next_eligible_materialization_unit: STORY-0001
   trace_proxy_cursor: STORY-0030
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
