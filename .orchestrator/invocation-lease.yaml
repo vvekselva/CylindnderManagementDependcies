@@ -7,7 +7,7 @@ scope:
   - BL-002
   - BL-008
 claims:
-  - STORY-0027
+  - STORY-0028
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -19,22 +19,26 @@ policy:
   testcontainers_validation_is_persistent_migration: false
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T06:18:03+05:30
-lease_expires_at: 2026-08-30T06:33:03+05:30
+heartbeat_at: 2026-08-30T06:25:44+05:30
+lease_expires_at: 2026-08-30T06:40:44+05:30
 result: IN_PROGRESS
 recovery:
   classification: FRESH_LEASE_AFTER_RECOVERED_STALE_INVOCATION
   prior_run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
   durable_evidence_reconciled: true
 progress:
-  work_units_attempted: 1
-  work_units_completed: 0
+  work_units_attempted: 2
+  work_units_completed: 1
+  completed_ids: [STORY-0027]
+  strict_field_ui_completion_delta: 1
+  materialization_delta: 1
+  approval_delta: 0
   bl008_testcontainers_validation_delta: 0
   bl008_migration_write_delta_persistent_target: 0
   bl008_blocker_confirmed: BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE
-  next_eligible_strict_unit: STORY-0027
+  next_eligible_strict_unit: STORY-0028
   transient_lane_logs_remaining: 0
 notes:
-  - BL-008 V1 Testcontainers unit is blocked before database startup because the ChatGPT runtime exposes no Docker-compatible/OCI container backend.
-  - No Testcontainer, PostgreSQL container, Flyway database action, Supabase action, or persistent database write occurred.
-  - Replanned immediately to independently eligible BL-002 STORY-0027; live SSOT cursor overrides stale hard-coded scheduler cursor text.
+  - BL-008 V1 Testcontainers validation remains blocked before database startup; no DB/Flyway write occurred.
+  - STORY-0027 root dashboard GET is durably strict-complete from frozen source.
+  - Replanned immediately to STORY-0028 alias route.
