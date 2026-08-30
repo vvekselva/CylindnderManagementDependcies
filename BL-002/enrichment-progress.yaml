@@ -1,6 +1,6 @@
-version: 23
+version: 24
 backlog_id: BL-002
-updated_at: 2026-08-30T06:25:31+05:30
+updated_at: 2026-08-30T06:28:12+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-BL008-TESTCONTAINERS-20260830-061203IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
@@ -8,25 +8,25 @@ metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 109
-  strict_field_ui_complete: 115
+  materialized_story_files: 112
+  strict_field_ui_complete: 118
   use_case_grouped: 0
   testing_ready: 0
 reconciliation:
   baseline_strict_count: 114
   current_run_strict_delta:
-    count: 1
-    stories: [STORY-0027]
+    count: 4
+    stories: [STORY-0027, STORY-0028, STORY-0029, STORY-0030]
   current_run_materialization_delta:
-    count: 1
-    stories: [STORY-0027]
+    count: 4
+    stories: [STORY-0027, STORY-0028, STORY-0029, STORY-0030]
   source_detail_review_required: []
   source_analyzed_waiting_cursor: []
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
-  next_eligible_strict_unit: STORY-0028
-  trace_proxy_cursor: STORY-0027
+  next_eligible_strict_unit: STORY-0034
+  trace_proxy_cursor: STORY-0030
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
   blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
