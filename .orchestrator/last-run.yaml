@@ -1,48 +1,39 @@
-run_id: CYLINDER-LEASE-RECOVERY-20260830-050837IST
-started_at: 2026-08-30T05:08:37+05:30
-completed_at: 2026-08-30T05:08:55+05:30
-elapsed_seconds: 18
-elapsed_minutes: 0.3
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
+started_at: 2026-08-30T05:34:48+05:30
+completed_at: null
+elapsed_seconds: null
+elapsed_minutes: null
 minimum_productive_minutes_required: 30
 minimum_productive_window_satisfied: false
-terminal_classification: ROOT_CAUSE_FIX_VALIDATION
+terminal_classification: RECOVERED_STALE_INVOCATION
 voluntary_early_stop: false
 eligible_work_remaining: true
-purpose: ORCHESTRATION_CONTROL_PATH_RECOVERY
+recovery:
+  recovered_at: 2026-08-30T06:11:41+05:30
+  last_durable_progress_at: 2026-08-30T05:44:28+05:30
+  original_completion_time_known: false
+  stale_after_minutes: 15
 lease:
   acquired: true
   readback_verified: true
   released: true
   claims_released: true
-  stale_recovery_performed: false
-root_cause:
-  classification: PRIOR_EXECUTION_PATH_GITHUB_WRITE_SAFETY_GATE
-  repository_permissions_fault: false
-  branch_fault: false
-  stale_sha_fault: false
-  malformed_lease_fault: false
-  ssot_corruption: false
-  evidence: direct GitHub contents update on main succeeded and ACTIVE lease readback matched the write
-fix:
-  status: APPLIED_AND_VALIDATED
-  corrective_route: CHATGPT_DIRECT_GITHUB_CONTENTS_WRITE_AND_READBACK
-  github_actions_used: false
-  external_worker_used: false
+  stale_recovery_performed: true
 work:
-  attempted_count: 0
-  attempted_ids: []
-  completed_strict_count: 0
-  completed_strict_ids: []
-  materialized_count: 0
-  strict_field_ui_completion_delta: 0
-  trace_materialization_delta: 0
+  attempted_count: 7
+  attempted_ids: [STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026]
+  completed_strict_count: 7
+  completed_strict_ids: [STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026]
+  materialized_count: 7
+  strict_field_ui_completion_delta: 7
+  trace_materialization_delta: 7
   approvals_delta: 0
-  next_eligible_strict_unit: STORY-0020
+  next_eligible_strict_unit: STORY-0027
 metrics_after:
   register_ready: 131
   clarification: 3
-  materialized_story_files: 101
-  strict_field_ui_complete: 107
+  materialized_story_files: 108
+  strict_field_ui_complete: 114
   approved: 0
   use_case_grouped: 0
   testing_ready: 0
@@ -54,6 +45,6 @@ bl008:
   database_write_delta: 0
 transient_logs_remaining: 0
 notes:
-  - This was a focused control-path recovery validation, not a normal productive backlog fire.
-  - The direct GitHub contents write path acquired and read back the singleton lease successfully, then released it cleanly.
-  - The previous lease-write blocker is resolved for the currently available ChatGPT GitHub connector path.
+  - Original completion time is unknown; it was not invented.
+  - Last durable progress is the enrichment-progress checkpoint at 05:44:28 IST.
+  - STORY-0027 had been claimed but was not durably strict-complete, so its claim was released.
