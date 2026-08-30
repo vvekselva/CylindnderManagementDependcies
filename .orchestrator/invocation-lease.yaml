@@ -1,33 +1,28 @@
 holder: Primary Cylinder Automation Tool
 run_id: CYLINDER-BL008-TESTCONTAINERS-20260830-061203IST
 acquired_at: 2026-08-30T06:12:03+05:30
-released_at: null
-status: ACTIVE
+released_at: 2026-08-30T11:14:16+05:30
+status: RELEASED
 scope:
   - BL-002
   - BL-008
-claims:
-  - STORY-0034
+claims: []
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
   github_runner: forbidden
   shared_ssot_single_writer: true
-  independent_backlog_units: true
   bl008_database_write_parallelism: 1
-  flyway_execution_mode: JAVA_API
-  testcontainers_validation_is_persistent_migration: false
-  minimum_productive_minutes: 30
   stale_after_minutes: 15
 heartbeat_at: 2026-08-30T06:28:25+05:30
-lease_expires_at: 2026-08-30T06:43:25+05:30
-result: IN_PROGRESS
+result: RECOVERED_STALE_INVOCATION
 recovery:
-  classification: FRESH_LEASE_AFTER_RECOVERED_STALE_INVOCATION
-  prior_run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
+  classification: RECOVERED_STALE_INVOCATION
+  recovered_at: 2026-08-30T11:14:16+05:30
+  last_durable_progress_at: 2026-08-30T06:28:12+05:30
   durable_evidence_reconciled: true
+  claims_released: [STORY-0034]
 progress:
-  work_units_attempted: 5
   work_units_completed: 4
   completed_ids: [STORY-0027, STORY-0028, STORY-0029, STORY-0030]
   strict_field_ui_completion_delta: 4
@@ -35,10 +30,5 @@ progress:
   approval_delta: 0
   bl008_testcontainers_validation_delta: 0
   bl008_migration_write_delta_persistent_target: 0
-  bl008_blocker_confirmed: BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE
   next_eligible_strict_unit: STORY-0034
   transient_lane_logs_remaining: 0
-notes:
-  - BL-008 Testcontainers backend remains unavailable; no DB/Flyway/Supabase write occurred.
-  - Customer-consumption R2 GET/API group STORY-0027 through STORY-0030 is durably strict-complete.
-  - Replanned immediately to next R2 strict unit STORY-0034.
