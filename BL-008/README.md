@@ -1,104 +1,67 @@
-# BL-008 — Database Migration Execution Status
+# BL-008 — Database Migration Authoring / Local Apply Workflow
 
-Latest governed continuation: `CYLINDER-PRODUCTION-FIRE-20260829-210423IST`.
+Current governed mode: **ChatGPT authors migration changes; the user applies them to a fresh PostgreSQL database and returns the Flyway result.**
 
-## Target and validation policy
+This supersedes the earlier Testcontainers/Supabase execution requirement for BL-008. No local runner package or ChatGPT-side database connection is required for the current workflow.
 
-- Persistent test target: **Supabase** project `xipkywwvzvrwcqnkifuv`, database `postgres`, PostgreSQL `17.6`.
-- ChatGPT-side migration-validation runtime: **PostgreSQL Testcontainers**.
-- Database write parallelism: `1`.
-- Migration mechanism: **genuine Flyway 10.0.0 Java API only**.
-- Manual/raw SQL replay and Supabase-native migration replay are forbidden as substitutes for Flyway.
-- GitHub is durable SSOT/version control only; GitHub runners are forbidden.
-- External worker runtimes remain forbidden.
-- Never invoke `clean` / `flyway clean`.
+## Execution boundary
 
-A successful Testcontainers run proves the governed frozen migrations work against an ephemeral PostgreSQL test database. It does **not** count as a migration applied to the persistent Supabase test target.
+- ChatGPT owns source analysis, migration design, additive SQL authoring, consistency checks, corrective follow-up, and durable BL-008 evidence.
+- The user owns execution of the normal Flyway migration chain against the new local database and returns the migration result/error to ChatGPT.
+- GitHub remains durable SSOT/version control only; GitHub Actions/runners are not used for orchestration execution.
+- Migration changes are additive by default. Existing historical migrations are not rewritten unless the user explicitly approves a historical migration repair because a fresh-database failure cannot be corrected by a later migration.
+- Flyway remains the migration mechanism. Raw/manual SQL replay is not a substitute for the migration chain.
+- Never use `flyway clean` against a database containing required data.
 
-## Frozen-source reconciliation — PASS
+## Current application source being reconciled
 
-Frozen repository: `vvekselva/CylinderManagement`  
-Frozen commit: `3ae6e61442132d94a307275b08dd65fcef228d89`  
-Migration path: `cylinder.datascripts/src/main/resources/db/migration`  
-POM: `cylinder.datascripts/pom.xml`
+Uploaded application backup: `Harinandhan-Cylinder-Backup(20260830-093548).zip`.
 
-`BL-008/migration-inventory.txt` binds governed V1-V17 filenames to immutable Git blob SHA-1 values. `V1__DailyLogin.sql` remains only the first source-order candidate until genuine Flyway `info()` selects pending work.
+Current migration directory:
 
-## Flyway Java dependency path — PASS
+`cylinder.datascripts/src/main/resources/db/migration`
 
-Previously verified with Java 21.0.11:
+The uploaded project currently contains V1 through V170, with historical gaps in version numbers where no migration file exists.
 
-- `org.flywaydb.core.Flyway` class load: PASS
-- `org.postgresql.Driver` class load: PASS
-- `Flyway.configure()` / `.load()`: PASS
-- `cleanDisabled(true)`: configured
-- `baselineOnMigrate(false)`: configured
-- `outOfOrder(false)`: configured
+## Static application/schema reconciliation
 
-`JAVA_API_DEPENDENCY_PATH = PASS`.
+The current Java DAO/entity layer references:
 
-## Testcontainers runtime gate — BLOCKED
+- `public.vw_customer_order_request_dashboard`
+- `public.vw_customer_order_request_daily_product_metrics`
 
-The newly approved Testcontainers path was probed during `CYLINDER-PRODUCTION-FIRE-20260829-210423IST`.
+The existing migration chain creates the equivalent legacy relations:
 
-Current blocker fingerprint:
+- `public.vw_customer_demand_dashboard`
+- `public.vw_customer_demand_daily_product_metrics`
 
-`BL008_TESTCONTAINERS_CONTAINER_RUNTIME_UNAVAILABLE_IN_CHATGPT_EXECUTION_HOST`
+The dashboard DAO directly queries `vw_customer_order_request_dashboard`, so the current migration set does not fully expose all relation names expected by the application source.
 
-Observed in the ChatGPT execution runtime:
+## Current additive correction
 
-- Java 21.0.11: available.
-- `docker`: unavailable (`command not found`).
-- `podman`: unavailable.
-- `nerdctl`: unavailable.
-- `ctr`: unavailable.
+New migration authored for the local handoff:
 
-Therefore standard Java Testcontainers cannot currently start a PostgreSQL container in this ChatGPT execution surface. This is a container-runtime prerequisite blocker, not a migration-script failure.
+`V171__Customer_Order_Request_View_Compatibility.sql`
 
-Latest evidence: `BL-008/evidence/20260829-210520-testcontainers-runtime-capability.md`.
+It preserves the legacy `vw_customer_demand_*` views and adds compatibility views with the exact names/columns expected by the current Java mappings.
 
-## Persistent Supabase route — secondary blocker unchanged
+No V1-V170 migration was modified.
 
-The earlier persistent-target blocker remains relevant only when applying already validated migrations to Supabase:
+## User execution / feedback loop
 
-`BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE`
+1. ChatGPT supplies the updated application/migration ZIP.
+2. User runs the normal Flyway migration chain on the fresh PostgreSQL database.
+3. User sends the Flyway result. If it fails, send the failing migration version, SQLSTATE/error text, and the relevant Flyway stack/error section.
+4. ChatGPT analyzes the failure against source and migration history.
+5. When an additive correction is possible, ChatGPT adds the next migration (`V172`, `V173`, ...), returns the updated package, and records the result.
+6. If a fresh-database failure occurs inside an older migration before later migrations can run, ChatGPT must explicitly identify that an additive migration cannot execute yet and propose the smallest governed historical repair or another user-approved recovery path rather than pretending a later migration can fix an earlier failed migration.
 
-Parent:
+## Current state
 
-`BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME`
+- Existing migrations modified: **0**
+- New migrations added in current handoff: **1**
+- Latest new migration: **V171**
+- Database execution result: **WAITING_FOR_USER_LOCAL_FLYWAY_RESULT**
+- User-local database writes by ChatGPT: **0**
 
-Subreason:
-
-`SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY`
-
-Existing evidence already proves the unavailable DNS/raw-TCP route, so identical network probes must not be repeated unless runtime capability changes.
-
-## Current safety state
-
-- Testcontainer started: **NO**
-- PostgreSQL Testcontainer started: **NO**
-- Flyway Java `info()` against Testcontainer: **NOT RUN**
-- Flyway Java `validateWithResult()` against Testcontainer: **NOT RUN**
-- Flyway Java `migrate()` against Testcontainer: **NOT RUN**
-- Persistent Supabase Flyway `info()` reached database: **NO**
-- migrations successfully applied to Testcontainer: **0/17**
-- migrations successfully applied to persistent Supabase target: **0/17**
-- migration-flow database writes: **0**
-- provider-native replay: **NOT RUN**
-- raw/manual SQL migration: **NOT RUN**
-- repeated Supabase network probe in latest fire: **NO**
-
-## Governed next flow
-
-When the ChatGPT execution host exposes a Docker-compatible local container runtime:
-
-1. start an ephemeral PostgreSQL 17.x Testcontainer;
-2. bind the immutable V1-V17 migration source;
-3. run genuine Flyway Java `info()`;
-4. run `validateWithResult()`;
-5. migrate exactly one pending governed migration;
-6. verify `flyway_schema_history`, resulting schema objects and integrity;
-7. continue one migration at a time, DB-write parallelism 1;
-8. destroy the Testcontainer after validation.
-
-BL-002 remains independently eligible and must not be blocked by this BL-008 lane-local prerequisite blocker.
+BL-002 remains independently eligible and is not blocked while BL-008 waits for the local Flyway result.
