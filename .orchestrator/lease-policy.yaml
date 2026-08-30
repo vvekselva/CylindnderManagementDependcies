@@ -1,6 +1,8 @@
-version: 4
+version: 5
 name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
 supersedes:
+  - version: 4
+    name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
   - version: 3
     name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
   - version: 2
@@ -13,7 +15,9 @@ principles:
   - Same writable resource is single-writer.
   - BL-008 database-write parallelism is exactly 1.
   - GitHub is durable control/audit persistence only; GitHub Actions/runners remain forbidden.
-  - External worker runtimes remain forbidden unless governance is explicitly changed.
+  - Execution is performed by ChatGPT; external worker runtimes remain forbidden unless governance is explicitly changed.
+  - Unit-local durable evidence is persisted before aggregate projections.
+  - BL-002 registered Story parity with physical Story files is a governed completion gate.
 run_scope:
   required: true
   modes:
@@ -22,12 +26,12 @@ run_scope:
     CONTINUOUS:
       rule: Replan across all eligible backlogs and independent work units.
     RECOVERY:
-      rule: Work only on blocker, stale-state, reconciliation, or architecture recovery units explicitly in scope.
+      rule: Work only on blocker, stale-state, reconciliation, architecture recovery, or parity-repair units explicitly in scope.
 resource_claims:
   claim_granularity: writable_resource_or_irreducible_work_unit
   claim_identity_examples:
     - BL-002|STORY-0054|BL-002/stories/STORY-0054.md
-    - BL-002|STORY-0055|BL-002/stories/STORY-0055.md
+    - BL-002|MATERIALIZE-STORY-0001|BL-002/stories/STORY-0001.md
     - BL-008|DB-WRITE-SLOT|SUPABASE:xipkywwvzvrwcqnkifuv:postgres
   compatibility_rule: Two claims may coexist only when their write sets do not intersect and neither depends on incomplete output owned by the other.
   read_only_parallelism: allowed
@@ -55,7 +59,7 @@ legacy_singleton_transition:
   status: DEPRECATED_AS_GLOBAL_MUTEX
   rule: A fresh legacy invocation lease protects only the resources explicitly listed in its claims; its broad scope field does not block unrelated resources.
   migration_rule: Existing active legacy lease must not be rewritten by an unrelated architecture/BL-008 run unless one of its explicit claimed resources conflicts.
-  retirement: Stop creating new global singleton leases after all orchestrator prompts adopt v3-or-later resource claims.
+  retirement: Stop creating new global singleton leases after all orchestrator prompts adopt resource claims.
 shared_aggregate_state:
   files:
     - .orchestrator/last-run.yaml
@@ -63,6 +67,10 @@ shared_aggregate_state:
   role: aggregate_or_checkpoint_only
   direct_worker_write_rule: Workers should persist unit-local evidence first; aggregate files are updated by a dedicated aggregator/checkpointer using optimistic concurrency.
   authority_rule: Unit-local durable evidence is authoritative for completed work; aggregate cursor lag must not erase completed unit evidence.
+  checkpoint_rule:
+    after_every_completed_or_blocked_unit: true
+    after_each_dispatch_wave_when_available: true
+    defer_all_updates_until_terminalization: forbidden
 BL-002:
   parallelism:
     independent_R1_units: allowed
@@ -73,11 +81,29 @@ BL-002:
     status_file_pattern: BL-002/work-status/STORY-*.yaml
   aggregate_file: BL-002/enrichment-progress.yaml
   aggregate_single_writer: true
+  canonical_story_register: BL-002/story-register.csv
+  materialization_queue: BL-002/materialization-task-queue.csv
+  materialization_parity:
+    required_story_count: 134
+    rule: Every story_id in story-register.csv must have exactly one physical BL-002/stories/<story-id>.md file.
+    priority:
+      R1: 1
+      R2: 2
+    queue_reconciliation: Recompute the set difference between registered Story IDs and physical Story files at invocation start/replan and reconcile materialization-task-queue.csv before selecting new work.
+    review_artifact_gate: A Story is not a complete review artifact until its physical file exists and is synchronized with governed evidence.
+    clarification_artifact_rule: NEEDS_CLARIFICATION does not waive physical materialization; create a file that documents the exact evidence gap without guessing.
+    completion: 134 validated physical Story files and zero pending materialization tasks.
+    separate_metrics:
+      - physical_materialization
+      - strict_field_ui_completion
+      - review_state
+      - approval_status
+      - use_case_grouping
+      - testing_readiness
   completion_rule: SOURCE_DETAIL_REVIEW_REQUIRED or a recorded source-detail gap is not strict field/UI completion.
   next_work_resolution:
-    authoritative_source: BL-002/enrichment-progress.yaml
     hardcoded_story_pointer: forbidden
-    rule: Reconcile unit-local evidence first, then resolve the currently eligible unfinished R1 unit dynamically on every invocation.
+    rule: Reconcile unit-local evidence, story-file parity, materialization queue, and aggregate progress first; then resolve the currently eligible unfinished unit dynamically on every invocation.
 BL-008:
   independent_read_only_units_parallel: allowed
   database_write_semaphore:
@@ -98,6 +124,7 @@ BL-008:
 planning:
   algorithm:
     - RECONCILE durable unit evidence.
+    - RECONCILE BL-002 registered Story IDs against physical Story files and materialization queue.
     - BUILD dependency graph and write sets.
     - SELECT all eligible safe-independent units up to available worker capacity.
     - CLAIM resources independently.
