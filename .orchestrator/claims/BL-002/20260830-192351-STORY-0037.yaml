@@ -3,9 +3,10 @@ backlog: BL-002
 work_unit: STORY-0037
 claimant: Primary Cylinder Automation Tool
 claimed_at: 2026-08-30T19:23:51+05:30
-heartbeat_at: 2026-08-30T19:23:51+05:30
+heartbeat_at: 2026-08-30T19:25:57+05:30
 lease_expires_at: 2026-08-30T19:38:51+05:30
-state: ACTIVE
+state: COMPLETED
+completed_at: 2026-08-30T19:25:57+05:30
 read_set:
   - BL-002/story-register.csv
   - BL-002/stories/STORY-0037.md
@@ -16,3 +17,8 @@ write_set:
   - BL-002/enrichment-progress.yaml
   - .orchestrator/last-run.yaml
 purpose: Frozen-source strict enrichment for registered GET /cylinderDelivery story.
+outcome:
+  strict_field_ui_complete: true
+  strict_delta: 1
+  physical_materialization_delta: 0
+  approval_delta: 0
