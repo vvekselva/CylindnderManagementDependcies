@@ -2,29 +2,30 @@
 
 **Consolidated current architecture - 30 August 2026**
 
-GitHub = durable version control / control-state persistence. ChatGPT = Primary Orchestrator, execution engine, validator and recovery coordinator.
+GitHub = durable version control / control-state persistence. ChatGPT = Primary Orchestrator, source analyst, migration author, validator and recovery coordinator. BL-008 has an explicit local execution handoff in which the user applies the authored Flyway migrations to the new PostgreSQL database and returns the result.
 
-This document is the human-readable source for the current architecture. It supersedes historical bootstrap-first, hosted-runner-bridge, Neon-target and global-singleton-lock wording. The generated PDF must be rebuilt from this source whenever this architecture changes.
+This document is the human-readable source for the current architecture. It supersedes historical bootstrap-first, hosted-runner-bridge, Neon-target, mandatory Testcontainers/Supabase execution, and global-singleton-lock wording. The generated PDF must be rebuilt from this source whenever this architecture changes.
 
 ## 1. Authoritative boundary
 
 | Area | Current governed state |
 |---|---|
 | Control repository | `vvekselva/CylindnderManagementDependcies` on `main` |
-| Application source | `vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89` |
-| Execution host | ChatGPT |
+| BL-001 frozen source | `vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89` |
+| BL-008 current authoring source | Uploaded `Harinandhan-Cylinder-Backup(20260830-093548).zip` |
+| Primary orchestration host | ChatGPT |
 | GitHub role | Durable control/audit persistence and version control only |
 | GitHub Actions/runners | Forbidden for orchestration execution |
 | External worker runtime | Forbidden unless governance is explicitly changed |
-| User manual execution | Forbidden as an orchestration dependency |
+| User local execution | Allowed only for the explicit BL-008 Flyway handoff |
 | Maximum safe-independent workers | Up to 10 |
-| BL-008 DB-write parallelism | Exactly 1 |
+| BL-008 database writes by ChatGPT | 0 in local-handoff mode |
 
 ## 2. Core execution lifecycle
 
 `TRIGGER -> READ/RECONCILE -> PLAN -> BUILD DEPENDENCY + READ/WRITE SETS -> CLAIM RESOURCE -> EXECUTE -> VALIDATE -> PERSIST UNIT EVIDENCE -> RELEASE CLAIM -> AGGREGATE/CHECKPOINT -> REPLAN/REFILL -> TERMINALIZE`
 
-There is no global backlog mutex. Work serializes only for a proven dependency, a write-set collision, an immutable-read invalidation risk, shared aggregate writing, or the BL-008 DB-write semaphore.
+There is no global backlog mutex. Work serializes only for a proven dependency, a write-set collision, an immutable-read invalidation risk, or shared aggregate writing. BL-008 local database execution is outside ChatGPT's worker pool and is represented as a governed handoff/result gate.
 
 ## 3. Resource-scoped claims
 
@@ -52,9 +53,11 @@ Primary aggregate projections include `.orchestrator/last-run.yaml` and `BL-002/
 
 Thirty minutes is a productive target, not a correctness minimum. The Orchestrator must use as much productive time as the platform supplies, up to the target, and must never idle merely to satisfy the clock.
 
-While eligible in-scope work remains and execution is still available, voluntary terminalization is forbidden. The loop is `REPLAN -> CLAIM -> DISPATCH` after every completed or blocked unit.
+While eligible in-scope ChatGPT work remains and execution is still available, voluntary terminalization is forbidden. The loop is `REPLAN -> CLAIM -> DISPATCH` after every completed or blocked unit.
 
 When the platform cuts execution short, use `RUNTIME_WINDOW_FORCED_STOP`, preserve all durable progress, and keep `voluntary_early_stop: false`.
+
+A BL-008 handoff waiting for the user's local Flyway result is not runnable ChatGPT database work and must not consume execution capacity or block BL-002.
 
 ## 7. Three-level SSOT
 
@@ -68,7 +71,7 @@ Fail-closed is local to the affected dependency or mutation scope. A blocked lan
 
 BL-001 is canonically complete at 134 unique HTTP method/path keys and remains read-only unless a source-integrity regression is proven.
 
-The exact frozen application source baseline remains `3ae6e61442132d94a307275b08dd65fcef228d89`.
+The exact frozen BL-001 application source baseline remains `3ae6e61442132d94a307275b08dd65fcef228d89`.
 
 ## 9. BL-002 Story register, physical files and priority
 
@@ -133,32 +136,48 @@ BL-004 starts from approved Stories/Use Cases/scenarios for integration and Use 
 
 Neither backlog may treat unapproved Story meaning as authoritative.
 
-## 14. BL-008 current database architecture
+## 14. BL-008 migration-authoring / local-apply architecture
 
-Current persistent test target: Supabase project `xipkywwvzvrwcqnkifuv`, database `postgres`, PostgreSQL 17.6.
+BL-008 now operates as an explicit handoff:
 
-Migration mode is genuine Flyway 10.0.0 Java API only. Exactly one target migration is selected/applied at a time. `clean`, raw/manual SQL and Supabase-native replay are forbidden.
+`CHATGPT SOURCE ANALYSIS -> ADDITIVE FLYWAY MIGRATION AUTHORING -> UPDATED ZIP -> USER LOCAL FLYWAY MIGRATE -> USER RETURNS RESULT -> CHATGPT RECONCILES / AUTHORS NEXT CORRECTION`
 
-DB-write parallelism is exactly 1 through claim `BL-008|DB-WRITE-SLOT|SUPABASE:xipkywwvzvrwcqnkifuv:postgres`.
+Current authoring source is the uploaded `Harinandhan-Cylinder-Backup(20260830-093548).zip`.
 
-The current ChatGPT execution runtime has no compliant outbound PostgreSQL route and no Docker/Testcontainers backend. Identical network/Testcontainers probes must not be repeated while the blocker fingerprint is unchanged. Capacity returns immediately to other eligible work.
+Current migration directory is `cylinder.datascripts/src/main/resources/db/migration`.
 
-## 15. Lock hierarchy
+The existing V1-V170 migration history is immutable by default. New changes start at V171 and continue sequentially. Historical migration content is changed only when a fresh-database failure occurs before any later additive migration can run and the user explicitly approves the smallest required historical repair.
+
+Flyway remains required. Raw/manual SQL replay is not a substitute for the migration chain. `flyway clean` is not part of the governed workflow.
+
+Current additive migration:
+
+`V171__Customer_Order_Request_View_Compatibility.sql`
+
+It addresses the source-proved mismatch where the current Java DAO/entity layer expects `vw_customer_order_request_dashboard` and `vw_customer_order_request_daily_product_metrics`, while the existing migration chain exposes the equivalent legacy `vw_customer_demand_*` relations.
+
+BL-008 current runtime state is `WAITING_FOR_USER_LOCAL_FLYWAY_RESULT`.
+
+Required returned failure evidence, when applicable: failing Flyway migration version, SQLSTATE/database error text, and the relevant Flyway error/stack section.
+
+## 15. Lock / handoff hierarchy
 
 | Ownership/lock | Capacity | Scope |
 |---|---:|---|
 | Primary invocation ownership | 1 primary | Competing primary invocation only; not a global backlog mutex |
-| Resource/work-unit claims | Up to 10 | Exact unit/write-set only |
+| Resource/work-unit claims | Up to 10 | Exact ChatGPT unit/write-set only |
 | Aggregate writer | 1 | Shared aggregate checkpoint/update only |
-| BL-008 DB-write semaphore | 1 | Genuine Flyway DB mutation through verification |
+| BL-008 local DB execution | 1 user-controlled migration run | User's new PostgreSQL database; ChatGPT performs no direct DB write in handoff mode |
 
 ## 16. Scheduler and watchdog
 
-The Production Fire is a trigger for real work, not proof of progress. It runs hourly around `:15` under the active task configuration.
+The Production Fire is a trigger for real ChatGPT-executable work, not proof of progress. It runs hourly around `:15` under the active task configuration.
 
 The read-only watchdog runs around `:50`, reads durable evidence and reports actual deltas. It must not execute backlog work or mutate state.
 
-Runtime reporting distinguishes strict enrichment, physical materialization, approvals, Use Case grouping, testing readiness and BL-008 migration progress.
+While BL-008 is `WAITING_FOR_USER_LOCAL_FLYWAY_RESULT`, scheduled runs must not repeat Docker/Testcontainers/network probes and must not fabricate database progress. They should continue independently eligible BL-002 work.
+
+Runtime reporting distinguishes strict enrichment, physical materialization, approvals, Use Case grouping, testing readiness and BL-008 local-handoff state/result.
 
 ## 17. Current BL-002 physical parity correction
 
@@ -168,7 +187,9 @@ The durable queue was created with 22 R1 priority-1 tasks and 1 R2 priority-2 ta
 
 ## 18. Quality gates
 
-Key gates include SSOT consistency, SOW executability, dependency satisfaction, exact source integrity, lifecycle evidence, traceability, Story physical parity, strict Story enrichment, explicit user approval, and BL-008 one-requirement Flyway/integrity verification.
+Key gates include SSOT consistency, SOW executability, dependency satisfaction, exact source integrity, lifecycle evidence, traceability, Story physical parity, strict Story enrichment, explicit user approval, and BL-008 migration-source/application consistency plus returned local Flyway execution evidence.
+
+For BL-008, a migration is not considered successfully applied merely because ChatGPT authored it. Applied status requires the user's local Flyway result.
 
 Fail-closed means do not invent, skip, auto-approve or substitute unsafe execution. It does not authorize a blocked unit to globally stop independent eligible work.
 
@@ -183,7 +204,8 @@ Fail-closed means do not invent, skip, auto-approve or substitute unsafe executi
 - `BL-002/stories/` - physical Story review artifacts.
 - `BL-002/materialization-task-queue.csv` - explicit priority queue for missing physical Story files.
 - `BL-002/enrichment-progress.yaml` - aggregate BL-002 projection.
-- `BL-008/` - Flyway runner, target governance and blocker evidence.
+- `BL-008/README.md` - current migration-authoring/local-apply handoff SSOT.
+- `BL-008/` - migration inventory and BL-008 evidence.
 
 ## 20. Document synchronization rule
 
