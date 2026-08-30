@@ -19,8 +19,8 @@ policy:
   testcontainers_validation_is_persistent_migration: false
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T06:15:11+05:30
-lease_expires_at: 2026-08-30T06:30:11+05:30
+heartbeat_at: 2026-08-30T06:18:03+05:30
+lease_expires_at: 2026-08-30T06:33:03+05:30
 result: IN_PROGRESS
 recovery:
   classification: FRESH_LEASE_AFTER_RECOVERED_STALE_INVOCATION
