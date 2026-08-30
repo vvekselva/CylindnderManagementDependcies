@@ -1,37 +1,39 @@
-version: 22
+version: 23
 backlog_id: BL-002
-updated_at: 2026-08-30T05:44:28+05:30
+updated_at: 2026-08-30T06:25:31+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
+run_id: CYLINDER-BL008-TESTCONTAINERS-20260830-061203IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 108
-  strict_field_ui_complete: 114
+  materialized_story_files: 109
+  strict_field_ui_complete: 115
   use_case_grouped: 0
   testing_ready: 0
 reconciliation:
-  baseline_strict_count: 107
+  baseline_strict_count: 114
   current_run_strict_delta:
-    count: 7
-    stories: [STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026]
+    count: 1
+    stories: [STORY-0027]
   current_run_materialization_delta:
-    count: 7
-    stories: [STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026]
+    count: 1
+    stories: [STORY-0027]
   source_detail_review_required: []
   source_analyzed_waiting_cursor: []
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
-  next_eligible_strict_unit: STORY-0027
-  trace_proxy_cursor: STORY-0026
+  next_eligible_strict_unit: STORY-0028
+  trace_proxy_cursor: STORY-0027
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
   blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
   parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
   subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
+  testcontainers_blocker: BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE
   migrations_applied_persistent_target: 0
   migration_write_delta: 0
+  testcontainers_validation_delta: 0
   repeated_network_probe_performed: false
