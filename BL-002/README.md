@@ -1,10 +1,10 @@
-# BL-002 — Reconstructed Controller Flow Stories
+# BL-002 - Reconstructed Controller Flow Stories
 
 ## Status
 
-BL-002 has been **redone from authoritative sources** in run `CYLINDER-MANUAL-FIRE-20260829-025819IST`.
+BL-002 was reconstructed from authoritative sources beginning with run `CYLINDER-MANUAL-FIRE-20260829-025819IST`.
 
-This is a reconstruction, not a recovery of the missing historical story files. Historical approvals or dispositions are **not** inferred or copied.
+This is a reconstruction, not a recovery of missing historical Story wording. Historical approvals or dispositions are not inferred or copied.
 
 ## Authoritative inputs
 
@@ -17,35 +17,68 @@ This is a reconstruction, not a recovery of the missing historical story files. 
 
 ## Reconstruction rules
 
-1. Story numbering is regenerated one-to-one from the classification `No` field: `1 -> STORY-0001` through `134 -> STORY-0134`.
-2. The exact HTTP method + path is the traceability key.
-3. R1 is review priority 1; R2 is review priority 2.
+1. Story numbering is one-to-one from classification `No`: `1 -> STORY-0001` through `134 -> STORY-0134`.
+2. Exact HTTP method + path is the traceability key.
+3. R1 is review/materialization priority 1; R2 is priority 2.
 4. Story auto-approval is forbidden.
-5. Every reconstructed story starts with `PENDING_USER_APPROVAL`.
+5. Every reconstructed Story starts with `PENDING_USER_APPROVAL` unless an explicit user decision is durably recorded.
 6. Stories with a complete BL-001 chain are `READY_FOR_USER_REVIEW`.
 7. Stories whose BL-001 chain is `PARTIAL_INTERMEDIATE_HOPS` are `NEEDS_CLARIFICATION`.
-8. Use-case grouping is blocked until the corresponding stories are explicitly approved by the user.
+8. Use-case grouping is blocked until corresponding Stories are explicitly approved by the user.
+
+## Canonical register and physical Story parity
+
+`story-register.csv` is the canonical 134-row Story register. Registration alone is not sufficient for the human review folder.
+
+The governed parity rule is:
+
+`134 registered Story IDs == 134 physical BL-002/stories/STORY-*.md files`
+
+Every registered Story must have exactly one physical Story document. A `NEEDS_CLARIFICATION` Story must still have a physical document that records the exact evidence gap without inventing missing behavior.
+
+Physical materialization is a separate metric from strict field/UI enrichment, review state, approval status, Use Case grouping and testing readiness.
+
+## Materialization work queue
+
+`materialization-task-queue.csv` is the durable prioritized queue for any registered Story whose physical `.md` file is absent.
+
+Queue policy:
+
+- R1 gap -> priority `1`
+- R2 gap -> priority `2`
+- Queue statuses: `PENDING`, `CLAIMED`, `MATERIALIZED`, `VALIDATED`, `BLOCKED`
+- Before BL-002 work selection/replanning, the Orchestrator must compare `story-register.csv` with `BL-002/stories/STORY-*.md`, reconcile this queue, and repair aggregate count drift.
+- BL-002 physical materialization is complete only when there are **134 validated physical Story files and zero pending materialization tasks**.
+
+## Review and strict enrichment
+
+A Story is not a complete review artifact until its physical `.md` file exists and is synchronized with governed evidence.
+
+Strict field/UI completion additionally requires the full applicable source-proved contract: screen/user intent, browser event, exact request/identity, controller, service/DAO/repository/entity/view/database path, validation/branches, persistence/read effects, response and visible outcome. A source-detail gap is not strict completion.
 
 ## Reconstruction result
 
-- Total reconstructed drafts: **134**
+- Total registered Story drafts: **134**
 - R1 drafts: **88**
 - R2 drafts: **46**
 - `READY_FOR_USER_REVIEW`: **131**
 - `NEEDS_CLARIFICATION`: **3**
 - Approved: **0**
 
-The three clarification-required stories are:
+The three clarification-required Stories are:
 
-- `STORY-0011` — `POST /complete-trip`
-- `STORY-0035` — `GET /customer-spot-cylinder-check/fetch`
-- `STORY-0036` — `GET /yard-audit-dashboard`
+- `STORY-0011` - `POST /complete-trip`
+- `STORY-0035` - `GET /customer-spot-cylinder-check/fetch`
+- `STORY-0036` - `GET /yard-audit-dashboard`
 
-Each is flagged because BL-001 records `PARTIAL_INTERMEDIATE_HOPS`; no missing dependency behavior is fabricated.
+Each is flagged because BL-001 records `PARTIAL_INTERMEDIATE_HOPS`; missing dependency behavior must not be fabricated.
 
 ## Artifacts
 
-- `story-register.csv` — canonical 134-row story register, release priority, review state, approval state, and traceability state.
-- `STORY-DEFINITION.md` — deterministic human-readable rendering and common acceptance contract for every story-register row.
+- `story-register.csv` - canonical 134-row Story catalogue with release priority, review state, approval state and traceability state.
+- `STORY-DEFINITION.md` - deterministic Story rendering and common acceptance contract.
+- `stories/` - physical human-readable Story review artifacts.
+- `materialization-task-queue.csv` - durable priority queue for registered Story files missing from `stories/`.
+- `enrichment-progress.yaml` - aggregate BL-002 progress projection; unit-local/physical evidence wins if the aggregate lags.
 
-The register plus the rendering contract are the canonical BL-002 story SSOT. They define all 134 human-readable drafts without copying or inventing the missing historical story wording.
+The register, rendering contract, physical Story files and materialization queue together form the current BL-002 Story SSOT for review readiness and materialization completeness.
