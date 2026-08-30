@@ -1,0 +1,18 @@
+# STORY-0024 — Save Customer Address Location
+
+- Release: R2
+- Endpoint: `POST /customer-address-location/upload`
+- Controller: `CustomerAddressLocationController.saveLocation`
+- Approval: PENDING_USER_APPROVAL
+- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+
+The user submits the `Upload Customer Address Location` form through the visible `Save Location` button. The form posts to `/customer-address-location/upload` and binds `@ModelAttribute("location") CustomerAddressLocationDto request`. Source-proved form fields are required numeric `customerAddressId`, `sourceReference`, `locationSource`, `locationStatus`, `capturedByEmployeeName`, `capturedByMobileNumber`, and `remarks`; manual coordinates are separate optional request parameters named exactly `latitudeText` and `longitudeText`. The submit button has no source-defined enable/disable rule beyond the browser-required customer-address ID.
+
+If DTO latitude is null and trimmed `latitudeText` is non-empty, the controller converts it with `new BigDecimal(...)`; longitude follows the same rule. It then calls `CustomerAddressLocationOfflineMapService.saveCustomerAddressLocation(request)`. A bad manual numeric value is a runtime failure caught by the controller. In the service, a null request or null customerAddressId fails with `Customer address is required for location capture.` The service starts from request latitude/longitude; if either is missing and sourceReference is non-null, it attempts to parse a coordinate pair from the source text. It then requires both coordinates and enforces latitude -90..90 and longitude -180..180 with the exact coordinate validation messages used by the offline-map service.
+
+The customer-address identity is resolved by `CustomerAddressJpaDao.findById(request.getCustomerAddressId())`; absence fails as `Customer address not found: <customerAddressId>`. Before inserting the replacement, `CustomerAddressLocationJpaDao.findByCustomerAddressCustomerAddressIdAndActiveTrue(customerAddressId)` checks for an active location. When one exists, that row is set `active=false`, `locationStatus=SUPERSEDED`, `updatedAt=now`, and saved.
+
+The new entity is `CustomerAddressLocationDo`, persisted through `CustomerAddressLocationJpaDao.save` into `public.tbl_customer_address_location`. Exact persisted identity/columns include generated `pk_customer_address_location_id` from sequence `public.pk_customer_address_location_id_serial`, non-null `fk_customer_address`, non-null latitude/longitude, non-null `location_source`, non-null `location_status`, optional `source_reference`, optional captured employee name/mobile, non-null `captured_at`, optional `verified_at`, optional `verified_by`, optional remarks, non-null `is_active`, non-null `created_at`, and optional `updated_at`. The service defaults locationSource to `WHATSAPP_COPY_PASTE` and locationStatus to `VERIFIED` when blank/null; it persists the submitted sourceReference and capture metadata, sets capturedAt and createdAt to now, sets verifiedAt to now only when locationStatus equals `VERIFIED` ignoring case, and creates the new row active=true. The saved entity is mapped back to a DTO.
+
+On success the controller sets flash `successMessage` to `Customer address location saved successfully.` and redirects to `/customer-address-location/missing`, so the user returns to the missing-location screen after the write. On any caught runtime failure it sets flash `errorMessage` to the exception message and redirects to `/customer-address-location/upload?customerAddressId=<submitted id>`. The upload page conditionally displays that error. No approval occurred.
