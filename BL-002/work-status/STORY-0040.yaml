@@ -1,0 +1,24 @@
+story_id: STORY-0040
+release: R1
+endpoint: POST /vehicleLoad
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
+status: SOURCE_DETAIL_REVIEW_REQUIRED
+strict_field_ui_complete: false
+materialized: true
+approval: PENDING_USER_APPROVAL
+source_ref: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+proved_in_this_run:
+  - controller_model_binding
+  - mediator_invocation_boundary
+  - success_redirect_to_vehicle_load_list
+  - invalid_input_error_redisplay
+  - request_dto_nested_vehicle_load_and_trip_contract
+  - challan_book_id_fields
+  - challan_starting_sheet_fields
+remaining_gap:
+  - concrete_ICylinderManagementApplicationMediator_implementation
+  - mediator_to_service_chain
+  - DAO_repository_entity_table_write_identity
+  - transaction_and_guard_predicates
+  - downstream_side_effects
+strict_promotion_rule: do_not_promote_until_remaining_applicable_source_contract_is_proved
