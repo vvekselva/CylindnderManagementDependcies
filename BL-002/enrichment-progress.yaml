@@ -1,9 +1,9 @@
-version: 34
+version: 35
 backlog_id: BL-002
-updated_at: 2026-08-31T00:23:53+05:30
+updated_at: 2026-08-31T00:24:44+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-001706IST
-checkpoint_state: CHECKPOINT_RECONCILIATION_PENDING_READBACK
+checkpoint_state: CHECKPOINT_RECONCILED
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -36,7 +36,8 @@ reconciliation:
     - STORY-0043 GET /wizard/vehicle-trip-load now durably proves blank nested DTO setup, template/model identities, one-form wizard browser contract, cache-backed purpose/product reads and exact ActiveChallanBookForTripLoadViewJpaDao.findByBookType calls for four book types.
     - STORY-0043 remains non-strict because the concrete active-challan JPA DAO/view/table source and concrete lookup-service implementations are absent from the frozen repository tree available to this run.
     - No strict percentage was inflated from controller/comment-only evidence.
-  aggregate_reconciliation_gate: PENDING_READBACK
+    - Readback verified BL-002 and last-run shared projections use the same run id, strict count, physical count, pending count, approval count and BL-008 state.
+  aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
