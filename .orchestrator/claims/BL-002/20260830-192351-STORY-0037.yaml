@@ -1,0 +1,18 @@
+claim_id: BL002-STORY-0037-20260830-192351IST
+backlog: BL-002
+work_unit: STORY-0037
+claimant: Primary Cylinder Automation Tool
+claimed_at: 2026-08-30T19:23:51+05:30
+heartbeat_at: 2026-08-30T19:23:51+05:30
+lease_expires_at: 2026-08-30T19:38:51+05:30
+state: ACTIVE
+read_set:
+  - BL-002/story-register.csv
+  - BL-002/stories/STORY-0037.md
+  - BL-002/enrichment-progress.yaml
+  - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+write_set:
+  - BL-002/stories/STORY-0037.md
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+purpose: Frozen-source strict enrichment for registered GET /cylinderDelivery story.
