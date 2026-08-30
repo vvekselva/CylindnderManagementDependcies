@@ -1,8 +1,8 @@
-version: 29
+version: 30
 backlog_id: BL-002
-updated_at: 2026-08-30T16:13:05+05:30
+updated_at: 2026-08-30T17:13:52+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-161305IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-171352IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -10,7 +10,7 @@ metrics:
   approved: 0
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 119
+  strict_field_ui_complete: 120
   use_case_grouped: 0
   testing_ready: 0
 materialization:
@@ -21,17 +21,15 @@ materialization:
   reconciliation_rule: REGISTER_MINUS_PHYSICAL_STORY_TREE
   parity_state: COMPLETE_134_OF_134
 reconciliation:
-  current_run_strict_delta: {count: 0, stories: []}
-  current_run_materialization_delta:
-    count: 13
-    stories: [STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  clarification_aware_materialized: [STORY-0035, STORY-0036]
+  current_run_strict_delta: {count: 1, stories: [STORY-0001]}
+  current_run_materialization_delta: {count: 0, stories: []}
+  source_integrity_repairs: [STORY-0001]
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
   correction:
-    - Reconciled the durable pending queue against the live Story tree.
-    - Materialized all thirteen remaining registered Story artifacts without inflating strict completion.
-    - Physical Story parity is now 134/134 with zero pending materialization tasks.
-    - Clarification stories preserve exact unresolved intermediate/source gaps without inventing behavior.
+    - Reconciled STORY-0001 against the canonical register and found its physical content described STORY-0002 instead of registered GET /login.
+    - Repaired STORY-0001 from frozen LoginController, login template, Spring Security configuration, success handler, DAO, entity and V1 migration evidence.
+    - Strict field/UI completion advanced from 119 to 120 without changing physical parity or approval state.
+    - Physical Story parity remains 134/134 with zero pending materialization tasks.
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
