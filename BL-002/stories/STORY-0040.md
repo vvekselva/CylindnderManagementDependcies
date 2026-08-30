@@ -11,14 +11,41 @@
 
 ## Human-readable story
 
-As an authorized Cylinder Management user or system consumer, I want to submit or execute **Vehicle Load** through **POST /vehicleLoad** so that the corresponding business operation is performed through the application.
+As an authorized Cylinder Management user, I want to submit the **Vehicle Load** form through **POST /vehicleLoad** so that the selected vehicle-load request is passed to the application mediator and, when accepted, the browser returns to the active vehicle-load list.
 
-## Governed evidence
+## Source-proved controller contract
 
-The canonical BL-002 story register identifies STORY-0040 as R1 priority 1 with complete traceability and pending user approval.
+`Uc02Phase01VehicleLoadController.doPost()` binds the submitted form as `@ModelAttribute("vehicleLoad") UC02Phase01VehicleLoadRequestDto requestDto` and invokes `uc02Phase01VehicleLoadMediator.invokeServices(requestDto)`.
+
+The controller explicitly reads/logs three submitted load quantities from `requestDto.vehicleLoadDto` before invoking the mediator:
+
+- `quantityFullForDelivery`
+- `quantityFullForBuffer`
+- `quantityEmptyForSupplier`
+
+On mediator success the controller redirects to `/vehicle-loads/list`.
+
+If the mediator throws `InvalidInputParameterException`, the same `with-menu/Uc02-Phase01-VehicleLoadView` is rendered again with the submitted `vehicleLoad` request object and `errorMessage` equal to the exception message.
+
+## Source-proved request model
+
+`UC02Phase01VehicleLoadRequestDto` contains:
+
+- `vehicleLoadDto`
+- `vehicleTripDto`
+- `deliveryChallanBookId`
+- `emptyPickupChallanBookId`
+- `supplierDropOffChallanBookId`
+- `customerSpotCylinderCheckBookId`
+- `deliveryChallanBookStartingSheetNumber`
+- `emptyPickupChallanBookStartingSheetNumber`
+- `supplierDropOffChallanBookStartingSheetNumber`
+- `customerSpotCylinderCheckBookStartingSheetNumber`
+
+Its frozen-source documentation states that the nested `VehicleLoadDto` carries vehicle identity, driver identity, load date/time, loaded-by/remarks and load-line cylinder selections.
 
 ## Exact remaining source-detail gap
 
-The physical Story artifact is materialized. Strict completion still requires frozen-source proof of exact submitted vehicle/load fields, browser validation/events, controller binding, DTO/model mapping, service/DAO/entity/database write identities, transaction/guard behavior, side effects, and success/error response and visible outcome.
+The physical Story artifact is materialized and the controller/request-model contract is now source-proved. Strict completion is still withheld because this run has not yet resolved the concrete implementation selected for `ICylinderManagementApplicationMediator<UC02Phase01VehicleLoadRequestDto, UC02Phase01VehicleLoadResponseDto>` and therefore cannot yet prove the exact mediator -> service -> DAO/repository -> entity/table write chain, transaction/guard predicates, persisted identities, or downstream side effects.
 
-No behavior beyond governed evidence is invented. No strict-field/UI completion is claimed. No approval occurred.
+No database behavior beyond frozen source is invented. No strict-field/UI completion is claimed. No approval occurred.
