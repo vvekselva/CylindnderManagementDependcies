@@ -1,6 +1,8 @@
-version: 6
+version: 7
 name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
 supersedes:
+  - version: 6
+    name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
   - version: 5
     name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
   - version: 4
@@ -14,12 +16,14 @@ principles:
   - Concurrency is decided by dependency and write-set collision, not backlog number.
   - Independent work units in the same backlog may execute concurrently.
   - Different backlogs may execute concurrently.
-  - Same writable ChatGPT-managed resource is single-writer.
+  - Same writable resource is single-writer.
+  - BL-008 database-write parallelism is exactly 1.
   - GitHub is durable control/audit persistence only; GitHub Actions/runners remain forbidden.
-  - ChatGPT performs orchestration/source analysis/artifact authoring; external worker runtimes remain forbidden unless governance is explicitly changed.
-  - BL-008 has an explicit user-local Flyway apply handoff; that exception is not a general permission for manual orchestration execution.
+  - All orchestration and automation execution is performed from ChatGPT's available tooling/runtime.
+  - External worker runtimes, local bridges, agents and user-operated per-run execution are forbidden.
   - Unit-local durable evidence is persisted before aggregate projections.
   - BL-002 registered Story parity with physical Story files is a governed completion gate.
+  - A run-local blocker must not automatically disable the recurring Production Fire scheduler.
 run_scope:
   required: true
   modes:
@@ -28,13 +32,9 @@ run_scope:
     CONTINUOUS:
       rule: Replan across all eligible backlogs and independent work units.
     RECOVERY:
-      rule: Work only on blocker, stale-state, reconciliation, architecture recovery, parity-repair, or migration-authoring recovery units explicitly in scope.
+      rule: Work only on blocker, stale-state, reconciliation, architecture recovery, or parity-repair units explicitly in scope.
 resource_claims:
   claim_granularity: writable_resource_or_irreducible_work_unit
-  claim_identity_examples:
-    - BL-002|STORY-0054|BL-002/stories/STORY-0054.md
-    - BL-002|MATERIALIZE-STORY-0001|BL-002/stories/STORY-0001.md
-    - BL-008|AUTHOR-V171|cylinder.datascripts/src/main/resources/db/migration/V171__Customer_Order_Request_View_Compatibility.sql
   compatibility_rule: Two claims may coexist only when their write sets do not intersect and neither depends on incomplete output owned by the other.
   read_only_parallelism: allowed
   same_file_parallel_writers: forbidden
@@ -60,19 +60,52 @@ legacy_singleton_transition:
   file: .orchestrator/invocation-lease.yaml
   status: DEPRECATED_AS_GLOBAL_MUTEX
   rule: A fresh legacy invocation lease protects only the resources explicitly listed in its claims; its broad scope field does not block unrelated resources.
-  migration_rule: Existing active legacy lease must not be rewritten by an unrelated architecture/BL-008 run unless one of its explicit claimed resources conflicts.
   retirement: Stop creating new global singleton leases after all orchestrator prompts adopt resource claims.
 shared_aggregate_state:
   files:
     - .orchestrator/last-run.yaml
     - BL-002/enrichment-progress.yaml
   role: aggregate_or_checkpoint_only
-  direct_worker_write_rule: Workers should persist unit-local evidence first; aggregate files are updated by a dedicated aggregator/checkpointer using optimistic concurrency.
+  direct_worker_write_rule: Workers persist unit-local evidence first; aggregate files are updated by a dedicated aggregator/checkpointer using optimistic concurrency.
   authority_rule: Unit-local durable evidence is authoritative for completed work; aggregate cursor lag must not erase completed unit evidence.
   checkpoint_rule:
     after_every_completed_or_blocked_unit: true
     after_each_dispatch_wave_when_available: true
     defer_all_updates_until_terminalization: forbidden
+scheduler_policy:
+  production_fire:
+    recurring: true
+    expected_cadence: hourly_around_15
+    run_local_blocker_scope: current_invocation_only
+    automatic_disable_for_blocker: forbidden
+    transient_github_write_failure:
+      behavior:
+        - Do not claim progress that was not durably persisted.
+        - Do not use scheduler disablement as blocker recovery.
+        - Allow the next scheduled fire to re-read SSOT and reevaluate the write path.
+    unchanged_BL008_runtime_blocker:
+      disable_scheduler: false
+      action: Return capacity to other eligible work and let future fires reevaluate only when capability evidence changes.
+    source_detail_gap:
+      disable_scheduler: false
+      action: Record the exact gap when durable persistence is available and continue another safe-independent unit.
+    platform_forced_runtime_cutoff:
+      disable_scheduler: false
+      classification: RUNTIME_WINDOW_FORCED_STOP
+    allowed_disable_conditions:
+      - explicit_user_instruction
+      - deliberate_schedule_replacement_or_supersession
+      - proven_scheduler_level_defect
+      - duplicate_fire_safety_condition
+    disable_reason_must_be_recorded: true
+  watchdog:
+    recurring: true
+    expected_cadence: hourly_around_50
+    read_only: true
+    lifecycle_independent_from_production_fire: true
+  cross_disable:
+    production_blocker_disables_watchdog: false
+    watchdog_failure_disables_production_fire: false
 BL-002:
   parallelism:
     independent_R1_units: allowed
@@ -107,32 +140,29 @@ BL-002:
     hardcoded_story_pointer: forbidden
     rule: Reconcile unit-local evidence, story-file parity, materialization queue, and aggregate progress first; then resolve the currently eligible unfinished unit dynamically on every invocation.
 BL-008:
-  execution_mode: CHATGPT_AUTHORS_USER_APPLIES_LOCALLY
-  chatgpt_database_write_parallelism: 0
-  local_apply_parallelism: 1
+  independent_read_only_units_parallel: allowed
+  database_write_semaphore:
+    identity: BL-008|DB-WRITE-SLOT|SUPABASE:xipkywwvzvrwcqnkifuv:postgres
+    capacity: 1
   migration_execution:
-    mechanism: FLYWAY
-    additive_by_default: true
-    historical_migrations_immutable_by_default: true
+    owner: CHATGPT
+    target: SUPABASE:xipkywwvzvrwcqnkifuv:postgres
+    mechanism: FLYWAY_10_JAVA_API_ONLY
     clean: forbidden
     raw_manual_sql_substitution: forbidden
-  handoff_state: WAITING_FOR_USER_LOCAL_FLYWAY_RESULT
-  current_additive_migration: V171__Customer_Order_Request_View_Compatibility.sql
-  handoff_result_required:
-    - flyway_result
-    - failing_migration_version_if_any
-    - sqlstate_or_database_error_if_any
-    - relevant_error_or_stack_section
-  early_failure_rule: If a fresh-database failure occurs in an older migration before a later additive migration can execute, a later migration must not be represented as a fix. Propose the smallest historical repair or alternate recovery and require explicit user approval before altering historical migration content.
-  blocker_isolation_rule: Waiting for user local Flyway evidence must not block BL-002.
-  scheduler_rule: Do not repeat Docker/Testcontainers/outbound-database probes while local handoff mode is active.
+    supabase_native_replay: forbidden
+  blocker_isolation_rule: A BL-008 blocker must not block BL-002 unless the run scope is TARGETED to BL-008, in which case unrelated BL-002 work must not be substituted.
+  unchanged_runtime_blocker_policy:
+    repeat_identical_network_probe: forbidden
+    repeat_identical_testcontainers_backend_probe: forbidden
+    retry_condition: Retry only after material execution-environment capability evidence changes.
+    unchanged_action: Persist zero BL-008 writes and immediately return capacity to other eligible in-scope work.
 planning:
   algorithm:
     - RECONCILE durable unit evidence.
     - RECONCILE BL-002 registered Story IDs against physical Story files and materialization queue.
-    - RECONCILE BL-008 authored-migration state against any user-returned Flyway evidence.
     - BUILD dependency graph and write sets.
-    - SELECT all eligible safe-independent ChatGPT-executable units up to available worker capacity.
+    - SELECT all eligible safe-independent units up to available worker capacity.
     - CLAIM resources independently.
     - DISPATCH concurrently.
     - Persist worker-local evidence as soon as a unit reaches a durable checkpoint.
@@ -146,19 +176,20 @@ productive_run_window:
   platform_limited_runtime:
     accepted_terminal_classification: RUNTIME_WINDOW_FORCED_STOP
     valid_when:
-      - eligible ChatGPT work may remain
+      - eligible work may remain
       - voluntary_early_stop is false
       - all completed unit-local evidence available before cutoff is durable
       - claims that can be released before cutoff are released
     compliance: A platform-forced sub-30-minute invocation is not a policy failure by itself.
-  voluntary_stop_rule: While eligible in-scope ChatGPT work remains and execution is still available, voluntary terminalization is forbidden; REPLAN -> CLAIM -> DISPATCH must continue.
+  voluntary_stop_rule: While eligible in-scope work remains and execution is still available, voluntary terminalization is forbidden; REPLAN -> CLAIM -> DISPATCH must continue.
   checkpoint_policy:
     after_every_completed_or_blocked_unit: true
     aggregate_checkpoint_after_each_dispatch_wave_when_available: true
     do_not_defer_all_durable_state_until_end_of_run: true
-  targeted_blocked_exception: A TARGETED run may terminate early when its scoped ChatGPT work has a hard unrecoverable blocker and no other in-scope recovery/read-only unit remains.
+  targeted_blocked_exception: A TARGETED run may terminate early when its scoped work has a hard unrecoverable blocker and no other in-scope recovery/read-only unit remains.
 github_role:
   purpose: durable_control_and_audit_persistence
   github_actions: forbidden
   github_runner: forbidden
   external_worker_runtime: forbidden
+  user_manual_execution: forbidden
