@@ -1,53 +1,70 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-161305IST
-started_at: 2026-08-30T16:13:05+05:30
-completed_at: 2026-08-30T16:14:05+05:30
-elapsed_seconds: 60
-elapsed_minutes: 1.0
-productive_runtime_target_minutes: 30
-productive_target_satisfied: false
-terminal_classification: RUNTIME_WINDOW_FORCED_STOP
-voluntary_early_stop: false
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-171352IST
+checkpoint_state: CHECKPOINT_RECONCILED
+checkpoint_repair: true
+reconciled_at: 2026-08-30T19:23:53+05:30
+reconciled_from:
+  - BL-002/enrichment-progress.yaml version 30
+  - BL-008/README.md
+  - .orchestrator/execution-architecture.yaml version 7
+started_at: null
+completed_at: null
+elapsed_seconds: null
+elapsed_minutes: null
+timestamp_note: Exact production-fire start/completion timestamps were not present in the durable evidence used for this repair and were not invented.
+terminal_classification: CHECKPOINT_RECONCILED_FROM_NEWER_DURABLE_EVIDENCE
+voluntary_early_stop: null
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   compatibility_invocation_lease_global_mutex: false
   shared_aggregate_single_writer: true
+  aggregate_reconciliation_gate: ACTIVE
+  projection_drift_recovery_applied: true
 work:
-  attempted_count: 13
-  attempted_ids: [STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  completed_materialization_count: 13
-  completed_materialization_ids: [STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  completed_strict_count: 0
-  completed_strict_ids: []
-  strict_field_ui_completion_delta: 0
-  physical_materialization_delta: 13
+  reconciled_strict_delta_count: 1
+  reconciled_strict_delta_ids: [STORY-0001]
+  physical_materialization_delta: 0
   approvals_delta: 0
-  next_dynamically_resolved_eligible_unit: DYNAMIC_STRICT_RECONCILIATION_REQUIRED
+  next_dynamically_resolved_eligible_unit: DYNAMIC_RECONCILIATION_REQUIRED
 metrics_after:
   register_ready: 131
   clarification: 3
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 119
+  strict_field_ui_complete: 120
+  strict_field_ui_remaining: 14
   approved: 0
   use_case_grouped: 0
   testing_ready: 0
 bl008:
-  mode: LOCAL_FLYWAY_EXISTING_DATABASE_HANDOFF
-  v171_database_validation: PASS
-  v172_required_for_v171_scope: false
-  full_schema_audit_state: WAITING_FOR_USER_SINGLE_RUN_RESULT
+  state_source: BL-008/README.md
+  execution_mode: USER_LOCAL_FLYWAY_HANDOFF
+  target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
+  last_validated_migration: V174__Enforce_Strict_Cylinder_Ownership_Model.sql
+  v174_validation: CLEAN_DATABASE_VALIDATED_PASS
+  phase2_supplier_customer_lifecycle_analysis: ACTIVE
+  location_exclusivity_customer_supplier_decommissioned: IMPLEMENTED_SOURCE_VALIDATION_PENDING
+  current_state: V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE
+  next_schema_migration: CREATE_ONLY_IF_CONCRETE_DATABASE_MISMATCH_IS_PROVED
   database_write_delta_chatgpt: 0
 claims:
-  resource_scoped_claims_created: 0
   claims_remaining: 0
   recoverable_claims_remaining: 0
 transient_logs_remaining: 0
+reconciliation:
+  drift_detected:
+    stale_last_run_run_id: CYLINDER-PRODUCTION-FIRE-20260830-161305IST
+    newer_bl002_run_id: CYLINDER-PRODUCTION-FIRE-20260830-171352IST
+    stale_strict_field_ui_complete: 119
+    reconciled_strict_field_ui_complete: 120
+    stale_bl008_state: V171_HANDOFF_STATE
+    reconciled_bl008_state: V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE
+  repair_result: PASS
+  readback_required_by_architecture: true
 notes:
-  - Mandatory startup SSOT and compatibility lease were read; legacy lease is RELEASED and not a global mutex.
-  - Reconciled the thirteen durable pending materialization tasks against the live Story tree.
-  - Materialized all remaining Story artifacts, reaching governed physical parity 134/134 and zero pending queue tasks.
-  - STORY-0035 and STORY-0036 remain clarification-aware; no missing intermediate behavior was invented.
-  - Strict completion remains 119/134; physical materialization did not inflate strict completion.
-  - BL-008 README proves V171 database validation PASS and now waits for the user's consolidated full-schema-audit result; no ChatGPT database write occurred.
-  - Further strict enrichment remains eligible and must be selected by dynamic reconciliation in the next available execution window.
+  - Repaired the stale compatibility aggregate without rolling back newer BL-002 progress.
+  - STORY-0001 strict completion is preserved from the newer BL-002 durable projection.
+  - Physical Story parity remains 134/134 with zero pending materialization tasks.
+  - No approvals were inferred or added.
+  - BL-008 state was reconciled to the newer durable README instead of the older V171 projection.
+  - Future Production Fires must repair aggregate drift before dispatch and read back both aggregate projections before claiming checkpoint success.
