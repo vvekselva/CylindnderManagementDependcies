@@ -1,50 +1,47 @@
-version: 28
+version: 29
 backlog_id: BL-002
-updated_at: 2026-08-30T12:17:30+05:30
+updated_at: 2026-08-30T16:13:05+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-121552IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-161305IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 121
-  materialization_pending: 13
+  materialized_story_files: 134
+  materialization_pending: 0
   strict_field_ui_complete: 119
   use_case_grouped: 0
   testing_ready: 0
 materialization:
   parity_target: 134
   queue: BL-002/materialization-task-queue.csv
-  pending_r1_priority_1: 12
-  pending_r2_priority_2: 1
+  pending_r1_priority_1: 0
+  pending_r2_priority_2: 0
   reconciliation_rule: REGISTER_MINUS_PHYSICAL_STORY_TREE
+  parity_state: COMPLETE_134_OF_134
 reconciliation:
   current_run_strict_delta: {count: 0, stories: []}
   current_run_materialization_delta:
-    count: 10
-    stories: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033]
-  clarification_aware_materialized: [STORY-0011, STORY-0012, STORY-0013]
-  source_detail_review_required: [STORY-0001, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033]
-  source_analyzed_waiting_cursor: []
+    count: 13
+    stories: [STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
+  clarification_aware_materialized: [STORY-0035, STORY-0036]
+  source_detail_review_required: [STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
   correction:
-    - Reconciled physical parity before selecting work.
-    - Materialized ten previously missing registered Story artifacts without inflating strict completion.
-    - Clarification stories preserve exact unresolved controller/source gaps and do not invent behavior.
+    - Reconciled the durable pending queue against the live Story tree.
+    - Materialized all thirteen remaining registered Story artifacts without inflating strict completion.
+    - Physical Story parity is now 134/134 with zero pending materialization tasks.
+    - Clarification stories preserve exact unresolved intermediate/source gaps without inventing behavior.
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
   next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
-  next_eligible_materialization_unit: STORY-0036
+  next_eligible_materialization_unit: null
   trace_proxy_cursor: STORY-0030
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
-  blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
-  parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
-  subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
-  testcontainers_blocker: BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE
-  migrations_applied_persistent_target: 0
-  migration_write_delta: 0
-  testcontainers_validation_delta: 0
-  repeated_network_probe_performed: false
-  retry_policy: RETRY_ONLY_AFTER_MATERIAL_RUNTIME_CAPABILITY_CHANGE
+  mode: LOCAL_FLYWAY_EXISTING_DATABASE_HANDOFF
+  v171_database_validation: PASS
+  v172_required_for_v171_scope: false
+  full_schema_audit_state: WAITING_FOR_USER_SINGLE_RUN_RESULT
+  database_write_delta_chatgpt: 0
