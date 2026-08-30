@@ -1,6 +1,6 @@
-version: 37
+version: 38
 backlog_id: BL-002
-updated_at: 2026-08-31T05:15:08+05:30
+updated_at: 2026-08-31T05:17:57+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
 checkpoint_state: CHECKPOINT_RECONCILED
@@ -27,12 +27,14 @@ reconciliation:
   current_run_materialization_delta: {count: 0, stories: []}
   source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: []
-  blocked_this_run: []
+  source_detail_refined_this_run: [STORY-0040]
+  blocked_this_run: [STORY-0040]
   correction:
-    - Startup detected BL-008 aggregate projection drift: aggregate still referenced V177 while BL-008/README.md proves V179 PASS and V180 authored waiting for clean validation.
-    - The stale STORY-0040 ACTIVE resource claim from 03:21:31 IST was recovered under the 15-minute liveness rule after reconciling durable STORY evidence.
-    - No completed work was rolled back and no strict completion was invented.
+    - Startup repaired BL-008 projection drift to the V180-authored state from the live BL-008 README.
+    - Expired STORY-0040 claim was recovered, then STORY-0040 was safely re-claimed as an exact-story unit.
+    - Frozen controller and request-DTO evidence now proves POST /vehicleLoad binding, submitted request fields, mediator invocation boundary, success redirect, and invalid-input redisplay.
+    - STORY-0040 remains non-strict because the concrete mediator-to-service-to-DAO/repository-to-entity/table write chain remains unresolved.
+    - No database behavior was invented and no strict percentage was inflated.
   aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
