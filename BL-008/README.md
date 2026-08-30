@@ -6,10 +6,10 @@ This supersedes the earlier wording that referred to a fresh/new database. No da
 
 ## Execution boundary
 
-- ChatGPT owns source analysis, migration design, additive SQL authoring, consistency checks, corrective follow-up, and durable BL-008 evidence.
-- The user owns execution of the normal Flyway migration process against the **existing database** and returns the migration result/error to ChatGPT.
+- ChatGPT owns source analysis, migration design, additive SQL authoring, consistency checks, corrective follow-up, consolidated validation-script generation, and durable BL-008 evidence.
+- The user owns execution of the normal Flyway migration process and consolidated validation scripts against the **existing database**, then returns the result to ChatGPT.
 - Existing database data, schema and `flyway_schema_history` are preserved.
-- Flyway determines the pending migration from the existing history. Already-applied migrations are not rerun.
+- Flyway determines pending migrations from existing history. Already-applied migrations are not rerun.
 - GitHub remains durable SSOT/version control only; GitHub Actions/runners are not used for orchestration execution.
 - Migration changes are additive by default. Existing historical migrations are not rewritten unless the user explicitly approves a historical repair because an earlier failed migration cannot be corrected by a later migration.
 - Flyway remains the migration mechanism. Raw/manual SQL replay is not a substitute for the migration chain.
@@ -17,27 +17,13 @@ This supersedes the earlier wording that referred to a fresh/new database. No da
 
 ## Current application source being reconciled
 
-Uploaded application backup: `Harinandhan-Cylinder-Backup(20260830-093548).zip`.
+Current user workspace snapshot: `Harinandhan-Cylinder-Backup(20260830-100356).zip`.
 
-Current migration directory:
+Migration directory:
 
 `cylinder.datascripts/src/main/resources/db/migration`
 
-The uploaded project contains migrations through V170 before the current BL-008 additive correction.
-
-## Static application/schema reconciliation
-
-The current Java DAO/entity layer references:
-
-- `public.vw_customer_order_request_dashboard`
-- `public.vw_customer_order_request_daily_product_metrics`
-
-The existing migration chain creates the equivalent legacy relations:
-
-- `public.vw_customer_demand_dashboard`
-- `public.vw_customer_demand_daily_product_metrics`
-
-The dashboard DAO directly queries `vw_customer_order_request_dashboard`, so the migration set did not fully expose all relation names expected by the application source.
+The workspace snapshot contains migrations through V170 before the BL-008 additive correction. V171 is maintained as the next additive migration delta.
 
 ## V171 additive correction
 
@@ -45,13 +31,11 @@ Migration:
 
 `V171__Customer_Order_Request_View_Compatibility.sql`
 
-It preserves the legacy `vw_customer_demand_*` views and adds compatibility views with the exact names/columns expected by the current Java mappings.
+It preserves the legacy `vw_customer_demand_*` views and adds compatibility views with the exact names/columns expected by current Java mappings.
 
 No V1-V170 migration was modified.
 
 ## V171 existing-database validation — PASS
-
-User applied V171 through the normal Flyway process against the existing database and returned the consolidated validation result.
 
 Validation evidence: `BL-008/evidence/20260830-v171-existing-database-validation-pass.md`.
 
@@ -67,15 +51,36 @@ Verified:
 
 Conclusion: **V171 is database-validated. No V172 is required to repair the V171 scope.**
 
+## Next governed step — full application schema compatibility audit
+
+Before authoring V172, the current workspace is statically reconciled against the migration corpus and the existing database must now be checked in one consolidated run.
+
+Generated validation artifact:
+
+`BL008_Full_Schema_Audit_After_V171.sql`
+
+Audit scope derived from the main runtime/DAO source:
+
+- 119 mapped or directly referenced runtime relations (tables/views),
+- 1,134 explicit JPA mapped columns (`@Column`, `@JoinColumn`, `@PrimaryKeyJoinColumn`),
+- 68 explicitly configured sequences,
+- V171 Flyway history success.
+
+The audit is read-only against permanent application data/schema and uses temporary session tables only for reporting. It returns failures-only, summary counts and one overall PASS/FAIL line.
+
+Decision rule:
+
+- `BL008_FULL_SCHEMA_AUDIT_PASS` -> do **not** create V172 from static schema mapping; advance to application/runtime functional smoke testing.
+- `BL008_FULL_SCHEMA_AUDIT_FAIL` -> analyze only the proved failures and author the smallest additive V172 correction when possible.
+
 ## Existing-database execution / feedback loop
 
 1. ChatGPT analyzes the next source/schema mismatch, if any.
-2. ChatGPT supplies a **delta-only ZIP** containing only new/changed files under their workspace-relative paths.
-3. User points the normal Flyway-enabled application/migration process to the **existing database**.
-4. Flyway validates existing migration history and applies only pending migrations.
-5. User runs one consolidated validation script and returns its final result table.
-6. ChatGPT records the evidence and either accepts the migration or authors the next additive migration if evidence proves another correction is required.
-7. If a failure occurs inside an already-pending older migration before a new additive migration can run, ChatGPT identifies that separately; a later migration cannot repair an earlier migration that never completed.
+2. ChatGPT supplies delta-only migration ZIPs only when a proved schema correction exists.
+3. User applies pending Flyway migrations to the existing database.
+4. User runs one consolidated validation script and returns the final output.
+5. ChatGPT records the evidence and either accepts the migration/audit or authors the next additive migration.
+6. If a failure occurs inside an already-pending older migration before a new additive migration can run, ChatGPT identifies that separately; a later migration cannot repair an earlier migration that never completed.
 
 ## Current state
 
@@ -85,8 +90,8 @@ Conclusion: **V171 is database-validated. No V172 is required to repair the V171
 - Database apply target: **EXISTING DATABASE**
 - Existing Flyway history: **PRESERVE**
 - V171 database validation: **PASS**
-- Current BL-008 state: **V171_DATABASE_VALIDATED_PASS**
 - V172 required for V171 scope: **NO**
+- Full application schema audit: **WAITING_FOR_USER_SINGLE_RUN_RESULT**
 - Database writes by ChatGPT: **0**
 
-BL-002 remains independently eligible while BL-008 continues source/schema reconciliation for any next proven mismatch.
+BL-002 remains independently eligible while BL-008 waits for the consolidated schema-audit result.
