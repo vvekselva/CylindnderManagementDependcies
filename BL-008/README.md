@@ -1,11 +1,11 @@
 # BL-008 — Database Migration / Ownership Model Workflow
 
-Current governed mode for the Ownership Model phase: **ChatGPT authors additive Flyway migration deltas/source deltas; the user performs clean Flyway migration/validation on a fresh PostgreSQL database and returns consolidated results.**
+Current governed mode for the Ownership Model phase: **ChatGPT authors additive Flyway migration deltas/source deltas; the user performs clean Flyway migration/validation on a fresh PostgreSQL database and returns consolidated results.** UI/runtime testing may be deferred into the governed test-case backlog and does not block independent source/migration work unless a specific acceptance gate requires it.
 
 ## Execution boundary
 
 - The prior populated database is not an ownership-migration input and its application rows are discarded.
-- Ownership-model acceptance is based on a fresh database created by the normal Flyway chain.
+- Ownership-model migration acceptance is based on a fresh database created by the normal Flyway chain.
 - Delta ZIPs contain only changed/new files, preserving workspace-relative paths.
 - GitHub is durable SSOT/version control only; GitHub Actions/runners are not used for orchestration execution.
 - Historical migrations remain unchanged by default.
@@ -14,7 +14,7 @@ Current governed mode for the Ownership Model phase: **ChatGPT authors additive 
 
 ## Current workspace
 
-User workspace snapshot: `Harinandhan-Cylinder-Backup(20260830-100356).zip`.
+Authoritative user workspace snapshot for further source changes: `Harinandhan-Cylinder-Backup(20260830-140843).zip`.
 
 Migration directory: `cylinder.datascripts/src/main/resources/db/migration`.
 
@@ -26,9 +26,9 @@ Governed ownership types:
 - `SUPPLIER_OWNED`
 - `CUSTOMER_OWNED`
 
-The current application ingestion service resolves the ownership type, derives company/exchangeable flags from the master, populates only the correct owner side, creates the active primary identifier and creates the initial yard inventory record.
+The application ingestion path resolves the ownership type, derives company/exchangeable flags from the ownership master, populates only the correct owner side, creates the active primary identifier and creates the initial yard inventory record.
 
-Historical V144 introduced the ownership schema. V149 added ownership-aware lifecycle logging and the external cylinder asset ledger. V174 strengthens the database ownership rules.
+Historical V144 introduced the ownership schema. V149 added ownership-aware lifecycle logging and the external cylinder asset ledger. V174 strengthens database ownership rules. V175 preserves supplier-owned logical asset count through replacement and terminal lifecycle events.
 
 ## V174 — CLEAN DATABASE VALIDATION PASS
 
@@ -47,21 +47,33 @@ Fresh-database validation result:
 
 Evidence: `BL-008/evidence/20260830-v174-clean-database-validation-pass.md`.
 
+## V175 — CLEAN DATABASE VALIDATION PASS
+
+Migration: `V175__Preserve_Supplier_Owned_Asset_Count.sql`
+
+Fresh-database validation result:
+
+- Flyway V175: **PASS**
+- fresh cylinder count: **PASS (`0`)**
+- external-ledger single-registration index: **PASS**
+- external-ledger delta constraint: **PASS**
+- supplier asset-count integrity view and expected columns: **PASS**
+- supplier replacement owner-match guard: **PASS**
+- supplier lifecycle count-neutral guard: **PASS**
+- supplier registration `+1`: **PASS**
+- supplier identifier replacement `0`: **PASS**
+- supplier decommission `0`: **PASS**
+- supplier decommission `-1`: correctly rejected
+- customer terminal/replacement semantics: **PASS**
+- overall: **BL008_OWNERSHIP_V175_VALIDATION_PASS; failed_checks=0**
+
+Evidence: `BL-008/evidence/20260830-v175-clean-database-validation-pass.md`.
+
 ## Phase 2 — Supplier/Customer Ownership Lifecycle — ACTIVE
 
-Current source/migration evidence:
+### Location exclusivity — implemented
 
-- New supplier-owned cylinders receive initial `FULL` Yard state with source `SUPPLIER_RETURN`.
-- New customer-owned cylinders receive initial `EMPTY` Yard state with source `CUSTOMER_RETURN`.
-- V149 routes external registration/terminal events to `tbl_external_cylinder_asset_ledger`.
-- External identifier replacement is count-neutral (`delta=0`).
-- Supplier-owned logical asset-count preservation remains under end-to-end validation.
-
-### Location exclusivity — Customer/Supplier/Decommissioned taken up
-
-The user explicitly requested completion of the three buckets previously documented as future extension points.
-
-Implemented source delta now evaluates five mutually exclusive buckets for the Yard -> Vehicle precondition:
+The Yard -> Vehicle precondition now evaluates five mutually exclusive buckets:
 
 1. Yard inventory
 2. Vehicle logistics
@@ -75,33 +87,47 @@ Authoritative sources:
 - Decommissioned: latest `tbl_cylinder_state_audit` state resolving to `DECOMMISSIONED`.
 - Legacy `tbl_cylinder_current_status` is not used as the ownership-model decision source.
 
-Application source commits:
+Focused JUnit execution is deferred to the governed test-case backlog.
 
-- DAO location queries: `38d3555879edafc92eebfeeeff2cf88808942cff`
-- Validator completion: `c74e9011acd3ef27aca352d3933f09ebfa804feb`
-- Focused JUnit test: `ac14d8363871ffe9bf46fa3eddcb2170b5109aa4`
+### Supplier refill physical-identifier exchange — source implemented
 
-Evidence: `BL-008/evidence/20260830-phase2-location-exclusivity-source-delta.md`.
+The supplier-refill collection path supports an optional changed returned identifier while retaining the same logical cylinder. The existing V175 database replacement function preserves supplier-owned logical asset count with a zero-delta replacement event.
 
-Validation status: **IMPLEMENTED / FOCUSED JUNIT EXECUTION PENDING**. Maven was unavailable in the ChatGPT execution container, so no runtime test PASS is claimed yet.
+The UI/runtime validation scenario requires a real supplier-owned refill exchange to create `SUPPLIER_REPLACED_AFTER_REFILL`. The user explicitly postponed UI testing; therefore this validation is classified as **POSTPONED / NON-BLOCKING**, not as an implementation failure.
 
-No schema change was required for these validator buckets; therefore this work does **not** create V175.
+Backlog: `BL-008/test-case-backlog.csv`.
+
+## Test policy / backlog
+
+UI and runtime workflow tests that are postponed are retained as explicit test cases and executed later as a consolidated test phase. They do not justify manual test-data insertion or speculative migrations.
+
+Current queued tests include:
+
+- Location-exclusivity focused JUnit execution.
+- Supplier refill exchange with changed returned identifier.
+- Supplier refill without identifier change.
+- Supplier refill negative validation cases.
+- Customer-owned lifecycle UI/runtime validation after its source implementation is finalized.
 
 ## Current state
 
 - Ownership Model Migration: **ACTIVE**
 - Target: **FRESH DATABASE / CLEAN FLYWAY MIGRATION**
+- Authoritative source workspace: **Harinandhan-Cylinder-Backup(20260830-140843).zip**
 - Legacy application data preservation: **NOT REQUIRED**
 - Legacy identifier backfill: **NOT REQUIRED**
 - Historical migration rewrites: **0**
 - V174: **CLEAN_DATABASE_VALIDATED_PASS**
-- Phase 2: **SUPPLIER_CUSTOMER_LIFECYCLE_ANALYSIS_ACTIVE**
-- Location exclusivity Customer/Supplier/Decommissioned: **IMPLEMENTED_SOURCE_VALIDATION_PENDING**
-- Current state: **V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE**
+- V175: **CLEAN_DATABASE_VALIDATED_PASS**
+- Location exclusivity Customer/Supplier/Decommissioned: **IMPLEMENTED / TEST BACKLOG**
+- Supplier refill physical-identifier exchange: **IMPLEMENTED / UI_RUNTIME_TEST_POSTPONED**
+- UI testing: **POSTPONED_BY_USER / NON_BLOCKING / TRACKED_IN_TEST_CASE_BACKLOG**
+- Phase 2: **CONTINUE_CUSTOMER_OWNED_LIFECYCLE_SOURCE_ANALYSIS**
 - Database writes by ChatGPT: **0**
 
 ## Next action
 
-1. Execute the focused `CylinderLocationExclusivityValidatorTest` in the normal Maven/Eclipse project environment.
-2. Continue the supplier-owned/customer-owned lifecycle and external-ledger analysis, especially supplier logical asset-count preservation and terminal-event accounting.
-3. Create V175 only if a concrete database mismatch is proved; do not create it merely to advance the version.
+1. Continue customer-owned lifecycle and owner/custody consistency source analysis without waiting for postponed UI tests.
+2. Determine whether any concrete database mismatch requires V176; do not create V176 merely to advance the version.
+3. Expand `BL-008/test-case-backlog.csv` as additional runtime/UI acceptance scenarios are identified.
+4. Execute deferred UI/runtime and focused unit tests later as the consolidated ownership-model test phase.
