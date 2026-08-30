@@ -18,8 +18,8 @@ policy:
   flyway_execution_mode: JAVA_API
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T05:34:48+05:30
-lease_expires_at: 2026-08-30T05:49:48+05:30
+heartbeat_at: 2026-08-30T05:37:32+05:30
+lease_expires_at: 2026-08-30T05:52:32+05:30
 result: IN_PROGRESS
 recovery:
   classification: CLEAN_START_FROM_RELEASED_LEASE
@@ -35,4 +35,5 @@ progress:
   transient_lane_logs_remaining: 0
 notes:
   - Mandatory startup recovery inputs read before backlog work.
+  - Same invocation heartbeat refreshed during continuous ChatGPT execution; no competing owner observed.
   - BL-008 blocker unchanged; no redundant network probe planned.
