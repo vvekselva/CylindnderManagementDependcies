@@ -7,7 +7,7 @@ scope:
   - BL-002
   - BL-008
 claims:
-  - STORY-0028
+  - STORY-0034
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -19,26 +19,26 @@ policy:
   testcontainers_validation_is_persistent_migration: false
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T06:25:44+05:30
-lease_expires_at: 2026-08-30T06:40:44+05:30
+heartbeat_at: 2026-08-30T06:28:25+05:30
+lease_expires_at: 2026-08-30T06:43:25+05:30
 result: IN_PROGRESS
 recovery:
   classification: FRESH_LEASE_AFTER_RECOVERED_STALE_INVOCATION
   prior_run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
   durable_evidence_reconciled: true
 progress:
-  work_units_attempted: 2
-  work_units_completed: 1
-  completed_ids: [STORY-0027]
-  strict_field_ui_completion_delta: 1
-  materialization_delta: 1
+  work_units_attempted: 5
+  work_units_completed: 4
+  completed_ids: [STORY-0027, STORY-0028, STORY-0029, STORY-0030]
+  strict_field_ui_completion_delta: 4
+  materialization_delta: 4
   approval_delta: 0
   bl008_testcontainers_validation_delta: 0
   bl008_migration_write_delta_persistent_target: 0
   bl008_blocker_confirmed: BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE
-  next_eligible_strict_unit: STORY-0028
+  next_eligible_strict_unit: STORY-0034
   transient_lane_logs_remaining: 0
 notes:
-  - BL-008 V1 Testcontainers validation remains blocked before database startup; no DB/Flyway write occurred.
-  - STORY-0027 root dashboard GET is durably strict-complete from frozen source.
-  - Replanned immediately to STORY-0028 alias route.
+  - BL-008 Testcontainers backend remains unavailable; no DB/Flyway/Supabase write occurred.
+  - Customer-consumption R2 GET/API group STORY-0027 through STORY-0030 is durably strict-complete.
+  - Replanned immediately to next R2 strict unit STORY-0034.
