@@ -1,4 +1,4 @@
-version: 6
+version: 7
 name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
 status: ACTIVE
 policy_ref: .orchestrator/lease-policy.yaml
@@ -56,13 +56,46 @@ aggregation:
     - refetch_current_blob_before_aggregate_write
     - optimistic_concurrency_sha
     - recompute_from_durable_unit_evidence_after_conflict
+  aggregate_reconciliation_gate:
+    required: true
+    authoritative_input_order:
+      - durable_unit_local_evidence
+      - live_physical_story_tree
+      - materialization_queue
+      - BL-008/README.md
+      - aggregate_projection_files
+    write_order:
+      - BL-002/enrichment-progress.yaml
+      - .orchestrator/last-run.yaml
+    readback_required: true
+    required_cross_projection_equalities:
+      - run_id_when_same_production_fire
+      - strict_field_ui_complete
+      - materialized_story_files
+      - materialization_pending
+      - approved
+      - bl008_current_state
+    success_state: CHECKPOINT_RECONCILED
+    failure_state: CHECKPOINT_RECONCILIATION_INCOMPLETE
+    failure_behavior:
+      - preserve_completed_unit_local_work
+      - do_not_invent_missing_timestamps_or_progress
+      - do_not_disable_recurring_scheduler
+      - next_invocation_repairs_projection_drift_before_new_dispatch
+  projection_drift_recovery:
+    detect_when:
+      - aggregate_run_ids_disagree
+      - aggregate_metrics_disagree
+      - aggregate_bl008_state_disagrees_with_BL-008_README
+    rule: Recompute stale projections from newest durable evidence and read back all repaired projections before selecting new work.
+    stale_last_run_must_not_override_newer_durable_projection: true
 
 scheduler_resilience:
   production_fire_recurring_task:
     expected_cadence: hourly_around_15
     performs_real_work: true
     automatic_disable_for_run_local_blocker: forbidden
-    next_fire_rule: Re-read live durable state independently on every scheduled invocation.
+    next_fire_rule: Re-read live durable state independently on every scheduled invocation and repair aggregate drift before dispatch.
   allowed_disable_conditions:
     - explicit_user_instruction
     - deliberate_schedule_replacement_or_supersession
@@ -72,6 +105,8 @@ scheduler_resilience:
     expected_cadence: hourly_around_50
     read_only: true
     lifecycle_independent_from_production_fire: true
+    aggregate_drift_reporting: required
+    newest_durable_evidence_wins_over_stale_aggregate: true
 
 BL-001:
   canonical_endpoint_count: 134
@@ -107,50 +142,28 @@ BL-002:
     rule: Reconcile unit-local evidence, physical-file parity, materialization queue and aggregate progress dynamically.
 
 BL-008:
-  execution_mode: LOCAL_FLYWAY_EXISTING_DATABASE_HANDOFF
+  state_source: BL-008/README.md
+  state_resolution: dynamic_at_startup_and_checkpoint
+  execution_mode: USER_LOCAL_FLYWAY_HANDOFF
   active_workstream: OWNERSHIP_MODEL_MIGRATION
   authoring_owner: CHATGPT
   apply_owner: USER_LOCAL_MACHINE
-  database_target: EXISTING_DATABASE
-  preserve_existing_database: true
-  preserve_existing_data: true
-  preserve_flyway_schema_history: true
-  recreate_database: forbidden
-  drop_recreate_schema: forbidden
-  clear_flyway_history: forbidden
-  rebaseline_for_handoff: forbidden
-  clean: forbidden
-  migration_mechanism: FLYWAY_NORMAL_MIGRATE
-  additive_migrations_by_default: true
+  database_target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
+  preserve_historical_migrations_by_default: true
   historical_migration_rewrite_requires_explicit_user_approval: true
   current_application_backup: Harinandhan-Cylinder-Backup(20260830-100356).zip
   migration_path: cylinder.datascripts/src/main/resources/db/migration
-  last_validated_migration: V173__Align_Yard_Inventory_Sequence_Names_With_JPA.sql
-  next_migration_candidate: V174
-  next_migration_status: NOT_AUTHORED_WAITING_FOR_OWNERSHIP_BASELINE_EVIDENCE
-  current_state: OWNERSHIP_MODEL_MIGRATION_STARTED_WAITING_FOR_PHASE1_BASELINE_RESULT
-  ownership_model:
-    phase: PHASE_1_BASELINE_AUDIT
-    control_document: BL-008/ownership-model/PHASE-1-BASELINE.md
-    user_handoff_script: BL008_Ownership_Model_Phase1_Baseline_Audit.sql
-    governed_types: [COMPANY_OWNED, SUPPLIER_OWNED, CUSTOMER_OWNED]
-    rule_company_owned: company_fleet_true_and_no_party_owner
-    rule_supplier_owned: company_fleet_false_and_supplier_owner_only
-    rule_customer_owned: company_fleet_false_and_customer_owner_only
-    both_party_owners_populated: forbidden
-    migration_decision_rule: Baseline existing rows before adding stronger ownership enforcement or corrective data migration.
-  current_flow:
-    - ChatGPT analyzes current ownership source and historical migrations.
-    - User runs the single read-only Phase-1 ownership baseline against the existing database.
-    - User returns the one consolidated result table.
-    - ChatGPT classifies invalid existing rows, if any.
-    - ChatGPT authors the smallest additive ownership-model migration only from proven baseline evidence.
-    - User applies that migration through normal Flyway and returns consolidated validation.
-  failure_rule: Do not enable stronger enforcement before classifying existing rows that would violate it; preserve existing data and history.
+  last_validated_migration: V174__Enforce_Strict_Cylinder_Ownership_Model.sql
+  current_state: V174_PASS_PHASE2_LIFECYCLE_AND_LOCATION_EXCLUSIVITY_ACTIVE
+  phase2:
+    supplier_customer_lifecycle_analysis: ACTIVE
+    location_exclusivity_customer_supplier_decommissioned: IMPLEMENTED_SOURCE_VALIDATION_PENDING
+    next_schema_migration: CREATE_ONLY_IF_CONCRETE_DATABASE_MISMATCH_IS_PROVED
   chatgpt_database_writes: forbidden
   raw_manual_sql_substitution: forbidden
   github_actions: forbidden
-  isolation: Waiting for user-local BL-008 result must not block eligible BL-002 work.
+  isolation: Waiting for user-local BL-008 validation must not block eligible BL-002 work.
+  anti_staleness_rule: Scheduler prompts and aggregate projections must not hard-code an older migration/state when BL-008/README.md contains newer durable evidence.
 
 legacy_transition:
   invocation_lease_file: .orchestrator/invocation-lease.yaml
