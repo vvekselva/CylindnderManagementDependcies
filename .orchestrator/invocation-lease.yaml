@@ -1,12 +1,13 @@
-holder: null
-run_id: CYLINDER-LEASE-RECOVERY-20260830-050837IST
-acquired_at: 2026-08-30T05:08:37+05:30
-released_at: 2026-08-30T05:08:55+05:30
-status: RELEASED
+holder: Primary Cylinder Automation Tool
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
+acquired_at: 2026-08-30T05:34:48+05:30
+released_at: null
+status: ACTIVE
 scope:
   - BL-002
   - BL-008
-claims: []
+claims:
+  - STORY-0020
 policy:
   execution_host: ChatGPT
   github_role: repository_storage_only
@@ -17,11 +18,11 @@ policy:
   flyway_execution_mode: JAVA_API
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T05:08:55+05:30
-lease_expires_at: null
-result: ROOT_CAUSE_FIXED_DIRECT_GITHUB_WRITE_PATH
+heartbeat_at: 2026-08-30T05:34:48+05:30
+lease_expires_at: 2026-08-30T05:49:48+05:30
+result: IN_PROGRESS
 recovery:
-  classification: CURRENT_GITHUB_DIRECT_WRITE_PATH_VALIDATED
+  classification: CLEAN_START_FROM_RELEASED_LEASE
   durable_evidence_reconciled: true
 progress:
   work_units_attempted: 0
@@ -33,7 +34,5 @@ progress:
   next_eligible_strict_unit: STORY-0020
   transient_lane_logs_remaining: 0
 notes:
-  - Root cause isolated to the prior execution/tool route safety gate; repository permissions, branch state, blob SHA handling, and lease format are healthy.
-  - Direct ChatGPT GitHub contents update succeeded on main and readback verified the ACTIVE lease before release.
-  - Future orchestration lease writes must use the direct GitHub contents write path available to ChatGPT; GitHub remains durable storage only and no GitHub Actions/runners are used.
-  - Validation lease released with zero claims and zero transient logs.
+  - Mandatory startup recovery inputs read before backlog work.
+  - BL-008 blocker unchanged; no redundant network probe planned.
