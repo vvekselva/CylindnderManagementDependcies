@@ -1,4 +1,4 @@
-version: 5
+version: 6
 name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
 status: ACTIVE
 policy_ref: .orchestrator/lease-policy.yaml
@@ -108,6 +108,7 @@ BL-002:
 
 BL-008:
   execution_mode: LOCAL_FLYWAY_EXISTING_DATABASE_HANDOFF
+  active_workstream: OWNERSHIP_MODEL_MIGRATION
   authoring_owner: CHATGPT
   apply_owner: USER_LOCAL_MACHINE
   database_target: EXISTING_DATABASE
@@ -122,17 +123,30 @@ BL-008:
   migration_mechanism: FLYWAY_NORMAL_MIGRATE
   additive_migrations_by_default: true
   historical_migration_rewrite_requires_explicit_user_approval: true
-  current_application_backup: Harinandhan-Cylinder-Backup(20260830-093548).zip
+  current_application_backup: Harinandhan-Cylinder-Backup(20260830-100356).zip
   migration_path: cylinder.datascripts/src/main/resources/db/migration
-  current_authored_migration: V171__Customer_Order_Request_View_Compatibility.sql
-  current_state: WAITING_FOR_USER_EXISTING_DATABASE_FLYWAY_RESULT
+  last_validated_migration: V173__Align_Yard_Inventory_Sequence_Names_With_JPA.sql
+  next_migration_candidate: V174
+  next_migration_status: NOT_AUTHORED_WAITING_FOR_OWNERSHIP_BASELINE_EVIDENCE
+  current_state: OWNERSHIP_MODEL_MIGRATION_STARTED_WAITING_FOR_PHASE1_BASELINE_RESULT
+  ownership_model:
+    phase: PHASE_1_BASELINE_AUDIT
+    control_document: BL-008/ownership-model/PHASE-1-BASELINE.md
+    user_handoff_script: BL008_Ownership_Model_Phase1_Baseline_Audit.sql
+    governed_types: [COMPANY_OWNED, SUPPLIER_OWNED, CUSTOMER_OWNED]
+    rule_company_owned: company_fleet_true_and_no_party_owner
+    rule_supplier_owned: company_fleet_false_and_supplier_owner_only
+    rule_customer_owned: company_fleet_false_and_customer_owner_only
+    both_party_owners_populated: forbidden
+    migration_decision_rule: Baseline existing rows before adding stronger ownership enforcement or corrective data migration.
   current_flow:
-    - ChatGPT authors additive migration.
-    - User runs normal Flyway migration against the existing database.
-    - Flyway validates existing history and applies only pending migrations.
-    - User returns Flyway result/error.
-    - ChatGPT authors V172/V173/etc when an additive correction is appropriate.
-  failure_rule: If an earlier pending migration fails before a later correction can execute, record that the later migration cannot repair the earlier uncompleted migration and request approval before rewriting historical migration content.
+    - ChatGPT analyzes current ownership source and historical migrations.
+    - User runs the single read-only Phase-1 ownership baseline against the existing database.
+    - User returns the one consolidated result table.
+    - ChatGPT classifies invalid existing rows, if any.
+    - ChatGPT authors the smallest additive ownership-model migration only from proven baseline evidence.
+    - User applies that migration through normal Flyway and returns consolidated validation.
+  failure_rule: Do not enable stronger enforcement before classifying existing rows that would violate it; preserve existing data and history.
   chatgpt_database_writes: forbidden
   raw_manual_sql_substitution: forbidden
   github_actions: forbidden
