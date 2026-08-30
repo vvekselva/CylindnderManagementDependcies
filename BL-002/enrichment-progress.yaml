@@ -1,26 +1,30 @@
-version: 25
+version: 26
 backlog_id: BL-002
-updated_at: 2026-08-30T11:15:32+05:30
-updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-111416IST
+updated_at: 2026-08-30T11:34:36+05:30
+updated_by: ChatGPT corrective orchestration fix
+run_id: CYLINDER-CORRECTIVE-FIX-20260830-113436IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
   materialized_story_files: 112
-  strict_field_ui_complete: 118
+  strict_field_ui_complete: 119
   use_case_grouped: 0
   testing_ready: 0
 reconciliation:
-  current_run_strict_delta: {count: 0, stories: []}
+  current_run_strict_delta: {count: 1, stories: [STORY-0034]}
   current_run_materialization_delta: {count: 0, stories: []}
-  source_detail_review_required: [STORY-0034]
-  source_analyzed_waiting_cursor: [STORY-0034]
+  source_detail_review_required: []
+  source_analyzed_waiting_cursor: []
+  correction:
+    - STORY-0034 frozen service/DAO/entity/database trace completed and its stale source-detail blocker removed.
+    - STORY-0034 is R2 per story-register/release metadata; it must never be represented as an R1 candidate.
+    - The next unfinished strict unit must be dynamically reconciled from unit-local evidence; a hard-coded replacement story is intentionally not written here.
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
-  next_eligible_strict_unit: STORY-0034
+  next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
   trace_proxy_cursor: STORY-0030
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
@@ -32,3 +36,4 @@ bl008:
   migration_write_delta: 0
   testcontainers_validation_delta: 0
   repeated_network_probe_performed: false
+  retry_policy: RETRY_ONLY_AFTER_MATERIAL_RUNTIME_CAPABILITY_CHANGE
