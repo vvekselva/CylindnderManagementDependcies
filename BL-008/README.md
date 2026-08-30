@@ -14,9 +14,9 @@ Current governed mode for the Ownership Model phase: **ChatGPT authors additive 
 
 ## Current workspace
 
-Latest validated source line is based on `Harinandhan-Cylinder-Backup(20260830-140843).zip` plus the integrated V176 delta used for the successful clean rerun.
+Latest validated source line is based on `Harinandhan-Cylinder-Backup(20260830-140843).zip` plus integrated V176 and V177 migration deltas.
 
-Prepared V177-integrated workspace for the next clean run: `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177.zip`.
+Prepared integrated workspace: `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177.zip`.
 
 Migration directory: `cylinder.datascripts/src/main/resources/db/migration`.
 
@@ -28,7 +28,7 @@ Governed ownership types:
 - `SUPPLIER_OWNED`
 - `CUSTOMER_OWNED`
 
-Historical V144 introduced the ownership schema. V149 added ownership-aware lifecycle logging and the external cylinder asset ledger. V174 strengthens database ownership rules. V175 preserves supplier-owned logical asset count through replacement and terminal lifecycle events. V176 enforces customer-owned owner/custody consistency. V177 is the next additive migration and enforces cross-table location exclusivity.
+Historical V144 introduced the ownership schema. V149 added ownership-aware lifecycle logging and the external cylinder asset ledger. V174 strengthens database ownership rules. V175 preserves supplier-owned logical asset count through replacement and terminal lifecycle events. V176 enforces customer-owned owner/custody consistency. V177 enforces database-wide cross-table location exclusivity.
 
 ## V174 — CLEAN DATABASE VALIDATION PASS
 
@@ -50,29 +50,39 @@ Evidence: `BL-008/evidence/20260830-v175-clean-database-validation-pass.md`.
 
 Migration: `V176__Enforce_Customer_Owned_Custody_Consistency.sql`
 
-Successful clean rerun results:
-
-- Flyway V176: PASS.
-- fresh cylinder count: `0`.
-- fresh party-custody count: `0`.
-- CUSTOMER/SUPPLIER party-shape constraint: PASS.
-- ACTIVE/CLOSED custody consistency: PASS.
-- customer-owned custody trigger: PASS.
-- owner-customer equality guard: PASS.
-- `vw_customer_owned_custody_integrity`: PASS.
-- expected view columns: `9/9`.
-- fresh customer custody integrity: `rows=0; failures=0`.
-- V175 regression: PASS.
-- V174 regression: PASS.
-- overall: **BL008_OWNERSHIP_V176_VALIDATION_PASS; failed_checks=0**.
+Overall: **BL008_OWNERSHIP_V176_VALIDATION_PASS; failed_checks=0**.
 
 Evidence: `BL-008/evidence/20260830-v176-clean-database-validation-pass.md`.
 
+## V177 — CLEAN DATABASE VALIDATION PASS
+
+Migration: `V177__Enforce_Cross_Table_Cylinder_Location_Exclusivity.sql`
+
+Successful clean validation proved:
+
+- Flyway V177 recorded successfully.
+- fresh cylinder count is `0`.
+- `vw_cylinder_location_exclusivity_integrity` exists with all `10/10` expected columns.
+- assertion and trigger functions exist.
+- Yard, Logistics, Party Custody and State Audit deferred constraint triggers are enabled.
+- required deferred trigger set is `4/4`.
+- fresh location integrity reports `rows=0; failures=0`.
+- V176 customer-custody regression: PASS.
+- V175 supplier-asset regression: PASS.
+- V174 strict-ownership regression: PASS.
+- overall: **BL008_OWNERSHIP_V177_VALIDATION_PASS; failed_checks=0**.
+
+Evidence: `BL-008/evidence/20260831-v177-clean-database-validation-pass.md`.
+
+The earlier V177 validation run that occurred before V177 execution remains historical only and is not a migration defect.
+
 ## Phase 2 — Supplier/Customer Ownership Lifecycle — ACTIVE
 
-### Location exclusivity — application layer implemented
+### Location exclusivity — application + database enforcement complete
 
-The Yard -> Vehicle Java precondition evaluates Yard inventory, Vehicle logistics, Customer active custody, Supplier active custody, and Decommissioned terminal status. Focused unit execution remains deferred to the governed test backlog.
+The Yard -> Vehicle Java precondition evaluates Yard inventory, Vehicle logistics, Customer active custody, Supplier active custody, and Decommissioned terminal status. V177 now provides database-wide deferred enforcement across the same authoritative physical/terminal location model.
+
+Focused unit execution and positive/negative runtime hand-off scenarios remain deferred to the governed test backlog.
 
 ### Supplier refill physical-identifier exchange — source implemented
 
@@ -82,24 +92,13 @@ The supplier-refill collection path supports an optional changed returned identi
 
 A CUSTOMER_OWNED cylinder can open CUSTOMER custody only at its owner customer. Supplier refill custody remains allowed without ownership transfer. UI/runtime lifecycle cases remain postponed and tracked in `BL-008/test-case-backlog.csv`.
 
-### Cross-table location exclusivity — V177 AUTHORED / NOT YET EXECUTED
+### Cross-table location exclusivity — V177 PASS
 
-V177: `V177__Enforce_Cross_Table_Cylinder_Location_Exclusivity.sql`
-
-V177 adds:
-
-- `vw_cylinder_location_exclusivity_integrity` across Yard, Logistics, Customer custody, Supplier custody and Decommissioned;
-- `fn_assert_cylinder_location_exclusive(bigint)` with the invariant `active_location_bucket_count <= 1`;
-- a generic deferred enforcement trigger function;
-- DEFERRABLE INITIALLY DEFERRED constraint triggers on Yard inventory lines, Logistics execution lines, Party custody, and State audit.
-
-The previously returned V177 validation table showed `FLYWAY_V177=FAIL` and all V177 objects absent while V174–V176 regression checks remained PASS. The user confirmed that **V177 had not been executed**. Therefore that result is classified as **VALIDATION_RUN_BEFORE_V177_EXECUTION**, not as a migration defect or migration rollback.
-
-A merged workspace containing both V176 and V177 has been prepared for the actual V177 clean execution.
+The database now enforces `active_location_bucket_count <= 1` at transaction end across Yard, Logistics, Customer custody, Supplier custody and Decommissioned state. Deferred enforcement intentionally permits a legitimate hand-off transaction to close the old location and open the new location in either SQL statement order, while rejecting an invalid committed state with multiple active buckets.
 
 ## Test policy / backlog
 
-UI and runtime workflow tests that are postponed remain explicit test cases for the later consolidated test phase. Backlog: `BL-008/test-case-backlog.csv`.
+UI, unit and runtime workflow tests that are postponed remain explicit test cases for the later consolidated test phase. Backlog: `BL-008/test-case-backlog.csv`.
 
 ## Current state
 
@@ -108,18 +107,17 @@ UI and runtime workflow tests that are postponed remain explicit test cases for 
 - V174: **CLEAN_DATABASE_VALIDATED_PASS**
 - V175: **CLEAN_DATABASE_VALIDATED_PASS**
 - V176: **CLEAN_DATABASE_VALIDATED_PASS**
-- V177: **AUTHORED / NOT_YET_EXECUTED**
-- Last V177 validation classification: **VALIDATION_RUN_BEFORE_V177_EXECUTION**
-- Location exclusivity Customer/Supplier/Decommissioned: **APPLICATION_IMPLEMENTED / DB_WIDE_V177_AUTHORED / RUNTIME_TEST_BACKLOG**
+- V177: **CLEAN_DATABASE_VALIDATED_PASS**
+- Location exclusivity Customer/Supplier/Decommissioned: **APPLICATION_AND_DATABASE_ENFORCEMENT_COMPLETE / RUNTIME_TEST_BACKLOG**
 - Supplier refill physical-identifier exchange: **IMPLEMENTED / UI_RUNTIME_TEST_POSTPONED**
 - Customer-owned owner/custody consistency: **V176_PASS / UI_RUNTIME_TEST_POSTPONED**
 - UI testing: **POSTPONED_BY_USER / NON_BLOCKING / TRACKED_IN_TEST_CASE_BACKLOG**
-- Phase 2: **V177_EXECUTION_GATE**
+- Phase 2: **CONTINUE_EXTERNAL_ASSET_TERMINAL_AND_ACCOUNTING_ANALYSIS**
 - Database writes by ChatGPT: **0**
 
 ## Next action
 
-1. Use `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177.zip` as the migration source.
-2. Perform the clean Flyway migration through V177.
-3. Run `BL008_Ownership_V177_Location_Exclusivity_Validation.sql` only after V177 has actually executed.
-4. Return the consolidated V177 result table for acceptance.
+1. Continue source analysis of external-asset terminal/accounting behavior for CUSTOMER_OWNED and SUPPLIER_OWNED cylinders, including the distinction between logical owned-asset count and active operational asset balance.
+2. Reconcile LOST / DAMAGED / DECOMMISSIONED / CLOSED event semantics with identifier and custody/location rules already validated in V174–V177.
+3. Add resulting UI/runtime scenarios to the postponed test backlog.
+4. Create V178 only if a concrete schema/function mismatch is proved; do not create a migration merely to advance the version.
