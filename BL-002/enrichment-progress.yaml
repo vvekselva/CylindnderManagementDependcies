@@ -3,7 +3,7 @@ backlog_id: BL-002
 updated_at: 2026-08-31T05:15:08+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
-checkpoint_state: STARTUP_DRIFT_REPAIRED
+checkpoint_state: CHECKPOINT_RECONCILED
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -33,7 +33,7 @@ reconciliation:
     - Startup detected BL-008 aggregate projection drift: aggregate still referenced V177 while BL-008/README.md proves V179 PASS and V180 authored waiting for clean validation.
     - The stale STORY-0040 ACTIVE resource claim from 03:21:31 IST was recovered under the 15-minute liveness rule after reconciling durable STORY evidence.
     - No completed work was rolled back and no strict completion was invented.
-  aggregate_reconciliation_gate: STARTUP_REPAIR_PENDING_LAST_RUN_READBACK
+  aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
