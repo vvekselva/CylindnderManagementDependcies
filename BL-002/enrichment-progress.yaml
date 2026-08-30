@@ -1,9 +1,9 @@
-version: 36
+version: 37
 backlog_id: BL-002
-updated_at: 2026-08-31T03:20:14+05:30
+updated_at: 2026-08-31T05:15:08+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-031440IST
-checkpoint_state: CHECKPOINT_RECONCILED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
+checkpoint_state: STARTUP_DRIFT_REPAIRED
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -27,16 +27,13 @@ reconciliation:
   current_run_materialization_delta: {count: 0, stories: []}
   source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: [STORY-0038]
-  blocked_this_run: [STORY-0038]
+  source_detail_refined_this_run: []
+  blocked_this_run: []
   correction:
-    - Startup reconciliation found aggregate projections aligned at 122/134 strict and 134/134 physical parity.
-    - STORY-0038 POST /cylinderDelivery now durably records the proved controller, DTO, mediator-boundary, validation-error and redirect-success contract.
-    - STORY-0038 remains non-strict because the concrete mediator-to-service-to-DAO/repository-to-entity/database write chain was not resolved from frozen source in this run.
-    - No database behavior was invented and no strict percentage was inflated.
-    - The STORY-0038 resource-scoped claim was released after unit-local evidence was persisted.
-    - Readback verified BL-002 and last-run projections used the same run id, strict count, physical count, pending count, approval count and BL-008 state before reconciliation was promoted.
-  aggregate_reconciliation_gate: PASS
+    - Startup detected BL-008 aggregate projection drift: aggregate still referenced V177 while BL-008/README.md proves V179 PASS and V180 authored waiting for clean validation.
+    - The stale STORY-0040 ACTIVE resource claim from 03:21:31 IST was recovered under the 15-minute liveness rule after reconciling durable STORY evidence.
+    - No completed work was rolled back and no strict completion was invented.
+  aggregate_reconciliation_gate: STARTUP_REPAIR_PENDING_LAST_RUN_READBACK
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
@@ -48,13 +45,16 @@ bl008:
   state_source: BL-008/README.md
   execution_mode: USER_LOCAL_FLYWAY_HANDOFF
   target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
-  last_validated_migration: V176__Enforce_Customer_Owned_Custody_Consistency.sql
+  last_validated_migration: V179__Enforce_Company_Fleet_Accounting_Integrity.sql
   v174_validation: CLEAN_DATABASE_VALIDATED_PASS
   v175_validation: CLEAN_DATABASE_VALIDATED_PASS
   v176_validation: CLEAN_DATABASE_VALIDATED_PASS
-  current_authored_migration: V177__Enforce_Cross_Table_Cylinder_Location_Exclusivity.sql
-  v177_validation: AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  phase2: V177_CLEAN_VALIDATION_GATE
-  current_state: V177_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  next_schema_migration: DO_NOT_CREATE_V178_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V177_ACCEPTANCE
+  v177_validation: CLEAN_DATABASE_VALIDATED_PASS
+  v178_validation: CLEAN_DATABASE_VALIDATED_PASS
+  v179_validation: CLEAN_DATABASE_VALIDATED_PASS
+  current_authored_migration: V180__Freeze_Cylinder_Ownership_Identity.sql
+  v180_validation: AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  phase2: V180_CLEAN_VALIDATION_GATE
+  current_state: V180_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  next_schema_migration: DO_NOT_CREATE_V181_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V180_ACCEPTANCE
   database_write_delta_chatgpt: 0
