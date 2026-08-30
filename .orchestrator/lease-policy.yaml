@@ -1,6 +1,8 @@
-version: 3
+version: 4
 name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
 supersedes:
+  - version: 3
+    name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
   - version: 2
     name: SELF_EXPIRING_SINGLETON_LEASE
 principles:
@@ -53,7 +55,7 @@ legacy_singleton_transition:
   status: DEPRECATED_AS_GLOBAL_MUTEX
   rule: A fresh legacy invocation lease protects only the resources explicitly listed in its claims; its broad scope field does not block unrelated resources.
   migration_rule: Existing active legacy lease must not be rewritten by an unrelated architecture/BL-008 run unless one of its explicit claimed resources conflicts.
-  retirement: Stop creating new global singleton leases after all orchestrator prompts adopt v3 resource claims.
+  retirement: Stop creating new global singleton leases after all orchestrator prompts adopt v3-or-later resource claims.
 shared_aggregate_state:
   files:
     - .orchestrator/last-run.yaml
@@ -72,6 +74,10 @@ BL-002:
   aggregate_file: BL-002/enrichment-progress.yaml
   aggregate_single_writer: true
   completion_rule: SOURCE_DETAIL_REVIEW_REQUIRED or a recorded source-detail gap is not strict field/UI completion.
+  next_work_resolution:
+    authoritative_source: BL-002/enrichment-progress.yaml
+    hardcoded_story_pointer: forbidden
+    rule: Reconcile unit-local evidence first, then resolve the currently eligible unfinished R1 unit dynamically on every invocation.
 BL-008:
   independent_read_only_units_parallel: allowed
   database_write_semaphore:
@@ -84,6 +90,11 @@ BL-008:
     clean: forbidden
   blocker_isolation_rule: A BL-008 blocker must not block BL-002 unless the run scope is TARGETED to BL-008, in which case unrelated BL-002 work must not be substituted.
   target_scope_rule: A TARGETED BL-008 recovery run may proceed concurrently with BL-002 when its write set does not intersect the active BL-002 claim set.
+  unchanged_runtime_blocker_policy:
+    repeat_identical_network_probe: forbidden
+    repeat_identical_testcontainers_backend_probe: forbidden
+    retry_condition: Retry only after material execution-environment capability evidence changes.
+    unchanged_action: Persist zero BL-008 writes and immediately return capacity to other eligible in-scope work.
 planning:
   algorithm:
     - RECONCILE durable unit evidence.
@@ -91,14 +102,28 @@ planning:
     - SELECT all eligible safe-independent units up to available worker capacity.
     - CLAIM resources independently.
     - DISPATCH concurrently.
-    - Persist worker-local evidence.
+    - Persist worker-local evidence as soon as a unit reaches a durable checkpoint.
     - Aggregate shared progress with optimistic concurrency.
     - REPLAN immediately after every completion or blocker.
   max_safe_independent_workers: 10
-minimum_productive_run:
-  minutes: 30
-  rule: Applies per invocation scope; never idle merely to satisfy the clock.
-  targeted_blocked_exception: A TARGETED run may terminate early only when its scoped work has a hard unrecoverable blocker and no other in-scope recovery/read-only unit remains.
+productive_run_window:
+  target_minutes: 30
+  hard_minimum_for_correctness: false
+  rule: Use as much productive execution time as the platform actually supplies, up to the target; never idle merely to satisfy the clock.
+  platform_limited_runtime:
+    accepted_terminal_classification: RUNTIME_WINDOW_FORCED_STOP
+    valid_when:
+      - eligible work may remain
+      - voluntary_early_stop is false
+      - all completed unit-local evidence available before cutoff is durable
+      - claims that can be released before cutoff are released
+    compliance: A platform-forced sub-30-minute invocation is not a policy failure by itself.
+  voluntary_stop_rule: While eligible in-scope work remains and execution is still available, voluntary terminalization is forbidden; REPLAN -> CLAIM -> DISPATCH must continue.
+  checkpoint_policy:
+    after_every_completed_or_blocked_unit: true
+    aggregate_checkpoint_after_each_dispatch_wave_when_available: true
+    do_not_defer_all_durable_state_until_end_of_run: true
+  targeted_blocked_exception: A TARGETED run may terminate early when its scoped work has a hard unrecoverable blocker and no other in-scope recovery/read-only unit remains.
 github_role:
   purpose: durable_control_and_audit_persistence
   github_actions: forbidden
