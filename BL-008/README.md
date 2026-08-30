@@ -28,7 +28,7 @@ Governed ownership types:
 
 The application ingestion path resolves the ownership type, derives company/exchangeable flags from the ownership master, populates only the correct owner side, creates the active primary identifier and creates the initial yard inventory record.
 
-Historical V144 introduced the ownership schema. V149 added ownership-aware lifecycle logging and the external cylinder asset ledger. V174 strengthens database ownership rules. V175 preserves supplier-owned logical asset count through replacement and terminal lifecycle events.
+Historical V144 introduced the ownership schema. V149 added ownership-aware lifecycle logging and the external cylinder asset ledger. V174 strengthens database ownership rules. V175 preserves supplier-owned logical asset count through replacement and terminal lifecycle events. V176 is the next additive migration and enforces customer-owned owner/custody consistency.
 
 ## V174 — CLEAN DATABASE VALIDATION PASS
 
@@ -95,19 +95,32 @@ The supplier-refill collection path supports an optional changed returned identi
 
 The UI/runtime validation scenario requires a real supplier-owned refill exchange to create `SUPPLIER_REPLACED_AFTER_REFILL`. The user explicitly postponed UI testing; therefore this validation is classified as **POSTPONED / NON-BLOCKING**, not as an implementation failure.
 
+### Customer-owned owner/custody consistency — V176 READY FOR CLEAN VALIDATION
+
+Source/migration analysis proved a database boundary gap: `tbl_cylinder.fk_owner_customer` identifies the owner of a `CUSTOMER_OWNED` cylinder, but the generic party-custody path could otherwise open CUSTOMER custody at a different customer.
+
+V176: `V176__Enforce_Customer_Owned_Custody_Consistency.sql`
+
+V176 adds:
+
+- exact party column shape on `tbl_cylinder_party_custody`: CUSTOMER custody has only `fk_customer`; SUPPLIER custody has only `fk_supplier`;
+- ACTIVE/CLOSED custody status consistency with exit metadata;
+- `fn_validate_customer_owned_custody_owner()` plus trigger at the authoritative custody boundary;
+- rule: if a `CUSTOMER_OWNED` cylinder is in CUSTOMER custody, that customer must equal `tbl_cylinder.fk_owner_customer`;
+- supplier refill custody remains allowed for a customer-owned cylinder;
+- `vw_customer_owned_custody_integrity` for operational integrity checks.
+
+No backfill is included because the governed target is a fresh database.
+
+V176 status: **AUTHORED / WAITING_FOR_CLEAN_FLYWAY_VALIDATION**.
+
 Backlog: `BL-008/test-case-backlog.csv`.
 
 ## Test policy / backlog
 
 UI and runtime workflow tests that are postponed are retained as explicit test cases and executed later as a consolidated test phase. They do not justify manual test-data insertion or speculative migrations.
 
-Current queued tests include:
-
-- Location-exclusivity focused JUnit execution.
-- Supplier refill exchange with changed returned identifier.
-- Supplier refill without identifier change.
-- Supplier refill negative validation cases.
-- Customer-owned lifecycle UI/runtime validation after its source implementation is finalized.
+Current queued tests include location-exclusivity unit execution, supplier refill exchange scenarios, customer-owned owner-customer delivery, negative delivery to a non-owner customer, customer-owned supplier refill, identifier-owner mismatch rejection, and customer-owned terminal lifecycle behavior.
 
 ## Current state
 
@@ -119,15 +132,17 @@ Current queued tests include:
 - Historical migration rewrites: **0**
 - V174: **CLEAN_DATABASE_VALIDATED_PASS**
 - V175: **CLEAN_DATABASE_VALIDATED_PASS**
+- V176: **AUTHORED_WAITING_FOR_CLEAN_VALIDATION**
 - Location exclusivity Customer/Supplier/Decommissioned: **IMPLEMENTED / TEST BACKLOG**
 - Supplier refill physical-identifier exchange: **IMPLEMENTED / UI_RUNTIME_TEST_POSTPONED**
+- Customer-owned owner/custody consistency: **V176_READY_FOR_VALIDATION / UI_RUNTIME_TESTS_POSTPONED**
 - UI testing: **POSTPONED_BY_USER / NON_BLOCKING / TRACKED_IN_TEST_CASE_BACKLOG**
-- Phase 2: **CONTINUE_CUSTOMER_OWNED_LIFECYCLE_SOURCE_ANALYSIS**
+- Phase 2: **V176_CLEAN_VALIDATION_GATE**
 - Database writes by ChatGPT: **0**
 
 ## Next action
 
-1. Continue customer-owned lifecycle and owner/custody consistency source analysis without waiting for postponed UI tests.
-2. Determine whether any concrete database mismatch requires V176; do not create V176 merely to advance the version.
-3. Expand `BL-008/test-case-backlog.csv` as additional runtime/UI acceptance scenarios are identified.
-4. Execute deferred UI/runtime and focused unit tests later as the consolidated ownership-model test phase.
+1. Integrate V176 into the current workspace and perform the clean Flyway migration through V176.
+2. Execute the consolidated V176 clean-database validation script and return its single result table.
+3. Keep customer-owned UI/runtime scenarios postponed in `BL-008/test-case-backlog.csv`.
+4. After V176 acceptance, continue the next source-proved Ownership Model requirement; do not create V177 merely to advance the version.
