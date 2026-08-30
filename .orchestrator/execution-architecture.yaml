@@ -1,11 +1,11 @@
-version: 4
+version: 5
 name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
 status: ACTIVE
 policy_ref: .orchestrator/lease-policy.yaml
 human_readable_architecture: .orchestrator/architecture-current.md
 
 execution_model:
-  execution_host: CHATGPT
+  execution_host: CHATGPT_WITH_BL008_USER_APPLY_HANDOFF
   coordinator_role: plan_reconcile_dispatch_aggregate
   github_role: durable_control_and_audit_persistence_only
   global_mutex: false
@@ -16,18 +16,11 @@ execution_model:
   maximum_safe_independent_workers: 10
 
 run_scope_contract:
-  required_fields:
-    - run_id
-    - mode
-    - requested_backlogs
-    - requested_units
+  required_fields: [run_id, mode, requested_backlogs, requested_units]
   modes:
-    TARGETED:
-      fallthrough_to_unrequested_backlog: false
-    CONTINUOUS:
-      fallthrough_to_other_eligible_backlogs: true
-    RECOVERY:
-      fallthrough_to_normal_backlog_work: false
+    TARGETED: {fallthrough_to_unrequested_backlog: false}
+    CONTINUOUS: {fallthrough_to_other_eligible_backlogs: true}
+    RECOVERY: {fallthrough_to_normal_backlog_work: false}
 
 worker_contract:
   before_dispatch:
@@ -46,22 +39,8 @@ worker_contract:
 
 resource_claim_file:
   path_pattern: .orchestrator/claims/<backlog>/<claim-id>.yaml
-  required_fields:
-    - claim_id
-    - backlog
-    - unit
-    - run_id
-    - status
-    - read_set
-    - write_set
-    - acquired_at
-    - heartbeat_at
-    - lease_expires_at
-  statuses:
-    - ACTIVE
-    - RELEASED
-    - RECOVERED_STALE_CLAIM
-  collision_rule: Two ACTIVE claims conflict only when write sets intersect, or when one write set intersects the other's required immutable read target in a way that invalidates its evidence.
+  statuses: [ACTIVE, RELEASED, RECOVERED_STALE_CLAIM]
+  collision_rule: Two ACTIVE claims conflict only when write sets intersect or a write invalidates another unit's required immutable read target.
 
 aggregation:
   strategy: unit_local_first
@@ -71,12 +50,8 @@ aggregation:
     after_each_dispatch_wave_when_available: true
     defer_all_state_until_end_forbidden: true
   files:
-    .orchestrator/last-run.yaml:
-      purpose: compatibility aggregate summary
-      direct_worker_writes: false
-    BL-002/enrichment-progress.yaml:
-      purpose: BL-002 aggregate projection
-      direct_story_worker_writes: false
+    .orchestrator/last-run.yaml: {purpose: compatibility_aggregate_summary, direct_worker_writes: false}
+    BL-002/enrichment-progress.yaml: {purpose: BL-002_aggregate_projection, direct_story_worker_writes: false}
   lost_update_prevention:
     - refetch_current_blob_before_aggregate_write
     - optimistic_concurrency_sha
@@ -87,24 +62,16 @@ scheduler_resilience:
     expected_cadence: hourly_around_15
     performs_real_work: true
     automatic_disable_for_run_local_blocker: forbidden
-    run_local_blockers_include:
-      - github_durable_write_failure
-      - source_detail_gap
-      - BL008_runtime_capability_blocker
-      - platform_runtime_cutoff
-    next_fire_rule: Re-read live durable state and re-evaluate current capabilities independently on every scheduled invocation.
+    next_fire_rule: Re-read live durable state independently on every scheduled invocation.
   allowed_disable_conditions:
     - explicit_user_instruction
     - deliberate_schedule_replacement_or_supersession
     - proven_scheduler_level_defect
     - duplicate_fire_safety_condition
-  disable_evidence_required: true
-  durable_write_failure_rule: Do not claim unwritten progress. Keep the blocker invocation-local and leave the recurring scheduler enabled for the next fire.
   watchdog:
     expected_cadence: hourly_around_50
     read_only: true
     lifecycle_independent_from_production_fire: true
-  cross_disable_rule: Production Fire blockers must not disable the watchdog; watchdog failures must not disable the Production Fire.
 
 BL-001:
   canonical_endpoint_count: 134
@@ -113,11 +80,9 @@ BL-001:
 
 BL-002:
   canonical_story_count: 134
-  release_counts:
-    R1: 88
-    R2: 46
+  release_counts: {R1: 88, R2: 46}
   release_gate: R1_FIRST
-  candidate_pool: all unfinished safe-independent R1 strict-field-UI units plus all unresolved R1 physical-story materialization gaps
+  candidate_pool: all unfinished safe-independent R1 strict-field-UI units plus unresolved R1 physical-story materialization gaps
   parallel_story_execution: true
   per_story_output: BL-002/stories/<story-id>.md
   per_story_status: BL-002/work-status/<story-id>.yaml
@@ -126,87 +91,57 @@ BL-002:
   story_definition: BL-002/STORY-DEFINITION.md
   materialization:
     queue: BL-002/materialization-task-queue.csv
-    queue_is_durable_work_ssot: true
     parity_gate: registered_story_ids_must_equal_physical_story_file_ids
     required_physical_story_files: 134
-    priority_rule:
-      R1: 1
-      R2: 2
-    statuses:
-      - PENDING
-      - CLAIMED
-      - MATERIALIZED
-      - VALIDATED
-      - BLOCKED
-    reconciliation_rule: Before selecting new BL-002 work, diff story-register.csv against BL-002/stories/STORY-*.md, reconcile the queue, and repair any aggregate count drift.
-    review_rule: A Story cannot be offered as a complete review artifact unless its physical .md file exists and is synchronized with current governed evidence. NEEDS_CLARIFICATION stories must still have a physical clarification-aware Story file that records the evidence gap without inventing behavior.
-    completion_rule: BL-002 physical materialization is complete only at 134/134 validated Story files and zero pending materialization tasks.
-    independence_rule: Materialization status is separate from strict field/UI enrichment, review state, approval status, use-case grouping, and testing readiness.
-  approvals:
-    automatic: false
-    user_required: true
+    priority_rule: {R1: 1, R2: 2}
+    statuses: [PENDING, CLAIMED, MATERIALIZED, VALIDATED, BLOCKED]
+    reconciliation_rule: Diff story-register.csv against BL-002/stories/STORY-*.md before selecting/replanning and repair aggregate count drift.
+    completion_rule: 134/134 validated Story files and zero pending materialization tasks.
+  approvals: {automatic: false, user_required: true}
   strict_completion:
     requires_full_applicable_source_contract: true
     source_detail_review_required_is_complete: false
     recorded_source_detail_gap_is_complete: false
-  scheduling_rule: Story numbering alone is not a dependency; only proven dependency edges or write-set conflicts serialize stories.
   next_work_resolution:
     hardcoded_story_pointer: forbidden
-    rule: Reconcile unit-local evidence, physical-file parity, materialization queue, and aggregate progress before dynamically resolving the next eligible unit.
+    rule: Reconcile unit-local evidence, physical-file parity, materialization queue and aggregate progress dynamically.
 
 BL-008:
-  execution_mode: FLYWAY_10_JAVA_API_ONLY
-  execution_owner: CHATGPT
-  provider: SUPABASE
-  project: xipkywwvzvrwcqnkifuv
-  database: postgres
-  postgresql_version: '17.6'
-  persistent_test_target: true
-  direct_external_production: false
-  governed_source_repository: vvekselva/CylinderManagement
-  governed_source_commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  execution_mode: LOCAL_FLYWAY_EXISTING_DATABASE_HANDOFF
+  authoring_owner: CHATGPT
+  apply_owner: USER_LOCAL_MACHINE
+  database_target: EXISTING_DATABASE
+  preserve_existing_database: true
+  preserve_existing_data: true
+  preserve_flyway_schema_history: true
+  recreate_database: forbidden
+  drop_recreate_schema: forbidden
+  clear_flyway_history: forbidden
+  rebaseline_for_handoff: forbidden
+  clean: forbidden
+  migration_mechanism: FLYWAY_NORMAL_MIGRATE
+  additive_migrations_by_default: true
+  historical_migration_rewrite_requires_explicit_user_approval: true
+  current_application_backup: Harinandhan-Cylinder-Backup(20260830-093548).zip
   migration_path: cylinder.datascripts/src/main/resources/db/migration
-  flyway_version: 10.0.0
-  runner: BL-008/java/FlywayJavaRunner.java
-  schema: public
-  clean_disabled: true
-  baseline_on_migrate: false
-  out_of_order: false
-  one_target_migration_at_a_time: true
-  database_write_parallelism: 1
-  credentials_runtime_only: true
-  raw_manual_sql: forbidden
-  supabase_native_replay: forbidden
-  current_runtime_blockers:
-    outbound_postgres:
-      fingerprint: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
-      parent: BL008_SUPABASE_JDBC_ROUTE_UNAVAILABLE_FROM_CHATGPT_JAVA_RUNTIME
-      subreason: SANDBOX_DNS_AND_RAW_OUTBOUND_TCP_BLOCKED_NO_PROXY
-    testcontainers:
-      fingerprint: BL008_CHATGPT_EXECUTION_RUNTIME_TESTCONTAINERS_BACKEND_UNAVAILABLE
-  unchanged_runtime_blocker_policy:
-    repeat_identical_network_probe: forbidden
-    repeat_identical_testcontainers_probe: forbidden
-    retry_condition: Retry only after material execution-environment capability evidence changes.
-    migration_write_delta: 0
-    capacity_behavior: Return immediately to other eligible in-scope work.
-  retry_sequence_when_capability_changes:
-    - prove_target_identity_and_history
-    - flyway_info
-    - prove_first_pending
-    - validateWithResult
-    - migrate_exactly_one_target
-    - flyway_info
-    - verify_success_history_schema_integrity
-    - persist_evidence
-    - stop_before_next_migration_requirement
+  current_authored_migration: V171__Customer_Order_Request_View_Compatibility.sql
+  current_state: WAITING_FOR_USER_EXISTING_DATABASE_FLYWAY_RESULT
+  current_flow:
+    - ChatGPT authors additive migration.
+    - User runs normal Flyway migration against the existing database.
+    - Flyway validates existing history and applies only pending migrations.
+    - User returns Flyway result/error.
+    - ChatGPT authors V172/V173/etc when an additive correction is appropriate.
+  failure_rule: If an earlier pending migration fails before a later correction can execute, record that the later migration cannot repair the earlier uncompleted migration and request approval before rewriting historical migration content.
+  chatgpt_database_writes: forbidden
+  raw_manual_sql_substitution: forbidden
+  github_actions: forbidden
+  isolation: Waiting for user-local BL-008 result must not block eligible BL-002 work.
 
 legacy_transition:
   invocation_lease_file: .orchestrator/invocation-lease.yaml
   treatment: compatibility_only
-  explicit_claims_only: true
   broad_scope_is_not_lock: true
-  new_runs_should_use_resource_claims: true
 
 productive_runtime:
   target_minutes: 30
@@ -219,7 +154,8 @@ safety:
   github_actions: forbidden
   github_runner: forbidden
   external_worker_runtime: forbidden
-  user_manual_execution: forbidden
+  user_manual_execution_general_orchestration: forbidden
+  BL008_user_local_flyway_apply: explicitly_allowed
   credentials_in_git: forbidden
   raw_manual_sql: forbidden
   zero_transient_logs_at_terminal: true
