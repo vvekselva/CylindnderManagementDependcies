@@ -37,11 +37,11 @@ The existing migration chain creates the equivalent legacy relations:
 - `public.vw_customer_demand_dashboard`
 - `public.vw_customer_demand_daily_product_metrics`
 
-The dashboard DAO directly queries `vw_customer_order_request_dashboard`, so the migration set does not fully expose all relation names expected by the application source.
+The dashboard DAO directly queries `vw_customer_order_request_dashboard`, so the migration set did not fully expose all relation names expected by the application source.
 
-## Current additive correction
+## V171 additive correction
 
-New migration authored:
+Migration:
 
 `V171__Customer_Order_Request_View_Compatibility.sql`
 
@@ -49,15 +49,33 @@ It preserves the legacy `vw_customer_demand_*` views and adds compatibility view
 
 No V1-V170 migration was modified.
 
+## V171 existing-database validation — PASS
+
+User applied V171 through the normal Flyway process against the existing database and returned the consolidated validation result.
+
+Validation evidence: `BL-008/evidence/20260830-v171-existing-database-validation-pass.md`.
+
+Verified:
+
+- V171 exists in `flyway_schema_history` with `success=true`.
+- `vw_customer_order_request_dashboard` exists.
+- `vw_customer_order_request_daily_product_metrics` exists.
+- All expected compatibility-view columns are present.
+- Dashboard compatibility/legacy row counts match (`0 = 0`) and data difference is `0`.
+- Daily metrics compatibility/legacy row counts match (`11 = 11`) and data difference is `0`.
+- Overall consolidated database validation result is `PASS`.
+
+Conclusion: **V171 is database-validated. No V172 is required to repair the V171 scope.**
+
 ## Existing-database execution / feedback loop
 
-1. ChatGPT supplies the updated application/migration ZIP.
-2. User points the normal Flyway-enabled application/migration process to the **existing database**.
-3. Flyway validates the existing migration history and applies only pending migrations, including V171 when appropriate.
-4. User sends the Flyway result. If it fails, send the failing migration version, SQLSTATE/error text, and the relevant Flyway error/stack section.
-5. ChatGPT analyzes the failure against source, current schema expectations and migration history.
-6. When an additive correction is possible, ChatGPT adds the next migration (`V172`, `V173`, ...), returns the updated package, and records the result.
-7. If the failure occurs inside an already-pending older migration before V171 can run, ChatGPT identifies that separately; a later migration cannot repair an earlier migration that never completed.
+1. ChatGPT analyzes the next source/schema mismatch, if any.
+2. ChatGPT supplies a **delta-only ZIP** containing only new/changed files under their workspace-relative paths.
+3. User points the normal Flyway-enabled application/migration process to the **existing database**.
+4. Flyway validates existing migration history and applies only pending migrations.
+5. User runs one consolidated validation script and returns its final result table.
+6. ChatGPT records the evidence and either accepts the migration or authors the next additive migration if evidence proves another correction is required.
+7. If a failure occurs inside an already-pending older migration before a new additive migration can run, ChatGPT identifies that separately; a later migration cannot repair an earlier migration that never completed.
 
 ## Current state
 
@@ -66,7 +84,9 @@ No V1-V170 migration was modified.
 - Latest new migration: **V171**
 - Database apply target: **EXISTING DATABASE**
 - Existing Flyway history: **PRESERVE**
-- Database execution result: **WAITING_FOR_USER_EXISTING_DATABASE_FLYWAY_RESULT**
+- V171 database validation: **PASS**
+- Current BL-008 state: **V171_DATABASE_VALIDATED_PASS**
+- V172 required for V171 scope: **NO**
 - Database writes by ChatGPT: **0**
 
-BL-002 remains independently eligible and is not blocked while BL-008 waits for the local Flyway result.
+BL-002 remains independently eligible while BL-008 continues source/schema reconciliation for any next proven mismatch.
