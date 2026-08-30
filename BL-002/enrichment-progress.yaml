@@ -1,32 +1,32 @@
-version: 15
+version: 16
 backlog_id: BL-002
-updated_at: 2026-08-30T00:29:00+05:30
+updated_at: 2026-08-30T05:39:23+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-001729IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-053448IST
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
   clarification: 3
   approved: 0
-  materialized_story_files: 101
-  strict_field_ui_complete: 107
+  materialized_story_files: 102
+  strict_field_ui_complete: 108
   use_case_grouped: 0
   testing_ready: 0
 reconciliation:
-  baseline_strict_count: 89
+  baseline_strict_count: 107
   current_run_strict_delta:
-    count: 18
-    stories: [STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0017, STORY-0018, STORY-0019, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
+    count: 1
+    stories: [STORY-0020]
   current_run_materialization_delta:
-    count: 18
-    stories: [STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0017, STORY-0018, STORY-0019, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077]
+    count: 1
+    stories: [STORY-0020]
   source_detail_review_required: []
   source_analyzed_waiting_cursor: []
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
-  next_eligible_strict_unit: STORY-0020
-  trace_proxy_cursor: STORY-0077
+  next_eligible_strict_unit: STORY-0021
+  trace_proxy_cursor: STORY-0020
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
   blocker: BL008_CHATGPT_EXECUTION_RUNTIME_OUTBOUND_POSTGRES_EGRESS_UNAVAILABLE
