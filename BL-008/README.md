@@ -16,6 +16,8 @@ Current governed mode for the Ownership Model phase: **ChatGPT authors additive 
 
 Latest validated source line is based on `Harinandhan-Cylinder-Backup(20260830-140843).zip` plus the integrated V176 delta used for the successful clean rerun.
 
+Prepared V177-integrated workspace for the next clean run: `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177.zip`.
+
 Migration directory: `cylinder.datascripts/src/main/resources/db/migration`.
 
 ## Ownership Model Migration — ACTIVE
@@ -66,8 +68,6 @@ Successful clean rerun results:
 
 Evidence: `BL-008/evidence/20260830-v176-clean-database-validation-pass.md`.
 
-The earlier failed V176 run remains historical evidence of a migration-source integration omission; the successful rerun closes that incident and proves V176 itself applies correctly.
-
 ## Phase 2 — Supplier/Customer Ownership Lifecycle — ACTIVE
 
 ### Location exclusivity — application layer implemented
@@ -82,16 +82,7 @@ The supplier-refill collection path supports an optional changed returned identi
 
 A CUSTOMER_OWNED cylinder can open CUSTOMER custody only at its owner customer. Supplier refill custody remains allowed without ownership transfer. UI/runtime lifecycle cases remain postponed and tracked in `BL-008/test-case-backlog.csv`.
 
-### Cross-table location exclusivity — V177 AUTHORED / CLEAN VALIDATION PENDING
-
-Source analysis proved the remaining enforcement gap:
-
-- Yard has a one-active-row-per-cylinder unique index.
-- Logistics has a one-active-row-per-cylinder unique index.
-- Party custody has a one-ACTIVE-row-per-cylinder unique index.
-- the Java validator protects Yard -> Vehicle loading.
-- the ownership dashboard/read model expects one location row per cylinder.
-- no database rule previously prevented one cylinder from being active in two different authoritative location tables at transaction end.
+### Cross-table location exclusivity — V177 AUTHORED / NOT YET EXECUTED
 
 V177: `V177__Enforce_Cross_Table_Cylinder_Location_Exclusivity.sql`
 
@@ -102,15 +93,13 @@ V177 adds:
 - a generic deferred enforcement trigger function;
 - DEFERRABLE INITIALLY DEFERRED constraint triggers on Yard inventory lines, Logistics execution lines, Party custody, and State audit.
 
-Deferred enforcement is intentional: valid hand-off transactions may close the old location and open the new location in either statement order, but the committed transaction cannot leave more than one active location/status bucket.
+The previously returned V177 validation table showed `FLYWAY_V177=FAIL` and all V177 objects absent while V174–V176 regression checks remained PASS. The user confirmed that **V177 had not been executed**. Therefore that result is classified as **VALIDATION_RUN_BEFORE_V177_EXECUTION**, not as a migration defect or migration rollback.
 
-V177 status: **AUTHORED / WAITING_FOR_CLEAN_FLYWAY_VALIDATION**.
+A merged workspace containing both V176 and V177 has been prepared for the actual V177 clean execution.
 
 ## Test policy / backlog
 
 UI and runtime workflow tests that are postponed remain explicit test cases for the later consolidated test phase. Backlog: `BL-008/test-case-backlog.csv`.
-
-The backlog now includes V177 positive hand-off ordering, negative duplicate cross-table location, and Decommissioned-plus-physical-location rejection cases in addition to the earlier supplier/customer lifecycle scenarios.
 
 ## Current state
 
@@ -119,17 +108,18 @@ The backlog now includes V177 positive hand-off ordering, negative duplicate cro
 - V174: **CLEAN_DATABASE_VALIDATED_PASS**
 - V175: **CLEAN_DATABASE_VALIDATED_PASS**
 - V176: **CLEAN_DATABASE_VALIDATED_PASS**
-- V177: **AUTHORED_WAITING_FOR_CLEAN_VALIDATION**
+- V177: **AUTHORED / NOT_YET_EXECUTED**
+- Last V177 validation classification: **VALIDATION_RUN_BEFORE_V177_EXECUTION**
 - Location exclusivity Customer/Supplier/Decommissioned: **APPLICATION_IMPLEMENTED / DB_WIDE_V177_AUTHORED / RUNTIME_TEST_BACKLOG**
 - Supplier refill physical-identifier exchange: **IMPLEMENTED / UI_RUNTIME_TEST_POSTPONED**
 - Customer-owned owner/custody consistency: **V176_PASS / UI_RUNTIME_TEST_POSTPONED**
 - UI testing: **POSTPONED_BY_USER / NON_BLOCKING / TRACKED_IN_TEST_CASE_BACKLOG**
-- Phase 2: **V177_CLEAN_VALIDATION_GATE**
+- Phase 2: **V177_EXECUTION_GATE**
 - Database writes by ChatGPT: **0**
 
 ## Next action
 
-1. Integrate V177 into the current workspace and perform a fresh clean Flyway migration through V177.
-2. Execute the consolidated V177 clean-database validation script and return its single result table.
-3. Keep V177 runtime workflow tests postponed in the governed backlog.
-4. After V177 acceptance, continue the next source-proved Ownership Model requirement; do not create V178 merely to advance the version.
+1. Use `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177.zip` as the migration source.
+2. Perform the clean Flyway migration through V177.
+3. Run `BL008_Ownership_V177_Location_Exclusivity_Validation.sql` only after V177 has actually executed.
+4. Return the consolidated V177 result table for acceptance.
