@@ -1,16 +1,16 @@
-version: 3
+version: 4
 story_id: STORY-0014
 release: R1
 canonical_register_endpoint: GET /challan-entry-aging-dashboard
 canonical_functional_area: Challan Monitoring
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework:
-  state: REWORK_BLOCKED_CONTROLLER_TEMPLATE_BINDING_REQUIRED
-  business_behavior_complete: false
-  selector_ux_reviewed: false
+  state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+  business_behavior_complete: true
+  selector_ux_reviewed: true
   search_conversion_required: false
   dependent_selector_rework_required: false
-  needs_clarification: true
+  needs_clarification: false
 identity_drift:
   detected: true
   repaired: true
@@ -18,28 +18,34 @@ identity_drift:
   repaired_physical_story_identity: GET /challan-entry-aging-dashboard
   rule: CANONICAL_REGISTER_WINS
 source_binding:
-  exact_route_search_attempted: true
-  github_code_search_total_count: 0
-  github_code_search_incomplete_results: true
-  exact_controller_bound: false
-  exact_template_bound: false
+  exact_controller_bound: true
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanEntryAgingDashboardController.java
+  controller_method: showChallanEntryAgingDashboard(trackerStatus, tripId)
+  exact_template_bound: true
+  template: cylindermanagement.web/src/main/resources/templates/final-version-1/ChallanEntryAgingDashboard.html
   exact_service_bound: true
-  exact_service_path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanEntryAgingDashboardService.java
-  exact_service_blob: f9070a3f78e7e6113d08caff4282c538cc9c1007
+  service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanEntryAgingDashboardService.java
   service_method: fetchDashboard(String trackerStatus, Long tripId)
-  exact_database_read_identity_bound: partial
-  dao_reads:
-    - TripChallanEntryTrackerJpaDao.countByTrackerStatus for PENDING/PARTIAL/COMPLETED/AGING/ESCALATED
-    - TripChallanEntryTrackerJpaDao.findDashboardRows(trackerStatus, tripId, PageRequest.of(0,200))
-    - TripChallanEntryTrackerAuditJpaDao.findDashboardRows(tripId, PageRequest.of(0,50))
-  mapper: ChallanEntryAgingDashboardMapper
-  source_detail_gap: Frozen service and DAO method identities are now proven, but the exact GET controller and rendered template remain unbound. No endpoint-to-service linkage or visible behavior is claimed until that controller/template evidence is found.
+  exact_database_read_identity_bound: true
+  tracker_table: public.tbl_trip_challan_entry_tracker
+  tracker_pk: pk_challan_entry_tracker_id
+  audit_table: public.tbl_trip_challan_entry_tracker_audit
+  audit_pk: pk_challan_entry_tracker_audit_id
+  tracker_row_limit: 200
+  audit_row_limit: 50
+proved_behavior:
+  status_filter_values: [PENDING, PARTIAL, COMPLETED, AGING, ESCALATED]
+  trip_id_filter: optional
+  kpi_counts_filtered_by_request_filters: false
+  tracker_rows_filtered_by_status_and_trip: true
+  audit_rows_filtered_by_trip: true
+  mutation_on_get: false
+  dedicated_empty_state: false
+  dedicated_controller_error_state: false
 approval:
   state: NOT_APPROVED
   explicit_user_approval_required_after_rework: true
   auto_approved: false
 next_actions:
-  - resolve exact frozen controller and template for GET /challan-entry-aging-dashboard
-  - bind controller invocation to ChallanEntryAgingDashboardService.fetchDashboard
-  - prove visible filters, counts, rows, empty/error behavior
-  - do not infer endpoint linkage solely from the service class
+  - user_review_of_reworked_story
+  - after_explicit_approval_only_fan_out_revised_BL004_BL005_BL009
