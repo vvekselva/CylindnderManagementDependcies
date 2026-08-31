@@ -4,13 +4,13 @@ scheduler_task: Cylinder Orchestrator Production Fire
 state: RUNNING
 mode: CONTINUOUS
 started_at: '2026-08-31T17:50:04+05:30'
-last_heartbeat_at: '2026-08-31T18:03:23+05:30'
+last_heartbeat_at: '2026-08-31T18:09:06+05:30'
 productive_runtime_seconds_if_measurable: null
-loop_iteration: 3
-running_worker_count: 2
-completed_worker_count: 2
+loop_iteration: 4
+running_worker_count: 0
+completed_worker_count: 5
 blocked_worker_count: 0
-active_work_unit_ids: [BL004-STORY-0013, BL005-STORY-0013]
+active_work_unit_ids: []
 eligible_work_count: 116
 dispatchable_work_count: 116
-last_action: BL004_BL005_STORY0013_FANOUT_GENERATION_IN_PROGRESS
+last_action: STORY0013_FANOUT_COMPLETE_STORY0001_BL009_RECONCILED_REPLAN_STORY0041
