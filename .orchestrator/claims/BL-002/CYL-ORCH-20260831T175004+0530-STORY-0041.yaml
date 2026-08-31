@@ -1,0 +1,20 @@
+claim_id: CYL-ORCH-20260831T175004+0530-STORY-0041
+run_id: CYL-ORCH-20260831T175004+0530
+backlog: BL-002
+work_unit: STORY-0041_BUSINESS_BEHAVIOR_REWORK
+status: ACTIVE
+claimed_at: '2026-08-31T18:11:12+05:30'
+heartbeat_at: '2026-08-31T18:11:12+05:30'
+lease_expires_at: '2026-08-31T18:26:12+05:30'
+read_set:
+  - BL-002/stories/STORY-0041.md
+  - BL-002/stories/STORY-0042.md
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/UC01RegisterCustomerController.java
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/final-version-1/UC01RegisterCustomer.html
+write_set:
+  - BL-002/stories/STORY-0041.md
+  - BL-002/work-status/STORY-0041.yaml
+  - BL-002/story-business-behavior-rework-task-queue.csv
+  - BL-002/enrichment-progress.yaml
+dependencies: []
+application_code_mutation: false
