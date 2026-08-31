@@ -1,7 +1,7 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
 checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-31T08:13:52+05:30
-checkpoint_at: 2026-08-31T08:27:16+05:30
+started_at: 2026-08-30T22:13:27-05:30
+checkpoint_at: 2026-08-30T22:13:27-05:30
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -10,29 +10,33 @@ architecture:
   run_scope_mode: PRODUCTION_FIRE
   compatibility_invocation_lease_global_mutex: false
 work:
-  attempted_ids: [STORY-0047]
+  attempted_ids: [AGGREGATE_RECONCILIATION]
   completed_strict_ids: []
-  blocked_ids: [STORY-0047]
-  source_detail_refined_ids: [STORY-0047]
+  blocked_ids: []
   strict_field_ui_completion_delta: 0
-  concurrent_durable_strict_advancement_observed: [STORY-0011]
+  durable_prior_unprojected_strict_advancement_reconciled: [STORY-0038]
   physical_materialization_delta: 0
-  approvals_delta: 0
-  next_dynamically_resolved_eligible_unit: DYNAMIC_RECONCILIATION_REQUIRED
+  approvals_delta: 1
+  approved_ids: [STORY-0001]
+  next_dynamically_resolved_eligible_unit: BL-004/STORY-0001_SOURCE_BINDING
 metrics_after:
   register_ready: 131
   clarification: 3
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 124
-  strict_field_ui_remaining: 10
-  approved: 0
+  strict_field_ui_complete: 125
+  strict_field_ui_remaining: 9
+  approved: 1
   use_case_grouped: 0
-  testing_ready: 0
+  testing_ready: 1
+approved_story_testing:
+  policy: .orchestrator/approved-story-testing-policy.yaml
+  BL-004: {queued: 1, generated: 1, executed: 0, pass: 0, fail: 0}
+  BL-005: {queued: 1, generated: 1, executed: 0, pass: 0, fail: 0}
+  BL-009: {catalogues: 1, test_data_sets: 1, live_validation_pending: 1, pass: 0, fail: 0}
 bl001:
   state: COMPLETE_READ_ONLY
   action: NO_CHANGE_REQUIRED
-  reason: No source-integrity regression proved in this fire.
 bl008:
   state_source: BL-008/README.md
   last_validated_migration: V184
@@ -41,17 +45,14 @@ bl008:
   current_state: CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION
   database_write_delta_chatgpt: 0
 claims:
-  recovered_stale: []
-  created: [20260831-082249-STORY-0047, 20260831-082531-AGGREGATE-RECONCILIATION, 20260831-082622-AGGREGATE-RECONCILIATION-RETRY]
-  completed: [20260831-082249-STORY-0047]
-  released_deferred_conflict: [20260831-082531-AGGREGATE-RECONCILIATION]
-  active_reconciliation_claim: 20260831-082622-AGGREGATE-RECONCILIATION-RETRY
-  work_unit_claims_remaining_at_checkpoint: 0
+  created: [20260830-221327-AGGREGATE-TESTING-RECONCILIATION]
+  work_unit_claims_remaining_at_checkpoint: 1
 reconciliation:
-  concurrent_newer_durable_evidence_preserved: true
-  story_unit_local_evidence_persisted: true
-  readback_verified_same_run_id: true
-  readback_verified_metrics: true
-  readback_verified_bl008_state: true
+  startup_projection_drift_detected: true
+  durable_approval_evidence_preserved: true
+  durable_STORY-0038_strict_evidence_preserved: true
+  physical_story_parity_verified: true
+  downstream_testing_fanout_verified: true
+  readback_pending: true
   aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
