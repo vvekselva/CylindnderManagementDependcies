@@ -1,3 +1,10 @@
 {"at":"2026-08-31T07:50:22Z","event":"INVOCATION_STARTED","run_id":"CYLINDER-PRODUCTION-FIRE-20260831-075022Z","mode":"CONTINUOUS"}
 {"at":"2026-08-31T07:50:22Z","event":"HEARTBEAT","state":"RECOVERY_RECONCILIATION","loop_iteration":1}
 {"at":"2026-08-31T07:50:23Z","event":"REPLAN_STARTED","reason":"previous run left eligible work with no governed termination record"}
+{"at":"2026-08-31T08:09:05Z","event":"DURABLE_PROGRESS_RECONCILED","detail":"BL-002 version 59 records STORY-0001/STORY-0011 business behavior complete awaiting review, STORY-0012/STORY-0013 identity drift repaired, STORY-0054 source binding complete and draft PR 3 in review"}
+{"at":"2026-08-31T08:18:00Z","event":"WORKER_DISPATCHED","work_unit":"BL-010/DEV-0001_PR3_VALIDATION","claim":"20260831-0818-DEV-0001-PR3-VALIDATION"}
+{"at":"2026-08-31T08:19:00Z","event":"WORKER_COMPLETED","work_unit":"BL-010/DEV-0001_PR3_VALIDATION","result":"CHANGES_REQUIRED_BEFORE_MERGE","evidence":"BL-010/evidence/DEV-0001-pr3-validation-20260831.yaml"}
+{"at":"2026-08-31T08:20:00Z","event":"CLAIM_RELEASED","work_unit":"BL-010/DEV-0001_PR3_VALIDATION"}
+{"at":"2026-08-31T08:20:00Z","event":"AGGREGATE_CHECKPOINT","projection":"BL-002/enrichment-progress.yaml","version":60,"state":"CHECKPOINT_RECONCILED"}
+{"at":"2026-08-31T08:20:03Z","event":"TARGET_RUNTIME_REACHED","productive_runtime_seconds":1781,"eligible_work_remaining":true}
+{"at":"2026-08-31T08:20:03Z","event":"INVOCATION_TERMINATING","reason":"TARGET_RUNTIME_REACHED","voluntary_early_stop":false}
