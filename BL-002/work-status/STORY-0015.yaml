@@ -1,16 +1,16 @@
-version: 2
+version: 3
 story_id: STORY-0015
 release: R1
 canonical_register_endpoint: GET /challan-heatmap
 canonical_functional_area: Challan Monitoring
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework:
-  state: REWORK_BLOCKED_SOURCE_DETAIL_REVIEW_REQUIRED
-  business_behavior_complete: false
-  selector_ux_reviewed: false
+  state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+  business_behavior_complete: true
+  selector_ux_reviewed: true
   search_conversion_required: false
   dependent_selector_rework_required: false
-  needs_clarification: true
+  needs_clarification: false
 identity_drift:
   detected: true
   repaired: true
@@ -18,20 +18,35 @@ identity_drift:
   repaired_physical_story_identity: GET /challan-heatmap
   rule: CANONICAL_REGISTER_WINS
 source_binding:
-  exact_route_search_attempted: true
-  github_code_search_total_count: 0
-  github_code_search_incomplete_results: true
-  exact_controller_bound: false
-  exact_template_bound: false
-  exact_service_bound: false
-  exact_database_read_identity_bound: false
-  source_detail_gap: Exact canonical route still does not resolve from accessible frozen-source search evidence. Because GitHub code search reports incomplete_results=true, route absence is not proven and no substitute source path may be invented.
+  exact_controller_bound: true
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanHeatmapController.java
+  controller_method: showHeatmap(bookType, bookCode, seriesPrefix)
+  exact_template_bound: true
+  template: cylindermanagement.web/src/main/resources/templates/final-version-1/ChallanHeatmapDashboard.html
+  exact_service_bound: true
+  service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanHeatmapFetchService.java
+  service_method: processRequest(ChallanHeatmapFetchRequestDto)
+  exact_database_read_identity_bound: true
+  primary_read_view: public.vw_challan_heatmap_metrics
+  primary_dao: ChallanHeatmapMetricsViewJpaDao
+proved_behavior:
+  filters: [bookType, bookCode, seriesPrefix]
+  book_type_matching: CASE_INSENSITIVE_EQUALITY
+  book_code_matching: CASE_INSENSITIVE_EQUALITY
+  series_prefix_matching: CASE_INSENSITIVE_CONTAINS
+  metrics: [totalPages, totalUsed, totalUnused, totalMissing, totalSpoiled]
+  explicit_empty_state: true
+  mutation_on_get: false
+  transaction: READ_ONLY
+selector_review:
+  book_code_control: STATIC_LIST
+  existing_reusable_search_rest_proven: false
+  conversion_required: false
+  rule: Do not invent a search-box target without an established source-bound reusable pattern.
 approval:
   state: NOT_APPROVED
   explicit_user_approval_required_after_rework: true
   auto_approved: false
 next_actions:
-  - resolve exact frozen source for GET /challan-heatmap from a complete source-tree proof
-  - trace heatmap calculation/data reads and visible behavior if source exists
-  - if complete frozen-tree proof establishes absence, classify source-integrity gap
-  - do not substitute the previous /system-settings identity
+  - user_review_of_reworked_story
+  - after_explicit_approval_only_fan_out_revised_BL004_BL005_BL009
