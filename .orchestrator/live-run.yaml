@@ -1,18 +1,21 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-232655-IST
 scheduler_fire_id: 20260831T232655+0530
 scheduler_task: Cylinder Production Fire
-state: RUNNING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-08-31T23:26:55+05:30'
-last_heartbeat_at: '2026-08-31T23:36:16+05:30'
-productive_runtime_seconds_if_measurable: 561
+last_heartbeat_at: '2026-08-31T23:37:08+05:30'
+productive_runtime_seconds_if_measurable: 613
 loop_iteration: 1
 running_worker_count: 0
 completed_worker_count: 0
 blocked_worker_count: 3
 active_work_unit_ids: []
 eligible_work_remaining: true
-last_action: CHECKPOINTED_THREE_PARTIAL_SOURCE_BINDINGS_REPLAN_REQUIRED
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: PLATFORM_RUNTIME_FORCED_STOP
+termination_time: '2026-08-31T23:37:08+05:30'
+last_action: CHECKPOINTED_RESUMABLE_RUNTIME_BOUNDARY
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260831-225914-IST-I
 aggregate_projection_version: 72
 aggregate_mutated: false
@@ -20,3 +23,4 @@ units_advanced:
   - STORY-0041
   - STORY-0045
   - STORY-0046
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-232655-IST/checkpoint.yaml
