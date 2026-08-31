@@ -5,68 +5,76 @@
 - Functional area: Customer Registration
 - Approval: PENDING_USER_APPROVAL
 - Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Traceability state: COMPLETE
-- Enrichment state: SOURCE_DETAIL_REVIEW_REQUIRED
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Human-readable story
 
-As an authorized Cylinder Management user, I want to submit Customer Registration through `POST /registerCustomer` so that the entered customer, phone and address information is validated and handed to the registration use-case mediator, with validation feedback returned to the same screen when input is rejected.
+As an authorized Cylinder Management user, I want to submit Customer Registration through `POST /registerCustomer` so that the entered customer, phone and address information is validated, transformed into persistence entities, and saved as the customer master and its associated contact/address records, while rejected input is returned to the same registration screen with validation feedback.
 
-## Frozen-source contract proved
+## Browser / submitted model
 
-### Browser / submitted model
-
-`templates/final-version-1/UC01RegisterCustomer.html` submits the customer-registration form against the controller-bound `customer` object. Frozen template evidence proves visible Customer Name binding to `customerDto.customerName` and GST Number binding to `customerDto.gstNumber`. GST input has `maxlength="15"` and an `oninput` handler that upper-cases the browser value. The rendered error styling recognizes `CUSTOMER_NAME_INVALID`, `GST_NUMBER_NULL`, `GST_NUMBER_INVALID`, and `GST_NUMBER_ALREADY_EXISTS` validation codes.
-
-### Controller and request identity
+`templates/final-version-1/UC01RegisterCustomer.html` submits the controller-bound `customer` object. Visible Customer Name binds to `customerDto.customerName`; GST Number binds to `customerDto.gstNumber`, is limited to 15 characters, and is upper-cased by the browser input handler. The page renders customer-name/GST validation codes and submits phone/address collections plus `addressTypeIds[N]`.
 
 `UC01RegisterCustomerController.doPost()` is mapped by `@PostMapping("/registerCustomer")` and binds `@ModelAttribute("customer") UC01RegisterCustomerRequestDto requestDto`.
 
-`UC01RegisterCustomerRequestDto` contains:
+The request contains `CustomerDto customerDto`, `List<AddressDto> addressDtos`, `List<PhoneNumberDto> phoneNumberDtos`, and `List<Long> addressTypeIds`.
 
-- `CustomerDto customerDto`
-- `List<AddressDto> addressDtos`
-- `List<PhoneNumberDto> phoneNumberDtos`
-- `List<Long> addressTypeIds`
+## Address-type resolution before business processing
 
-The DTO documents that `addressTypeIds[N]` maps to `addressDtos[N]` because Spring MVC cannot reliably construct the nested `AddressTypeDto` from the single submitted identifier property.
+Before invoking the mediator, the controller resolves each submitted `addressTypeIds[N]` against `lookupDataCache.getAddressTypes()` and places the matched `AddressTypeDto` on `addressDtos[N]`. Missing indexes, null identifiers, or unmatched identifiers remain unresolved for downstream validation.
 
-`CustomerDto` proves the submitted customer object carries `customerId`, `customerName`, `gstNumber`, `active`, and associated phone/address/business collections. No validation annotation is present on this DTO itself in the frozen source inspected here.
+## Mediator, validation and persistence path
 
-### Address-type resolution branch
+The concrete Spring component `UC01RegisterCustomerMediator` maps the UC01 request into `CustomerIngestionRequestDto` and calls `CustomerIngestionService.processRequest(...)`.
 
-Before mediator invocation, `doPost()` calls `resolveAddressTypes(requestDto)`.
+`CustomerIngestionService` first invokes `CustomerIngestionRequstValidator`. The validator source proves null request/customer rejection, required customer name, GST required/format/state-code/duplicate checks, required phone collection with phone normalization/length/pattern/duplicate checks, required address collection, Address Type presence validation, address-line validation, and city/state/country validation.
 
-- If `addressDtos` or `addressTypeIds` is null, resolution is skipped.
-- For each address, a missing corresponding id is left unresolved.
-- A supplied id is matched against `lookupDataCache.getAddressTypes()` by `addressTypeId`.
-- When found, the full `AddressTypeDto` is set on the corresponding `AddressDto`.
-- When not found, the address type remains null.
+After validation, the service:
 
-### Application handoff
+1. maps `CustomerDto` to `CustomerDo`;
+2. maps each `AddressDto` to `AddressDo`;
+3. resolves `CityDo`, `StateDo`, and `CountryDo` from the submitted IDs;
+4. creates `CustomerAddressDo` linking the customer and address;
+5. maps each `PhoneNumberDto` to `PhoneNumberDo`;
+6. creates `CustomerPhoneNumberDo` linking customer and phone;
+7. attaches the child associations to `CustomerDo`;
+8. calls `customerJpaDao.save(customerDo)`.
 
-After address-type resolution, the controller invokes the injected `ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>` through `uC01RegisterCustomerMediator.invokeServices(requestDto)`.
+## Exact database identities and generated IDs
 
-This is the deepest concrete write-side application boundary proven from the frozen source available to this run.
+The frozen entity mappings prove:
 
-### Validation-error response
+- `CustomerDo` -> `public.tbl_customer`; sequence `public.pk_customer_id_serial`; columns `pk_customer_id`, `customer_name`, `gst_number`, `active`.
+- `AddressDo` -> `public.tbl_address`; sequence `public.pk_address_id_serial`; columns `pk_address_id`, `address_line_1`, `address_line_2`, `address_line_3`, `landmark`, `fk_city`, `fk_state`, `fk_country`.
+- `CustomerAddressDo` -> `public.tbl_customer_address`; sequence `public.pk_customer_address_id_serial`; columns `pk_customer_address_id`, `fk_customer`, `fk_address`, `fk_address_type`.
+- `PhoneNumberDo` -> `public.tbl_phone_number`; sequence `public.pk_phone_number_id_serial`; columns `pk_phone_number_id`, `phone_number`.
+- `CustomerPhoneNumberDo` -> `public.tbl_customer_phone_number`; sequence `public.pk_customer_phone_number_id_serial`; columns `pk_customer_phone_number_id`, `fk_customer`, `fk_phone_number`.
 
-`InvalidInputParameterException` is caught by the controller. When the exception carries a `CustomerIngestionRequestDto`, its validator-flagged `CustomerDto`, phone list and address list are copied back into the use-case request DTO. Validation errors remain attached for rendering. The controller then re-renders `ViewConstants.REGISTER_CUSTOMER_VIEW` with:
+`CustomerDo.customerAddresses` and `CustomerDo.customerPhoneNumbers` use `CascadeType.ALL`, and the association entities cascade their newly mapped Address/Phone entities where configured, so the customer save is the source-proved persistence entry point for the graph.
 
-- model key `customer` = the rejected request DTO;
-- model key `addressTypes` = `lookupDataCache.getAddressTypes()`.
+## Transaction boundary
 
-The visible outcome is therefore the Customer Registration screen populated with rejected input and validation indicators/messages rather than a success redirect.
+`CustomerJpaDao` extends `JpaRepository<CustomerDo, Long>`. The application uses Spring Boot 3.2.5 / Spring Data JPA 3.2.5, whose `SimpleJpaRepository.save()` is transaction-demarcated. No broader `@Transactional` boundary is source-proved on `UC01RegisterCustomerMediator` or `CustomerIngestionService`; the exact proved boundary begins at the repository-proxy `save()` invocation.
 
-### Success response
+## Material source-proved behavior requiring user review
 
-If mediator invocation returns without `InvalidInputParameterException`, the controller logs successful registration and returns `redirect:` plus `ViewConstants.REDIRECT_HOME_LINK`.
+The controller resolves an `AddressTypeDto`, and `CustomerAddressDo` has the persistence field `fk_address_type`. However, `CustomerIngestionService` creates each `CustomerAddressDo` and sets only `customer` and `address`; it does **not** call `setAddressType(...)` in the frozen implementation.
 
-## Exact remaining source-detail gap
+Therefore the source proves that Address Type is validated/resolved in the request but does not prove that the resolved Address Type is persisted into `public.tbl_customer_address.fk_address_type` on this code path. This is recorded as current source behavior for user review. It is not automatically converted into a development change, and no application code is mutated without explicit approval of an exact change manifest.
 
-Strict completion is deliberately **not** claimed. The frozen repository proves the POST endpoint, browser bindings, request DTO/model structure, address-type resolution, mediator boundary, validation exception branch, re-render behavior, and success redirect. However, the concrete implementation behind the injected UC01 mediator and its downstream customer-ingestion service -> DAO/repository -> entity/table/column write path is not present or otherwise source-resolvable in the frozen source evidence available to this orchestration run.
+## Validation-error response
 
-Therefore the exact database identities, uniqueness query/guard implementation, transaction boundary, persisted side effects, generated database identifiers, and downstream response population cannot be asserted without inventing behavior. `SOURCE_DETAIL_REVIEW_REQUIRED` remains correct and this Story does not increase `strict_field_ui_complete`.
+`InvalidInputParameterException` is caught by the controller. When it carries a `CustomerIngestionRequestDto`, validator-flagged customer, phone and address DTOs are copied back to the request model, validation errors remain available for rendering, Address Type options are reloaded, and the same registration screen is returned with the rejected values.
 
-No approval occurred.
+## Success response
+
+If mediator invocation completes without `InvalidInputParameterException`, the controller redirects to `ViewConstants.REDIRECT_HOME_LINK` (`/ownership-dashboard` in the frozen source).
+
+## Completion and approval gate
+
+The Story is Business Behavior Complete because its browser submission, controller request identity, address-type resolution, concrete mediator, validator, service mapping, repository persistence path, entity/table/column identities, generated IDs, transaction boundary, error behavior and success outcome are source-bound. The Address Type persistence omission is explicitly documented as source-proved current behavior rather than hidden or invented.
+
+This Story now awaits explicit user review. No approval is inferred or automatically applied.
