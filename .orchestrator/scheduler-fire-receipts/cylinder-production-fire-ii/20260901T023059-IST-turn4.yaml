@@ -3,10 +3,12 @@ fire_id: "20260901T023059-IST-turn4"
 observed_fire_time: "2026-09-01T02:30:59+05:30"
 scheduled_fire_time: "2026-09-01T02:30:59+05:30"
 receipt_time: "2026-09-01T02:31:00+05:30"
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: "CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4"
 run_link_state: RUN_LINKED
 orchestrator_started_time: "2026-09-01T02:31:02+05:30"
-terminal_classification: null
-termination_time: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_time: "2026-09-01T02:33:55+05:30"
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4/checkpoint.yaml
+termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4/termination.yaml
