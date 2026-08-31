@@ -1,0 +1,45 @@
+story_id: STORY-0046
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-003017-IST
+evidence_time: '2026-09-01T00:35:20+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+business_behavior_complete: true
+approval_state: AWAITING_EXPLICIT_USER_REVIEW
+entity_database_binding:
+  path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CustomerDo.java
+  entity: CustomerDo
+  table: public.tbl_customer
+  columns:
+    customerId: pk_customer_id
+    customerName: customer_name
+    gstNumber: gst_number
+    active: active
+  read_filter_identity:
+    - customer_name is the persisted identity used by customerName derived-query filtering and ascending list sort
+    - gst_number is the persisted identity used by GST derived-query filtering
+    - active is the persisted identity used by active-only list filtering
+ui_controller_reconciliation:
+  path: cylindermanagement.web/src/main/resources/templates/CustomerListPage.html
+  controller_endpoint: GET /fetchCustomerByPage
+  controls:
+    searchInput:
+      behavior: Search by name or GST; Enter or debounced input calls list endpoint
+      request_parameter: searchTerm
+    activeOnlyCheck:
+      request_parameter: activeOnly
+    pageSizeSelect:
+      request_parameter: itemsPerPage
+    pagination:
+      request_parameter: pageNumber
+  navigation:
+    customer_row: GET /displayCustomer?customerId={customerId}
+    register_customer: GET /registerCustomer
+    inactive_customer: POST /setCustomerInactive with customerId
+  reset_behavior:
+    filter_or_page_size_changes: pageNumber resets to 1
+conclusion: The remaining entity/table-column identity and browser-to-controller parameter bindings are source-proved. Combined with the prior controller/service/DAO evidence, STORY-0046 satisfies the Business Behavior source-binding completion gate and now awaits explicit user review.
+auto_approved: false
+story_approval_delta: 0
+application_code_mutation: false
+bl010_execution: false
+github_actions_or_runners_used: false
