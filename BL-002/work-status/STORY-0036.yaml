@@ -1,0 +1,62 @@
+version: 1
+story_id: STORY-0036
+run_id: CYLINDER-TARGETED-BL002-STORY-0036-20260831-0802IST
+release: R1
+endpoint: GET /yard-audit-dashboard
+functional_area: Yard Audit
+state: STRICT_FIELD_UI_COMPLETE
+strict_field_ui_complete: true
+materialized: true
+approval: PENDING_USER_APPROVAL
+review_state: NEEDS_CLARIFICATION
+updated_at: 2026-08-31T08:02+05:30
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+proven_contract:
+  controller:
+    class: YardAuditDashboardController
+    method: doGet
+    request_params: [stockCheckId, gateDate]
+    request_dto: YardAuditDashboardFetchRequestDto
+    view: final-version-1/YardAuditDashboard
+    model_attributes: [backLink, selectedStockCheckId, selectedGateDate, dashboard, dashboardLoadError]
+  service:
+    class: YardAuditDashboardFetchService
+    method: processRequest
+    response_dto: YardAuditDashboardFetchResponseDto
+    dashboard_dto: YardAuditDashboardDto
+  dao:
+    class: YardQualityGateJpaDao
+    methods:
+      - fetchLatestAuditSummary
+      - fetchAuditSummariesByDate
+      - countAuditsByCheckDate
+      - findByYardStockCheckIdOrderByOpenedAtDesc
+      - fetchAuditLines
+      - fetchAuditEvents
+      - fetchThirdPartyAlerts
+  database_read_objects:
+    - public.tbl_yard_stock_check
+    - public.tbl_yard_stock_check_line
+    - public.tbl_yard_quality_gate
+    - public.tbl_cylinder_states
+    - public.tbl_yard_check_event
+  ui_outcomes:
+    - audit_date_filter
+    - audit_id_filter
+    - reset
+    - new_yard_audit_navigation
+    - dashboard_load_error
+    - empty_dashboard
+    - empty_daily_audit_list
+    - selected_audit_metrics
+    - daily_audit_list
+    - selected_audit_gate_status
+    - third_party_alerts
+    - audit_line_details
+    - audit_event_timeline
+applicable_flow_type: READ_REPORTING
+write_side_persistence_required: false
+remaining_source_gap: []
+strict_decision: COMPLETE_APPLICABLE_SOURCE_CONTRACT_PROVED
+bl001_action: NO_CHANGE_REQUIRED_CANONICAL_ROW_ALREADY_IDENTIFIES_CONTROLLER_SERVICE_DAO_AND_DATABASE_OBJECT_SET
+approval_delta: 0
