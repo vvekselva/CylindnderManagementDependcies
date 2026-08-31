@@ -1,8 +1,8 @@
-version: 70
+version: 71
 backlog_id: BL-002
-updated_at: 2026-08-31T17:37:56+05:30
+updated_at: 2026-08-31T17:56:14+05:30
 updated_by: Primary Cylinder Automation Tool
-checkpoint_state: CHECKPOINT_RECONCILED_POST_APPROVAL_CONFORMANCE_AND_STORY0037_UNIT_DRIFT
+checkpoint_state: CHECKPOINT_RECONCILED_STARTUP_QUEUE_AND_LIFECYCLE_RECOVERY
 scope:
   total_stories: 134
   r1_stories: 88
@@ -104,9 +104,12 @@ reconciliation:
   testing_policy_legacy_auto_rework_wording_detected: true
   current_code_mutation_governance: USER_APPROVAL_REQUIRED_FOR_EXACT_DRIFT_MANIFEST
   unit_evidence_reconciled: true
-  aggregate_queue_projection_pending: true
-  queue_projection_drift_ids: [STORY-0001, STORY-0013, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
-  aggregate_reconciliation_gate: PARTIAL_PASS_QUEUE_PROJECTION_REPAIR_REQUIRED
+  aggregate_queue_projection_pending: false
+  queue_projection_drift_ids: []
+  aggregate_reconciliation_gate: CHECKPOINT_RECONCILED
+  recovered_prior_run_id: CYL-20260831T171739-0530
+  recovered_prior_run_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  recovered_prior_run_termination_record: .orchestrator/runs/CYL-20260831T171739-0530/termination.yaml
 cursor:
   priority_post_approval_conformance_ids: []
   next_global_rework_unit: STORY-0041
