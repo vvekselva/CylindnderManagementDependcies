@@ -1,6 +1,6 @@
-version: 67
+version: 68
 backlog_id: BL-002
-updated_at: 2026-08-31T09:20:15Z
+updated_at: 2026-08-31T11:37:39Z
 updated_by: Primary Cylinder Automation Tool
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
@@ -11,22 +11,22 @@ scope:
 business_behavior_rework:
   policy: BL-002/story-business-behavior-rework-policy.yaml
   total_registered: 134
-  rework_required: 121
+  rework_required: 116
   rework_in_progress: 1
-  business_behavior_complete: 12
-  awaiting_user_review: 12
+  business_behavior_complete: 17
+  awaiting_user_review: 17
   approved_after_rework: 0
   needs_clarification: 0
-  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0054]
-  awaiting_user_review_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0054]
+  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
+  awaiting_user_review_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
   active_rework_ids: [STORY-0037]
-  static_reference_selector_reviewed: 13
-  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0054]
+  static_reference_selector_reviewed: 16
+  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0039, STORY-0040, STORY-0043, STORY-0054]
   search_conversion_required: 0
   search_conversion_required_ids: []
   dependent_selector_rework_required: 0
   dependent_selector_rework_required_ids: []
-  remaining_global_rework_count: 122
+  remaining_global_rework_count: 117
 legacy_metrics:
   register_ready: 131
   clarification: 3
@@ -46,7 +46,6 @@ materialization:
   parity_state: COMPLETE_134_OF_134
   identity_drift_detected_ids: [STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0033]
   identity_drift_repaired_ids: [STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0033]
-  identity_drift_detail: STORY-0012 Challan Book add-form is source-bound through SummaryMetricLookupFetchService/DAO/entity/public.tbl_summary_metric_lookup; STORY-0013 Challan Book registration is source-bound through service/DAO/entity/public.tbl_challan_book_registry with disabled validation/ledger gaps recorded; STORY-0014 aging dashboard is source-bound through tracker/audit service/DAOs/tables; STORY-0015 Challan Heatmap is source-bound through controller/service/public.vw_challan_heatmap_metrics; STORY-0016 photo retrieval is source-bound through controller/DAO/public.tbl_challan_page_photo; STORY-0031 ownership obligation dashboard is source-bound through service/DAOs/custody/customer/supplier/cylinder reads; STORY-0033 Walk-in Sale POST is source-bound through WalkinSaleServiceImpl and its transactional persistence/challan-link chain; STORY-0036 Yard Audit Dashboard is source-bound through controller/service/YardQualityGateJpaDao and yard audit read objects.
 development_changes:
   backlog: BL-010
   queue: BL-010/development-change-task-queue.csv
@@ -91,21 +90,21 @@ reconciliation:
   startup_projection_drift_repaired: true
   unit_evidence_reconciled: true
   aggregate_queue_projection_pending: true
-  repaired_fields:
-    - STORY-0012 closed source-detail gap through SummaryMetricLookupFetchService, SummaryMetricLookupJpaDao, SummaryMetricLookupDo and public.tbl_summary_metric_lookup
-    - STORY-0013 completed Challan Book registration business behavior with source-proved current-state gaps retained
-    - STORY-0014 completed Challan Entry Aging Dashboard behavior
-    - STORY-0015 completed Challan Heatmap behavior and selector review
-    - STORY-0016 completed Challan Page Photo retrieval behavior
-    - STORY-0031 completed Ownership Obligation Dashboard behavior and text-search selector review
-    - STORY-0033 closed concrete WalkinSaleServiceImpl transaction/persistence binding
-    - STORY-0036 completed Yard Audit Dashboard business behavior and cleared stale needs-clarification unit state
-    - STORY-0054 remains source-validated after BL-010 implementation and awaiting explicit user review/approval
-    - STORY-0037 moved to REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED because its embedded Save operation is only proved through the generic mediator handoff; concrete transaction/persistence remains unbound
-  aggregate_reconciliation_gate: PENDING_GLOBAL_QUEUE_PROJECTION
+  recovered_prior_run_ids: [CYLINDER-PRODUCTION-FIRE-20260831-110529Z, CYLINDER-PRODUCTION-FIRE-20260831-112823Z]
+  newly_reconciled_business_behavior_complete_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+  durable_evidence_sources:
+    STORY-0038: BL-002/work-status/STORY-0038.yaml
+    STORY-0039: BL-002/work-status/STORY-0039.yaml
+    STORY-0040: BL-002/work-status/STORY-0040.yaml
+    STORY-0043: BL-002/work-status/STORY-0043.yaml
+    STORY-0044: BL-002/work-status/STORY-0044.yaml
+  queue_projection_drift_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+  aggregate_reconciliation_gate: PARTIAL_PASS_QUEUE_PROJECTION_REPAIR_REQUIRED
 cursor:
   next_global_rework_unit: STORY-0037
-  fallback_dependency_safe_r1_unit: STORY-0038
+  fallback_dependency_safe_r1_unit: STORY-0041
+  secondary_fallback_r1_unit: STORY-0042
+  next_unstarted_dependency_safe_r1_unit: STORY-0045
   priority_development_unit: null
   next_development_action: USER_REVIEW_STORY_0054_THEN_EXPLICIT_APPROVAL_OR_REWORK
   next_testing_action: NONE_UNTIL_CURRENT_REVISED_STORY_APPROVAL_OR_REAPPROVAL
