@@ -1,0 +1,47 @@
+story_id: STORY-0001
+backlog_id: BL-005
+release: R1
+approval_state: APPROVED
+framework: JUNIT_5
+database_runtime: POSTGRESQL_TESTCONTAINERS
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+state: SOURCE_BOUND_EXECUTION_BLOCKED
+generated: true
+source_bound: true
+executed: false
+pass: false
+fail: false
+source_bindings:
+  existing_integration_test:
+    path: cylinder.application.jpa/src/test/java/com/sreyas/datamatics/application/jpa/dao/integration/tests/DailyLoginReportJpaDaoIntegrationTest.java
+    package: com.sreyas.datamatics.application.jpa.dao.integration.tests
+    blob_sha: 9626e0700b5f87a2f9a8a3901d61c1aa29ffd798
+  daily_login_dao:
+    path: cylinder.application.jpa/src/main/java/com/sreyas/datamatics/application/jpa/dao/DailyLoginReportJpaDao.java
+    blob_sha: dfe7f645800e8dc839acd7adb1b7b0ca86d2cb7c
+  daily_login_entity:
+    path: cylinder.application.jpa/src/main/java/com/sreyas/datamatics/application/jpa/entity/DailyLoginReportDo.java
+    blob_sha: d46127a9a908bc7d3e936f04bcf73aae5a2f0ea3
+  testcontainers_properties:
+    path: cylinder.application.jpa/src/test/resources/testcontainers.properties
+    blob_sha: 0c09c2f4a82bea6002e2ee6f929f4cb62aada101
+generated_test: BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java
+covered_in_generated_source:
+  - normal Flyway/JPA/Testcontainers startup pattern
+  - generated daily-login identifier persistence
+  - non-null login_time persistence
+  - existsByLoginDate current-day guard
+  - previous-day boundary
+remaining_story_level_integration_cases:
+  - invalid authentication creates no daily-login row
+  - successful authentication invokes DailyLoginSuccessHandler persistence flow
+  - subsequent same-day successful authentication creates no duplicate
+  - successful authentication navigates to /ownership-dashboard
+runtime_capability:
+  java_21: AVAILABLE
+  maven: UNAVAILABLE
+  docker: UNAVAILABLE
+execution_blockers:
+  - CHATGPT_RUNTIME_MAVEN_UNAVAILABLE
+  - CHATGPT_RUNTIME_DOCKER_UNAVAILABLE
+next_action: EXECUTE_SOURCE_BOUND_JPA_AND_SECURITY_INTEGRATION_TESTS_WHEN_COMPATIBLE_RUNTIME_AVAILABLE
