@@ -1,0 +1,11 @@
+scheduler_task: Cylinder Production Fire - ii
+fire_id: 20260831T123813Z
+observed_fire_time: 2026-08-31T18:08:13+05:30
+scheduled_fire_time: 2026-08-31T18:08:13+05:30
+receipt_time: 2026-08-31T12:38:13Z
+state: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
+run_id: null
+run_link_state: UNLINKED
+terminal_classification: null
+termination_time: null
