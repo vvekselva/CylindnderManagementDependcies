@@ -1,15 +1,15 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-130321Z
-scheduler_fire_id: 20260831T183321+0530
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-142414Z
+scheduler_fire_id: 20260831T195414+0530
 scheduler_task: Cylinder Production Fire - ii
 state: RUNNING
 mode: CONTINUOUS
-started_at: '2026-08-31T18:33:21+05:30'
-last_heartbeat_at: '2026-08-31T18:45:43+05:30'
-loop_iteration: 5
+started_at: '2026-08-31T19:54:20+05:30'
+last_heartbeat_at: '2026-08-31T19:55:42+05:30'
+loop_iteration: 1
 running_worker_count: 0
 completed_worker_count: 0
 blocked_worker_count: 0
 active_work_unit_ids: []
 eligible_work_count: null
 dispatchable_work_count: null
-last_action: STORY_0041_SOURCE_BINDING_CONTINUE
+last_action: PRIOR_TERMINATION_GAP_RECOVERED_RECONCILE_PROJECTIONS
