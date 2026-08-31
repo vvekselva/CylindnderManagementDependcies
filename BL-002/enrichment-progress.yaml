@@ -1,6 +1,6 @@
-version: 58
+version: 59
 backlog_id: BL-002
-updated_at: 2026-08-31T08:04:40Z
+updated_at: 2026-08-31T08:09:05Z
 updated_by: Primary Cylinder Automation Tool
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
@@ -12,16 +12,16 @@ business_behavior_rework:
   policy: BL-002/story-business-behavior-rework-policy.yaml
   total_registered: 134
   rework_required: 132
-  rework_in_progress: 2
+  rework_in_progress: 3
   business_behavior_complete: 2
   awaiting_user_review: 2
   approved_after_rework: 0
-  needs_clarification: 1
+  needs_clarification: 2
   business_behavior_complete_ids: [STORY-0001, STORY-0011]
   awaiting_user_review_ids: [STORY-0001, STORY-0011]
-  active_rework_ids: [STORY-0012, STORY-0054]
-  static_reference_selector_reviewed: 4
-  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0054]
+  active_rework_ids: [STORY-0012, STORY-0013, STORY-0054]
+  static_reference_selector_reviewed: 5
+  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0054]
   search_conversion_required: 1
   search_conversion_required_ids: [STORY-0054]
   dependent_selector_rework_required: 1
@@ -44,9 +44,9 @@ materialization:
   parity_target: 134
   queue: BL-002/materialization-task-queue.csv
   parity_state: COMPLETE_134_OF_134
-  identity_drift_detected_ids: [STORY-0012]
-  identity_drift_repaired_ids: [STORY-0012]
-  identity_drift_detail: canonical STORY-0012 identity repaired to GET /logistics/challan-books/add-form; remaining gate is SummaryMetricLookupFetchService implementation/database-read binding
+  identity_drift_detected_ids: [STORY-0012, STORY-0013]
+  identity_drift_repaired_ids: [STORY-0012, STORY-0013]
+  identity_drift_detail: canonical STORY-0012 repaired to GET /logistics/challan-books/add-form and STORY-0013 repaired to POST /logistics/challan-books/save; both remain fail-closed at unproven service/database depth
 development_changes:
   backlog: BL-010
   queue: BL-010/development-change-task-queue.csv
@@ -87,12 +87,13 @@ reconciliation:
     - STORY-0001 physical Story and unit status reconciled from stale APPROVED projection to materially reworked current contract requiring explicit reapproval
     - STORY-0011 advanced to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW with selector review complete
     - STORY-0012 canonical identity repaired to exact frozen ChallanBookWebController/template; deepest service/database read remains fail-closed
+    - STORY-0013 canonical identity repaired to exact frozen ChallanBookWebController registration POST/template; deepest ingestion service/database write remains fail-closed
     - STORY-0054 exact Customer/Address/Product search source binding completed and implementation advanced to draft PR 3 without approval
     - shared business-behavior queue reconciled after concurrent-write refetch using newest unit evidence
   aggregate_reconciliation_gate: PASS
 cursor:
   next_global_rework_unit: STORY-0012
-  fallback_dependency_safe_r1_unit: STORY-0013
+  fallback_dependency_safe_r1_unit: STORY-0014
   priority_development_unit: BL-010/DEV-0001
   next_development_action: VALIDATE_DRAFT_PR_3_THEN_RECONCILE_IMPLEMENTED_SOURCE_BACK_TO_BL002
   next_testing_action: NONE_UNTIL_CURRENT_REVISED_STORY_APPROVAL_OR_REAPPROVAL
