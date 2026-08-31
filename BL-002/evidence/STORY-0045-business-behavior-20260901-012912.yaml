@@ -1,0 +1,31 @@
+version: 1
+story_id: STORY-0045
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-012912-IST
+recorded_at: '2026-09-01T01:36:16+05:30'
+classification: BUSINESS_BEHAVIOR_REWORK_PARTIAL
+completion_gate: FAIL_CLOSED
+source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+proved:
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchController.java
+    component: CustomerFetchController
+    method: doGet
+    behavior: GET /displayCustomer requires request parameter customerId, maps it to CustomerFetchByIdRequestDto.customerId, invokes customerFetchByIdService.processRequest, exposes the response DTO as model attribute customer, and renders DisplayCustomer on success.
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchController.java
+    component: CustomerFetchController
+    method: doGet
+    behavior: InvalidInputParameterException or CylinderManagementApplicationException redirects to /fetchCustomerByPage?pageNumber=1&itemsPerPage=10.
+unresolved:
+  - concrete implementation bound to the injected ICylinderManagementApplicationService<CustomerFetchByIdRequestDto, CustomerFetchByIdResponseDto>
+  - exact service/DAO/entity/database read chain for customerId
+  - exact DisplayCustomer template contract remains unresolved because prior frozen-source review found filename/content inconsistency and filename alone is not accepted as behavior proof
+approval:
+  user_approval: NOT_GRANTED
+  auto_approved: false
+code_mutation:
+  application_code_mutations: 0
+  bl010_created_or_executed: 0
+  drift_manifest_approval_used: false
+result: PARTIAL_CONTINUE_REQUIRED
+next_action: Resolve the concrete customerFetchByIdService implementation and downstream persistence/read bindings from exact frozen-source paths; then reconcile the DisplayCustomer template contract.
