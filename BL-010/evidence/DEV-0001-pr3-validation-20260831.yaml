@@ -1,29 +1,34 @@
 development_id: DEV-0001
 story_id: STORY-0054
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
-validated_at: 2026-08-31T08:19:00Z
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
+validated_at: 2026-08-31T08:28:06Z
 pull_request: 3
-application_head: 32a6d6fc9cc24aff74cfa8e4068241233c8e7f9d
-state: CHANGES_REQUIRED_BEFORE_MERGE
+application_head: dde2b007c8ad5278f162cf153b5857397d5b35a0
+state: IMPLEMENTATION_SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED
 approval_state: NOT_APPROVED
 checks:
   exact_search_endpoints_reused: PASS
-  customer_response_collection_contract: PASS_FROM_DURABLE_SOURCE_BINDING
-  address_response_collection_contract: PASS_FROM_DURABLE_SOURCE_BINDING
-  product_response_wrapper_field_contract: NOT_PROVEN
-  hidden_id_selection_model: PRESENT
-  dependent_address_loading: PRESENT
-  minimum_search_length: PRESENT_3
-  debounce: PRESENT_280MS
-  scope_minimization: FAIL
+  customer_response_collection_contract: PASS_EXACT_SOURCE
+  address_response_collection_contract: PASS_EXACT_SOURCE
+  product_response_wrapper_field_contract: PASS_EXACT_FROZEN_SOURCE_PRODUCT_DTOS
+  hidden_id_selection_model: PASS
+  dependent_address_loading: PASS
+  dependent_address_clear_on_customer_change: PASS
+  minimum_search_length: PASS_3
+  debounce: PASS_280MS
+  post_field_identity_customerId: PASS
+  post_field_identity_customerAddressId: PASS
+  post_field_identity_productId: PASS
+  scope_minimization: PASS_ONE_PLANNED_TEMPLATE_CHANGED
+  browser_runtime_execution: NOT_EXECUTED_IN_CHATGPT_RUNTIME
 findings:
-  - PR 3 implements the intended Customer, dependent Address and Product search UX on CustomerDemandDashboard.html.
-  - The durable source binding proves ProductSearchResponseDto as the product response type and productId as the identity field, but does not prove the exact JSON collection/wrapper field consumed by the PR. Merge must fail closed until that DTO contract is bound exactly.
-  - PR 3 also rewrites a large amount of existing page CSS/layout while implementing the selector change; this is broader than the minimal selector UX change and creates avoidable regression surface.
+  - Frozen ProductSearchResponseDto declares List<ProductDto> productDtos with getProductDtos/setProductDtos, so the browser parser data.productDtos is exact.
+  - PR 3 was corrected by restoring final-version-1/CustomerDemandDashboard.html to the PR base blob; only with-menu/CustomerDemandDashboard.html remains changed.
+  - The remaining template change implements Customer search, Customer-dependent Address loading, Product search, hidden selected identities, stale Address clearing, 3-character minimum and 280 ms debounce.
+  - Static/source validation is complete; no live browser execution is claimed.
   - No Story approval is inferred from implementation or validation.
-required_corrections:
-  - Bind the exact ProductSearchResponseDto JSON structure from frozen/current source and make the browser parser match it exactly.
-  - Reduce PR 3 to the minimum required Customer/Address/Product selector changes unless each unrelated presentation change is separately governed and validated.
-  - Revalidate template behavior after corrections, then reconcile implemented source back to BL-002 STORY-0054 before user review/approval.
-merge_gate: BLOCKED
+required_next_actions:
+  - Reconcile the implemented source back into BL-002 STORY-0054 business-behavior text/evidence.
+  - Present the reconciled Story for explicit user review/approval before revised BL-004/BL-005/BL-009 fan-out.
+merge_gate: SOURCE_VALIDATED_PR_REMAINS_DRAFT_PENDING_GOVERNED_REVIEW
 fanout_gate: BLOCKED_UNTIL_EXPLICIT_STORY_APPROVAL
