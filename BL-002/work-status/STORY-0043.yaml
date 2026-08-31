@@ -1,0 +1,41 @@
+version: 1
+story_id: STORY-0043
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+release: R1
+endpoint: GET /wizard/vehicle-trip-load
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+strict_field_ui_complete: true
+business_behavior_complete: true
+approval: PENDING_USER_APPROVAL
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+page_read_behavior:
+  - GET creates a blank combined VehicleTripDto + VehicleLoadDto request and renders final-version-1/VehicleTripLoadWizard.
+  - LookupDataCache supplies load-purpose and product reference data; the cache is populated at startup and lazily reloads empty caches through injected application services.
+  - ProductFetchByPageService reads ProductJpaDao and maps ProductDo records from public.tbl_product.
+  - VehicleLoadPurposeFetchAllService reads VehicleLoadPurposeJpaDao and maps VehicleLoadPurposeDo records from public.tbl_vehicle_load_purpose.
+  - ActiveChallanBookForTripLoadViewJpaDao.findByBookType supplies active book choices for DELIVERY_CHALLAN, EMPTY_PICKUP_CHALLAN, FILLING_NOTE and CUSTOMER_SPOT_CYLINDER_CHECK.
+  - ActiveChallanBookForTripLoadViewDo is immutable and maps public.vw_active_challan_books_for_trip_load, including book_id, book_code, book_type, sheet range, current_location, unused/used/spoiled/missing counts and next_available_sheet_number.
+embedded_save_capability:
+  related_story: STORY-0044
+  endpoint: POST /wizard/vehicle-trip-load/save
+  source_bound: true
+  business_effect_summary: The final Save is one transactional combined trip/load operation that validates trip/load/four physical challan books, creates the trip/load and YARD_START stop, assigns the four books with starting sheet numbers, sets the trip Loaded, and transfers selected cylinders from active Yard Inventory to active logistics execution.
+selector_ux_review:
+  state: COMPLETE_SEARCH_AND_DEPENDENT_SELECTORS_SOURCE_PROVED
+  vehicle: search_based
+  driver: search_based
+  customer: search_based
+  customer_address: dependent_on_customer
+  cylinder: state_based_search
+  challan_books: filtered_active_book_choices_from_public_view
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+current_source_gaps:
+  - ProductFetchByPageService currently uses ProductJpaDao.findAll(pageable) even when a nonblank searchTerm is supplied; its comment says a filtered DAO method is intended later. The wizard's initial product reference list therefore must not be described as source-proved server-side filtered product search through this cache path.
+  - ProductFetchByPageService caps page size at 10 even though LookupDataCache uses a fetch-all style cache contract; source is recorded exactly without inventing larger retrieval behavior.
+code_mutation_performed: false
+bl010_created_or_executed: false
+approval_delta: 0
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+fanout_authorized: false
