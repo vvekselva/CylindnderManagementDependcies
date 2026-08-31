@@ -1,0 +1,14 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-065142Z
+recovered_by_run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
+recovered_at: 2026-08-31T07:53:28Z
+classification: RECOVERED_UNEXPLAINED_EARLY_TERMINATION
+original_end_time: UNKNOWN_NOT_INVENTED
+last_known_durable_timestamp: 2026-08-31T06:51:42Z
+evidence:
+  eligible_work_remaining: true
+  prior_terminal_classification: PARTIAL_CONTINUE_REQUIRED
+  governed_termination_record_present: false
+  governed_live_heartbeat_present: false
+  runtime_window_forced_stop_evidence_present: false
+root_cause_status: UNRESOLVED_APPLICATION_EXIT_PATH
+recovery_action: Continue from newest durable state; source-bind BL-010/DEV-0001 and require governed termination evidence for the current run.
