@@ -1,9 +1,9 @@
-version: 45
+version: 46
 backlog_id: BL-002
-updated_at: 2026-08-31T07:13:54+05:30
+updated_at: 2026-08-31T07:14:23+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-071328IST
-checkpoint_state: CHECKPOINT_RECONCILIATION_INCOMPLETE
+checkpoint_state: CHECKPOINT_RECONCILED
 scope:
   total_stories: 134
   r1_stories: 88
@@ -26,29 +26,22 @@ materialization:
   pending_r2_priority_2: 0
   parity_state: COMPLETE_134_OF_134
 reconciliation:
-  current_run_strict_delta:
-    count: 0
-    stories: []
-  current_run_materialization_delta:
-    count: 0
-    stories: []
+  current_run_strict_delta: {count: 0, stories: []}
+  current_run_materialization_delta: {count: 0, stories: []}
   source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
   source_detail_refined_this_run: []
   blocked_this_run: []
   correction:
-    - BL-008 README is newer than the stale V182 aggregate projection.
-    - Authoritative BL-008 state is CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION with V174 through V184 validated PASS.
-  aggregate_reconciliation_gate: PENDING_LAST_RUN_UPDATE_AND_READBACK
+    - Startup projection drift repaired to authoritative BL-008 closure through V184.
+  aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
   next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
   next_eligible_materialization_unit: null
   trace_proxy_cursor: STORY-0030
-approval_policy:
-  auto_approve: false
-  approvals_delta: 0
+approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
   state_source: BL-008/README.md
   execution_mode: CLOSED
