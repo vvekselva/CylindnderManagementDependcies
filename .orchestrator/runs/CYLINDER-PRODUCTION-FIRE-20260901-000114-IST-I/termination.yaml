@@ -1,0 +1,17 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
+scheduler_task: Cylinder Production Fire - i
+scheduler_fire_id: 20260901T000114+0530
+started_at: '2026-09-01T00:01:14+05:30'
+termination_time: '2026-09-01T00:14:00+05:30'
+elapsed_seconds: 766
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: AUTOMATION_INVOCATION_RUNTIME_BOUNDARY
+state: TERMINATED
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I/checkpoint.yaml
+eligible_work_remaining: true
+active_claims_remaining: 0
+story_approval_delta: 0
+application_code_mutation: false
+bl_010_execution: false
+github_actions_or_runners_used: false
+resumable: true
