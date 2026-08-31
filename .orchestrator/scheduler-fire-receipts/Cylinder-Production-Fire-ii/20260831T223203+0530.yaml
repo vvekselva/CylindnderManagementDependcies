@@ -2,10 +2,11 @@ scheduler_task: Cylinder Production Fire - ii
 fire_id: 20260831T223203+0530
 scheduled_or_observed_fire_at: '2026-08-31T22:32:03+05:30'
 receipt_persisted_at: '2026-08-31T22:32:03+05:30'
-state: TRIGGER_RECEIVED
+state: RUN_LINKED
+orchestrator_state: ORCHESTRATOR_STARTED
 intended_run_scope: CONTINUOUS
-run_id: null
-live_run_path: null
-event_stream_path: null
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-223203-IST-II
+live_run_path: .orchestrator/live-run.yaml
+event_stream_path: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-223203-IST-II/events.ndjson
 terminal_classification: null
 terminated_at_when_observable: null
