@@ -19,4 +19,4 @@ Rules:
 5. Every automated test must carry the matching `BL008-SUI-xxx` test-case ID in its display name or method documentation.
 6. Database remains frozen at V185; service/UI failures are corrected in application code first unless a test proves a database-model defect.
 
-Automation source is maintained in the `CylinderManagement` source repository under the BL-008 test-automation branch and mirrored by the delta package recorded in the BL-008 SSOT.
+Automation source now resides on the `main` branch of the `CylinderManagement` application repository under `cylindermanagement.custommapper.service/src/test`. The former `bl008-v185-test-automation` branch is identical to the point that was fast-forwarded into `main` and is no longer required for executing the tests.
