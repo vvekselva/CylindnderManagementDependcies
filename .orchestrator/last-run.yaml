@@ -1,7 +1,7 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-054234Z
-checkpoint_state: CHECKPOINT_RECONCILIATION_IN_PROGRESS
+checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T05:42:34Z
-checkpoint_at: 2026-08-31T05:43:44Z
+checkpoint_at: 2026-08-31T05:45:52Z
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -10,54 +10,20 @@ architecture:
   run_scope_mode: PRODUCTION_FIRE
   compatibility_invocation_lease_global_mutex: false
 work:
-  attempted_ids:
-    - AGGREGATE_RECONCILIATION
-    - BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR
-    - BL-009/STORY-0001_EXECUTABLE_TEST_RUNTIME_PROBE
-    - BL-004/STORY-0001_EXECUTION_RUNTIME_PROBE
-    - BL-005/STORY-0001_EXECUTION_RUNTIME_PROBE
-  completed_ids:
-    - BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR
+  attempted_ids: [AGGREGATE_RECONCILIATION, BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR, BL-009/STORY-0001_EXECUTABLE_TEST_RUNTIME_PROBE, BL-004/STORY-0001_EXECUTION_RUNTIME_PROBE, BL-005/STORY-0001_EXECUTION_RUNTIME_PROBE]
+  completed_ids: [BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR]
   completed_strict_ids: []
-  blocked_ids:
-    - BL-004/STORY-0001_EXECUTION
-    - BL-005/STORY-0001_EXECUTION
-    - BL-009/STORY-0001_CODE_EXECUTION
+  blocked_ids: [BL-004/STORY-0001_EXECUTION, BL-005/STORY-0001_EXECUTION, BL-009/STORY-0001_CODE_EXECUTION]
   strict_field_ui_completion_delta: 0
   physical_materialization_delta: 0
   approvals_delta: 0
   approved_ids: [STORY-0001]
   next_dynamically_resolved_eligible_unit: DYNAMIC_BL-002_STRICT_RECONCILIATION_OR_TEST_RUNTIME_RECOVERY
-metrics_after:
-  register_ready: 131
-  clarification: 3
-  materialized_story_files: 134
-  materialization_pending: 0
-  strict_field_ui_complete: 126
-  strict_field_ui_remaining: 8
-  approved: 1
-  use_case_grouped: 0
-  testing_ready: 1
+metrics_after: {register_ready: 131, clarification: 3, materialized_story_files: 134, materialization_pending: 0, strict_field_ui_complete: 126, strict_field_ui_remaining: 8, approved: 1, use_case_grouped: 0, testing_ready: 1}
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
-  BL-004:
-    queued: 1
-    generated: 1
-    source_bound: 1
-    executed: 0
-    pass: 0
-    fail: 0
-    coverage: NOT_EXECUTED
-    execution_blocked: 1
-  BL-005:
-    queued: 1
-    generated: 1
-    source_bound: 1
-    executed: 0
-    pass: 0
-    fail: 0
-    coverage: NOT_EXECUTED
-    execution_blocked: 1
+  BL-004: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, coverage: NOT_EXECUTED, execution_blocked: 1}
+  BL-005: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, coverage: NOT_EXECUTED, execution_blocked: 1}
   BL-009:
     catalogues: 1
     test_data_sets: 1
@@ -71,26 +37,9 @@ approved_story_testing:
     coverage: NOT_EXECUTED
     live_validation_pending: 1
     live_validation_executed: 0
-  runtime_capability:
-    java_21: AVAILABLE
-    maven: UNAVAILABLE
-    gradle: UNAVAILABLE
-    ant: AVAILABLE
-    junit5_runtime: UNAVAILABLE
-    mockito_runtime: UNAVAILABLE
-    jacoco_runtime: UNAVAILABLE
-    docker: UNAVAILABLE
-    podman: UNAVAILABLE
-    local_postgresql: UNAVAILABLE
-    outbound_dependency_resolution: DNS_BLOCKED
-  substitutions:
-    direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS
-    ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE
-    local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED
-    h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT
-bl001:
-  state: COMPLETE_READ_ONLY
-  action: NO_CHANGE_REQUIRED
+  runtime_capability: {java_21: AVAILABLE, maven: UNAVAILABLE, gradle: UNAVAILABLE, ant: AVAILABLE, junit5_runtime: UNAVAILABLE, mockito_runtime: UNAVAILABLE, jacoco_runtime: UNAVAILABLE, docker: UNAVAILABLE, podman: UNAVAILABLE, local_postgresql: UNAVAILABLE, outbound_dependency_resolution: DNS_BLOCKED}
+  substitutions: {direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS, ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE, local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED, h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT}
+bl001: {state: COMPLETE_READ_ONLY, action: NO_CHANGE_REQUIRED}
 bl008:
   state_source: BL-008/README.md
   last_historical_clean_validated_migration: V184
@@ -107,6 +56,6 @@ reconciliation:
   BL-009_executable_code_state_projected: true
   runtime_capability_reprobed: true
   durable_evidence: .orchestrator/evidence/20260831-054344-testing-runtime-and-drift-reconciliation.md
-  readback_pending: true
-  aggregate_reconciliation_gate: IN_PROGRESS
+  readback_pending: false
+  aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
