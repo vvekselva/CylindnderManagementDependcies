@@ -1,0 +1,23 @@
+story_id: STORY-0046
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
+release: R1
+endpoint: GET /fetchCustomerByPage
+status: SOURCE_DETAIL_REVIEW_REQUIRED
+strict_field_ui_complete: false
+approval: PENDING_USER_APPROVAL
+materialized: true
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+proved:
+  - CustomerFetchByPageRequestDto exists in frozen DTO source
+  - DTO documentation names pageNumber, itemsPerPage, searchTerm and activeOnly semantics
+  - DTO documentation references CustomerFetchByPageController and CustomerFetchByPageService
+source_integrity_finding:
+  - expected concrete CustomerFetchByPageController source path returned not found
+  - frozen commit evidence contains the controller name only in DTO documentation, not as executable controller proof
+remaining_gap:
+  - exact GET controller mapping and parameter binding unresolved
+  - browser caller and response mapping unresolved
+  - concrete service/DAO/entity/database read implementation unresolved
+strict_promotion_withheld_reason: executable_controller_and_downstream_read_contract_not_source_proved
+database_behavior_invented: false
+approval_delta: 0
