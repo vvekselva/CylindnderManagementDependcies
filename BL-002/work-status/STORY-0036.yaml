@@ -1,62 +1,43 @@
-version: 1
+version: 2
 story_id: STORY-0036
-run_id: CYLINDER-TARGETED-BL002-STORY-0036-20260831-0802IST
 release: R1
-endpoint: GET /yard-audit-dashboard
-functional_area: Yard Audit
-state: STRICT_FIELD_UI_COMPLETE
-strict_field_ui_complete: true
-materialized: true
-approval: PENDING_USER_APPROVAL
-review_state: NEEDS_CLARIFICATION
-updated_at: 2026-08-31T08:02+05:30
+canonical_register_endpoint: GET /yard-audit-dashboard
+canonical_functional_area: Yard Audit
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-proven_contract:
-  controller:
-    class: YardAuditDashboardController
-    method: doGet
-    request_params: [stockCheckId, gateDate]
-    request_dto: YardAuditDashboardFetchRequestDto
-    view: final-version-1/YardAuditDashboard
-    model_attributes: [backLink, selectedStockCheckId, selectedGateDate, dashboard, dashboardLoadError]
-  service:
-    class: YardAuditDashboardFetchService
-    method: processRequest
-    response_dto: YardAuditDashboardFetchResponseDto
-    dashboard_dto: YardAuditDashboardDto
-  dao:
-    class: YardQualityGateJpaDao
-    methods:
-      - fetchLatestAuditSummary
-      - fetchAuditSummariesByDate
-      - countAuditsByCheckDate
-      - findByYardStockCheckIdOrderByOpenedAtDesc
-      - fetchAuditLines
-      - fetchAuditEvents
-      - fetchThirdPartyAlerts
-  database_read_objects:
-    - public.tbl_yard_stock_check
-    - public.tbl_yard_stock_check_line
-    - public.tbl_yard_quality_gate
-    - public.tbl_cylinder_states
-    - public.tbl_yard_check_event
-  ui_outcomes:
-    - audit_date_filter
-    - audit_id_filter
-    - reset
-    - new_yard_audit_navigation
-    - dashboard_load_error
-    - empty_dashboard
-    - empty_daily_audit_list
-    - selected_audit_metrics
-    - daily_audit_list
-    - selected_audit_gate_status
-    - third_party_alerts
-    - audit_line_details
-    - audit_event_timeline
-applicable_flow_type: READ_REPORTING
-write_side_persistence_required: false
-remaining_source_gap: []
-strict_decision: COMPLETE_APPLICABLE_SOURCE_CONTRACT_PROVED
-bl001_action: NO_CHANGE_REQUIRED_CANONICAL_ROW_ALREADY_IDENTIFIES_CONTROLLER_SERVICE_DAO_AND_DATABASE_OBJECT_SET
-approval_delta: 0
+rework:
+  state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+  business_behavior_complete: true
+  selector_ux_reviewed: true
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+  needs_clarification: false
+source_binding:
+  exact_controller_bound: true
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/YardAuditDashboardController.java
+  controller_method: doGet(stockCheckId, gateDate)
+  exact_service_bound: true
+  service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/YardAuditDashboardFetchService.java
+  service_method: processRequest(YardAuditDashboardFetchRequestDto)
+  exact_dao_bound: true
+  dao: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/YardQualityGateJpaDao.java
+  exact_database_read_identity_bound: true
+  database_objects: [public.tbl_yard_stock_check, public.tbl_yard_stock_check_line, public.tbl_yard_quality_gate, public.tbl_cylinder_states, public.tbl_yard_check_event]
+proved_behavior:
+  filters: [stockCheckId, gateDate]
+  mutation_on_get: false
+  dashboard_load_error: true
+  empty_dashboard: true
+  empty_daily_audit_list: true
+  audit_line_state_comparison: true
+  third_party_alerts: true
+  event_timeline: true
+selector_review:
+  large_reference_static_selector_present: false
+  search_conversion_required: false
+approval:
+  state: NOT_APPROVED
+  explicit_user_approval_required_after_rework: true
+  auto_approved: false
+next_actions:
+  - user_review_of_reworked_story
+  - after_explicit_approval_only_fan_out_revised_BL004_BL005_BL009
