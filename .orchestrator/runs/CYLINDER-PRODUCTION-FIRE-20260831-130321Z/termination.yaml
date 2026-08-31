@@ -1,0 +1,8 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-130321Z
+classification: ABNORMAL_PROCESS_DISAPPEARANCE
+observed_at: 2026-08-31T19:55:30+05:30
+last_heartbeat_at: 2026-08-31T18:45:43+05:30
+reason: stale heartbeat with no durable terminal record
+original_completion_time: null
+eligible_work_remaining: true
+recovered_by_run_id: CYLINDER-PRODUCTION-FIRE-20260831-142414Z
