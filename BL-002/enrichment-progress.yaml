@@ -1,8 +1,8 @@
-version: 47
+version: 48
 backlog_id: BL-002
-updated_at: 2026-08-31T08:02+05:30
+updated_at: 2026-08-31T08:23+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-TARGETED-BL002-STORY-0036-20260831-0802IST
+run_id: CYLINDER-TARGETED-BL002-STORY-0011-20260831-0812IST
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
   total_stories: 134
@@ -15,8 +15,8 @@ metrics:
   approved: 0
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 123
-  strict_field_ui_remaining: 11
+  strict_field_ui_complete: 124
+  strict_field_ui_remaining: 10
   use_case_grouped: 0
   testing_ready: 0
 materialization:
@@ -26,19 +26,20 @@ materialization:
   pending_r2_priority_2: 0
   parity_state: COMPLETE_134_OF_134
 reconciliation:
-  current_run_strict_delta: {count: 1, stories: [STORY-0036]}
+  current_run_strict_delta: {count: 1, stories: [STORY-0011]}
   current_run_materialization_delta: {count: 0, stories: []}
-  source_integrity_repairs: []
+  source_integrity_repairs:
+    - STORY-0011 physical Story identity repaired from unrelated R2 GET /login content to canonical R1 POST /complete-trip Trip Completion.
   source_detail_review_required: [STORY-0035, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: [STORY-0036]
+  source_detail_refined_this_run: [STORY-0011]
   blocked_this_run: []
   correction:
-    - STORY-0036 Yard Audit strict applicable source contract proved from frozen baseline controller, service, DAO, database-read identities, DTO/model and Thymeleaf UI behavior.
-    - BL-001 canonical matrix already contains the Yard Audit controller/service/DAO/database object set; BL-001 remained COMPLETE_READ_ONLY because no source-integrity regression was found.
-    - Register review_state NEEDS_CLARIFICATION was not auto-cleared; approval remains explicit-user-only.
+    - STORY-0011 applicable browser, controller, validator, transactional service, DAO/entity/database branching and terminal behavior proved from frozen baseline and current canonical BL-001 evidence.
+    - Current canonical BL-001 /complete-trip row already identifies CompleteTripController.completeTrip, CompleteTripServiceImpl and CompleteTripRequestValidator; BL-001 change was not required.
+    - Register-level NEEDS_CLARIFICATION was retained; approval remains explicit-user-only.
   aggregate_reconciliation_gate: PASS
 cursor:
-  last_strict_r1_story: STORY-0036
+  last_strict_r1_story: STORY-0011
   next_eligible_strict_r1_story: null
   next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
   next_eligible_materialization_unit: null
