@@ -1,0 +1,36 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
+checkpoint_state: RESUMABLE_RUNTIME_BOUNDARY
+started_at: '2026-09-01T02:00:33+05:30'
+checkpoint_at: '2026-09-01T02:09:30+05:30'
+run_scope: CONTINUOUS
+scheduler_handoff:
+  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire-i/fire-20260901T020033+0530.yaml
+  handoff_acknowledged: true
+  run_linked: true
+recovery:
+  unresolved_prior_scheduler_start_termination_gap: false
+  prior_run_had_active_work_units: false
+work:
+  story_id: STORY-0045
+  classification: CODE_CONFORMANCE_DRIFT_USER_REVIEW_REQUIRED
+  business_behavior_complete: false
+  evidence: BL-002/evidence/STORY-0045/20260901T020800+0530-display-template-drift-confirmed.yaml
+  review_packet: BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
+  next_action: Continue exact GET /displayCustomer controller/model and persistence read-path binding; do not mutate the drift manifest without explicit user approval.
+aggregate:
+  completion_delta_this_run: 0
+  authoritative_completion_projection_changed: false
+  known_queue_projection_cleanup_remaining: true
+claims:
+  active_at_checkpoint: 0
+approval:
+  auto_approve: false
+  approval_delta: 0
+drift_governance:
+  application_code_mutation: false
+  bl010_created: false
+  bl010_executed: false
+  review_packet_persisted: true
+runtime_reliability:
+  eligible_work_remaining: true
+  github_actions_runners_used: false
