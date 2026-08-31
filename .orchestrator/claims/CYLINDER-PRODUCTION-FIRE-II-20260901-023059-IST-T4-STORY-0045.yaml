@@ -1,0 +1,10 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4
+work_unit: STORY-0045
+backlog: BL-002
+claim_state: CLAIMED
+claimed_at: "2026-09-01T02:32:00+05:30"
+mode: SAFE_INDEPENDENT
+mutation_scope: DURABLE_EVIDENCE_ONLY
+application_code_mutation: false
+code_drift_implementation_allowed: false
+approval_gate: EXPLICIT_USER_APPROVAL_REQUIRED
