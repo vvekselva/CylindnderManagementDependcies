@@ -1,0 +1,35 @@
+story_id: STORY-0054
+release: R1
+approval:
+  state: NOT_APPROVED
+  auto_approved: false
+  explicit_user_approval_required: true
+rework:
+  state: REWORK_REQUIRED_USER_UX_CHANGE
+  business_behavior_documented: true
+  implementation_source_proof_complete: false
+  user_required_target_behavior:
+    customer_selector: SEARCH_BOX_REUSE_WALK_IN_SALE_CUSTOMER_REST_PATTERN
+    address_selector: DEPENDENT_ON_SELECTED_CUSTOMER
+    product_selector: SEARCH_BOX_REUSE_EXISTING_PRODUCT_REST_PATTERN
+  current_source_gap:
+    customer_selector: STATIC_SERVER_RENDERED_LIST
+    address_selector: GLOBAL_SERVER_RENDERED_LIST
+    product_selector: STATIC_SERVER_RENDERED_LIST
+  completion_requirements:
+    - implement_or_source_prove_searchable_customer_selector
+    - bind_exact_existing_customer_search_rest_endpoint
+    - populate_only_selected_customer_addresses
+    - clear_address_when_customer_changes_or_clears
+    - implement_or_source_prove_searchable_product_selector
+    - bind_exact_existing_product_search_rest_endpoint
+    - prove_selected_id_propagation_and_stale_id_clear_behavior
+    - preserve_server_side_customer_address_ownership_validation
+    - explicit_user_review_and_approval
+downstream_fanout:
+  BL-004: DEFER_UNTIL_EXPLICIT_APPROVAL
+  BL-005: DEFER_UNTIL_EXPLICIT_APPROVAL
+  BL-009: DEFER_UNTIL_EXPLICIT_APPROVAL
+notes:
+  - Current frozen source behavior is evidence of the gap, not acceptance of the target UX.
+  - Existing Walk-in Sale search behavior is the required customer-selector reference pattern.
