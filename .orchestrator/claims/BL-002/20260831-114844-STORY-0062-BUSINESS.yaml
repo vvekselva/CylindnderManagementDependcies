@@ -1,0 +1,12 @@
+claim_id: 20260831-114844-STORY-0062-BUSINESS
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+backlog: BL-002
+unit: STORY-0062_BUSINESS_BEHAVIOR_REVIEW
+status: ACTIVE
+acquired_at: 2026-08-31T11:48:44Z
+heartbeat_at: 2026-08-31T11:48:44Z
+read_set:
+  - BL-002/stories/STORY-0062.md
+write_set:
+  - BL-002/work-status/STORY-0062.yaml
+purpose: Validate the strict Vehicle Trip List artifact against the current business-behavior contract without code mutation or approval.
