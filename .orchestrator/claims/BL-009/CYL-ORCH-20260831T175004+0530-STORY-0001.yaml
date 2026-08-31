@@ -1,0 +1,12 @@
+claim_id: CYL-ORCH-20260831T175004+0530-STORY-0001
+run_id: CYL-ORCH-20260831T175004+0530
+backlog: BL-009
+work_unit: STORY-0001_REAPPROVED_CONTRACT_RECONCILIATION
+status: ACTIVE
+claimed_at: '2026-08-31T18:06:11+05:30'
+heartbeat_at: '2026-08-31T18:06:11+05:30'
+lease_expires_at: '2026-08-31T18:21:11+05:30'
+read_set: [BL-002/stories/STORY-0001.md, BL-009/stories/STORY-0001.md, BL-009/test-data/STORY-0001.csv, BL-009/test-data/STORY-0001.md, BL-009/generated-tests/STORY-0001/Story0001TestDataDrivenTest.java]
+write_set: [BL-009/stories/STORY-0001.md, BL-009/generated-tests/STORY-0001/Story0001TestDataDrivenTest.java, BL-009/evidence/STORY-0001-reconciliation-20260831.yaml, BL-009/test-case-task-queue.csv]
+dependencies: {story_approval: APPROVED_AFTER_REWORK, code_conformance: CODE_CONFORMANCE_VERIFIED_PASS}
+application_code_mutation: false
