@@ -2,8 +2,11 @@ claim_id: STORY-0045-CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
 run_id: CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
 backlog: BL-002
 work_unit: STORY-0045
-status: ACTIVE
+status: RELEASED
 safe_independent: true
 claimed_at: '2026-09-01T02:04:30+05:30'
-heartbeat_at: '2026-09-01T02:04:30+05:30'
-resume_from: BL-002/evidence/STORY-0045-source-resolution-20260901-013227.yaml
+heartbeat_at: '2026-09-01T02:08:30+05:30'
+released_at: '2026-09-01T02:08:30+05:30'
+release_classification: USER_REVIEW_REQUIRED_CONTINUE_SOURCE_BINDING
+resume_from: BL-002/evidence/STORY-0045/20260901T020800+0530-display-template-drift-confirmed.yaml
+review_packet: BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
