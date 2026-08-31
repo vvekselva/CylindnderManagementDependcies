@@ -1,0 +1,16 @@
+version: 1
+scheduler_task: Cylinder Orchestrator Production Fire
+fire_id: manual-20260831T110529Z
+trigger_source: USER_REQUESTED_CONTINUOUS_FIRE
+observed_fire_time: 2026-08-31T11:05:29Z
+scheduled_fire_time: null
+receipt_time: 2026-08-31T11:05:29Z
+state: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
+run_id: null
+run_link_state: NOT_YET_LINKED
+terminal_classification: null
+termination_time: null
+notes:
+  - Scheduler last_run_time is not treated as execution proof.
+  - This durable receipt is the orchestration handoff acknowledgement for this invocation.
