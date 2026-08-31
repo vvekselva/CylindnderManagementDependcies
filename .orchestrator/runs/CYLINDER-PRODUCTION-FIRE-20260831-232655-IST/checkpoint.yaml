@@ -1,0 +1,41 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-232655-IST
+checkpoint_time: '2026-08-31T23:36:51+05:30'
+mode: CONTINUOUS
+state: RESUMABLE_RUNTIME_BOUNDARY
+started_at: '2026-08-31T23:26:55+05:30'
+productive_runtime_seconds_if_measurable: 596
+recovery_first:
+  previous_run: CYLINDER-PRODUCTION-FIRE-20260831-225914-IST-I
+  previous_checkpoint_reconciled: true
+aggregate_checkpoint:
+  version_observed: 72
+  mutated: false
+  projection_drift_detected: false
+  reason: Unit-local source evidence advanced but no unit crossed the business-behavior-complete gate; canonical counts remain unchanged.
+units_advanced:
+  - story_id: STORY-0041
+    state: PARTIAL_SOURCE_BINDING_ADVANCED
+    evidence: BL-002/evidence/STORY-0041/20260831T233357+0530-controller-validation-error-binding.yaml
+    remaining:
+      - concrete Spring mediator bean implementation/configuration
+      - exact transaction boundary around mediator/service persistence chain
+      - validator implementation proving exact server-side required-field and cross-reference rules
+  - story_id: STORY-0045
+    state: PARTIAL_SOURCE_BINDING_ADVANCED
+    evidence: BL-002/evidence/STORY-0045/20260831T233456+0530-display-template-source-mismatch.yaml
+    remaining:
+      - exact GET /displayCustomer controller mapping and method
+      - actual display model/filter/action contract and downstream read path
+  - story_id: STORY-0046
+    state: PARTIAL_SOURCE_BINDING_ADVANCED
+    evidence: BL-002/evidence/STORY-0046/20260831T233554+0530-customer-list-template-binding.yaml
+    remaining:
+      - exact GET /fetchCustomerByPage controller and request binding
+      - service/DAO/database read path and server-side filter/order branches
+active_claims_remaining: 0
+eligible_work_remaining: true
+next_recovery_action: Resume exact frozen-source traversal for STORY-0041 mediator/validator/transaction binding; in parallel-safe sequence continue STORY-0045/0046 controller and persistence binding, then replan to STORY-0047 or next dependency-safe R1 unit.
+approval_delta: 0
+application_code_mutation: false
+bl_010_execution: false
+github_actions_or_runners_used: false
