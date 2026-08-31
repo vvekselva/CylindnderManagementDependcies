@@ -1,0 +1,15 @@
+claim_id: 20260831-113112-STORY-0040-BUSINESS
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+backlog: BL-002
+unit: STORY-0040_BUSINESS_BEHAVIOR_REWORK
+status: ACTIVE
+acquired_at: 2026-08-31T11:31:12Z
+heartbeat_at: 2026-08-31T11:31:12Z
+read_set:
+  - BL-002/stories/STORY-0040.md
+  - BL-002/work-status/STORY-0040.yaml
+  - BL-002/work-status/STORY-0039.yaml
+write_set:
+  - BL-002/stories/STORY-0040.md
+  - BL-002/work-status/STORY-0040.yaml
+purpose: Upgrade existing strict source trace into the current business-behavior review contract without changing application code or approval state.
