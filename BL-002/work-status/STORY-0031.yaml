@@ -1,0 +1,36 @@
+version: 1
+story_id: STORY-0031
+release: R1
+canonical_register_endpoint: GET /ownership-obligation-dashboard
+canonical_functional_area: Ownership Obligation
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+rework:
+  state: REWORK_BLOCKED_SOURCE_DETAIL_REVIEW_REQUIRED
+  business_behavior_complete: false
+  selector_ux_reviewed: false
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+  needs_clarification: true
+identity_drift:
+  detected: true
+  repaired: true
+  prior_physical_story_identity: GET /product
+  repaired_physical_story_identity: GET /ownership-obligation-dashboard
+  rule: CANONICAL_REGISTER_WINS
+source_binding:
+  exact_route_search_attempted: true
+  github_code_search_total_count: 0
+  github_code_search_incomplete_results: true
+  exact_controller_bound: false
+  exact_template_bound: false
+  exact_service_bound: false
+  exact_database_read_identity_bound: false
+  source_detail_gap: Exact canonical ownership-obligation route did not resolve through accessible search evidence; incomplete search cannot prove absence, so no substitute source path is invented.
+approval:
+  state: NOT_APPROVED
+  explicit_user_approval_required_after_rework: true
+  auto_approved: false
+next_actions:
+  - resolve exact frozen source for GET /ownership-obligation-dashboard from complete source-tree proof
+  - trace ownership/obligation calculations through persistence and visible dashboard behavior if source exists
+  - if complete frozen-tree proof establishes absence, classify source-integrity gap
