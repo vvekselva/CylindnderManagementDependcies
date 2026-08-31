@@ -1,0 +1,64 @@
+version: 1
+name: APPROVED_STORY_TESTING_FANOUT
+status: ACTIVE
+source_backlog: BL-002
+approval_gate:
+  required_state: APPROVED
+  source_of_approval: EXPLICIT_USER_APPROVAL_ONLY
+  auto_approval: forbidden
+fanout:
+  BL-004:
+    purpose: JUNIT_UNIT_TEST_GENERATION_AND_EXECUTION
+    framework: JUNIT_5
+    required_outputs:
+      - BL-004/stories/<story-id>.md
+      - BL-004/generated-tests/<story-id>/*Test.java
+      - BL-004/unit-test-task-queue.csv
+  BL-005:
+    purpose: JUNIT_TESTCONTAINERS_INTEGRATION_TEST_CREATION_AND_EXECUTION
+    framework: JUNIT_5
+    integration_runtime: POSTGRESQL_TESTCONTAINERS
+    required_outputs:
+      - BL-005/stories/<story-id>.md
+      - BL-005/generated-tests/<story-id>/*IntegrationTest.java
+      - BL-005/integration-test-task-queue.csv
+  BL-009:
+    purpose: HUMAN_READABLE_TEST_CASES_TEST_DATA_AND_LIVE_VALIDATION
+    required_outputs:
+      - BL-009/stories/<story-id>.md
+      - BL-009/test-data/<story-id>.csv
+      - BL-009/test-case-task-queue.csv
+orchestrator_rule:
+  startup:
+    - read_this_policy
+    - reconcile_all_durable_approved_BL-002_stories
+    - diff_approved_story_ids_against_BL-004_BL-005_BL-009
+    - materialize_missing_downstream_artifacts_idempotently
+  selection_priority:
+    - approval_projection_reconciliation
+    - missing_approved_story_fanout_artifacts
+    - executable_BL-004_unit_tests
+    - executable_BL-005_testcontainers_tests
+    - BL-009_test_case_test_data_validation
+    - other_eligible_story_enrichment
+  execution:
+    github_actions: forbidden
+    github_runner: forbidden
+    chatgpt_side_only: true
+    generated_test_is_not_execution_pass: true
+    exact_frozen_source_binding_required_before_execution: true
+    persist_unit_local_test_evidence_immediately: true
+watchdog_reporting:
+  required: true
+  fields:
+    - approved_story_count
+    - approved_story_ids
+    - BL-004_queued_generated_executed_pass_failed
+    - BL-005_queued_generated_executed_pass_failed
+    - BL-009_test_catalogues_count
+    - BL-009_test_data_count
+    - live_validation_pending_pass_failed
+    - per_approved_story_next_action
+    - aggregate_drift_state
+current_seed:
+  approved_story_ids: [STORY-0001]
