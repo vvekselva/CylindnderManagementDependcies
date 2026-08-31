@@ -2,8 +2,10 @@ scheduler_task: Cylinder Production Fire - ii
 observed_fire_time: 2026-08-31T19:54:14+05:30
 scheduled_fire_time: 2026-08-31T19:54:14+05:30
 receipt_time: 2026-08-31T19:54:14+05:30
-state: TRIGGER_RECEIVED
+state: RUN_LINKED
+orchestrator_state: ORCHESTRATOR_STARTED
 intended_scope: CONTINUOUS
-run_id: null
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-142414Z
+run_started_at: 2026-08-31T19:54:20+05:30
 terminal_classification: null
 termination_time: null
