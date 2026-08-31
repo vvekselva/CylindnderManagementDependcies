@@ -1,39 +1,43 @@
-version: 1
+version: 2
 story_id: STORY-0012
 release: R1
 canonical_register_endpoint: GET /logistics/challan-books/add-form
 canonical_functional_area: Challan Book
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework:
-  state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
+  state: REWORK_IN_PROGRESS_SOURCE_DETAIL_REVIEW_REQUIRED
   business_behavior_complete: false
-  selector_ux_reviewed: false
+  selector_ux_reviewed: true
   search_conversion_required: false
   dependent_selector_rework_required: false
   needs_clarification: true
 identity_drift:
   detected: true
+  repaired: true
   canonical_story: STORY-0012 = GET /logistics/challan-books/add-form
-  physical_story_file_currently_describes: GET /DisplayCurrentVehicleLoad
-  rule: CANONICAL_REGISTER_WINS_PENDING_EXACT_SOURCE_BINDING
+  prior_physical_story_identity: POST /login
+  repaired_physical_story_identity: GET /logistics/challan-books/add-form
+  rule: CANONICAL_REGISTER_WINS
 source_binding:
-  exact_controller_bound: false
-  exact_template_bound: false
-  broad_code_search_attempted: true
-  search_terms:
-    - logistics/challan-books/add-form
-    - ChallanBookController add-form challan-books
-    - challan
-  search_results: NO_INDEXED_MATCH_AT_FROZEN_SOURCE
+  exact_controller_bound: true
+  controller: cylinermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
+  controller_method: addForm(Model model)
+  exact_template_bound: true
+  template: cylinermanagement.web/src/main/resources/templates/final-version-1/add-challan-book.html
+  exact_visible_form_fields_bound: true
+  summary_metric_service_interface_bound: true
+  summary_metric_service: SummaryMetricLookupFetchService
+  exact_service_implementation_bound: false
+  exact_database_read_identity_bound: false
+  source_detail_gap: Bind SummaryMetricLookupFetchService implementation through DAO/repository/entity/view to exact database read identity.
 approval:
   state: NOT_APPROVED
   explicit_user_approval_required_after_rework: true
   auto_approved: false
 next_actions:
-  - bind canonical challan-book add-form endpoint to exact frozen-source controller/template
-  - repair STORY-0012 physical content only after exact source binding
-  - perform mandatory reference-selector UX review from bound page source
+  - bind SummaryMetricLookupFetchService implementation and exact downstream database read identity
+  - complete revised business-behavior narrative only after deepest applicable source evidence is proven
   - user_review_after_business_behavior_rework
 notes:
-  - The mismatched DisplayCurrentVehicleLoad content was deliberately not rewritten as STORY-0012 because doing so would preserve incorrect identity.
-  - No endpoint, field, selector, validation or persistence behavior is invented while source binding remains unresolved.
+  - Canonical identity drift is repaired without inventing unresolved service/DAO/database behavior.
+  - GET add-form prepares the screen and does not itself create a Challan Book; the create POST is a separate endpoint boundary.
