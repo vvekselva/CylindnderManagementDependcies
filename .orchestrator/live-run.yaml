@@ -1,14 +1,20 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
 scheduler_fire_id: PRODUCTION-FIRE-20260831-081605Z
-state: WORKING
+state: TERMINATED
 started_at: 2026-08-31T08:20:58Z
-last_heartbeat_at: 2026-08-31T08:47:32Z
-productive_runtime_seconds_if_measurable: 1594
-loop_iteration: 9
-running_worker_count: 1
+last_heartbeat_at: 2026-08-31T08:51:04Z
+productive_runtime_seconds_if_measurable: 1806
+loop_iteration: 10
+running_worker_count: 0
 completed_worker_count: 2
-blocked_worker_count: 5
-active_work_unit_ids: [BL-002/STORY-0014]
+blocked_worker_count: 6
+active_work_unit_ids: []
 eligible_work_count: 126
 dispatchable_work_count: 1
-last_action: REPLAN_TO_STORY-0014_EXACT_FROZEN_SOURCE_BINDING
+last_action: TERMINATED_TARGET_RUNTIME_REACHED
+termination:
+  requested: true
+  reason: TARGET_RUNTIME_REACHED
+  terminated_at: 2026-08-31T08:51:04Z
+  eligible_work_remaining: true
+  terminal_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-082058Z/termination.yaml
