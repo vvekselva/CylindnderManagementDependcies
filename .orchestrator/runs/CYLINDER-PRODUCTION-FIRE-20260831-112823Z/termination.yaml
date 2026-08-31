@@ -1,15 +1,58 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
-terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
-termination_reason: START_EVENT_WITHOUT_HEARTBEAT_OR_TERMINAL_RECORD
-original_termination_time: null
-recovery_observed_at: 2026-08-31T11:34:28Z
-orchestrator_started_at: 2026-08-31T11:28:23Z
-last_heartbeat_at: null
-terminal_event_found: false
-termination_record_found_before_recovery: false
-eligible_work_remaining: true
-recovered_by_run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+termination_reason: SPLIT_BRAIN_RECOVERY_OWNERSHIP_CONFLICT
+started_at: 2026-08-31T11:28:23Z
+terminated_at: 2026-08-31T11:50:34Z
+elapsed_seconds: 1331
+elapsed_minutes: 22.18
 voluntary_early_stop: false
-notes:
-  - Exact original process termination time is unknown and is not invented.
-  - No backlog progress is inferred from scheduler or start evidence alone.
+genuine_hard_blocker: true
+eligible_work_remaining: true
+scheduler_fire_id: FIRE-20260831T112801Z
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/user-requested-continuous-fire/FIRE-20260831T112801Z.yaml
+split_brain_recovery:
+  conflicting_run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
+  conflicting_recovery_observed_at: 2026-08-31T11:34:28Z
+  conflicting_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  conflicting_reason: START_EVENT_WITHOUT_HEARTBEAT_OR_TERMINAL_RECORD
+  reclassification_basis:
+    - Current run event stream contains a durable heartbeat at 2026-08-31T11:38:34Z, later than the conflicting recovery observation.
+    - Additional durable STORY/work-status/claim commits were produced after the conflicting recovery observation.
+  conclusion: The stale/disappearance recovery was a false positive caused by liveness evidence not being consistently projected before the competing fire recovered this run. Continuing after detecting this ownership conflict is unsafe, so this invocation is fail-closed as DUPLICATE_FIRE_SUPPRESSED.
+completed_units_this_invocation:
+  - BL-002/STORY-0040_BUSINESS_BEHAVIOR_REWORK
+  - BL-002/STORY-0055_BUSINESS_BEHAVIOR_REWORK
+  - BL-002/STORY-0056_BUSINESS_BEHAVIOR_REWORK
+  - BL-002/STORY-0057_BUSINESS_BEHAVIOR_REVIEW
+  - BL-002/STORY-0058_BUSINESS_BEHAVIOR_REVIEW
+  - BL-002/STORY-0059_BUSINESS_BEHAVIOR_REVIEW
+  - BL-002/STORY-0060_BUSINESS_BEHAVIOR_REVIEW
+  - BL-002/STORY-0061_BUSINESS_BEHAVIOR_REVIEW
+  - BL-002/STORY-0062_BUSINESS_BEHAVIOR_REVIEW
+blocked_or_replan_units:
+  - BL-002/STORY-0041_EXACT_ADDRESS_TYPE_SERVICE_DAO_DB_BINDING
+  - BL-002/STORY-0042_EXACT_SUPPLIER_EXPORT_CHALLAN_MAPPING_SERVICE_DAO_DB_BINDING
+  - BL-002/STORY-0045_EXACT_CUSTOMER_FETCH_SERVICE_DAO_DB_BINDING
+  - BL-002/STORY-0046_EXACT_SUPPLIER_FETCH_SERVICE_DAO_TEMPLATE_BINDING
+  - BL-002/STORY-0047_EXACT_CHALLAN_PHOTO_UPLOAD_PERSISTENCE_BINDING
+  - BL-002/STORY-0048_EXACT_CHALLAN_PHOTO_DEACTIVATION_PERSISTENCE_BINDING
+  - BL-002/STORY-0049_DISABLED_ADD_STOP_MEDIATOR_SOURCE_DETAIL_REVIEW
+  - BL-002/STORY-0050_CONFIRM_LOAD_TEMPLATE_SOURCE_DETAIL_REVIEW
+  - BL-002/STORY-0051_CONFIRM_LOAD_EXACT_SERVICE_PERSISTENCE_BINDING
+  - BL-002/STORY-0052_TRIP_RETURN_EXACT_CONTROLLER_SERVICE_SOURCE_BINDING
+  - BL-002/STORY-0053_TRIP_RETURN_POST_EXACT_FIELD_TRANSACTION_SOURCE_BINDING
+  - BL-002/STORY-0063_WRITE_CONFLICT_REPLAN_REQUIRED
+aggregate_reconciliation:
+  state: INCOMPLETE
+  reason: OPTIMISTIC_CONCURRENCY_SHA_CONFLICT_AND_CONCURRENT_WRITER_ACTIVITY
+  completed_unit_evidence_preserved: true
+  shared_projection_force_overwrite_attempted: false
+  next_invocation_must_reconcile_before_new_shared_projection_write: true
+approval_delta: 0
+auto_approval_used: false
+application_code_mutation_delta: 0
+bl010_created_or_executed_delta: 0
+github_actions_runners_used: false
+active_claims_at_terminal: 0
+transient_logs_remaining: 0
+next_action: NEXT_FIRE_RECONCILE_SPLIT_BRAIN_LIVENESS_AND_SHARED_PROJECTION_DRIFT_THEN_REPLAN_FROM_DURABLE_UNIT_EVIDENCE
