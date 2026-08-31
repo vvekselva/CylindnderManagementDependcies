@@ -10,3 +10,6 @@
 {"at":"2026-08-31T08:49:11Z","event":"REPLAN_COMPLETED","detail":"STORY-0014 frozen source investigation continued; service architecture located"}
 {"at":"2026-08-31T08:50:23Z","event":"WORKER_BLOCKED","unit":"BL-002/STORY-0014","detail":"exact ChallanEntryAgingDashboardService and DAO reads proved; exact GET controller/template remain unbound so Story remains fail-closed"}
 {"at":"2026-08-31T08:50:23Z","event":"REPLAN_STARTED","detail":"productive target boundary approaching; preserve next eligible work for governed continuation"}
+{"at":"2026-08-31T08:51:04Z","event":"HEARTBEAT","loop_iteration":10,"active":[]}
+{"at":"2026-08-31T08:51:04Z","event":"TERMINATION_REQUESTED","reason":"TARGET_RUNTIME_REACHED","eligible_work_remaining":true}
+{"at":"2026-08-31T08:51:04Z","event":"INVOCATION_TERMINATED","reason":"TARGET_RUNTIME_REACHED","productive_runtime_seconds":1806}
