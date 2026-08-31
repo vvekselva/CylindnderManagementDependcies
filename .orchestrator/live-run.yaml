@@ -1,27 +1,28 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
 scheduler_fire_id: manual-20260831T113304Z
 scheduler_task: cylinder-production-fire
-state: RUNNING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: 2026-08-31T11:33:27Z
-last_heartbeat_at: 2026-08-31T11:35:22Z
-productive_runtime_seconds_if_measurable: 115
-loop_iteration: 1
+last_heartbeat_at: 2026-08-31T11:38:47Z
+productive_runtime_seconds_if_measurable: 320
+loop_iteration: 2
 running_worker_count: 0
-completed_worker_count: 0
+completed_worker_count: 1
 blocked_worker_count: 0
 active_work_unit_ids: []
-eligible_work_count: 122
+eligible_work_count: 117
 dispatchable_work_count: null
-last_action: STARTUP_HANDOFF_AND_TERMINATION_GAP_RECONCILED
+last_action: CHECKPOINT_RECONCILED_WITH_QUEUE_PROJECTION_PENDING
 prior_run_recovery:
   run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
   classification: ABNORMAL_PROCESS_DISAPPEARANCE
   original_termination_time: null
   recovery_observed_at: 2026-08-31T11:34:28Z
 termination:
-  requested: false
-  reason: null
-  terminated_at: null
+  requested: true
+  reason: INTERACTIVE_TURN_EXECUTION_BOUNDARY
+  classification: PLATFORM_RUNTIME_FORCED_STOP
+  terminated_at: 2026-08-31T11:38:47Z
   eligible_work_remaining: true
   terminal_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-113327Z/termination.yaml
