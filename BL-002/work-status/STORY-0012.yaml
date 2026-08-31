@@ -1,0 +1,39 @@
+version: 1
+story_id: STORY-0012
+release: R1
+canonical_register_endpoint: GET /logistics/challan-books/add-form
+canonical_functional_area: Challan Book
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+rework:
+  state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
+  business_behavior_complete: false
+  selector_ux_reviewed: false
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+  needs_clarification: true
+identity_drift:
+  detected: true
+  canonical_story: STORY-0012 = GET /logistics/challan-books/add-form
+  physical_story_file_currently_describes: GET /DisplayCurrentVehicleLoad
+  rule: CANONICAL_REGISTER_WINS_PENDING_EXACT_SOURCE_BINDING
+source_binding:
+  exact_controller_bound: false
+  exact_template_bound: false
+  broad_code_search_attempted: true
+  search_terms:
+    - logistics/challan-books/add-form
+    - ChallanBookController add-form challan-books
+    - challan
+  search_results: NO_INDEXED_MATCH_AT_FROZEN_SOURCE
+approval:
+  state: NOT_APPROVED
+  explicit_user_approval_required_after_rework: true
+  auto_approved: false
+next_actions:
+  - bind canonical challan-book add-form endpoint to exact frozen-source controller/template
+  - repair STORY-0012 physical content only after exact source binding
+  - perform mandatory reference-selector UX review from bound page source
+  - user_review_after_business_behavior_rework
+notes:
+  - The mismatched DisplayCurrentVehicleLoad content was deliberately not rewritten as STORY-0012 because doing so would preserve incorrect identity.
+  - No endpoint, field, selector, validation or persistence behavior is invented while source binding remains unresolved.
