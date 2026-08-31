@@ -4,13 +4,13 @@ scheduler_task: Cylinder Production Fire - i
 state: RUNNING
 mode: CONTINUOUS
 started_at: 2026-08-31T20:02:27+05:30
-last_heartbeat_at: 2026-08-31T20:10:02+05:30
-productive_runtime_seconds_if_measurable: 455
-loop_iteration: 3
+last_heartbeat_at: 2026-08-31T20:13:06+05:30
+productive_runtime_seconds_if_measurable: 639
+loop_iteration: 4
 running_worker_count: 1
 completed_worker_count: 0
 blocked_worker_count: 0
 active_work_unit_ids: [BL-002/AGGREGATE_PROJECTION_DRIFT_REPAIR]
 eligible_work_count: null
 dispatchable_work_count: null
-last_action: CLAIMED_AGGREGATE_DRIFT_REPAIR
+last_action: VERIFY_UNIT_EVIDENCE_BEFORE_AGGREGATE_REPAIR
