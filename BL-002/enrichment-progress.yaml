@@ -1,9 +1,9 @@
 version: 49
 backlog_id: BL-002
-updated_at: 2026-08-31T08:26:42+05:30
+updated_at: 2026-08-31T08:27:16+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
-checkpoint_state: CHECKPOINT_RECONCILIATION_PENDING
+checkpoint_state: CHECKPOINT_RECONCILED
 scope:
   total_stories: 134
   r1_stories: 88
@@ -39,7 +39,7 @@ reconciliation:
     - CustomerUpdateService scalar modelMapper mapping is commented out; customer-name/GST scalar persistence mutation is not claimed.
     - Frozen UC01RegisterCustomer.html posts to /registerCustomer, not /updateCustomer, so the exact visible/browser submit path for POST /updateCustomer remains unproved and strict completion is withheld.
     - Concurrent durable STORY-0011 strict completion was preserved; this run did not claim its +1 delta.
-  aggregate_reconciliation_gate: PENDING_READBACK
+  aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0011
   next_eligible_strict_r1_story: null
