@@ -1,0 +1,31 @@
+version: 1
+story_id: STORY-0037
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+completed_at: 2026-08-31T11:16:05Z
+result: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+approval_delta: 0
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_bindings:
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase02CylinderDeliveryController.java
+  mediator: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mediator/Uc02Phase02CylinderDeliveryMediator.java
+  service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/OrderIngestionService.java
+  validator: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/OrderIngestionRequestValidator.java
+  dao: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/OrderJpaDao.java
+  header_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/OrderDo.java
+  line_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/OrderLineDo.java
+persistence:
+  transaction: OrderIngestionService.processRequest @Transactional
+  save: OrderJpaDao.save(OrderDo)
+  header_table: public.tbl_order
+  header_pk: pk_order_id
+  line_table: public.tbl_order_line
+  line_pk: pk_order_line_id
+  cascade: OrderDo.orderLines CascadeType.ALL
+current_source_gaps:
+  - No executable cylinder-state-transition service is invoked after delivery-order save; only a commented future example exists.
+  - CylinderManagementApplicationException is logged/swallowed by the mediator before SUCCESS response code is set.
+  - Browser and server requiredness differ for Delivery Address and challan-date semantics.
+  - Cylinder existence validation uses an unsafe cylinderIdNull guard and does not safely prove the intended existence check.
+code_mutation_performed: false
+bl010_created_or_executed: false
+user_drift_approval_required_before_future_code_mutation: true
