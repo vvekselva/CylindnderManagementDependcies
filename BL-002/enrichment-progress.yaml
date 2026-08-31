@@ -1,6 +1,6 @@
-version: 42
+version: 43
 backlog_id: BL-002
-updated_at: 2026-08-31T06:20:01+05:30
+updated_at: 2026-08-31T06:21:40+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
 checkpoint_state: CHECKPOINT_RECONCILED
@@ -28,12 +28,12 @@ reconciliation:
   source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
   source_detail_refined_this_run: [STORY-0042, STORY-0044]
-  blocked_this_run: [STORY-0042, STORY-0044]
+  blocked_this_run: [STORY-0042, STORY-0044, STORY-0045]
   correction:
     - Startup repaired BL-008 projection drift to V182-authored waiting for clean validation.
     - STORY-0042 POST /registerCustomer source contract was refined; strict promotion remains blocked by missing concrete mediator/service/persistence implementation.
-    - STORY-0044 POST /wizard/vehicle-trip-load/save source contract was refined; executable source uses the generic application service while the detailed transactional database narrative is only in comments and is not accepted as proof.
-    - No database behavior was invented and no strict percentage was inflated.
+    - STORY-0044 POST /wizard/vehicle-trip-load/save source contract was refined; executable source uses the generic application service while the commented transactional narrative is not accepted as executable proof.
+    - STORY-0045 GET /displayCustomer source-location attempts did not resolve an authoritative controller path in the frozen commit; exact source-location blocker persisted without invented behavior.
   aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
