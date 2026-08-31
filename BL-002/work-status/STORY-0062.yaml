@@ -1,0 +1,30 @@
+version: 1
+story_id: STORY-0062
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+release: R1
+endpoint: GET /vehicle-trips/list
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+strict_field_ui_complete: true
+business_behavior_complete: true
+materialized: true
+approval: PENDING_USER_APPROVAL
+approval_delta: 0
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+business_contract_validation:
+  paging_normalization_and_vehicleTripId_desc_order: PASS
+  trip_vehicle_driver_database_read_identity: PASS
+  visible_row_and_empty_state_contract: PASS
+  search_term_preserved_but_not_applied: PASS_GAP_RECORDED
+  pagination_size_not_preserved: PASS_GAP_RECORDED
+current_source_gaps:
+  searchTerm_has_no_effect_on_service_result: true
+  pagination_and_filter_do_not_preserve_nondefault_size: true
+  code_change_authorized: false
+selector_ux_review:
+  state: NOT_APPLICABLE_LIST_FILTER_ONLY
+code_mutation_performed: false
+bl010_created_or_executed: false
+fanout_authorized: false
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+updated_at: 2026-08-31T11:48:58Z
