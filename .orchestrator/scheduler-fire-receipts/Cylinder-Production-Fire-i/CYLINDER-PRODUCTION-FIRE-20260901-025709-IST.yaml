@@ -3,9 +3,12 @@ fire_id: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST
 observed_fire_time: 2026-09-01T02:57:09+05:30
 scheduled_fire_time: 2026-09-01T02:57:09+05:30
 receipt_time: 2026-09-01T02:57:15+05:30
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST-RUN-001
 link_state: RUN_LINKED
-terminal_classification: null
-termination_time: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_time: 2026-09-01T03:04:18+05:30
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260901-025709-IST-RUN-001.yaml
+resumable: true
+eligible_work_remaining: true
