@@ -1,0 +1,16 @@
+claim_id: PAC-0002-CYL-20260831T171739-0530
+run_id: CYL-20260831T171739-0530
+backlog: BL-002
+work_unit_id: PAC-0002
+story_id: STORY-0013
+claim_scope:
+  - BL-002/post-approval-code-conformance/PAC-0002
+  - BL-002/drift-review-packets/STORY-0013
+write_set:
+  - BL-002/post-approval-code-conformance-task-queue.csv
+  - BL-002/post-approval-code-conformance/evidence/STORY-0013.yaml
+  - BL-002/drift-review-packets/STORY-0013.md
+claimed_at: '2026-08-31T17:33:42+05:30'
+heartbeat_at: '2026-08-31T17:33:42+05:30'
+lease_expires_at: '2026-08-31T17:48:42+05:30'
+state: ACTIVE
