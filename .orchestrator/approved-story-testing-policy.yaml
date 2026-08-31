@@ -1,4 +1,4 @@
-version: 4
+version: 5
 name: APPROVED_STORY_TESTING_FANOUT
 status: ACTIVE
 source_backlog: BL-002
@@ -10,8 +10,32 @@ approval_gate:
   historical_approval_does_not_approve_materially_reworked_contract: true
   development_change_backlog: BL-010/development-change-task-queue.csv
   development_implementation_does_not_imply_story_approval: true
+post_approval_reverse_engineering_conformance_gate:
+  required: true
+  queue: BL-002/post-approval-code-conformance-task-queue.csv
+  applies_to: ALL_REVERSE_ENGINEERED_STORIES_AFTER_EXPLICIT_USER_APPROVAL_OR_REAPPROVAL
+  purpose: VERIFY_APPROVED_STORY_STILL_CORRESPONDS_TO_FROZEN_APPLICATION_CODE_BEFORE_TEST_FANOUT
+  required_checks:
+    - controller_and_endpoint_identity
+    - request_and_response_contract
+    - service_and_service_implementation_binding
+    - dao_repository_binding
+    - entity_and_database_read_write_identity
+    - rendered_template_and_visible_fields_when_applicable
+    - validation_and_current_state_gaps
+    - persistence_side_effects_and_transactions
+    - visible_success_and_error_outcomes
+    - same_page_related_operations
+    - reference_selector_behavior_when_applicable
+  pass_state: CODE_CONFORMANCE_VERIFIED_PASS
+  drift_state: STORY_CODE_DRIFT_DETECTED
+  drift_behavior:
+    - block_BL004_BL005_BL009_fanout
+    - record_exact_story_vs_code_mismatch
+    - return_story_for_rework_and_explicit_reapproval_if_contract_changes_materially
+  fanout_requires_pass: true
 fanout:
-  gate: ONLY_AFTER_EXPLICIT_APPROVAL_OR_REAPPROVAL_OF_CURRENT_REVISED_STORY
+  gate: ONLY_AFTER_EXPLICIT_APPROVAL_OR_REAPPROVAL_AND_POST_APPROVAL_CODE_CONFORMANCE_PASS
   BL-004:
     purpose: JUNIT_UNIT_TEST_GENERATION_EXECUTION_AND_COVERAGE
     framework: JUNIT_5
@@ -72,11 +96,13 @@ orchestrator_rule:
     - read_this_policy
     - reconcile_current_revised_story_approval_states
     - distinguish_historical_approval_from_current_contract_approval
-    - suspend_revised_behavior_fanout_for_stories_requiring_reapproval
-    - diff_current_approved_or_reapproved_story_ids_against_BL-004_BL-005_BL-009
-    - materialize_missing_downstream_artifacts_idempotently_only_after_gate
+    - reconcile_post_approval_code_conformance_queue
+    - suspend_revised_behavior_fanout_until_code_conformance_pass
+    - diff_current_approved_or_reapproved_and_conformance_passed_story_ids_against_BL-004_BL-005_BL-009
+    - materialize_missing_downstream_artifacts_idempotently_only_after_both_gates
   selection_priority:
     - approval_projection_reconciliation
+    - post_approval_reverse_engineering_code_conformance_verification
     - BL-010_development_changes_for_user_required_story_corrections
     - current_contract_approval_or_reapproval_gate
     - missing_approved_story_fanout_artifacts
@@ -101,6 +127,9 @@ watchdog_reporting:
   fields:
     - historical_approved_story_count
     - current_revised_contract_approved_or_reapproved_count
+    - post_approval_code_conformance_pending_ids
+    - post_approval_code_conformance_pass_ids
+    - post_approval_code_drift_ids
     - reapproval_required_ids
     - BL-010_development_change_state
     - BL-004_queued_generated_executed_pass_failed_and_coverage
@@ -108,6 +137,7 @@ watchdog_reporting:
     - BL-009_test_catalogues_data_code_mapping_execution_and_coverage
 current_seed:
   historical_approved_story_ids: [STORY-0001]
-  current_revised_contract_approved_or_reapproved_story_ids: []
-  reapproval_required_ids: [STORY-0001]
+  current_revised_contract_approved_or_reapproved_story_ids: [STORY-0001, STORY-0013]
+  post_approval_code_conformance_pending_ids: [STORY-0001, STORY-0013]
+  post_approval_code_conformance_pass_ids: []
   revised_fanout_eligible_ids: []
