@@ -1,8 +1,8 @@
-version: 68
+version: 69
 backlog_id: BL-002
-updated_at: 2026-08-31T11:37:39Z
+updated_at: 2026-08-31T17:21:57+05:30
 updated_by: Primary Cylinder Automation Tool
-checkpoint_state: CHECKPOINT_RECONCILED
+checkpoint_state: CHECKPOINT_RECONCILED_APPROVAL_PROJECTION_REPAIRED
 scope:
   total_stories: 134
   r1_stories: 88
@@ -14,11 +14,12 @@ business_behavior_rework:
   rework_required: 116
   rework_in_progress: 1
   business_behavior_complete: 17
-  awaiting_user_review: 17
-  approved_after_rework: 0
+  awaiting_user_review: 15
+  approved_after_rework: 2
   needs_clarification: 0
   business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
-  awaiting_user_review_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
+  awaiting_user_review_ids: [STORY-0011, STORY-0012, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
+  approved_after_rework_ids: [STORY-0001, STORY-0013]
   active_rework_ids: [STORY-0037]
   static_reference_selector_reviewed: 16
   static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0039, STORY-0040, STORY-0043, STORY-0054]
@@ -31,9 +32,10 @@ legacy_metrics:
   register_ready: 131
   clarification: 3
   historical_approved: 1
-  current_revised_contract_approved_or_reapproved: 0
-  reapproval_required: 1
-  reapproval_required_ids: [STORY-0001]
+  current_revised_contract_approved_or_reapproved: 2
+  current_revised_contract_approved_or_reapproved_ids: [STORY-0001, STORY-0013]
+  reapproval_required: 0
+  reapproval_required_ids: []
   materialized_story_files: 134
   materialization_pending: 0
   strict_field_ui_complete: 126
@@ -49,31 +51,30 @@ materialization:
 development_changes:
   backlog: BL-010
   queue: BL-010/development-change-task-queue.csv
-  queued: 1
-  ids: [DEV-0001]
-  story_ids: [STORY-0054]
-  ready_for_source_binding: 0
-  source_binding_complete: 1
+  queued: 4
+  ids: [DEV-0001, DEV-0002, DEV-0003, DEV-0004]
+  story_ids: [STORY-0054, STORY-0013]
+  source_binding_complete: 4
   implementation_complete: 1
-  implementation_in_review: 0
-  validation_state: IMPLEMENTATION_SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED
-  validation_evidence: BL-010/evidence/DEV-0001-pr3-validation-20260831.yaml
-  merge_gate: SOURCE_VALIDATED_PR_REMAINS_DRAFT_PENDING_GOVERNED_REVIEW
-  product_response_wrapper_contract: PROVEN_PRODUCT_DTOS_FROM_FROZEN_DTO
-  scope_minimization: PASS_ONE_PLANNED_TEMPLATE_CHANGED
-  bl002_reconciliation_state: RECONCILED_READY_FOR_USER_REVIEW
-  application_branch: automation/bl010-dev0001-customer-demand-search
-  application_head: dde2b007c8ad5278f162cf153b5857397d5b35a0
-  pull_request: 3
-  rule: Development implementation does not imply Story approval; revised testing fan-out remains blocked until explicit user approval/reapproval.
+  not_started: 3
+  code_mutation_gate: EXPLICIT_DRIFT_APPROVAL_REQUIRED_UNDER_CURRENT_POLICY
+  executable_now: 0
+  DEV-0001_validation_state: IMPLEMENTATION_SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED
+  DEV-0001_validation_evidence: BL-010/evidence/DEV-0001-pr3-validation-20260831.yaml
+  DEV-0001_merge_gate: SOURCE_VALIDATED_PR_REMAINS_DRAFT_PENDING_GOVERNED_REVIEW
+  rule: Existing queued development items do not authorize code mutation. Current post-approval conformance and explicit DRIFT_APPROVED_FOR_CODE_CHANGE evidence are required before any new BL-010 mutation.
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
+  current_governance_override: .orchestrator/post-approval-code-conformance-policy.yaml
   historical_approved_story_ids: [STORY-0001]
-  current_revised_contract_approved_or_reapproved_story_ids: []
+  current_revised_contract_approved_or_reapproved_story_ids: [STORY-0001, STORY-0013]
+  post_approval_code_conformance_pending_ids: [STORY-0001, STORY-0013]
+  post_approval_code_conformance_pass_ids: []
   revised_fanout_eligible_ids: []
-  BL-004: {historical_generated: 1, revised_execution_eligible: 0, status: SUSPENDED_PENDING_REAPPROVAL, coverage: NOT_EXECUTED_REVISED_CONTRACT}
-  BL-005: {historical_generated: 1, revised_execution_eligible: 0, status: SUSPENDED_PENDING_REAPPROVAL, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  BL-004: {queued: 2, revised_execution_eligible: 0, status: BLOCKED_PENDING_POST_APPROVAL_CODE_CONFORMANCE, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  BL-005: {queued: 2, revised_execution_eligible: 0, status: BLOCKED_PENDING_POST_APPROVAL_CODE_CONFORMANCE, coverage: NOT_EXECUTED_REVISED_CONTRACT}
   BL-009:
+    queued: 2
     historical_catalogues: 1
     historical_test_data_sets: 1
     historical_human_readable_test_data: 1
@@ -84,30 +85,28 @@ approved_story_testing:
     revised_application_behavior_pass: 0
     revised_application_behavior_fail: 0
     revised_coverage: NOT_EXECUTED
-    status: SUSPENDED_PENDING_STORY_REWORK_AND_REAPPROVAL
+    status: BLOCKED_PENDING_POST_APPROVAL_CODE_CONFORMANCE
 reconciliation:
   startup_projection_drift_detected: true
   startup_projection_drift_repaired: true
+  approval_projection_drift_detected: true
+  approval_projection_drift_repaired: true
+  durable_approval_evidence_ids: [STORY-0001, STORY-0013]
+  testing_policy_legacy_auto_rework_wording_detected: true
+  current_code_mutation_governance: USER_APPROVAL_REQUIRED_FOR_EXACT_DRIFT_MANIFEST
   unit_evidence_reconciled: true
   aggregate_queue_projection_pending: true
-  recovered_prior_run_ids: [CYLINDER-PRODUCTION-FIRE-20260831-110529Z, CYLINDER-PRODUCTION-FIRE-20260831-112823Z]
-  newly_reconciled_business_behavior_complete_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
-  durable_evidence_sources:
-    STORY-0038: BL-002/work-status/STORY-0038.yaml
-    STORY-0039: BL-002/work-status/STORY-0039.yaml
-    STORY-0040: BL-002/work-status/STORY-0040.yaml
-    STORY-0043: BL-002/work-status/STORY-0043.yaml
-    STORY-0044: BL-002/work-status/STORY-0044.yaml
-  queue_projection_drift_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+  queue_projection_drift_ids: [STORY-0001, STORY-0013, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
   aggregate_reconciliation_gate: PARTIAL_PASS_QUEUE_PROJECTION_REPAIR_REQUIRED
 cursor:
+  priority_post_approval_conformance_ids: [STORY-0001, STORY-0013]
   next_global_rework_unit: STORY-0037
   fallback_dependency_safe_r1_unit: STORY-0041
   secondary_fallback_r1_unit: STORY-0042
   next_unstarted_dependency_safe_r1_unit: STORY-0045
   priority_development_unit: null
-  next_development_action: USER_REVIEW_STORY_0054_THEN_EXPLICIT_APPROVAL_OR_REWORK
-  next_testing_action: NONE_UNTIL_CURRENT_REVISED_STORY_APPROVAL_OR_REAPPROVAL
+  next_development_action: CONFORMANCE_FIRST_THEN_DRIFT_REVIEW_PACKET_AND_EXPLICIT_USER_DECISION_IF_DRIFT
+  next_testing_action: NONE_UNTIL_CURRENT_POST_APPROVAL_CODE_CONFORMANCE_PASS
 approval_policy:
   auto_approve: false
   explicit_user_approval_required: true
