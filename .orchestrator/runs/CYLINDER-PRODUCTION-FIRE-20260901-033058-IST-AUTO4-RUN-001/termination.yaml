@@ -1,0 +1,9 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
+terminated_at: '2026-09-01T03:38:38+05:30'
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY
+resumable: true
+eligible_work_remaining: true
+active_claims_at_terminal: 0
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4.yaml
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001/checkpoint.yaml
