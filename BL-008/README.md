@@ -1,69 +1,52 @@
-# BL-008 — REOPENED FOR FINAL DATABASE HARMONY
+# BL-008 — DATABASE FROZEN / SERVICE-UI ACCEPTANCE PHASE
 
 Date: **2026-08-31**
 
-Current status: **V185 AUTHORED / WAITING_FOR_CLEAN_VALIDATION**
+Current status: **V185 CLEAN_DATABASE_VALIDATED_PASS — DATABASE FROZEN AT V185**
 
-## Why BL-008 was reopened
+## Final database result
 
-After the earlier V184 closure, the business model was clarified further. The core V144 architecture was already correct: `tbl_cylinder` is the stable transaction/lifecycle identity; yard, logistics, custody, orders and pickups use only `fk_cylinder`; current/historical physical markings are resolved through `tbl_cylinder_identifier` and views.
+The final business-model alignment migration `V185__Align_External_Logical_Physical_Asset_Model.sql` has passed the clean-database harmony validator with:
 
-Four later assumptions were too restrictive and are corrected by V185:
+`BL008_V185_FINAL_DATABASE_HARMONY_PASS; failed_checks=0`
 
-1. CUSTOMER_OWNED custody does **not** have to equal the permanent owner customer. The physical cylinder may be held by another customer; custody must record the holder/history.
-2. COMPANY_OWNED has no logical/physical split. `tbl_cylinder.cylinder_serial` is itself the company physical identity; a separate active-primary physical identifier is not required.
-3. CUSTOMER_OWNED physical LOST/DECOMMISSIONED is not automatic logical-asset closure. External physical condition events are count-neutral; only explicit logical relationship closure reduces the customer active logical balance.
-4. Physical replacement party is the actual current custodian/refill party, not necessarily the permanent owner. Replacement history now retains custody evidence.
+Accepted database migration line:
 
-## Accepted historical migration line
+`V174 -> V185 = CLEAN_DATABASE_VALIDATED_PASS`
 
-The following remain immutable and previously clean-database validated PASS:
+No active database migration gate remains.
 
-- V174 strict ownership model
-- V175 supplier logical asset-count preservation
-- V176 customer custody boundary (owner-equality semantics superseded by V185)
-- V177 cross-table location exclusivity
-- V178 external accounting (terminal-shrink semantics superseded by V185)
-- V179 company fleet accounting
-- V180 ownership identity immutability
-- V181 identifier authority/replacement integrity (universal exact-one/owner-context semantics superseded by V185)
-- V182 identifier value/history integrity
-- V183 state-audit history immutability
-- V184 state-audit chain continuity/serialization
-
-`V174 -> V184 = HISTORICAL CLEAN_DATABASE_VALIDATED_PASS`
-
-## V185 final governed model
+## Frozen governed model
 
 ### Transaction identity
 
-All business/operational relations continue using only the logical `tbl_cylinder.pk_cylinder_id` (`fk_cylinder`). Physical identifier values are not transaction foreign keys.
+All business/operational relations use only the stable logical `tbl_cylinder.pk_cylinder_id` through `fk_cylinder`. Physical cylinder identifiers are never operational foreign keys.
 
 ### Company-owned
 
-- No logical/physical separation.
-- `cylinder_serial` is the company cylinder identity displayed and transacted.
-- Expected separate active-primary physical identifiers: **0**.
+- No logical/physical split.
+- `tbl_cylinder.cylinder_serial` is the company cylinder identity.
+- Separate active-primary physical identifier rows required: **0**.
 
 ### Supplier/customer-owned
 
-- `tbl_cylinder` = stable logical asset.
-- `tbl_cylinder_identifier` = current/historical physical markings.
-- `ASSIGNED` = exactly one active-primary physical ID.
-- `AWAITING_REPLACEMENT` = zero active-primary physical IDs and no active physical location/custody.
-- `CLOSED` = zero active-primary physical IDs; final custody remains only with permanent owner; no further operational use.
+- `tbl_cylinder` is the stable logical asset.
+- `tbl_cylinder_identifier` stores current/historical physical identifiers.
+- `ASSIGNED` = exactly one active-primary physical identifier.
+- `AWAITING_REPLACEMENT` = zero active-primary physical identifiers and no active physical location/custody.
+- `CLOSED` = zero active-primary physical identifiers; no further operational use.
 
-### Custody
+### Ownership and custody
 
-Ownership and custody are separate. CUSTOMER_OWNED may be held by owner customer or another customer. Supplier/customer replacement uses the actual custody row valid at replacement time.
+Ownership and custody are separate. A CUSTOMER_OWNED logical asset may be held by its owner customer or another customer. Custody history records the actual holder. Physical replacement is validated against the actual custody/refill context at replacement time.
 
-### Physical condition/accounting
+### Physical condition and logical accounting
 
-External DAMAGED/LOST/DECOMMISSIONED events are logical-count neutral. LOST/DECOMMISSIONED retire the current physical marking and put the logical asset into `AWAITING_REPLACEMENT`. Explicit `CUSTOMER_ASSET_CLOSED` alone contributes `-1` to the customer logical active-asset balance. Supplier close remains count-neutral under the governed supplier logical-count model.
+For external assets, physical DAMAGED/LOST/DECOMMISSIONED events do not automatically close or reduce the logical asset. LOST/DECOMMISSIONED retires the current physical identifier and places the logical asset into `AWAITING_REPLACEMENT`. Only explicit `CUSTOMER_ASSET_CLOSED` reduces the customer logical active-asset balance by one. Supplier logical close remains count-neutral under the governed supplier model.
 
 ### Recovery
 
-Company terminal states remain terminal. Supplier/customer logical assets may recover from physical DAMAGED/LOST/DECOMMISSIONED only after a usable physical ID is assigned; service/location rules determine the exact operational recovery flow.
+Company terminal states remain terminal. Supplier/customer logical assets may recover from physical DAMAGED/LOST/DECOMMISSIONED only after a usable replacement physical identifier is assigned.
 
 ### Display
 
@@ -71,27 +54,60 @@ Company terminal states remain terminal. Supplier/customer logical assets may re
 - Supplier: `LS-00100 / SUP-7788`
 - Customer: `LC-00025 / CUST-250`
 
-The logical ID remains the transaction key even when the physical ID is displayed alongside it.
+The logical ID always remains the transaction key.
 
-## Current database gate
+## Validation evidence
 
-Migration: `V185__Align_External_Logical_Physical_Asset_Model.sql`
+V185 clean validation confirmed:
 
-Validator: `BL008_Ownership_V185_Final_Harmony_Validation.sql`
+- logical-ID-only operational storage;
+- external logical-asset status controls;
+- customer ownership/custody separation;
+- ownership-aware physical identifier authority;
+- replacement custody traceability;
+- external logical-count accounting semantics;
+- append-only external ledger;
+- explicit customer logical closure;
+- operational guards for CLOSED/AWAITING_REPLACEMENT;
+- ownership-aware recovery;
+- logical + physical display view;
+- final BL-008 harmony view;
+- regressions for accepted prior migrations.
 
-Expected final line:
+Evidence: `BL-008/evidence/20260831-v185-final-database-harmony-pass.md`.
 
-`BL008_V185_FINAL_DATABASE_HARMONY_PASS; failed_checks=0`
+## Database freeze rule
 
-**Database freeze is not declared until V185 returns that clean PASS.**
+**The database is frozen at V185.**
 
-## After V185 PASS
+Do not create V186 or modify the schema unless:
 
-1. Freeze the database migration line at V185.
-2. Do not create V186 unless a new approved requirement proves a database defect.
-3. Correct service code to preserve logical IDs internally, remove separate company physical-ID creation, and use current-custodian replacement semantics.
-4. Correct UI/search output to show logical + physical IDs for external cylinders and only one ID for company cylinders.
-5. Execute service, DB-runtime and UI regression cases against the frozen database.
-6. Close BL-008 only after those service/UI corrections and acceptance tests are completed.
+1. a new approved business requirement is introduced, or
+2. a service/UI/runtime regression test proves a genuine database defect.
 
-Evidence: `BL-008/evidence/20260831-v185-final-business-model-alignment-authored.md`.
+Application/service/UI defects must be corrected in application code first when the frozen database model is already correct.
+
+## Current BL-008 phase
+
+Database/schema work: **COMPLETE**.
+
+Next phase: **service and UI corrections/testing against the frozen V185 database**.
+
+The service/UI acceptance scope includes:
+
+- company registration without a separate physical identifier;
+- supplier/customer logical + physical registration;
+- logical ID retained in all internal transactions;
+- cross-customer custody with ownership unchanged;
+- supplier/customer physical loss/damage and replacement;
+- current-custodian replacement semantics;
+- final customer return and explicit logical closure;
+- CLOSED logical asset cannot be reused;
+- company display as one ID;
+- supplier/customer display as logical ID + physical ID;
+- search results must never replace the logical transaction ID with the physical display ID;
+- existing ownership/location/accounting/state-history regressions.
+
+## Next action
+
+Freeze V185 as the database baseline and proceed with service/UI testing and corrections only. BL-008 final closure occurs after those acceptance results are recorded.
