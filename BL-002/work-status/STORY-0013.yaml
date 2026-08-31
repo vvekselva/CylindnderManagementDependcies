@@ -1,0 +1,40 @@
+version: 1
+story_id: STORY-0013
+release: R1
+canonical_register_endpoint: POST /logistics/challan-books/save
+canonical_functional_area: Challan Management
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+rework:
+  state: REWORK_IN_PROGRESS_SOURCE_DETAIL_REVIEW_REQUIRED
+  business_behavior_complete: false
+  selector_ux_reviewed: true
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+  needs_clarification: true
+identity_drift:
+  detected: true
+  repaired: true
+  prior_physical_story_identity: GET /logout
+  repaired_physical_story_identity: POST /logistics/challan-books/save
+  rule: CANONICAL_REGISTER_WINS
+source_binding:
+  exact_controller_bound: true
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
+  controller_method: processBookIngestion(ChallanBookIngestionRequestDto requestDto)
+  exact_template_bound: true
+  template: cylindermanagement.web/src/main/resources/templates/final-version-1/add-challan-book.html
+  exact_visible_form_fields_bound: true
+  ingestion_service_interface_bound: true
+  ingestion_service: com.sreyas.datamatics.cylinder.management.services.ChallanBookIngestionService
+  service_method: processRequest(requestDto)
+  exact_service_implementation_bound: false
+  exact_database_write_identity_bound: false
+  source_detail_gap: Bind ChallanBookIngestionService implementation through validation, DAO/repository/entity and exact database writes.
+approval:
+  state: NOT_APPROVED
+  explicit_user_approval_required_after_rework: true
+  auto_approved: false
+next_actions:
+  - bind ChallanBookIngestionService implementation and persistence path
+  - prove validation/error branches and exact tables/records written
+  - user_review_after_business_behavior_rework
