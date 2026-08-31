@@ -1,0 +1,40 @@
+story_id: STORY-0013
+backlog: BL-009
+run_id: CYL-ORCH-20260831T175004+0530
+generated_at: '2026-08-31T17:58:50+05:30'
+source_story: BL-002/stories/STORY-0013.md
+approval_state: APPROVED_AFTER_REWORK
+code_conformance_state: CODE_CONFORMANCE_VERIFIED_PASS
+catalogue:
+  path: BL-009/stories/STORY-0013.md
+  generated: true
+  test_case_count: 10
+machine_test_data:
+  path: BL-009/test-data/STORY-0013.csv
+  generated: true
+  row_count: 10
+human_readable_test_data:
+  path: BL-009/test-data/STORY-0013.md
+  generated: true
+  row_count: 10
+  semantic_row_parity: PASS_BY_GENERATION_REVIEW
+executable_mapping:
+  path: BL-009/generated-tests/STORY-0013/Story0013TestDataDrivenTest.java
+  generated: true
+  mapped_case_ids: [TC-0013-01, TC-0013-02, TC-0013-03, TC-0013-04, TC-0013-05, TC-0013-06, TC-0013-07, TC-0013-08, TC-0013-09, TC-0013-10]
+  canonical_csv_consumed_directly: true
+execution:
+  data_contract_execution_state: NOT_EXECUTED
+  application_behavior_execution_state: NOT_EXECUTED
+  pass_count: 0
+  fail_count: 0
+coverage:
+  jacoco_state: NOT_EXECUTED
+  line: NOT_EXECUTED
+  branch: NOT_EXECUTED
+limitations:
+  - Generated executable mapping proves case/data linkage only when executed; it is not application-behavior PASS evidence.
+  - PostgreSQL persistence/unique-constraint behavior requires PostgreSQL Testcontainers/Flyway/JPA integration execution and cannot be substituted with H2 or manual SQL.
+  - Current-source gaps are intentionally represented as gaps, not target fixes.
+application_code_mutation: false
+result: GENERATED_AND_MAPPED_RUNTIME_EXECUTION_PENDING
