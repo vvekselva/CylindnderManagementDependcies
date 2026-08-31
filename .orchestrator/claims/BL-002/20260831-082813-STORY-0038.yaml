@@ -1,0 +1,19 @@
+version: 1
+claim_id: 20260831-082813-STORY-0038
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+backlog: BL-002
+unit_id: STORY-0038
+status: ACTIVE
+claimed_at: 2026-08-31T08:28:13+05:30
+heartbeat_at: 2026-08-31T08:28:13+05:30
+lease_expires_at: 2026-08-31T08:43:13+05:30
+owner: Primary Cylinder Automation Tool
+mode: RESOURCE_SCOPED
+read_set:
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+  - BL-002/stories/STORY-0038.md
+  - BL-002/work-status/STORY-0038.yaml
+write_set:
+  - BL-002/stories/STORY-0038.md
+  - BL-002/work-status/STORY-0038.yaml
+purpose: Resolve the previously missing mediator-service-DAO-entity/database chain and re-evaluate strict completion from frozen source.
