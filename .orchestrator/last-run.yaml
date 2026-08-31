@@ -1,9 +1,9 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
-checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-31T06:14:02+05:30
-checkpoint_at: 2026-08-31T06:23:32+05:30
-elapsed_seconds_at_checkpoint: 570
-elapsed_minutes_at_checkpoint: 9.5
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-071328IST
+checkpoint_state: CHECKPOINT_RECONCILIATION_INCOMPLETE
+started_at: 2026-08-31T07:13:28+05:30
+checkpoint_at: 2026-08-31T07:14:23+05:30
+elapsed_seconds_at_checkpoint: 55
+elapsed_minutes_at_checkpoint: 0.92
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -11,10 +11,10 @@ architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   compatibility_invocation_lease_global_mutex: false
 work:
-  attempted_ids: [STORY-0042, STORY-0044, STORY-0045, STORY-0046]
+  attempted_ids: []
   completed_strict_ids: []
-  blocked_ids: [STORY-0042, STORY-0044, STORY-0045, STORY-0046]
-  source_detail_refined_ids: [STORY-0042, STORY-0044]
+  blocked_ids: []
+  source_detail_refined_ids: []
   strict_field_ui_completion_delta: 0
   physical_materialization_delta: 0
   approvals_delta: 0
@@ -27,28 +27,22 @@ metrics_after:
   approved: 0
 bl008:
   state_source: BL-008/README.md
-  last_validated_migration: V181
-  current_authored_migration: V182
-  current_state: V182_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  last_validated_migration: V184
+  current_authored_migration: null
+  current_state: CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION
   database_write_delta_chatgpt: 0
 claims:
   recovered_stale: []
-  created: [20260831-061654-STORY-0042, 20260831-061902-STORY-0044, 20260831-062047-STORY-0045, 20260831-062242-STORY-0046]
-  completed: [20260831-061654-STORY-0042, 20260831-061902-STORY-0044, 20260831-062047-STORY-0045, 20260831-062242-STORY-0046]
+  created: []
+  completed: []
   claims_remaining_at_checkpoint: 0
 reconciliation:
   startup_projection_drift_detected: true
   startup_projection_drift_repaired: true
-  stale_aggregate: V180_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  durable_bl008_truth: V182_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  readback_verified_same_run_id: true
-  readback_verified_metrics: true
-  readback_verified_bl008_state: true
-  aggregate_reconciliation_gate: PASS
+  stale_aggregate: V182_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  durable_bl008_truth: CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION
+  readback_verified_same_run_id: false
+  readback_verified_metrics: false
+  readback_verified_bl008_state: false
+  aggregate_reconciliation_gate: PENDING_READBACK
 transient_logs_remaining: 0
-notes:
-  - Startup aggregate drift repaired to live BL-008 V182 state.
-  - STORY-0042 and STORY-0044 were source-refined and released with durable unit-local evidence; both remain non-strict because downstream executable persistence paths are unresolved.
-  - STORY-0045 remains blocked because its authoritative controller path was not resolved in the frozen source.
-  - STORY-0046 proves its paging/filter DTO documentation but not a concrete executable controller/service/read path; DTO comments were not promoted into executable evidence.
-  - ChatGPT database writes remain zero.
