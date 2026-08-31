@@ -1,27 +1,32 @@
-version: 2
+version: 3
 story_id: STORY-0038
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
 release: R1
 endpoint: POST /cylinderDelivery
-state: STRICT_FIELD_UI_COMPLETE
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+business_behavior_complete: true
 strict_field_ui_complete: true
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-result: STRICT_SOURCE_PROOF_COMPLETE
-strict_delta: 1
+approval: PENDING_USER_APPROVAL
 approval_delta: 0
-materialization_delta: 0
 proven_contract:
-  - Uc02-Phase02-CylinderDeliveryView posts exact form to /cylinderDelivery and proves visible controls, hidden identities, lookup/browser events, cylinder selection and submit guards.
+  - The delivery form submits exact challan/customer/address/driver/vehicle/order-line identities to POST /cylinderDelivery.
   - Uc02Phase02CylinderDeliveryController binds UC02Phase02CylinderDeliveryRequestDto and invokes Uc02Phase02CylinderDeliveryMediator.
-  - Uc02Phase02CylinderDeliveryMediator maps OrderDto into OrderIngestionRequestDto and invokes OrderIngestionService.
+  - The concrete mediator maps OrderDto into OrderIngestionRequestDto and invokes OrderIngestionService.
   - OrderIngestionRequestValidator proves executable request/FK/order-line validation branches and input-validation failure behavior.
   - OrderIngestionService.processRequest is transactional, resolves FK DAOs, builds OrderDo/OrderLineDo and calls OrderJpaDao.save(orderDo).
-  - OrderJpaDao extends JpaRepository<OrderDo, Long>.
-  - OrderDo maps public.tbl_order and cascades orderLines; OrderLineDo maps public.tbl_order_line.
-  - Success redirects to /orderList?pageNumber=1&itemsPerPage=10; invalid input redisplays the delivery form with errorMessage.
-source_truth_caveats:
-  - Validator requires challanDate.isBefore(LocalDate.now()), while browser initializes an empty challan date to today; mismatch is recorded rather than corrected.
-  - Cylinder-existence branch uses the executable cylinderIdNull condition exactly as frozen; intended safer logic is not invented.
-  - Future cylinder state transition in mediator is commented example code only and is not claimed as an active side effect.
-approval: PENDING_USER_APPROVAL
+  - OrderJpaDao extends JpaRepository<OrderDo, Long>; OrderDo maps public.tbl_order and cascade-all persists OrderLineDo to public.tbl_order_line.
+  - Success redirects to /orderList?pageNumber=1&itemsPerPage=10; InvalidInputParameterException redisplays the delivery form with errorMessage.
+business_effect:
+  - Persists the delivery challan header in public.tbl_order and selected cylinder lines in public.tbl_order_line as one JPA transaction.
+  - Defaults order status to DELIVERED when submitted status is null/blank; derives product from each resolved Cylinder and uses submitted quantity or cylinder total quantity fallback.
+current_source_gaps:
+  - Validator requires challanDate.isBefore(LocalDate.now()), while browser initializes an empty challan date to today.
+  - Cylinder-existence validation uses an unsafe cylinderIdNull guard and does not safely prove the intended cylinder existence check.
+  - Future cylinder state transition in mediator is commented example code only; no explicit cylinder-state transition is executed.
+  - CylinderManagementApplicationException from OrderIngestionService is logged/swallowed by the mediator, after which SUCCESS response code is still set.
+code_mutation_performed: false
+bl010_created_or_executed: false
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+fanout_authorized: false
 transient_logs_remaining: 0
