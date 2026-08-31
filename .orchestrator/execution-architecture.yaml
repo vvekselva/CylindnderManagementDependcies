@@ -1,4 +1,4 @@
-version: 9
+version: 10
 name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
 status: ACTIVE
 policy_ref: .orchestrator/lease-policy.yaml
@@ -15,6 +15,22 @@ execution_model:
     - write_set_collision
     - database_write_semaphore
   maximum_safe_independent_workers: 10
+
+scheduler_to_orchestrator_handoff:
+  durable_receipt_required: true
+  scheduler_last_run_time_is_not_execution_proof: true
+  first_orchestrator_action: PERSIST_TRIGGER_RECEIPT
+  receipt_path_pattern: .orchestrator/scheduler-fire-receipts/<scheduler-task>/<fire-id>.yaml
+  receipt_before_backlog_read_or_mutation: required
+  receipt_initial_state: TRIGGER_RECEIVED
+  link_run_after_run_id_allocation: required
+  run_link_fields: [run_id, live_run_path, event_stream_path]
+  terminal_receipt_update: required
+  classifications:
+    scheduler_trigger_without_receipt: SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
+    receipt_without_run_start: ORCHESTRATOR_START_NOT_CONFIRMED
+    run_without_terminal_evidence: ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING
+  recovery_rule: Next Production Fire resolves unresolved handoff/start/termination gaps before new dispatch.
 
 run_scope_contract:
   required_fields: [run_id, mode, requested_backlogs, requested_units]
@@ -97,10 +113,12 @@ aggregation:
 
 runtime_liveness:
   live_run_file: .orchestrator/live-run.yaml
+  scheduler_receipt_path_pattern: .orchestrator/scheduler-fire-receipts/<scheduler-task>/<fire-id>.yaml
   run_event_path_pattern: .orchestrator/runs/<run-id>/events.ndjson
   termination_record_path_pattern: .orchestrator/runs/<run-id>/termination.yaml
   heartbeat_max_interval_minutes: 2
   last_run_aggregate_alone_proves_running: false
+  scheduler_last_run_time_alone_proves_execution: false
   abnormal_disappearance_rule: Stale heartbeat without a valid terminal event is ABNORMAL_PROCESS_DISAPPEARANCE.
   next_fire_recovery_first_on_incomplete_prior_termination: true
 
@@ -130,8 +148,10 @@ scheduler_resilience:
   production_fire_recurring_task:
     expected_cadence: hourly_around_15
     performs_real_work: true
+    trigger_receipt_required: true
+    trigger_receipt_is_first_action: true
     automatic_disable_for_run_local_blocker: forbidden
-    next_fire_rule: Re-read live durable state independently on every scheduled invocation, reconcile incomplete prior termination first, repair aggregate drift, then dispatch.
+    next_fire_rule: Re-read live durable state independently on every scheduled invocation, reconcile unresolved scheduler-handoff or incomplete prior termination first, repair aggregate drift, then dispatch.
   allowed_disable_conditions:
     - explicit_user_instruction
     - deliberate_schedule_replacement_or_supersession
@@ -143,8 +163,15 @@ scheduler_resilience:
     lifecycle_independent_from_production_fire: true
     aggregate_drift_reporting: required
     newest_durable_evidence_wins_over_stale_aggregate: true
+    scheduler_correlation_required: true
+    scheduler_sources: [scheduled_task_last_run_time, scheduler_fire_receipt]
     liveness_sources: [.orchestrator/live-run.yaml, .orchestrator/runs/<run-id>/events.ndjson, .orchestrator/runs/<run-id>/termination.yaml]
     stale_heartbeat_detection: required
+    trigger_without_receipt_must_report: SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
+    receipt_without_run_start_must_report: ORCHESTRATOR_START_NOT_CONFIRMED
+    run_without_terminal_record_must_report: ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING
+    comparison_table_requires_run_times_in_headings: true
+    previous_and_current_values_required: true
 
 BL-001:
   canonical_endpoint_count: 134
@@ -252,6 +279,7 @@ productive_runtime:
   platform_forced_short_run_requires_positive_evidence: true
 
 quality_gates:
+  QG_TRIGGER: scheduler execution is valid only after a durable trigger receipt is linked to a run ID
   QG_RUNTIME: continue productive dispatch/replan while eligible work and execution capacity remain
   QG_HEARTBEAT: live heartbeat must be current and consistent with event/worker evidence
   QG_TERMINATION: every termination must have an allowed reason and complete durable diagnostic evidence
