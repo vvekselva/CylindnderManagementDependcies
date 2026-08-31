@@ -1,0 +1,27 @@
+story_id: STORY-0045
+evidence_time: '2026-08-31T23:34:56+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-232655-IST
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+findings:
+  - path: cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html
+    blob_sha: b9617edc8514b37918caeb5c8602d7520e86eb33
+    proved_behavior: The file exists under the display-customer filename, but the inspected frozen source begins with UC01RegisterCustomer commentary and renders page title 'Register Customer'; it is not safe to treat the filename alone as proof of a customer-display/list screen contract.
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulCustomerServices.java
+    blob_sha: 8e00f126407b53cf864f87eb738f1ececed025d9
+    proved_behavior: GET /search/customer/{searchText} maps searchText into CylinderManagementApplicationRequestDto.searchTerm and delegates to ICylinderManagementApplicationSearchService.searchWithText; application exceptions return an empty CustomerSearchResponseDto.
+  - source_scan: controller package directory
+    proved_behavior: Frozen web/controller directory listing does not itself expose a controller named for DisplayCustomer; this is not negative proof that GET /displayCustomer is absent elsewhere.
+business_behavior_complete: false
+classification: SOURCE_DETAIL_REVIEW_REQUIRED
+remaining_source_binding:
+  - exact GET /displayCustomer controller mapping and method
+  - model attributes supplied to the display page
+  - exact display filters, columns and actions from the actual rendered contract
+  - service/DAO/entity/database read path and pagination/filter branches
+  - visible empty/error outcomes
+negative_inference_rule: Directory naming and code-index misses cannot be used to invent endpoint absence.
+approval: PENDING_USER_APPROVAL
+application_code_mutation: false
+bl_010_execution: false
