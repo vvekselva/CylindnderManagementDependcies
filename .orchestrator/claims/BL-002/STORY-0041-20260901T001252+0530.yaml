@@ -3,9 +3,12 @@ backlog: BL-002
 resource: BL-002/STORY-0041
 work_unit: STORY-0041_BUSINESS_BEHAVIOR_REWORK
 owner_run: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
-state: ACTIVE
+state: RELEASED
 claimed_at: '2026-09-01T00:12:52+05:30'
 heartbeat_at: '2026-09-01T00:12:52+05:30'
+released_at: '2026-09-01T00:12:52+05:30'
 lease_expires_at: '2026-09-01T00:27:52+05:30'
 write_set:
   - BL-002/evidence/STORY-0041/
+result: CONCRETE_MEDIATOR_VALIDATOR_PERSISTENCE_BOUND_TRANSACTION_BOUNDARY_REMAINS
+evidence: BL-002/evidence/STORY-0041/20260901T001252+0530-concrete-mediator-validator-persistence-binding.yaml
