@@ -1,0 +1,34 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-012912-IST
+mode: CONTINUOUS
+started_at: '2026-09-01T01:29:13+05:30'
+checkpoint_at: '2026-09-01T01:36:16+05:30'
+elapsed_seconds: 423
+receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire/20260901T012912+0530.yaml
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260901-010244-IST-I
+aggregate:
+  enrichment_version: 74
+  business_behavior_complete: 21
+  total_stories: 134
+  percentage: 15.7
+  rework_required: 113
+  awaiting_user_review: 19
+  approved_after_rework: 2
+  projection_drift_pending: true
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+work:
+  attempted: [STORY-0045]
+  completed: []
+  partial: [STORY-0045]
+  unit_evidence:
+    - BL-002/evidence/STORY-0045-business-behavior-20260901-012912.yaml
+  active_claims_at_checkpoint: 0
+  eligible_work_remaining: true
+  next_primary_unit: STORY-0045
+  fallback_unit: STORY-0047
+  next_action: Resolve STORY-0045 concrete customerFetchByIdService implementation and downstream DAO/entity/database read path, then reconcile DisplayCustomer template behavior; separately repair stale queue projections without changing authoritative aggregate semantics.
+governance:
+  story_auto_approvals: 0
+  application_code_mutations: 0
+  bl010_created_or_executed: 0
+  github_actions_or_runners_used: 0
+  fail_closed_preserved: true
