@@ -1,8 +1,8 @@
-version: 66
+version: 67
 backlog_id: BL-002
-updated_at: 2026-08-31T09:12:04Z
+updated_at: 2026-08-31T09:20:15Z
 updated_by: Primary Cylinder Automation Tool
-checkpoint_state: RECONCILIATION_IN_PROGRESS
+checkpoint_state: CHECKPOINT_RECONCILED
 scope:
   total_stories: 134
   r1_stories: 88
@@ -11,17 +11,17 @@ scope:
 business_behavior_rework:
   policy: BL-002/story-business-behavior-rework-policy.yaml
   total_registered: 134
-  rework_required: 122
-  rework_in_progress: 0
+  rework_required: 121
+  rework_in_progress: 1
   business_behavior_complete: 12
   awaiting_user_review: 12
   approved_after_rework: 0
   needs_clarification: 0
   business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0054]
   awaiting_user_review_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0054]
-  active_rework_ids: []
-  static_reference_selector_reviewed: 12
-  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0054]
+  active_rework_ids: [STORY-0037]
+  static_reference_selector_reviewed: 13
+  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0054]
   search_conversion_required: 0
   search_conversion_required_ids: []
   dependent_selector_rework_required: 0
@@ -101,6 +101,7 @@ reconciliation:
     - STORY-0033 closed concrete WalkinSaleServiceImpl transaction/persistence binding
     - STORY-0036 completed Yard Audit Dashboard business behavior and cleared stale needs-clarification unit state
     - STORY-0054 remains source-validated after BL-010 implementation and awaiting explicit user review/approval
+    - STORY-0037 moved to REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED because its embedded Save operation is only proved through the generic mediator handoff; concrete transaction/persistence remains unbound
   aggregate_reconciliation_gate: PENDING_GLOBAL_QUEUE_PROJECTION
 cursor:
   next_global_rework_unit: STORY-0037
