@@ -1,0 +1,15 @@
+claim_id: 20260831-081250-STORY-0015
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
+status: ACTIVE
+claimed_at: 2026-08-31T08:12:50Z
+heartbeat_at: 2026-08-31T08:12:50Z
+lease_expires_at: 2026-08-31T08:27:50Z
+work_unit: BL-002/STORY-0015
+read_set:
+  - BL-002/story-register.csv
+  - BL-002/stories/STORY-0015.md
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+write_set:
+  - BL-002/stories/STORY-0015.md
+  - BL-002/work-status/STORY-0015.yaml
+purpose: Repair canonical identity drift to GET /challan-heatmap and fail closed where exact frozen route source is unresolved.
