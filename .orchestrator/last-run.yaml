@@ -1,9 +1,9 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
 checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T06:14:02+05:30
-checkpoint_at: 2026-08-31T06:18:22+05:30
-elapsed_seconds_at_checkpoint: 260
-elapsed_minutes_at_checkpoint: 4.333
+checkpoint_at: 2026-08-31T06:20:01+05:30
+elapsed_seconds_at_checkpoint: 359
+elapsed_minutes_at_checkpoint: 5.983
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -11,10 +11,10 @@ architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   compatibility_invocation_lease_global_mutex: false
 work:
-  attempted_ids: [STORY-0042]
+  attempted_ids: [STORY-0042, STORY-0044]
   completed_strict_ids: []
-  blocked_ids: [STORY-0042]
-  source_detail_refined_ids: [STORY-0042]
+  blocked_ids: [STORY-0042, STORY-0044]
+  source_detail_refined_ids: [STORY-0042, STORY-0044]
   strict_field_ui_completion_delta: 0
   physical_materialization_delta: 0
   approvals_delta: 0
@@ -33,8 +33,8 @@ bl008:
   database_write_delta_chatgpt: 0
 claims:
   recovered_stale: []
-  created: [20260831-061654-STORY-0042]
-  completed: [20260831-061654-STORY-0042]
+  created: [20260831-061654-STORY-0042, 20260831-061902-STORY-0044]
+  completed: [20260831-061654-STORY-0042, 20260831-061902-STORY-0044]
   claims_remaining_at_checkpoint: 0
 reconciliation:
   startup_projection_drift_detected: true
@@ -47,8 +47,8 @@ reconciliation:
   aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
 notes:
-  - Startup aggregate drift repaired to the live BL-008 V182 state.
-  - STORY-0042 was claimed as an exact resource-scoped unit and source-refined from the frozen application source.
-  - Controller, request DTO, address-type resolution, validation re-render and success redirect are proved.
-  - Strict completion remains withheld because the downstream mediator/service/persistence chain is unresolved.
+  - Startup aggregate drift repaired to live BL-008 V182 state.
+  - STORY-0042 and STORY-0044 were independently claimed, source-refined and released with durable unit-local evidence.
+  - Both remain non-strict because their concrete executable downstream persistence chains are unresolved.
+  - STORY-0044 comments describing direct transactional table writes were not treated as executable proof because that service path is commented out.
   - ChatGPT database writes remain zero.
