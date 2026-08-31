@@ -1,94 +1,67 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-074539Z
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
 checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-31T07:45:39Z
-checkpoint_at: 2026-08-31T07:57:39Z
-terminal_classification: PARTIAL_CONTINUE_REQUIRED
+started_at: 2026-08-31T08:20:58Z
+checkpoint_at: 2026-08-31T08:49:28Z
+terminal_classification: RUNNING_PRODUCTIVE_WINDOW
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
+  run_scope: CONTINUOUS
   github_role: DURABLE_CONTROL_AUDIT_ONLY
   github_actions_runners_used: false
 work:
-  attempted_ids:
-    - AGGREGATE_RECONCILIATION
-    - STORY-0001_BUSINESS_BEHAVIOR_REWORK
-    - STORY-0011_BUSINESS_BEHAVIOR_REWORK
-    - STORY-0012_CANONICAL_IDENTITY_SOURCE_BINDING
-    - STORY-0054_UNIT_TO_AGGREGATE_DRIFT_REPAIR
-    - BL-008_LIVE_STATE_READ
   completed_ids:
-    - STORY-0001_BUSINESS_BEHAVIOR_REWORK
-    - STORY-0011_BUSINESS_BEHAVIOR_REWORK
-    - STORY-0012_IDENTITY_DRIFT_DURABLY_RECORDED
-    - STORY-0054_UNIT_TO_AGGREGATE_DRIFT_REPAIR
-    - BL-008_LIVE_STATE_READ
+    - BL-002/STORY-0032_BUSINESS_BEHAVIOR_REWORK
   blocked_ids:
-    - STORY-0012_EXACT_FROZEN_SOURCE_BINDING_FOR_GET_LOGISTICS_CHALLAN_BOOKS_ADD_FORM
-    - BL-010/DEV-0001_IMPLEMENTATION_PENDING_EXACT_SEARCH_SOURCE_BINDING
-    - BL-008_JUNIT_EXECUTION_BLOCKED_BY_MISSING_RUNTIME_DEPENDENCIES
+    - BL-002/STORY-0033_CONCRETE_SERVICE_PERSISTENCE_BINDING
+  active_ids:
+    - BL-002/STORY-0014_EXACT_FROZEN_SOURCE_BINDING
   approvals_delta: 0
   current_revised_contract_approved_or_reapproved: 0
-  next_dynamically_resolved_eligible_unit: STORY-0012
-  fallback_dependency_safe_r1_unit: STORY-0013
 business_behavior_rework:
   total_registered: 134
-  rework_required: 132
-  rework_in_progress: 2
-  business_behavior_complete: 2
-  business_behavior_complete_ids: [STORY-0001, STORY-0011]
-  awaiting_user_review: 2
-  awaiting_user_review_ids: [STORY-0001, STORY-0011]
+  rework_required: 130
+  rework_in_progress: 3
+  business_behavior_complete: 4
+  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0032, STORY-0054]
+  awaiting_user_review: 4
+  awaiting_user_review_ids: [STORY-0001, STORY-0011, STORY-0032, STORY-0054]
   approved_after_rework: 0
-  needs_clarification: 1
-  active_ids: [STORY-0012, STORY-0054]
-  selector_ux_reviewed: 3
-  selector_ux_reviewed_ids: [STORY-0001, STORY-0011, STORY-0054]
-  search_conversion_required: 1
-  search_conversion_required_ids: [STORY-0054]
-  dependent_selector_rework_required: 1
-  dependent_selector_rework_required_ids: [STORY-0054]
-  remaining_global_rework_count: 132
+  active_ids: [STORY-0012, STORY-0013, STORY-0033]
 legacy_metrics: {materialized_story_files: 134, materialization_pending: 0, strict_field_ui_complete: 126, strict_field_ui_remaining: 8, historical_approved: 1, reapproval_required: 1}
 development_changes:
   backlog: BL-010
-  queued: 1
   current: DEV-0001
   story: STORY-0054
-  state: READY_FOR_SOURCE_BINDING
-  next_action: BIND_WALKIN_CUSTOMER_SEARCH_ADDRESS_LOOKUP_PRODUCT_SEARCH_THEN_IMPLEMENT
+  state: PR_3_SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED
+  next_action: USER_REVIEW_STORY_0054_THEN_EXPLICIT_APPROVAL_OR_REWORK
 approved_story_testing:
-  policy_version: 4
-  historical_approved_ids: [STORY-0001]
   current_revised_contract_approved_or_reapproved_ids: []
   revised_fanout_eligible_ids: []
-  BL-004: {historical_generated: 1, revised_executed: 0, pass: 0, fail: 0, coverage: NOT_EXECUTED_REVISED_CONTRACT, status: SUSPENDED_PENDING_REAPPROVAL}
-  BL-005: {historical_generated: 1, revised_executed: 0, pass: 0, fail: 0, coverage: NOT_EXECUTED_REVISED_CONTRACT, status: SUSPENDED_PENDING_REAPPROVAL}
-  BL-009: {historical_catalogue: 1, historical_data_sets: 1, historical_code: 1, historical_data_contract_pass_rows: 7, historical_data_contract_fail_rows: 0, revised_application_executed: 0, revised_pass: 0, revised_fail: 0, coverage: NOT_EXECUTED_REVISED_CONTRACT, status: SUSPENDED_PENDING_REAPPROVAL}
+  BL-004: {status: SUSPENDED_PENDING_REAPPROVAL}
+  BL-005: {status: SUSPENDED_PENDING_REAPPROVAL}
+  BL-009: {status: SUSPENDED_PENDING_STORY_REWORK_AND_REAPPROVAL}
 bl001: {state: COMPLETE_READ_ONLY, action: NO_CHANGE_REQUIRED}
 bl008:
   state_source: BL-008/README.md
   current_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
   schema_work: COMPLETE_AND_FROZEN
   active_migration_gate: null
-  service_ui_acceptance_cases: 30
-  junit_execution_delta: 0
-  jacoco_coverage_delta: 0
   junit_runtime_state: BLOCKED_BY_MISSING_MAVEN_JUNIT5_MOCKITO_RUNTIME_DEPENDENCIES
   database_write_delta_chatgpt: 0
 reconciliation:
-  startup_projection_drift_detected: true
-  startup_projection_drift_repaired: true
-  repaired:
-    - STORY-0001 stale APPROVED physical Story and unit status reconciled to revised-contract reapproval gate
-    - STORY-0011 advanced to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
-    - STORY-0012 canonical-register versus physical-story identity drift recorded fail-closed
-    - STORY-0054 stale aggregate awaiting-review state replaced by newest unit-local REWORK_REQUIRED_USER_UX_CHANGE evidence
-    - shared queue updated only after concurrent-write refetch
   aggregate_reconciliation_gate: PASS
-  readback_required: true
-claims:
-  active_at_checkpoint: 0
-  shared_aggregate_writer_conflicts: 1
-  shared_aggregate_conflicts_recovered_by_refetch: 1
+  enrichment_progress_version: 62
+  repaired:
+    - STORY-0032 stale Product identity replaced by canonical R1 GET /walkin-sale and exact frozen controller/template behavior
+    - STORY-0033 stale Product UOM identity replaced by canonical R1 POST /walkin-sale with fail-closed concrete-service persistence gap
+runtime_reliability:
+  heartbeat_state: CURRENT
+  last_heartbeat_at: 2026-08-31T08:47:32Z
+  loop_iteration: 9
+  target_min_minutes: 30
+  target_max_minutes: 45
+  termination_requested: false
+  next_action: CONTINUE_PRODUCTIVE_REPLAN_UNTIL_TARGET_OR_GOVERNED_TERMINATION
 transient_logs_remaining: 0
