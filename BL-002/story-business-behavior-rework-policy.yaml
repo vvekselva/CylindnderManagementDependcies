@@ -1,4 +1,4 @@
-version: 1
+version: 2
 name: BL002_BUSINESS_BEHAVIOR_REWORK
 status: ACTIVE
 scope:
@@ -7,15 +7,18 @@ scope:
   all_registered_stories_require_rework: true
   trigger: USER_REVIEW_FEEDBACK_2026_08_31
 reason:
-  summary: Existing stories may prove endpoint/source mechanics without adequately explaining what the page or operation does for the business/user.
+  summary: Existing stories may prove endpoint/source mechanics without adequately explaining what the page or operation does for the business/user, and may preserve poor static-list UX even where reusable search services already exist.
   exemplar: STORY-0054
-  defect_class: BUSINESS_BEHAVIOR_AND_IMPACT_MISSING_OR_UNDEREXPLAINED
+  defect_classes:
+    - BUSINESS_BEHAVIOR_AND_IMPACT_MISSING_OR_UNDEREXPLAINED
+    - STATIC_REFERENCE_LIST_USED_WHERE_REUSABLE_SEARCH_PATTERN_EXISTS
 approval:
   auto_approval: forbidden
   pending_story_rule: remains_not_approved_until_explicit_user_approval
-  previously_approved_story_rule: material_rework_requires_explicit_reapproval_before downstream testing can be treated as final for the revised story
+  previously_approved_story_rule: material_rework_requires_explicit_reapproval_before_downstream_testing_can_be_treated_as_final_for_the_revised_story
+  fanout_rule: BL-004_BL-005_BL-009_revised_behavior_fanout_only_after_explicit_user_approval_or_reapproval
 quality_gate:
-  story_is_not_review_ready_until_all_applicable_sections_are_source_proved:
+  story_is_not_review_ready_until_all_applicable_sections_are_source_proved_or_user_required_target_behavior_is_explicitly_identified:
     - business_purpose
     - user_goal_and_trigger
     - page_or_operation_role_in_business_process
@@ -30,17 +33,60 @@ quality_gate:
     - error_or_rejection_outcome
     - related_operations_on_same_page
     - cross_story_relationships_when_GET_and_POST_are_separate_registered_endpoints
+    - current_state_vs_required_state_gap_when_user_has_requested_a_change
   endpoint_trace_only_is_insufficient: true
   technical_chain_only_is_insufficient: true
   form_field_list_without_business_meaning_is_insufficient: true
   persistence_without_user_or_business_impact_is_insufficient: true
-  no_invention_rule: Any behavior or impact not proved by frozen source must be marked unproved/needs clarification.
+  no_invention_rule: Behavior not proved by frozen source must be marked unproved/needs clarification unless it is explicitly recorded as a USER_REQUIRED_TARGET_BEHAVIOR.
 page_story_rule:
   embedded_actions_must_be_described: true
   example: A GET dashboard Story that renders a create form must explain the create capability, its fields, validation, system impact and visible outcome even when the POST is a separate Story.
 post_story_rule:
   must_explain_business_transaction_not_only_controller_service_dao_chain: true
   must_explain_before_after_state: true
+reference_selector_ux_rule:
+  status: ACTIVE
+  trigger: USER_FEEDBACK_STORY_0054_2026_08_31
+  principle: Reuse established searchable reference selectors and REST services instead of large static list boxes when such application patterns already exist.
+  review_all_reworked_pages: true
+  reference_types_to_review:
+    - Customer
+    - Product
+    - Supplier
+    - Vehicle
+    - Driver
+    - Address
+    - other_large_reference_lists
+  required_story_details_when_search_pattern_applies:
+    - visible_search_box
+    - exact_reused_rest_service_or_endpoint_once_source_bound
+    - search_text_parameter
+    - minimum_length_if_any
+    - debounce_if_any
+    - result_display_fields
+    - selected_id_propagation
+    - stale_hidden_id_clear_behavior
+    - dependent_lookup_population
+    - dependent_selection_reset_on_parent_change
+    - server_side_reference_validation
+    - user_and_system_impact
+  reuse_rule:
+    existing_application_rest_service_preferred: true
+    duplicate_search_service_without_proved_need: forbidden
+    exemplar_customer_search_pattern: WALK_IN_SALE
+    exemplar_product_search_pattern: EXISTING_APPLICATION_SEARCH_ENABLED_PAGES
+  dependent_reference_rule:
+    exemplar: CUSTOMER_TO_CUSTOMER_ADDRESS
+    behavior:
+      - parent_reference_selected_first
+      - fetch_only_children_belonging_to_selected_parent
+      - populate_child_choices_after_parent_selection
+      - clear_child_selection_when_parent_changes_or_clears
+      - keep_server_side_parent_child_ownership_guard
+  current_source_does_not_equal_accepted_target_rule: true
+  static_list_in_current_source_may_be_recorded_as_current_state_gap: true
+  implementation_required_before_source_proved_completion_when_user_requests_search_conversion: true
 rework_execution:
   order:
     - R1
@@ -49,9 +95,11 @@ rework_execution:
   preserve_existing_source_evidence: true
   do_not_discard_valid_traceability: true
   rewrite_human_readable_story: true
+  scan_static_reference_controls_on_every_page: true
+  compare_against_existing_search_enabled_patterns: true
   require_user_review_after_rework: true
   approvals_are_explicit_user_only: true
-  downstream_test_regeneration_rule: regenerate_or_reconcile BL-004 BL-005 BL-009 when revised approved story changes testable behavior
+  downstream_test_regeneration_rule: regenerate_or_reconcile_BL-004_BL-005_BL-009_only_after_revised_story_is_explicitly_approved
 metrics:
   track:
     - total_registered
@@ -61,7 +109,13 @@ metrics:
     - awaiting_user_review
     - approved_after_rework
     - needs_clarification
+    - static_reference_selector_reviewed
+    - search_conversion_required
+    - dependent_selector_rework_required
 watchdog:
   report_rework_progress: true
   report_next_story: true
   report_business_behavior_gaps: true
+  report_static_reference_selector_findings: true
+  report_search_conversion_required_ids: true
+  report_dependent_selector_rework_ids: true
