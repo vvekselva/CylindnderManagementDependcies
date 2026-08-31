@@ -1,0 +1,22 @@
+version: 1
+claim_id: 20260831-082622-AGGREGATE-RECONCILIATION-RETRY
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+backlog: BL-002
+unit_id: AGGREGATE-RECONCILIATION
+status: ACTIVE
+claimed_at: 2026-08-31T08:26:22+05:30
+heartbeat_at: 2026-08-31T08:26:22+05:30
+lease_expires_at: 2026-08-31T08:41:22+05:30
+owner: Primary Cylinder Automation Tool
+mode: SINGLE_WRITER_RECONCILIATION
+read_set:
+  - BL-002/work-status/STORY-0047.yaml
+  - BL-002/stories/STORY-0047.md
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+  - BL-008/README.md
+  - .orchestrator/claims/BL-002/20260831-0824-FINAL-READBACK.yaml
+write_set:
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+purpose: Rebase STORY-0047 zero-strict-delta refinement onto the newer durable 124/134 aggregate snapshot and verify both projections.
