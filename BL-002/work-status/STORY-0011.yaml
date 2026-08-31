@@ -1,0 +1,80 @@
+version: 1
+story_id: STORY-0011
+run_id: CYLINDER-TARGETED-BL002-STORY-0011-20260831-0812IST
+release: R1
+endpoint: POST /complete-trip
+functional_area: Trip Completion
+state: STRICT_FIELD_UI_COMPLETE
+strict_field_ui_complete: true
+materialized: true
+approval: PENDING_USER_APPROVAL
+review_state: NEEDS_CLARIFICATION
+updated_at: 2026-08-31T08:25+05:30
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+identity_reconciliation:
+  prior_physical_story_identity: R2 GET /login Authentication Login Page
+  canonical_register_identity: R1 POST /complete-trip Trip Completion
+  result: PHYSICAL_STORY_REPAIRED_TO_CANONICAL_IDENTITY
+proven_contract:
+  browser:
+    template: final-version-1/Displayvehicleload
+    form: completeTripForm
+    method: POST
+    action: /complete-trip
+    request_fields: [vehicleLoadId]
+  controller:
+    class: CompleteTripController
+    method: completeTrip
+    request_param: vehicleLoadId
+    request_dto: CompleteTripRequestDto
+    success_terminal: redirect via ViewConstants.REDIRECT_HOME_LINK
+    error_behavior: application_exception_rethrow_and_unexpected_exception_wrap
+  validator:
+    class: CompleteTripRequestValidator
+    guards:
+      - request_required
+      - vehicle_load_required
+      - positive_vehicle_load_id_required
+      - vehicle_load_must_exist
+      - logistics_execution_must_exist
+      - active_logistics_state_must_be_allowed_for_yard
+      - active_logistics_state_must_map_to_final_yard_state
+      - cylinder_must_not_already_have_active_yard_inventory_line
+  service:
+    class: CompleteTripServiceImpl
+    method: processRequest
+    transactional: true
+    trip_status_guard: Proceeding
+    final_trip_status: Halt
+    logistics_execution_final_status: COMPLETED
+    yard_end_stop_type: YARD_END
+    yard_end_stop_status: COMPLETED
+    yard_code: MAIN
+    final_yard_states: [FULL, EMPTY]
+    yard_source_types: [SUPPLIER_RETURN, CUSTOMER_RETURN, YARD_RETURN]
+  dao_classes:
+    - VehicleLoadJpaDao
+    - VehicleTripJpaDao
+    - VehicleTripStatusJpaDao
+    - VehicleTripStopJpaDao
+    - VehicleTripStopTypeJpaDao
+    - YardEntriesJpaDao
+    - YardInventoryJpaDao
+    - YardInventoryLineJpaDao
+    - YardInventorySourceTypeJpaDao
+    - CylinderStateJpaDao
+    - CylinderLogisticsExecutionJpaDao
+    - CylinderLogisticsExecutionLineJpaDao
+    - YardInventoryAllowedStateJpaDao
+  side_effects:
+    - create_legacy_yard_entry
+    - create_active_yard_inventory_line
+    - complete_and_deactivate_active_logistics_line
+    - close_logistics_execution
+    - create_completed_yard_end_stop
+    - transition_vehicle_trip_to_Halt
+applicable_flow_type: TRANSACTIONAL_WRITE_WORKFLOW
+remaining_source_gap: []
+strict_decision: COMPLETE_APPLICABLE_SOURCE_CONTRACT_PROVED
+bl001_action: NO_CHANGE_REQUIRED_CURRENT_CANONICAL_ROW_ALREADY_MATCHES_FROZEN_CONTROLLER_SERVICE_VALIDATOR_AND_BRANCHING_CHAIN
+approval_delta: 0
