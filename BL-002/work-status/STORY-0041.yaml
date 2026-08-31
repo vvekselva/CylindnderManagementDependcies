@@ -1,33 +1,52 @@
-version: 2
+version: 3
 story_id: STORY-0041
-run_id: CYL-20260831T171739-0530
+run_id: CYL-ORCH-20260831T175004+0530
 release: R1
 endpoint: GET /registerCustomer
-status: BUSINESS_BEHAVIOR_REWORK_REQUIRED_FIELD_COVERAGE
-strict_field_ui_complete: false
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+updated_at: '2026-08-31T18:13:14+05:30'
+rework_state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
+business_behavior_state: UI_AND_PAGE_LEVEL_BUSINESS_BEHAVIOR_SOURCE_BOUND_WRITE_PERSISTENCE_PENDING
 business_behavior_complete: false
 approval: PENDING_USER_APPROVAL
 materialized: true
-updated_at: '2026-08-31T17:40:38+05:30'
-frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-resolved_source_detail:
-  - AddressTypeFetchByPageService is present at the frozen commit and is now source-bound.
-  - It reads Address Type reference data through AddressTypeJpaDao with pageable ascending addressType sorting and optional addressType/description search.
-  - AddressTypeJpaDao extends JpaRepository<AddressTypeDo, Long>.
-  - AddressTypeDo maps public.tbl_address_type with pk_address_type_id, sequence public.pk_address_type_id_serial, address_type and description.
-  - The GET page therefore performs an Address Type reference-data read on cache refresh and no customer write.
-remaining_rework:
-  - complete source-bound inventory of every visible/entered/selected phone and address field
-  - business meaning and validation for each field
-  - add/remove/change behavior for repeating phone/address controls
-  - submit interaction and related embedded operation behavior
-  - server-side relationship validation
-  - complete success/error outcomes
-  - applicable large-reference selector review
 selector_ux_review:
-  state: PARTIAL_REVIEW_ADDRESS_TYPE_ONLY
-  search_conversion_required: NOT_YET_DETERMINED_FOR_COMPLETE_PAGE
-strict_promotion_withheld_reason: complete_business_behavior_and_field_selector_review_not_yet_source_bound
+  state: COMPLETE_FOR_CURRENT_PAGE
+  reviewed: true
+  large_reference_controls: [COUNTRY, STATE, CITY]
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+  country: {endpoint: 'GET /search/country/{q}', debounce_ms: 280, hidden_id_clear_on_edit: true, clears_dependents: [STATE, CITY]}
+  state: {endpoint: 'GET /search/state/{q}', debounce_ms: 280, hidden_id_clear_on_edit: true, clears_dependents: [CITY]}
+  city: {endpoint: 'GET /search/city/{q}', debounce_ms: 280, hidden_id_clear_on_edit: true, clears_dependents: []}
+  address_type: BOUNDED_DOMAIN_LOOKUP_NO_SEARCH_CONVERSION_REQUIRED
+source_bound:
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/UC01RegisterCustomerController.java
+  template: cylindermanagement.web/src/main/resources/templates/final-version-1/UC01RegisterCustomer.html
+  view_constant: final-version-1/UC01RegisterCustomer
+  address_type_read: public.tbl_address_type
+  embedded_submit_story: STORY-0042
+  visible_business_fields:
+    - customerDto.customerName
+    - customerDto.gstNumber
+    - phoneNumberDtos[N].phoneNumber
+    - addressTypeIds[N]
+    - addressDtos[N].addressLine1
+    - addressDtos[N].addressLine2
+    - addressDtos[N].addressLine3
+    - addressDtos[N].landmark
+    - addressDtos[N].country.countryId
+    - addressDtos[N].state.stateId
+    - addressDtos[N].city.cityId
+remaining_source_binding:
+  - concrete UC01 mediator implementation
+  - customer ingestion service transaction
+  - DAO/repository write calls
+  - exact customer/address/phone persisted identities and tables/columns
+  - uniqueness and server-side relationship validation implementation
+  - generated identifiers and transaction boundary
+completion_gate: DO_NOT_MARK_BUSINESS_BEHAVIOR_COMPLETE_UNTIL_WRITE_SIDE_PERSISTENCE_EFFECT_IS_SOURCE_BOUND
 database_behavior_invented: false
+application_code_mutation: false
 approval_delta: 0
-next_action: COMPLETE_RENDERED_FORM_FIELD_AND_SELECTOR_BEHAVIOR_REWORK
+next_action: TRACE_UC01_MEDIATOR_SERVICE_DAO_PERSISTENCE_FROM_FROZEN_SOURCE
