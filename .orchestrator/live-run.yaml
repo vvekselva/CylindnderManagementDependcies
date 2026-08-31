@@ -1,16 +1,16 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-150658Z-II
-scheduler_fire_id: 20260831T150658Z
-scheduler_task: Cylinder Production Fire - ii
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
+scheduler_fire_id: 20260831T220145+0530
+scheduler_task: Cylinder Production Fire - i
 state: RUNNING
 mode: CONTINUOUS
-started_at: '2026-08-31T20:36:58+05:30'
-last_heartbeat_at: '2026-08-31T20:47:42+05:30'
-loop_iteration: 5
-running_worker_count: 1
+started_at: '2026-08-31T22:01:45+05:30'
+last_heartbeat_at: '2026-08-31T22:02:55+05:30'
+productive_runtime_seconds_if_measurable: 70
+loop_iteration: 1
+running_worker_count: 0
 completed_worker_count: 0
 blocked_worker_count: 0
-active_work_unit_ids:
-  - BL-002/STORY-0041_BUSINESS_BEHAVIOR_REWORK
+active_work_unit_ids: []
 eligible_work_count: null
 dispatchable_work_count: null
-last_action: STORY_0041_EXACT_PERSISTENCE_BINDING_RESEARCH
+last_action: PRIOR_STALE_RUN_RECOVERED_RECONCILING_CLAIMS_AND_AGGREGATES
