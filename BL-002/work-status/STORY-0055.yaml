@@ -1,0 +1,35 @@
+version: 1
+story_id: STORY-0055
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+release: R1
+endpoint: POST /customer-demands
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+strict_field_ui_complete: true
+business_behavior_complete: true
+materialized: true
+approval: PENDING_USER_APPROVAL
+approval_delta: 0
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+related_page_story: STORY-0054
+selector_ux_review:
+  state: RECONCILED_WITH_IMPLEMENTED_RELATED_PAGE_CONTRACT
+  customer_search: GET /search/customer/{searchText}
+  customer_min_length: 3
+  customer_debounce_ms: 280
+  dependent_address: GET /search/address/customer-address/{customerId}
+  product_search: GET /search/product/{searchText}
+  product_min_length: 3
+  product_debounce_ms: 280
+  stale_identity_reset: true
+  server_relationship_validation: true
+persistence:
+  dao: CustomerDemandJpaDao.saveAndFlush
+  table: public.tbl_customer_order_request
+  primary_key: pk_customer_order_request_id
+  sequence: public.pk_customer_order_request_id_serial
+code_mutation_performed: false
+bl010_created_or_executed: false
+fanout_authorized: false
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+updated_at: 2026-08-31T11:44:40Z
