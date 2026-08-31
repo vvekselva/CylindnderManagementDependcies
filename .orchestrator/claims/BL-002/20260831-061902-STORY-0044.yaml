@@ -3,11 +3,12 @@ claim_id: 20260831-061902-STORY-0044
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
 backlog: BL-002
 unit_id: STORY-0044
-status: ACTIVE
+status: RELEASED
 owner: Primary Cylinder Automation Tool
 claimed_at: 2026-08-31T06:19:02+05:30
-heartbeat_at: 2026-08-31T06:19:02+05:30
-lease_expires_at: 2026-08-31T06:34:02+05:30
+heartbeat_at: 2026-08-31T06:19:44+05:30
+released_at: 2026-08-31T06:19:44+05:30
+released_reason: unit-local Story and work-status evidence persisted; executable downstream write contract remains unresolved
 read_set:
   - BL-002/stories/STORY-0044.md
   - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/VehicleTripLoadWizardController.java
