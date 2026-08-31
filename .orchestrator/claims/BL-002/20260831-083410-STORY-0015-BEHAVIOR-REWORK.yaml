@@ -2,9 +2,10 @@ claim_id: 20260831-083410-STORY-0015-BEHAVIOR-REWORK
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
 backlog: BL-002
 work_unit: STORY-0015
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T08:34:10Z
-heartbeat_at: 2026-08-31T08:34:10Z
+heartbeat_at: 2026-08-31T08:34:59Z
+released_at: 2026-08-31T08:34:59Z
 lease_expires_at: 2026-08-31T08:49:10Z
 read_set:
   - BL-002/stories/STORY-0015.md
@@ -12,4 +13,6 @@ read_set:
   - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 write_set:
   - BL-002/work-status/STORY-0015.yaml
-purpose: Reconstruct STORY-0015 business behavior from exact frozen source under the global revised-contract rework policy.
+result: BLOCKED_SOURCE_DETAIL_REVIEW_REQUIRED
+blocker: Exact canonical GET /challan-heatmap did not resolve; GitHub code search returned total_count=0 but incomplete_results=true, so route absence is not proven.
+next_action: CONTINUE_WITH_NEXT_DEPENDENCY_SAFE_R1_REWORK_UNIT
