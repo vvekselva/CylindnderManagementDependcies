@@ -1,0 +1,15 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-013227-IST
+started_at: '2026-09-01T01:32:31+05:30'
+terminated_at: '2026-09-01T01:36:43+05:30'
+elapsed_seconds: 252
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: RUNTIME_BOUNDARY_WITH_ELIGIBLE_WORK_REMAINING
+resumable: true
+eligible_work_remaining: true
+active_claim_count: 0
+last_completed_action: STORY-0045_PARTIAL_SOURCE_RESOLUTION_CHECKPOINTED
+next_action: Reconcile stale BL-002 queue projection when full authoritative queue is safely retrievable, then continue exact STORY-0045 source binding or another dependency-safe Release-1 unit.
+approvals_delta: 0
+application_code_mutation_delta: 0
+bl010_execution_delta: 0
+github_actions_or_runners_used: false
