@@ -79,28 +79,61 @@ The official post-freeze acceptance pack contains **30 tests** in six stages:
 5. Customer logical closure — BL008-SUI-022..025
 6. Regression / end-to-end — BL008-SUI-026..030
 
+### Canonical TestData Backlog
+
+The reusable test data and acceptance catalogue are frozen for execution under:
+
+`BL-008/TestData-Backlog/`
+
 Canonical files:
 
-- `BL-008/test-cases/BL008-V185-service-ui-test-cases.csv`
-- `BL-008/test-cases/BL008-V185-test-execution-order.md`
-- `BL-008/test-data/BL008-V185-test-data.csv`
-- `BL-008/test-data/BL008-V185-test-data.md`
+- `BL-008/TestData-Backlog/BL008_V185_Test_Data.csv`
+- `BL-008/TestData-Backlog/BL008_V185_Service_UI_Test_Cases.csv`
+- `BL-008/TestData-Backlog/BL008_V185_Test_Data_Human_Readable.md`
+- `BL-008/TestData-Backlog/BL008_V185_Test_Execution_Order.md`
+- `BL-008/TestData-Backlog/README.md`
 
 The old `BL-008/test-case-backlog.csv` is historical pre-V185 material and must not be used as the current acceptance source where its V176/V178/V181 assumptions conflict with the final V185 model.
 
+## Automated test code
+
+JUnit-style test automation is stored in the source repository `vvekselva/CylinderManagement` on branch:
+
+`bl008-v185-test-automation`
+
+Current automated test assets are under:
+
+`cylindermanagement.custommapper.service/src/test/java/com/sreyas/datamatics/cylinder/management/bl008/`
+
+and:
+
+`cylindermanagement.custommapper.service/src/test/resources/bl008/`
+
+The automation currently includes:
+
+- `BL008V185TestCatalogTest` — verifies all 30 test IDs and reusable datasets are present.
+- `BL008V185SourceContractTest` — one JUnit contract assertion for every BL008-SUI-001..030 case.
+- `BL008V185CylinderIngestionServiceTest` — Mockito behavior tests for company/supplier/customer registration identity handling.
+- `BL008V185SupplierReplacementServiceTest` — Mockito behavior tests for V185 supplier refill/custodian replacement semantics.
+
+These tests are intentionally red/green TDD tests. A failure identifies an application/service/UI mismatch against the frozen V185 contract; it does not reopen the database automatically.
+
 ### Known source risks to test first
 
-Static source review already identifies likely application mismatches which the tests must verify rather than changing the frozen database:
+Static source review identifies likely application mismatches which the tests are designed to expose:
 
 - `CylinderIngestionService` still creates a primary identifier for company registration and overwrites response `cylinderSerial` with the physical identifier.
 - `AvailableYardCylinderByStateSearchService` can overwrite logical `cylinderSerial` with the physical identifier.
 - `CylindersOnVehicleSearchServiceWithOwnershipModel` can overwrite logical `cylinderSerial` with the physical identifier.
 - `SupplierRefillIdentifierReplacementService` still requires the refill supplier to equal the permanent owner supplier instead of using the valid current custody/refill context.
+- Domain Lookup still needs the final logical-ID/physical-ID conditional UI treatment verified.
 
 ## Current BL-008 phase
 
 Database/schema work: **COMPLETE AND FROZEN**.
 
-Test design and reusable test data: **COMPLETE**.
+Test design and reusable TestData Backlog: **COMPLETE AND STORED IN GIT**.
 
-Next action: execute service/integration tests in the documented order, correct application defects, rerun dependent regressions, and then execute UI acceptance tests. BL-008 final closure occurs after the 30-case acceptance results are recorded.
+JUnit-style automated contract/behavior test code: **AUTHORED AND STORED ON `bl008-v185-test-automation`**.
+
+Next action: run Stage 1 automated tests, correct application defects, rerun affected tests until green, then continue through service/integration and UI acceptance. BL-008 final closure occurs after the 30-case acceptance results are recorded.
