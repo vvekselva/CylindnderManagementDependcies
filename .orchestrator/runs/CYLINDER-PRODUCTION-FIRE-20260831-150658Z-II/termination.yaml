@@ -1,0 +1,21 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-150658Z-II
+scheduler_fire_id: 20260831T150658Z
+termination_reason: ABNORMAL_PROCESS_DISAPPEARANCE
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+started_at: '2026-08-31T20:36:58+05:30'
+last_heartbeat_at: '2026-08-31T20:47:42+05:30'
+terminated_at_when_observable: '2026-08-31T22:02:55+05:30'
+productive_runtime_seconds_if_measurable: null
+running_worker_count: 0
+completed_worker_count: 0
+blocked_worker_count: 1
+active_work_unit_ids:
+  - BL-002/STORY-0041_BUSINESS_BEHAVIOR_REWORK
+eligible_work_remaining: true
+eligible_work_count: null
+dispatchable_work_count: null
+last_durable_event: STORY_0041_EXACT_PERSISTENCE_BINDING_RESEARCH
+last_successful_checkpoint: null
+exception_or_platform_evidence_if_applicable: heartbeat stale beyond 2-minute reliability threshold and no durable termination record existed
+recovery_required: true
+next_recovery_action: reconcile STORY-0041 claim and aggregate projection before redispatch
