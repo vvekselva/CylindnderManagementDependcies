@@ -1,7 +1,7 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
-checkpoint_state: CHECKPOINT_RECONCILIATION_PENDING
+checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T08:13:52+05:30
-checkpoint_at: 2026-08-31T08:26:42+05:30
+checkpoint_at: 2026-08-31T08:27:16+05:30
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -50,8 +50,8 @@ claims:
 reconciliation:
   concurrent_newer_durable_evidence_preserved: true
   story_unit_local_evidence_persisted: true
-  readback_verified_same_run_id: false
-  readback_verified_metrics: false
-  readback_verified_bl008_state: false
-  aggregate_reconciliation_gate: PENDING_READBACK
+  readback_verified_same_run_id: true
+  readback_verified_metrics: true
+  readback_verified_bl008_state: true
+  aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
