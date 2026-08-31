@@ -4,42 +4,90 @@
 - Endpoint: `POST /customer-demands`
 - Controller: `CustomerDemandController.create`
 - Approval: PENDING_USER_APPROVAL
+- Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Source field contract: STRICT_FIELD_UI_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Business-behavior rework: COMPLETE
+- Frozen transaction source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Related reconciled create page: `STORY-0054` / BL-010 DEV-0001 implementation source PR #3 head `dde2b007c8ad5278f162cf153b5857397d5b35a0`
 
-## User intent and browser entry
-On the Customer Demands dashboard, the user enters a new demand in the server-rendered create form and activates `Save Request`. The form performs a normal POST to `/customer-demands`; the frozen template contains no JavaScript submit/AJAX/debounce path.
+## Business purpose
 
-## Exact visible controls / submitted fields
-The form is bound to `createRequest` and submits: `customerId` (Long, required select), `customerAddressId` (Long, optional select), `productId` (Long, required select), `requestedCylinders` (Integer, required number, HTML min 1), `requiredDeliveryDate` (LocalDate, optional date), `receivedBy` (String, required text), and `remarks` (String, optional textarea). `Save Request` is the submit control.
+The user records a customer request for a product/cylinders so that the business has a durable PENDING demand/order-request that can be monitored and planned for delivery. This POST is the Save Request transaction embedded in the Customer Demand page documented by STORY-0054.
 
-The customer select uses customer IDs, the optional address select uses customer-address IDs, and the product select uses product IDs. All three option lists are server rendered by the GET dashboard. No source-proved dependent customer/address lookup or hidden-field propagation exists.
+## User entry and selector behavior
 
-## Controller mapping and outcome
-`CustomerDemandController.create` binds the form with `@ModelAttribute("createRequest") CustomerDemandCreateRequestDto` and calls `CustomerDemandService.create`.
+The approved target is not the former long static Customer/Product lists. The related page has been source-reconciled after DEV-0001 to use searchable Customer and Product controls and a Customer-dependent Address control:
 
-Success adds flash attribute `successMessage = "Customer demand created successfully"`. Any `RuntimeException` is caught and its message is added as `errorMessage`. Both paths redirect to `/customer-demands`, where the dashboard template renders the flash message.
+- Customer: minimum 3 characters, 280 ms debounce, `GET /search/customer/{searchText}`, display `customerName`, hidden submitted identity `customerId`.
+- Address: enabled/populated only after Customer selection through `GET /search/address/customer-address/{customerId}`; submitted identity `customerAddressId`; changing/clearing Customer clears stale Address identity/options.
+- Product: minimum 3 characters, 280 ms debounce, `GET /search/product/{searchText}`, display `productName`, response collection `productDtos`, hidden submitted identity `productId`; changing/clearing Product clears stale identity.
 
-## Service validation and reference guards
-The service proves these guards: request object must exist; `customerId` is required; `productId` is required; `requestedCylinders` must be greater than zero; `receivedBy` must contain text.
+The POST continues to receive persistent IDs rather than display text. Server-side Customer/Address relationship validation remains authoritative.
 
-The selected customer must exist in customer persistence and selected product must exist in product persistence. If `customerAddressId` is supplied, that address must exist. If the loaded address has a customer and its customer ID differs from the submitted `customerId`, creation is rejected with `Selected delivery address does not belong to selected customer`.
+## Submitted fields and business meaning
 
-The template also supplies browser-native required/min constraints for customer, product, requested cylinders and received-by. There is no source-proved custom JavaScript validation or disabled-button rule.
+`CustomerDemandController.create` binds `@ModelAttribute("createRequest") CustomerDemandCreateRequestDto` containing:
+
+- `customerId` — required Customer requesting the demand.
+- `customerAddressId` — optional delivery location belonging to that Customer.
+- `productId` — required requested Product.
+- `requestedCylinders` — required requested cylinder quantity; must be greater than zero.
+- `requiredDeliveryDate` — optional requested delivery date.
+- `receivedBy` — required person who received/recorded the request.
+- `remarks` — optional business notes/instructions.
+
+## Validation and relationship guards
+
+`CustomerDemandService.create` proves:
+
+1. request object must exist;
+2. `customerId` is required and must resolve in Customer persistence;
+3. `productId` is required and must resolve in Product persistence;
+4. `requestedCylinders` must be greater than zero;
+5. `receivedBy` must contain text;
+6. supplied `customerAddressId` must resolve;
+7. if the loaded address has a Customer, its Customer ID must equal submitted `customerId`; otherwise creation is rejected with `Selected delivery address does not belong to selected customer`.
+
+The browser also supplies required/min constraints for Customer, Product, requested quantity and Received By, but these do not replace server validation.
 
 ## Derived/default values
-If `requiredDeliveryDate` is absent, the service uses `LocalDate.now()`. That date is written as both requested date and required delivery date. Request type is `SAME_DAY` when the effective date equals today, otherwise `PLANNED`. Request status is set to `PENDING`. `requestedAt` is current local date/time.
 
-A request number is generated as prefix `CDM-` plus a `yyyyMMddHHmmssSSS` timestamp. The entity maps request number as non-null and unique; no separate application duplicate-check branch is source-proved.
+If `requiredDeliveryDate` is absent, the service uses `LocalDate.now()`. The effective date is written as both requested date and required delivery date. Request type becomes `SAME_DAY` when the effective date is today; otherwise `PLANNED`. Status is `PENDING`, and `requestedAt` is the current local date/time.
 
-## Persistence path and exact identity
-The service creates `CustomerDemandDo` and persists with `CustomerDemandJpaDao.saveAndFlush`. The entity maps to `public.tbl_customer_order_request`; generated primary identity is `pk_customer_order_request_id` using sequence `public.pk_customer_order_request_id_serial`.
+The service generates a request number with prefix `CDM-` plus a `yyyyMMddHHmmssSSS` timestamp. The mapped request number is non-null and unique; no separate application duplicate pre-check is source-proved.
 
-Persisted relationships/values include customer (`fk_customer`), optional delivery address (`fk_delivery_address`), product (`fk_product`), request number, requested cylinders, requested/required delivery dates, request type/status, received-by, remarks and requested timestamp. Entity lifecycle also supplies created/updated/default consistency behavior when applicable.
+## Exact persistence effect
 
-## Visible completion behavior
-Successful creation redirects to the dashboard and displays `Customer demand created successfully`. A caught runtime validation/reference/persistence error redirects to the same dashboard and displays the exception message through `errorMessage`.
+The service constructs `CustomerDemandDo` and calls `CustomerDemandJpaDao.saveAndFlush`.
 
-## Governed conclusion
-The frozen template, controller, DTO, service and entity/DAO source resolve the prior posted-field, validation, ID-propagation, default/status/date, persistence and visible-outcome gaps. STORY-0055 is `STRICT_FIELD_UI_COMPLETE`. Approval remains `PENDING_USER_APPROVAL`; no approval is inferred.
+Exact persistence identity:
+
+- table: `public.tbl_customer_order_request`;
+- primary key: `pk_customer_order_request_id`;
+- sequence: `public.pk_customer_order_request_id_serial`.
+
+Persisted business data includes Customer (`fk_customer`), optional delivery Address (`fk_delivery_address`), Product (`fk_product`), generated request number, requested cylinders, requested/required dates, request type/status, Received By, remarks and request timestamp.
+
+## User-visible outcome
+
+On success the controller adds flash attribute `successMessage = "Customer demand created successfully"` and redirects to `/customer-demands`.
+
+A caught `RuntimeException` adds its message as `errorMessage` and redirects to the same dashboard. The dashboard renders the corresponding flash message so the user can see the result and correct invalid input when necessary.
+
+## Business impact
+
+A successful Save Request creates the durable demand used by the Customer Demand monitoring and delivery-planning flow. The searchable-selector page contract reduces incorrect Customer/Product selection and prevents stale Address association while preserving exact persistent IDs and server-side ownership validation.
+
+## Story/code-change governance
+
+The selector implementation belongs to the reconciled page contract in STORY-0054/DEV-0001. This Story records the POST transaction that consumes those selected identities; it does not authorize any new application-code mutation.
+
+Any future conformance drift or proposed fix must first produce the governed user-review manifest with exact repository/ref, file/class/method or template/database location, current-versus-approved behavior, proposed change, business impact, tests and database impact. No BL-010 implementation is authorized without explicit user approval of that manifest.
+
+## Review gate
+
+The POST business transaction is source-bound from user-entered/selected values through controller/service validation, relationship guards, defaults, exact persistence identity and visible completion behavior, and is reconciled with the related searchable-selector page contract.
+
+`STORY-0055` is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+No Story approval/reapproval occurred. BL-004/BL-005/BL-009 fan-out remains blocked until explicit approval/reapproval of the current contract and a current post-approval Story/code conformance PASS.
