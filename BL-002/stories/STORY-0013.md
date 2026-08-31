@@ -4,8 +4,9 @@
 - Endpoint: `POST /logistics/challan-books/save`
 - Controller: `ChallanBookWebController`
 - Controller method: `processBookIngestion(ChallanBookIngestionRequestDto requestDto)`
-- Approval: NOT_APPROVED
-- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Approval evidence: `BL-002/approval-evidence/STORY-0013-approval-20260831.md`
+- Business-behavior rework: APPROVED_AFTER_REWORK
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Business purpose
@@ -68,6 +69,8 @@ The business intent is that the submitted book metadata be valid before persiste
 
 These are `CURRENT_STATE_GAP` findings. They must not be represented as functioning validations or page-ledger creation until application code is corrected and tested.
 
+The first three service-level gaps are now separately queued in BL-010 as `DEV-0002`, `DEV-0003`, and `DEV-0004`. Their existence does not invalidate this Story approval and their queued state does not imply implementation.
+
 ## Error / visible outcome
 
 The controller explicitly catches `CylinderManagementApplicationException`. For that exception type it redisplays `final-version-1/add-challan-book`, restores `ingestionRequest`, repopulates summary metrics, and exposes `errorMessage = "Error: " + exception.getMessage()`.
@@ -82,6 +85,8 @@ A successful submit creates the durable Challan Book registry identity used by l
 
 - STORY-0012 — `GET /logistics/challan-books/add-form`: renders the blank registration form and summary metrics.
 
-## Rework gate
+## Approval and fan-out gate
 
-**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. Controller, form, service, DAO and exact database write identity are now frozen-source bound. The documented current-state gaps are retained rather than guessed away. No automatic approval or revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
+**APPROVED_AFTER_REWORK.** The user explicitly approved this reworked Story on 2026-08-31. Controller, form, service, DAO and exact database write identity are frozen-source bound, and the documented current-state gaps remain part of the approved contract until corrected by separately governed development work.
+
+Revised BL-004, BL-005 and BL-009 fan-out is authorized. Approval does **not** imply that tests are generated, executed, passing, or covered; those states require separate durable evidence.
