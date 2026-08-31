@@ -1,0 +1,27 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
+checkpoint_state: RESUMABLE_RUNTIME_BOUNDARY
+checkpoint_at: '2026-09-01T03:38:38+05:30'
+mode: CONTINUOUS
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+eligible_work_remaining: true
+active_claims: []
+aggregate:
+  business_behavior_complete: 21
+  business_behavior_total: 134
+  percent: 15.7
+  completion_delta_this_run: 0
+story_0045:
+  status: PENDING_USER_APPROVAL
+  business_behavior_complete: false
+  backend_binding: SOURCE_PROVED_TO_AVAILABLE_SERVICE_DAO_ENTITY_DB
+  controller_service_binding: CODE_CONFORMANCE_DRIFT_DETECTED
+  evidence: BL-002/evidence/STORY-0045/20260901T033758-IST-backend-binding-and-import-drift.yaml
+  new_review_packet: BL-002/reviews/STORY-0045/20260901T033758-IST-controller-service-import-drift-review.yaml
+  existing_template_review_packet: BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
+queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+governance:
+  auto_approval: false
+  application_code_mutation: false
+  bl010_created_or_executed: false
+  github_actions_runners_used: false
+next_action: Keep both STORY-0045 drift scopes blocked pending exact user approval; continue another dependency-safe Release-1 Story; reconcile stale queue rows only with exact-preservation proof.
