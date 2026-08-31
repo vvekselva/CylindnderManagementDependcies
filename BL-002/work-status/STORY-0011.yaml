@@ -1,80 +1,44 @@
-version: 1
+version: 2
 story_id: STORY-0011
-run_id: CYLINDER-TARGETED-BL002-STORY-0011-20260831-0812IST
 release: R1
 endpoint: POST /complete-trip
 functional_area: Trip Completion
-state: STRICT_FIELD_UI_COMPLETE
-strict_field_ui_complete: true
-materialized: true
-approval: PENDING_USER_APPROVAL
-review_state: NEEDS_CLARIFICATION
-updated_at: 2026-08-31T08:23+05:30
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-identity_reconciliation:
-  prior_physical_story_identity: R2 GET /login Authentication Login Page
-  canonical_register_identity: R1 POST /complete-trip Trip Completion
-  result: PHYSICAL_STORY_REPAIRED_TO_CANONICAL_IDENTITY
-proven_contract:
-  browser:
-    template: final-version-1/Displayvehicleload
-    form: completeTripForm
-    method: POST
-    action: /complete-trip
-    request_fields: [vehicleLoadId]
-  controller:
-    class: CompleteTripController
-    method: completeTrip
-    request_param: vehicleLoadId
-    request_dto: CompleteTripRequestDto
-    success_terminal: redirect via ViewConstants.REDIRECT_HOME_LINK
-    error_behavior: application_exception_rethrow_and_unexpected_exception_wrap
-  validator:
-    class: CompleteTripRequestValidator
-    guards:
-      - request_required
-      - vehicle_load_required
-      - positive_vehicle_load_id_required
-      - vehicle_load_must_exist
-      - logistics_execution_must_exist
-      - active_logistics_state_must_be_allowed_for_yard
-      - active_logistics_state_must_map_to_final_yard_state
-      - cylinder_must_not_already_have_active_yard_inventory_line
-  service:
-    class: CompleteTripServiceImpl
-    method: processRequest
-    transactional: true
-    trip_status_guard: Proceeding
-    final_trip_status: Halt
-    logistics_execution_final_status: COMPLETED
-    yard_end_stop_type: YARD_END
-    yard_end_stop_status: COMPLETED
-    yard_code: MAIN
-    final_yard_states: [FULL, EMPTY]
-    yard_source_types: [SUPPLIER_RETURN, CUSTOMER_RETURN, YARD_RETURN]
-  dao_classes:
-    - VehicleLoadJpaDao
-    - VehicleTripJpaDao
-    - VehicleTripStatusJpaDao
-    - VehicleTripStopJpaDao
-    - VehicleTripStopTypeJpaDao
-    - YardEntriesJpaDao
-    - YardInventoryJpaDao
-    - YardInventoryLineJpaDao
-    - YardInventorySourceTypeJpaDao
-    - CylinderStateJpaDao
-    - CylinderLogisticsExecutionJpaDao
-    - CylinderLogisticsExecutionLineJpaDao
-    - YardInventoryAllowedStateJpaDao
-  side_effects:
-    - create_legacy_yard_entry
-    - create_active_yard_inventory_line
-    - complete_and_deactivate_active_logistics_line
-    - close_logistics_execution
-    - create_completed_yard_end_stop
-    - transition_vehicle_trip_to_Halt
-applicable_flow_type: TRANSACTIONAL_WRITE_WORKFLOW
-remaining_source_gap: []
-strict_decision: COMPLETE_APPLICABLE_SOURCE_CONTRACT_PROVED
-bl001_action: NO_CHANGE_REQUIRED_CURRENT_CANONICAL_ROW_ALREADY_MATCHES_FROZEN_CONTROLLER_SERVICE_VALIDATOR_AND_BRANCHING_CHAIN
-approval_delta: 0
+legacy:
+  strict_state: STRICT_FIELD_UI_COMPLETE
+  strict_field_ui_complete: true
+  prior_review_state: NEEDS_CLARIFICATION
+rework:
+  state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+  business_behavior_complete: true
+  selector_ux_reviewed: true
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+  needs_clarification: false
+  application_code_change_required: false
+approval:
+  state: NOT_APPROVED
+  explicit_user_approval_required: true
+  auto_approved: false
+proven_business_contract:
+  user_action: complete_current_vehicle_load_trip
+  submitted_fields: [vehicleLoadId]
+  trip_precondition: Proceeding
+  final_trip_status: Halt
+  logistics_execution_final_status: COMPLETED
+  yard_end_stop_type: YARD_END
+  yard_end_stop_status: COMPLETED
+  yard_code: MAIN
+  returned_cylinder_final_states: [FULL, EMPTY]
+  return_source_types: [SUPPLIER_RETURN, CUSTOMER_RETURN, YARD_RETURN]
+  transactional: true
+selector_review:
+  reference_types_checked: [Customer, Product, Supplier, Vehicle, Driver, Address, other_large_reference_lists]
+  result: NOT_APPLICABLE_TO_COMPLETE_TRIP_SUBMIT_ACTION
+  reason: request_contains_only_hidden_current_vehicleLoadId
+next_actions:
+  - user_review_reworked_STORY-0011
+  - explicit_user_approval_required_before_revised_BL004_BL005_BL009_fanout
+notes:
+  - Register-level historical NEEDS_CLARIFICATION is resolved by the previously source-proved complete validator/service/DAO transaction chain and this business-behavior rewrite.
+  - No selector UX implementation change is required for this POST action.
