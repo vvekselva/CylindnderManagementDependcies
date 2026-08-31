@@ -44,12 +44,13 @@ claims:
   created: [20260831-0802-STORY-0036, 20260831-0802-AGGREGATE-RECONCILIATION]
   completed: [20260831-0802-STORY-0036]
   work_unit_claims_remaining_at_checkpoint: 0
+  aggregate_claim_status_at_checkpoint: ACTIVE_FOR_FINALIZATION
 reconciliation:
   source_contract_frozen_baseline_verified: true
   story_unit_local_evidence_persisted: true
   bl001_reopen_required: false
-  readback_verified_same_run_id: pending_post_write_readback
-  readback_verified_metrics: pending_post_write_readback
-  readback_verified_bl008_state: pending_post_write_readback
-  aggregate_reconciliation_gate: PENDING_READBACK
+  readback_verified_same_run_id: true
+  readback_verified_metrics: true
+  readback_verified_bl008_state: true
+  aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
