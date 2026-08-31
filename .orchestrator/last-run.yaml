@@ -1,9 +1,9 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
-checkpoint_state: CHECKPOINT_RECONCILIATION_INCOMPLETE
+checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T06:14:02+05:30
-checkpoint_at: null
-elapsed_seconds_at_checkpoint: null
-elapsed_minutes_at_checkpoint: null
+checkpoint_at: 2026-08-31T06:15:22+05:30
+elapsed_seconds_at_checkpoint: 80
+elapsed_minutes_at_checkpoint: 1.333
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -37,15 +37,16 @@ claims:
   claims_remaining_at_checkpoint: 0
 reconciliation:
   startup_projection_drift_detected: true
-  startup_projection_drift_repaired: false
+  startup_projection_drift_repaired: true
   stale_aggregate: V180_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
   durable_bl008_truth: V182_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  readback_verified_same_run_id: false
-  readback_verified_metrics: false
-  readback_verified_bl008_state: false
-  aggregate_reconciliation_gate: FAIL
+  readback_verified_same_run_id: true
+  readback_verified_metrics: true
+  readback_verified_bl008_state: true
+  aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
 notes:
-  - BL-002 aggregate was advanced to the current run and live BL-008 V182 state.
-  - This last-run projection is the paired checkpoint repair attempt.
-  - No BL-002 dispatch is permitted until both aggregate projections read back equal.
+  - Startup BL-008 projection drift repaired from V180-authored to live V182-authored state.
+  - BL-002 remains 122 strict, 134 physical, zero pending materialization and zero approvals.
+  - Aggregate readback matched on production-fire run id, governed BL-002 metrics and BL-008 state.
+  - No new BL-002 unit has been dispatched yet in this run.
