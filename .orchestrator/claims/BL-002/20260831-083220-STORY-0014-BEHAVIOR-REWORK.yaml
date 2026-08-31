@@ -1,0 +1,16 @@
+claim_id: 20260831-083220-STORY-0014-BEHAVIOR-REWORK
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
+backlog: BL-002
+work_unit: STORY-0014
+status: ACTIVE
+claimed_at: 2026-08-31T08:32:20Z
+heartbeat_at: 2026-08-31T08:32:20Z
+lease_expires_at: 2026-08-31T08:47:20Z
+read_set:
+  - BL-002/stories/STORY-0014.md
+  - BL-002/work-status/STORY-0014.yaml
+  - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+write_set:
+  - BL-002/stories/STORY-0014.md
+  - BL-002/work-status/STORY-0014.yaml
+purpose: Reconstruct STORY-0014 business behavior from exact frozen source under the global revised-contract rework policy.
