@@ -1,0 +1,42 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-022702-IST
+checkpoint_time: '2026-09-01T02:32:10+05:30'
+mode: CONTINUOUS
+backlog: BL-002
+aggregate:
+  business_behavior_complete: 21
+  total_stories: 134
+  completion_percent: 15.7
+  awaiting_user_review: 19
+  approved_or_reapproved: 2
+  rework_remaining: 113
+  completion_delta_this_invocation: 0
+projection_reconciliation:
+  authoritative_aggregate_drift_detected: false
+  known_queue_projection_drift:
+    - STORY-0041
+    - STORY-0042
+    - STORY-0046
+  queue_rewrite_performed: false
+  reason: Full authoritative queue reconstruction was not safely available; destructive partial rewrite remains prohibited.
+units:
+  STORY-0045:
+    claim_state: RELEASED
+    business_behavior_complete: false
+    approval_state: PENDING_USER_APPROVAL
+    evidence: BL-002/evidence/STORY-0045/20260901T023146+0530-backend-binding-investigation.yaml
+    drift_review_packet: BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
+    manifest_implemented: false
+    next_action: Exact frozen-source backend binding remains required; source-index non-match is not absence proof.
+runtime:
+  active_claims: 0
+  eligible_work_remaining: true
+  resumable: true
+  next_invocation_first_actions:
+    - Reconcile scheduler handoff/start/termination gaps and live state.
+    - Reconcile authoritative aggregate/projection drift.
+    - Resume STORY-0045 backend binding or dispatch another safe-independent eligible Story while user approval remains pending.
+controls:
+  story_auto_approvals: 0
+  application_code_mutations: 0
+  bl_010_creations_or_executions: 0
+  github_actions_or_runners: 0
