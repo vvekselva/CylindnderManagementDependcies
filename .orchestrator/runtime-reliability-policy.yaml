@@ -1,0 +1,123 @@
+version: 1
+name: ORCHESTRATOR_RUNTIME_RELIABILITY_AND_TERMINATION_DIAGNOSTICS
+status: ACTIVE
+effective_at: 2026-08-31T13:03:00+05:30
+
+runtime_window:
+  productive_target_min_minutes: 30
+  productive_target_max_minutes: 45
+  hard_minimum_for_correctness: false
+  never_idle_to_consume_runtime: true
+  voluntary_stop_with_eligible_work: forbidden
+  checkpoint_is_terminal_condition: false
+
+worker_pool:
+  maximum_safe_independent_workers: 10
+  continuous_refill: required
+  refill_trigger:
+    - worker_completed
+    - worker_blocked
+    - claim_released
+    - aggregate_checkpoint_completed
+  rule: While execution capacity and eligible safe-independent work remain, continue REPLAN -> CLAIM -> DISPATCH.
+
+live_run:
+  path: .orchestrator/live-run.yaml
+  required: true
+  heartbeat_max_interval_minutes: 2
+  refresh_on:
+    - invocation_start
+    - dispatch_wave
+    - worker_completion_or_blocker
+    - aggregate_checkpoint
+    - terminalization_start
+  required_fields:
+    - run_id
+    - scheduler_fire_id
+    - state
+    - started_at
+    - last_heartbeat_at
+    - productive_runtime_seconds_if_measurable
+    - loop_iteration
+    - running_worker_count
+    - completed_worker_count
+    - blocked_worker_count
+    - active_work_unit_ids
+    - eligible_work_count
+    - dispatchable_work_count
+    - last_action
+
+run_events:
+  path_pattern: .orchestrator/runs/<run-id>/events.ndjson
+  append_only: true
+  required_events:
+    - INVOCATION_STARTED
+    - RECONCILIATION_COMPLETED
+    - WORKER_DISPATCHED
+    - WORKER_COMPLETED
+    - WORKER_BLOCKED
+    - HEARTBEAT
+    - CHECKPOINT_COMPLETED
+    - REPLAN_STARTED
+    - REPLAN_COMPLETED
+    - EXCEPTION_CAUGHT
+    - TERMINATION_REQUESTED
+    - INVOCATION_TERMINATED
+
+terminalization:
+  single_governed_exit_path: required
+  direct_silent_return: forbidden
+  terminal_record_path_pattern: .orchestrator/runs/<run-id>/termination.yaml
+  allowed_reasons:
+    - ALL_ELIGIBLE_WORK_COMPLETED
+    - ALL_REMAINING_WORK_BLOCKED
+    - TARGET_RUNTIME_REACHED
+    - PLATFORM_RUNTIME_FORCED_STOP
+    - UNHANDLED_EXCEPTION
+    - RESOURCE_CLAIM_FAILURE
+    - AGGREGATE_RECONCILIATION_FAILURE
+    - DEPENDENCY_DEADLOCK
+    - SCHEDULER_CANCELLED
+    - USER_REQUESTED_STOP
+    - DUPLICATE_FIRE_SUPPRESSED
+    - APPLICATION_SHUTDOWN
+    - ABNORMAL_PROCESS_DISAPPEARANCE
+    - UNKNOWN_TERMINATION
+  unknown_termination_is_defect: true
+  platform_forced_stop_requires_positive_evidence: true
+  required_terminal_fields:
+    - run_id
+    - scheduler_fire_id
+    - termination_reason
+    - terminal_classification
+    - started_at
+    - last_heartbeat_at
+    - terminated_at_when_observable
+    - productive_runtime_seconds_if_measurable
+    - running_worker_count
+    - completed_worker_count
+    - blocked_worker_count
+    - active_work_unit_ids
+    - eligible_work_remaining
+    - eligible_work_count
+    - dispatchable_work_count
+    - last_durable_event
+    - last_successful_checkpoint
+    - exception_or_platform_evidence_if_applicable
+    - recovery_required
+    - next_recovery_action
+
+abnormal_termination_detection:
+  heartbeat_stale_without_terminal_event: ABNORMAL_PROCESS_DISAPPEARANCE
+  last_run_aggregate_alone_proves_liveness: false
+  watchdog_must_read_live_run_and_events: true
+  next_fire_recovery_first_when_previous_terminal_record_invalid_or_missing: true
+
+quality_gates:
+  QG_RUNTIME: Eligible work plus execution capacity implies continued productive dispatch/replan.
+  QG_HEARTBEAT: Live heartbeat must remain current and consistent with worker/event evidence.
+  QG_TERMINATION: Every termination must have one allowed reason and complete durable diagnostic evidence.
+
+acceptance:
+  rule: A Production Fire must not finish with eligible_work_remaining=true without a positively evidenced governed reason.
+  failure_behavior: Mark termination governance failure and make the next Production Fire perform recovery-first root-cause reconciliation before new dispatch.
