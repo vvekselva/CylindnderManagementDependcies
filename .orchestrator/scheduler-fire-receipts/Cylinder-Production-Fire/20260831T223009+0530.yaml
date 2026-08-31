@@ -2,11 +2,14 @@ scheduler_task: Cylinder Production Fire
 fire_id: 20260831T223009+0530
 scheduled_or_observed_fire_at: '2026-08-31T22:30:09+05:30'
 receipt_persisted_at: '2026-08-31T22:30:09+05:30'
-state: RUN_LINKED
+state: TERMINATED
 orchestrator_state: ORCHESTRATOR_STARTED
 intended_run_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-223009-IST
 live_run_path: .orchestrator/live-run.yaml
 event_stream_path: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-223009-IST/events.ndjson
-terminal_classification: null
-terminated_at_when_observable: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: PLATFORM_RUNTIME_FORCED_STOP
+terminated_at_when_observable: '2026-08-31T22:44:51+05:30'
+termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-223009-IST/termination.yaml
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-223009-IST/checkpoint.yaml
