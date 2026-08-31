@@ -1,0 +1,51 @@
+story_id: STORY-0041
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
+evidence_time: '2026-09-01T00:12:52+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+business_behavior_complete: false
+proved_this_run:
+  concrete_mediator:
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mediator/UC01RegisterCustomerMediator.java
+    class: UC01RegisterCustomerMediator
+    spring_component: true
+    method: invokeServices
+    behavior:
+      - maps customer, addresses, and phone numbers from UC01 request into CustomerIngestionRequestDto
+      - invokes customerIngestionService.processRequest
+      - rethrows InvalidInputParameterException
+      - returns SUCCESS response code after invocation path
+  persistence_service:
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerIngestionService.java
+    class: CustomerIngestionService
+    spring_component: true
+    method: processRequest
+    behavior:
+      - invokes customerIngestionRequstValidator.validate before persistence
+      - maps customer/address/phone DTOs into persistence entities
+      - resolves City, State, Country entities by submitted IDs
+      - links customer-address and customer-phone entities
+      - persists CustomerDo through customerJpaDao.save(customerDo)
+  validator:
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/CustomerIngestionRequstValidator.java
+    class: CustomerIngestionRequstValidator
+    spring_component: true
+    behavior_proved:
+      - null request and null customer rejection
+      - nonblank customer name
+      - GST required, regex/state-code validation, duplicate GST check
+      - phone list required, number normalization, length/pattern validation, duplicate phone check
+      - address list required
+      - address type presence validation
+      - address line validation
+      - city/state/country validation continues in source implementation
+  transaction_boundary_observation:
+    mediator_explicit_transactional_annotation: false
+    customer_ingestion_service_explicit_transactional_annotation: false
+    note: No explicit @Transactional annotation is present on the concrete mediator or CustomerIngestionService at the frozen source ref. CustomerJpaDao is a Spring Data JpaRepository, but exact runtime transaction demarcation for save is not fully source-bound by the application files inspected in this run.
+remaining_source_binding:
+  - exact effective transaction boundary around CustomerJpaDao.save in the deployed Spring Data/JPA configuration
+fail_closed_reason: concrete mediator, persistence, and validator are now proven, but exact effective transaction demarcation remains unproven
+application_code_mutation: false
+story_approval_delta: 0
+next_action: Bind transaction management configuration/runtime semantics at the frozen source ref; if the effective transaction boundary is proven and no other story-contract gap remains, mark business behavior complete and route to explicit user review without auto-approval.
