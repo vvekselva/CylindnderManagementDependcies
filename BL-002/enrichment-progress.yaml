@@ -1,8 +1,8 @@
-version: 49
+version: 50
 backlog_id: BL-002
-updated_at: 2026-08-31T08:27:16+05:30
+updated_at: 2026-08-30T22:13:27-05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
   total_stories: 134
@@ -12,41 +12,43 @@ scope:
 metrics:
   register_ready: 131
   clarification: 3
-  approved: 0
+  approved: 1
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 124
-  strict_field_ui_remaining: 10
+  strict_field_ui_complete: 125
+  strict_field_ui_remaining: 9
   use_case_grouped: 0
-  testing_ready: 0
+  testing_ready: 1
 materialization:
   parity_target: 134
   queue: BL-002/materialization-task-queue.csv
   pending_r1_priority_1: 0
   pending_r2_priority_2: 0
   parity_state: COMPLETE_134_OF_134
+approved_story_testing:
+  policy: .orchestrator/approved-story-testing-policy.yaml
+  approved_story_ids: [STORY-0001]
+  BL-004: {queued: 1, generated: 1, executed: 0, pass: 0, fail: 0}
+  BL-005: {queued: 1, generated: 1, executed: 0, pass: 0, fail: 0}
+  BL-009: {catalogues: 1, test_data_sets: 1, live_validation_pending: 1, pass: 0, fail: 0}
 reconciliation:
+  startup_projection_drift_detected: true
+  repaired_fields:
+    - approved: 0 -> 1 from durable STORY-0001 explicit user approval evidence
+    - strict_field_ui_complete: 124 -> 125 from durable STORY-0038 strict evidence
+    - strict_field_ui_remaining: 10 -> 9
+    - testing_ready: 0 -> 1 from complete approved-story BL-004/BL-005/BL-009 fan-out materialization
   current_run_strict_delta: {count: 0, stories: []}
-  concurrent_durable_strict_advancement_observed: {count: 1, stories: [STORY-0011], resulting_strict_count: 124}
+  durable_prior_unprojected_strict_delta: {count: 1, stories: [STORY-0038]}
+  current_run_approval_projection_delta: {count: 1, stories: [STORY-0001]}
   current_run_materialization_delta: {count: 0, stories: []}
-  source_integrity_repairs: []
-  source_detail_review_required: [STORY-0035, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: [STORY-0047]
-  blocked_this_run: [STORY-0047]
-  correction:
-    - STORY-0047 frozen controller directly invokes CustomerUpdateService through ICylinderManagementApplicationService; no separate CustomerUpdateApplicationService layer is proved.
-    - STORY-0047 persistence path is proved through CustomerUpdateService, CustomerJpaDao and CustomerDo/public.tbl_customer for the executable phone/address aggregate save.
-    - CustomerUpdateService scalar modelMapper mapping is commented out; customer-name/GST scalar persistence mutation is not claimed.
-    - Frozen UC01RegisterCustomer.html posts to /registerCustomer, not /updateCustomer, so the exact visible/browser submit path for POST /updateCustomer remains unproved and strict completion is withheld.
-    - Concurrent durable STORY-0011 strict completion was preserved; this run did not claim its +1 delta.
+  source_detail_review_required: [STORY-0035, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
   aggregate_reconciliation_gate: PASS
 cursor:
-  last_strict_r1_story: STORY-0011
-  next_eligible_strict_r1_story: null
   next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
   next_eligible_materialization_unit: null
-  trace_proxy_cursor: STORY-0030
-approval_policy: {auto_approve: false, approvals_delta: 0}
+  next_approved_story_testing_unit: BL-004/STORY-0001_SOURCE_BINDING
+approval_policy: {auto_approve: false, approvals_delta: 1}
 bl008:
   state_source: BL-008/README.md
   execution_mode: CLOSED
