@@ -1,0 +1,31 @@
+story_id: STORY-0045
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST-RUN-001
+frozen_repository: vvekselva/CylinderManagement
+frozen_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+evidence_time: "2026-09-01T03:03:15+05:30"
+classification: SOURCE_INDEX_BINDING_UNRESOLVED
+business_behavior_complete: false
+known_positive_binding:
+  controller: CustomerFetchController.doGet
+  route: GET /displayCustomer
+  request_parameter: customerId
+  request_dto: CustomerFetchByIdRequestDto
+  service_field: customerFetchByIdService
+  render_template: DisplayCustomer
+remaining_proof:
+  - concrete customerFetchByIdService implementation
+  - exact DAO/repository call
+  - entity mapping used by the read path
+  - database table/object read by the path
+search_attempts:
+  - token: CustomerFetchByIdService
+    result: zero_results_incomplete_index
+  - token: customerFetchByIdService
+    result: zero_results_incomplete_index
+interpretation: "Incomplete code-search results are not evidence that the implementation is absent. The proof gate remains open and fail-closed."
+code_drift_review:
+  status: PENDING_USER_APPROVAL
+  approved_manifest_expansion: false
+  application_code_mutation: false
+  bl010_created_or_executed: false
+next_action: "Resume exact frozen-source binding for concrete service -> DAO -> entity -> database. Do not implement DisplayCustomer drift unless its exact manifest is explicitly approved."
