@@ -1,0 +1,24 @@
+story_id: STORY-0041
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-223009-IST
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+evidence_type: SOURCE_BINDING_CONTINUATION
+observed_at: '2026-08-31T22:44:16+05:30'
+claim: STORY-0041-CYLINDER-PRODUCTION-FIRE-20260831-223009-IST
+inherited_verified_facts:
+  - POST /registerCustomer controller invokes uC01RegisterCustomerMediator.invokeServices(requestDto)
+  - mediator field type is ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
+  - resolveAddressTypes maps submitted addressTypeIds to AddressDto.addressType before mediator invocation
+this_run_result: PARTIAL_SOURCE_BINDING_CONTINUES
+additional_verified_source_binding: []
+remaining_source_binding:
+  - concrete Spring bean implementation/configuration selected for uC01RegisterCustomerMediator
+  - exact transaction boundary across mediator/service chain
+  - validator implementation proving server-side cross-reference and required-field rules
+fail_closed: true
+business_behavior_complete: false
+application_code_mutation: false
+bl_010_execution: false
+approval_delta: 0
+aggregate_projection_mutated: false
+aggregate_projection_repair_remaining: true
+next_action: continue frozen-tree/package traversal for concrete mediator bean, validator and transaction annotations; reconcile aggregate from authoritative unit-local states before promotion
