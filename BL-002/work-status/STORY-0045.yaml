@@ -1,0 +1,21 @@
+story_id: STORY-0045
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
+release: R1
+endpoint: GET /displayCustomer
+status: SOURCE_DETAIL_REVIEW_REQUIRED
+strict_field_ui_complete: false
+approval: PENDING_USER_APPROVAL
+materialized: true
+checked_at: 2026-08-31T06:21:19+05:30
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+attempted_source_resolution:
+  - searched frozen commit evidence for displayCustomer and DisplayCustomer
+  - attempted conventional controller paths DisplayCustomerController.java and CustomerDisplayController.java
+result: controller source path not resolved from authoritative frozen source during this unit
+remaining_gap:
+  - exact controller/template/model source unresolved
+  - visible filters/columns/actions and browser requests unresolved
+  - service/DAO/entity/database read path unresolved
+strict_promotion_withheld_reason: authoritative_source_path_not_resolved
+database_behavior_invented: false
+approval_delta: 0
