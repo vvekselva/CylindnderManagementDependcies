@@ -1,0 +1,30 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-010244-IST-I
+checkpoint_time: '2026-09-01T01:07:00+05:30'
+mode: CONTINUOUS
+state: RESUMABLE_CHECKPOINT
+eligible_work_remaining: true
+active_claims_remaining: 0
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-II-20260901-003017-IST
+aggregate_reconciliation:
+  starting_business_behavior_complete: 20
+  ending_business_behavior_complete: 21
+  starting_awaiting_user_review: 18
+  ending_awaiting_user_review: 19
+  starting_rework_required: 114
+  ending_rework_required: 113
+  enrichment_projection_version: 74
+  queue_projection_pending: true
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+unit_results:
+  STORY-0042:
+    business_behavior_complete: true
+    approval_state: AWAITING_EXPLICIT_USER_REVIEW
+    evidence: BL-002/evidence/STORY-0042/20260901T011000+0530-complete-write-path-binding.yaml
+    material_review_finding: CustomerIngestionService does not assign resolved Address Type to CustomerAddressDo before save; fk_address_type persistence is not source-proved on this path.
+    completion_delta: 1
+approvals_delta: 0
+auto_approval_performed: false
+application_code_mutations: 0
+bl010_executions: 0
+github_actions_or_runners_used: false
+next_recovery_action: Repair stale queue rows for STORY-0041, STORY-0042 and STORY-0046, then continue STORY-0045 or another dependency-safe R1 business-behavior unit.
