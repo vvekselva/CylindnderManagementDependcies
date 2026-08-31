@@ -1,0 +1,67 @@
+version: 1
+name: BL002_BUSINESS_BEHAVIOR_REWORK
+status: ACTIVE
+scope:
+  backlog: BL-002
+  registered_story_count: 134
+  all_registered_stories_require_rework: true
+  trigger: USER_REVIEW_FEEDBACK_2026_08_31
+reason:
+  summary: Existing stories may prove endpoint/source mechanics without adequately explaining what the page or operation does for the business/user.
+  exemplar: STORY-0054
+  defect_class: BUSINESS_BEHAVIOR_AND_IMPACT_MISSING_OR_UNDEREXPLAINED
+approval:
+  auto_approval: forbidden
+  pending_story_rule: remains_not_approved_until_explicit_user_approval
+  previously_approved_story_rule: material_rework_requires_explicit_reapproval_before downstream testing can be treated as final for the revised story
+quality_gate:
+  story_is_not_review_ready_until_all_applicable_sections_are_source_proved:
+    - business_purpose
+    - user_goal_and_trigger
+    - page_or_operation_role_in_business_process
+    - exact_user_entered_or_selected_fields
+    - business_meaning_of_each_field
+    - validation_and_why_it_matters
+    - what_happens_when_user_submits_or_acts
+    - exact_system_state_change_or_read_effect
+    - persistence_or_read_identity
+    - downstream_business_impact
+    - visible_user_outcome
+    - error_or_rejection_outcome
+    - related_operations_on_same_page
+    - cross_story_relationships_when_GET_and_POST_are_separate_registered_endpoints
+  endpoint_trace_only_is_insufficient: true
+  technical_chain_only_is_insufficient: true
+  form_field_list_without_business_meaning_is_insufficient: true
+  persistence_without_user_or_business_impact_is_insufficient: true
+  no_invention_rule: Any behavior or impact not proved by frozen source must be marked unproved/needs clarification.
+page_story_rule:
+  embedded_actions_must_be_described: true
+  example: A GET dashboard Story that renders a create form must explain the create capability, its fields, validation, system impact and visible outcome even when the POST is a separate Story.
+post_story_rule:
+  must_explain_business_transaction_not_only_controller_service_dao_chain: true
+  must_explain_before_after_state: true
+rework_execution:
+  order:
+    - R1
+    - R2
+  priority_within_release: story_id_ascending_unless_dependency_or_user_priority_requires_otherwise
+  preserve_existing_source_evidence: true
+  do_not_discard_valid_traceability: true
+  rewrite_human_readable_story: true
+  require_user_review_after_rework: true
+  approvals_are_explicit_user_only: true
+  downstream_test_regeneration_rule: regenerate_or_reconcile BL-004 BL-005 BL-009 when revised approved story changes testable behavior
+metrics:
+  track:
+    - total_registered
+    - rework_required
+    - rework_in_progress
+    - business_behavior_complete
+    - awaiting_user_review
+    - approved_after_rework
+    - needs_clarification
+watchdog:
+  report_rework_progress: true
+  report_next_story: true
+  report_business_behavior_gaps: true
