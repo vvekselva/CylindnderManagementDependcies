@@ -1,7 +1,7 @@
-version: 10
+version: 11
 name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
 supersedes:
-  - version: 9
+  - version: 10
     name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
 runtime_reliability_policy_ref: .orchestrator/runtime-reliability-policy.yaml
 principles:
@@ -17,6 +17,7 @@ principles:
   - A run-local blocker must not automatically disable the recurring Production Fire scheduler.
   - A successful checkpoint is not a terminal condition while eligible work and execution capacity remain.
   - Every Production Fire termination must be durably explainable.
+  - Scheduler last_run_time is scheduler-delivery evidence only and is not proof of orchestrator execution.
 
 run_scope:
   required: true
@@ -26,7 +27,7 @@ run_scope:
     CONTINUOUS:
       rule: Replan across all eligible independent backlogs/units.
     RECOVERY:
-      rule: Work only on blocker, stale-state, reconciliation, architecture recovery, parity repair or prior-run termination recovery in scope.
+      rule: Work only on blocker, stale-state, reconciliation, architecture recovery, parity repair, scheduler-handoff recovery or prior-run termination recovery in scope.
 
 resource_claims:
   claim_granularity: writable_resource_or_irreducible_work_unit
@@ -66,6 +67,20 @@ shared_aggregate_state:
     checkpoint_is_terminal_condition: false
     after_checkpoint_action: REPLAN_AND_REFILL_WHILE_ELIGIBLE_WORK_AND_CAPACITY_REMAIN
 
+scheduler_handoff_receipts:
+  path_pattern: .orchestrator/scheduler-fire-receipts/<scheduler-task>/<fire-id>.yaml
+  first_action_required: true
+  first_action_state: TRIGGER_RECEIVED
+  must_precede_backlog_read_or_mutation: true
+  run_link_required: true
+  terminal_update_required: true
+  scheduler_last_run_time_is_execution_proof: false
+  classifications:
+    scheduler_trigger_without_receipt: SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
+    receipt_without_run_start: ORCHESTRATOR_START_NOT_CONFIRMED
+    run_without_terminal_record: ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING
+  unresolved_gap_recovery: next_fire_before_new_dispatch
+
 runtime_liveness:
   live_run_file: .orchestrator/live-run.yaml
   event_stream_path_pattern: .orchestrator/runs/<run-id>/events.ndjson
@@ -73,6 +88,7 @@ runtime_liveness:
   heartbeat_max_interval_minutes: 2
   last_run_aggregate_alone_proves_liveness: false
   watchdog_reads_live_run_and_event_evidence: true
+  watchdog_correlates_scheduler_last_run_time_with_receipts_and_runs: true
   stale_heartbeat_without_terminal_event: ABNORMAL_PROCESS_DISAPPEARANCE
   next_fire_recovery_first_on_invalid_or_missing_terminal_record: true
 
@@ -83,6 +99,8 @@ scheduler_policy:
     run_local_blocker_scope: current_invocation_only
     automatic_disable_for_blocker: forbidden
     continuous_dispatch_refill: required
+    durable_trigger_receipt_required: true
+    trigger_receipt_must_be_first_tool_write: true
     allowed_disable_conditions:
       - explicit_user_instruction
       - deliberate_schedule_replacement_or_supersession
@@ -95,6 +113,9 @@ scheduler_policy:
     read_only: true
     lifecycle_independent_from_production_fire: true
     stale_heartbeat_detection: required
+    scheduler_handoff_gap_detection: required
+    previous_and_current_run_time_in_heading: required
+    previous_and_current_metric_values: required
 
 BL-002:
   parallelism:
@@ -160,6 +181,7 @@ BL-008:
 
 planning:
   algorithm:
+    - RECOVER unresolved scheduler handoff/start/termination evidence gaps when required.
     - RECOVER incomplete prior termination evidence when required.
     - RECONCILE durable unit evidence.
     - RECONCILE BL-002 Story parity/materialization queue.
@@ -205,6 +227,7 @@ terminalization_policy:
   eligible_work_remaining_without_governed_reason: forbidden
 
 quality_gates:
+  QG_TRIGGER: A scheduled invocation counts as orchestrator execution only after durable trigger receipt plus run linkage.
   QG_RUNTIME: Continue productive dispatch/replan while eligible work and execution capacity remain.
   QG_HEARTBEAT: Live heartbeat must remain current and consistent with event/worker evidence.
   QG_TERMINATION: Every termination must have an allowed reason and complete durable diagnostic evidence.
