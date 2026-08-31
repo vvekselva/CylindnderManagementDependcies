@@ -2,117 +2,103 @@
 
 - Release: R1
 - Primary page endpoint: `GET /customer-demands`
-- Page controller: `CustomerDemandController.showDashboard`
 - Related create action: `POST /customer-demands` (`STORY-0055`)
-- Approval: NOT_APPROVED
-- Review state: REWORK_REQUIRED_USER_UX_CHANGE
-- Frozen source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
-- Requirement source: explicit user review feedback on 2026-08-31
+- Page controller: `CustomerDemandController.showDashboard`
+- Approval: **NOT_APPROVED**
+- Review state: **READY_FOR_USER_REVIEW_AFTER_IMPLEMENTATION_SOURCE_RECONCILIATION**
+- Frozen behavior/source reference: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Implemented development source: PR #3, head `dde2b007c8ad5278f162cf153b5857397d5b35a0`
+- Development backlog: `BL-010/DEV-0001`
 
-## What this page is for
-The Customer Demand page is the operational screen used to record what a customer is asking the business to deliver and to monitor those demands afterwards. It is not only a dashboard/list page.
+## Business purpose
+The Customer Demand page is used to record what a customer is asking the business to deliver and to monitor those demands. From the same page the user can view/filter existing demands and metrics and create a new demand with Customer, Delivery Address, Product, requested cylinders, required date, received-by and optional remarks.
 
-From the same page, the user must be able to:
-1. see existing customer demands;
-2. filter/search existing demands;
-3. see demand/delivery metrics; and
-4. create a new customer demand by selecting the customer, delivery address, product, requested cylinder quantity, delivery date, who received the request, and optional remarks.
+A successful Save Request creates a durable pending customer-demand/order-request record for later monitoring and delivery planning.
 
-The business result of Save Request is a durable pending customer-demand/order-request record that is available to later demand monitoring and delivery planning.
+## Reconciled implemented create-demand journey
+The former long static Customer/Product reference lists are no longer the accepted target. The implementation in PR #3 now follows the source-bound searchable-selector contract below.
 
-## Required user journey for creating a demand
-The create-demand interaction must follow the same search-oriented user experience used elsewhere in the application, particularly the Walk-in Sale workflow. Large reference data such as customers and products must not be presented as long static list boxes when an existing application search service can be reused.
+### 1. Customer — searchable selector
+The visible Customer control is a search box. Browser behavior is now source-proved as:
 
-### 1. Select Customer — SEARCH BOX REQUIRED
-`customerId` remains the persisted/submitted customer identity, but the visible control must be a searchable Customer field rather than a preloaded list box.
+- minimum input length: **3 characters**;
+- debounce: **280 ms**;
+- exact REST endpoint: `GET /search/customer/{searchText}` (browser URL under the deployed context: `/cylindermanagement/search/customer/{searchText}`);
+- response collection: `customerDtos`;
+- display value: `customerName`;
+- selected identity: `customerId`;
+- selected ID is stored in the hidden form field bound to `customerId`;
+- editing/clearing Customer invalidates the selected Customer ID and also clears the dependent Address ID/options.
 
-Required behavior:
-- the user types part of the customer name/identifier into a Customer search box;
-- the search box must reuse the same existing Customer REST/search service used by the Walk-in Sale customer selector, rather than introduce another independent customer-search implementation;
-- matching customer results are displayed to the user;
-- selecting a result stores the exact customer ID used by the create-demand request;
-- changing or clearing the selected customer must invalidate/clear any previously selected customer address;
-- the Story must identify the exact REST endpoint, request parameter/minimum-length/debounce behavior and hidden-ID propagation from frozen source once the Walk-in Sale implementation is bound during implementation/rework.
+This reuses the existing Walk-in Sale search pattern and does not introduce a duplicate Customer endpoint.
 
-The current frozen Customer Demand template uses a server-rendered Customer list box. That is the current-state behavior, not the accepted target behavior. This Story therefore remains REWORK_REQUIRED until the page is changed and source-proved.
+### 2. Delivery Address — dependent on selected Customer
+Address selection is disabled until a Customer is selected. The implementation then calls:
 
-### 2. Populate Address after Customer Selection
-`customerAddressId` represents the delivery location for the selected customer.
+`GET /search/address/customer-address/{customerId}`
 
-Required behavior:
-- no unrelated global address list should be presented as the normal selection model;
-- after a customer is selected, the system must fetch/populate only addresses belonging to that customer;
-- the user then selects one of those customer addresses;
-- if the customer changes, the address options and selected address must be reset;
-- the existing customer-address REST/search service should be reused where the application already provides one;
-- server-side validation must continue to reject an address that does not belong to the submitted customer.
+(browser URL `/cylindermanagement/search/address/customer-address/{customerId}`).
 
-Business impact: the demand is tied to the correct customer delivery location and the user is prevented from accidentally choosing another customer's address.
+The response collection is `customerAddressDtos`; each option carries `customerAddressId`. Changing/clearing Customer resets `customerAddressId` and the Address options before another lookup. Server-side ownership validation remains authoritative: a submitted Address must belong to the submitted Customer.
 
-### 3. Select Product — SEARCH BOX REQUIRED
-`productId` remains the persisted/submitted product identity, but the visible Product control must be a searchable field rather than a long static product list.
+### 3. Product — searchable selector
+The visible Product control is a search box with:
 
-Required behavior:
-- the user types part of the product name/code;
-- results are obtained using the same existing Product REST/search service/pattern used on other application pages;
-- the user selects the required product;
-- the selected product ID is propagated into the create-demand request;
-- clearing/changing the search selection must clear stale hidden product identity;
-- exact endpoint, minimum-length/debounce/result mapping must be source-proved during implementation/rework.
+- minimum input length: **3 characters**;
+- debounce: **280 ms**;
+- exact REST endpoint: `GET /search/product/{searchText}` (browser URL `/cylindermanagement/search/product/{searchText}`);
+- response type: `ProductSearchResponseDto`;
+- exact JSON collection: `productDtos` (source-proved from `ProductSearchResponseDto#getProductDtos()`);
+- display value: `productName`;
+- selected identity: `productId`;
+- selected ID is stored in the hidden form field bound to `productId`;
+- editing/clearing the Product search invalidates stale `productId`.
 
 ### 4. Other demand fields
-| Field | Required | User meaning | System impact when created |
+| Field | Required | User meaning | System impact |
 |---|---|---|---|
-| Customer | Yes | Customer requesting cylinders/product | Selected search result supplies `customerId`; persisted as the demand customer. |
-| Customer Address | No | Delivery location for this demand | Populated only for selected customer; selected ID supplies `customerAddressId`. |
-| Product | Yes | Product/cylinder product requested | Selected search result supplies `productId`; persisted as the requested product. |
-| `requestedCylinders` | Yes | Number of cylinders requested | Must be greater than zero; becomes requested quantity for planning/metrics. |
-| `requiredDeliveryDate` | No | Date by which customer requires delivery | Defaults to today if absent; drives SAME_DAY vs PLANNED classification. |
-| `receivedBy` | Yes | Person/user who received or recorded request | Must contain text and is persisted with the demand. |
-| `remarks` | No | Additional instructions/context | Optional information persisted with request. |
+| Customer | Yes | Customer requesting cylinders/product | Search selection submits `customerId`. |
+| Customer Address | No | Delivery location | Only selected Customer's addresses are offered; selection submits `customerAddressId`. |
+| Product | Yes | Requested product | Search selection submits `productId`. |
+| `requestedCylinders` | Yes | Requested cylinder quantity | Must be greater than zero. |
+| `requiredDeliveryDate` | No | Required delivery date | Defaults to today if absent; contributes to SAME_DAY/PLANNED classification. |
+| `receivedBy` | Yes | Person who received/recorded request | Must contain text and is persisted. |
+| `remarks` | No | Additional instructions/context | Optional persisted information. |
 
 ## Save Request — business transaction
-When the user activates Save Request, the selected Customer ID, selected Address ID, selected Product ID and entered demand fields are submitted to `POST /customer-demands`.
+Save Request posts the hidden selected identities and entered fields to `POST /customer-demands`. Existing service rules remain authoritative:
 
-The existing service rules remain applicable unless implementation changes prove otherwise:
-- customer is required and must exist;
-- product is required and must exist;
+- Customer is required and must exist;
+- Product is required and must exist;
 - requested quantity must be greater than zero;
 - received-by must contain text;
-- optional selected address must exist and belong to the selected customer.
+- an optional Address must exist and belong to the selected Customer.
 
-On a valid request the system creates a `CustomerDemandDo` through `CustomerDemandJpaDao.saveAndFlush` in `public.tbl_customer_order_request`.
+On valid input the system creates `CustomerDemandDo` through `CustomerDemandJpaDao.saveAndFlush` in `public.tbl_customer_order_request`. The existing transaction derives/generates request number (`CDM-` prefix), `PENDING` status, effective required-delivery date, `SAME_DAY` versus `PLANNED`, request timestamp, and the generated database identity `pk_customer_order_request_id` using `public.pk_customer_order_request_id_serial`.
 
-The system currently derives/generates:
-- request number with `CDM-` prefix;
-- status `PENDING`;
-- effective requested/required delivery date;
-- `SAME_DAY` when effective date is today, otherwise `PLANNED`;
-- request timestamp; and
-- generated database identity `pk_customer_order_request_id` using `public.pk_customer_order_request_id_serial`.
+A validation/reference/persistence failure must not create the demand and must return a visible error so the user can correct the input.
+
+## Existing dashboard behavior
+The page continues to show demand/delivery metrics and existing demands, with filters including status, request type, product name and search term plus pagination. These monitoring controls are separate from the new create-form reference searches.
+
+## Implementation/source reconciliation evidence
+`BL-010/DEV-0001` is source-validated against PR #3 head `dde2b007c8ad5278f162cf153b5857397d5b35a0`:
+
+- exact Customer, Address and Product services are bound;
+- exact Customer/Address response collections are bound;
+- `ProductSearchResponseDto.productDtos` is proven directly from frozen DTO source;
+- hidden submitted identities remain `customerId`, `customerAddressId`, `productId`;
+- Customer change clears stale Address selection;
+- Product change clears stale Product identity;
+- minimum length/debounce are implemented as 3 / 280 ms;
+- the PR was scope-minimized so the governed change is limited to `with-menu/CustomerDemandDashboard.html`;
+- no live browser execution is claimed by this source-validation step.
 
 ## User/system impact
-A successful Save Request creates a new operational demand that can appear in demand dashboards and participate in delivery-planning and later delivery-status processing. The user receives confirmation on the Customer Demand page.
-
-A validation/reference/persistence error must leave the demand uncreated and return a useful visible error so the user can correct the input.
-
-## Existing demand monitoring
-The same page continues to show/filter existing demands and metrics. Existing filters include status, request type, product name and search term with pagination. These dashboard behaviors are separate from the new required search controls used inside the create-demand form.
-
-## Current-state versus required-state gap
-Current frozen source proves server-rendered static Customer, Address and Product lists on this page. The user-required target is:
-
-`Customer search -> select Customer -> load that Customer's addresses -> select Address -> Product search -> select Product -> enter quantity/date/received-by/remarks -> Save Request`
-
-This target must reuse the same Customer/Product search REST services/patterns already used by established pages such as Walk-in Sale, and reuse the existing customer-address service where applicable. Exact endpoint names and browser behavior must be bound from authoritative source during implementation; they must not be invented in this Story.
-
-## Cross-page rework rule introduced by this review
-This page is an exemplar for a wider UX rework. During BL-002 rework, any page that currently renders large Customer/Product/Supplier/Vehicle/Driver or similar reference datasets as static list boxes must be reviewed against existing application search controls. Where a reusable search service/pattern already exists, the target Story should describe the searchable control, selected-ID propagation, dependent-list population/reset behavior and user/system impact instead of accepting a long static list merely because the current source renders one.
+The user searches for a Customer instead of scanning a long list, sees only that Customer's delivery addresses, searches for a Product, enters demand details, and saves. The system still receives exact persistent IDs and retains server-side relationship validation, reducing incorrect Customer/Address/Product association while preserving the existing business transaction.
 
 ## Approval and fan-out gate
-This Story is explicitly **NOT APPROVED**.
-
-No revised BL-004 unit-test, BL-005 integration-test or BL-009 test-case/test-data fan-out is authorized for this revised behavior until the user explicitly approves the reworked Story. Existing historical downstream artifacts, if any, must not be treated as approval of this revised UX contract.
+This Story is **NOT APPROVED**. Implementation completion and source reconciliation do not auto-approve it. Revised BL-004, BL-005 and BL-009 fan-out remains blocked until explicit user approval/reapproval of this reconciled Story.
 
 ## Review conclusion
-STORY-0054 remains `REWORK_REQUIRED_USER_UX_CHANGE`. The business purpose is now documented, but approval is blocked until the Customer and Product selectors are reworked as search boxes, customer-dependent Address population/reset behavior is implemented/source-proved, and the resulting Story is explicitly approved by the user.
+The requested selector UX rework has now been implemented and source-reconciled into this Story. The previous `REWORK_REQUIRED_USER_UX_CHANGE` implementation gap is closed at source level. The Story is now **READY_FOR_USER_REVIEW_AFTER_IMPLEMENTATION_SOURCE_RECONCILIATION**, while approval remains explicitly pending.
