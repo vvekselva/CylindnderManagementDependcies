@@ -3,9 +3,14 @@ observed_fire_time: 2026-08-31T19:54:14+05:30
 scheduled_fire_time: 2026-08-31T19:54:14+05:30
 receipt_time: 2026-08-31T19:54:14+05:30
 state: TERMINATED
-orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-142414Z
 run_started_at: 2026-08-31T19:54:20+05:30
-terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
-recovery_observed_at: 2026-08-31T20:03:23+05:30
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+termination_time: 2026-08-31T20:05:29+05:30
+eligible_work_remaining: true
+prior_recovery_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+prior_recovery_classification_superseded: true
+supersession_reason: Invocation remained alive after the earlier stale-heartbeat recovery classification; newer primary CYLINDER-PRODUCTION-FIRE-20260831-143227Z is durably RUNNING, so this run terminates fail-closed to prevent split-brain writers.
+next_action: NEWER_ACTIVE_PRIMARY_CONTINUES_FROM_LIVE_DURABLE_STATE
