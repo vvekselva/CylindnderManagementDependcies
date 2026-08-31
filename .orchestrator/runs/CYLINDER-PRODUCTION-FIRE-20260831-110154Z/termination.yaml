@@ -1,0 +1,27 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110154Z
+scheduler_fire_id: FIRE-20260831T110122Z
+scheduler_task: Cylinder Production Fire
+mode: CONTINUOUS
+started_at: 2026-08-31T11:01:54Z
+terminated_at: 2026-08-31T11:07:36Z
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+termination_reason: NEWER_ACTIVE_PRIMARY_INVOCATION_OWNS_LIVE_RUN
+voluntary_early_stop: false
+eligible_work_remaining: true
+newer_active_run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+newer_active_run_started_at: 2026-08-31T11:05:29Z
+safety_action: STOP_THIS_INVOCATION_BEFORE_BACKLOG_MUTATION_AFTER_OVERLAP_DETECTION
+scheduler_handoff:
+  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/FIRE-20260831T110122Z.yaml
+  trigger_received: true
+  run_linked: true
+prior_recovery_classification:
+  observed: ABNORMAL_PROCESS_DISAPPEARANCE
+  observed_at: 2026-08-31T11:05:29Z
+  disposition: SUPERSEDED_BY_DUPLICATE_FIRE_SUPPRESSION_AFTER_CURRENT_INVOCATION_REAPPEARED_AND_NEWER_PRIMARY_WAS_CONFIRMED_ACTIVE
+work_deltas:
+  backlog_mutations_after_overlap_detection: 0
+  application_code_mutations: 0
+  story_approvals: 0
+  bl010_code_rework: 0
+next_action: NEWER_ACTIVE_PRIMARY_INVOCATION_CONTINUES_FROM_DURABLE_STATE
