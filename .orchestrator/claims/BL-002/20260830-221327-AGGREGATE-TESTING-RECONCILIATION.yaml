@@ -1,0 +1,20 @@
+claim_id: 20260830-221327-AGGREGATE-TESTING-RECONCILIATION
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
+backlog: BL-002
+unit: AGGREGATE_RECONCILIATION
+status: ACTIVE
+acquired_at: 2026-08-30T22:13:27-05:30
+heartbeat_at: 2026-08-30T22:13:27-05:30
+lease_expires_at: 2026-08-30T22:28:27-05:30
+read_set:
+  - BL-002/work-status/STORY-0001.yaml
+  - BL-002/work-status/STORY-0038.yaml
+  - BL-002/stories/
+  - BL-002/materialization-task-queue.csv
+  - BL-004/unit-test-task-queue.csv
+  - BL-005/integration-test-task-queue.csv
+  - BL-009/test-case-task-queue.csv
+  - BL-008/README.md
+write_set:
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
