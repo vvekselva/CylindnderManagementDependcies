@@ -5,8 +5,8 @@ backlog: BL-002
 unit_id: STORY-0011
 status: ACTIVE
 claimed_at: 2026-08-31T08:12+05:30
-heartbeat_at: 2026-08-31T08:12+05:30
-lease_expires_at: 2026-08-31T08:27+05:30
+heartbeat_at: 2026-08-31T08:22+05:30
+lease_expires_at: 2026-08-31T08:37+05:30
 owner: Primary Cylinder Automation Tool
 mode: TARGETED
 read_set:
