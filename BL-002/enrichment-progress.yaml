@@ -1,9 +1,9 @@
-version: 48
+version: 49
 backlog_id: BL-002
-updated_at: 2026-08-31T08:23+05:30
+updated_at: 2026-08-31T08:26:42+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-TARGETED-BL002-STORY-0011-20260831-0812IST
-checkpoint_state: CHECKPOINT_RECONCILED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+checkpoint_state: CHECKPOINT_RECONCILIATION_PENDING
 scope:
   total_stories: 134
   r1_stories: 88
@@ -26,18 +26,20 @@ materialization:
   pending_r2_priority_2: 0
   parity_state: COMPLETE_134_OF_134
 reconciliation:
-  current_run_strict_delta: {count: 1, stories: [STORY-0011]}
+  current_run_strict_delta: {count: 0, stories: []}
+  concurrent_durable_strict_advancement_observed: {count: 1, stories: [STORY-0011], resulting_strict_count: 124}
   current_run_materialization_delta: {count: 0, stories: []}
-  source_integrity_repairs:
-    - STORY-0011 physical Story identity repaired from unrelated R2 GET /login content to canonical R1 POST /complete-trip Trip Completion.
+  source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: [STORY-0011]
-  blocked_this_run: []
+  source_detail_refined_this_run: [STORY-0047]
+  blocked_this_run: [STORY-0047]
   correction:
-    - STORY-0011 applicable browser, controller, validator, transactional service, DAO/entity/database branching and terminal behavior proved from frozen baseline and current canonical BL-001 evidence.
-    - Current canonical BL-001 /complete-trip row already identifies CompleteTripController.completeTrip, CompleteTripServiceImpl and CompleteTripRequestValidator; BL-001 change was not required.
-    - Register-level NEEDS_CLARIFICATION was retained; approval remains explicit-user-only.
-  aggregate_reconciliation_gate: PASS
+    - STORY-0047 frozen controller directly invokes CustomerUpdateService through ICylinderManagementApplicationService; no separate CustomerUpdateApplicationService layer is proved.
+    - STORY-0047 persistence path is proved through CustomerUpdateService, CustomerJpaDao and CustomerDo/public.tbl_customer for the executable phone/address aggregate save.
+    - CustomerUpdateService scalar modelMapper mapping is commented out; customer-name/GST scalar persistence mutation is not claimed.
+    - Frozen UC01RegisterCustomer.html posts to /registerCustomer, not /updateCustomer, so the exact visible/browser submit path for POST /updateCustomer remains unproved and strict completion is withheld.
+    - Concurrent durable STORY-0011 strict completion was preserved; this run did not claim its +1 delta.
+  aggregate_reconciliation_gate: PENDING_READBACK
 cursor:
   last_strict_r1_story: STORY-0011
   next_eligible_strict_r1_story: null
