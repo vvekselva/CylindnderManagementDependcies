@@ -1,0 +1,18 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+termination_reason: STALE_HEARTBEAT_WITHOUT_TERMINAL_EVENT
+original_termination_time: null
+recovery_observed_at: 2026-08-31T11:28:48Z
+last_heartbeat_at: 2026-08-31T11:26:14Z
+heartbeat_age_seconds_at_recovery: 154
+heartbeat_max_interval_seconds: 120
+terminal_event_found: false
+termination_record_found_before_recovery: false
+eligible_work_remaining: true
+active_work_at_last_heartbeat:
+  - BL-002/STORY-0043_STRICT_AND_BUSINESS_SOURCE_BINDING
+recovered_by_run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+voluntary_early_stop: false
+notes:
+  - Exact original process termination time is unknown and is not invented.
+  - Durable completed work from the interrupted run remains authoritative.
