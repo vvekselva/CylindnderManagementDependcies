@@ -1,20 +1,27 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
-scheduler_fire_id: PRODUCTION-FIRE-20260831-081605Z
-state: TERMINATED
-started_at: 2026-08-31T08:20:58Z
-last_heartbeat_at: 2026-08-31T08:51:04Z
-productive_runtime_seconds_if_measurable: 1806
-loop_iteration: 10
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+scheduler_fire_id: manual-20260831T110529Z
+scheduler_task: Cylinder Orchestrator Production Fire
+state: RUNNING
+mode: CONTINUOUS
+started_at: 2026-08-31T11:05:29Z
+last_heartbeat_at: 2026-08-31T11:05:29Z
+productive_runtime_seconds_if_measurable: 0
+loop_iteration: 0
 running_worker_count: 0
-completed_worker_count: 2
-blocked_worker_count: 6
+completed_worker_count: 0
+blocked_worker_count: 0
 active_work_unit_ids: []
-eligible_work_count: 126
-dispatchable_work_count: 1
-last_action: TERMINATED_TARGET_RUNTIME_REACHED
+eligible_work_count: null
+dispatchable_work_count: null
+last_action: SCHEDULER_HANDOFF_RECONCILED_ORCHESTRATOR_STARTED
+prior_run_recovery:
+  run_id: CYLINDER-PRODUCTION-FIRE-20260831-110154Z
+  classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  original_termination_time: null
+  recovery_observed_at: 2026-08-31T11:05:29Z
 termination:
-  requested: true
-  reason: TARGET_RUNTIME_REACHED
-  terminated_at: 2026-08-31T08:51:04Z
-  eligible_work_remaining: true
-  terminal_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-082058Z/termination.yaml
+  requested: false
+  reason: null
+  terminated_at: null
+  eligible_work_remaining: null
+  terminal_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-110529Z/termination.yaml
