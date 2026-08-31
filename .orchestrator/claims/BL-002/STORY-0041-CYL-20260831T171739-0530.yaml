@@ -1,0 +1,15 @@
+claim_id: STORY-0041-CYL-20260831T171739-0530
+run_id: CYL-20260831T171739-0530
+backlog: BL-002
+work_unit_id: STORY-0041
+story_id: STORY-0041
+claim_scope:
+  - BL-002/story-rework/STORY-0041
+write_set:
+  - BL-002/stories/STORY-0041.md
+  - BL-002/work-status/STORY-0041.yaml
+  - BL-002/enrichment-progress.yaml
+claimed_at: '2026-08-31T17:39:40+05:30'
+heartbeat_at: '2026-08-31T17:39:40+05:30'
+lease_expires_at: '2026-08-31T17:54:40+05:30'
+state: ACTIVE
