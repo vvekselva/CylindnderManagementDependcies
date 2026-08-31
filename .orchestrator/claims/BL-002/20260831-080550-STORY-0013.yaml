@@ -1,8 +1,9 @@
 claim_id: 20260831-080550-STORY-0013
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T08:05:50Z
-heartbeat_at: 2026-08-31T08:05:50Z
+heartbeat_at: 2026-08-31T08:08:46Z
+released_at: 2026-08-31T08:08:46Z
 lease_expires_at: 2026-08-31T08:20:50Z
 work_unit: BL-002/STORY-0013
 read_set:
@@ -12,4 +13,6 @@ read_set:
 write_set:
   - BL-002/stories/STORY-0013.md
   - BL-002/work-status/STORY-0013.yaml
-purpose: Repair STORY-0013 canonical identity to POST /logistics/challan-books/save and bind exact controller/template-visible contract; fail closed at unresolved service/database depth.
+result: CANONICAL_IDENTITY_REPAIRED_CONTROLLER_TEMPLATE_UI_BOUND_SOURCE_DETAIL_GAP_REMAINS
+remaining_gate: Bind ChallanBookIngestionService implementation through validation and exact downstream database write identity.
+approval_state: NOT_APPROVED
