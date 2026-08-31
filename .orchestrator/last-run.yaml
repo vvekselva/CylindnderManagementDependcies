@@ -1,8 +1,9 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
 checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T08:20:58Z
-checkpoint_at: 2026-08-31T08:49:28Z
-terminal_classification: RUNNING_PRODUCTIVE_WINDOW
+checkpoint_at: 2026-08-31T08:51:04Z
+terminal_classification: TARGET_RUNTIME_REACHED
+termination_reason: TARGET_RUNTIME_REACHED
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
@@ -15,10 +16,10 @@ work:
     - BL-002/STORY-0032_BUSINESS_BEHAVIOR_REWORK
   blocked_ids:
     - BL-002/STORY-0033_CONCRETE_SERVICE_PERSISTENCE_BINDING
-  active_ids:
-    - BL-002/STORY-0014_EXACT_FROZEN_SOURCE_BINDING
+    - BL-002/STORY-0014_CONTROLLER_TEMPLATE_BINDING
   approvals_delta: 0
   current_revised_contract_approved_or_reapproved: 0
+  next_dynamically_resolved_eligible_unit: BL-002/STORY-0014
 business_behavior_rework:
   total_registered: 134
   rework_required: 130
@@ -56,12 +57,17 @@ reconciliation:
   repaired:
     - STORY-0032 stale Product identity replaced by canonical R1 GET /walkin-sale and exact frozen controller/template behavior
     - STORY-0033 stale Product UOM identity replaced by canonical R1 POST /walkin-sale with fail-closed concrete-service persistence gap
+    - STORY-0014 advanced with exact frozen ChallanEntryAgingDashboardService and DAO reads while controller/template binding remains fail-closed
 runtime_reliability:
-  heartbeat_state: CURRENT
-  last_heartbeat_at: 2026-08-31T08:47:32Z
-  loop_iteration: 9
+  heartbeat_state: TERMINATED_CLEANLY
+  last_heartbeat_at: 2026-08-31T08:51:04Z
+  productive_runtime_seconds: 1806
+  loop_iteration: 10
   target_min_minutes: 30
   target_max_minutes: 45
-  termination_requested: false
-  next_action: CONTINUE_PRODUCTIVE_REPLAN_UNTIL_TARGET_OR_GOVERNED_TERMINATION
+  termination_requested: true
+  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-082058Z/termination.yaml
+  next_action: NEXT_FIRE_CONTINUE_DYNAMIC_REPLAN_FROM_LIVE_DURABLE_STATE
+claims:
+  active_at_terminal: 0
 transient_logs_remaining: 0
