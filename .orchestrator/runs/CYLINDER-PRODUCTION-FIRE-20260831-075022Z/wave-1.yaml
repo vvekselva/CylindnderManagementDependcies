@@ -1,0 +1,15 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
+wave: 1
+state: COMPLETED
+completed_units:
+  - PREVIOUS_RUN_RECOVERY_CLASSIFICATION
+  - BL-010/DEV-0001_EXACT_SOURCE_BINDING
+source_binding:
+  customer_rest: BOUND
+  customer_address_rest: BOUND
+  product_rest: BOUND
+  walkin_customer_browser_pattern: BOUND
+next_units:
+  - BL-010/DEV-0001_IMPLEMENTATION
+  - BL-002/STORY-0001_REWORK_WHEN_SAFE_INDEPENDENT
+approval_delta: 0
