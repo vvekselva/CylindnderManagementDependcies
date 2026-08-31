@@ -1,0 +1,9 @@
+scheduler_task: Cylinder Orchestrator Production Fire
+scheduled_fire_time: '2026-08-31T17:15:00+05:30'
+observed_fire_time: '2026-08-31T17:17:39+05:30'
+receipt_time: '2026-08-31T17:17:39+05:30'
+status: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
+run_id: null
+terminal_classification: null
+termination_time: null
