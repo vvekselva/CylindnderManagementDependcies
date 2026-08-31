@@ -1,6 +1,6 @@
-version: 65
+version: 66
 backlog_id: BL-002
-updated_at: 2026-08-31T09:10:19Z
+updated_at: 2026-08-31T09:12:04Z
 updated_by: Primary Cylinder Automation Tool
 checkpoint_state: RECONCILIATION_IN_PROGRESS
 scope:
@@ -11,22 +11,22 @@ scope:
 business_behavior_rework:
   policy: BL-002/story-business-behavior-rework-policy.yaml
   total_registered: 134
-  rework_required: 123
+  rework_required: 122
   rework_in_progress: 0
-  business_behavior_complete: 11
-  awaiting_user_review: 11
+  business_behavior_complete: 12
+  awaiting_user_review: 12
   approved_after_rework: 0
   needs_clarification: 0
-  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0054]
-  awaiting_user_review_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0054]
+  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0054]
+  awaiting_user_review_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0054]
   active_rework_ids: []
-  static_reference_selector_reviewed: 11
-  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0054]
+  static_reference_selector_reviewed: 12
+  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0054]
   search_conversion_required: 0
   search_conversion_required_ids: []
   dependent_selector_rework_required: 0
   dependent_selector_rework_required_ids: []
-  remaining_global_rework_count: 123
+  remaining_global_rework_count: 122
 legacy_metrics:
   register_ready: 131
   clarification: 3
@@ -46,7 +46,7 @@ materialization:
   parity_state: COMPLETE_134_OF_134
   identity_drift_detected_ids: [STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0033]
   identity_drift_repaired_ids: [STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0033]
-  identity_drift_detail: STORY-0012 Challan Book add-form is source-bound through SummaryMetricLookupFetchService/DAO/entity/public.tbl_summary_metric_lookup; STORY-0013 Challan Book registration is source-bound through service/DAO/entity/public.tbl_challan_book_registry with disabled validation/ledger gaps recorded; STORY-0014 aging dashboard is source-bound through tracker/audit service/DAOs/tables; STORY-0015 Challan Heatmap is source-bound through controller/service/public.vw_challan_heatmap_metrics; STORY-0016 photo retrieval is source-bound through controller/DAO/public.tbl_challan_page_photo; STORY-0031 ownership obligation dashboard is source-bound through service/DAOs/custody/customer/supplier/cylinder reads; STORY-0033 Walk-in Sale POST is source-bound through WalkinSaleServiceImpl and its transactional persistence/challan-link chain.
+  identity_drift_detail: STORY-0012 Challan Book add-form is source-bound through SummaryMetricLookupFetchService/DAO/entity/public.tbl_summary_metric_lookup; STORY-0013 Challan Book registration is source-bound through service/DAO/entity/public.tbl_challan_book_registry with disabled validation/ledger gaps recorded; STORY-0014 aging dashboard is source-bound through tracker/audit service/DAOs/tables; STORY-0015 Challan Heatmap is source-bound through controller/service/public.vw_challan_heatmap_metrics; STORY-0016 photo retrieval is source-bound through controller/DAO/public.tbl_challan_page_photo; STORY-0031 ownership obligation dashboard is source-bound through service/DAOs/custody/customer/supplier/cylinder reads; STORY-0033 Walk-in Sale POST is source-bound through WalkinSaleServiceImpl and its transactional persistence/challan-link chain; STORY-0036 Yard Audit Dashboard is source-bound through controller/service/YardQualityGateJpaDao and yard audit read objects.
 development_changes:
   backlog: BL-010
   queue: BL-010/development-change-task-queue.csv
@@ -99,11 +99,12 @@ reconciliation:
     - STORY-0016 completed Challan Page Photo retrieval behavior
     - STORY-0031 completed Ownership Obligation Dashboard behavior and text-search selector review
     - STORY-0033 closed concrete WalkinSaleServiceImpl transaction/persistence binding
+    - STORY-0036 completed Yard Audit Dashboard business behavior and cleared stale needs-clarification unit state
     - STORY-0054 remains source-validated after BL-010 implementation and awaiting explicit user review/approval
   aggregate_reconciliation_gate: PENDING_GLOBAL_QUEUE_PROJECTION
 cursor:
-  next_global_rework_unit: STORY-0036
-  fallback_dependency_safe_r1_unit: STORY-0037
+  next_global_rework_unit: STORY-0037
+  fallback_dependency_safe_r1_unit: STORY-0038
   priority_development_unit: null
   next_development_action: USER_REVIEW_STORY_0054_THEN_EXPLICIT_APPROVAL_OR_REWORK
   next_testing_action: NONE_UNTIL_CURRENT_REVISED_STORY_APPROVAL_OR_REAPPROVAL
