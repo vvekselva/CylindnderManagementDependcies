@@ -1,0 +1,39 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-003017-IST
+checkpoint_time: '2026-09-01T00:34:48+05:30'
+mode: CONTINUOUS
+state: RESUMABLE_CHECKPOINT
+eligible_work_remaining: true
+active_claims_remaining: 0
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
+unit_results:
+  STORY-0041:
+    business_behavior_complete: true
+    approval_state: AWAITING_EXPLICIT_USER_REVIEW
+    evidence: BL-002/evidence/STORY-0041/20260901T003248+0530-transaction-boundary-complete.yaml
+    completion_delta: 1
+  STORY-0046:
+    business_behavior_complete: true
+    approval_state: AWAITING_EXPLICIT_USER_REVIEW
+    evidence: BL-002/evidence/STORY-0046/20260901T003520+0530-entity-ui-reconciliation-complete.yaml
+    completion_delta: 1
+aggregate_projection:
+  source_aggregate_version_observed: 72
+  source_aggregate_business_behavior_complete: 18
+  source_aggregate_awaiting_user_review: 16
+  source_aggregate_rework_required: 116
+  authoritative_unit_delta_business_behavior_complete: 2
+  derived_business_behavior_complete: 20
+  derived_awaiting_user_review: 18
+  derived_rework_required: 114
+  approved_after_rework: 2
+  total_stories: 134
+  derived_business_behavior_completion_percentage: 14.9
+  canonical_projection_state: AGGREGATE_DRIFT_DETECTED
+  canonical_projection_repair_pending: true
+  reason: New authoritative unit-local completion evidence for STORY-0041 and STORY-0046 is newer than enrichment-progress.yaml and story-business-behavior-rework-task-queue.csv. Unit evidence is authoritative; stale aggregate files must be reconciled on the next single-writer projection repair.
+approvals_delta: 0
+auto_approval_performed: false
+application_code_mutations: 0
+bl010_executions: 0
+github_actions_or_runners_used: false
+next_recovery_action: Reconcile canonical BL-002 aggregate projections from unit evidence, then select the next R1 business-behavior rework unit without auto-approval.
