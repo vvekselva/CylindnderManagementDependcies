@@ -1,0 +1,19 @@
+version: 1
+claim_id: 20260831-082249-STORY-0047
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+backlog: BL-002
+unit_id: STORY-0047
+status: ACTIVE
+claimed_at: 2026-08-31T08:22:49+05:30
+heartbeat_at: 2026-08-31T08:22:49+05:30
+lease_expires_at: 2026-08-31T08:37:49+05:30
+owner: Primary Cylinder Automation Tool
+mode: RESOURCE_SCOPED
+read_set:
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+  - BL-002/stories/STORY-0047.md
+  - BL-002/enrichment-progress.yaml
+write_set:
+  - BL-002/stories/STORY-0047.md
+  - BL-002/work-status/STORY-0047.yaml
+purpose: Reconcile STORY-0047 POST /updateCustomer against frozen controller, service, validator, JPA DAO/entity/database and exact UC01RegisterCustomer browser form evidence without inventing behavior.
