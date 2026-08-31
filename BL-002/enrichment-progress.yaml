@@ -1,10 +1,14 @@
-version: 44
+version: 45
 backlog_id: BL-002
-updated_at: 2026-08-31T06:23:32+05:30
+updated_at: 2026-08-31T07:13:54+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
-checkpoint_state: CHECKPOINT_RECONCILED
-scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-071328IST
+checkpoint_state: CHECKPOINT_RECONCILIATION_INCOMPLETE
+scope:
+  total_stories: 134
+  r1_stories: 88
+  r2_stories: 46
+  processing_order: R1_THEN_R2
 metrics:
   register_ready: 131
   clarification: 3
@@ -20,44 +24,37 @@ materialization:
   queue: BL-002/materialization-task-queue.csv
   pending_r1_priority_1: 0
   pending_r2_priority_2: 0
-  reconciliation_rule: REGISTER_MINUS_PHYSICAL_STORY_TREE
   parity_state: COMPLETE_134_OF_134
 reconciliation:
-  current_run_strict_delta: {count: 0, stories: []}
-  current_run_materialization_delta: {count: 0, stories: []}
+  current_run_strict_delta:
+    count: 0
+    stories: []
+  current_run_materialization_delta:
+    count: 0
+    stories: []
   source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: [STORY-0042, STORY-0044]
-  blocked_this_run: [STORY-0042, STORY-0044, STORY-0045, STORY-0046]
+  source_detail_refined_this_run: []
+  blocked_this_run: []
   correction:
-    - Startup repaired BL-008 projection drift to V182-authored waiting for clean validation.
-    - STORY-0042 and STORY-0044 source contracts were refined but remain non-strict due to unresolved executable downstream persistence implementations.
-    - STORY-0045 controller source path was not resolved in authoritative frozen source and remains blocked without invented behavior.
-    - STORY-0046 DTO source was proved, including documented pageNumber/itemsPerPage/searchTerm/activeOnly semantics, but the named CustomerFetchByPageController was not present at the expected frozen path and no concrete controller class was source-proved.
-  aggregate_reconciliation_gate: PASS
+    - BL-008 README is newer than the stale V182 aggregate projection.
+    - Authoritative BL-008 state is CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION with V174 through V184 validated PASS.
+  aggregate_reconciliation_gate: PENDING_LAST_RUN_UPDATE_AND_READBACK
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
   next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
   next_eligible_materialization_unit: null
   trace_proxy_cursor: STORY-0030
-approval_policy: {auto_approve: false, approvals_delta: 0}
+approval_policy:
+  auto_approve: false
+  approvals_delta: 0
 bl008:
   state_source: BL-008/README.md
-  execution_mode: USER_LOCAL_FLYWAY_HANDOFF
-  target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
-  last_validated_migration: V181__Enforce_Identifier_Authority_And_Replacement_Integrity.sql
-  v174_validation: CLEAN_DATABASE_VALIDATED_PASS
-  v175_validation: CLEAN_DATABASE_VALIDATED_PASS
-  v176_validation: CLEAN_DATABASE_VALIDATED_PASS
-  v177_validation: CLEAN_DATABASE_VALIDATED_PASS
-  v178_validation: CLEAN_DATABASE_VALIDATED_PASS
-  v179_validation: CLEAN_DATABASE_VALIDATED_PASS
-  v180_validation: CLEAN_DATABASE_VALIDATED_PASS
-  v181_validation: CLEAN_DATABASE_VALIDATED_PASS
-  current_authored_migration: V182__Enforce_Active_Identifier_Value_Uniqueness_And_History_Integrity.sql
-  v182_validation: AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  phase2: V182_CLEAN_VALIDATION_GATE
-  current_state: V182_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  next_schema_migration: DO_NOT_CREATE_V183_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V182_ACCEPTANCE
+  execution_mode: CLOSED
+  last_validated_migration: V184
+  accepted_migration_baseline: V174-V184 CLEAN_DATABASE_VALIDATED_PASS
+  current_authored_migration: null
+  active_migration_gate: NONE
+  current_state: CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION
   database_write_delta_chatgpt: 0
