@@ -1,24 +1,38 @@
 story_id: STORY-0044
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
 release: R1
 endpoint: POST /wizard/vehicle-trip-load/save
-status: SOURCE_DETAIL_REVIEW_REQUIRED
-strict_field_ui_complete: false
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+strict_field_ui_complete: true
+business_behavior_complete: true
 approval: PENDING_USER_APPROVAL
 materialized: true
-refined_at: 2026-08-31T06:19:44+05:30
 frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-proved:
-  - exact POST wizard save endpoint and ModelAttribute binding
-  - vehicleTripDto, vehicleLoadDto, four challan-book ids and four starting-sheet-number fields
-  - generic application-service processRequest boundary
-  - success redirect to /vehicle-loads/list
-  - CylinderManagementApplicationException error re-render and reference-data repopulation
-  - executable source differs from commented IVehicleTripLoadWizardService narrative
-remaining_gap:
-  - concrete vehicleLoadAndTripIngestionService implementation unresolved
-  - exact validation/transaction/DAO/repository/entity/table/column path unresolved
-  - generated ids and persistent trip/load/cylinder/challan side effects unresolved
-strict_promotion_withheld_reason: executable_downstream_write_contract_not_source_proved
-database_behavior_invented: false
+source_binding:
+  controller: VehicleTripLoadWizardController
+  concrete_service: VehicleLoadAndTripIngestionService
+  transaction: VehicleLoadAndTripIngestionService.processRequest @Transactional
+validation:
+  - VehicleTripIngestionRequestValidator validates non-null trip, existing Vehicle and Driver, starting time, existing Customer and Customer Address, and verifies the address belongs to the selected Customer.
+  - VehicleLoadIngestionValidator validates loadedBy and selected-cylinder existence/location/Yard FULL-or-EMPTY loadability where lines are present.
+  - TripChallanBookAssignmentSelectionValidator requires four distinct book IDs and four starting unused sheet numbers for DELIVERY_CHALLAN, EMPTY_PICKUP_CHALLAN, FILLING_NOTE and CUSTOMER_SPOT_CYLINDER_CHECK.
+  - Each challan book must be active for its expected type, physically IN_OFFICE, have unused pages, have a starting sheet within the physical book range and not before nextAvailableSheetNumber, and that exact sheet must currently be UNUSED.
+  - A challan book already assigned to another non-returned trip is rejected.
+persistence:
+  - Creates VehicleTrip in public.tbl_vehicle_trip initially with Started status, resolving Vehicle, Driver, Customer and Customer Address.
+  - Creates VehicleLoad in public.tbl_vehicle_load and cascade-all VehicleLoadLine records in public.tbl_vehicle_load_line.
+  - Creates YARD_START trip stop with ARRIVED status, then changes trip status to Loaded and saves trip/load.
+  - Creates four public.tbl_trip_challan_book_assignment rows linking saved trip/load to selected physical books and assigned starting sheet numbers.
+  - Creates OPEN public.tbl_cylinder_logistics_execution and active public.tbl_cylinder_logistics_execution_line rows for selected cylinders.
+  - EMPTY cylinders target EMPTY_PICKED_FOR_REFILL; FULL delivery/buffer cylinders target FULL_PICKED_UP_FOR_DELIVERY.
+  - Deactivates the previous active public.tbl_yard_inventory_line rows in the same transaction.
+current_source_gaps:
+  - VehicleTripIngestionRequestValidator driver-null guard repeats tripDto.getDriver() and then dereferences getDriverId without an explicit getDriverId null check; exact source retained without code mutation.
+  - VehicleTrip customer validation checks customerAddressId <= 0 in the customer-ID condition instead of customerId <= 0; exact source retained without code mutation.
+  - VehicleLoadIngestionValidator quantity null condition checks quantityFullForDelivery twice and omits explicit quantityEmptyForSupplier null validation.
+code_mutation_performed: false
+bl010_created_or_executed: false
 approval_delta: 0
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+fanout_authorized: false
