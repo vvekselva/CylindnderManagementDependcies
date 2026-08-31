@@ -3,11 +3,14 @@ fire_id: 20260831T232655+0530
 observed_fire_time: '2026-08-31T23:26:55+05:30'
 scheduled_fire_time: '2026-08-31T23:26:55+05:30'
 receipt_time: '2026-08-31T23:26:55+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope:
   mode: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-232655-IST
-orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_state: TERMINATED
 started_at: '2026-08-31T23:26:55+05:30'
-terminal_classification: null
-termination_time: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: PLATFORM_RUNTIME_FORCED_STOP
+termination_time: '2026-08-31T23:37:08+05:30'
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-232655-IST/checkpoint.yaml
+eligible_work_remaining: true
