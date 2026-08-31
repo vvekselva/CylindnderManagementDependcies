@@ -1,0 +1,43 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4
+checkpoint_time: "2026-09-01T02:33:50+05:30"
+checkpoint_state: RESUMABLE_RUNTIME_BOUNDARY
+mode: CONTINUOUS
+scheduler_handoff:
+  fire_id: 20260901T023059-IST-turn4
+  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire-ii/20260901T023059-IST-turn4.yaml
+  acknowledged: true
+  run_linked: true
+prior_run_reconciliation:
+  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
+  previous_terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+  unresolved_gap_remaining: false
+aggregate_reconciliation:
+  authoritative_business_behavior_complete: 21
+  total_stories: 134
+  percentage: 15.7
+  queue_projection_drift_remaining: true
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+  note: Complete queue blob was retrieved; rewrite was withheld in this invocation because a byte-for-byte-preserving replacement outside the three stale rows was not established with sufficient confidence.
+work:
+  story_id: STORY-0045
+  claim_state: RELEASED
+  result: PARTIAL_CONTINUE_REQUIRED
+  evidence: BL-002/evidence/STORY-0045/20260901T023300-IST-controller-binding.yaml
+  new_source_proof:
+    - exact GET /displayCustomer handler is CustomerFetchController.doGet
+    - customerId Long request parameter is copied to CustomerFetchByIdRequestDto
+    - customerFetchByIdService.processRequest is invoked
+    - success view is DisplayCustomer with model key customer
+    - InvalidInputParameterException and CylinderManagementApplicationException redirect to fetchCustomerByPage page 1 size 10
+  remaining_gates:
+    - concrete customerFetchByIdService implementation binding
+    - DAO/entity/database read path
+    - reconciled DisplayCustomer template behavior
+  drift_review_gate: EXISTING_USER_REVIEW_PACKET_PENDING_EXPLICIT_APPROVAL
+  application_code_mutation: false
+  bl010_created: false
+  bl010_executed: false
+claims:
+  active_at_checkpoint: 0
+eligible_work_remaining: true
+next_action: "Resume STORY-0045 service -> DAO -> entity -> database binding; keep DisplayCustomer drift implementation blocked pending explicit approval; repair queue projection only with exact-preservation proof."
