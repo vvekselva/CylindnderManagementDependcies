@@ -4,89 +4,70 @@
 - Endpoint: `POST /cylinderDelivery`
 - Functional area: Cylinder Delivery
 - Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
+- Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Traceability state: COMPLETE
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Business-behavior rework: COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Human-readable story
 
-As an authorized Cylinder Management user, I want to submit the Cylinder Delivery / Delivery Challan Entry form so that the application validates the delivery, persists its delivery-challan header and cylinder lines, and returns me to the order list on success or redisplays the entered form with a visible validation error on failure.
+As an authorized Cylinder Management user, I want to submit the Cylinder Delivery / Delivery Challan Entry form so that the application validates the physical challan and receiving-party identities, records the delivery challan header and its selected cylinder lines in one transaction, and returns a visible success or validation-error outcome.
 
-## Screen, controls and browser submission
+## Submitted business information
 
-The frozen `Uc02-Phase02-CylinderDeliveryView.html` is the exact visible screen. Its form is `th:action="@{/cylinderDelivery}"`, model object `cylinderDelivery`, method `post`, id `order-form`.
+The form posts to `/cylinderDelivery` as model object `cylinderDelivery`. Source-proved submitted values include Challan Number, Challan Date, Challan Type ID, Order Status, Driver ID, Vehicle ID, Remarks, Customer ID, Delivery Address ID, and each selected cylinder as `orderDto.orderLines[i].cylinder.cylinderId` with `orderDto.orderLines[i].quantity`.
 
-The source-proved visible controls and submitted identities include Challan Number (`orderDto.challanNumber`), Challan Date (`orderDto.challanDate`), Challan Type hidden ID, Order Status, Driver hidden ID, Vehicle hidden ID, Remarks, Customer hidden ID, Delivery Address hidden ID, and selected in-transit cylinder rows propagated as `orderDto.orderLines[i].cylinder.cylinderId` plus `orderDto.orderLines[i].quantity`.
+The page uses search-based Vehicle, Driver, Customer, Challan Type and Order Status controls. Customer selection loads addresses for that Customer and clears stale Customer/Address IDs when the Customer changes. The in-transit cylinder picker is gated by Vehicle and Challan Date. Client submit guards require Challan Number, Challan Date, Challan Type, Customer, Driver, Vehicle and at least one cylinder.
 
-The screen performs vehicle, driver, customer, challan-type, order-status and customer-address lookups, and gates the in-transit cylinder picker on both selected vehicle and challan date. It calls the in-transit cylinder search endpoints documented in STORY-0037. `submitOrder()` blocks submission when Challan Number, Challan Date, Challan Type ID, Customer ID, Driver ID, Vehicle ID or at least one cylinder is missing. If these browser guards pass, the form submits to the exact registered endpoint `POST /cylinderDelivery`.
+## Controller and concrete service path
 
-## Controller and request identity
+`Uc02Phase02CylinderDeliveryController.doPost(...)` binds `UC02Phase02CylinderDeliveryRequestDto` and invokes `Uc02Phase02CylinderDeliveryMediator.invokeServices(requestDto)`.
 
-`Uc02Phase02CylinderDeliveryController.doPost(...)` is annotated `@PostMapping("/cylinderDelivery")` and binds `@ModelAttribute("cylinderDelivery") UC02Phase02CylinderDeliveryRequestDto`.
+The concrete mediator creates `OrderIngestionRequestDto`, copies the submitted `OrderDto`, and invokes `OrderIngestionService.processRequest()`.
 
-It calls `uc02Phase02CylinderDeliveryMediator.invokeServices(requestDto)`.
+`OrderIngestionService.processRequest()` is `@Transactional`. It validates the request, builds `OrderDo` and `OrderLineDo` objects, resolves the submitted foreign-key identities through their JPA DAOs, and saves the assembled order through `OrderJpaDao.save(orderDo)`.
 
-- Success: redirects to `/orderList?pageNumber=1&itemsPerPage=10`.
-- `InvalidInputParameterException`: redisplays `Uc02-Phase02-CylinderDeliveryView`, preserves the submitted request under model key `cylinderDelivery`, and adds `errorMessage`, which the page renders in its server-side error banner.
+## Server validation
 
-## Mediator contract
+Current frozen source requires:
 
-`Uc02Phase02CylinderDeliveryMediator` is the concrete mediator. It creates `OrderIngestionRequestDto`, copies the submitted `OrderDto` into it, and invokes `orderIngestionService.processRequest(orderRequest)`. On success it copies the returned saved `OrderDto` into `UC02Phase02CylinderDeliveryResponseDto` and sets SUCCESS response code.
+1. non-null request and nested Order DTO;
+2. non-blank Challan Number;
+3. Challan Date to be non-null and strictly before `LocalDate.now()`;
+4. positive/existing Challan Type ID;
+5. positive/existing Customer ID;
+6. positive/existing Delivery Address ID;
+7. positive/existing Driver ID;
+8. positive/existing Vehicle ID; and
+9. non-empty Order Lines with cylinder identities.
 
-The only executable downstream service in this mediator is the order-ingestion service. A future cylinder-state-transition service appears only in commented example code and is **not** claimed as an active side effect.
+The browser initializes an empty Challan Date to today, but the server rejects today because it requires `isBefore(LocalDate.now())`. This is recorded as current-source behavior rather than normalized.
 
-## Validation and branches
+The cylinder-existence branch is also source-defective: it performs the DAO existence lookup under the `cylinderIdNull` condition rather than the safe non-null condition. The Story documents this exact behavior and does not authorize a code fix.
 
-`OrderIngestionRequestValidator` validates the service request using `UC_002_PHASE_02_PLACE_ORDER`. Frozen-source checks include:
+## Exact persistence and business effect
 
-- request and nested `OrderDto` presence;
-- non-blank challan number;
-- challan date must be non-null and `isBefore(LocalDate.now())` (the executable validator therefore rejects today/future dates even though the browser initializes the field to today; this implementation mismatch is recorded, not normalized away);
-- valid/existing challan type;
-- valid/existing customer;
-- valid/existing customer delivery address;
-- valid/existing driver;
-- valid/existing vehicle;
-- non-empty order lines;
-- cylinder identity checks for each order line.
+The service trims Challan Number, copies Challan Date and Remarks, uses the submitted Order Status or defaults it to `DELIVERED` when null/blank, and sets server-side created/updated timestamps.
 
-The cylinder-existence branch in the frozen validator is written as `if (cylinderIdNull && cylinderJpaDao.findById(lineDto.getCylinder().getCylinderId()).isEmpty())`. This exact branch is retained as source truth; no safer intended behavior is invented.
+For every line it resolves the Cylinder, sets the line Product from the resolved Cylinder, and uses submitted Quantity or the Cylinder's `totalQuantity` as fallback.
 
-When accumulated validation errors exist, `InvalidInputParameterException.throwInputValidationFailure(...)` prevents persistence and returns control to the controller error path.
+`OrderJpaDao` is `JpaRepository<OrderDo, Long>`. `OrderDo` maps to `public.tbl_order` with primary key `pk_order_id`. Relevant persisted identities include `challan_number`, `challan_date`, `fk_challan_type`, `fk_customer`, `fk_delivery_address`, `fk_driver`, `fk_vehicle`, `order_status`, `remarks`, `created_at` and `updated_at`.
 
-## Transactional service and persistence side effects
+`OrderDo.orderLines` is `CascadeType.ALL`. Its `OrderLineDo` children therefore persist with the header into `public.tbl_order_line`, primary key `pk_order_line_id`, with `fk_order`, `fk_cylinder`, `fk_product` and `quantity`.
 
-`OrderIngestionService.processRequest(...)` is `@Transactional`.
+The proved business effect is creation of the delivery order/challan record and its cylinder lines. The mediator contains a cylinder-state-transition service only as commented future example code, so no explicit cylinder-state transition is claimed for this source path.
 
-After validation it builds `OrderDo` and actively assigns:
+## Current error-path gap
 
-- trimmed challan number;
-- challan date;
-- order status, defaulting to `DELIVERED` when submitted status is null/blank;
-- remarks;
-- created/updated timestamps.
+`InvalidInputParameterException` is rethrown by the mediator and reaches the controller's validation-error path. However, `CylinderManagementApplicationException` from the order-ingestion service is caught and only logged by the mediator; execution then continues to set a SUCCESS response code. This is a current-source gap, not approved target behavior.
 
-It resolves the submitted FK identities through `ChallanTypeJpaDao`, `CustomerJpaDao`, `CustomerAddressJpaDao`, `DriverJpaDao`, and `VehicleJpaDao`. For each submitted `OrderLineDto` it resolves `CylinderDo`, constructs `OrderLineDo`, assigns the parent order, cylinder, the cylinder's product, and quantity (submitted quantity or the cylinder total quantity fallback), then attaches the line list to `OrderDo`.
+## Visible outcome
 
-The active write is `orderJpaDao.save(orderDo)`. The earlier standalone order-save block is commented out and is not counted as another write.
+On the normal successful controller path the browser redirects to `/orderList?pageNumber=1&itemsPerPage=10`. On `InvalidInputParameterException`, the same delivery form is rendered with the submitted model and `errorMessage`.
 
-## DAO/entity/database identity
+## Review and approval gate
 
-`OrderJpaDao` extends `JpaRepository<OrderDo, Long>`.
+The POST business behavior is now source-bound from visible submission through controller, concrete mediator, validator, transactional service, JPA repository/entities and exact `public.tbl_order` / `public.tbl_order_line` identities. The Story is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-`OrderDo` maps to `public.tbl_order` with primary key `pk_order_id` generated from `public.pk_order_id_serial`. Source-proved persisted columns/joins applicable here include `challan_number`, `challan_date`, `fk_challan_type`, `fk_customer`, `fk_delivery_address`, `fk_driver`, `fk_vehicle`, `order_status`, `remarks`, `created_at`, `updated_at`, and the one-to-many `orderLines` relationship with `CascadeType.ALL`.
-
-`OrderLineDo` maps to `public.tbl_order_line`, primary key `pk_order_line_id` generated from `public.pk_order_line_id_serial`, with `fk_order`, `fk_cylinder`, `fk_product`, `quantity`, and optional `fk_delivery_address`. Because `OrderDo.orderLines` is cascade-all and the service saves the assembled `OrderDo`, the attached order lines are included in that JPA aggregate persistence operation.
-
-No database behavior beyond executable JPA mapping/service evidence is invented.
-
-## Response and visible outcome
-
-On successful transactional service completion, the mediator returns success and the controller redirects the browser to the paged order list. On input-validation failure, no successful save path is completed and the user sees the same delivery screen with the submitted model and `errorMessage` banner.
-
-## Strict completion decision
-
-Strict field/UI completion is **PASS** for registered `POST /cylinderDelivery`. Frozen source now proves the exact visible form/control and browser submission path; POST controller and DTO; concrete mediator; validator and executable branches; transactional `OrderIngestionService`; FK DAOs; `OrderJpaDao`; `OrderDo`/`OrderLineDo`; exact `public.tbl_order`/`public.tbl_order_line` identities; persistence side effects; success redirect; and visible validation-error outcome.
-
-No approval occurred; approval remains explicitly pending user approval.
+No approval occurred. Explicit user approval/rework remains required. Any later code correction arising from Story/code conformance must first present the exact Drift / Code Change Manifest and receive explicit user approval before BL-010 or application-source mutation.
