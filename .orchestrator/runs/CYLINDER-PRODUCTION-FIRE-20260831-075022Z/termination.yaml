@@ -1,0 +1,21 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
+scheduler_fire_id: PRODUCTION-FIRE-20260831-074656Z
+termination_reason: ABNORMAL_PROCESS_DISAPPEARANCE
+terminal_classification: RECOVERED_ABNORMAL_TERMINATION
+started_at: 2026-08-31T07:50:22Z
+last_heartbeat_at: 2026-08-31T07:50:22Z
+terminated_at_when_observable: null
+recovered_at: 2026-08-31T08:19:37Z
+productive_runtime_seconds_if_measurable: 0
+running_worker_count: 0
+completed_worker_count: 0
+blocked_worker_count: 0
+active_work_unit_ids: []
+eligible_work_remaining: true
+eligible_work_count: 2
+dispatchable_work_count: 2
+last_durable_event: REPLAN_STARTED
+last_successful_checkpoint: null
+exception_or_platform_evidence_if_applicable: heartbeat stale beyond governed 2-minute interval and no INVOCATION_TERMINATED event or termination record existed
+recovery_required: true
+next_recovery_action: reconcile newest durable aggregate and unit-local evidence before new dispatch
