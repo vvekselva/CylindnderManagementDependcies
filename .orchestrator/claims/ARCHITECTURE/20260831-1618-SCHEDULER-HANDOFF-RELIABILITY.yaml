@@ -1,10 +1,9 @@
 claim_id: ARCHITECTURE-20260831-1618-SCHEDULER-HANDOFF-RELIABILITY
 backlog: ARCHITECTURE
-status: ACTIVE
+status: RELEASED
 owner: Primary Cylinder Automation Tool
 created_at: 2026-08-31T16:18:34+05:30
-heartbeat_at: 2026-08-31T16:18:34+05:30
-lease_expires_at: 2026-08-31T16:33:34+05:30
+released_at: 2026-08-31T16:21:55+05:30
 purpose: Correct scheduler-to-orchestrator handoff observability and watchdog reporting after scheduled task last_run_time advanced without a corresponding durable Production Fire run record.
 read_set:
   - .orchestrator/runtime-reliability-policy.yaml
@@ -17,5 +16,13 @@ write_set:
   - .orchestrator/runtime-reliability-policy.yaml
   - .orchestrator/execution-architecture.yaml
   - .orchestrator/lease-policy.yaml
-  - .orchestrator/architecture-current.md
-result: null
+  - .orchestrator/scheduler-handoff-reliability.md
+result:
+  runtime_reliability_policy: version_2
+  execution_architecture: version_10
+  lease_policy: version_11
+  scheduler_handoff_architecture_addendum: ACTIVE
+  watchdog_scheduler_correlation: ENABLED
+  production_fire_receipt_first_prompts: ENABLED_FOR_ACTIVE_PRODUCTION_FIRE_TASKS
+  root_cause_boundary: SCHEDULER_TO_ORCHESTRATOR_HANDOFF_GAP
+  prior_unacknowledged_scheduler_fires: MUST_BE_REPORTED_NOT_RETROACTIVELY_FABRICATED
