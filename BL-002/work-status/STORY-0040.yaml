@@ -1,44 +1,37 @@
+version: 2
 story_id: STORY-0040
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
 release: R1
 endpoint: POST /vehicleLoad
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
-updated_at: 2026-08-31T03:59:34Z
-status: STRICT_FIELD_UI_COMPLETE
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 strict_field_ui_complete: true
+business_behavior_complete: true
 materialized: true
 approval: PENDING_USER_APPROVAL
-source_ref: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-proved_in_this_run:
-  - concrete_Uc02Phase01VehicleLoadMediator_implementation
-  - mediator_vehicleLoadDto_and_vehicleTripDto_mapping
-  - concrete_VehicleLoadIngestionService_transactional_chain
-  - request_validation_boundary
-  - trip_resolution_and_loaded_status_transition
-  - exact_active_yard_inventory_cardinality_guard
-  - EMPTY_and_FULL_quantity_and_state_branches
-  - YARD_START_trip_stop_creation
-  - vehicle_load_and_cascaded_vehicle_load_line_persistence
-  - cylinder_logistics_execution_header_and_line_persistence
-  - active_yard_inventory_deactivation
-  - response_mapping_and_controller_redirect
-  - exact_JPA_database_identifiers
-source_bindings:
-  mediator:
-    class: com.sreyas.datamatics.cylinder.management.mediator.Uc02Phase01VehicleLoadMediator
-    blob_sha: 9d261956e7dd78b37290dd4d38d40534341d6894
-  service:
-    class: com.sreyas.datamatics.cylinder.management.services.VehicleLoadIngestionService
-    blob_sha: 6d63ff49a466490d8bcbc9aaeca8659c6dea3d99
-  entities:
-    VehicleLoadDo: {blob_sha: 04ca5cba6023011b7ba39e84168aa74a63e5bf45, table: public.tbl_vehicle_load}
-    VehicleLoadLineDo: {blob_sha: 6f8543a86dbf52107c55da3feb405e1641b46d5d, table: public.tbl_vehicle_load_line}
-    VehicleTripDo: {blob_sha: b2cce583616cb58cc80d4b97e1bdf77f6c9e99bb, table: public.tbl_vehicle_trip}
-    VehicleTripStopDo: {blob_sha: 05af3f34e305e4b704c0f78ee567434f69c44c48, table: public.tbl_vehicle_trip_stop}
-    CylinderLogisticsExecutionDo: {blob_sha: 580f2b3fb42a1789f0ae23c54325d333c6eddcc4, table: public.tbl_cylinder_logistics_execution}
-    CylinderLogisticsExecutionLineDo: {blob_sha: 56d8fbb16b787975c3574185ed932baa904bcbc9, table: public.tbl_cylinder_logistics_execution_line}
-    YardInventoryLineDo: {blob_sha: 177507033ac72f7dcd1b468443fd9b237f79bd1b, table: public.tbl_yard_inventory_line}
-notable_source_behavior:
-  - InvalidInputParameterException is rethrown by mediator to controller.
-  - Other CylinderManagementApplicationException is caught/logged by mediator before its common SUCCESS response-code assignment; this is source truth and not silently corrected.
-remaining_gap: []
-strict_promotion_rule: satisfied
+approval_delta: 0
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+business_contract:
+  - Save validates the submitted trip/load/cylinder allocation contract and executes VehicleLoadIngestionService.processRequest transactionally.
+  - The transaction creates YARD_START/ARRIVED stop state, marks the trip Loaded, persists vehicle load and cascaded load lines, creates OPEN logistics execution and lines, and deactivates source active Yard Inventory lines.
+  - EMPTY cylinders map to EMPTY_FOR_SUPPLIER / EMPTY_PICKED_FOR_REFILL; FULL cylinders map to FULL_FOR_DELIVERY or FULL_FOR_BUFFER / FULL_PICKED_UP_FOR_DELIVERY according to submitted quantities.
+  - Exact persistence identities include public.tbl_vehicle_load, public.tbl_vehicle_load_line, public.tbl_vehicle_trip, public.tbl_vehicle_trip_stop, public.tbl_cylinder_logistics_execution, public.tbl_cylinder_logistics_execution_line and public.tbl_yard_inventory_line.
+selector_ux_review:
+  state: COMPLETE_RELATED_GET_PAGE_SOURCE_PROVED
+  related_story: STORY-0039
+  vehicle: search_based
+  driver: search_based
+  cylinder: state_and_serial_search_based
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+current_source_gaps:
+  - Browser requires at least one Cylinder while server validation permits empty pickup-only load.
+  - Mediator catches/logs non-input CylinderManagementApplicationException before common SUCCESS response assignment.
+  - Quantity-summary null validation checks quantityFullForDelivery twice and omits an explicit quantityEmptyForSupplier null check.
+  - Direct GET entry may omit VehicleTripDto while the POST persistence path requires a resolvable trip identity.
+code_mutation_performed: false
+bl010_created_or_executed: false
+drift_code_change_approval_required_if_later_proposed: true
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+fanout_authorized: false
+updated_at: 2026-08-31T11:31:29Z
