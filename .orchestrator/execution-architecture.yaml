@@ -1,7 +1,8 @@
-version: 8
+version: 9
 name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
 status: ACTIVE
 policy_ref: .orchestrator/lease-policy.yaml
+runtime_reliability_policy_ref: .orchestrator/runtime-reliability-policy.yaml
 human_readable_architecture: .orchestrator/architecture-current.md
 
 execution_model:
@@ -36,6 +37,9 @@ worker_contract:
     - release_resource_claim
     - notify_or_trigger_aggregate_reconciliation_in_same_invocation_when_available
     - replan
+    - refill_safe_independent_worker_capacity
+  continuous_refill_required: true
+  checkpoint_success_must_not_return_from_invocation: true
 
 resource_claim_file:
   path_pattern: .orchestrator/claims/<backlog>/<claim-id>.yaml
@@ -49,6 +53,7 @@ aggregation:
     after_every_completed_or_blocked_unit: true
     after_each_dispatch_wave_when_available: true
     defer_all_state_until_end_forbidden: true
+    checkpoint_is_terminal_condition: false
   files:
     .orchestrator/last-run.yaml: {purpose: compatibility_aggregate_summary, direct_worker_writes: false}
     BL-002/enrichment-progress.yaml: {purpose: BL-002_aggregate_projection, direct_story_worker_writes: false}
@@ -90,12 +95,43 @@ aggregation:
     rule: Recompute stale projections from newest durable evidence and read back all repaired projections before selecting new work.
     stale_last_run_must_not_override_newer_durable_projection: true
 
+runtime_liveness:
+  live_run_file: .orchestrator/live-run.yaml
+  run_event_path_pattern: .orchestrator/runs/<run-id>/events.ndjson
+  termination_record_path_pattern: .orchestrator/runs/<run-id>/termination.yaml
+  heartbeat_max_interval_minutes: 2
+  last_run_aggregate_alone_proves_running: false
+  abnormal_disappearance_rule: Stale heartbeat without a valid terminal event is ABNORMAL_PROCESS_DISAPPEARANCE.
+  next_fire_recovery_first_on_incomplete_prior_termination: true
+
+terminalization:
+  single_governed_exit_path_required: true
+  direct_silent_return_forbidden: true
+  allowed_reasons:
+    - ALL_ELIGIBLE_WORK_COMPLETED
+    - ALL_REMAINING_WORK_BLOCKED
+    - TARGET_RUNTIME_REACHED
+    - PLATFORM_RUNTIME_FORCED_STOP
+    - UNHANDLED_EXCEPTION
+    - RESOURCE_CLAIM_FAILURE
+    - AGGREGATE_RECONCILIATION_FAILURE
+    - DEPENDENCY_DEADLOCK
+    - SCHEDULER_CANCELLED
+    - USER_REQUESTED_STOP
+    - DUPLICATE_FIRE_SUPPRESSED
+    - APPLICATION_SHUTDOWN
+    - ABNORMAL_PROCESS_DISAPPEARANCE
+    - UNKNOWN_TERMINATION
+  unknown_termination_is_defect: true
+  platform_forced_stop_requires_positive_evidence: true
+  eligible_work_remaining_requires_governed_reason: true
+
 scheduler_resilience:
   production_fire_recurring_task:
     expected_cadence: hourly_around_15
     performs_real_work: true
     automatic_disable_for_run_local_blocker: forbidden
-    next_fire_rule: Re-read live durable state independently on every scheduled invocation and repair aggregate drift before dispatch.
+    next_fire_rule: Re-read live durable state independently on every scheduled invocation, reconcile incomplete prior termination first, repair aggregate drift, then dispatch.
   allowed_disable_conditions:
     - explicit_user_instruction
     - deliberate_schedule_replacement_or_supersession
@@ -107,6 +143,8 @@ scheduler_resilience:
     lifecycle_independent_from_production_fire: true
     aggregate_drift_reporting: required
     newest_durable_evidence_wins_over_stale_aggregate: true
+    liveness_sources: [.orchestrator/live-run.yaml, .orchestrator/runs/<run-id>/events.ndjson, .orchestrator/runs/<run-id>/termination.yaml]
+    stale_heartbeat_detection: required
 
 BL-001:
   canonical_endpoint_count: 134
@@ -203,11 +241,20 @@ legacy_transition:
   broad_scope_is_not_lock: true
 
 productive_runtime:
-  target_minutes: 30
+  target_min_minutes: 30
+  target_max_minutes: 45
   hard_minimum_for_correctness: false
   never_idle_to_reach_target: true
   voluntary_stop_with_eligible_work: forbidden
-  platform_forced_short_run_classification: RUNTIME_WINDOW_FORCED_STOP
+  checkpoint_is_terminal_condition: false
+  continuous_worker_refill: required
+  platform_forced_short_run_classification: PLATFORM_RUNTIME_FORCED_STOP
+  platform_forced_short_run_requires_positive_evidence: true
+
+quality_gates:
+  QG_RUNTIME: continue productive dispatch/replan while eligible work and execution capacity remain
+  QG_HEARTBEAT: live heartbeat must be current and consistent with event/worker evidence
+  QG_TERMINATION: every termination must have an allowed reason and complete durable diagnostic evidence
 
 safety:
   github_actions: forbidden
