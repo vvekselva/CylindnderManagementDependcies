@@ -1,9 +1,9 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
-checkpoint_state: CHECKPOINT_RECONCILED_WITH_QUEUE_PROJECTION_PENDING
-started_at: 2026-08-31T11:33:27Z
-checkpoint_at: 2026-08-31T11:38:47Z
-terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
-termination_reason: INTERACTIVE_TURN_EXECUTION_BOUNDARY
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-223009-IST
+checkpoint_state: RESUMABLE_RUNTIME_BOUNDARY
+started_at: '2026-08-31T22:30:09+05:30'
+checkpoint_at: '2026-08-31T22:44:51+05:30'
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: PLATFORM_RUNTIME_FORCED_STOP
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
@@ -12,48 +12,42 @@ architecture:
   github_role: DURABLE_CONTROL_AUDIT_ONLY
   github_actions_runners_used: false
 scheduler_handoff:
-  fire_id: manual-20260831T113304Z
-  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/manual-20260831T113304Z.yaml
+  fire_id: 20260831T223009+0530
+  receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire/20260831T223009+0530.yaml
   handoff_acknowledged: true
   run_linked: true
-prior_gap_recovery:
-  recovered_run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
-  classification: ABNORMAL_PROCESS_DISAPPEARANCE
-  recovery_observed_at: 2026-08-31T11:34:28Z
+prior_run_reconciliation:
+  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
+  previous_terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+  unresolved_gap_remaining: false
+concurrency:
+  duplicate_suppressed_run: CYLINDER-PRODUCTION-FIRE-II-20260831-223203-IST
 business_behavior_rework:
-  total_registered: 134
-  rework_required: 116
-  rework_in_progress: 1
-  business_behavior_complete: 17
-  awaiting_user_review: 17
-  approved_after_rework: 0
-  newly_reconciled_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
-  active_ids: [STORY-0037]
-  remaining_global_rework_count: 117
+  active_unit: STORY-0041
+  result: PARTIAL_SOURCE_BINDING_CONTINUES
+  business_behavior_complete: false
+  evidence: BL-002/evidence/STORY-0041/20260831T224416+0530-source-binding-continuation.yaml
+  remaining_source_binding:
+    - concrete Spring mediator bean implementation/configuration
+    - exact transaction boundary around mediator/service chain
+    - validator implementation proving server-side cross-reference and required-field rules
 reconciliation:
-  enrichment_progress_version: 68
-  durable_unit_evidence_reconciled: true
-  aggregate_projection_repaired: true
-  queue_projection_repair_remaining: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
-  gate: PARTIAL_PASS_QUEUE_PROJECTION_REPAIR_REQUIRED
+  aggregate_projection_repaired: false
+  aggregate_projection_repair_remaining: true
+  reason: exact reconciliation from authoritative unit-local states remains required
 approval:
   auto_approve: false
   approval_delta: 0
-  current_revised_contract_approved_or_reapproved: 0
 drift_governance:
   application_code_mutation: false
   bl010_code_rework_executed: false
   user_drift_approval_bypassed: false
-bl008:
-  state_source: BL-008/README.md
-  current_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
-  schema_work: COMPLETE_AND_FROZEN
-  active_migration_gate: null
 runtime_reliability:
   heartbeat_state: TERMINATED_AT_RUNTIME_BOUNDARY
-  productive_runtime_seconds: 320
-  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-113327Z/termination.yaml
-  next_action: NEXT_FIRE_REPAIR_QUEUE_PROJECTION_THEN_DYNAMIC_REPLAN
+  productive_runtime_seconds: 882
+  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-223009-IST/termination.yaml
+  checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-223009-IST/checkpoint.yaml
+  next_action: RECONCILE_AGGREGATE_THEN_RESUME_STORY_0041_OR_DISPATCH_SAFE_INDEPENDENT_UNIT
 claims:
   active_at_terminal: 0
 transient_logs_remaining: 0
