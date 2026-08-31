@@ -1,9 +1,11 @@
 scheduler_task: Cylinder Production Fire - i
 observed_scheduled_fire_time: 2026-08-31T22:01:45+05:30
 receipt_time: 2026-08-31T22:01:45+05:30
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
 run_link_state: RUN_LINKED
-terminal_classification: null
-termination_time: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_time: 2026-08-31T22:13:54+05:30
+eligible_work_remaining: true
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-220145-IST/checkpoint.yaml
