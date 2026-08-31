@@ -1,18 +1,13 @@
 scheduler_task: USER_REQUESTED_CONTINUOUS_FIRE
 fire_id: FIRE-20260831T112801Z
-scheduled_fire_time: null
 observed_fire_time: 2026-08-31T11:28:01Z
 receipt_time: 2026-08-31T11:28:01Z
-state: ORCHESTRATOR_STARTED
-intended_scope:
-  mode: CONTINUOUS
-  requested_backlogs: ALL_ELIGIBLE
-  requested_units: DYNAMIC
+state: TERMINATED
+intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
 run_link_state: RUN_LINKED
 orchestrator_started_at: 2026-08-31T11:28:23Z
-terminal_classification: null
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
 termination_time: null
-notes:
-  - Direct user-triggered invocation; no scheduler-supplied scheduled fire timestamp was available in this turn.
-  - Scheduler last_run_time is not treated as orchestration execution proof.
+recovery_observed_at: 2026-08-31T11:34:28Z
+termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-112823Z/termination.yaml
