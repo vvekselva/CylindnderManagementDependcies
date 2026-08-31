@@ -1,6 +1,6 @@
-version: 54
+version: 55
 backlog_id: BL-002
-updated_at: 2026-08-31T05:45:52Z
+updated_at: 2026-08-31T05:54:26Z
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-054234Z
 checkpoint_state: CHECKPOINT_RECONCILED
@@ -34,18 +34,27 @@ approved_story_testing:
     catalogues: 1
     test_data_sets: 1
     human_readable_test_data: 1
-    executable_test_code: 1
+    junit_executable_test_code: 1
+    substitution_test_code: 1
     test_case_code_mapping: 9_OF_9_MAPPED_TO_EXECUTABLE_LAYER_OR_EXPLICIT_RUNTIME_LAYER
     test_data_row_code_consumption: 7_OF_7_DATA_CONTRACT_ROWS
-    code_executed: 0
-    pass: 0
-    fail: 0
+    data_contract_code_executed: 1
+    data_contract_rows_pass: 7
+    data_contract_rows_fail: 0
+    application_behavior_executed: 0
+    application_behavior_pass: 0
+    application_behavior_fail: 0
     coverage: NOT_EXECUTED
     live_validation_pending: 1
     live_validation_executed: 0
-    execution_blocked: 1
+    application_execution_blocked: 1
   runtime_capability: {java_21: AVAILABLE, maven: UNAVAILABLE, gradle: UNAVAILABLE, ant: AVAILABLE, junit5_runtime: UNAVAILABLE, mockito_runtime: UNAVAILABLE, jacoco_runtime: UNAVAILABLE, docker: UNAVAILABLE, podman: UNAVAILABLE, local_postgresql: UNAVAILABLE, outbound_dependency_resolution: DNS_BLOCKED}
-  substitution: {direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS, ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE, local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED, h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT}
+  substitution:
+    BL-009_data_contract_java21_runner: EXECUTED_PASS_7_OF_7_ROWS
+    direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS
+    ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE
+    local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED
+    h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT
 reconciliation:
   startup_projection_drift_detected: true
   startup_projection_drift_repaired: true
@@ -58,19 +67,24 @@ reconciliation:
     - .orchestrator/evidence/20260831-054344-testing-runtime-and-drift-reconciliation.md
     - BL-009/test-data/STORY-0001.md
     - BL-009/test-case-task-queue.csv
+    - BL-009/evidence/STORY-0001-data-contract-execution-20260831-055426Z.md
+    - BL-002/work-status/STORY-0041.yaml
   current_run_strict_delta: {count: 0, stories: []}
   current_run_approval_projection_delta: {count: 0, stories: []}
   current_run_materialization_delta: {count: 0, stories: []}
   current_run_BL-009_human_readable_test_data_delta: {count: 1, stories: [STORY-0001]}
-  current_run_BL-009_executable_test_execution_delta: {executed: 0, pass: 0, fail: 0}
+  current_run_BL-009_data_contract_execution_delta: {runner_executed: 1, rows_executed: 7, rows_pass: 7, rows_fail: 0}
+  current_run_BL-009_application_behavior_execution_delta: {executed: 0, pass: 0, fail: 0}
   current_run_coverage_delta: {unit: NOT_EXECUTED, integration: NOT_EXECUTED, combined: NOT_EXECUTED}
   source_detail_review_required: [STORY-0035, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
+  source_resolution_this_run:
+    STORY-0041: DOWNSTREAM_ADDRESS_TYPE_IMPLEMENTATION_NOT_PRESENT_AT_FROZEN_SOURCE
   aggregate_reconciliation_gate: PASS
 cursor:
-  next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
+  next_eligible_strict_unit: STORY-0043
   next_eligible_materialization_unit: null
-  next_approved_story_testing_unit: RUNTIME_CAPABILITY_RECOVERY_OR_EQUIVALENT_SUBSTITUTION
-  testing_execution_blocked_units: [BL-004/STORY-0001, BL-005/STORY-0001, BL-009/STORY-0001]
+  next_approved_story_testing_unit: RECOVER_JUNIT5_RUNTIME_FOR_APPLICATION_BEHAVIOR_EXECUTION
+  testing_execution_blocked_units: [BL-004/STORY-0001, BL-005/STORY-0001, BL-009/STORY-0001_APPLICATION_BEHAVIOR]
 approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
   state_source: BL-008/README.md
