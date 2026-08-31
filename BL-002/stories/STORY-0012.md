@@ -1,57 +1,79 @@
-# STORY-0012 — Challan Book Add Form
+# STORY-0012 — Challan Book Registration Form
 
 - Release: R1
 - Endpoint: `GET /logistics/challan-books/add-form`
+- Functional area: Challan Management
 - Controller: `ChallanBookWebController`
-- Controller method: `showAddBookForm()`
-- View: `final-version-1/add-challan-book.html`
 - Approval: NOT_APPROVED
-- Business-behavior rework: IN_PROGRESS_SOURCE_DETAIL_GAP
+- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
-## User story
+## Business purpose
 
-When an operator opens the Challan Book add-form URL, the application prepares a blank Challan Book registration screen and attempts to load three summary-metric groups. This GET request prepares the screen; the actual book registration mutation belongs to the separate POST `/logistics/challan-books/save` endpoint.
+This page prepares the operator to register a physical Challan Book used for delivery, empty-pickup, supplier filling-note, or customer spot-check paperwork. It renders the registration form and gives the user current Challan Book summary metrics before any new book is saved. The actual persistence operation is STORY-0013 (`POST /logistics/challan-books/save`).
 
-## Exact source-bound GET flow
+Opening this GET does not create a Challan Book.
 
-1. Browser requests `GET /logistics/challan-books/add-form` under controller base `/logistics/challan-books`.
-2. `ChallanBookWebController.showAddBookForm()` creates `ModelAndView("final-version-1/add-challan-book.html")`.
-3. It creates a blank `ChallanBookIngestionRequestDto` and exposes it as model attribute `ingestionRequest`.
-4. `populateSummaryMetrics(...)` calls `SummaryMetricLookupFetchService` for total, active, and unused-page Challan Book metrics.
-5. On successful metric reads, the model receives `challanBookTotalMetrics`, `challanBookActiveMetrics`, and `challanBookUnusedMetrics`.
-6. If a runtime exception occurs while loading metrics, the controller substitutes empty metric lists and exposes `summaryMetricErrorMessage = "Summary metrics are temporarily unavailable."`; the registration form still renders.
+## What the user sees and enters
 
-## Exact visible registration controls
+The page renders `final-version-1/add-challan-book.html` with an empty `ChallanBookIngestionRequestDto` and the following business inputs:
 
-The bound template posts separately to `/logistics/challan-books/save` with model object `ingestionRequest`. Relevant controls include:
+- **Challan Book Type** — selects the document/business purpose (`DELIVERY_CHALLAN`, `EMPTY_PICKUP_CHALLAN`, `FILLING_NOTE`, or `CUSTOMER_SPOT_CYLINDER_CHECK`).
+- **Book Reference Code** — required unique business code, maximum 30 characters.
+- **Serial Prefix** — optional sheet-number prefix, maximum 10 characters.
+- **Starting Sheet** — required numeric starting page, UI minimum 1.
+- **Ending Sheet** — required numeric ending page, UI minimum 1.
+- **Storage Location** — required current holding location of the physical book.
+- **Submit/Register** — posts the form to `POST /logistics/challan-books/save` (STORY-0013).
 
-| Visible control | Bound field / behavior |
-|---|---|
-| Challan Book Type | radio choices bound to `challanBook.bookType`: `DELIVERY_CHALLAN`, `EMPTY_PICKUP_CHALLAN`, `FILLING_NOTE`, `CUSTOMER_SPOT_CYLINDER_CHECK` |
-| Book Reference Code | `challanBook.bookCode`; required; maxlength 30 |
-| Serial Prefix | `challanBook.seriesPrefix`; optional; maxlength 10 |
-| Starting Sheet | `challanBook.startSheetNumber`; numeric; min 1; required |
-| Ending Sheet | `challanBook.endSheetNumber`; numeric; min 1; required |
-| Storage Location | `challanBook.currentLocation`; required; selectable values shown by the template |
-| Submit | posts to the separate `POST /logistics/challan-books/save` handler |
+These controls are bounded Challan Book metadata rather than large Customer/Product/Supplier/Vehicle/Driver/Address master-data selectors. No reference-search conversion is applicable to this page.
 
-The GET Story does not claim the POST registration mutation as its own side effect.
+## Summary information loaded before registration
 
-## Service / database depth
+The controller uses `SummaryMetricLookupFetchService` to load three ordered metric groups:
 
-The metric reads are source-proved at the controller boundary as:
+### Total-book metrics
+- `TOTAL_CHALLAN_BOOKS`
+- `TOTAL_DELIVERY_CHALLAN_BOOKS`
+- `TOTAL_EMPTY_PICKUP_BOOKS`
+- `TOTAL_SUPPLIER_EMPTY_BOOKS`
 
-- `fetchChallanBookTotalMetrics()`
-- `fetchChallanBookActiveMetrics()`
-- `fetchChallanBookUnusedPageMetrics()`
+### Active/closed metrics
+- `TOTAL_ACTIVE_BOOKS`
+- `TOTAL_CLOSED_BOOKS`
+- `TOTAL_ACTIVE_DELIVERY_CHALLAN_BOOKS`
+- `TOTAL_ACTIVE_EMPTY_PICKUP_BOOKS`
+- `TOTAL_ACTIVE_SUPPLIER_EMPTY_DROPOFF_BOOKS`
 
-The injected interface is `com.sreyas.datamatics.cylinder.management.services.SummaryMetricLookupFetchService`.
+### Unused-page metrics
+- `TOTAL_UNUSED_PAGES_ACTIVE_DELIVERY_CHALLAN_BOOKS`
+- `TOTAL_UNUSED_PAGES_ACTIVE_EMPTY_PICKUP_BOOKS`
+- `TOTAL_UNUSED_PAGES_ACTIVE_SUPPLIER_EMPTY_DROPOFF_BOOKS`
 
-The exact frozen implementation -> DAO/repository -> entity/view -> table/view read identity has not yet been bound. That missing depth is recorded instead of guessing a database source.
+The service is read-only and queries those keys through `SummaryMetricLookupJpaDao.findByLookUpKeyIn(...)`. It reconstructs the result in the business-defined key order and silently omits a requested key when no matching row exists. fileciteturn144file0L2-L2
 
-Therefore STORY-0012 is **canonical-identity repaired and controller/template/UI source-bound, but not yet revised business-behavior complete**.
+## Exact database read identity
 
-## Current gate
+`SummaryMetricLookupDo` maps to `public.tbl_summary_metric_lookup` with generated primary key `pk_summary_metric_lookup_id`. `look_up_key` is non-null and unique; each record also stores a UI label, explanatory meaning, numeric value and decimal-value flag. fileciteturn146file0L2-L2
 
-`SOURCE_DETAIL_REVIEW_REQUIRED`: bind `SummaryMetricLookupFetchService` to its exact implementation and downstream database read identity. No automatic Story approval occurs.
+The DAO is `SummaryMetricLookupJpaDao extends JpaRepository<SummaryMetricLookupDo, Long>` and provides lookup by one key or a collection of keys. fileciteturn145file0L2-L2
+
+## What happens when the page opens
+
+1. The controller creates the blank registration request/model.
+2. It fetches the three metric groups above from `public.tbl_summary_metric_lookup`.
+3. It places the request and metric groups into the model.
+4. It renders the Challan Book registration template.
+5. No Challan Book registry row or page ledger is written by this GET.
+
+## Validation and related submit behavior
+
+Browser-required fields and numeric minima are enforced by the form. Deeper persistence validation belongs to STORY-0013. In the frozen POST implementation, intended service exceptions for null input and invalid sheet ranges are currently commented out, duplicate code is not explicitly pre-checked, and per-sheet ledger generation is commented out. Those are source-proved current-state gaps documented in STORY-0013 and are not falsely attributed to this GET page.
+
+## Business impact
+
+The page combines data entry with a live operational summary so the operator can see current book counts/availability while preparing a new registration. Because it is read-only until Submit, merely opening or refreshing the page cannot change Challan inventory.
+
+## Rework gate
+
+**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. Controller/template form behavior plus the exact summary-metric service, DAO and `public.tbl_summary_metric_lookup` read identity are frozen-source bound. No automatic approval and no revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
