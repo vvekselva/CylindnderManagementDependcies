@@ -1,0 +1,20 @@
+data_set_id,row_type,ownership_or_party_type,logical_cylinder_id,current_physical_id,replacement_physical_id,owner_party_code,current_custody_party_code,product_code,initial_state,logical_asset_status,initial_location,expected_display,purpose,notes
+TD-REF-01,REFERENCE,Product,,,,,,OXYGEN,,,,,Reusable product/UOM,Use active OXYGEN + CC (or equivalent existing configured UOM).
+TD-SUP-OWNER-A,PARTY,Supplier,,,,SUP-OWNER-A,,,,,,,Permanent owner supplier,Example: Alpha Industrial Gases
+TD-SUP-SERVICE-B,PARTY,Supplier,,,,SUP-SERVICE-B,,,,,,,Non-owner refill/custodian supplier,Example: Beta Refill Services
+TD-SUP-UNRELATED-C,PARTY,Supplier,,,,SUP-UNRELATED-C,,,,,,,Negative supplier context,Example: Gamma Gas Traders
+TD-CUST-OWNER-A,PARTY,Customer,,,,CUST-OWNER-A,,,,,,,Permanent owner customer,Example: Alpha Engineering
+TD-CUST-HOLDER-B,PARTY,Customer,,,,CUST-HOLDER-B,,,,,,,Valid non-owner current holder,Example: Beta Fabricators
+TD-CUST-HOLDER-C,PARTY,Customer,,,,CUST-HOLDER-C,,,,,,,Second valid holder,Example: Gamma Auto Works
+TD-CUST-UNRELATED-X,PARTY,Customer,,,,CUST-UNRELATED-X,,,,,,,Negative customer context,Example: Delta Industries
+TD-COMP-01,CYLINDER,COMPANY_OWNED,COMP-TST-001,,,,,OXYGEN,EMPTY,N/A,YARD,COMP-TST-001,Company registration/display,No separate physical ID.
+TD-COMP-02,CYLINDER,COMPANY_OWNED,COMP-TST-002,,,,,OXYGEN,FULL,N/A,YARD,COMP-TST-002,Company terminal test,Use LOST/DECOMMISSIONED.
+TD-SUP-01,CYLINDER,SUPPLIER_OWNED,LS-TST-001,SUP-PHY-1001,SUP-PHY-9001,SUP-OWNER-A,SUP-SERVICE-B,OXYGEN,EMPTY,ASSIGNED,YARD,LS-TST-001 / SUP-PHY-1001,Owner vs refill-custodian replacement,Owner A; service supplier B.
+TD-SUP-02,CYLINDER,SUPPLIER_OWNED,LS-TST-002,SUP-PHY-1002,SUP-PHY-9002,SUP-OWNER-A,,OXYGEN,EMPTY,ASSIGNED,YARD,LS-TST-002 / SUP-PHY-1002,Supplier logical-count stability,Damage/loss/replacement.
+TD-CUST-01,CYLINDER,CUSTOMER_OWNED,LC-TST-001,CUST-PHY-2001,CUST-PHY-9001,CUST-OWNER-A,CUST-HOLDER-B,OXYGEN,FULL,ASSIGNED,CUSTOMER,LC-TST-001 / CUST-PHY-2001,Cross-customer custody,Owner A; holder B then C.
+TD-CUST-02,CYLINDER,CUSTOMER_OWNED,LC-TST-002,CUST-PHY-2002,CUST-PHY-9002,CUST-OWNER-A,,OXYGEN,FULL,ASSIGNED,YARD,LC-TST-002 / CUST-PHY-2002,Collision target,Keep physical ID active.
+TD-CUST-CLOSE,CYLINDER,CUSTOMER_OWNED,LC-TST-003,CUST-PHY-2003,,CUST-OWNER-A,CUST-HOLDER-B,OXYGEN,FULL,ASSIGNED,CUSTOMER,LC-TST-003 / CUST-PHY-2003,Final return + closure,Move B -> owner A before successful close.
+TD-CUST-LOSS,CYLINDER,CUSTOMER_OWNED,LC-TST-004,CUST-PHY-2004,CUST-PHY-9004,CUST-OWNER-A,,OXYGEN,FULL,ASSIGNED,YARD,LC-TST-004 / CUST-PHY-2004,LOST -> awaiting -> recovery,Logical count must not change on physical loss.
+TD-DUP-01,NEGATIVE,SUPPLIER_OWNED,LS-TST-DUP1, sup-phy-1001 ,,SUP-OWNER-A,,OXYGEN,EMPTY,ASSIGNED,YARD,,Normalized duplicate registration,Must collide with SUP-PHY-1001.
+TD-DUP-02,NEGATIVE,CUSTOMER_OWNED,LC-TST-001,CUST-PHY-2001, cust-phy-2002 ,CUST-OWNER-A,CUST-HOLDER-B,OXYGEN,FULL,ASSIGNED,CUSTOMER,,Normalized duplicate replacement,Must collide with CUST-PHY-2002.
+TD-MIXED-E2E,SCENARIO,MIXED,COMP-TST-001 | LS-TST-001 | LC-TST-001,SUP-PHY-1001 | CUST-PHY-2001,,SUP-OWNER-A / CUST-OWNER-A,SUP-SERVICE-B / CUST-HOLDER-B,OXYGEN,MIXED,MIXED,MIXED,Company one ID; external logical / physical,Final combined scenario,Use after individual cases.
