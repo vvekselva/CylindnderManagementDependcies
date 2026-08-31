@@ -1,0 +1,24 @@
+story_id: STORY-0041
+evidence_time: '2026-08-31T23:33:57+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-232655-IST
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/UC01RegisterCustomerController.java
+proved:
+  - POST /registerCustomer receives UC01RegisterCustomerRequestDto as model attribute customer.
+  - resolveAddressTypes maps submitted addressTypeIds to AddressTypeDto values from LookupDataCache before mediator invocation.
+  - controller invokes typed ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>.invokeServices(requestDto).
+  - InvalidInputParameterException is caught in the controller and the failure path re-renders the register-customer view instead of redirecting.
+  - when the exception carries CustomerIngestionRequestDto, validator-flagged customer, phone-number and address DTOs are copied back into the request DTO for the rendered view.
+  - validationErrorDtos from the failed CustomerIngestionRequestDto are observable in the controller failure path.
+  - addressTypes are repopulated from LookupDataCache when the form is re-rendered after validation failure.
+business_behavior_complete: false
+remaining_source_binding:
+  - concrete Spring mediator bean implementation/configuration
+  - exact transaction boundary around mediator/service persistence chain
+  - validator implementation proving exact server-side required-field and cross-reference rules
+negative_inference_rule: Failed repository code-index searches are not evidence that a source implementation is absent.
+approval: PENDING_USER_APPROVAL
+application_code_mutation: false
+bl_010_execution: false
