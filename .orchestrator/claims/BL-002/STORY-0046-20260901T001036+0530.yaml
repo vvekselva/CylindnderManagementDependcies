@@ -1,0 +1,11 @@
+claim_id: STORY-0046-20260901T001036+0530
+backlog: BL-002
+resource: BL-002/STORY-0046
+work_unit: STORY-0046_BUSINESS_BEHAVIOR_REWORK
+owner_run: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
+state: ACTIVE
+claimed_at: '2026-09-01T00:10:36+05:30'
+heartbeat_at: '2026-09-01T00:10:36+05:30'
+lease_expires_at: '2026-09-01T00:25:36+05:30'
+write_set:
+  - BL-002/evidence/STORY-0046/
