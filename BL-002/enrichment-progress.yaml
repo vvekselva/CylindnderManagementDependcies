@@ -1,98 +1,100 @@
-version: 55
+version: 56
 backlog_id: BL-002
-updated_at: 2026-08-31T05:54:26Z
+updated_at: 2026-08-31T06:51:42Z
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-054234Z
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-065142Z
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
   total_stories: 134
   r1_stories: 88
   r2_stories: 46
   processing_order: R1_THEN_R2
-metrics:
+business_behavior_rework:
+  policy: BL-002/story-business-behavior-rework-policy.yaml
+  total_registered: 134
+  rework_required: 134
+  rework_in_progress: 1
+  business_behavior_complete: 0
+  awaiting_user_review: 0
+  approved_after_rework: 0
+  needs_clarification: 0
+  active_rework_ids: [STORY-0054]
+  STORY-0054_state: REWORK_REQUIRED_USER_UX_CHANGE
+  static_reference_selector_reviewed: 1
+  search_conversion_required: 1
+  search_conversion_required_ids: [STORY-0054]
+  dependent_selector_rework_required: 1
+  dependent_selector_rework_required_ids: [STORY-0054]
+  remaining_global_rework_count: 134
+legacy_metrics:
   register_ready: 131
   clarification: 3
-  approved: 1
+  historical_approved: 1
+  current_revised_contract_approved_or_reapproved: 0
+  reapproval_required: 1
+  reapproval_required_ids: [STORY-0001]
   materialized_story_files: 134
   materialization_pending: 0
   strict_field_ui_complete: 126
   strict_field_ui_remaining: 8
   use_case_grouped: 0
-  testing_ready: 1
+  testing_ready_current_revised_contract: 0
 materialization:
   parity_target: 134
   queue: BL-002/materialization-task-queue.csv
-  pending_r1_priority_1: 0
-  pending_r2_priority_2: 0
   parity_state: COMPLETE_134_OF_134
+development_changes:
+  backlog: BL-010
+  queue: BL-010/development-change-task-queue.csv
+  queued: 1
+  ids: [DEV-0001]
+  story_ids: [STORY-0054]
+  ready_for_source_binding: 1
+  implementation_complete: 0
+  rule: Development implementation does not imply Story approval; reconcile implemented source back into BL-002 before explicit approval/reapproval.
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
-  approved_story_ids: [STORY-0001]
-  BL-004: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, execution_blocked: 1, coverage: NOT_EXECUTED}
-  BL-005: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, execution_blocked: 1, coverage: NOT_EXECUTED}
+  historical_approved_story_ids: [STORY-0001]
+  current_revised_contract_approved_or_reapproved_story_ids: []
+  revised_fanout_eligible_ids: []
+  BL-004: {historical_generated: 1, revised_execution_eligible: 0, status: SUSPENDED_PENDING_REAPPROVAL, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  BL-005: {historical_generated: 1, revised_execution_eligible: 0, status: SUSPENDED_PENDING_REAPPROVAL, coverage: NOT_EXECUTED_REVISED_CONTRACT}
   BL-009:
-    catalogues: 1
-    test_data_sets: 1
-    human_readable_test_data: 1
-    junit_executable_test_code: 1
-    substitution_test_code: 1
-    test_case_code_mapping: 9_OF_9_MAPPED_TO_EXECUTABLE_LAYER_OR_EXPLICIT_RUNTIME_LAYER
-    test_data_row_code_consumption: 7_OF_7_DATA_CONTRACT_ROWS
-    data_contract_code_executed: 1
-    data_contract_rows_pass: 7
-    data_contract_rows_fail: 0
-    application_behavior_executed: 0
-    application_behavior_pass: 0
-    application_behavior_fail: 0
-    coverage: NOT_EXECUTED
-    live_validation_pending: 1
-    live_validation_executed: 0
-    application_execution_blocked: 1
-  runtime_capability: {java_21: AVAILABLE, maven: UNAVAILABLE, gradle: UNAVAILABLE, ant: AVAILABLE, junit5_runtime: UNAVAILABLE, mockito_runtime: UNAVAILABLE, jacoco_runtime: UNAVAILABLE, docker: UNAVAILABLE, podman: UNAVAILABLE, local_postgresql: UNAVAILABLE, outbound_dependency_resolution: DNS_BLOCKED}
-  substitution:
-    BL-009_data_contract_java21_runner: EXECUTED_PASS_7_OF_7_ROWS
-    direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS
-    ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE
-    local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED
-    h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT
+    historical_catalogues: 1
+    historical_test_data_sets: 1
+    historical_human_readable_test_data: 1
+    historical_executable_test_code: 1
+    historical_data_contract_rows_pass: 7
+    historical_data_contract_rows_fail: 0
+    revised_application_behavior_executed: 0
+    revised_application_behavior_pass: 0
+    revised_application_behavior_fail: 0
+    revised_coverage: NOT_EXECUTED
+    status: SUSPENDED_PENDING_STORY_REWORK_AND_REAPPROVAL
 reconciliation:
   startup_projection_drift_detected: true
   startup_projection_drift_repaired: true
   repaired_fields:
-    - BL-008 projection advanced from stale V184 CLOSED to live V185 AUTHORED / WAITING_FOR_CLEAN_VALIDATION
-    - BL-009 human-readable test-data companion count advanced 0 -> 1
-    - BL-009 executable-code lifecycle and row/case mapping projected into shared aggregate
-    - runtime testing capability re-probed; no stale Maven/Docker assumption treated as permanent
-  durable_evidence:
-    - .orchestrator/evidence/20260831-054344-testing-runtime-and-drift-reconciliation.md
-    - BL-009/test-data/STORY-0001.md
-    - BL-009/test-case-task-queue.csv
-    - BL-009/evidence/STORY-0001-data-contract-execution-20260831-055426Z.md
-    - BL-002/work-status/STORY-0041.yaml
-  current_run_strict_delta: {count: 0, stories: []}
-  current_run_approval_projection_delta: {count: 0, stories: []}
-  current_run_materialization_delta: {count: 0, stories: []}
-  current_run_BL-009_human_readable_test_data_delta: {count: 1, stories: [STORY-0001]}
-  current_run_BL-009_data_contract_execution_delta: {runner_executed: 1, rows_executed: 7, rows_pass: 7, rows_fail: 0}
-  current_run_BL-009_application_behavior_execution_delta: {executed: 0, pass: 0, fail: 0}
-  current_run_coverage_delta: {unit: NOT_EXECUTED, integration: NOT_EXECUTED, combined: NOT_EXECUTED}
-  source_detail_review_required: [STORY-0035, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_resolution_this_run:
-    STORY-0041: DOWNSTREAM_ADDRESS_TYPE_IMPLEMENTATION_NOT_PRESENT_AT_FROZEN_SOURCE
+    - global business-behavior rework metrics projected separately from legacy strict metrics
+    - STORY-0054 corrected from awaiting-review projection to REWORK_REQUIRED_USER_UX_CHANGE
+    - BL-010 Development Changes backlog created and STORY-0054 routed to DEV-0001
+    - historical STORY-0001 approval separated from current revised-contract approval; revised testing fan-out suspended pending reapproval
+    - BL-008 projection advanced from V185 waiting-for-validation to V185 CLEAN_DATABASE_VALIDATED_PASS / DATABASE_FROZEN_AT_V185
   aggregate_reconciliation_gate: PASS
 cursor:
-  next_eligible_strict_unit: STORY-0043
-  next_eligible_materialization_unit: null
-  next_approved_story_testing_unit: RECOVER_JUNIT5_RUNTIME_FOR_APPLICATION_BEHAVIOR_EXECUTION
-  testing_execution_blocked_units: [BL-004/STORY-0001, BL-005/STORY-0001, BL-009/STORY-0001_APPLICATION_BEHAVIOR]
-approval_policy: {auto_approve: false, approvals_delta: 0}
+  next_global_rework_unit: STORY-0001
+  priority_development_unit: BL-010/DEV-0001
+  next_development_action: BIND_WALKIN_CUSTOMER_SEARCH_ADDRESS_LOOKUP_PRODUCT_SEARCH_THEN_IMPLEMENT
+  next_testing_action: NONE_UNTIL_CURRENT_REVISED_STORY_APPROVAL_OR_REAPPROVAL
+approval_policy:
+  auto_approve: false
+  explicit_user_approval_required: true
+  development_completion_auto_approval: false
 bl008:
   state_source: BL-008/README.md
-  execution_mode: USER_LOCAL_FLYWAY_HANDOFF
-  last_historical_clean_validated_migration: V184
-  current_authored_migration: V185__Align_External_Logical_Physical_Asset_Model.sql
-  active_migration_gate: V185_CLEAN_VALIDATION_REQUIRED
-  current_state: V185_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  expected_validation_line: BL008_V185_FINAL_DATABASE_HARMONY_PASS_FAILED_CHECKS_0
-  database_freeze_declared: false
-  database_write_delta_chatgpt: 0
+  current_migration: V185__Align_External_Logical_Physical_Asset_Model.sql
+  current_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
+  database_schema_work: COMPLETE_AND_FROZEN
+  active_database_migration_gate: null
+  service_ui_acceptance_cases: 30
+  chatgpt_database_write_delta: 0
