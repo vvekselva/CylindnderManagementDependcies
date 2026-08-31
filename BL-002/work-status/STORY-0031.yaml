@@ -1,16 +1,16 @@
-version: 1
+version: 2
 story_id: STORY-0031
 release: R1
 canonical_register_endpoint: GET /ownership-obligation-dashboard
 canonical_functional_area: Ownership Obligation
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework:
-  state: REWORK_BLOCKED_SOURCE_DETAIL_REVIEW_REQUIRED
-  business_behavior_complete: false
-  selector_ux_reviewed: false
+  state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+  business_behavior_complete: true
+  selector_ux_reviewed: true
   search_conversion_required: false
   dependent_selector_rework_required: false
-  needs_clarification: true
+  needs_clarification: false
 identity_drift:
   detected: true
   repaired: true
@@ -18,19 +18,34 @@ identity_drift:
   repaired_physical_story_identity: GET /ownership-obligation-dashboard
   rule: CANONICAL_REGISTER_WINS
 source_binding:
-  exact_route_search_attempted: true
-  github_code_search_total_count: 0
-  github_code_search_incomplete_results: true
-  exact_controller_bound: false
-  exact_template_bound: false
-  exact_service_bound: false
-  exact_database_read_identity_bound: false
-  source_detail_gap: Exact canonical ownership-obligation route did not resolve through accessible search evidence; incomplete search cannot prove absence, so no substitute source path is invented.
+  exact_controller_bound: true
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/OwnershipObligationDashboardController.java
+  controller_method: showOwnershipObligationDashboard(partyType, custodyStatus, tripId, searchTerm)
+  exact_template_bound: true
+  template: cylindermanagement.web/src/main/resources/templates/final-version-1/OwnershipObligationDashboard.html
+  exact_service_bound: true
+  service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/OwnershipObligationDashboardService.java
+  service_method: fetchDashboard(partyType, custodyStatus, tripId, searchTerm)
+  exact_database_read_identity_bound: true
+  base_tables: [public.tbl_cylinder_party_custody, public.tbl_cylinder, public.tbl_customer, public.tbl_supplier]
+proved_behavior:
+  filters: [partyType, custodyStatus, tripId, searchTerm]
+  search_term_fields: [cylinderSerial, partyName]
+  search_matching: CASE_INSENSITIVE_CONTAINS
+  detail_row_limit: 200
+  party_summary_limit: 50
+  kpi_counts_filtered_by_request_filters: false
+  mutation_on_get: false
+  dedicated_empty_state: false
+  dedicated_controller_error_state: false
+selector_review:
+  large_reference_static_selector_present: false
+  existing_text_search: true
+  search_conversion_required: false
 approval:
   state: NOT_APPROVED
   explicit_user_approval_required_after_rework: true
   auto_approved: false
 next_actions:
-  - resolve exact frozen source for GET /ownership-obligation-dashboard from complete source-tree proof
-  - trace ownership/obligation calculations through persistence and visible dashboard behavior if source exists
-  - if complete frozen-tree proof establishes absence, classify source-integrity gap
+  - user_review_of_reworked_story
+  - after_explicit_approval_only_fan_out_revised_BL004_BL005_BL009
