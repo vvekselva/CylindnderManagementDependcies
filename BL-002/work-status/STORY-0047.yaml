@@ -1,0 +1,30 @@
+version: 1
+backlog_id: BL-002
+story_id: STORY-0047
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+release: R1
+endpoint: POST /updateCustomer
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+result: SOURCE_DETAIL_REFINED_STRICT_BLOCKED_BROWSER_ENDPOINT_MISMATCH
+enrichment_state: SOURCE_DETAIL_REVIEW_REQUIRED
+strict_field_ui_complete: false
+strict_delta: 0
+approval_delta: 0
+materialization_delta: 0
+source_proof:
+  controller: CustomerUpdateController.doPost binds CustomerUpdateRequestDto and invokes customerUpdateService.processRequest
+  validator: CustomerUpdateRequestValidator proves customer ID/name, GST, phone and address validation branches
+  service: CustomerUpdateService validates, findById, uniqueness-checks GST/new phones, rebuilds phone/address mappings, and saves CustomerDo
+  dao: CustomerJpaDao extends JpaRepository<CustomerDo, Long>
+  entity: CustomerDo
+  database: public.tbl_customer; pk_customer_id; public.pk_customer_id_serial; customer_name; gst_number; active
+  success_response: redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10
+  validation_response: UC01RegisterCustomer with model key customer
+strict_blockers:
+  - Frozen UC01RegisterCustomer.html posts to /registerCustomer, not /updateCustomer; no exact visible/browser submit path for POST /updateCustomer is proved.
+  - CustomerUpdateService has modelMapper.map(customerDto, existingCustomerDo) commented out, so customer-name/GST scalar persistence mutation is not proved by executable code.
+corrections:
+  - The executable downstream service is CustomerUpdateService through the ICylinderManagementApplicationService interface; do not substitute an unproved CustomerUpdateApplicationService layer.
+  - Do not claim redirect to an update-detail page; executable controller success redirects to the paged customer list.
+approval: PENDING_USER_APPROVAL
+transient_logs_remaining: 0
