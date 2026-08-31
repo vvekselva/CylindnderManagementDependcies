@@ -1,0 +1,22 @@
+claim_id: CYL-ORCH-20260831T175004+0530-STORY-0013
+run_id: CYL-ORCH-20260831T175004+0530
+backlog: BL-005
+work_unit: STORY-0013_INTEGRATION_TEST_GENERATION
+status: ACTIVE
+claimed_at: '2026-08-31T18:00:45+05:30'
+heartbeat_at: '2026-08-31T18:00:45+05:30'
+lease_expires_at: '2026-08-31T18:15:45+05:30'
+read_set:
+  - BL-002/stories/STORY-0013.md
+  - BL-002/work-status/STORY-0013.yaml
+  - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/cylindermanagement.custommapper.service/.../ChallanBookIngestionService.java
+  - BL-005/integration-test-task-queue.csv
+write_set:
+  - BL-005/stories/STORY-0013.md
+  - BL-005/generated-tests/STORY-0013/Story0013ChallanBookIntegrationTest.java
+  - BL-005/evidence/STORY-0013-generation-20260831.yaml
+  - BL-005/integration-test-task-queue.csv
+dependencies:
+  story_approval: APPROVED_AFTER_REWORK
+  code_conformance: CODE_CONFORMANCE_VERIFIED_PASS
+application_code_mutation: false
