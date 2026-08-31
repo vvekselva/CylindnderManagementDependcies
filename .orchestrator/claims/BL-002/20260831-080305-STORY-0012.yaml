@@ -1,8 +1,9 @@
 claim_id: 20260831-080305-STORY-0012
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T08:03:05Z
-heartbeat_at: 2026-08-31T08:03:05Z
+heartbeat_at: 2026-08-31T08:05:05Z
+released_at: 2026-08-31T08:05:05Z
 lease_expires_at: 2026-08-31T08:18:05Z
 work_unit: BL-002/STORY-0012
 read_set:
@@ -13,4 +14,6 @@ read_set:
 write_set:
   - BL-002/stories/STORY-0012.md
   - BL-002/work-status/STORY-0012.yaml
-purpose: Repair canonical identity drift and bind GET /logistics/challan-books/add-form to exact frozen controller/template behavior without inventing unresolved service/DAO details.
+result: CANONICAL_IDENTITY_REPAIRED_CONTROLLER_TEMPLATE_UI_BOUND_SOURCE_DETAIL_GAP_REMAINS
+remaining_gate: Bind SummaryMetricLookupFetchService implementation through exact downstream database read identity.
+approval_state: NOT_APPROVED
