@@ -1,11 +1,11 @@
-version: 1
+version: 2
 story_id: STORY-0014
 release: R1
 canonical_register_endpoint: GET /challan-entry-aging-dashboard
 canonical_functional_area: Challan Monitoring
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework:
-  state: REWORK_IN_PROGRESS_SOURCE_DETAIL_REVIEW_REQUIRED
+  state: REWORK_BLOCKED_SOURCE_DETAIL_REVIEW_REQUIRED
   business_behavior_complete: false
   selector_ux_reviewed: false
   search_conversion_required: false
@@ -19,16 +19,19 @@ identity_drift:
   rule: CANONICAL_REGISTER_WINS
 source_binding:
   exact_route_search_attempted: true
+  github_code_search_total_count: 0
+  github_code_search_incomplete_results: true
   exact_controller_bound: false
   exact_template_bound: false
   exact_service_bound: false
   exact_database_read_identity_bound: false
-  source_detail_gap: Exact canonical route did not resolve through the accessible application search index; bind from frozen source tree or record proven route absence.
+  source_detail_gap: Exact canonical route still does not resolve from accessible frozen-source search evidence. Because GitHub code search reports incomplete_results=true, route absence is not proven and no substitute controller/template/service/database path may be invented.
 approval:
   state: NOT_APPROVED
   explicit_user_approval_required_after_rework: true
   auto_approved: false
 next_actions:
-  - resolve exact frozen controller/source for GET /challan-entry-aging-dashboard
-  - trace dashboard data through service/repository/database and visible behavior
+  - resolve exact frozen controller/source for GET /challan-entry-aging-dashboard from a complete source-tree proof
+  - trace dashboard data through service/repository/database and visible behavior if source exists
+  - if complete frozen-tree proof establishes absence, classify source-integrity gap
   - do not substitute the previous /system-settings identity
