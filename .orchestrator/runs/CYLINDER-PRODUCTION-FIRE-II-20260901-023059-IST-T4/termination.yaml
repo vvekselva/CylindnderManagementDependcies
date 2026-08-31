@@ -1,0 +1,13 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4
+termination_time: "2026-09-01T02:33:55+05:30"
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY
+voluntary_early_stop: false
+eligible_work_remaining: true
+resumable: true
+active_claims: 0
+application_code_mutation: false
+bl010_created: false
+bl010_executed: false
+github_actions_runners_used: false
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4/checkpoint.yaml
