@@ -4,127 +4,110 @@
 - Endpoint: `GET /vehicleLoad`
 - Functional area: Vehicle Load
 - Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
+- Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Traceability state: COMPLETE
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Business-behavior rework: COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Human-readable story
 
-As an authorized Cylinder Management user, I want to open the Vehicle Loading screen so that I can identify the vehicle and driver, set load date/time and loading metadata, choose cylinders available for loading, distribute FULL cylinders between delivery and buffer purposes, and prepare the vehicle-load submission.
+As an authorized Cylinder Management user, I want to prepare a vehicle load for an active trip, select cylinders physically available in the yard, distribute FULL cylinders between delivery and buffer purposes and identify EMPTY cylinders for supplier refill, so that saving the load records the vehicle load and its lines, marks the trip Loaded, records the yard-start stop and transfers the selected cylinders from active yard inventory into active vehicle logistics execution.
 
-## Entry and server-side GET contract
+## Entry behavior
 
-`GET /vehicleLoad` is handled by `Uc02Phase01VehicleLoadController.doGet(Model model)`.
+`GET /vehicleLoad` is handled by `Uc02Phase01VehicleLoadController.doGet(Model)` and renders `with-menu/Uc02-Phase01-VehicleLoadView` with model attribute `vehicleLoad`.
 
-The controller always:
+The controller creates a fresh `UC02Phase01VehicleLoadRequestDto` and `VehicleLoadDto`. When `REDIRECT_REQUEST` is present after trip creation, it also reads `DRIVER_ID`, `DRIVER_NAME`, `VEHICLE_ID`, `VEHICLE_NUMBER` and `VEHICLE_TRIP_ID`, sends them to the page as preselected values, creates `VehicleTripDto`, sets its trip ID and attaches it to the request. Without redirect attributes, this trip attachment is not performed by the GET source.
 
-1. creates a new `UC02Phase01VehicleLoadRequestDto`;
-2. creates a new `VehicleLoadDto` and attaches it to the request DTO;
-3. creates a `VehicleTripDto` placeholder;
-4. creates view `with-menu/Uc02-Phase01-VehicleLoadView`;
-5. exposes the request DTO as model attribute `vehicleLoad`;
-6. calls `lookupDataCache.getVehicleLoadPurposes()`.
+The GET also calls `lookupDataCache.getVehicleLoadPurposes()`, but the returned local list is not added to the model, so no unproved UI effect is attributed to that lookup.
 
-The fetched `vehicleLoadPurposeDtos` local variable is not added to the model in this handler, so no further behavior is attributed to that call.
+## Visible fields and business meaning
 
-### Redirect-preselected branch
+- **Vehicle** identifies the trip vehicle. Redirect entry can preselect and lock it; direct entry uses vehicle type-ahead search.
+- **Driver** identifies the trip driver. Redirect entry can preselect and lock it; direct entry uses driver type-ahead search.
+- **Load Date / Load Time** describe when the load is prepared; browser logic synchronizes the visible time into the submitted vehicle-load model.
+- **Loaded By** records the person/operator responsible for loading and is required by both browser and server validation.
+- **Remarks** records optional load notes.
+- **Cylinder picker** selects cylinders and submits each selected identity as `vehicleLoadDto.loadLines[i].cylinder.cylinderId`.
+- **For Customer Delivery** is the submitted FULL-cylinder allocation for delivery.
+- **Buffer / Adhoc Supply** is the submitted FULL-cylinder allocation for buffer use.
+- **For Supplier Refill** is synchronized by the browser to the selected EMPTY-cylinder count.
+- **Save Vehicle Load** executes the embedded POST mutation described below.
 
-When the Spring `Model` contains `REDIRECT_REQUEST`, the controller reads these exact flash/model attributes:
+## Search and client behavior
 
-- `DRIVER_ID`
-- `DRIVER_NAME`
-- `VEHICLE_ID`
-- `VEHICLE_NUMBER`
-- `VEHICLE_TRIP_ID`
+Vehicle and Driver are search-based selectors. Editing their visible text clears the stale selected hidden ID and a 280 ms debounce is used before lookup. Cylinder lookup uses the state and serial/state APIs and supports paging/search/add/remove.
 
-It forwards them to the page as:
+The browser maintains selected FULL/EMPTY counts. It recalculates Delivery and Buffer as complementary values and requires `Delivery + Buffer == selected FULL count` before submit. It also requires Vehicle, Driver, Loaded By and at least one cylinder.
 
-- `preselectedVehicleId`
-- `preselectedVehicleNumber`
-- `preselectedDriverId`
-- `preselectedDriverName`
-- `preselectedVehicleTripId`
+A notable current-state mismatch is preserved: the server validator explicitly permits an empty load for pickup-only trips, while the browser `submitLoad()` blocks submission when no cylinder is selected.
 
-It also sets `vehicleTripDto.vehicleTripId` and attaches that DTO to the request DTO. When `REDIRECT_REQUEST` is absent, this preselection branch is skipped and the page uses normal vehicle/driver type-ahead behavior.
+## Save Vehicle Load — concrete server path
 
-Frozen controller source:
-`cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase01VehicleLoadController.java`
+`POST /vehicleLoad` invokes `Uc02Phase01VehicleLoadMediator.invokeServices(requestDto)`. The concrete mediator creates `VehicleLoadIngestionRequestDto`, copies `VehicleLoadDto` and `VehicleTripDto`, and invokes `VehicleLoadIngestionService.processRequest()`.
 
-## Exact screen and form binding
+`VehicleLoadIngestionService.processRequest()` is `@Transactional`, so its persisted load, trip, stop, yard and logistics changes participate in the same service transaction unless a database/runtime failure rolls the transaction back.
 
-The Thymeleaf page is:
-`cylindermanagement.web/src/main/resources/templates/with-menu/Uc02-Phase01-VehicleLoadView.html`.
+## Server validation and loadability rules
 
-The form uses `th:object="${vehicleLoad}"`, `method="post"`, and posts to `/vehicleLoad`.
+`VehicleLoadIngestionValidator` source proves:
 
-Source-proved controls include:
+1. request DTO, `VehicleTripDto` and `VehicleLoadDto` must be non-null;
+2. `loadedBy` must not be blank;
+3. load lines may be empty at server level for pickup-only trips;
+4. when lines exist, every line must contain a Cylinder ID and that Cylinder must exist;
+5. every selected cylinder must pass location-exclusivity validation and be available only in Yard;
+6. the active Yard Inventory line and cylinder state must exist;
+7. only Yard states `FULL` and `EMPTY` are loadable.
 
-- **Vehicle*** — visible type-ahead `vehicle-text`; selected identity is propagated to hidden `vehicle-id` for the request DTO; the redirect branch can pre-populate and lock this field.
-- **Driver*** — visible type-ahead with hidden selected driver identity; the redirect branch can pre-populate and lock this field.
-- **Load Date*** — `vehicleLoadDto.loadDate`; `onchange` invokes `syncLoadTime()`.
-- **Load Time*** — visible time control; `onchange` and `oninput` invoke `syncLoadTime()`; hidden `vehicleLoadDto.loadTime` carries the submitted value.
-- **Loaded By*** — text input `vehicleLoadDto.loadedBy`.
-- **Remarks** — optional text input `vehicleLoadDto.remarks`.
-- **Cylinder picker** — lists available cylinders, supports serial search, refresh, pagination, add/remove, and creates hidden `vehicleLoadDto.loadLines[i].cylinder.cylinderId` inputs for selected lines.
-- **For Customer Delivery*** — `vehicleLoadDto.quantityFullForDelivery`.
-- **Buffer / Adhoc Supply*** — `vehicleLoadDto.quantityFullForBuffer`.
-- **For Supplier Refill** — read-only `vehicleLoadDto.quantityEmptyForSupplier`, auto-synchronized to the selected EMPTY count.
-- **Cancel** — navigates away without submitting.
-- **Save Vehicle Load** — invokes `submitLoad()`.
+The service independently requires exactly one active Yard Inventory line for each selected cylinder.
 
-The screen displays a server-side error banner when `errorMessage` is present.
+The validator's VehicleTrip-ID positive/existence validation block is commented out. The service subsequently performs `vehicleTripJpaDao.findById(vehicleTripId).orElseThrow(...)`, so a resolvable trip identity is still required by the effective persistence path.
 
-## Browser events and dependent request identities
+The quantity-summary null check contains a current-source defect: `quantityFullForDelivery` is checked twice and `quantityEmptyForSupplier` is not explicitly included in that null condition. This is documented as current behavior and is not silently corrected by Story rework.
 
-The page defines these source-proved request identities:
+## Load-purpose and cylinder-state assignment
 
-- cylinder-by-state API: `/cylindermanagement/search/cylinder/by-state`;
-- cylinder-by-serial-and-state API: `/cylindermanagement/search/cylinder/by-serial-and-state`;
-- vehicle type-ahead base: `/cylindermanagement/search/vehicle/`;
-- driver type-ahead base: `/cylindermanagement/search/driver/`.
+For every selected cylinder, the service obtains its single active Yard Inventory line and reads the Yard cylinder state.
 
-Vehicle and Driver text edits clear their previously selected hidden IDs. Each type-ahead waits 280 ms before issuing its request. Empty text closes the dropdown without a request. Vehicle results display vehicle number/type and propagate `vehicleId`; Driver results display driver name and propagate `driverId`. Request failures are logged and the dropdown is hidden rather than inventing a successful selection.
+- `EMPTY` is assigned load purpose `EMPTY_FOR_SUPPLIER` while the requested EMPTY allocation has capacity. Its target logistics cylinder state becomes `EMPTY_PICKED_FOR_REFILL`.
+- `FULL` is first allocated to `FULL_FOR_DELIVERY` until that requested count is satisfied, then to `FULL_FOR_BUFFER`. Both FULL purposes target `FULL_PICKED_UP_FOR_DELIVERY`.
+- Any other Yard state, missing state, excess EMPTY count or excess FULL count causes `CylinderManagementApplicationException`.
 
-Cylinder selection is maintained client-side and each selected cylinder contributes a hidden request field named exactly `vehicleLoadDto.loadLines[i].cylinder.cylinderId`. The live summary tracks FULL, EMPTY and total counts.
+The service sets each load-line `loadedAt` timestamp and derives total cylinders loaded from the actual constructed line list.
 
-## Purpose-distribution branch and validation
+## Exact persistence and business impact
 
-The page maintains three quantities:
+The transaction performs these source-proved mutations:
 
-- `quantityFullForDelivery`
-- `quantityFullForBuffer`
-- `quantityEmptyForSupplier`
+1. It creates a `YARD_START` `VehicleTripStop` with status `ARRIVED` and the next stop sequence for the trip.
+2. It changes the selected `VehicleTrip` status to `Loaded`.
+3. It saves `VehicleLoadDo` through `VehicleLoadJpaDao`. `VehicleLoadDo` maps to `public.tbl_vehicle_load`, primary key `pk_vehicle_load_id`, and owns unique `fk_vehicle_trip`.
+4. `VehicleLoadDo.loadLines` uses `CascadeType.ALL`; therefore the attached `VehicleLoadLineDo` rows are persisted to `public.tbl_vehicle_load_line`, primary key `pk_vehicle_load_line_id`, containing `fk_vehicle_load`, `fk_cylinder`, `fk_load_purpose` and `loaded_at`.
+5. It creates one OPEN `CylinderLogisticsExecutionDo`, mapped to `public.tbl_cylinder_logistics_execution`, linked to the saved vehicle load and trip.
+6. It creates active `CylinderLogisticsExecutionLineDo` rows in `public.tbl_cylinder_logistics_execution_line`, one per selected cylinder, with the target cylinder-state identity, `is_active=true`, `is_completed=false` and `is_exception=false`.
+7. It sets each selected source `public.tbl_yard_inventory_line.is_active` to `false` and saves the modified Yard Inventory lines.
 
-`quantityEmptyForSupplier` is automatically synchronized to the selected EMPTY count. Editing Delivery recalculates Buffer as the remainder; editing Buffer recalculates Delivery as the remainder. `validateDistribution()` requires Delivery + Buffer to equal the total selected FULL cylinder count. When it does not, the page shows the distribution error and refuses submit.
+The service comments additionally state that database triggers fired by persisted vehicle-load lines synchronize legacy `tbl_cylinder_current_status`; Java intentionally does not directly update that legacy current-status table in this path.
 
-## Client-side submit guards
+The business result is therefore more than creation of a load header: the same service transaction establishes the trip as Loaded and transfers the selected cylinders out of active Yard Inventory into active logistics execution for that vehicle trip.
 
-`submitLoad()` refuses submission when any source-proved requirement fails:
+## Current-source gaps requiring review
 
-- no selected vehicle ID;
-- no selected driver ID;
-- no selected cylinder line;
-- blank Loaded By value;
-- FULL purpose distribution does not balance.
+- Direct GET entry does not attach `VehicleTripDto` unless redirect attributes are present, while the server validation/persistence path requires a trip DTO and resolvable trip ID. A successful direct-entry submit is therefore not source-proved by this path.
+- Browser requires at least one cylinder, while server validation permits an empty pickup-only load.
+- The mediator catches/logs `CylinderManagementApplicationException` from the ingestion service without rethrowing and afterwards sets SUCCESS response code. This can mask an application-level service failure in the mediator response path.
+- Quantity-summary null validation checks `quantityFullForDelivery` twice and omits an explicit `quantityEmptyForSupplier` null check.
 
-On a distribution failure it reports the actual Delivery, Buffer and required FULL counts and scrolls the distribution section into view. When all guards pass, the submit spinner is activated and the form posts to `POST /vehicleLoad`.
+These are documented current-source behaviors, not automatically approved code changes. Any later Story/code conformance drift that would alter application code must pass the user-approved Drift / Code Change Manifest gate before BL-010 work or source mutation.
 
-## Adjacent POST behavior visible from this screen
+## Visible outcome
 
-The same controller binds the submitted form as `@ModelAttribute("vehicleLoad") UC02Phase01VehicleLoadRequestDto` and invokes `uc02Phase01VehicleLoadMediator.invokeServices(requestDto)`.
+On the controller's normal success path, the browser is redirected to `/vehicle-loads/list`. `InvalidInputParameterException` redisplays the Vehicle Load form with the submitted model and `errorMessage`. No other exception behavior is invented beyond the source-proved mediator/controller handling.
 
-- success redirects to `/vehicle-loads/list`;
-- `InvalidInputParameterException` redisplays `with-menu/Uc02-Phase01-VehicleLoadView`, preserves `vehicleLoad`, and exposes the exception message as `errorMessage`.
+## Review and approval gate
 
-The registered work unit is the GET screen-entry story. The deeper POST mediator/service/DAO/database mutation is a separate registered mutation path and is not falsely attributed to this GET handler.
+The page's embedded Save Vehicle Load capability is now bound through controller, concrete mediator, transactional service, validation, exact persistence identities and yard-to-logistics business effects. The Story is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-## Deepest applicable data path for this GET
-
-The GET handler performs one explicit application lookup: `lookupDataCache.getVehicleLoadPurposes()`. The frozen controller evidence does not prove a direct repository/DAO/database access from this GET handler itself, and the returned local variable is not attached to the model. Therefore no database table identity is attributed to the registered GET operation without additional source proof.
-
-## Strict completion decision
-
-Strict field/UI completion is **PASS** for registered `GET /vehicleLoad`. Frozen controller/template source proves the blank/direct and redirect-preselected branches, exact form/model binding, visible controls, browser events, dependent request identities, hidden cylinder propagation, purpose-distribution rules, submit guards, adjacent POST handoff, success/error visibility and the deepest directly applicable GET-side application lookup.
-
-No approval occurred; approval remains explicitly pending user approval.
+No approval occurred. Explicit user approval or rework remains required, and testing fan-out remains unauthorized until all downstream approval/conformance gates pass.
