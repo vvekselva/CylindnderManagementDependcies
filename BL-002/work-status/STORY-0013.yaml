@@ -1,11 +1,11 @@
-version: 3
+version: 4
 story_id: STORY-0013
 release: R1
 canonical_register_endpoint: POST /logistics/challan-books/save
 canonical_functional_area: Challan Management
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework:
-  state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+  state: APPROVED_AFTER_REWORK
   business_behavior_complete: true
   selector_ux_reviewed: true
   search_conversion_required: false
@@ -49,10 +49,16 @@ development_backlog:
     - DEV-0004: SERVICE_LEVEL_DUPLICATE_BOOK_CODE_PRECHECK
   state: QUEUED_NOT_IMPLEMENTED
 approval:
-  state: NOT_APPROVED
-  explicit_user_approval_required_after_rework: true
+  state: APPROVED_AFTER_REWORK
+  type: EXPLICIT_USER_APPROVAL_AFTER_REWORK
+  evidence: BL-002/approval-evidence/STORY-0013-approval-20260831.md
+  explicit_user_approval_required_after_rework: false
   auto_approved: false
+downstream_testing:
+  BL-004: READY_FOR_REVISED_CONTRACT_FANOUT
+  BL-005: READY_FOR_REVISED_CONTRACT_FANOUT
+  BL-009: READY_FOR_REVISED_CONTRACT_FANOUT
 next_actions:
+  - fanout_revised_BL004_BL005_BL009
   - implement_and_test_DEV-0002_DEV-0003_DEV-0004
-  - user_review_of_reworked_story_and_development_changes
-  - after_explicit_approval_only_fan_out_revised_BL004_BL005_BL009
+  - preserve_current_state_gap_distinction_until_implementation_is_durable
