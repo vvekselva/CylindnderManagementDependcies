@@ -1,0 +1,16 @@
+claim_id: 20260831-035204-STORY-0001-VALIDATION-READINESS
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
+backlog: BL-009
+unit: STORY-0001_VALIDATION_READINESS
+status: ACTIVE
+acquired_at: 2026-08-31T03:52:04Z
+heartbeat_at: 2026-08-31T03:52:04Z
+lease_expires_at: 2026-08-31T04:07:04Z
+read_set:
+  - BL-009/stories/STORY-0001.md
+  - BL-009/test-data/STORY-0001.csv
+  - BL-004/work-status/STORY-0001.yaml
+  - BL-005/work-status/STORY-0001.yaml
+write_set:
+  - BL-009/test-case-task-queue.csv
+  - BL-009/work-status/STORY-0001.yaml
