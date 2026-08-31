@@ -1,19 +1,20 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4
-scheduler_fire_id: 20260901T023059-IST-turn4
-scheduler_task: cylinder-production-fire-ii
-state: TERMINATED
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4
+scheduler_task: cylinder-production-fire
+state: RUNNING
 mode: CONTINUOUS
-started_at: '2026-09-01T02:31:02+05:30'
-last_heartbeat_at: '2026-09-01T02:33:55+05:30'
-terminated_at: '2026-09-01T02:33:55+05:30'
-terminal_classification: PLATFORM_RUNTIME_BOUNDARY
-terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY
-running_worker_count: 0
+started_at: '2026-09-01T03:30:58+05:30'
+last_heartbeat_at: '2026-09-01T03:34:30+05:30'
+terminated_at: null
+terminal_classification: null
+terminal_reason: null
+running_worker_count: 1
 completed_worker_count: 0
 blocked_worker_count: 0
-active_work_unit_ids: []
+active_work_unit_ids:
+  - STORY-0045
 eligible_work_remaining: true
 resumable: true
-last_action: STORY-0045_CONTROLLER_BINDING_EVIDENCE_PERSISTED
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
-next_action: Resume STORY-0045 concrete service -> DAO -> entity -> database binding; keep DisplayCustomer drift implementation blocked pending exact user approval; repair stale queue rows only with exact-preservation proof.
+last_action: STORY-0045_CLAIMED_FOR_BACKEND_BINDING
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST-RUN-001
+next_action: Bind CustomerFetchByIdService concrete implementation to CustomerJpaDao/CustomerDo/database; keep DisplayCustomer drift implementation blocked pending exact user approval.
