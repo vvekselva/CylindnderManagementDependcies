@@ -1,11 +1,13 @@
 claim_id: 20260831-0818-DEV-0001-PR3-VALIDATION
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T08:18:00Z
-heartbeat_at: 2026-08-31T08:18:00Z
+heartbeat_at: 2026-08-31T08:20:00Z
+released_at: 2026-08-31T08:20:00Z
 lease_expires_at: 2026-08-31T08:33:00Z
 backlog: BL-010
 work_unit: DEV-0001_PR3_VALIDATION
+result: CHANGES_REQUIRED_BEFORE_MERGE
 read_set:
   - vvekselva/CylinderManagement pull/3
   - BL-010/evidence/DEV-0001-source-binding-complete.yaml
