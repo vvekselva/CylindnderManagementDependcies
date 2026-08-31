@@ -1,0 +1,20 @@
+claim_id: 20260831-034922-STORY-0001-SOURCE-BINDING
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
+backlog: BL-004
+unit: STORY-0001_SOURCE_BINDING
+status: ACTIVE
+acquired_at: 2026-08-31T03:49:22Z
+heartbeat_at: 2026-08-31T03:49:22Z
+lease_expires_at: 2026-08-31T04:04:22Z
+read_set:
+  - BL-002/stories/STORY-0001.md
+  - BL-004/stories/STORY-0001.md
+  - BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/cylinder.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/LoginController.java
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/cylinder.web/src/main/java/com/sreyas/datamatics/security/handler/DailyLoginSuccessHandler.java
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/cylinder.application.jpa/src/main/java/com/sreyas/datamatics/application/jpa/dao/DailyLoginReportJpaDao.java
+write_set:
+  - BL-004/stories/STORY-0001.md
+  - BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java
+  - BL-004/unit-test-task-queue.csv
+  - BL-004/work-status/STORY-0001.yaml
