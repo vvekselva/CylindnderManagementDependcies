@@ -1,0 +1,2 @@
+story_id,release,approval_state,framework,task_type,status,issue,depends_on,next_action
+STORY-0001,R1,APPROVED,JUNIT_5,UNIT_TEST_GENERATION,QUEUED,2,BL-002/STORY-0001,GENERATE_AND_EXECUTE_JUNIT_UNIT_TESTS
