@@ -1,0 +1,27 @@
+version: 1
+story_id: STORY-0057
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+release: R1
+endpoint: GET /trip-review
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+strict_field_ui_complete: true
+business_behavior_complete: true
+materialized: true
+approval: PENDING_USER_APPROVAL
+approval_delta: 0
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+read_contract:
+  service: TripReviewFetchService.fetchNotReviewedTrips
+  dao: TripReviewHeaderViewJpaDao.findByReviewStatusOrderByTripStartedAtDesc
+  predicate: NOT_REVIEWED
+  order: tripStartedAt DESC
+  view: public.vw_trip_review_header
+  identity: vehicle_trip_id
+selector_ux_review:
+  state: NOT_APPLICABLE_PERSISTENT_ROW_ID_NAVIGATION
+code_mutation_performed: false
+bl010_created_or_executed: false
+fanout_authorized: false
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+updated_at: 2026-08-31T11:47:20Z
