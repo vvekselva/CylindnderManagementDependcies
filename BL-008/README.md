@@ -13,9 +13,9 @@ Current governed mode: **ChatGPT authors additive Flyway/source deltas; the user
 
 ## Current workspace
 
-Validated source line through V182 is based on `Harinandhan-Cylinder-Backup(20260830-140843).zip` plus integrated V176–V182 deltas.
+Validated source line through V183 is based on `Harinandhan-Cylinder-Backup(20260830-140843).zip` plus integrated V176–V183 deltas.
 
-Prepared integrated workspace through V183: `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179_V180_V181_V182_V183.zip`.
+Prepared integrated workspace through V184: `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179_V180_V181_V182_V183_V184.zip`.
 
 Migration directory: `cylinder.datascripts/src/main/resources/db/migration`.
 
@@ -36,10 +36,9 @@ Migration directory: `cylinder.datascripts/src/main/resources/db/migration`.
 - **V180** ownership identity immutability — `BL008_OWNERSHIP_V180_VALIDATION_PASS; failed_checks=0`
 - **V181** identifier authority/replacement integrity — `BL008_OWNERSHIP_V181_VALIDATION_PASS; failed_checks=0`
 - **V182** active identifier value uniqueness/history integrity — `BL008_OWNERSHIP_V182_VALIDATION_PASS; failed_checks=0`
+- **V183** state-audit history immutability — `BL008_OWNERSHIP_V183_VALIDATION_PASS; failed_checks=0`
 
-Evidence is stored under `BL-008/evidence/`, including `20260831-v182-clean-database-validation-pass.md`.
-
-The first V182 validator reported only the normalized unique-index check as FAIL even though the returned PostgreSQL definition showed the correct UNIQUE expression/predicate. This was a validator text-deparsing false negative. Validation v2 used catalog semantics and V182 passed all checks.
+Evidence is stored under `BL-008/evidence/`, including `20260831-v183-clean-database-validation-pass.md`.
 
 ## Phase 2 ownership lifecycle status
 
@@ -57,55 +56,64 @@ CUSTOMER_OWNED cylinders can enter CUSTOMER custody only at their owner customer
 
 ### External/company accounting — V178/V179 PASS
 
-External and company accounting boundaries, terminal idempotence, running totals, and ownership-scoped integrity views are validated.
+External and company accounting boundaries, terminal idempotence, running totals and ownership-scoped integrity views are validated.
 
 ### Ownership identity — V180 PASS
 
-Post-registration ownership type/owner identity is immutable and governed ownership master semantics are protected.
+Post-registration ownership type/owner identity is immutable and governed ownership-master semantics are protected.
 
 ### Identifier authority/history — V181/V182 PASS
 
-The database now enforces ownership-specific serial compatibility, exactly one active primary identifier per logical cylinder at transaction end, same-cylinder replacement history, append-only replacement events, normalized global active-primary value uniqueness, nonblank values, valid active/history windows, and immutable identifier history identity fields.
+The database enforces ownership-specific serial compatibility, exactly one active primary identifier per logical cylinder at transaction end, same-cylinder replacement history, append-only replacement events, normalized global active-primary value uniqueness, nonblank values, valid active/history windows and immutable identifier history identity fields.
 
-### State-audit history integrity — V183 AUTHORED / CLEAN VALIDATION PENDING
+### State-audit history — V183 PASS
 
-Source analysis after V182 proved the next database-boundary gap:
+V183 makes the authoritative lifecycle event history append-only after INSERT: DELETE and event-identity/source mutation are rejected while remarks-only annotation correction remains allowed. Existing fleet/external accounting, daily-count and current-status projection triggers remain enabled.
 
-- `tbl_cylinder_state_audit` is an authoritative lifecycle stream consumed by INSERT-only downstream projections/triggers including fleet/external accounting, daily counts and the legacy current-status mirror; V177 also relies on state audit for terminal-location integrity.
-- The JPA repository exposes UPDATE and DELETE, and its existing integration tests explicitly expect remarks update and audit-row deletion to work.
-- Rewriting event identity or deleting an already-consumed audit event can therefore make the audit stream disagree with downstream histories because those INSERT-time side effects are not reversed/recomputed.
+### State-audit chain continuity / concurrency — V184 AUTHORED / CLEAN VALIDATION PENDING
 
-V183: `V183__Protect_Cylinder_State_Audit_History.sql`
+Source analysis after V183 proved the next database-boundary gap:
 
-V183 adds:
+1. V183 protects an audit row after INSERT but does not validate the continuity of a newly inserted audit row against the latest prior row for the same cylinder.
+2. Two concurrent transactions can both start from the same prior lifecycle state and append competing audit events, creating a fork in the authoritative history.
+3. The fresh registration flow already establishes a linear audit chain. Its first event uses a same-state initialization pattern; later rows carry the previous lifecycle state. Same-state note/correction rows are valid when they continue from the latest state.
 
-- DELETE rejection for `tbl_cylinder_state_audit`;
-- immutability of cylinder, previous/new state, order, changed_at and legacy source identity after INSERT;
-- remarks-only correction remains allowed;
-- `vw_cylinder_state_audit_history_integrity` as a structural/history diagnostic view without introducing a new current-status authority.
+V184: `V184__Enforce_State_Audit_Chain_Continuity_And_Serialization.sql`
 
-V183 status: **AUTHORED / WAITING_FOR_CLEAN_FLYWAY_VALIDATION**.
+V184 adds:
+
+- a supporting latest-live-audit index;
+- `fn_validate_state_audit_chain_continuity()` and BEFORE INSERT trigger;
+- per-cylinder transaction advisory serialization for non-legacy state-audit inserts;
+- continuity rule: every later non-legacy audit row must declare the immediately prior audit `fk_new_state` as its `fk_previous_state`;
+- first-row compatibility with NULL or same-state initialization;
+- legacy-import rows deliberately excluded from this live operational chain rule;
+- `vw_cylinder_state_audit_chain_integrity` for chain continuity diagnostics.
+
+V184 does **not** introduce a new state-transition legality matrix; existing lifecycle/state-machine behavior remains unchanged.
+
+V184 status: **AUTHORED / WAITING_FOR_CLEAN_FLYWAY_VALIDATION**.
 
 ## Test policy / backlog
 
-`BL-008/test-case-backlog.csv` now contains **33 deferred/pending cases**: 1 `PENDING_EXECUTION`, 1 `PLANNED`, and 31 `POSTPONED_BY_USER`. All are marked `blocking=NO`.
+`BL-008/test-case-backlog.csv` now contains **35 non-blocking cases**: 1 `PENDING_EXECUTION`, 1 `PLANNED`, and 33 `POSTPONED_BY_USER`.
 
-V183 adds cases for audit DELETE rejection, event-identity mutation rejection, and remarks-only correction.
+V184 adds chain-discontinuity rejection and same-cylinder concurrent audit serialization cases.
 
 ## Current state
 
 - Ownership Model Migration: **ACTIVE**
 - Target: **FRESH DATABASE / CLEAN FLYWAY MIGRATION**
-- V174–V182: **CLEAN_DATABASE_VALIDATED_PASS**
-- V183: **AUTHORED_WAITING_FOR_CLEAN_VALIDATION**
-- UI/runtime test backlog: **33 NON-BLOCKING CASES**
-- Phase 2 gate: **V183_CLEAN_VALIDATION_GATE**
+- V174–V183: **CLEAN_DATABASE_VALIDATED_PASS**
+- V184: **AUTHORED_WAITING_FOR_CLEAN_VALIDATION**
+- UI/runtime test backlog: **35 NON-BLOCKING CASES**
+- Phase 2 gate: **V184_CLEAN_VALIDATION_GATE**
 - Database writes by ChatGPT: **0**
 
 ## Next action
 
-1. Use `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179_V180_V181_V182_V183.zip` as migration source.
-2. Perform a fresh clean Flyway migration through V183.
-3. Run `BL008_Ownership_V183_State_Audit_History_Validation.sql`.
-4. Return the consolidated V183 result table.
-5. After V183 acceptance, continue only with the next source-proved requirement; do not create V184 merely to advance the version.
+1. Use `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179_V180_V181_V182_V183_V184.zip` as migration source.
+2. Perform a fresh clean Flyway migration through V184.
+3. Run `BL008_Ownership_V184_State_Audit_Chain_Validation.sql`.
+4. Return the consolidated V184 result table.
+5. After V184 acceptance, continue only with the next source-proved requirement; do not create V185 merely to advance the version.
