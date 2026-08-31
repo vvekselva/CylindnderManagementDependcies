@@ -1,0 +1,34 @@
+conformance_id: PAC-0002
+story_id: STORY-0013
+run_id: CYL-20260831T171739-0530
+checked_at: '2026-08-31T17:36:20+05:30'
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+approved_story: BL-002/stories/STORY-0013.md
+approval_evidence: BL-002/approval-evidence/STORY-0013-approval-20260831.md
+classification: CODE_CONFORMANCE_VERIFIED_PASS
+drift_detected: false
+code_change_required: false
+code_mutation_performed: false
+verified_source:
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
+    anchors: [POST_/logistics/challan-books/save, processBookIngestion, successMessage, errorMessage]
+  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+    anchors: [processRequest, commented_null_guard_throw, commented_sheet_range_throw, saveAndFlush, commented_page_ledger_generation]
+verified_behavior:
+  - POST /logistics/challan-books/save delegates the submitted request to ChallanBookIngestionService and redirects with the approved success outcome after service success.
+  - The service maps and saves the Challan Book registry and stamps createdAt/updatedAt.
+  - The approved Story explicitly records the frozen current-state gaps: disabled controlled null guard, disabled start/end range exception, no explicit duplicate-code precheck, and commented per-sheet ledger generation.
+  - Those documented gaps are present in the frozen source and therefore are not Story/code drift.
+  - No large master-data selector conversion applies to this submit Story.
+legacy_development_queue_observation:
+  entries: [DEV-0002, DEV-0003, DEV-0004]
+  state: NOT_AUTHORIZED_FOR_CODE_MUTATION_BY_THIS_CONFORMANCE_PASS
+  reason: Their target fixes go beyond the approved Story's documented frozen current-state behavior and require the current explicit drift/code-change approval governance before application mutation.
+fanout_gate:
+  current_story_approval: PASS
+  code_conformance: PASS
+  revised_BL004_BL005_BL009_fanout: ELIGIBLE
+limitations:
+  - This is frozen-source conformance verification, not runtime test execution.
+  - No JUnit or JaCoCo result is inferred from source conformance.
