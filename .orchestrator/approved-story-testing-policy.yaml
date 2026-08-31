@@ -1,12 +1,17 @@
-version: 3
+version: 4
 name: APPROVED_STORY_TESTING_FANOUT
 status: ACTIVE
 source_backlog: BL-002
 approval_gate:
-  required_state: APPROVED
+  required_state: APPROVED_OR_REAPPROVED_FOR_CURRENT_REVISED_CONTRACT
   source_of_approval: EXPLICIT_USER_APPROVAL_ONLY
   auto_approval: forbidden
+  global_business_rework_policy: BL-002/story-business-behavior-rework-policy.yaml
+  historical_approval_does_not_approve_materially_reworked_contract: true
+  development_change_backlog: BL-010/development-change-task-queue.csv
+  development_implementation_does_not_imply_story_approval: true
 fanout:
+  gate: ONLY_AFTER_EXPLICIT_APPROVAL_OR_REAPPROVAL_OF_CURRENT_REVISED_STORY
   BL-004:
     purpose: JUNIT_UNIT_TEST_GENERATION_EXECUTION_AND_COVERAGE
     framework: JUNIT_5
@@ -46,10 +51,7 @@ fanout:
       csv_is_machine_readable_source: true
       human_readable_companion_required: true
       human_readable_path: BL-009/test-data/<story-id>.md
-      human_readable_sections_required:
-        - purpose_and_scope
-        - test_data_explanation
-        - test_data_table
+      human_readable_sections_required: [purpose_and_scope, test_data_explanation, test_data_table]
       table_must_contain_actual_test_data_values: true
       reference_only_table_forbidden: true
       row_parity_with_csv_required: true
@@ -68,13 +70,15 @@ coverage:
 orchestrator_rule:
   startup:
     - read_this_policy
-    - reconcile_all_durable_approved_BL-002_stories
-    - diff_approved_story_ids_against_BL-004_BL-005_BL-009
-    - materialize_missing_downstream_artifacts_idempotently
-    - verify_BL-009_csv_and_human_readable_test_data_parity
-    - verify_every_BL-009_test_case_and_test_data_row_has_executable_code_mapping
+    - reconcile_current_revised_story_approval_states
+    - distinguish_historical_approval_from_current_contract_approval
+    - suspend_revised_behavior_fanout_for_stories_requiring_reapproval
+    - diff_current_approved_or_reapproved_story_ids_against_BL-004_BL-005_BL-009
+    - materialize_missing_downstream_artifacts_idempotently_only_after_gate
   selection_priority:
     - approval_projection_reconciliation
+    - BL-010_development_changes_for_user_required_story_corrections
+    - current_contract_approval_or_reapproval_gate
     - missing_approved_story_fanout_artifacts
     - incomplete_BL-009_human_readable_test_data
     - missing_BL-009_executable_test_code
@@ -95,21 +99,15 @@ orchestrator_rule:
 watchdog_reporting:
   required: true
   fields:
-    - approved_story_count
-    - approved_story_ids
+    - historical_approved_story_count
+    - current_revised_contract_approved_or_reapproved_count
+    - reapproval_required_ids
+    - BL-010_development_change_state
     - BL-004_queued_generated_executed_pass_failed_and_coverage
     - BL-005_queued_generated_executed_pass_failed_and_coverage
-    - BL-009_test_catalogues_count
-    - BL-009_test_data_count
-    - BL-009_human_readable_test_data_count
-    - BL-009_executable_test_code_count
-    - BL-009_test_case_code_mapping_state
-    - BL-009_test_data_row_code_mapping_state
-    - BL-009_code_executed_pass_failed
-    - BL-009_test_data_table_parity_state
-    - combined_coverage_and_uncovered_story_branches
-    - live_validation_pending_pass_failed
-    - per_approved_story_next_action
-    - aggregate_drift_state
+    - BL-009_test_catalogues_data_code_mapping_execution_and_coverage
 current_seed:
-  approved_story_ids: [STORY-0001]
+  historical_approved_story_ids: [STORY-0001]
+  current_revised_contract_approved_or_reapproved_story_ids: []
+  reapproval_required_ids: [STORY-0001]
+  revised_fanout_eligible_ids: []
