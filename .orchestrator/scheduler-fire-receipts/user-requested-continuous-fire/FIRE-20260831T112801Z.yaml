@@ -1,0 +1,17 @@
+scheduler_task: USER_REQUESTED_CONTINUOUS_FIRE
+fire_id: FIRE-20260831T112801Z
+scheduled_fire_time: null
+observed_fire_time: 2026-08-31T11:28:01Z
+receipt_time: 2026-08-31T11:28:01Z
+state: TRIGGER_RECEIVED
+intended_scope:
+  mode: CONTINUOUS
+  requested_backlogs: ALL_ELIGIBLE
+  requested_units: DYNAMIC
+run_id: null
+run_link_state: PENDING
+terminal_classification: null
+termination_time: null
+notes:
+  - Direct user-triggered invocation; no scheduler-supplied scheduled fire timestamp was available in this turn.
+  - Scheduler last_run_time is not treated as orchestration execution proof.
