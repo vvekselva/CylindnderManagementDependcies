@@ -4,12 +4,13 @@ scheduler_task: Cylinder Production Fire - ii
 state: RUNNING
 mode: CONTINUOUS
 started_at: '2026-08-31T20:36:58+05:30'
-last_heartbeat_at: '2026-08-31T20:37:50+05:30'
-loop_iteration: 1
-running_worker_count: 0
+last_heartbeat_at: '2026-08-31T20:42:15+05:30'
+loop_iteration: 2
+running_worker_count: 1
 completed_worker_count: 0
 blocked_worker_count: 0
-active_work_unit_ids: []
+active_work_unit_ids:
+  - BL-002/STORY-0041_BUSINESS_BEHAVIOR_REWORK
 eligible_work_count: null
 dispatchable_work_count: null
-last_action: RECOVERED_STALE_PREVIOUS_RUN
+last_action: STORY_0041_EXACT_PERSISTENCE_BINDING_RESEARCH
