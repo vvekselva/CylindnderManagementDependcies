@@ -8,5 +8,6 @@ intended_scope: CONTINUOUS
 run_id: CYL-20260831T171739-0530
 live_run_path: .orchestrator/live-run.yaml
 event_stream_path: .orchestrator/runs/CYL-20260831T171739-0530/events.ndjson
-terminal_classification: null
+terminal_classification: ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING_RECOVERED
 termination_time: null
+recovery_observed_at: '2026-08-31T17:51:26+05:30'
