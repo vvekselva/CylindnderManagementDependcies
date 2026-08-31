@@ -1,8 +1,8 @@
-version: 46
+version: 47
 backlog_id: BL-002
-updated_at: 2026-08-31T07:14:23+05:30
+updated_at: 2026-08-31T08:02+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-071328IST
+run_id: CYLINDER-TARGETED-BL002-STORY-0036-20260831-0802IST
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
   total_stories: 134
@@ -15,8 +15,8 @@ metrics:
   approved: 0
   materialized_story_files: 134
   materialization_pending: 0
-  strict_field_ui_complete: 122
-  strict_field_ui_remaining: 12
+  strict_field_ui_complete: 123
+  strict_field_ui_remaining: 11
   use_case_grouped: 0
   testing_ready: 0
 materialization:
@@ -26,17 +26,19 @@ materialization:
   pending_r2_priority_2: 0
   parity_state: COMPLETE_134_OF_134
 reconciliation:
-  current_run_strict_delta: {count: 0, stories: []}
+  current_run_strict_delta: {count: 1, stories: [STORY-0036]}
   current_run_materialization_delta: {count: 0, stories: []}
   source_integrity_repairs: []
-  source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: []
+  source_detail_review_required: [STORY-0035, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
+  source_detail_refined_this_run: [STORY-0036]
   blocked_this_run: []
   correction:
-    - Startup projection drift repaired to authoritative BL-008 closure through V184.
+    - STORY-0036 Yard Audit strict applicable source contract proved from frozen baseline controller, service, DAO, database-read identities, DTO/model and Thymeleaf UI behavior.
+    - BL-001 canonical matrix already contains the Yard Audit controller/service/DAO/database object set; BL-001 remained COMPLETE_READ_ONLY because no source-integrity regression was found.
+    - Register review_state NEEDS_CLARIFICATION was not auto-cleared; approval remains explicit-user-only.
   aggregate_reconciliation_gate: PASS
 cursor:
-  last_strict_r1_story: STORY-0134
+  last_strict_r1_story: STORY-0036
   next_eligible_strict_r1_story: null
   next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
   next_eligible_materialization_unit: null
