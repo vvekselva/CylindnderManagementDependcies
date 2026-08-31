@@ -1,8 +1,9 @@
-version: 9
+version: 10
 name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
 supersedes:
-  - version: 8
+  - version: 9
     name: RESOURCE_SCOPED_LEASES_AND_CLAIMS
+runtime_reliability_policy_ref: .orchestrator/runtime-reliability-policy.yaml
 principles:
   - No global backlog lock.
   - Concurrency is decided by dependency and write-set collision, not backlog number.
@@ -14,6 +15,8 @@ principles:
   - Unit-local durable evidence is persisted before aggregate projections.
   - BL-002 registered Story parity with physical Story files is a governed completion gate.
   - A run-local blocker must not automatically disable the recurring Production Fire scheduler.
+  - A successful checkpoint is not a terminal condition while eligible work and execution capacity remain.
+  - Every Production Fire termination must be durably explainable.
 
 run_scope:
   required: true
@@ -23,7 +26,7 @@ run_scope:
     CONTINUOUS:
       rule: Replan across all eligible independent backlogs/units.
     RECOVERY:
-      rule: Work only on blocker, stale-state, reconciliation, architecture recovery or parity-repair units in scope.
+      rule: Work only on blocker, stale-state, reconciliation, architecture recovery, parity repair or prior-run termination recovery in scope.
 
 resource_claims:
   claim_granularity: writable_resource_or_irreducible_work_unit
@@ -60,6 +63,18 @@ shared_aggregate_state:
     after_every_completed_or_blocked_unit: true
     after_each_dispatch_wave_when_available: true
     defer_all_updates_until_terminalization: forbidden
+    checkpoint_is_terminal_condition: false
+    after_checkpoint_action: REPLAN_AND_REFILL_WHILE_ELIGIBLE_WORK_AND_CAPACITY_REMAIN
+
+runtime_liveness:
+  live_run_file: .orchestrator/live-run.yaml
+  event_stream_path_pattern: .orchestrator/runs/<run-id>/events.ndjson
+  termination_record_path_pattern: .orchestrator/runs/<run-id>/termination.yaml
+  heartbeat_max_interval_minutes: 2
+  last_run_aggregate_alone_proves_liveness: false
+  watchdog_reads_live_run_and_event_evidence: true
+  stale_heartbeat_without_terminal_event: ABNORMAL_PROCESS_DISAPPEARANCE
+  next_fire_recovery_first_on_invalid_or_missing_terminal_record: true
 
 scheduler_policy:
   production_fire:
@@ -67,6 +82,7 @@ scheduler_policy:
     expected_cadence: hourly_around_15
     run_local_blocker_scope: current_invocation_only
     automatic_disable_for_blocker: forbidden
+    continuous_dispatch_refill: required
     allowed_disable_conditions:
       - explicit_user_instruction
       - deliberate_schedule_replacement_or_supersession
@@ -78,6 +94,7 @@ scheduler_policy:
     expected_cadence: hourly_around_50
     read_only: true
     lifecycle_independent_from_production_fire: true
+    stale_heartbeat_detection: required
 
 BL-002:
   parallelism:
@@ -143,22 +160,54 @@ BL-008:
 
 planning:
   algorithm:
+    - RECOVER incomplete prior termination evidence when required.
     - RECONCILE durable unit evidence.
     - RECONCILE BL-002 Story parity/materialization queue.
     - BUILD dependency graph and write sets.
     - SELECT safe-independent units.
     - CLAIM resources independently.
     - DISPATCH and persist unit evidence.
-    - REPLAN immediately after completion or blocker.
+    - CHECKPOINT when required.
+    - REPLAN immediately after completion, blocker or checkpoint.
+    - REFILL safe-independent capacity continuously up to the governed limit.
   max_safe_independent_workers: 10
 
 productive_run_window:
-  target_minutes: 30
+  target_min_minutes: 30
+  target_max_minutes: 45
   hard_minimum_for_correctness: false
   rule: Use productive execution time actually available; never idle merely to satisfy the clock.
   voluntary_stop_rule: While eligible ChatGPT-executable work remains and execution is available, continue REPLAN -> CLAIM -> DISPATCH.
+  checkpoint_return_rule: Returning merely because CHECKPOINT_RECONCILED succeeded is forbidden.
   platform_limited_runtime:
-    accepted_terminal_classification: RUNTIME_WINDOW_FORCED_STOP
+    accepted_terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+    positive_platform_or_cancellation_evidence_required: true
+
+terminalization_policy:
+  single_governed_exit_path: required
+  direct_silent_return: forbidden
+  allowed_reasons:
+    - ALL_ELIGIBLE_WORK_COMPLETED
+    - ALL_REMAINING_WORK_BLOCKED
+    - TARGET_RUNTIME_REACHED
+    - PLATFORM_RUNTIME_FORCED_STOP
+    - UNHANDLED_EXCEPTION
+    - RESOURCE_CLAIM_FAILURE
+    - AGGREGATE_RECONCILIATION_FAILURE
+    - DEPENDENCY_DEADLOCK
+    - SCHEDULER_CANCELLED
+    - USER_REQUESTED_STOP
+    - DUPLICATE_FIRE_SUPPRESSED
+    - APPLICATION_SHUTDOWN
+    - ABNORMAL_PROCESS_DISAPPEARANCE
+    - UNKNOWN_TERMINATION
+  unknown_termination_is_defect: true
+  eligible_work_remaining_without_governed_reason: forbidden
+
+quality_gates:
+  QG_RUNTIME: Continue productive dispatch/replan while eligible work and execution capacity remain.
+  QG_HEARTBEAT: Live heartbeat must remain current and consistent with event/worker evidence.
+  QG_TERMINATION: Every termination must have an allowed reason and complete durable diagnostic evidence.
 
 github_role:
   purpose: durable_control_and_audit_persistence
