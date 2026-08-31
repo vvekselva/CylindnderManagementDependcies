@@ -1,0 +1,28 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST
+started_at: '2026-09-01T05:01:48+05:30'
+terminated_at: '2026-09-01T05:06:07+05:30'
+elapsed_seconds: 259
+elapsed_minutes: 4.3167
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+terminal_reason: GOVERNED_AUTOMATION_INVOCATION_RUNTIME_BOUNDARY
+eligible_work_remaining: true
+resumable: true
+active_claims_at_termination: []
+running_worker_count: 0
+completed_worker_count: 0
+blocked_worker_count: 0
+business_behavior_complete_before: 21
+business_behavior_complete_after: 21
+completion_delta: 0
+work_advanced:
+  - STORY-0047
+  - STORY-0048
+work_completed: []
+local_git_transport_state: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+governance:
+  story_auto_approval: false
+  code_mutation: false
+  BL010_creation_or_execution: false
+  STORY0045_drift_remained_approval_gated: true
+next_action: Resume dependency-safe R1 source proof for STORY-0047/STORY-0048 using local Git when transport is available; otherwise exact frozen-source file reads only. Keep STORY-0045 drift approval-gated.
