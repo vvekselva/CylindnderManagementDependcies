@@ -1,0 +1,15 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-225914-IST-I
+state: TERMINATED
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: AUTOMATION_INVOCATION_RUNTIME_BOUNDARY
+started_at: '2026-08-31T22:59:14+05:30'
+terminated_at: '2026-08-31T23:07:10+05:30'
+elapsed_seconds: 476
+productive_runtime_seconds_if_measurable: 476
+eligible_work_remaining: true
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-225914-IST-I/checkpoint.yaml
+active_claims_remaining: 0
+story_approval_delta: 0
+application_code_mutation: false
+bl_010_execution: false
+github_actions_or_runners_used: false
