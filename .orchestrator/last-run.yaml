@@ -1,9 +1,9 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
-checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-31T08:20:58Z
-checkpoint_at: 2026-08-31T08:51:04Z
-terminal_classification: TARGET_RUNTIME_REACHED
-termination_reason: TARGET_RUNTIME_REACHED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
+checkpoint_state: CHECKPOINT_RECONCILED_WITH_QUEUE_PROJECTION_PENDING
+started_at: 2026-08-31T11:33:27Z
+checkpoint_at: 2026-08-31T11:38:47Z
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+termination_reason: INTERACTIVE_TURN_EXECUTION_BOUNDARY
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
@@ -11,63 +11,49 @@ architecture:
   run_scope: CONTINUOUS
   github_role: DURABLE_CONTROL_AUDIT_ONLY
   github_actions_runners_used: false
-work:
-  completed_ids:
-    - BL-002/STORY-0032_BUSINESS_BEHAVIOR_REWORK
-  blocked_ids:
-    - BL-002/STORY-0033_CONCRETE_SERVICE_PERSISTENCE_BINDING
-    - BL-002/STORY-0014_CONTROLLER_TEMPLATE_BINDING
-  approvals_delta: 0
-  current_revised_contract_approved_or_reapproved: 0
-  next_dynamically_resolved_eligible_unit: BL-002/STORY-0014
+scheduler_handoff:
+  fire_id: manual-20260831T113304Z
+  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/manual-20260831T113304Z.yaml
+  handoff_acknowledged: true
+  run_linked: true
+prior_gap_recovery:
+  recovered_run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+  classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  recovery_observed_at: 2026-08-31T11:34:28Z
 business_behavior_rework:
   total_registered: 134
-  rework_required: 130
-  rework_in_progress: 3
-  business_behavior_complete: 4
-  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0032, STORY-0054]
-  awaiting_user_review: 4
-  awaiting_user_review_ids: [STORY-0001, STORY-0011, STORY-0032, STORY-0054]
+  rework_required: 116
+  rework_in_progress: 1
+  business_behavior_complete: 17
+  awaiting_user_review: 17
   approved_after_rework: 0
-  active_ids: [STORY-0012, STORY-0013, STORY-0033]
-legacy_metrics: {materialized_story_files: 134, materialization_pending: 0, strict_field_ui_complete: 126, strict_field_ui_remaining: 8, historical_approved: 1, reapproval_required: 1}
-development_changes:
-  backlog: BL-010
-  current: DEV-0001
-  story: STORY-0054
-  state: PR_3_SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED
-  next_action: USER_REVIEW_STORY_0054_THEN_EXPLICIT_APPROVAL_OR_REWORK
-approved_story_testing:
-  current_revised_contract_approved_or_reapproved_ids: []
-  revised_fanout_eligible_ids: []
-  BL-004: {status: SUSPENDED_PENDING_REAPPROVAL}
-  BL-005: {status: SUSPENDED_PENDING_REAPPROVAL}
-  BL-009: {status: SUSPENDED_PENDING_STORY_REWORK_AND_REAPPROVAL}
-bl001: {state: COMPLETE_READ_ONLY, action: NO_CHANGE_REQUIRED}
+  newly_reconciled_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+  active_ids: [STORY-0037]
+  remaining_global_rework_count: 117
+reconciliation:
+  enrichment_progress_version: 68
+  durable_unit_evidence_reconciled: true
+  aggregate_projection_repaired: true
+  queue_projection_repair_remaining: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+  gate: PARTIAL_PASS_QUEUE_PROJECTION_REPAIR_REQUIRED
+approval:
+  auto_approve: false
+  approval_delta: 0
+  current_revised_contract_approved_or_reapproved: 0
+drift_governance:
+  application_code_mutation: false
+  bl010_code_rework_executed: false
+  user_drift_approval_bypassed: false
 bl008:
   state_source: BL-008/README.md
   current_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
   schema_work: COMPLETE_AND_FROZEN
   active_migration_gate: null
-  junit_runtime_state: BLOCKED_BY_MISSING_MAVEN_JUNIT5_MOCKITO_RUNTIME_DEPENDENCIES
-  database_write_delta_chatgpt: 0
-reconciliation:
-  aggregate_reconciliation_gate: PASS
-  enrichment_progress_version: 62
-  repaired:
-    - STORY-0032 stale Product identity replaced by canonical R1 GET /walkin-sale and exact frozen controller/template behavior
-    - STORY-0033 stale Product UOM identity replaced by canonical R1 POST /walkin-sale with fail-closed concrete-service persistence gap
-    - STORY-0014 advanced with exact frozen ChallanEntryAgingDashboardService and DAO reads while controller/template binding remains fail-closed
 runtime_reliability:
-  heartbeat_state: TERMINATED_CLEANLY
-  last_heartbeat_at: 2026-08-31T08:51:04Z
-  productive_runtime_seconds: 1806
-  loop_iteration: 10
-  target_min_minutes: 30
-  target_max_minutes: 45
-  termination_requested: true
-  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-082058Z/termination.yaml
-  next_action: NEXT_FIRE_CONTINUE_DYNAMIC_REPLAN_FROM_LIVE_DURABLE_STATE
+  heartbeat_state: TERMINATED_AT_RUNTIME_BOUNDARY
+  productive_runtime_seconds: 320
+  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-113327Z/termination.yaml
+  next_action: NEXT_FIRE_REPAIR_QUEUE_PROJECTION_THEN_DYNAMIC_REPLAN
 claims:
   active_at_terminal: 0
 transient_logs_remaining: 0
