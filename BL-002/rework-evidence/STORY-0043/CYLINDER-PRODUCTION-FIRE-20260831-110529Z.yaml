@@ -1,0 +1,25 @@
+version: 1
+story_id: STORY-0043
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+completed_at: 2026-08-31T11:27:15Z
+result: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+approval_delta: 0
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_bindings:
+  active_challan_dao: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/view/dao/ActiveChallanBookForTripLoadViewJpaDao.java
+  active_challan_view: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/view/entity/ActiveChallanBookForTripLoadViewDo.java
+  active_challan_db_identity: public.vw_active_challan_books_for_trip_load
+  lookup_cache: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/cache/LookupDataCache.java
+  product_service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductFetchByPageService.java
+  product_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/ProductDo.java
+  product_table: public.tbl_product
+  load_purpose_service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleLoadPurposeFetchAllService.java
+  load_purpose_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/VehicleLoadPurposeDo.java
+  load_purpose_table: public.tbl_vehicle_load_purpose
+embedded_save_story: STORY-0044
+current_source_gaps:
+  - ProductFetchByPageService uses findAll(pageable) even for nonblank searchTerm.
+  - ProductFetchByPageService caps requested page size at 10, so LookupDataCache fetch-all intent does not prove all products are loaded in one call.
+code_mutation_performed: false
+bl010_created_or_executed: false
+user_drift_approval_required_before_future_code_mutation: true
