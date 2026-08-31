@@ -1,8 +1,7 @@
-version: 56
+version: 57
 backlog_id: BL-002
-updated_at: 2026-08-31T06:51:42Z
+updated_at: 2026-08-31T07:57:39Z
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-065142Z
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
   total_stories: 134
@@ -12,20 +11,22 @@ scope:
 business_behavior_rework:
   policy: BL-002/story-business-behavior-rework-policy.yaml
   total_registered: 134
-  rework_required: 134
-  rework_in_progress: 1
-  business_behavior_complete: 0
-  awaiting_user_review: 0
+  rework_required: 132
+  rework_in_progress: 2
+  business_behavior_complete: 2
+  awaiting_user_review: 2
   approved_after_rework: 0
-  needs_clarification: 0
-  active_rework_ids: [STORY-0054]
-  STORY-0054_state: REWORK_REQUIRED_USER_UX_CHANGE
-  static_reference_selector_reviewed: 1
+  needs_clarification: 1
+  business_behavior_complete_ids: [STORY-0001, STORY-0011]
+  awaiting_user_review_ids: [STORY-0001, STORY-0011]
+  active_rework_ids: [STORY-0012, STORY-0054]
+  static_reference_selector_reviewed: 3
+  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0054]
   search_conversion_required: 1
   search_conversion_required_ids: [STORY-0054]
   dependent_selector_rework_required: 1
   dependent_selector_rework_required_ids: [STORY-0054]
-  remaining_global_rework_count: 134
+  remaining_global_rework_count: 132
 legacy_metrics:
   register_ready: 131
   clarification: 3
@@ -43,6 +44,8 @@ materialization:
   parity_target: 134
   queue: BL-002/materialization-task-queue.csv
   parity_state: COMPLETE_134_OF_134
+  identity_drift_detected_ids: [STORY-0012]
+  identity_drift_detail: canonical register says GET /logistics/challan-books/add-form while physical STORY-0012 currently describes GET /DisplayCurrentVehicleLoad
 development_changes:
   backlog: BL-010
   queue: BL-010/development-change-task-queue.csv
@@ -75,14 +78,15 @@ reconciliation:
   startup_projection_drift_detected: true
   startup_projection_drift_repaired: true
   repaired_fields:
-    - global business-behavior rework metrics projected separately from legacy strict metrics
-    - STORY-0054 corrected from awaiting-review projection to REWORK_REQUIRED_USER_UX_CHANGE
-    - BL-010 Development Changes backlog created and STORY-0054 routed to DEV-0001
-    - historical STORY-0001 approval separated from current revised-contract approval; revised testing fan-out suspended pending reapproval
-    - BL-008 projection advanced from V185 waiting-for-validation to V185 CLEAN_DATABASE_VALIDATED_PASS / DATABASE_FROZEN_AT_V185
+    - STORY-0001 physical Story and unit status reconciled from stale APPROVED projection to materially reworked current contract requiring explicit reapproval
+    - STORY-0011 advanced to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW with selector review complete
+    - STORY-0012 canonical-register versus physical-Story identity drift recorded fail-closed pending exact frozen-source binding
+    - STORY-0054 aggregate queue corrected to REWORK_REQUIRED_USER_UX_CHANGE from newest unit-local evidence
+    - shared business-behavior queue reconciled after concurrent-write refetch using newest unit evidence
   aggregate_reconciliation_gate: PASS
 cursor:
-  next_global_rework_unit: STORY-0001
+  next_global_rework_unit: STORY-0012
+  fallback_dependency_safe_r1_unit: STORY-0013
   priority_development_unit: BL-010/DEV-0001
   next_development_action: BIND_WALKIN_CUSTOMER_SEARCH_ADDRESS_LOOKUP_PRODUCT_SEARCH_THEN_IMPLEMENT
   next_testing_action: NONE_UNTIL_CURRENT_REVISED_STORY_APPROVAL_OR_REAPPROVAL
@@ -97,4 +101,7 @@ bl008:
   database_schema_work: COMPLETE_AND_FROZEN
   active_database_migration_gate: null
   service_ui_acceptance_cases: 30
+  junit_execution_delta: 0
+  jacoco_coverage_delta: 0
+  junit_runtime_state: BLOCKED_BY_MISSING_MAVEN_JUNIT5_MOCKITO_RUNTIME_DEPENDENCIES
   chatgpt_database_write_delta: 0
