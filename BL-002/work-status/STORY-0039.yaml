@@ -1,0 +1,46 @@
+version: 1
+story_id: STORY-0039
+release: R1
+endpoint: GET /vehicleLoad
+updated_by: Primary Cylinder Automation Tool
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+rework_policy: BL-002/story-business-behavior-rework-policy.yaml
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+approval_state: NOT_APPROVED
+business_behavior_complete: true
+source_proved:
+  - GET /vehicleLoad creates a blank UC02Phase01VehicleLoadRequestDto and VehicleLoadDto; redirect entry may also attach a VehicleTripDto and preselected vehicle/driver/trip identities.
+  - The page uses search-based Vehicle and Driver selectors and cylinder search by state/serial, with hidden selected identities and FULL/EMPTY purpose-distribution controls.
+  - POST /vehicleLoad invokes Uc02Phase01VehicleLoadMediator, which builds VehicleLoadIngestionRequestDto and invokes VehicleLoadIngestionService.processRequest.
+  - VehicleLoadIngestionService.processRequest is @Transactional.
+  - The service resolves the VehicleTrip, maps VehicleLoadDo, resolves selected cylinders, requires exactly one active YardInventoryLine per cylinder, and accepts only yard states FULL or EMPTY.
+  - EMPTY cylinders receive purpose EMPTY_FOR_SUPPLIER and target state EMPTY_PICKED_FOR_REFILL.
+  - FULL cylinders are allocated first to FULL_FOR_DELIVERY then FULL_FOR_BUFFER according to submitted counters and target state FULL_PICKED_UP_FOR_DELIVERY.
+  - The service creates a YARD_START VehicleTripStop with ARRIVED status, changes the VehicleTrip status to Loaded, saves VehicleLoad and VehicleTrip, then transfers cylinder custody from active yard inventory to an OPEN CylinderLogisticsExecution.
+  - VehicleLoadDo maps to public.tbl_vehicle_load with pk_vehicle_load_id and unique fk_vehicle_trip. Load lines cascade to public.tbl_vehicle_load_line with pk_vehicle_load_line_id, fk_vehicle_load, fk_cylinder and fk_load_purpose.
+  - The logistics transfer creates public.tbl_cylinder_logistics_execution and public.tbl_cylinder_logistics_execution_line records, assigning the target cylinder state and active=true/completed=false/exception=false.
+  - The same transaction marks the source public.tbl_yard_inventory_line records inactive.
+  - VehicleLoadIngestionService comments prove PostgreSQL load-line triggers update legacy tbl_cylinder_current_status; Java does not directly update that legacy table in this path.
+validation_current_source:
+  - request, VehicleTripDto and VehicleLoadDto must be non-null.
+  - loadedBy must not be blank.
+  - selected cylinder lines, when present, must have valid existing cylinders available only in Yard and in FULL or EMPTY yard state.
+  - Service logic additionally requires exactly one active yard inventory line for every selected cylinder.
+  - Empty load is explicitly allowed by server validator for pickup-only trips, while current browser submit logic requires at least one selected cylinder; this is a current UI/server behavior gap.
+  - VehicleTrip ID positivity/existence checks in VehicleLoadIngestionValidator are commented out; the service later performs findById(vehicleTripId).orElseThrow, so the effective service path still requires a resolvable trip identity.
+  - Quantity-summary null validation repeats quantityFullForDelivery and does not explicitly check quantityEmptyForSupplier; this is recorded as a current-source validation gap.
+current_state_gaps:
+  - Direct GET entry does not attach VehicleTripDto unless redirect attributes are present, while the server validator requires VehicleTripDto; direct-entry submit compatibility is therefore not source-proved.
+  - Server permits empty load for pickup-only trips, while browser submit blocks zero selected cylinders.
+  - Mediator catches/logs CylinderManagementApplicationException without rethrowing and then sets SUCCESS response code.
+  - Quantity-summary validator null-check omits quantityEmptyForSupplier because quantityFullForDelivery is checked twice.
+selector_ux_review:
+  state: COMPLETE_CURRENT_PAGE_PATTERN_ALREADY_SEARCH_BASED
+  vehicle: {control: type_ahead_search, endpoint: GET /search/vehicle/{term}, stale_selected_id_clear: SOURCE_PROVED}
+  driver: {control: type_ahead_search, endpoint: GET /search/driver/{term}, stale_selected_id_clear: SOURCE_PROVED}
+  cylinder: {control: paged_search, endpoints: [POST /search/cylinder/by-state, POST /search/cylinder/by-serial-and-state]}
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+review_decision: The embedded Save Vehicle Load capability is now source-bound through controller, concrete mediator, transactional service and exact persistence/custody effects, with current validation/UI gaps recorded rather than normalized.
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+fanout_authorized: false
