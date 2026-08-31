@@ -3,44 +3,114 @@
 - Release: R1
 - Endpoint: `GET /login`
 - Controller: `LoginController.showLoginPage`
-- Approval: APPROVED
-- Approval source: Explicit user approval in ChatGPT on 2026-08-31
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REAPPROVAL
+- Approval state: NOT APPROVED FOR CURRENT REVISED CONTRACT
+- Historical approval: Explicit user approval recorded on 2026-08-31 before the mandatory global business-behavior rework
+- Current approval requirement: Explicit user reapproval is required because this Story has been materially reworked
+- Legacy enrichment state: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
-## Source-integrity correction
+## What this page is for
 
-The canonical `BL-002/story-register.csv` maps STORY-0001 to R1 `GET /login` in the Authentication / Login functional area. The previously materialized physical file incorrectly described `GET /offline-map/status`, which belongs to STORY-0002. This artifact is corrected to the canonical registered endpoint before strict enrichment; physical parity remains 134/134 because the Story file already existed.
+The Login page is the controlled entry point into the Cylinder Management application. Its business purpose is to make sure that only an authenticated user can enter protected operational functions such as ownership, cylinder movement, yard, customer, supplier and trip activities.
 
-## Screen entry and controller contract
+A user comes to this page when opening the application without an authenticated session, when explicitly navigating to `/login`, after a failed sign-in attempt, or after logging out.
 
-`GET /login` is handled by `LoginController.showLoginPage`. It accepts two optional query parameters, `error` and `logout`. The controller renders `LOGIN_FORM_VIEW`, whose frozen constant value is `final-version-1/login`. If `error` is present it adds model attribute `errorMessage` with visible text `Invalid username or password.`; if `logout` is present it adds `logoutMessage` with visible text `You have been successfully logged out.`. Neither branch performs a database write.
+The business outcome of a successful login is not merely that credentials are accepted: the user is admitted into the protected application and is directed to the ownership dashboard. The application also records at most one daily-login report for the current date so that the system has a durable daily usage/login marker without creating a duplicate row for every successful login on the same day.
 
-Spring Security explicitly permits `/login`. Other non-whitelisted business requests require authentication. The configured form-login page is `/login`, and the authentication processing endpoint is `POST /perform_login`.
+## What the user sees and enters
 
-## Exact visible controls and browser behavior
+The rendered page title is `Sign in to your account` and the subtitle is `Enter your credentials to continue`.
 
-The rendered page title is `Sign in to your account` and the subtitle is `Enter your credentials to continue`. The form posts to `/perform_login` using HTTP POST and has `autocomplete="off"`.
+The user-facing controls are:
 
-Visible authentication controls are:
+| Field/control | What the user does | Business meaning | Source-proved behavior |
+|---|---|---|---|
+| Username | Enters the application username | Identifies which application user is requesting access | Text input `id="username"`, submitted as `userName`, placeholder `Enter your username`, HTML `required`, `autofocus`, `autocomplete="username"` |
+| Password | Enters the password for that username | Proves the user's credentials to the authentication system | Password input `id="password"`, submitted as `password`, placeholder `Enter your password`, HTML `required`, `autocomplete="current-password"` |
+| Password visibility button | Shows or hides the entered password | Helps the user verify what was typed without changing the authentication value | `type="button"`; `togglePw()` switches the input between `password` and `text`; it does not submit |
+| Sign In | Submits the credentials | Requests authenticated access to protected Cylinder Management functions | POSTs the form to `/perform_login` after browser-required validation succeeds |
 
-- `Username`: text input `id="username"`, request/form field `name="userName"`, placeholder `Enter your username`, HTML `required`, `autofocus`, and `autocomplete="username"`.
-- `Password`: password input `id="password"`, request/form field `name="password"`, placeholder `Enter your password`, HTML `required`, and `autocomplete="current-password"`.
-- Password visibility button: `type="button"`, invoking `togglePw()`. It changes the password input type between `password` and `text` and changes the displayed icon between the hidden/visible states. It does not submit the form.
-- `Sign In`: submit button that performs the form POST after browser-required validation succeeds.
+The form has `autocomplete="off"` at form level while the credential inputs explicitly define their appropriate browser autocomplete semantics.
 
-No custom minimum-length, debounce, AJAX credential lookup, or client-side authentication API is defined in this template. The browser's HTML `required` constraints are the source-proved local validation for the two credential fields. An error model attribute renders a danger alert; a logout model attribute renders a success alert. When an error alert is present, page JavaScript applies the defined shake animation to the login card.
+## Validation and why it matters
 
-## Authentication binding, branch behavior and persistence
+Both Username and Password are HTML `required` fields. This prevents an obviously incomplete sign-in request from being submitted by the browser and gives the user immediate local feedback.
 
-Spring Security binds the processing endpoint's username parameter from `userName` and password parameter from `password`. Authentication itself is handled by the configured Spring Security form-login flow rather than by `LoginController`. On failed authentication, Spring Security returns to the configured login page with the error indication consumed by the controller's optional `error` parameter; the controller then renders the invalid-credentials message. Logout is permitted and its login-page indication is consumed by optional `logout` to render the successful-logout message.
+No source-proved custom minimum length, debounce, AJAX credential lookup or client-side authentication API is defined on this page. Authentication correctness is therefore decided by Spring Security when the form is submitted, not by a client-side lookup.
 
-On successful authentication, `DailyLoginSuccessHandler.onAuthenticationSuccess` is invoked. It calculates the current local date and calls `DailyLoginReportJpaDao.existsByLoginDate(today)`. The DAO query proves the guard as `COUNT(d) > 0` where `CAST(d.loginTime AS date) = :today`. If a login report already exists for that date, no new report is saved. Otherwise the handler creates `DailyLoginReportDo`, sets `loginTime` to `LocalDateTime.now()`, and saves it through the JPA repository. It then sets the default target URL to `/ownership-dashboard` and delegates to the normal Spring Security success handling.
+This matters because credential validity must be determined by the security layer rather than by the page itself.
 
-The exact persistent identity is JPA entity `DailyLoginReportDo` mapped to `public.tbl_daily_login_report`. Its generated identifier is column `pk_daily_login_report_id`, backed by sequence `public.pk_daily_login_id_serial` with allocation size 1; the required timestamp is column `login_time` (`nullable=false`). Frozen migration `V1__DailyLogin.sql` creates `public.tbl_daily_login_report` with `pk_daily_login_report_id` and `login_time timestamp NOT NULL`, a uniqueness constraint on the ID, and creates sequence `public.pk_daily_login_id_serial`.
+## What happens when the user clicks Sign In
 
-The GET story therefore proves the login screen's entry path, exact rendered template, query branches, credential controls, browser behavior, authentication POST binding, failure/logout feedback, successful-authentication daily-report guard and conditional persistence, exact JPA/table/column/sequence identity, and successful redirect target.
+The form posts to `POST /perform_login`. Spring Security binds the username from request parameter `userName` and the password from request parameter `password`.
 
-## Approval and downstream testing
+### Successful authentication
 
-STORY-0001 was explicitly approved by the user on 2026-08-31. Approval fans out to BL-004 JUnit unit-test generation, BL-005 JUnit/Testcontainers integration-test creation, and BL-009 human-readable test-case/test-data generation. This approval applies only to STORY-0001 and does not auto-approve any other Story.
+On successful authentication, `DailyLoginSuccessHandler.onAuthenticationSuccess` runs.
+
+1. It calculates the current local date.
+2. It checks `DailyLoginReportJpaDao.existsByLoginDate(today)`.
+3. The source-proved DAO guard uses `COUNT(d) > 0` with `CAST(d.loginTime AS date) = :today`.
+4. If a report already exists for that date, no additional daily-login row is created.
+5. If no report exists, a new `DailyLoginReportDo` is created with `loginTime = LocalDateTime.now()` and saved through JPA.
+6. The authenticated user is then directed to `/ownership-dashboard` through the normal Spring Security success handling.
+
+### Failed authentication
+
+Spring Security returns the user to the login page with the error indication. `GET /login` accepts optional query parameter `error`; when present, the controller adds `errorMessage = Invalid username or password.`. The page renders that as a danger alert and applies the defined shake animation to the login card.
+
+The business effect is that access is denied, no authenticated business session is granted, and the user is given a clear reason to retry the credentials.
+
+### Logout outcome
+
+`GET /login` also accepts optional query parameter `logout`. When present, the controller adds `logoutMessage = You have been successfully logged out.` and the page renders the success message. The user is therefore visibly informed that the protected session has ended.
+
+## Exact read/write and persistence effect
+
+`GET /login` itself does not write to the database. It renders `LOGIN_FORM_VIEW`, whose frozen value is `final-version-1/login`, and optionally supplies the error/logout feedback attributes.
+
+The only persistence described by this page-level business flow occurs after successful authentication through the daily-login success handler.
+
+The persistent identity is:
+
+- JPA entity: `DailyLoginReportDo`
+- Table: `public.tbl_daily_login_report`
+- Primary key: `pk_daily_login_report_id`
+- Sequence: `public.pk_daily_login_id_serial`, allocation size 1
+- Required timestamp column: `login_time`, `nullable=false`
+- Migration evidence: `V1__DailyLogin.sql`
+
+The daily-exists guard prevents multiple successful logins on the same calendar date from creating duplicate daily-login report rows.
+
+## Downstream business impact
+
+A successful authentication enables the user to proceed to the protected Cylinder Management application. The default successful landing page is `/ownership-dashboard`.
+
+The daily-login record provides a system-level daily usage marker. Because the guard is date-based, repeated successful sign-ins on the same date do not inflate that report with duplicate daily rows.
+
+A failed authentication has the opposite business effect: the user remains outside protected application functions.
+
+## Related operations rendered or represented by this page
+
+Although this registered Story is `GET /login`, the page contains and explains the embedded authentication action performed by `POST /perform_login`. The POST processing is handled by Spring Security rather than a separate business controller method, so the page Story includes the submit behavior instead of describing only the GET render.
+
+The page also represents the result of the logout flow through its optional `logout` branch.
+
+## Reference-selector UX review
+
+The mandatory reference-selector review was performed for Customer, Product, Supplier, Vehicle, Driver, Address and other large business-reference controls.
+
+**Result: NOT APPLICABLE.** This page contains credential fields only. Username and Password are authentication inputs, not business-reference selectors, so no static-list-to-search-box conversion or dependent-selector rework is required for STORY-0001.
+
+## Current-state versus required-state assessment
+
+No user-requested functional or selector UX change is currently identified for the Login page. The rework changes the Story contract/documentation so that it explains the complete user/business behavior, persistence impact and visible outcomes; it does not claim an application-code change.
+
+## Approval and testing gate
+
+STORY-0001 had a historical explicit approval before the mandatory global business-behavior rework. That historical approval remains audit evidence only.
+
+Because the Story has now been materially reworked to the current business-behavior standard, its current revised contract is **NOT APPROVED** until the user explicitly reapproves it.
+
+Accordingly, revised BL-004 unit-test execution, BL-005 integration-test execution and BL-009 revised-contract test execution remain suspended. Existing historical downstream artifacts are preserved but do not constitute approval or PASS for this revised Story.
