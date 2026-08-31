@@ -1,8 +1,9 @@
 claim_id: 20260831-075328-DEV-0001
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T07:53:28Z
-heartbeat_at: 2026-08-31T07:53:28Z
+heartbeat_at: 2026-08-31T08:00:12Z
+released_at: 2026-08-31T08:00:12Z
 lease_expires_at: 2026-08-31T08:08:28Z
 work_unit: BL-010/DEV-0001
 story_id: STORY-0054
@@ -12,4 +13,11 @@ read_set:
   - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 write_set:
   - BL-010/evidence/DEV-0001-source-binding.md
-purpose: Bind exact reusable Customer, customer-address and Product search services plus Walk-in browser behavior before implementation.
+  - BL-010/evidence/DEV-0001-source-binding-complete.yaml
+  - BL-010/evidence/DEV-0001-implementation-plan.md
+  - CylinderManagement:automation/bl010-dev0001-customer-demand-search
+result: SOURCE_BINDING_COMPLETE_AND_IMPLEMENTATION_COMMITTED_PR_3_DRAFT
+application_head: 32a6d6fc9cc24aff74cfa8e4068241233c8e7f9d
+pull_request: 3
+approval_state: NOT_APPROVED
+fanout_state: BLOCKED_UNTIL_EXPLICIT_STORY_APPROVAL
