@@ -1,21 +1,28 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-142414Z
 scheduler_fire_id: 20260831T195414+0530
-termination_reason: ABNORMAL_PROCESS_DISAPPEARANCE
-terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+scheduler_task: Cylinder Production Fire - ii
+termination_reason: DUPLICATE_FIRE_SUPPRESSED
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
 started_at: 2026-08-31T19:54:20+05:30
 last_heartbeat_at: 2026-08-31T19:55:42+05:30
-terminated_at_when_observable: null
-recovery_observed_at: 2026-08-31T20:03:23+05:30
-productive_runtime_seconds_if_measurable: null
+terminated_at: 2026-08-31T20:05:29+05:30
+elapsed_seconds_from_receipt: 675
+elapsed_seconds_from_run_start: 669
 running_worker_count: 0
 completed_worker_count: 0
 blocked_worker_count: 0
 active_work_unit_ids: []
 eligible_work_remaining: true
-eligible_work_count: null
-dispatchable_work_count: null
 last_durable_event: PRIOR_TERMINATION_GAP_RECOVERED_RECONCILE_PROJECTIONS
-last_successful_checkpoint: null
-exception_or_platform_evidence_if_applicable: heartbeat stale beyond 2-minute policy; no terminal record and no run event stream found at recovery
-recovery_required: true
-next_recovery_action: next active fire reconciles durable projections before new dispatch
+prior_recovery_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+prior_recovery_classification_superseded: true
+supersession_reason: This invocation was still executing after the earlier stale-heartbeat recovery classification; a newer primary run CYLINDER-PRODUCTION-FIRE-20260831-143227Z is now durably RUNNING with heartbeat 2026-08-31T20:04:16+05:30, so this invocation terminates fail-closed to prevent split-brain writers.
+newer_active_run_id: CYLINDER-PRODUCTION-FIRE-20260831-143227Z
+newer_active_run_last_heartbeat_at: 2026-08-31T20:04:16+05:30
+approvals_delta: 0
+application_code_mutation_delta: 0
+bl010_execution_delta: 0
+github_actions_or_runners_used: false
+aggregate_checkpoint_result: NOT_WRITTEN_DUE_TO_NEWER_ACTIVE_PRIMARY
+next_action: NEWER_ACTIVE_PRIMARY_CONTINUES_FROM_LIVE_DURABLE_STATE_AND_RECONCILES_PROJECTIONS
+zero_transient_logs: true
