@@ -1,0 +1,30 @@
+version: 1
+story_id: STORY-0060
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+release: R1
+endpoint: GET /vehicle-loads/list
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+strict_field_ui_complete: true
+business_behavior_complete: true
+materialized: true
+approval: PENDING_USER_APPROVAL
+approval_delta: 0
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+business_contract_validation:
+  active_trip_filter_and_pagination: PASS
+  active_trip_view_and_vehicle_load_read_identity: PASS
+  row_navigation_by_vehicleLoadId: PASS
+  returned_trip_button_status_predicate: PASS
+  empty_state: PASS
+current_source_gaps:
+  searchTerm_model_round_trip_not_proved: true
+  pagination_size_not_preserved_in_links: true
+  code_change_authorized: false
+selector_ux_review:
+  state: NOT_APPLICABLE_FILTERED_ACTIVE_LOAD_LIST
+code_mutation_performed: false
+bl010_created_or_executed: false
+fanout_authorized: false
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+updated_at: 2026-08-31T11:51:35Z
