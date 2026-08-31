@@ -1,0 +1,9 @@
+claim_id: STORY-0045-CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
+backlog: BL-002
+work_unit: STORY-0045
+status: ACTIVE
+safe_independent: true
+claimed_at: '2026-09-01T02:04:30+05:30'
+heartbeat_at: '2026-09-01T02:04:30+05:30'
+resume_from: BL-002/evidence/STORY-0045-source-resolution-20260901-013227.yaml
