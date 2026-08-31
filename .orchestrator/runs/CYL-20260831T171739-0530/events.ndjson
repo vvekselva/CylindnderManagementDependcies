@@ -1,0 +1,2 @@
+{"event":"INVOCATION_STARTED","run_id":"CYL-20260831T171739-0530","scheduler_fire_id":"20260831T171500_0530","observed_at":"2026-08-31T17:17:39+05:30","mode":"CONTINUOUS"}
+{"event":"HEARTBEAT","run_id":"CYL-20260831T171739-0530","observed_at":"2026-08-31T17:19:30+05:30","last_action":"STARTUP_CONTROL_READS_IN_PROGRESS"}
