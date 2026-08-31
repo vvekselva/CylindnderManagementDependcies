@@ -1,0 +1,34 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST-RUN-001
+fire_id: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST
+checkpoint_time: "2026-09-01T03:03:42+05:30"
+mode: CONTINUOUS
+terminal_intent: PLATFORM_RUNTIME_BOUNDARY
+resumable: true
+eligible_work_remaining: true
+active_claims: 0
+backlog: BL-002
+authoritative_projection:
+  business_behavior_complete: 21
+  total: 134
+  percent: 15.7
+  awaiting_user_review: 19
+  approved_or_reapproved: 2
+  remaining_rework: 113
+completion_delta_this_run: 0
+projection_drift:
+  status: KNOWN_PENDING_RECONCILIATION
+  stale_story_rows:
+    - STORY-0041
+    - STORY-0042
+    - STORY-0046
+work_performed:
+  story: STORY-0045
+  result: SOURCE_INDEX_BINDING_UNRESOLVED
+  evidence: BL-002/evidence/STORY-0045/20260901T030315-IST-service-binding-unresolved.yaml
+  next_gate: "concrete customerFetchByIdService -> DAO -> entity -> database binding"
+governance:
+  stories_auto_approved: 0
+  application_code_mutations: 0
+  bl010_created_or_executed: 0
+  github_actions_or_runners: 0
+  drift_manifest_implementation: BLOCKED_PENDING_EXPLICIT_USER_APPROVAL
