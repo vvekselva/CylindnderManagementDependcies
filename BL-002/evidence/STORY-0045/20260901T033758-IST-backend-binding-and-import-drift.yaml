@@ -1,0 +1,50 @@
+story_id: STORY-0045
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
+captured_at: '2026-09-01T03:37:58+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+classification: CODE_CONFORMANCE_DRIFT_DETECTED
+story_business_behavior_complete: false
+completion_delta: 0
+backend_source_proof:
+  controller:
+    path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchController.java
+    handler: GET /displayCustomer
+    imported_service: com.sreyas.datamatics.cylindermanagement.customer.dm.service.CustomerFetchByIdService
+  web_dependency:
+    path: cylindermanagement.web/pom.xml
+    artifact: cylindermanagement.custommapper.service
+    version: 0.0.3-SNAPSHOT
+  available_service:
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerFetchByIdService.java
+    declared_package: com.sreyas.datamatics.cylinder.management.services
+    component: CustomerFetchByIdService
+    method: processRequest(CustomerFetchByIdRequestDto)
+    behavior:
+      - rejects null request, null customerId, and negative customerId
+      - calls CustomerJpaDao.findById(customerId)
+      - throws DomainObjectNotFoundException when absent
+      - maps CustomerDo plus customer addresses and phone numbers into CustomerFetchByIdResponseDto
+  dao:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CustomerJpaDao.java
+    interface: CustomerJpaDao
+    contract: extends JpaRepository<CustomerDo, Long>
+  entity:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CustomerDo.java
+    table: public.tbl_customer
+    id_column: pk_customer_id
+    relationships:
+      - customerAddresses
+      - customerPhoneNumbers
+source_tree_check:
+  exact_controller_import_package_source_path_found: false
+  available_service_package_source_path_found: true
+  interpretation: The frozen repository source tree does not contain a CustomerFetchByIdService.java at the package path imported by CustomerFetchController, while a same-named Spring component exists in the custommapper dependency under a different declared package.
+impact: The controller-to-service source binding is not conformant/provable from the frozen source and may prevent clean compilation or service wiring for /displayCustomer; STORY-0045 remains fail-closed.
+existing_template_drift: DisplayCustomer.html remains separately approval-gated and must not be implemented without explicit approval.
+governance:
+  application_code_mutated: false
+  bl_010_created_or_executed: false
+  auto_approval: false
+  user_review_required: true
+next_gate: Exact user approval of the import/package drift code-change manifest and the separate DisplayCustomer template drift manifest; safe-independent backlog work may continue meanwhile.
