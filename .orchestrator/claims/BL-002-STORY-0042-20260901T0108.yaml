@@ -3,11 +3,13 @@ run_id: CYLINDER-PRODUCTION-FIRE-20260901-010244-IST-I
 backlog_id: BL-002
 work_unit_id: STORY-0042
 scope: BUSINESS_BEHAVIOR_REWORK_SOURCE_BINDING
-state: ACTIVE
-claimed_at: '2026-09-01T01:08:00+05:30'
+state: RELEASED_COMPLETE
+claimed_at: '2026-09-01T01:05:30+05:30'
+released_at: '2026-09-01T01:06:48+05:30'
 resource_scope:
   - BL-002/stories/STORY-0042.md
   - BL-002/evidence/STORY-0042/
 shared_aggregate_write: false
 approval_authority: NONE
 application_code_mutation_allowed: false
+result: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
