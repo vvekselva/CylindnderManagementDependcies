@@ -5,12 +5,13 @@ trigger_source: USER_REQUESTED_CONTINUOUS_FIRE
 observed_fire_time: 2026-08-31T11:05:29Z
 scheduled_fire_time: null
 receipt_time: 2026-08-31T11:05:29Z
-state: TRIGGER_RECEIVED
+state: ORCHESTRATOR_STARTED
 intended_scope: CONTINUOUS
-run_id: null
-run_link_state: NOT_YET_LINKED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+run_link_state: RUN_LINKED
+orchestrator_started_at: 2026-08-31T11:05:29Z
 terminal_classification: null
 termination_time: null
 notes:
   - Scheduler last_run_time is not treated as execution proof.
-  - This durable receipt is the orchestration handoff acknowledgement for this invocation.
+  - Durable trigger receipt persisted before backlog read or mutation.
