@@ -1,6 +1,6 @@
-version: 57
+version: 58
 backlog_id: BL-002
-updated_at: 2026-08-31T07:57:39Z
+updated_at: 2026-08-31T08:04:40Z
 updated_by: Primary Cylinder Automation Tool
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
@@ -20,8 +20,8 @@ business_behavior_rework:
   business_behavior_complete_ids: [STORY-0001, STORY-0011]
   awaiting_user_review_ids: [STORY-0001, STORY-0011]
   active_rework_ids: [STORY-0012, STORY-0054]
-  static_reference_selector_reviewed: 3
-  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0054]
+  static_reference_selector_reviewed: 4
+  static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0054]
   search_conversion_required: 1
   search_conversion_required_ids: [STORY-0054]
   dependent_selector_rework_required: 1
@@ -45,15 +45,21 @@ materialization:
   queue: BL-002/materialization-task-queue.csv
   parity_state: COMPLETE_134_OF_134
   identity_drift_detected_ids: [STORY-0012]
-  identity_drift_detail: canonical register says GET /logistics/challan-books/add-form while physical STORY-0012 currently describes GET /DisplayCurrentVehicleLoad
+  identity_drift_repaired_ids: [STORY-0012]
+  identity_drift_detail: canonical STORY-0012 identity repaired to GET /logistics/challan-books/add-form; remaining gate is SummaryMetricLookupFetchService implementation/database-read binding
 development_changes:
   backlog: BL-010
   queue: BL-010/development-change-task-queue.csv
   queued: 1
   ids: [DEV-0001]
   story_ids: [STORY-0054]
-  ready_for_source_binding: 1
+  ready_for_source_binding: 0
+  source_binding_complete: 1
   implementation_complete: 0
+  implementation_in_review: 1
+  application_branch: automation/bl010-dev0001-customer-demand-search
+  application_head: 32a6d6fc9cc24aff74cfa8e4068241233c8e7f9d
+  pull_request: 3
   rule: Development implementation does not imply Story approval; reconcile implemented source back into BL-002 before explicit approval/reapproval.
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
@@ -80,15 +86,15 @@ reconciliation:
   repaired_fields:
     - STORY-0001 physical Story and unit status reconciled from stale APPROVED projection to materially reworked current contract requiring explicit reapproval
     - STORY-0011 advanced to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW with selector review complete
-    - STORY-0012 canonical-register versus physical-Story identity drift recorded fail-closed pending exact frozen-source binding
-    - STORY-0054 aggregate queue corrected to REWORK_REQUIRED_USER_UX_CHANGE from newest unit-local evidence
+    - STORY-0012 canonical identity repaired to exact frozen ChallanBookWebController/template; deepest service/database read remains fail-closed
+    - STORY-0054 exact Customer/Address/Product search source binding completed and implementation advanced to draft PR 3 without approval
     - shared business-behavior queue reconciled after concurrent-write refetch using newest unit evidence
   aggregate_reconciliation_gate: PASS
 cursor:
   next_global_rework_unit: STORY-0012
   fallback_dependency_safe_r1_unit: STORY-0013
   priority_development_unit: BL-010/DEV-0001
-  next_development_action: BIND_WALKIN_CUSTOMER_SEARCH_ADDRESS_LOOKUP_PRODUCT_SEARCH_THEN_IMPLEMENT
+  next_development_action: VALIDATE_DRAFT_PR_3_THEN_RECONCILE_IMPLEMENTED_SOURCE_BACK_TO_BL002
   next_testing_action: NONE_UNTIL_CURRENT_REVISED_STORY_APPROVAL_OR_REAPPROVAL
 approval_policy:
   auto_approve: false
