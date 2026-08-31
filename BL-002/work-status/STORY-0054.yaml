@@ -5,40 +5,42 @@ approval:
   auto_approved: false
   explicit_user_approval_required: true
 rework:
-  state: REWORK_REQUIRED_USER_UX_CHANGE
+  state: READY_FOR_USER_REVIEW_AFTER_IMPLEMENTATION_SOURCE_RECONCILIATION
   business_behavior_documented: true
-  implementation_source_proof_complete: false
-  user_required_target_behavior:
-    customer_selector: SEARCH_BOX_REUSE_WALK_IN_SALE_CUSTOMER_REST_PATTERN
-    address_selector: DEPENDENT_ON_SELECTED_CUSTOMER
-    product_selector: SEARCH_BOX_REUSE_EXISTING_PRODUCT_REST_PATTERN
-  current_source_gap:
-    customer_selector: STATIC_SERVER_RENDERED_LIST
-    address_selector: GLOBAL_SERVER_RENDERED_LIST
-    product_selector: STATIC_SERVER_RENDERED_LIST
+  implementation_source_proof_complete: true
+  implemented_application_head: dde2b007c8ad5278f162cf153b5857397d5b35a0
+  implemented_pr: 3
+  browser_runtime_execution: NOT_EXECUTED_IN_CHATGPT_RUNTIME
+  target_behavior:
+    customer_selector: SEARCH_BOX_REUSING_EXISTING_CUSTOMER_REST
+    address_selector: DEPENDENT_SELECTED_CUSTOMER_ONLY
+    product_selector: SEARCH_BOX_REUSING_EXISTING_PRODUCT_REST
+  source_bound_contract:
+    customer_endpoint: GET /search/customer/{searchText}
+    customer_response_collection: customerDtos
+    customer_id_field: customerId
+    address_endpoint: GET /search/address/customer-address/{customerId}
+    address_response_collection: customerAddressDtos
+    address_id_field: customerAddressId
+    product_endpoint: GET /search/product/{searchText}
+    product_response_collection: productDtos
+    product_id_field: productId
+    minimum_search_length: 3
+    debounce_ms: 280
   completion_requirements:
-    - implement_or_source_prove_searchable_customer_selector
-    - bind_exact_existing_customer_search_rest_endpoint
-    - populate_only_selected_customer_addresses
-    - clear_address_when_customer_changes_or_clears
-    - implement_or_source_prove_searchable_product_selector
-    - bind_exact_existing_product_search_rest_endpoint
-    - prove_selected_id_propagation_and_stale_id_clear_behavior
-    - preserve_server_side_customer_address_ownership_validation
-    - reconcile_story_from_implemented_source
     - explicit_user_review_and_approval
 development_change:
   backlog: BL-010
   development_id: DEV-0001
   queue: BL-010/development-change-task-queue.csv
-  state: READY_FOR_SOURCE_BINDING
-  implementation_required: true
+  state: IMPLEMENTED_SOURCE_VALIDATED_AND_RECONCILED_TO_STORY
+  implementation_required: false
   implementation_does_not_imply_approval: true
 downstream_fanout:
   BL-004: DEFER_UNTIL_EXPLICIT_APPROVAL
   BL-005: DEFER_UNTIL_EXPLICIT_APPROVAL
   BL-009: DEFER_UNTIL_EXPLICIT_APPROVAL
 notes:
-  - Current frozen source behavior is evidence of the gap, not acceptance of the target UX.
-  - Existing Walk-in Sale search behavior is the required customer-selector reference pattern.
-  - User directed that development changes be worked in the Development Changes backlog; DEV-0001 is the governed implementation unit.
+  - PR 3 was scope-minimized to the governed with-menu Customer Demand template.
+  - Exact Product JSON wrapper field productDtos was proved from frozen ProductSearchResponseDto source.
+  - Source implementation/reconciliation is complete, but live browser execution and explicit Story approval are not claimed.
