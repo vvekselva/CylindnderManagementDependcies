@@ -1,0 +1,103 @@
+version: 1
+name: POST_APPROVAL_STORY_CODE_CONFORMANCE_AND_AUTOMATED_REWORK
+status: ACTIVE
+scope: BL-002_REVERSE_ENGINEERED_STORIES
+execution_host: CHATGPT_ONLY
+github_role: DURABLE_CONTROL_AUDIT_STORAGE_ONLY
+
+trigger:
+  condition: EXPLICIT_USER_APPROVAL_OR_REAPPROVAL_DURABLY_RECORDED
+  action: IDEMPOTENTLY_ENQUEUE_POST_APPROVAL_CODE_CONFORMANCE
+  queue: BL-002/post-approval-code-conformance-task-queue.csv
+  approval_alone_releases_testing_fanout: false
+
+conformance:
+  required_state_before_fanout: CODE_CONFORMANCE_VERIFIED_PASS
+  governed_source_required: true
+  exact_source_binding_required: true
+  verify:
+    - endpoint_and_http_method
+    - controller_and_method
+    - request_response_dto_or_model
+    - template_and_visible_fields_when_applicable
+    - service_interface_and_concrete_implementation
+    - dao_repository
+    - entity_view
+    - exact_database_read_write_identity
+    - validation_and_error_paths
+    - transaction_and_persistence_behavior
+    - user_visible_success_error_outcome
+    - related_operations_on_same_page
+    - selector_search_dependent_reset_behavior_when_applicable
+  pass_state: CODE_CONFORMANCE_VERIFIED_PASS
+  drift_state: STORY_CODE_DRIFT_DETECTED
+  evidence_path_pattern: BL-002/code-conformance-evidence/<story-id>/<evidence-id>.yaml
+
+fanout_gate:
+  requires:
+    - EXPLICIT_APPROVAL_OR_REAPPROVAL_CURRENT_CONTRACT
+    - CODE_CONFORMANCE_VERIFIED_PASS_CURRENT_SOURCE_BINDING
+  releases: [BL-004, BL-005, BL-009]
+  fail_closed: true
+
+code_rework:
+  automated: true
+  backlog: BL-010
+  queue: BL-010/development-change-task-queue.csv
+  creation_rule: CREATE_OR_REUSE_IDEMPOTENT_TASK_FOR_STORY_SOURCE_FINGERPRINT_AND_DEFECT_FINGERPRINT
+  duplicate_tasks_for_same_fingerprint: forbidden
+  eligible_drift_classes:
+    - CODE_DEFECT
+    - USER_REQUIRED_TARGET_BEHAVIOR_GAP
+    - APPROVED_VALIDATION_GAP
+    - APPROVED_SELECTOR_UX_GAP
+    - APPROVED_PERSISTENCE_OR_TRANSACTION_GAP
+  execution:
+    - resolve_governed_source
+    - determine_read_write_sets
+    - acquire_resource_claim
+    - stage_exact_source_binding
+    - implement_minimal_safe_change
+    - validate_source_binding
+    - run_available_unit_integration_runtime_validation
+    - persist_changed_file_and_test_evidence
+    - release_claim
+    - automatically_reenqueue_story_code_conformance
+  runtime_unavailable_state: SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED
+  never_promote_runtime_not_executed_to_pass: true
+  github_actions: forbidden
+  github_runner: forbidden
+  external_worker_runtime: forbidden
+
+story_reapproval:
+  required_when_material_change_affects:
+    - business_purpose_or_user_goal
+    - fields_or_field_meaning
+    - validation_contract
+    - persistence_identity_or_transaction_semantics
+    - user_visible_success_error_behavior
+    - selector_contract_or_dependent_reset_behavior
+    - downstream_business_impact
+  material_change_state: REAPPROVAL_REQUIRED
+  non_material_implementation_fix_requires_new_conformance_pass: true
+  auto_reapproval: forbidden
+
+scheduler:
+  production_fire_must_treat_as_normal_eligible_work:
+    - pending_post_approval_code_conformance
+    - STORY_CODE_DRIFT_DETECTED_with_automatable_rework
+    - BL-010_code_rework_queued_or_in_progress
+    - post_rework_conformance_rerun
+  dynamic_selection_required: true
+  hardcoded_story_pointer: forbidden
+  resource_scoped_claims_required: true
+
+watchdog_reporting:
+  required_fields:
+    - approved_story_count
+    - pending_code_conformance_count_and_ids
+    - conformance_pass_count_and_ids
+    - story_code_drift_count_and_ids
+    - automated_code_rework_queued_in_progress_complete_count_and_ids
+    - reapproval_required_after_code_rework_count_and_ids
+    - fanout_eligible_count_and_ids
