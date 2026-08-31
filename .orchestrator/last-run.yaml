@@ -1,89 +1,77 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-054234Z
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-065142Z
 checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-31T05:42:34Z
-checkpoint_at: 2026-08-31T05:54:26Z
+started_at: 2026-08-31T06:51:42Z
+checkpoint_at: 2026-08-31T06:51:42Z
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
-  run_scope_mode: PRODUCTION_FIRE
-  compatibility_invocation_lease_global_mutex: false
+  github_role: DURABLE_CONTROL_AUDIT_ONLY
+  github_actions_runners_used: false
 work:
   attempted_ids:
     - AGGREGATE_RECONCILIATION
-    - BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR
-    - BL-009/STORY-0001_EXECUTABLE_TEST_RUNTIME_PROBE
-    - BL-004/STORY-0001_EXECUTION_RUNTIME_PROBE
-    - BL-005/STORY-0001_EXECUTION_RUNTIME_PROBE
-    - BL-009/STORY-0001_DATA_CONTRACT_SUBSTITUTION_EXECUTION
-    - BL-002/STORY-0041_SOURCE_RESOLUTION
+    - BL-010/BOOTSTRAP_DEVELOPMENT_CHANGES
+    - BL-010/DEV-0001_STORY-0054_ROUTE
+    - STORY-0001_REVISED_APPROVAL_GATE_RECONCILIATION
+    - BL-008_V185_LIVE_STATE_RECONCILIATION
   completed_ids:
-    - BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR
-    - BL-009/STORY-0001_DATA_CONTRACT_SUBSTITUTION_EXECUTION
-    - BL-002/STORY-0041_SOURCE_RESOLUTION_WITH_DURABLE_GAP
-  completed_strict_ids: []
+    - BL-010/BOOTSTRAP_DEVELOPMENT_CHANGES
+    - BL-010/DEV-0001_STORY-0054_ROUTE
+    - STORY-0001_REVISED_APPROVAL_GATE_RECONCILIATION
+    - BL-008_V185_LIVE_STATE_RECONCILIATION
   blocked_ids:
-    - BL-004/STORY-0001_EXECUTION
-    - BL-005/STORY-0001_EXECUTION
-    - BL-009/STORY-0001_APPLICATION_BEHAVIOR_EXECUTION
-    - BL-002/STORY-0041_STRICT_PROMOTION
-  strict_field_ui_completion_delta: 0
-  physical_materialization_delta: 0
+    - BL-010/DEV-0001_IMPLEMENTATION_PENDING_EXACT_SEARCH_SOURCE_BINDING
   approvals_delta: 0
-  approved_ids: [STORY-0001]
-  next_dynamically_resolved_eligible_unit: STORY-0043
-metrics_after: {register_ready: 131, clarification: 3, materialized_story_files: 134, materialization_pending: 0, strict_field_ui_complete: 126, strict_field_ui_remaining: 8, approved: 1, use_case_grouped: 0, testing_ready: 1}
+  current_revised_contract_approved_or_reapproved: 0
+  next_dynamically_resolved_eligible_unit: BL-010/DEV-0001
+business_behavior_rework:
+  total_registered: 134
+  rework_required: 134
+  rework_in_progress: 1
+  business_behavior_complete: 0
+  awaiting_user_review: 0
+  approved_after_rework: 0
+  active_ids: [STORY-0054]
+  selector_ux_reviewed: 1
+  search_conversion_required: 1
+  search_conversion_required_ids: [STORY-0054]
+  dependent_selector_rework_required: 1
+  dependent_selector_rework_required_ids: [STORY-0054]
+legacy_metrics: {materialized_story_files: 134, materialization_pending: 0, strict_field_ui_complete: 126, strict_field_ui_remaining: 8, historical_approved: 1, reapproval_required: 1}
+development_changes:
+  backlog: BL-010
+  queued: 1
+  current: DEV-0001
+  story: STORY-0054
+  state: READY_FOR_SOURCE_BINDING
+  next_action: BIND_WALKIN_CUSTOMER_SEARCH_ADDRESS_LOOKUP_PRODUCT_SEARCH_THEN_IMPLEMENT
 approved_story_testing:
-  policy: .orchestrator/approved-story-testing-policy.yaml
-  BL-004: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, coverage: NOT_EXECUTED, execution_blocked: 1}
-  BL-005: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, coverage: NOT_EXECUTED, execution_blocked: 1}
-  BL-009:
-    catalogues: 1
-    test_data_sets: 1
-    human_readable_test_data: 1
-    junit_executable_test_code: 1
-    substitution_test_code: 1
-    test_case_code_mapping: 9_OF_9_MAPPED_TO_EXECUTABLE_LAYER_OR_EXPLICIT_RUNTIME_LAYER
-    test_data_row_code_consumption: 7_OF_7_DATA_CONTRACT_ROWS
-    data_contract_code_executed: 1
-    data_contract_rows_pass: 7
-    data_contract_rows_fail: 0
-    application_behavior_executed: 0
-    application_behavior_pass: 0
-    application_behavior_fail: 0
-    coverage: NOT_EXECUTED
-    live_validation_pending: 1
-    live_validation_executed: 0
-  runtime_capability: {java_21: AVAILABLE, maven: UNAVAILABLE, gradle: UNAVAILABLE, ant: AVAILABLE, junit5_runtime: UNAVAILABLE, mockito_runtime: UNAVAILABLE, jacoco_runtime: UNAVAILABLE, docker: UNAVAILABLE, podman: UNAVAILABLE, local_postgresql: UNAVAILABLE, outbound_dependency_resolution: DNS_BLOCKED}
-  substitutions:
-    BL-009_data_contract_java21_runner: EXECUTED_PASS_7_OF_7_ROWS
-    direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS
-    ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE
-    local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED
-    h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT
+  policy_version: 4
+  historical_approved_ids: [STORY-0001]
+  current_revised_contract_approved_or_reapproved_ids: []
+  revised_fanout_eligible_ids: []
+  BL-004: {historical_generated: 1, revised_executed: 0, pass: 0, fail: 0, coverage: NOT_EXECUTED_REVISED_CONTRACT, status: SUSPENDED_PENDING_REAPPROVAL}
+  BL-005: {historical_generated: 1, revised_executed: 0, pass: 0, fail: 0, coverage: NOT_EXECUTED_REVISED_CONTRACT, status: SUSPENDED_PENDING_REAPPROVAL}
+  BL-009: {historical_catalogue: 1, historical_data_sets: 1, historical_code: 1, historical_data_contract_pass_rows: 7, historical_data_contract_fail_rows: 0, revised_application_executed: 0, revised_pass: 0, revised_fail: 0, coverage: NOT_EXECUTED_REVISED_CONTRACT, status: SUSPENDED_PENDING_REAPPROVAL}
 bl001: {state: COMPLETE_READ_ONLY, action: NO_CHANGE_REQUIRED}
 bl008:
   state_source: BL-008/README.md
-  last_historical_clean_validated_migration: V184
-  current_authored_migration: V185__Align_External_Logical_Physical_Asset_Model.sql
-  active_migration_gate: V185_CLEAN_VALIDATION_REQUIRED
-  current_state: V185_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  database_freeze_declared: false
+  current_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
+  schema_work: COMPLETE_AND_FROZEN
+  active_migration_gate: null
+  service_ui_acceptance_cases: 30
   database_write_delta_chatgpt: 0
 reconciliation:
   startup_projection_drift_detected: true
   startup_projection_drift_repaired: true
-  BL-008_live_state_projected: true
-  BL-009_human_readable_test_data_repaired: true
-  BL-009_executable_code_state_projected: true
-  BL-009_data_contract_execution_projected: true
-  STORY-0041_source_resolution_projected: true
-  runtime_capability_reprobed: true
-  durable_evidence:
-    - .orchestrator/evidence/20260831-054344-testing-runtime-and-drift-reconciliation.md
-    - BL-009/evidence/STORY-0001-data-contract-execution-20260831-055426Z.md
-    - BL-002/work-status/STORY-0041.yaml
-  readback_pending: false
+  repaired:
+    - BL-008 stale waiting-for-V185-validation projection
+    - missing global business-story rework projection
+    - STORY-0054 stale awaiting-review queue interpretation
+    - missing BL-010 Development Changes routing
+    - historical STORY-0001 approval incorrectly appearing current for revised-contract testing
   aggregate_reconciliation_gate: PASS
+  readback_required: true
 transient_logs_remaining: 0
