@@ -1,0 +1,35 @@
+version: 1
+story_id: STORY-0039
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+completed_at: 2026-08-31T11:18:45Z
+result: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+approval_delta: 0
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_bindings:
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase01VehicleLoadController.java
+  mediator: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mediator/Uc02Phase01VehicleLoadMediator.java
+  service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleLoadIngestionService.java
+  validator: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/VehicleLoadIngestionValidator.java
+  load_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/VehicleLoadDo.java
+  load_line_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/VehicleLoadLineDo.java
+  logistics_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CylinderLogisticsExecutionDo.java
+  logistics_line_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CylinderLogisticsExecutionLineDo.java
+  yard_line_entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/YardInventoryLineDo.java
+persistence:
+  transaction: VehicleLoadIngestionService.processRequest @Transactional
+  load_table: public.tbl_vehicle_load
+  load_line_table: public.tbl_vehicle_load_line
+  logistics_table: public.tbl_cylinder_logistics_execution
+  logistics_line_table: public.tbl_cylinder_logistics_execution_line
+  yard_line_table: public.tbl_yard_inventory_line
+  trip_effect: VehicleTrip status changed to Loaded
+  stop_effect: YARD_START stop saved with ARRIVED status
+  custody_effect: active yard lines deactivated and active logistics execution lines created
+current_source_gaps:
+  - Direct GET path does not attach VehicleTripDto while persistence requires a resolvable trip.
+  - Browser requires at least one cylinder while server validator permits empty pickup-only loads.
+  - Mediator logs/swallows CylinderManagementApplicationException and then sets SUCCESS response code.
+  - Quantity-summary null validation repeats quantityFullForDelivery and omits explicit quantityEmptyForSupplier null validation.
+code_mutation_performed: false
+bl010_created_or_executed: false
+user_drift_approval_required_before_future_code_mutation: true
