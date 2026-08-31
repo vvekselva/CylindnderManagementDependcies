@@ -4,13 +4,13 @@ scheduler_task: Cylinder Production Fire - i
 state: RUNNING
 mode: CONTINUOUS
 started_at: 2026-08-31T20:02:27+05:30
-last_heartbeat_at: 2026-08-31T20:13:06+05:30
-productive_runtime_seconds_if_measurable: 639
-loop_iteration: 4
-running_worker_count: 1
+last_heartbeat_at: 2026-08-31T20:15:24+05:30
+productive_runtime_seconds_if_measurable: 777
+loop_iteration: 5
+running_worker_count: 2
 completed_worker_count: 0
 blocked_worker_count: 0
-active_work_unit_ids: [BL-002/AGGREGATE_PROJECTION_DRIFT_REPAIR]
+active_work_unit_ids: [BL-002/AGGREGATE_PROJECTION_DRIFT_REPAIR, BL-002/STORY-0041_BUSINESS_BEHAVIOR_REWORK]
 eligible_work_count: null
 dispatchable_work_count: null
-last_action: VERIFY_UNIT_EVIDENCE_BEFORE_AGGREGATE_REPAIR
+last_action: STORY_0041_ENTITY_DAO_SOURCE_RESOLUTION
