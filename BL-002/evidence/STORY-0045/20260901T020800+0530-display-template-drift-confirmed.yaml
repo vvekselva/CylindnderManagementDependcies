@@ -1,0 +1,20 @@
+story_id: STORY-0045
+evidence_time: '2026-09-01T02:08:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  path: cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html
+  blob_sha: b9617edc8514b37918caeb5c8602d7520e86eb33
+finding: The frozen DisplayCustomer.html is semantically a Register Customer template. Its opening source comment identifies UC01RegisterCustomer.html, its document title is 'Register Customer', and inspected content is registration-form styling/markup. This is positive source proof of a template responsibility mismatch, not an inference from filename or search absence.
+classification: CODE_CONFORMANCE_DRIFT_USER_REVIEW_REQUIRED
+review_packet: BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
+business_behavior_complete: false
+remaining_source_binding:
+  - exact GET /displayCustomer controller/model contract
+  - service/DAO/entity/database read path
+  - final visible display fields/actions/empty/error outcomes
+application_code_mutation: false
+bl_010_created: false
+bl_010_executed: false
+auto_approval: false
