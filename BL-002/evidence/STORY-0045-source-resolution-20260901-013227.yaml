@@ -1,0 +1,25 @@
+story_id: STORY-0045
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-013227-IST
+recorded_at: '2026-09-01T01:36:43+05:30'
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+status: PARTIAL_SOURCE_PROOF
+business_behavior_complete: false
+auto_approved: false
+application_code_mutated: false
+bl010_created_or_executed: false
+proven_from_prior_durable_evidence:
+  - customer search endpoint GET /search/customer/{searchText} and application-search-service delegation are source-bound
+  - CustomerListPage row navigation to /displayCustomer?customerId=... is source-bound
+  - file named DisplayCustomer.html cannot by filename alone establish rendered display behavior because its observed content was inconsistent with the expected display contract
+this_invocation:
+  - recursive frozen tree was inspected
+  - repository code search for displayCustomer, CustomerController and fetchCustomerByPage did not return a reliable exact handler binding
+  - absence of an indexed match was not treated as proof that source behavior is absent
+remaining_source_gaps:
+  - exact /displayCustomer controller handler and request parameter contract
+  - exact DTO/model mapping used to render the selected customer
+  - service/DAO/entity/database read path for the display operation
+  - exact rendered template block and visible field behavior for /displayCustomer
+next_action: Traverse exact frozen module/path bindings from controller/template references; if exact source remains undiscoverable, retain fail-closed source-detail gap and dispatch another dependency-safe Release-1 unit.
