@@ -1,0 +1,37 @@
+story_id: STORY-0041
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-003017-IST
+evidence_time: '2026-09-01T00:32:48+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+business_behavior_complete: true
+approval_state: AWAITING_EXPLICIT_USER_REVIEW
+transaction_boundary:
+  application_repository_configuration:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/configuration/ApplicationDataConfiguration.java
+    enable_jpa_repositories: true
+    repository_package: com.sreyas.datamatics.application.jpa.dao
+  customer_repository:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CustomerJpaDao.java
+    interface: CustomerJpaDao
+    extends: JpaRepository<CustomerDo, Long>
+  application_dependency:
+    path: cylinder.management.dao/pom.xml
+    spring_boot_parent: 3.2.5
+    spring_boot_starter_data_jpa: true
+  framework_contract:
+    repository: spring-projects/spring-data-jpa
+    ref: 3.2.5
+    path: spring-data-jpa/src/main/java/org/springframework/data/jpa/repository/support/SimpleJpaRepository.java
+    implementation: SimpleJpaRepository.save
+    transactional_annotation: true
+  effective_boundary:
+    begins_at: customerJpaDao.save(customerDo) repository-proxy invocation
+    operation: Spring Data SimpleJpaRepository.save
+    broader_application_transaction_proved: false
+    note: No broader @Transactional annotation was source-proved on UC01RegisterCustomerMediator or CustomerIngestionService; the repository save method itself is transaction-demarcated by Spring Data JPA 3.2.5.
+conclusion: The sole remaining source-binding gate for STORY-0041 is satisfied. The registration persistence call has a source-proved transactional repository boundary. STORY-0041 is Business Behavior Complete and requires explicit user review; it is not auto-approved.
+auto_approved: false
+story_approval_delta: 0
+application_code_mutation: false
+bl010_execution: false
+github_actions_or_runners_used: false
