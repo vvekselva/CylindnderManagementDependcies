@@ -3,9 +3,9 @@ fire_id: 20260831T171500+0530
 scheduled_fire_time: '2026-08-31T17:15:00+05:30'
 observed_fire_time: '2026-08-31T17:49:50+05:30'
 receipt_time: '2026-08-31T17:50:04+05:30'
-trigger_state: TRIGGER_RECEIVED
+trigger_state: ORCHESTRATOR_STARTED
 intended_scope: CONTINUOUS
-run_id: null
-run_link_state: NOT_LINKED
+run_id: CYL-ORCH-20260831T175004+0530
+run_link_state: RUN_LINKED
 terminal_classification: null
 termination_time: null
