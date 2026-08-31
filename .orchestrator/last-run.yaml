@@ -1,66 +1,51 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
-checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-31T05:15:08+05:30
-checkpoint_at: 2026-08-31T05:17:57+05:30
-elapsed_seconds_at_checkpoint: 169
-elapsed_minutes_at_checkpoint: 2.817
-productive_runtime_target_minutes: 30
-productive_target_satisfied_at_checkpoint: false
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
+checkpoint_state: CHECKPOINT_RECONCILIATION_INCOMPLETE
+started_at: 2026-08-31T06:14:02+05:30
+checkpoint_at: null
+elapsed_seconds_at_checkpoint: null
+elapsed_minutes_at_checkpoint: null
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   compatibility_invocation_lease_global_mutex: false
-  shared_aggregate_single_writer: true
 work:
-  attempted_ids: [STORY-0040]
+  attempted_ids: []
   completed_strict_ids: []
-  blocked_ids: [STORY-0040]
-  source_detail_refined_ids: [STORY-0040]
+  blocked_ids: []
   strict_field_ui_completion_delta: 0
   physical_materialization_delta: 0
   approvals_delta: 0
   next_dynamically_resolved_eligible_unit: DYNAMIC_RECONCILIATION_REQUIRED
 metrics_after:
-  register_ready: 131
-  clarification: 3
   materialized_story_files: 134
   materialization_pending: 0
   strict_field_ui_complete: 122
   strict_field_ui_remaining: 12
   approved: 0
-  use_case_grouped: 0
-  testing_ready: 0
 bl008:
   state_source: BL-008/README.md
-  execution_mode: USER_LOCAL_FLYWAY_HANDOFF
-  target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
-  last_validated_migration: V179__Enforce_Company_Fleet_Accounting_Integrity.sql
-  current_authored_migration: V180__Freeze_Cylinder_Ownership_Identity.sql
-  v180_validation: AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  phase2: V180_CLEAN_VALIDATION_GATE
-  current_state: V180_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  next_schema_migration: DO_NOT_CREATE_V181_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V180_ACCEPTANCE
+  last_validated_migration: V181
+  current_authored_migration: V182
+  current_state: V182_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
   database_write_delta_chatgpt: 0
 claims:
-  recovered_stale: [20260831-032131-STORY-0040]
-  created: [20260831-051508-STORY-0040]
-  completed: [20260831-051508-STORY-0040]
+  recovered_stale: []
+  created: []
+  completed: []
   claims_remaining_at_checkpoint: 0
 reconciliation:
   startup_projection_drift_detected: true
-  startup_projection_drift_repaired: true
-  stale_aggregate: V177_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  durable_bl008_truth: V180_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  readback_verified_same_run_id: true
-  readback_verified_metrics: true
-  readback_verified_bl008_state: true
-  aggregate_reconciliation_gate: PASS
+  startup_projection_drift_repaired: false
+  stale_aggregate: V180_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  durable_bl008_truth: V182_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  readback_verified_same_run_id: false
+  readback_verified_metrics: false
+  readback_verified_bl008_state: false
+  aggregate_reconciliation_gate: FAIL
 transient_logs_remaining: 0
 notes:
-  - Startup repaired stale BL-008 aggregate state using the newer durable BL-008 README.
-  - Expired STORY-0040 claim was recovered before new dispatch.
-  - STORY-0040 was safely re-claimed and its controller/request DTO contract was refined from frozen source.
-  - Strict completion remains withheld because the concrete mediator-to-service-to-DAO/repository-to-entity/table chain is unresolved.
-  - No database behavior was invented; ChatGPT database writes remain zero.
+  - BL-002 aggregate was advanced to the current run and live BL-008 V182 state.
+  - This last-run projection is the paired checkpoint repair attempt.
+  - No BL-002 dispatch is permitted until both aggregate projections read back equal.
