@@ -1,0 +1,28 @@
+version: 1
+story_id: STORY-0058
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+release: R1
+endpoint: GET /trip-review/{vehicleTripId}
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+strict_field_ui_complete: true
+business_behavior_complete: true
+materialized: true
+approval: PENDING_USER_APPROVAL
+approval_delta: 0
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+business_contract_validation:
+  entry_from_queue_with_exact_vehicleTripId: PASS
+  review_header_and_dashboard_composition: PASS
+  visible_kpis_sections_and_empty_states: PASS
+  challan_photo_navigation: PASS
+  review_eligibility_and_close_button_guard: PASS
+  offline_map_rendering_contract: PASS
+  read_only_get_boundary: PASS
+selector_ux_review:
+  state: NOT_APPLICABLE_DETAIL_DASHBOARD
+code_mutation_performed: false
+bl010_created_or_executed: false
+fanout_authorized: false
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+updated_at: 2026-08-31T11:48:32Z
