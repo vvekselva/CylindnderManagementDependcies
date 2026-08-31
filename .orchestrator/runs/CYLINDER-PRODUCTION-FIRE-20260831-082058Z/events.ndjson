@@ -1,0 +1,3 @@
+{"at":"2026-08-31T08:20:58Z","event":"INVOCATION_STARTED","run_id":"CYLINDER-PRODUCTION-FIRE-20260831-082058Z","mode":"CONTINUOUS"}
+{"at":"2026-08-31T08:20:59Z","event":"RECONCILIATION_COMPLETED","detail":"newest durable evidence selected; prior fire reached TARGET_RUNTIME_REACHED and BL-002 aggregate is version 60"}
+{"at":"2026-08-31T08:20:59Z","event":"REPLAN_STARTED","eligible":"BL-010/DEV-0001 correction plus dependency-safe BL-002 R1 rework"}
