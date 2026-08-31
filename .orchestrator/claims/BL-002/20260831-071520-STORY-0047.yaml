@@ -1,0 +1,16 @@
+claim_id: 20260831-071520-STORY-0047
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-071328IST
+backlog: BL-002
+unit_id: STORY-0047
+status: ACTIVE
+claimed_at: 2026-08-31T07:15:20+05:30
+heartbeat_at: 2026-08-31T07:15:20+05:30
+lease_expires_at: 2026-08-31T07:30:20+05:30
+read_set:
+  - BL-002/stories/STORY-0047.md
+  - BL-002/story-register.csv
+  - frozen-authoritative-application-source
+write_set:
+  - BL-002/stories/STORY-0047.md
+  - BL-002/work-status/STORY-0047.yaml
+shared_aggregate_writes: false
