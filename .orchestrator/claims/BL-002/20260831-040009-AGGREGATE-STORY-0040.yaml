@@ -1,0 +1,19 @@
+claim_id: 20260831-040009-AGGREGATE-STORY-0040
+run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
+backlog: BL-002
+unit: STORY-0040_AGGREGATE_RECONCILIATION
+status: ACTIVE
+acquired_at: 2026-08-31T04:00:09Z
+heartbeat_at: 2026-08-31T04:00:09Z
+lease_expires_at: 2026-08-31T04:15:09Z
+read_set:
+  - BL-002/work-status/STORY-0040.yaml
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+  - BL-004/work-status/STORY-0001.yaml
+  - BL-005/work-status/STORY-0001.yaml
+  - BL-009/work-status/STORY-0001.yaml
+  - BL-008/README.md
+write_set:
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
