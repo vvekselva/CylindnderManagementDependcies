@@ -1,9 +1,9 @@
-version: 39
+version: 40
 backlog_id: BL-002
-updated_at: 2026-08-31T06:14:02+05:30
+updated_at: 2026-08-31T06:15:22+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
-checkpoint_state: CHECKPOINT_RECONCILIATION_IN_PROGRESS
+checkpoint_state: CHECKPOINT_RECONCILED
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -30,10 +30,10 @@ reconciliation:
   source_detail_refined_this_run: []
   blocked_this_run: []
   correction:
-    - Startup detected BL-008 projection drift: prior aggregate stopped at V180-authored while live BL-008 README proves V180 PASS, V181 PASS and V182 authored waiting for clean validation.
-    - BL-002 counts remain unchanged while aggregate projection repair is performed before new dispatch.
-    - No database behavior was invented and ChatGPT database writes remain zero.
-  aggregate_reconciliation_gate: IN_PROGRESS
+    - Startup repaired BL-008 projection drift from V180-authored to the live README state: V180 PASS, V181 PASS, V182 authored waiting for clean validation.
+    - BL-002 counts remain 122 strict, 134 physical, zero pending materialization and zero approvals.
+    - Paired aggregate readback matched on run id, governed metrics and BL-008 current state.
+  aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
