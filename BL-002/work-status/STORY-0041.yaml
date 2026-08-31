@@ -1,12 +1,12 @@
-version: 3
+version: 4
 story_id: STORY-0041
 run_id: CYL-ORCH-20260831T175004+0530
 release: R1
 endpoint: GET /registerCustomer
 frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-updated_at: '2026-08-31T18:13:14+05:30'
+updated_at: '2026-08-31T18:14:15+05:30'
 rework_state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
-business_behavior_state: UI_AND_PAGE_LEVEL_BUSINESS_BEHAVIOR_SOURCE_BOUND_WRITE_PERSISTENCE_PENDING
+business_behavior_state: UI_SELECTOR_AND_CANDIDATE_PERSISTENCE_SERVICE_SOURCE_BOUND_MEDIATOR_LINK_PENDING
 business_behavior_complete: false
 approval: PENDING_USER_APPROVAL
 materialized: true
@@ -38,15 +38,31 @@ source_bound:
     - addressDtos[N].country.countryId
     - addressDtos[N].state.stateId
     - addressDtos[N].city.cityId
+  candidate_write_service:
+    class: CustomerIngestionService
+    status: SOURCE_PRESENT_BUT_UC01_MEDIATOR_TO_SERVICE_BINDING_NOT_YET_PROVED
+    behavior:
+      - invokes customer ingestion validator with UC_001_RESGISTER_CUSTOMER
+      - maps CustomerDto to CustomerDo
+      - resolves submitted City/State/Country IDs with their JPA DAOs
+      - builds CustomerAddressDo relationships
+      - maps phone DTOs and builds CustomerPhoneNumberDo relationships
+      - sets customer address and phone collections
+      - calls CustomerJpaDao.save(customerDo)
+      - returns SUCCESS response code
+    persistence_entities:
+      customer: {table: public.tbl_customer, pk: pk_customer_id, sequence: public.pk_customer_id_serial, gst_unique: true, active_default: true}
+      address: {table: public.tbl_address, pk: pk_address_id, sequence: public.pk_address_id_serial, location_fks: [fk_city, fk_state, fk_country]}
+      customer_address: {table: public.tbl_customer_address, pk: pk_customer_address_id, sequence: public.pk_customer_address_id_serial, fks: [fk_customer, fk_address, fk_address_type]}
+      phone: {table: public.tbl_phone_number, pk: pk_phone_number_id, sequence: public.pk_phone_number_id_serial, phone_unique: true}
+      customer_phone: {table: public.tbl_customer_phone_number, pk: pk_customer_phone_number_id, sequence: public.pk_customer_phone_number_id_serial, fks: [fk_customer, fk_phone_number], unique_pair: true}
 remaining_source_binding:
-  - concrete UC01 mediator implementation
-  - customer ingestion service transaction
-  - DAO/repository write calls
-  - exact customer/address/phone persisted identities and tables/columns
-  - uniqueness and server-side relationship validation implementation
-  - generated identifiers and transaction boundary
-completion_gate: DO_NOT_MARK_BUSINESS_BEHAVIOR_COMPLETE_UNTIL_WRITE_SIDE_PERSISTENCE_EFFECT_IS_SOURCE_BOUND
+  - concrete UC01 mediator implementation or configuration proving invocation of CustomerIngestionService
+  - exact transaction boundary around the mediator/service chain
+  - validator implementation proving server-side cross-reference and required-field rules
+  - verify Address Type relationship propagation from controller DTO into CustomerAddressDo persistence path
+completion_gate: DO_NOT_MARK_BUSINESS_BEHAVIOR_COMPLETE_UNTIL_MEDIATOR_SERVICE_BINDING_AND_RELATIONSHIP_VALIDATION_ARE_SOURCE_PROVED
 database_behavior_invented: false
 application_code_mutation: false
 approval_delta: 0
-next_action: TRACE_UC01_MEDIATOR_SERVICE_DAO_PERSISTENCE_FROM_FROZEN_SOURCE
+next_action: TRACE_UC01_MEDIATOR_BINDING_AND_VALIDATOR_FROM_FROZEN_SOURCE
