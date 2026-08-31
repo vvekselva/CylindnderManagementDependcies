@@ -1,10 +1,13 @@
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4
 work_unit: STORY-0045
 backlog: BL-002
-claim_state: CLAIMED
+claim_state: RELEASED
 claimed_at: "2026-09-01T02:32:00+05:30"
+released_at: "2026-09-01T02:33:45+05:30"
+release_classification: PARTIAL_CONTINUE_REQUIRED
 mode: SAFE_INDEPENDENT
 mutation_scope: DURABLE_EVIDENCE_ONLY
 application_code_mutation: false
 code_drift_implementation_allowed: false
 approval_gate: EXPLICIT_USER_APPROVAL_REQUIRED
+evidence: BL-002/evidence/STORY-0045/20260901T023300-IST-controller-binding.yaml
