@@ -1,12 +1,10 @@
 run_id: CYL-ORCH-20260831T175004+0530
-classification: RECOVERY_CLASSIFICATION_RETRACTED
-valid_terminal_record: false
-retraction_reason: NEWER_DURABLE_HEARTBEAT_PROVED_RUN_STILL_ACTIVE
+classification: ABNORMAL_PROCESS_DISAPPEARANCE
+valid_terminal_record: true
 started_at: '2026-08-31T17:50:04+05:30'
-previously_observed_last_heartbeat_at: '2026-08-31T18:03:23+05:30'
-newer_heartbeat_at: '2026-08-31T18:09:06+05:30'
-recovery_attempt_observed_at: '2026-08-31T18:10:13+05:30'
-retracted_by_run: CYLINDER-PRODUCTION-FIRE-20260831-123813Z
+last_durable_heartbeat_at: '2026-08-31T18:09:06+05:30'
+recovery_observed_at: '2026-08-31T18:33:21+05:30'
+recovered_by_run: CYLINDER-PRODUCTION-FIRE-20260831-130321Z
 eligible_work_remaining: true
-active_claims_at_retraction: 0
-note: The earlier abnormal-disappearance classification was invalidated by newer durable liveness evidence. This file is retained as recovery-audit evidence and must not be treated as a terminal record.
+active_claims_at_recovery: 0
+reason: Heartbeat exceeded governed freshness window and no newer durable heartbeat or valid terminal record existed at recovery observation time.
