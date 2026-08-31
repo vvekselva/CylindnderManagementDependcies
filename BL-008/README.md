@@ -1,107 +1,114 @@
-# BL-008 — Database Migration / Ownership Model Workflow
+# BL-008 — CLOSED
 
-Current governed mode: **ChatGPT authors additive Flyway/source deltas; the user performs clean Flyway migration/validation on a fresh PostgreSQL database and returns consolidated results.** UI/unit/runtime scenarios may be postponed into the governed test backlog and are non-blocking unless explicitly required by an acceptance gate.
+Closure date: **2026-08-31**
 
-## Execution boundary
+Closure status: **CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION**
 
-- Acceptance target: fresh database / normal clean Flyway chain.
-- No legacy cylinder/identifier backfill is required.
-- Historical migrations remain unchanged by default.
-- Delta ZIPs contain changed/new files only and preserve workspace-relative paths.
-- GitHub is durable SSOT/version control only; orchestration execution does not use GitHub runners.
-- No raw/manual SQL substitutes for Flyway execution.
-- No migration is created merely to advance a version number.
+## What is complete
 
-## Current workspace
+All currently required BL-008 Ownership Model database migrations are complete and clean-database validated:
 
-Validated source line through V184 is based on `Harinandhan-Cylinder-Backup(20260830-140843).zip` plus integrated V176–V184 deltas.
+- V174 strict ownership model — PASS
+- V175 supplier-owned asset-count preservation — PASS
+- V176 customer owner/custody consistency — PASS
+- V177 cross-table location exclusivity — PASS
+- V178 external-asset terminal/accounting integrity — PASS
+- V179 company-fleet accounting integrity — PASS
+- V180 ownership identity immutability — PASS
+- V181 identifier authority/replacement integrity — PASS
+- V182 active identifier value uniqueness/history integrity — PASS
+- V183 state-audit history immutability — PASS
+- V184 state-audit chain continuity/serialization — PASS
 
-Validated integrated workspace: `Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179_V180_V181_V182_V183_V184.zip`.
+Accepted migration baseline:
 
-Migration directory: `cylinder.datascripts/src/main/resources/db/migration`.
+`V174 -> V184 = CLEAN_DATABASE_VALIDATED_PASS`
 
-## Governed ownership types
+Active migration gate: **NONE**
 
-- `COMPANY_OWNED`
-- `SUPPLIER_OWNED`
-- `CUSTOMER_OWNED`
+V185: **NOT CREATED / NOT REQUIRED BY CURRENT SOURCE EVIDENCE**
 
-## Accepted clean-database gates
+The post-V184 source trace did not prove another database-boundary requirement.
 
-- **V174** strict ownership model — `BL008_OWNERSHIP_V174_VALIDATION_PASS; failed_checks=0`
-- **V175** supplier-owned asset-count preservation — `BL008_OWNERSHIP_V175_VALIDATION_PASS; failed_checks=0`
-- **V176** customer owner/custody consistency — `BL008_OWNERSHIP_V176_VALIDATION_PASS; failed_checks=0`
-- **V177** cross-table location exclusivity — `BL008_OWNERSHIP_V177_VALIDATION_PASS; failed_checks=0`
-- **V178** external-asset terminal/accounting integrity — `BL008_OWNERSHIP_V178_VALIDATION_PASS; failed_checks=0`
-- **V179** company fleet accounting integrity — `BL008_OWNERSHIP_V179_VALIDATION_PASS; failed_checks=0`
-- **V180** ownership identity immutability — `BL008_OWNERSHIP_V180_VALIDATION_PASS; failed_checks=0`
-- **V181** identifier authority/replacement integrity — `BL008_OWNERSHIP_V181_VALIDATION_PASS; failed_checks=0`
-- **V182** active identifier value uniqueness/history integrity — `BL008_OWNERSHIP_V182_VALIDATION_PASS; failed_checks=0`
-- **V183** state-audit history immutability — `BL008_OWNERSHIP_V183_VALIDATION_PASS; failed_checks=0`
-- **V184** state-audit chain continuity/serialization — `BL008_OWNERSHIP_V184_VALIDATION_PASS; failed_checks=0`
+## Application-side focused test
 
-Evidence is stored under `BL-008/evidence/`, including `20260831-v184-clean-database-validation-pass.md`.
+BL008-TC-001 Location Exclusivity was executed on 2026-08-31 by compiling the production `CylinderLocationExclusivityValidator.java` unchanged with local dependency stubs and running a standalone assertion harness.
 
-## Phase 2 ownership lifecycle status
+Result:
 
-### Location exclusivity — V177 PASS
+`BL008_TC001_STANDALONE_HARNESS_PASS; checks=4; failures=0`
 
-Transaction-end exclusivity is enforced across Yard, Logistics, Customer custody, Supplier custody and Decommissioned state. Runtime hand-off tests remain postponed.
+Evidence:
 
-### Supplier refill identifier exchange — source implemented
+`BL-008/evidence/20260831-tc001-location-exclusivity-standalone-harness-pass.md`
 
-Supplier refill can replace the physical identifier while retaining the same supplier-owned logical cylinder. UI/runtime validation remains postponed.
+This is a focused execution of the real validator logic. It is not represented as a full Maven/Spring/JUnit build because Maven is not available in the execution container.
 
-### Customer ownership/custody — V176 PASS
+## Residual test disposition
 
-CUSTOMER_OWNED cylinders can enter CUSTOMER custody only at their owner customer; supplier refill custody remains allowed without ownership transfer.
+The detailed historical regression catalogue remains in:
 
-### External/company accounting — V178/V179 PASS
+`BL-008/test-case-backlog.csv`
 
-External and company accounting boundaries, terminal idempotence, serialized company-fleet running totals and ownership-scoped integrity views are validated.
+The authoritative closure disposition is:
 
-### Ownership identity — V180 PASS
+`BL-008/test-case-closure-disposition.csv`
 
-Post-registration ownership type/owner identity is immutable and governed ownership-master semantics are protected.
+At BL-008 closure:
 
-### Identifier authority/history — V181/V182 PASS
+- **BL008-TC-001** — `PASS_FOCUSED_STANDALONE_HARNESS`
+- **BL008-TC-016** — `DEFERRED_UNTIL_WORKFLOW_EXISTS` because no governed `CUSTOMER_ASSET_CLOSED` producer exists in the current source.
+- **BL008-TC-002 through TC-015 and TC-017 through TC-035** — `TRANSFERRED_TO_CONSOLIDATED_REGRESSION_BACKLOG`.
 
-The database enforces ownership-specific serial compatibility, exactly one active primary identifier per logical cylinder at transaction end, same-cylinder replacement history, append-only replacement events, normalized global active-primary value uniqueness, nonblank values, valid active/history windows and immutable identifier-history identity fields.
+The transferred cases are UI/runtime/DB-runtime/concurrency validation scenarios. They were already classified `blocking=NO`. They are **not** being falsely represented as executed or passed.
 
-### State-audit history / chain — V183/V184 PASS
+If a transferred regression test later exposes a defect, BL-008 may be reopened with that concrete evidence.
 
-The authoritative lifecycle audit stream is append-only after INSERT; event identity cannot be rewritten or deleted; remarks-only correction remains allowed. Non-legacy lifecycle audit INSERTs are serialized per logical cylinder and later rows must continue from the immediately preceding audit new-state. First-row NULL/same-state initialization and legacy-import compatibility are preserved.
+## Closure meaning
 
-## Post-V184 source trace
+BL-008 is closed because:
 
-No additional database migration requirement was proved in the immediate post-V184 trace, so **V185 is not created**.
+1. all source-proved ownership database changes were implemented;
+2. every required migration through V184 passed clean-database validation;
+3. post-V184 source analysis proved no further migration requirement;
+4. the immediately executable focused application location-exclusivity behavior passed;
+5. remaining non-blocking runtime tests have an explicit post-closure disposition rather than remaining as an indefinite active gate.
 
-A dormant/test fleet-dashboard source path still contains a direct `tbl_cylinder_current_status` state-breakdown query, but both its controller and service activation annotations are disabled. It is therefore source-cleanup/test-backlog material rather than a clean-migration blocker. The authoritative V179 company-fleet summary view remains validated.
+`CLOSED` does **not** mean that every possible UI/runtime test has been executed.
 
-## Test policy / backlog
+## Final workspace
 
-`BL-008/test-case-backlog.csv` contains **35 non-blocking cases**:
+Validated integrated workspace:
 
-- 1 `PENDING_EXECUTION`: BL008-TC-001 focused location-exclusivity unit test.
-- 1 `PLANNED`: BL008-TC-016 reserved CUSTOMER_ASSET_CLOSED case, pending a governed CLOSED producer.
-- 33 `POSTPONED_BY_USER`: UI/runtime/DB-runtime/concurrency cases for the accepted ownership rules.
+`Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179_V180_V181_V182_V183_V184.zip`
 
-All backlog cases have `blocking=NO`.
+Migration directory:
 
-## Current state
+`cylinder.datascripts/src/main/resources/db/migration`
 
-- Ownership Model Migration: **V174–V184 CLEAN_DATABASE_VALIDATED_PASS**
-- Active clean-migration gate: **NONE**
-- V185: **NOT CREATED — NO SOURCE-PROVED DATABASE GAP**
-- Target database validation: **COMPLETE THROUGH V184**
-- UI/runtime test backlog: **35 NON-BLOCKING CASES**
-- Next executable backlog item: **BL008-TC-001 Location Exclusivity UNIT**
-- Database writes by ChatGPT: **0**
+## Closure evidence
 
-## Next action
+- `BL-008/evidence/20260831-v174-clean-database-validation-pass.md`
+- `BL-008/evidence/20260830-v175-clean-database-validation-pass.md`
+- `BL-008/evidence/20260830-v176-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-v177-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-v178-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-v179-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-v180-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-v181-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-v182-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-v183-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-v184-clean-database-validation-pass.md`
+- `BL-008/evidence/20260831-tc001-location-exclusivity-standalone-harness-pass.md`
+- `BL-008/closure/20260831-bl008-closure.md`
 
-1. Keep V174–V184 frozen as the accepted clean-migration line.
-2. Execute `BL008-TC-001` in a normal Maven/Eclipse-capable environment when available.
-3. Keep the 33 explicitly postponed UI/runtime/DB-runtime cases deferred until the consolidated test phase.
-4. Do not create V185 unless a new source-proved database requirement is identified.
-5. After the unit/runtime backlog is accepted, close the Ownership Model phase and advance BL-008 to the next governed backlog work item.
+## Reopen conditions
+
+Reopen BL-008 only when concrete evidence proves one of the following:
+
+- a transferred runtime/regression case exposes a defect in accepted BL-008 behavior;
+- a new governed ownership requirement is approved;
+- a future `CUSTOMER_ASSET_CLOSED` workflow requires accounting/schema changes;
+- a new source trace proves a database-boundary gap not covered by V174-V184.
+
+Otherwise, continue with the next governed backlog item.
