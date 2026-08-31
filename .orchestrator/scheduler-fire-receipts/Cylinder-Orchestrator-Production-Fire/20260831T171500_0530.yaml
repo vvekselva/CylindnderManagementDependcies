@@ -6,5 +6,7 @@ status: ORCHESTRATOR_STARTED
 handoff_status: RUN_LINKED
 intended_scope: CONTINUOUS
 run_id: CYL-20260831T171739-0530
+live_run_path: .orchestrator/live-run.yaml
+event_stream_path: .orchestrator/runs/CYL-20260831T171739-0530/events.ndjson
 terminal_classification: null
 termination_time: null
