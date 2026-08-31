@@ -2,10 +2,12 @@ claim_id: STORY-0041-CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
 backlog: BL-002
 work_unit_id: STORY-0041_BUSINESS_BEHAVIOR_REWORK
-status: ACTIVE
+status: RELEASED_RUNTIME_BOUNDARY
 acquired_at: '2026-08-31T22:04:34+05:30'
 heartbeat_at: '2026-08-31T22:12:38+05:30'
 lease_expires_at: '2026-08-31T22:27:38+05:30'
+released_at: '2026-08-31T22:13:54+05:30'
+release_reason: INVOCATION_RUNTIME_BOUNDARY_WORK_REMAINS_RESUMABLE
 read_set:
   - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
   - BL-002/stories/STORY-0041.md
@@ -13,3 +15,5 @@ read_set:
 write_set:
   - BL-002/work-status/STORY-0041.yaml
   - BL-002/evidence/STORY-0041/
+last_durable_evidence: BL-002/evidence/STORY-0041/20260831T221238+0530-source-binding-research.yaml
+next_action: TRACE_CONCRETE_UC01_MEDIATOR_BEAN_TRANSACTION_AND_VALIDATOR_FROM_FROZEN_SOURCE
