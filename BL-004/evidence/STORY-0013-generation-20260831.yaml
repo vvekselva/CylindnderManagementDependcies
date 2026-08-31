@@ -1,0 +1,26 @@
+story_id: STORY-0013
+backlog: BL-004
+run_id: CYL-ORCH-20260831T175004+0530
+generated_at: '2026-08-31T18:03:23+05:30'
+source_story: BL-002/stories/STORY-0013.md
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+approval_state: APPROVED_AFTER_REWORK
+code_conformance_state: CODE_CONFORMANCE_VERIFIED_PASS
+outputs:
+  plan: BL-004/stories/STORY-0013.md
+  junit_source: BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServiceTest.java
+scenarios_generated: 5
+source_binding:
+  service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+  dao: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ChallanBookRegistryJpaDao.java
+  entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/ChallanBookRegistryDo.java
+execution:
+  state: NOT_EXECUTED
+  pass: 0
+  fail: 0
+  blocker: MISSING_MAVEN_JUNIT5_MOCKITO_RUNTIME_DEPENDENCIES
+coverage:
+  jacoco_line: NOT_EXECUTED
+  jacoco_branch: NOT_EXECUTED
+application_code_mutation: false
+result: GENERATED_SOURCE_BOUND_RUNTIME_EXECUTION_PENDING
