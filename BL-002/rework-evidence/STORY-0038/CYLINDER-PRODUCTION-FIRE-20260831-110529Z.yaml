@@ -1,0 +1,19 @@
+version: 1
+story_id: STORY-0038
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
+completed_at: 2026-08-31T11:20:12Z
+result: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+approval_delta: 0
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+persistence:
+  transaction: OrderIngestionService.processRequest @Transactional
+  header_table: public.tbl_order
+  line_table: public.tbl_order_line
+current_source_gaps:
+  - Browser initializes Challan Date to today while server requires a date strictly before today.
+  - Cylinder existence validation uses an unsafe cylinderIdNull guard.
+  - Explicit cylinder-state-transition service is commented only and does not execute.
+  - CylinderManagementApplicationException is swallowed by the mediator before SUCCESS response code is set.
+code_mutation_performed: false
+bl010_created_or_executed: false
+user_drift_approval_required_before_future_code_mutation: true
