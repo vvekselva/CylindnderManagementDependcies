@@ -1,0 +1,18 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-233211-IST-II
+scheduler_task: Cylinder Production Fire - ii
+scheduler_fire_id: 20260831T233211-IST
+state: TERMINATED
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+termination_time: 2026-08-31T23:33:05+05:30
+reason: another primary orchestrator run has durable RUNNING state and no terminal record after repeated liveness revalidation
+active_primary_run_id: CYLINDER-PRODUCTION-FIRE-20260831-232655-IST
+active_primary_started_at: 2026-08-31T23:26:55+05:30
+active_primary_last_heartbeat_at: 2026-08-31T23:27:53+05:30
+backlog_mutation_performed: false
+claims_created: 0
+application_code_mutation: false
+bl_010_execution: false
+story_approval_delta: 0
+github_actions_or_runners_used: false
+eligible_work_remaining: true
+scheduler_disable_action: false
