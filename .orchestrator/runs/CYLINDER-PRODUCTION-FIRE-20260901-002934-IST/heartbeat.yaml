@@ -1,0 +1,9 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-002934-IST
+state: RUNNING
+mode: CONTINUOUS
+started_at: '2026-09-01T00:29:34+05:30'
+last_heartbeat_at: '2026-09-01T00:33:30+05:30'
+loop_iteration: 1
+active_work_unit_ids: [STORY-0041, STORY-0046]
+eligible_work_remaining: true
+last_action: FROZEN_SOURCE_BINDING_SEARCH_INDEX_LIMITATION_RECORDED_FAIL_CLOSED
