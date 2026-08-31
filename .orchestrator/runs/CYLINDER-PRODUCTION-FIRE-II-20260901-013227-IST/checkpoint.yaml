@@ -1,0 +1,25 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-013227-IST
+checkpoint_at: '2026-09-01T01:36:43+05:30'
+mode: CONTINUOUS
+aggregate:
+  bl002_business_behavior_complete: 21
+  bl002_total: 134
+  bl002_percentage: 15.7
+  awaiting_user_review: 19
+  approved_or_reapproved: 2
+  rework_remaining: 113
+projection_reconciliation:
+  aggregate_current: true
+  stale_queue_rows_pending: [STORY-0041, STORY-0042, STORY-0046]
+  queue_rewrite_deferred_reason: full authoritative CSV could not be safely reconstructed from partial retrieval; no destructive partial rewrite performed
+work_units:
+  STORY-0045:
+    result: PARTIAL_CONTINUE_REQUIRED
+    evidence: BL-002/evidence/STORY-0045-source-resolution-20260901-013227.yaml
+active_claim_count: 0
+eligible_work_remaining: true
+next_action: Reconcile stale queue projection when full authoritative queue is safely retrievable, then continue STORY-0045 exact /displayCustomer source binding or dispatch another dependency-safe Release-1 story.
+approvals_delta: 0
+application_code_mutation_delta: 0
+bl010_execution_delta: 0
+github_actions_or_runners_used: false
