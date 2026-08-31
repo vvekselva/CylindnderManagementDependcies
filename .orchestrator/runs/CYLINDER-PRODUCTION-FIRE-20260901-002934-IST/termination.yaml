@@ -1,0 +1,14 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-002934-IST
+state: TERMINATED
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: PLATFORM_RUNTIME_FORCED_STOP_WITH_RESUMABLE_ELIGIBLE_WORK
+started_at: '2026-09-01T00:29:34+05:30'
+terminated_at: '2026-09-01T00:34:00+05:30'
+elapsed_seconds: 266
+eligible_work_remaining: true
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-002934-IST/checkpoint.yaml
+active_claims_at_termination: []
+approvals_delta: 0
+application_code_mutations: 0
+bl010_execution_delta: 0
+github_actions_or_runners_used: false
