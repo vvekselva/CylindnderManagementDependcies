@@ -1,16 +1,16 @@
-version: 1
+version: 2
 story_id: STORY-0016
 release: R1
 canonical_register_endpoint: GET /challan-page-photo/{challanPagePhotoId}
 canonical_functional_area: Challan Monitoring
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework:
-  state: REWORK_BLOCKED_SOURCE_DETAIL_REVIEW_REQUIRED
-  business_behavior_complete: false
-  selector_ux_reviewed: false
+  state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+  business_behavior_complete: true
+  selector_ux_reviewed: true
   search_conversion_required: false
   dependent_selector_rework_required: false
-  needs_clarification: true
+  needs_clarification: false
 identity_drift:
   detected: true
   repaired: true
@@ -18,18 +18,30 @@ identity_drift:
   repaired_physical_story_identity: GET /challan-page-photo/{challanPagePhotoId}
   rule: CANONICAL_REGISTER_WINS
 source_binding:
-  exact_route_search_attempted: true
-  github_code_search_total_count: 0
-  github_code_search_incomplete_results: true
-  exact_controller_bound: false
-  exact_service_bound: false
-  exact_storage_or_database_identity_bound: false
-  source_detail_gap: Exact canonical photo route did not resolve through accessible search evidence; incomplete search cannot prove absence, so no substitute source path is invented.
+  exact_controller_bound: true
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanPagePhotoController.java
+  controller_method: retrieveChallanPagePhoto(challanPagePhotoId)
+  exact_dao_bound: true
+  dao: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ChallanPagePhotoJpaDao.java
+  exact_entity_bound: true
+  entity: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/ChallanPagePhotoDo.java
+  exact_database_read_identity_bound: true
+  table: public.tbl_challan_page_photo
+  primary_key: pk_challan_page_photo_id
+proved_behavior:
+  inactive_or_missing: HTTP_404
+  active: HTTP_200_BINARY_INLINE
+  content_type: PERSISTED_CONTENT_TYPE
+  content_disposition: INLINE
+  fallback_filename: challan-page-photo
+  binary_column: photo_data_bytea
+  mutation_on_get: false
+  transaction: READ_ONLY
+  explicit_controller_authorization_check: false
 approval:
   state: NOT_APPROVED
   explicit_user_approval_required_after_rework: true
   auto_approved: false
 next_actions:
-  - resolve exact frozen source for GET /challan-page-photo/{challanPagePhotoId} from complete source-tree proof
-  - trace path-variable validation, photo lookup/storage identity, response headers/body and error branches
-  - if complete frozen-tree proof establishes absence, classify source-integrity gap
+  - user_review_of_reworked_story
+  - after_explicit_approval_only_fan_out_revised_BL004_BL005_BL009
