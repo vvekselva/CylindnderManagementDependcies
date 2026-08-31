@@ -1,4 +1,4 @@
-version: 2
+version: 3
 name: APPROVED_STORY_TESTING_FANOUT
 status: ACTIVE
 source_backlog: BL-002
@@ -8,14 +8,14 @@ approval_gate:
   auto_approval: forbidden
 fanout:
   BL-004:
-    purpose: JUNIT_UNIT_TEST_GENERATION_AND_EXECUTION
+    purpose: JUNIT_UNIT_TEST_GENERATION_EXECUTION_AND_COVERAGE
     framework: JUNIT_5
     required_outputs:
       - BL-004/stories/<story-id>.md
       - BL-004/generated-tests/<story-id>/*Test.java
       - BL-004/unit-test-task-queue.csv
   BL-005:
-    purpose: JUNIT_TESTCONTAINERS_INTEGRATION_TEST_CREATION_AND_EXECUTION
+    purpose: JUNIT_TESTCONTAINERS_INTEGRATION_TEST_CREATION_EXECUTION_AND_COVERAGE
     framework: JUNIT_5
     integration_runtime: POSTGRESQL_TESTCONTAINERS
     required_outputs:
@@ -23,12 +23,25 @@ fanout:
       - BL-005/generated-tests/<story-id>/*IntegrationTest.java
       - BL-005/integration-test-task-queue.csv
   BL-009:
-    purpose: HUMAN_READABLE_TEST_CASES_TEST_DATA_AND_LIVE_VALIDATION
+    purpose: HUMAN_READABLE_TEST_CASES_TEST_DATA_EXECUTABLE_TEST_CODE_AND_LIVE_VALIDATION
+    framework: JUNIT_5
     required_outputs:
       - BL-009/stories/<story-id>.md
       - BL-009/test-data/<story-id>.csv
       - BL-009/test-data/<story-id>.md
+      - BL-009/generated-tests/<story-id>/*Test.java
       - BL-009/test-case-task-queue.csv
+    executable_test_contract:
+      every_test_case_requires_code_mapping: true
+      every_test_data_row_requires_code_consumption: true
+      parameterized_data_driven_tests_preferred: true
+      generated_code_is_not_behavior_pass: true
+      exact_frozen_source_binding_required_for_application_behavior_pass: true
+      test_layers_allowed: [BL-004_UNIT, BL-005_INTEGRATION, BL-009_RUNTIME_OR_UI]
+      no_documentation_only_completion: true
+      execution_evidence_required_for_pass: true
+      uncovered_or_unexecutable_case_requires_durable_blocker_or_justified_exclusion: true
+      coverage_link_required: true
     test_data_format_contract:
       csv_is_machine_readable_source: true
       human_readable_companion_required: true
@@ -43,7 +56,15 @@ fanout:
       data_id_parity_with_csv_required: true
       semantic_value_parity_with_csv_required: true
       secrets_rule: runtime_secret_placeholders_may_be_shown_but_real_secrets_must_not_be_persisted
-      acceptance_rule: BL-009 test-data generation is incomplete until both CSV and human-readable companion exist and the human-readable table contains the applicable test data values.
+      acceptance_rule: BL-009 test-data generation is incomplete until CSV, human-readable companion and executable code mapping exist for every applicable row.
+coverage:
+  tool: JACOCO
+  actual_execution_only: true
+  required_metrics: [line, branch]
+  optional_metrics: [instruction, method, class]
+  track_separately: [UNIT, INTEGRATION, COMBINED]
+  uncovered_story_behavior_requires: TEST_REFINEMENT_OR_DURABLE_JUSTIFICATION
+  never_infer_coverage_from_generated_code: true
 orchestrator_rule:
   startup:
     - read_this_policy
@@ -51,32 +72,42 @@ orchestrator_rule:
     - diff_approved_story_ids_against_BL-004_BL-005_BL-009
     - materialize_missing_downstream_artifacts_idempotently
     - verify_BL-009_csv_and_human_readable_test_data_parity
+    - verify_every_BL-009_test_case_and_test_data_row_has_executable_code_mapping
   selection_priority:
     - approval_projection_reconciliation
     - missing_approved_story_fanout_artifacts
     - incomplete_BL-009_human_readable_test_data
+    - missing_BL-009_executable_test_code
     - executable_BL-004_unit_tests
     - executable_BL-005_testcontainers_tests
-    - BL-009_test_case_test_data_validation
+    - executable_BL-009_data_driven_or_runtime_tests
+    - coverage_gap_test_refinement
+    - BL-009_live_test_data_validation
     - other_eligible_story_enrichment
   execution:
     github_actions: forbidden
     github_runner: forbidden
     chatgpt_side_only: true
+    substitutions_allowed_when_behaviorally_equivalent_and_explicitly_recorded: true
     generated_test_is_not_execution_pass: true
-    exact_frozen_source_binding_required_before_execution: true
+    exact_frozen_source_binding_required_before_application_behavior_pass: true
     persist_unit_local_test_evidence_immediately: true
 watchdog_reporting:
   required: true
   fields:
     - approved_story_count
     - approved_story_ids
-    - BL-004_queued_generated_executed_pass_failed
-    - BL-005_queued_generated_executed_pass_failed
+    - BL-004_queued_generated_executed_pass_failed_and_coverage
+    - BL-005_queued_generated_executed_pass_failed_and_coverage
     - BL-009_test_catalogues_count
     - BL-009_test_data_count
     - BL-009_human_readable_test_data_count
+    - BL-009_executable_test_code_count
+    - BL-009_test_case_code_mapping_state
+    - BL-009_test_data_row_code_mapping_state
+    - BL-009_code_executed_pass_failed
     - BL-009_test_data_table_parity_state
+    - combined_coverage_and_uncovered_story_branches
     - live_validation_pending_pass_failed
     - per_approved_story_next_action
     - aggregate_drift_state
