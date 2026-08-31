@@ -2,11 +2,13 @@ scheduler_task: Cylinder Production Fire - i
 fire_id: 20260901T000114+0530
 observed_scheduled_fire_time: '2026-09-01T00:01:14+05:30'
 receipt_time: '2026-09-01T00:01:14+05:30'
-state: TERMINATED
+state: RUN_LINKED
 intended_scope:
   mode: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
 orchestrator_state: ORCHESTRATOR_STARTED
 run_linked_at: '2026-09-01T00:01:14+05:30'
-terminal_classification: CONTROL_PLANE_WRITE_UNAVAILABLE
-termination_time: '2026-09-01T00:02:17+05:30'
+reconciled_at: '2026-09-01T00:02:17+05:30'
+recovery_note: transient live-run write failure recovered within the same invocation; prior temporary terminal projection superseded
+terminal_classification: null
+termination_time: null
