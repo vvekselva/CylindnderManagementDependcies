@@ -1,0 +1,15 @@
+claim_id: 20260831-075328-DEV-0001
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
+status: ACTIVE
+claimed_at: 2026-08-31T07:53:28Z
+heartbeat_at: 2026-08-31T07:53:28Z
+lease_expires_at: 2026-08-31T08:08:28Z
+work_unit: BL-010/DEV-0001
+story_id: STORY-0054
+read_set:
+  - BL-002/stories/STORY-0054.md
+  - BL-010/README.md
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+write_set:
+  - BL-010/evidence/DEV-0001-source-binding.md
+purpose: Bind exact reusable Customer, customer-address and Product search services plus Walk-in browser behavior before implementation.
