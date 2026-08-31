@@ -1,8 +1,8 @@
-version: 71
+version: 72
 backlog_id: BL-002
-updated_at: 2026-08-31T17:56:14+05:30
+updated_at: 2026-08-31T18:00:05+05:30
 updated_by: Primary Cylinder Automation Tool
-checkpoint_state: CHECKPOINT_RECONCILED_STARTUP_QUEUE_AND_LIFECYCLE_RECOVERY
+checkpoint_state: CHECKPOINT_RECONCILED_BL009_STORY0013_GENERATED_MAPPED
 scope:
   total_stories: 134
   r1_stories: 88
@@ -71,22 +71,25 @@ approved_story_testing:
   post_approval_code_conformance_pending_ids: []
   post_approval_code_conformance_pass_ids: [STORY-0001, STORY-0013]
   revised_fanout_eligible_ids: [STORY-0001, STORY-0013]
-  BL-004: {queued: 2, revised_execution_eligible: 2, status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED, coverage: NOT_EXECUTED_REVISED_CONTRACT}
-  BL-005: {queued: 2, revised_execution_eligible: 2, status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  BL-004: {queued: 2, revised_execution_eligible: 2, generated_current_contract: 1, status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  BL-005: {queued: 2, revised_execution_eligible: 2, generated_current_contract: 1, status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED, coverage: NOT_EXECUTED_REVISED_CONTRACT}
   BL-009:
     queued: 2
-    historical_catalogues: 1
-    historical_test_data_sets: 1
-    historical_human_readable_test_data: 1
-    historical_executable_test_code: 1
+    catalogues_present: 2
+    machine_test_data_present: 2
+    human_readable_test_data_present: 2
+    executable_test_code_present: 2
+    current_contract_generated_mapped_ids: [STORY-0013]
     historical_data_contract_rows_pass: 7
     historical_data_contract_rows_fail: 0
     revised_application_behavior_executed: 0
     revised_application_behavior_pass: 0
     revised_application_behavior_fail: 0
     revised_coverage: NOT_EXECUTED
-    status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED
-  runtime_blocker: MISSING_MAVEN_JUNIT5_MOCKITO_RUNTIME_DEPENDENCIES
+    status: FANOUT_ELIGIBLE_GENERATED_MAPPING_RUNTIME_EXECUTION_BLOCKED
+  runtime_blocker: MISSING_MAVEN_JUNIT5_MOCKITO_AND_CONTAINER_RUNTIME_DEPENDENCIES
+  runtime_probe_at: 2026-08-31T17:59:21+05:30
+  runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING, local_junit_mockito_cache: MISSING}
   jacoco_unit_line: NOT_EXECUTED
   jacoco_unit_branch: NOT_EXECUTED
   jacoco_integration_line: NOT_EXECUTED
@@ -117,7 +120,7 @@ cursor:
   next_unstarted_dependency_safe_r1_unit: STORY-0045
   priority_development_unit: null
   next_development_action: NONE_WITHOUT_DRIFT_APPROVED_FOR_CODE_CHANGE
-  next_testing_action: FANOUT_MAINTENANCE_ALLOWED_BUT_RUNTIME_EXECUTION_BLOCKED
+  next_testing_action: GENERATE_BL004_AND_BL005_STORY0013_THEN_RECONCILE_STORY0001_ARTIFACTS
 approval_policy:
   auto_approve: false
   explicit_user_approval_required: true
