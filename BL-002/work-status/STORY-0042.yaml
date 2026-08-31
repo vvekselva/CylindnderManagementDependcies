@@ -1,0 +1,26 @@
+story_id: STORY-0042
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
+release: R1
+endpoint: POST /registerCustomer
+status: SOURCE_DETAIL_REVIEW_REQUIRED
+strict_field_ui_complete: false
+approval: PENDING_USER_APPROVAL
+materialized: true
+refined_at: 2026-08-31T06:17:57+05:30
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+proved:
+  - exact POST endpoint and ModelAttribute request binding
+  - customer/address/phone/addressTypeIds request structure
+  - visible Customer Name and GST bindings plus GST browser uppercase/max-length behavior
+  - address-type id to AddressTypeDto cache resolution branches
+  - UC01 mediator invocation boundary
+  - InvalidInputParameterException customer-ingestion re-render branch
+  - success redirect behavior
+remaining_gap:
+  - concrete UC01 mediator implementation unavailable in frozen source evidence
+  - downstream customer-ingestion service implementation unresolved
+  - DAO/repository/entity/table/column write identities unresolved
+  - exact uniqueness query, transaction and persistent side effects unresolved
+strict_promotion_withheld_reason: downstream_write_contract_not_source_proved
+database_behavior_invented: false
+approval_delta: 0
