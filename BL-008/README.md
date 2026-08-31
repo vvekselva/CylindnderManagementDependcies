@@ -1,114 +1,97 @@
-# BL-008 — CLOSED
+# BL-008 — REOPENED FOR FINAL DATABASE HARMONY
 
-Closure date: **2026-08-31**
+Date: **2026-08-31**
 
-Closure status: **CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION**
+Current status: **V185 AUTHORED / WAITING_FOR_CLEAN_VALIDATION**
 
-## What is complete
+## Why BL-008 was reopened
 
-All currently required BL-008 Ownership Model database migrations are complete and clean-database validated:
+After the earlier V184 closure, the business model was clarified further. The core V144 architecture was already correct: `tbl_cylinder` is the stable transaction/lifecycle identity; yard, logistics, custody, orders and pickups use only `fk_cylinder`; current/historical physical markings are resolved through `tbl_cylinder_identifier` and views.
 
-- V174 strict ownership model — PASS
-- V175 supplier-owned asset-count preservation — PASS
-- V176 customer owner/custody consistency — PASS
-- V177 cross-table location exclusivity — PASS
-- V178 external-asset terminal/accounting integrity — PASS
-- V179 company-fleet accounting integrity — PASS
-- V180 ownership identity immutability — PASS
-- V181 identifier authority/replacement integrity — PASS
-- V182 active identifier value uniqueness/history integrity — PASS
-- V183 state-audit history immutability — PASS
-- V184 state-audit chain continuity/serialization — PASS
+Four later assumptions were too restrictive and are corrected by V185:
 
-Accepted migration baseline:
+1. CUSTOMER_OWNED custody does **not** have to equal the permanent owner customer. The physical cylinder may be held by another customer; custody must record the holder/history.
+2. COMPANY_OWNED has no logical/physical split. `tbl_cylinder.cylinder_serial` is itself the company physical identity; a separate active-primary physical identifier is not required.
+3. CUSTOMER_OWNED physical LOST/DECOMMISSIONED is not automatic logical-asset closure. External physical condition events are count-neutral; only explicit logical relationship closure reduces the customer active logical balance.
+4. Physical replacement party is the actual current custodian/refill party, not necessarily the permanent owner. Replacement history now retains custody evidence.
 
-`V174 -> V184 = CLEAN_DATABASE_VALIDATED_PASS`
+## Accepted historical migration line
 
-Active migration gate: **NONE**
+The following remain immutable and previously clean-database validated PASS:
 
-V185: **NOT CREATED / NOT REQUIRED BY CURRENT SOURCE EVIDENCE**
+- V174 strict ownership model
+- V175 supplier logical asset-count preservation
+- V176 customer custody boundary (owner-equality semantics superseded by V185)
+- V177 cross-table location exclusivity
+- V178 external accounting (terminal-shrink semantics superseded by V185)
+- V179 company fleet accounting
+- V180 ownership identity immutability
+- V181 identifier authority/replacement integrity (universal exact-one/owner-context semantics superseded by V185)
+- V182 identifier value/history integrity
+- V183 state-audit history immutability
+- V184 state-audit chain continuity/serialization
 
-The post-V184 source trace did not prove another database-boundary requirement.
+`V174 -> V184 = HISTORICAL CLEAN_DATABASE_VALIDATED_PASS`
 
-## Application-side focused test
+## V185 final governed model
 
-BL008-TC-001 Location Exclusivity was executed on 2026-08-31 by compiling the production `CylinderLocationExclusivityValidator.java` unchanged with local dependency stubs and running a standalone assertion harness.
+### Transaction identity
 
-Result:
+All business/operational relations continue using only the logical `tbl_cylinder.pk_cylinder_id` (`fk_cylinder`). Physical identifier values are not transaction foreign keys.
 
-`BL008_TC001_STANDALONE_HARNESS_PASS; checks=4; failures=0`
+### Company-owned
 
-Evidence:
+- No logical/physical separation.
+- `cylinder_serial` is the company cylinder identity displayed and transacted.
+- Expected separate active-primary physical identifiers: **0**.
 
-`BL-008/evidence/20260831-tc001-location-exclusivity-standalone-harness-pass.md`
+### Supplier/customer-owned
 
-This is a focused execution of the real validator logic. It is not represented as a full Maven/Spring/JUnit build because Maven is not available in the execution container.
+- `tbl_cylinder` = stable logical asset.
+- `tbl_cylinder_identifier` = current/historical physical markings.
+- `ASSIGNED` = exactly one active-primary physical ID.
+- `AWAITING_REPLACEMENT` = zero active-primary physical IDs and no active physical location/custody.
+- `CLOSED` = zero active-primary physical IDs; final custody remains only with permanent owner; no further operational use.
 
-## Residual test disposition
+### Custody
 
-The detailed historical regression catalogue remains in:
+Ownership and custody are separate. CUSTOMER_OWNED may be held by owner customer or another customer. Supplier/customer replacement uses the actual custody row valid at replacement time.
 
-`BL-008/test-case-backlog.csv`
+### Physical condition/accounting
 
-The authoritative closure disposition is:
+External DAMAGED/LOST/DECOMMISSIONED events are logical-count neutral. LOST/DECOMMISSIONED retire the current physical marking and put the logical asset into `AWAITING_REPLACEMENT`. Explicit `CUSTOMER_ASSET_CLOSED` alone contributes `-1` to the customer logical active-asset balance. Supplier close remains count-neutral under the governed supplier logical-count model.
 
-`BL-008/test-case-closure-disposition.csv`
+### Recovery
 
-At BL-008 closure:
+Company terminal states remain terminal. Supplier/customer logical assets may recover from physical DAMAGED/LOST/DECOMMISSIONED only after a usable physical ID is assigned; service/location rules determine the exact operational recovery flow.
 
-- **BL008-TC-001** — `PASS_FOCUSED_STANDALONE_HARNESS`
-- **BL008-TC-016** — `DEFERRED_UNTIL_WORKFLOW_EXISTS` because no governed `CUSTOMER_ASSET_CLOSED` producer exists in the current source.
-- **BL008-TC-002 through TC-015 and TC-017 through TC-035** — `TRANSFERRED_TO_CONSOLIDATED_REGRESSION_BACKLOG`.
+### Display
 
-The transferred cases are UI/runtime/DB-runtime/concurrency validation scenarios. They were already classified `blocking=NO`. They are **not** being falsely represented as executed or passed.
+- Company: `COMP-00125`
+- Supplier: `LS-00100 / SUP-7788`
+- Customer: `LC-00025 / CUST-250`
 
-If a transferred regression test later exposes a defect, BL-008 may be reopened with that concrete evidence.
+The logical ID remains the transaction key even when the physical ID is displayed alongside it.
 
-## Closure meaning
+## Current database gate
 
-BL-008 is closed because:
+Migration: `V185__Align_External_Logical_Physical_Asset_Model.sql`
 
-1. all source-proved ownership database changes were implemented;
-2. every required migration through V184 passed clean-database validation;
-3. post-V184 source analysis proved no further migration requirement;
-4. the immediately executable focused application location-exclusivity behavior passed;
-5. remaining non-blocking runtime tests have an explicit post-closure disposition rather than remaining as an indefinite active gate.
+Validator: `BL008_Ownership_V185_Final_Harmony_Validation.sql`
 
-`CLOSED` does **not** mean that every possible UI/runtime test has been executed.
+Expected final line:
 
-## Final workspace
+`BL008_V185_FINAL_DATABASE_HARMONY_PASS; failed_checks=0`
 
-Validated integrated workspace:
+**Database freeze is not declared until V185 returns that clean PASS.**
 
-`Harinandhan-Cylinder-Backup(20260830-140843)_WITH_V176_V177_V178_V179_V180_V181_V182_V183_V184.zip`
+## After V185 PASS
 
-Migration directory:
+1. Freeze the database migration line at V185.
+2. Do not create V186 unless a new approved requirement proves a database defect.
+3. Correct service code to preserve logical IDs internally, remove separate company physical-ID creation, and use current-custodian replacement semantics.
+4. Correct UI/search output to show logical + physical IDs for external cylinders and only one ID for company cylinders.
+5. Execute service, DB-runtime and UI regression cases against the frozen database.
+6. Close BL-008 only after those service/UI corrections and acceptance tests are completed.
 
-`cylinder.datascripts/src/main/resources/db/migration`
-
-## Closure evidence
-
-- `BL-008/evidence/20260831-v174-clean-database-validation-pass.md`
-- `BL-008/evidence/20260830-v175-clean-database-validation-pass.md`
-- `BL-008/evidence/20260830-v176-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-v177-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-v178-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-v179-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-v180-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-v181-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-v182-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-v183-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-v184-clean-database-validation-pass.md`
-- `BL-008/evidence/20260831-tc001-location-exclusivity-standalone-harness-pass.md`
-- `BL-008/closure/20260831-bl008-closure.md`
-
-## Reopen conditions
-
-Reopen BL-008 only when concrete evidence proves one of the following:
-
-- a transferred runtime/regression case exposes a defect in accepted BL-008 behavior;
-- a new governed ownership requirement is approved;
-- a future `CUSTOMER_ASSET_CLOSED` workflow requires accounting/schema changes;
-- a new source trace proves a database-boundary gap not covered by V174-V184.
-
-Otherwise, continue with the next governed backlog item.
+Evidence: `BL-008/evidence/20260831-v185-final-business-model-alignment-authored.md`.
