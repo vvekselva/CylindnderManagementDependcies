@@ -2,10 +2,11 @@ claim_id: CYL-ORCH-20260831T175004+0530-STORY-0013
 run_id: CYL-ORCH-20260831T175004+0530
 backlog: BL-009
 work_unit: STORY-0013_FANOUT_GENERATION
-status: ACTIVE
+status: RELEASED
 claimed_at: '2026-08-31T17:56:56+05:30'
-heartbeat_at: '2026-08-31T17:56:56+05:30'
+heartbeat_at: '2026-08-31T17:59:21+05:30'
 lease_expires_at: '2026-08-31T18:11:56+05:30'
+released_at: '2026-08-31T17:59:21+05:30'
 read_set:
   - BL-002/stories/STORY-0013.md
   - BL-002/work-status/STORY-0013.yaml
@@ -21,4 +22,5 @@ write_set:
 dependencies:
   story_approval: APPROVED_AFTER_REWORK
   code_conformance: CODE_CONFORMANCE_VERIFIED_PASS
+result: GENERATED_AND_MAPPED_RUNTIME_EXECUTION_PENDING
 application_code_mutation: false
