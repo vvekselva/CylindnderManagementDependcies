@@ -1,0 +1,28 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+termination_reason: INTERACTIVE_TURN_EXECUTION_BOUNDARY
+started_at: 2026-08-31T11:33:27Z
+terminated_at: 2026-08-31T11:38:47Z
+productive_runtime_seconds: 320
+voluntary_early_stop: false
+eligible_work_remaining: true
+active_claims_at_terminal: 0
+completed_work:
+  - SCHEDULER_HANDOFF_ACKNOWLEDGED_AND_RUN_LINKED
+  - PRIOR_RUN_112823_ABNORMAL_TERMINATION_RECONCILED
+  - BL002_AGGREGATE_RECONCILED_FROM_DURABLE_UNIT_EVIDENCE
+  - BL008_LIVE_STATE_RECONFIRMED_V185_DATABASE_FROZEN
+reconciled_business_behavior_complete_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+current_business_behavior_complete: 17
+current_awaiting_user_review: 17
+current_rework_required: 116
+current_rework_in_progress: 1
+remaining_global_rework_count: 117
+queue_projection_repair_remaining: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+next_primary_unit: STORY-0037
+next_safe_fallback_units: [STORY-0041, STORY-0042, STORY-0045]
+application_code_mutation: false
+story_approval_delta: 0
+bl010_code_rework_executed: false
+github_actions_runners_used: false
+next_action: NEXT_FIRE_REPAIR_QUEUE_PROJECTION_THEN_DYNAMIC_REPLAN
