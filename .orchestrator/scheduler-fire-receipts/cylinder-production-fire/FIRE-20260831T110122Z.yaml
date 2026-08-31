@@ -3,8 +3,9 @@ fire_id: FIRE-20260831T110122Z
 observed_fire_time: 2026-08-31T11:01:22Z
 scheduled_fire_time: unknown
 receipt_time: 2026-08-31T11:01:22Z
-state: TRIGGER_RECEIVED
+state: RUN_LINKED
 intended_scope: CONTINUOUS
-run_id: null
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-110154Z
+orchestrator_started_at: 2026-08-31T11:01:54Z
 terminal_classification: null
 termination_time: null
