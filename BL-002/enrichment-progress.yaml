@@ -1,6 +1,6 @@
-version: 43
+version: 44
 backlog_id: BL-002
-updated_at: 2026-08-31T06:21:40+05:30
+updated_at: 2026-08-31T06:23:32+05:30
 updated_by: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
 checkpoint_state: CHECKPOINT_RECONCILED
@@ -28,12 +28,12 @@ reconciliation:
   source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
   source_detail_refined_this_run: [STORY-0042, STORY-0044]
-  blocked_this_run: [STORY-0042, STORY-0044, STORY-0045]
+  blocked_this_run: [STORY-0042, STORY-0044, STORY-0045, STORY-0046]
   correction:
     - Startup repaired BL-008 projection drift to V182-authored waiting for clean validation.
-    - STORY-0042 POST /registerCustomer source contract was refined; strict promotion remains blocked by missing concrete mediator/service/persistence implementation.
-    - STORY-0044 POST /wizard/vehicle-trip-load/save source contract was refined; executable source uses the generic application service while the commented transactional narrative is not accepted as executable proof.
-    - STORY-0045 GET /displayCustomer source-location attempts did not resolve an authoritative controller path in the frozen commit; exact source-location blocker persisted without invented behavior.
+    - STORY-0042 and STORY-0044 source contracts were refined but remain non-strict due to unresolved executable downstream persistence implementations.
+    - STORY-0045 controller source path was not resolved in authoritative frozen source and remains blocked without invented behavior.
+    - STORY-0046 DTO source was proved, including documented pageNumber/itemsPerPage/searchTerm/activeOnly semantics, but the named CustomerFetchByPageController was not present at the expected frozen path and no concrete controller class was source-proved.
   aggregate_reconciliation_gate: PASS
 cursor:
   last_strict_r1_story: STORY-0134
