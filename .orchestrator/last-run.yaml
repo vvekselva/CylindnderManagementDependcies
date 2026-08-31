@@ -1,7 +1,7 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-054234Z
 checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T05:42:34Z
-checkpoint_at: 2026-08-31T05:45:52Z
+checkpoint_at: 2026-08-31T05:54:26Z
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -10,15 +10,29 @@ architecture:
   run_scope_mode: PRODUCTION_FIRE
   compatibility_invocation_lease_global_mutex: false
 work:
-  attempted_ids: [AGGREGATE_RECONCILIATION, BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR, BL-009/STORY-0001_EXECUTABLE_TEST_RUNTIME_PROBE, BL-004/STORY-0001_EXECUTION_RUNTIME_PROBE, BL-005/STORY-0001_EXECUTION_RUNTIME_PROBE]
-  completed_ids: [BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR]
+  attempted_ids:
+    - AGGREGATE_RECONCILIATION
+    - BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR
+    - BL-009/STORY-0001_EXECUTABLE_TEST_RUNTIME_PROBE
+    - BL-004/STORY-0001_EXECUTION_RUNTIME_PROBE
+    - BL-005/STORY-0001_EXECUTION_RUNTIME_PROBE
+    - BL-009/STORY-0001_DATA_CONTRACT_SUBSTITUTION_EXECUTION
+    - BL-002/STORY-0041_SOURCE_RESOLUTION
+  completed_ids:
+    - BL-009/STORY-0001_HUMAN_READABLE_TEST_DATA_REPAIR
+    - BL-009/STORY-0001_DATA_CONTRACT_SUBSTITUTION_EXECUTION
+    - BL-002/STORY-0041_SOURCE_RESOLUTION_WITH_DURABLE_GAP
   completed_strict_ids: []
-  blocked_ids: [BL-004/STORY-0001_EXECUTION, BL-005/STORY-0001_EXECUTION, BL-009/STORY-0001_CODE_EXECUTION]
+  blocked_ids:
+    - BL-004/STORY-0001_EXECUTION
+    - BL-005/STORY-0001_EXECUTION
+    - BL-009/STORY-0001_APPLICATION_BEHAVIOR_EXECUTION
+    - BL-002/STORY-0041_STRICT_PROMOTION
   strict_field_ui_completion_delta: 0
   physical_materialization_delta: 0
   approvals_delta: 0
   approved_ids: [STORY-0001]
-  next_dynamically_resolved_eligible_unit: DYNAMIC_BL-002_STRICT_RECONCILIATION_OR_TEST_RUNTIME_RECOVERY
+  next_dynamically_resolved_eligible_unit: STORY-0043
 metrics_after: {register_ready: 131, clarification: 3, materialized_story_files: 134, materialization_pending: 0, strict_field_ui_complete: 126, strict_field_ui_remaining: 8, approved: 1, use_case_grouped: 0, testing_ready: 1}
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
@@ -28,17 +42,26 @@ approved_story_testing:
     catalogues: 1
     test_data_sets: 1
     human_readable_test_data: 1
-    executable_test_code: 1
+    junit_executable_test_code: 1
+    substitution_test_code: 1
     test_case_code_mapping: 9_OF_9_MAPPED_TO_EXECUTABLE_LAYER_OR_EXPLICIT_RUNTIME_LAYER
     test_data_row_code_consumption: 7_OF_7_DATA_CONTRACT_ROWS
-    code_executed: 0
-    pass: 0
-    fail: 0
+    data_contract_code_executed: 1
+    data_contract_rows_pass: 7
+    data_contract_rows_fail: 0
+    application_behavior_executed: 0
+    application_behavior_pass: 0
+    application_behavior_fail: 0
     coverage: NOT_EXECUTED
     live_validation_pending: 1
     live_validation_executed: 0
   runtime_capability: {java_21: AVAILABLE, maven: UNAVAILABLE, gradle: UNAVAILABLE, ant: AVAILABLE, junit5_runtime: UNAVAILABLE, mockito_runtime: UNAVAILABLE, jacoco_runtime: UNAVAILABLE, docker: UNAVAILABLE, podman: UNAVAILABLE, local_postgresql: UNAVAILABLE, outbound_dependency_resolution: DNS_BLOCKED}
-  substitutions: {direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS, ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE, local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED, h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT}
+  substitutions:
+    BL-009_data_contract_java21_runner: EXECUTED_PASS_7_OF_7_ROWS
+    direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS
+    ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE
+    local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED
+    h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT
 bl001: {state: COMPLETE_READ_ONLY, action: NO_CHANGE_REQUIRED}
 bl008:
   state_source: BL-008/README.md
@@ -54,8 +77,13 @@ reconciliation:
   BL-008_live_state_projected: true
   BL-009_human_readable_test_data_repaired: true
   BL-009_executable_code_state_projected: true
+  BL-009_data_contract_execution_projected: true
+  STORY-0041_source_resolution_projected: true
   runtime_capability_reprobed: true
-  durable_evidence: .orchestrator/evidence/20260831-054344-testing-runtime-and-drift-reconciliation.md
+  durable_evidence:
+    - .orchestrator/evidence/20260831-054344-testing-runtime-and-drift-reconciliation.md
+    - BL-009/evidence/STORY-0001-data-contract-execution-20260831-055426Z.md
+    - BL-002/work-status/STORY-0041.yaml
   readback_pending: false
   aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
