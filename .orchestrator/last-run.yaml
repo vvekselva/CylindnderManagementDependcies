@@ -1,9 +1,9 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001
 checkpoint_state: RESUMABLE_RUNTIME_BOUNDARY
-started_at: '2026-09-01T03:30:58+05:30'
-checkpoint_at: '2026-09-01T03:38:38+05:30'
-terminal_classification: PLATFORM_RUNTIME_BOUNDARY
-termination_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY
+started_at: '2026-09-01T05:01:48+05:30'
+checkpoint_at: '2026-09-01T05:06:07+05:30'
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+termination_reason: GOVERNED_AUTOMATION_INVOCATION_RUNTIME_BOUNDARY
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
@@ -12,21 +12,18 @@ architecture:
   github_role: DURABLE_CONTROL_AUDIT_ONLY
   github_actions_runners_used: false
 scheduler_handoff:
-  fire_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4
-  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4.yaml
+  fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST
+  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire-i/CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST.yaml
   handoff_acknowledged: true
   run_linked: true
 prior_run_reconciliation:
-  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST-RUN-001
+  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
   unresolved_gap_remaining: false
 business_behavior_rework:
-  active_unit: STORY-0045
-  result: PENDING_USER_APPROVAL
-  business_behavior_complete: false
-  evidence: BL-002/evidence/STORY-0045/20260901T033758-IST-backend-binding-and-import-drift.yaml
-  review_packets:
-    - BL-002/reviews/STORY-0045/20260901T033758-IST-controller-service-import-drift-review.yaml
-    - BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
+  advanced_units: [STORY-0047, STORY-0048]
+  completed_units: []
+  result: PARTIAL_CONTINUE_REQUIRED
+  evidence: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001/work-units/STORY-0047-STORY-0048-source-analysis.yaml
 aggregate:
   business_behavior_complete: 21
   business_behavior_total: 134
@@ -40,15 +37,20 @@ approval:
   auto_approve: false
   approval_delta: 0
 drift_governance:
+  story0045_approval_gate_preserved: true
   application_code_mutation: false
   bl010_created: false
   bl010_executed: false
   user_drift_approval_bypassed: false
+source_runtime:
+  requested_method: LOCAL_GIT
+  local_git_transport_state: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+  fallback: EXACT_FROZEN_SOURCE_CONNECTOR_READS_ONLY
 runtime_reliability:
   heartbeat_state: TERMINATED_AT_RUNTIME_BOUNDARY
-  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001/termination.yaml
-  checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001/checkpoint.yaml
-  next_action: Keep both STORY-0045 drift scopes blocked pending exact user approval; continue another dependency-safe Release-1 Story; reconcile stale queue rows only with exact-preservation proof.
+  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001/termination.yaml
+  event_stream: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001/events.ndjson
+  next_action: Resume dependency-safe R1 source proof for STORY-0047/STORY-0048 using local Git when transport is available; otherwise exact frozen-source file reads only. Keep STORY-0045 drift approval-gated.
 claims:
   active_at_terminal: 0
 transient_logs_remaining: 0
