@@ -1,7 +1,7 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
 checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-30T22:13:27-05:30
-checkpoint_at: 2026-08-30T22:13:27-05:30
+checkpoint_at: 2026-08-31T03:52:45Z
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -10,15 +10,15 @@ architecture:
   run_scope_mode: PRODUCTION_FIRE
   compatibility_invocation_lease_global_mutex: false
 work:
-  attempted_ids: [AGGREGATE_RECONCILIATION]
+  attempted_ids: [AGGREGATE_RECONCILIATION, BL-004/STORY-0001_SOURCE_BINDING, BL-005/STORY-0001_SOURCE_BINDING, BL-009/STORY-0001_VALIDATION_READINESS]
   completed_strict_ids: []
-  blocked_ids: []
+  blocked_ids: [BL-004/STORY-0001_EXECUTION, BL-005/STORY-0001_EXECUTION, BL-009/STORY-0001_LIVE_VALIDATION]
   strict_field_ui_completion_delta: 0
   durable_prior_unprojected_strict_advancement_reconciled: [STORY-0038]
   physical_materialization_delta: 0
   approvals_delta: 1
   approved_ids: [STORY-0001]
-  next_dynamically_resolved_eligible_unit: BL-004/STORY-0001_SOURCE_BINDING
+  next_dynamically_resolved_eligible_unit: DYNAMIC_BL-002_STRICT_RECONCILIATION
 metrics_after:
   register_ready: 131
   clarification: 3
@@ -31,9 +31,10 @@ metrics_after:
   testing_ready: 1
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
-  BL-004: {queued: 1, generated: 1, executed: 0, pass: 0, fail: 0}
-  BL-005: {queued: 1, generated: 1, executed: 0, pass: 0, fail: 0}
-  BL-009: {catalogues: 1, test_data_sets: 1, live_validation_pending: 1, pass: 0, fail: 0}
+  BL-004: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, execution_blocked: 1}
+  BL-005: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, execution_blocked: 1}
+  BL-009: {catalogues: 1, test_data_sets: 1, live_validation_pending: 1, live_validation_executed: 0, pass: 0, fail: 0, execution_blocked: 1}
+  runtime_capability: {java_21: AVAILABLE, maven: UNAVAILABLE, docker: UNAVAILABLE}
 bl001:
   state: COMPLETE_READ_ONLY
   action: NO_CHANGE_REQUIRED
@@ -45,14 +46,20 @@ bl008:
   current_state: CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION
   database_write_delta_chatgpt: 0
 claims:
-  created: [20260830-221327-AGGREGATE-TESTING-RECONCILIATION]
-  work_unit_claims_remaining_at_checkpoint: 1
+  created: [20260830-221327-AGGREGATE-TESTING-RECONCILIATION, 20260831-034922-STORY-0001-SOURCE-BINDING, 20260831-035034-STORY-0001-SOURCE-BINDING, 20260831-035204-STORY-0001-VALIDATION-READINESS, 20260831-035245-AGGREGATE-TEST-WAVE]
+  released: [20260830-221327-AGGREGATE-TESTING-RECONCILIATION, 20260831-034922-STORY-0001-SOURCE-BINDING, 20260831-035034-STORY-0001-SOURCE-BINDING, 20260831-035204-STORY-0001-VALIDATION-READINESS]
+  active_reconciliation_claim: 20260831-035245-AGGREGATE-TEST-WAVE
+  work_unit_claims_remaining_at_checkpoint: 0
 reconciliation:
   startup_projection_drift_detected: true
+  startup_projection_drift_repaired: true
   durable_approval_evidence_preserved: true
   durable_STORY-0038_strict_evidence_preserved: true
   physical_story_parity_verified: true
   downstream_testing_fanout_verified: true
+  BL-004_source_binding_persisted: true
+  BL-005_source_binding_persisted: true
+  BL-009_readiness_persisted: true
   readback_pending: true
   aggregate_reconciliation_gate: PASS
 transient_logs_remaining: 0
