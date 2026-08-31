@@ -2,9 +2,10 @@ claim_id: 20260831-083530-STORY-0016-IDENTITY-REWORK
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
 backlog: BL-002
 work_unit: STORY-0016
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T08:35:30Z
-heartbeat_at: 2026-08-31T08:35:30Z
+heartbeat_at: 2026-08-31T08:36:30Z
+released_at: 2026-08-31T08:36:30Z
 lease_expires_at: 2026-08-31T08:50:30Z
 read_set:
   - BL-002/story-register.csv
@@ -13,4 +14,6 @@ read_set:
 write_set:
   - BL-002/stories/STORY-0016.md
   - BL-002/work-status/STORY-0016.yaml
-purpose: Repair STORY-0016 canonical identity drift and rework business behavior from exact frozen source evidence.
+result: IDENTITY_REPAIRED_BLOCKED_SOURCE_DETAIL_REVIEW_REQUIRED
+blocker: Canonical identity repaired to GET /challan-page-photo/{challanPagePhotoId}; exact frozen route search returned 0 with incomplete_results=true, so source path remains unresolved.
+next_action: CONTINUE_WITH_NEXT_DEPENDENCY_SAFE_R1_REWORK_UNIT
