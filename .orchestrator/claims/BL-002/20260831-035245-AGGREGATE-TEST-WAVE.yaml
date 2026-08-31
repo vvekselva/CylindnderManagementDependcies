@@ -2,10 +2,12 @@ claim_id: 20260831-035245-AGGREGATE-TEST-WAVE
 run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
 backlog: BL-002
 unit: APPROVED_STORY_TESTING_WAVE_RECONCILIATION
-status: ACTIVE
+status: RELEASED
 acquired_at: 2026-08-31T03:52:45Z
-heartbeat_at: 2026-08-31T03:52:45Z
+heartbeat_at: 2026-08-31T03:53:44Z
 lease_expires_at: 2026-08-31T04:07:45Z
+released_at: 2026-08-31T03:53:44Z
+result: CHECKPOINT_RECONCILED
 read_set:
   - BL-004/work-status/STORY-0001.yaml
   - BL-005/work-status/STORY-0001.yaml
