@@ -1,8 +1,9 @@
 claim_id: RECONCILE-20260831-113327Z
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
 backlog: BL-002
-state: ACTIVE
+state: RELEASED
 claimed_at: 2026-08-31T11:35:22Z
+released_at: 2026-08-31T11:38:23Z
 work_unit: AGGREGATE_RECONCILIATION_FROM_DURABLE_UNIT_EVIDENCE
 read_set:
   - BL-002/work-status/STORY-0038.yaml
@@ -15,4 +16,7 @@ write_set:
   - BL-002/enrichment-progress.yaml
   - .orchestrator/last-run.yaml
   - .orchestrator/live-run.yaml
+result: PARTIAL_PASS_QUEUE_PROJECTION_REPAIR_REQUIRED
+reconciled_business_behavior_complete_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+queue_projection_drift_ids: [STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
 scope_note: Aggregate projection repair only; no application code mutation.
