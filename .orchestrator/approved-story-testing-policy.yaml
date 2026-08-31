@@ -1,4 +1,4 @@
-version: 1
+version: 2
 name: APPROVED_STORY_TESTING_FANOUT
 status: ACTIVE
 source_backlog: BL-002
@@ -27,16 +27,34 @@ fanout:
     required_outputs:
       - BL-009/stories/<story-id>.md
       - BL-009/test-data/<story-id>.csv
+      - BL-009/test-data/<story-id>.md
       - BL-009/test-case-task-queue.csv
+    test_data_format_contract:
+      csv_is_machine_readable_source: true
+      human_readable_companion_required: true
+      human_readable_path: BL-009/test-data/<story-id>.md
+      human_readable_sections_required:
+        - purpose_and_scope
+        - test_data_explanation
+        - test_data_table
+      table_must_contain_actual_test_data_values: true
+      reference_only_table_forbidden: true
+      row_parity_with_csv_required: true
+      data_id_parity_with_csv_required: true
+      semantic_value_parity_with_csv_required: true
+      secrets_rule: runtime_secret_placeholders_may_be_shown_but_real_secrets_must_not_be_persisted
+      acceptance_rule: BL-009 test-data generation is incomplete until both CSV and human-readable companion exist and the human-readable table contains the applicable test data values.
 orchestrator_rule:
   startup:
     - read_this_policy
     - reconcile_all_durable_approved_BL-002_stories
     - diff_approved_story_ids_against_BL-004_BL-005_BL-009
     - materialize_missing_downstream_artifacts_idempotently
+    - verify_BL-009_csv_and_human_readable_test_data_parity
   selection_priority:
     - approval_projection_reconciliation
     - missing_approved_story_fanout_artifacts
+    - incomplete_BL-009_human_readable_test_data
     - executable_BL-004_unit_tests
     - executable_BL-005_testcontainers_tests
     - BL-009_test_case_test_data_validation
@@ -57,6 +75,8 @@ watchdog_reporting:
     - BL-005_queued_generated_executed_pass_failed
     - BL-009_test_catalogues_count
     - BL-009_test_data_count
+    - BL-009_human_readable_test_data_count
+    - BL-009_test_data_table_parity_state
     - live_validation_pending_pass_failed
     - per_approved_story_next_action
     - aggregate_drift_state
