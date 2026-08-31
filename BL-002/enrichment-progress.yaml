@@ -1,8 +1,8 @@
-version: 69
+version: 70
 backlog_id: BL-002
-updated_at: 2026-08-31T17:21:57+05:30
+updated_at: 2026-08-31T17:37:56+05:30
 updated_by: Primary Cylinder Automation Tool
-checkpoint_state: CHECKPOINT_RECONCILED_APPROVAL_PROJECTION_REPAIRED
+checkpoint_state: CHECKPOINT_RECONCILED_POST_APPROVAL_CONFORMANCE_AND_STORY0037_UNIT_DRIFT
 scope:
   total_stories: 134
   r1_stories: 88
@@ -12,22 +12,22 @@ business_behavior_rework:
   policy: BL-002/story-business-behavior-rework-policy.yaml
   total_registered: 134
   rework_required: 116
-  rework_in_progress: 1
-  business_behavior_complete: 17
-  awaiting_user_review: 15
+  rework_in_progress: 0
+  business_behavior_complete: 18
+  awaiting_user_review: 16
   approved_after_rework: 2
   needs_clarification: 0
-  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
-  awaiting_user_review_ids: [STORY-0011, STORY-0012, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
+  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
+  awaiting_user_review_ids: [STORY-0011, STORY-0012, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044, STORY-0054]
   approved_after_rework_ids: [STORY-0001, STORY-0013]
-  active_rework_ids: [STORY-0037]
+  active_rework_ids: []
   static_reference_selector_reviewed: 16
   static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0039, STORY-0040, STORY-0043, STORY-0054]
   search_conversion_required: 0
   search_conversion_required_ids: []
   dependent_selector_rework_required: 0
   dependent_selector_rework_required_ids: []
-  remaining_global_rework_count: 117
+  remaining_global_rework_count: 116
 legacy_metrics:
   register_ready: 131
   clarification: 3
@@ -41,7 +41,7 @@ legacy_metrics:
   strict_field_ui_complete: 126
   strict_field_ui_remaining: 8
   use_case_grouped: 0
-  testing_ready_current_revised_contract: 0
+  testing_ready_current_revised_contract: 2
 materialization:
   parity_target: 134
   queue: BL-002/materialization-task-queue.csv
@@ -68,11 +68,11 @@ approved_story_testing:
   current_governance_override: .orchestrator/post-approval-code-conformance-policy.yaml
   historical_approved_story_ids: [STORY-0001]
   current_revised_contract_approved_or_reapproved_story_ids: [STORY-0001, STORY-0013]
-  post_approval_code_conformance_pending_ids: [STORY-0001, STORY-0013]
-  post_approval_code_conformance_pass_ids: []
-  revised_fanout_eligible_ids: []
-  BL-004: {queued: 2, revised_execution_eligible: 0, status: BLOCKED_PENDING_POST_APPROVAL_CODE_CONFORMANCE, coverage: NOT_EXECUTED_REVISED_CONTRACT}
-  BL-005: {queued: 2, revised_execution_eligible: 0, status: BLOCKED_PENDING_POST_APPROVAL_CODE_CONFORMANCE, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  post_approval_code_conformance_pending_ids: []
+  post_approval_code_conformance_pass_ids: [STORY-0001, STORY-0013]
+  revised_fanout_eligible_ids: [STORY-0001, STORY-0013]
+  BL-004: {queued: 2, revised_execution_eligible: 2, status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  BL-005: {queued: 2, revised_execution_eligible: 2, status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED, coverage: NOT_EXECUTED_REVISED_CONTRACT}
   BL-009:
     queued: 2
     historical_catalogues: 1
@@ -85,28 +85,36 @@ approved_story_testing:
     revised_application_behavior_pass: 0
     revised_application_behavior_fail: 0
     revised_coverage: NOT_EXECUTED
-    status: BLOCKED_PENDING_POST_APPROVAL_CODE_CONFORMANCE
+    status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED
+  runtime_blocker: MISSING_MAVEN_JUNIT5_MOCKITO_RUNTIME_DEPENDENCIES
+  jacoco_unit_line: NOT_EXECUTED
+  jacoco_unit_branch: NOT_EXECUTED
+  jacoco_integration_line: NOT_EXECUTED
+  jacoco_integration_branch: NOT_EXECUTED
+  jacoco_combined_line: NOT_EXECUTED
+  jacoco_combined_branch: NOT_EXECUTED
 reconciliation:
   startup_projection_drift_detected: true
   startup_projection_drift_repaired: true
   approval_projection_drift_detected: true
   approval_projection_drift_repaired: true
+  story0037_unit_projection_drift_detected: true
+  story0037_unit_projection_drift_repaired: true
   durable_approval_evidence_ids: [STORY-0001, STORY-0013]
   testing_policy_legacy_auto_rework_wording_detected: true
   current_code_mutation_governance: USER_APPROVAL_REQUIRED_FOR_EXACT_DRIFT_MANIFEST
   unit_evidence_reconciled: true
   aggregate_queue_projection_pending: true
-  queue_projection_drift_ids: [STORY-0001, STORY-0013, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
+  queue_projection_drift_ids: [STORY-0001, STORY-0013, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0043, STORY-0044]
   aggregate_reconciliation_gate: PARTIAL_PASS_QUEUE_PROJECTION_REPAIR_REQUIRED
 cursor:
-  priority_post_approval_conformance_ids: [STORY-0001, STORY-0013]
-  next_global_rework_unit: STORY-0037
-  fallback_dependency_safe_r1_unit: STORY-0041
-  secondary_fallback_r1_unit: STORY-0042
+  priority_post_approval_conformance_ids: []
+  next_global_rework_unit: STORY-0041
+  fallback_dependency_safe_r1_unit: STORY-0042
   next_unstarted_dependency_safe_r1_unit: STORY-0045
   priority_development_unit: null
-  next_development_action: CONFORMANCE_FIRST_THEN_DRIFT_REVIEW_PACKET_AND_EXPLICIT_USER_DECISION_IF_DRIFT
-  next_testing_action: NONE_UNTIL_CURRENT_POST_APPROVAL_CODE_CONFORMANCE_PASS
+  next_development_action: NONE_WITHOUT_DRIFT_APPROVED_FOR_CODE_CHANGE
+  next_testing_action: FANOUT_MAINTENANCE_ALLOWED_BUT_RUNTIME_EXECUTION_BLOCKED
 approval_policy:
   auto_approve: false
   explicit_user_approval_required: true
