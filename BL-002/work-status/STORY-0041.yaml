@@ -1,12 +1,12 @@
-version: 4
+version: 5
 story_id: STORY-0041
-run_id: CYL-ORCH-20260831T175004+0530
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
 release: R1
 endpoint: GET /registerCustomer
 frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-updated_at: '2026-08-31T18:14:15+05:30'
+updated_at: '2026-08-31T22:12:38+05:30'
 rework_state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
-business_behavior_state: UI_SELECTOR_AND_CANDIDATE_PERSISTENCE_SERVICE_SOURCE_BOUND_MEDIATOR_LINK_PENDING
+business_behavior_state: UI_SELECTOR_CONTROLLER_MEDIATOR_INTERFACE_AND_CANDIDATE_PERSISTENCE_SOURCE_BOUND_CONCRETE_MEDIATOR_LINK_PENDING
 business_behavior_complete: false
 approval: PENDING_USER_APPROVAL
 materialized: true
@@ -26,6 +26,12 @@ source_bound:
   view_constant: final-version-1/UC01RegisterCustomer
   address_type_read: public.tbl_address_type
   embedded_submit_story: STORY-0042
+  controller_submit_binding:
+    endpoint: POST /registerCustomer
+    mediator_field_type: ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
+    mediator_field_name: uC01RegisterCustomerMediator
+    invocation: uC01RegisterCustomerMediator.invokeServices(requestDto)
+    pre_invocation_address_type_resolution: resolveAddressTypes maps addressTypeIds into AddressDto.addressType
   visible_business_fields:
     - customerDto.customerName
     - customerDto.gstNumber
@@ -40,7 +46,7 @@ source_bound:
     - addressDtos[N].city.cityId
   candidate_write_service:
     class: CustomerIngestionService
-    status: SOURCE_PRESENT_BUT_UC01_MEDIATOR_TO_SERVICE_BINDING_NOT_YET_PROVED
+    status: SOURCE_PRESENT_BUT_CONCRETE_UC01_MEDIATOR_BEAN_TO_SERVICE_BINDING_NOT_YET_PROVED
     behavior:
       - invokes customer ingestion validator with UC_001_RESGISTER_CUSTOMER
       - maps CustomerDto to CustomerDo
@@ -57,12 +63,12 @@ source_bound:
       phone: {table: public.tbl_phone_number, pk: pk_phone_number_id, sequence: public.pk_phone_number_id_serial, phone_unique: true}
       customer_phone: {table: public.tbl_customer_phone_number, pk: pk_customer_phone_number_id, sequence: public.pk_customer_phone_number_id_serial, fks: [fk_customer, fk_phone_number], unique_pair: true}
 remaining_source_binding:
-  - concrete UC01 mediator implementation or configuration proving invocation of CustomerIngestionService
+  - concrete Spring bean implementation or configuration proving the controller mediator invokes CustomerIngestionService
   - exact transaction boundary around the mediator/service chain
   - validator implementation proving server-side cross-reference and required-field rules
-  - verify Address Type relationship propagation from controller DTO into CustomerAddressDo persistence path
+source_research_evidence: BL-002/evidence/STORY-0041/20260831T221238+0530-source-binding-research.yaml
 completion_gate: DO_NOT_MARK_BUSINESS_BEHAVIOR_COMPLETE_UNTIL_MEDIATOR_SERVICE_BINDING_AND_RELATIONSHIP_VALIDATION_ARE_SOURCE_PROVED
 database_behavior_invented: false
 application_code_mutation: false
 approval_delta: 0
-next_action: TRACE_UC01_MEDIATOR_BINDING_AND_VALIDATOR_FROM_FROZEN_SOURCE
+next_action: TRACE_CONCRETE_UC01_MEDIATOR_BEAN_TRANSACTION_AND_VALIDATOR_FROM_FROZEN_SOURCE
