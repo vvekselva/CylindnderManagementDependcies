@@ -1,0 +1,48 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001
+recorded_at: '2026-09-01T05:06:07+05:30'
+mode: CONTINUOUS
+frozen_application_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_execution_method_requested: LOCAL_GIT
+source_execution_method_result: BLOCKED
+source_execution_blocker:
+  classification: LOCAL_GIT_TRANSPORT_DNS_UNAVAILABLE
+  evidence: "git clone failed: Could not resolve host: github.com"
+  scheduler_level_defect: false
+fallback_control_plane_reads_used: true
+work_units:
+  - story_id: STORY-0047
+    release: R1
+    current_state: SOURCE_DETAIL_REVIEW_REQUIRED
+    positively_reconciled:
+      - exact endpoint is POST /updateCustomer
+      - controller/service/validator/DAO/entity/table path already durably source-bound in Story evidence
+      - visible UC01RegisterCustomer form posts to /registerCustomer, not /updateCustomer
+    unresolved_gate: Exact frozen-source visible update screen/control/browser event posting CustomerUpdateRequestDto to /updateCustomer, or positive proof that no browser UI applies.
+    result: PARTIAL_CONTINUE_REQUIRED
+    business_behavior_complete_delta: 0
+  - story_id: STORY-0048
+    release: R1
+    current_state: SOURCE_DETAIL_REVIEW_REQUIRED
+    positively_reconciled:
+      - endpoint POST /add-stop/challan-page-photo/delete-ajax
+      - AddStopController.deleteChallanPagePhotoAjax -> ChallanPagePhotoUploadService.deactivatePhoto -> ChallanPagePhotoJpaDao.findById/save -> ChallanPagePhotoDo -> public.tbl_challan_page_photo
+      - HTTP 200/400/500 JSON outcome classes already durably recorded
+    unresolved_gates:
+      - exact request identifier field, datatype and requiredness
+      - exact persisted active/deactivation physical columns
+      - exact validation/ownership guards
+    source_identifier_lookup_attempts:
+      - AddStopController
+      - deleteChallanPagePhotoAjax
+    result: PARTIAL_CONTINUE_REQUIRED
+    business_behavior_complete_delta: 0
+governance:
+  auto_approval: false
+  application_code_mutation: false
+  BL010_creation_or_execution: false
+  STORY0045_drift_scope_touched: false
+aggregate_projection_mutation: false
+reason: No strict-completion claim is permitted without exact frozen-source proof. Local Git source transport is unavailable in this invocation and broad remote-search absence is not treated as proof.
+next_action: On the next invocation, retry local Git only if transport evidence changes; otherwise resolve exact frozen-source paths without broad search and continue STORY-0047/STORY-0048 proof while keeping STORY-0045 drift approval-gated.
