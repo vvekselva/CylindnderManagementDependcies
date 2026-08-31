@@ -1,4 +1,4 @@
-version: 7
+version: 8
 name: CYLINDER_RESOURCE_SCOPED_EXECUTION_ARCHITECTURE
 status: ACTIVE
 policy_ref: .orchestrator/lease-policy.yaml
@@ -140,6 +140,38 @@ BL-002:
   next_work_resolution:
     hardcoded_story_pointer: forbidden
     rule: Reconcile unit-local evidence, physical-file parity, materialization queue and aggregate progress dynamically.
+
+BL-009:
+  policy_source: .orchestrator/approved-story-testing-policy.yaml
+  purpose: HUMAN_READABLE_TEST_CASES_TEST_DATA_AND_LIVE_VALIDATION
+  approval_dependency: EXPLICITLY_APPROVED_BL-002_STORY_ONLY
+  per_story_test_catalogue: BL-009/stories/<story-id>.md
+  machine_readable_test_data: BL-009/test-data/<story-id>.csv
+  human_readable_test_data: BL-009/test-data/<story-id>.md
+  test_data_contract:
+    both_machine_and_human_readable_formats_required: true
+    csv_remains_machine_readable_source: true
+    human_readable_companion_required: true
+    human_readable_companion_must_explain_test_data: true
+    human_readable_table_required: true
+    table_must_contain_actual_test_data_values: true
+    reference_only_or_id_only_table_forbidden: true
+    csv_and_human_readable_row_parity_required: true
+    csv_and_human_readable_data_id_parity_required: true
+    csv_and_human_readable_semantic_value_parity_required: true
+    real_secrets_in_repository: forbidden
+    runtime_secret_placeholders: allowed
+  completion_gate:
+    generated_test_data_complete_only_when:
+      - csv_exists
+      - human_readable_companion_exists
+      - human_readable_explanation_exists
+      - human_readable_table_contains_applicable_test_values
+      - csv_human_readable_parity_passes
+  reconciliation:
+    detect_missing_human_readable_companion_as_incomplete: true
+    detect_table_without_test_values_as_incomplete: true
+    repair_is_backlog_work_not_watchdog_work: true
 
 BL-008:
   state_source: BL-008/README.md
