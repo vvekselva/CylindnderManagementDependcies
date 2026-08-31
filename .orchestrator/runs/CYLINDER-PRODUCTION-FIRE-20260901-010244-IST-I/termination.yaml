@@ -1,0 +1,21 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-010244-IST-I
+started_at: '2026-09-01T01:02:44+05:30'
+termination_time: '2026-09-01T01:07:00+05:30'
+elapsed_seconds: 256
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: PLATFORM_RUNTIME_FORCED_STOP
+mode: CONTINUOUS
+eligible_work_remaining: true
+resumable: true
+active_claims_remaining: 0
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-010244-IST-I/checkpoint.yaml
+completed_work_units: [STORY-0042]
+business_behavior_complete_delta: 1
+aggregate_projection_version: 74
+queue_projection_repair_pending: true
+approvals_delta: 0
+auto_approval_performed: false
+application_code_mutations: 0
+bl010_executions: 0
+github_actions_or_runners_used: false
+next_action: Repair queue projection drift for STORY-0041, STORY-0042 and STORY-0046, then continue the next dependency-safe R1 Story.
