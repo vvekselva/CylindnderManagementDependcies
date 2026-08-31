@@ -1,23 +1,24 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
-scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4
-scheduler_task: cylinder-production-fire
-state: TERMINATED
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST
+scheduler_task: Cylinder Production Fire - i
+state: ACTIVE
 mode: CONTINUOUS
-started_at: '2026-09-01T03:30:58+05:30'
-last_heartbeat_at: '2026-09-01T03:38:38+05:30'
-terminated_at: '2026-09-01T03:38:38+05:30'
-terminal_classification: PLATFORM_RUNTIME_BOUNDARY
-terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY
+started_at: '2026-09-01T05:01:48+05:30'
+last_heartbeat_at: '2026-09-01T05:04:45+05:30'
+terminated_at: null
+terminal_classification: null
+terminal_reason: null
 running_worker_count: 0
-completed_worker_count: 1
+completed_worker_count: 0
 blocked_worker_count: 0
 active_work_unit_ids: []
 eligible_work_remaining: true
 resumable: true
-last_action: STORY-0045_BACKEND_BOUND_AND_CONTROLLER_SERVICE_IMPORT_DRIFT_REVIEW_PERSISTED
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST-RUN-001
+last_action: PRIOR_RUN_RECONCILED_LOCAL_GIT_TRANSPORT_BLOCKER_RECORDED_IN_EXECUTION_MEMORY
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
 aggregate_business_behavior_complete: 21
 aggregate_business_behavior_total: 134
 aggregate_percent: 15.7
 completion_delta_this_run: 0
-next_action: Keep both STORY-0045 drift manifests approval-gated; continue another dependency-safe Release-1 Story and reconcile stale STORY-0041/STORY-0042/STORY-0046 queue projection only with exact-preservation proof.
+local_git_transport_state: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+next_action: Continue safe-independent Release-1 source analysis using exact frozen-source connector reads where local Git transport is unavailable; do not mutate approval-gated STORY-0045 code.
