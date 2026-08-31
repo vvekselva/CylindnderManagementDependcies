@@ -1,0 +1,21 @@
+version: 1
+claim_id: 20260831-082531-AGGREGATE-RECONCILIATION
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+backlog: BL-002
+unit_id: AGGREGATE-RECONCILIATION
+status: ACTIVE
+claimed_at: 2026-08-31T08:25:31+05:30
+heartbeat_at: 2026-08-31T08:25:31+05:30
+lease_expires_at: 2026-08-31T08:40:31+05:30
+owner: Primary Cylinder Automation Tool
+mode: SINGLE_WRITER_RECONCILIATION
+read_set:
+  - BL-002/work-status/STORY-0047.yaml
+  - BL-002/stories/STORY-0047.md
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+  - BL-008/README.md
+write_set:
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+purpose: Project the same durable post-wave snapshot into both BL-002 aggregate files and verify readback equality.
