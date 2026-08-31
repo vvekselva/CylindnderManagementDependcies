@@ -1,0 +1,28 @@
+version: 1
+story_id: STORY-0059
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+release: R1
+endpoint: GET /fetchSupplierByPage
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+status: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+strict_field_ui_complete: true
+business_behavior_complete: true
+materialized: true
+approval: PENDING_USER_APPROVAL
+approval_delta: 0
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+business_contract_validation:
+  request_defaults_and_normalization: PASS
+  visible_filter_controls_and_change_submit_behavior: PASS
+  supplier_name_gst_active_filter_branches: PASS
+  pagination_and_sort_contract: PASS
+  dao_entity_and_database_read_identity: PASS
+  visible_rows_empty_state_and_exception_redirect: PASS
+selector_ux_review:
+  state: NOT_APPLICABLE_FILTERED_LIST_PAGE
+  supplier_reference_selector_present: false
+code_mutation_performed: false
+bl010_created_or_executed: false
+fanout_authorized: false
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
+updated_at: 2026-08-31T11:50:20Z
