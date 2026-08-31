@@ -1,9 +1,9 @@
-version: 38
+version: 39
 backlog_id: BL-002
-updated_at: 2026-08-31T05:17:57+05:30
+updated_at: 2026-08-31T06:14:02+05:30
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-051508IST
-checkpoint_state: CHECKPOINT_RECONCILED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
+checkpoint_state: CHECKPOINT_RECONCILIATION_IN_PROGRESS
 scope: {total_stories: 134, r1_stories: 88, r2_stories: 46, processing_order: R1_THEN_R2}
 metrics:
   register_ready: 131
@@ -27,15 +27,13 @@ reconciliation:
   current_run_materialization_delta: {count: 0, stories: []}
   source_integrity_repairs: []
   source_detail_review_required: [STORY-0035, STORY-0036, STORY-0038, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  source_detail_refined_this_run: [STORY-0040]
-  blocked_this_run: [STORY-0040]
+  source_detail_refined_this_run: []
+  blocked_this_run: []
   correction:
-    - Startup repaired BL-008 projection drift to the V180-authored state from the live BL-008 README.
-    - Expired STORY-0040 claim was recovered, then STORY-0040 was safely re-claimed as an exact-story unit.
-    - Frozen controller and request-DTO evidence now proves POST /vehicleLoad binding, submitted request fields, mediator invocation boundary, success redirect, and invalid-input redisplay.
-    - STORY-0040 remains non-strict because the concrete mediator-to-service-to-DAO/repository-to-entity/table write chain remains unresolved.
-    - No database behavior was invented and no strict percentage was inflated.
-  aggregate_reconciliation_gate: PASS
+    - Startup detected BL-008 projection drift: prior aggregate stopped at V180-authored while live BL-008 README proves V180 PASS, V181 PASS and V182 authored waiting for clean validation.
+    - BL-002 counts remain unchanged while aggregate projection repair is performed before new dispatch.
+    - No database behavior was invented and ChatGPT database writes remain zero.
+  aggregate_reconciliation_gate: IN_PROGRESS
 cursor:
   last_strict_r1_story: STORY-0134
   next_eligible_strict_r1_story: null
@@ -47,16 +45,18 @@ bl008:
   state_source: BL-008/README.md
   execution_mode: USER_LOCAL_FLYWAY_HANDOFF
   target: FRESH_DATABASE_CLEAN_FLYWAY_CHAIN
-  last_validated_migration: V179__Enforce_Company_Fleet_Accounting_Integrity.sql
+  last_validated_migration: V181__Enforce_Identifier_Authority_And_Replacement_Integrity.sql
   v174_validation: CLEAN_DATABASE_VALIDATED_PASS
   v175_validation: CLEAN_DATABASE_VALIDATED_PASS
   v176_validation: CLEAN_DATABASE_VALIDATED_PASS
   v177_validation: CLEAN_DATABASE_VALIDATED_PASS
   v178_validation: CLEAN_DATABASE_VALIDATED_PASS
   v179_validation: CLEAN_DATABASE_VALIDATED_PASS
-  current_authored_migration: V180__Freeze_Cylinder_Ownership_Identity.sql
-  v180_validation: AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  phase2: V180_CLEAN_VALIDATION_GATE
-  current_state: V180_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
-  next_schema_migration: DO_NOT_CREATE_V181_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V180_ACCEPTANCE
+  v180_validation: CLEAN_DATABASE_VALIDATED_PASS
+  v181_validation: CLEAN_DATABASE_VALIDATED_PASS
+  current_authored_migration: V182__Enforce_Active_Identifier_Value_Uniqueness_And_History_Integrity.sql
+  v182_validation: AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  phase2: V182_CLEAN_VALIDATION_GATE
+  current_state: V182_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  next_schema_migration: DO_NOT_CREATE_V183_UNLESS_SOURCE_PROVED_REQUIREMENT_EXISTS_AFTER_V182_ACCEPTANCE
   database_write_delta_chatgpt: 0
