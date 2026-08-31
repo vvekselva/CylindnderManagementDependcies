@@ -1,3 +1,6 @@
 {"event":"TRIGGER_RECEIVED","at":"2026-08-31T11:28:01Z","fire_id":"FIRE-20260831T112801Z","mode":"CONTINUOUS"}
 {"event":"ORCHESTRATOR_STARTED","at":"2026-08-31T11:28:23Z","run_id":"CYLINDER-PRODUCTION-FIRE-20260831-112823Z"}
 {"event":"PRIOR_TERMINATION_GAP_RECOVERED","at":"2026-08-31T11:28:48Z","prior_run_id":"CYLINDER-PRODUCTION-FIRE-20260831-110529Z","classification":"ABNORMAL_PROCESS_DISAPPEARANCE","last_heartbeat_at":"2026-08-31T11:26:14Z"}
+{"event":"UNIT_COMPLETED","at":"2026-08-31T11:31:29Z","unit":"BL-002/STORY-0040_BUSINESS_BEHAVIOR_REWORK","result":"BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW","approval_delta":0,"code_mutation":false}
+{"event":"AGGREGATE_RECONCILIATION_CONFLICT","at":"2026-08-31T11:35:10Z","path":"BL-002/enrichment-progress.yaml","reason":"OPTIMISTIC_CONCURRENCY_SHA_CONFLICT","completed_unit_evidence_preserved":true}
+{"event":"HEARTBEAT","at":"2026-08-31T11:38:34Z","last_action":"REFILL_SOURCE_REVIEW","active_claims":0,"eligible_work_remaining":true}
