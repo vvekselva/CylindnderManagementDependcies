@@ -1,10 +1,10 @@
 # CylinderManagement Automation Framework - Self-Reliant E2E
 
-**Consolidated current architecture - 31 August 2026 - Revision 5 (Runtime Reliability & Termination Diagnostics)**
+**Consolidated current architecture - 31 August 2026 - Revision 6 (Post-Approval Code Conformance & Automated Code Rework)**
 
-GitHub is durable version control/control-state persistence. ChatGPT is the Primary Orchestrator, source analyst, migration author, validator and recovery coordinator. BL-008 retains its explicit user-apply handoff according to the live `BL-008/README.md`; BL-008 current state must always be resolved dynamically from that file rather than from stale architecture prose.
+GitHub is durable version control/control-state persistence. ChatGPT is the Primary Orchestrator, source analyst, code-rework executor, migration author, validator and recovery coordinator. BL-008 retains its explicit user-apply handoff according to the live `BL-008/README.md`; BL-008 current state must always be resolved dynamically from that file rather than from stale architecture prose.
 
-This revision preserves the BL-009 dual-format test-data contract and adds application-level runtime reliability: a live invocation heartbeat, append-only run events, continuous worker-pool refill, governed terminalization, mandatory root-cause evidence, abnormal-disappearance detection and recovery-first handling after incomplete termination.
+Revision 6 preserves runtime reliability and the BL-009 dual-format test-data contract, and adds a mandatory post-approval Story-to-code conformance gate for reverse-engineered BL-002 Stories. Explicit approval authorizes source conformance verification; it does not directly release testing fan-out. Story/code drift that is an automatable code gap is routed to BL-010 and executed by ChatGPT through resource-scoped claims, then conformance is rerun. Material Story-contract changes require explicit reapproval.
 
 ## 1. Authoritative boundary
 
@@ -12,7 +12,7 @@ This revision preserves the BL-009 dual-format test-data contract and adds appli
 |---|---|
 | Control repository | `vvekselva/CylindnderManagementDependcies` on `main` |
 | Application source | Current governed/frozen Cylinder source and evidence |
-| Primary orchestration/source-analysis host | ChatGPT |
+| Primary orchestration/source-analysis/code-rework host | ChatGPT |
 | GitHub role | Durable control/audit persistence and version control only |
 | GitHub Actions/runners | Forbidden |
 | External worker runtime / local bridge / agent | Forbidden |
@@ -20,14 +20,13 @@ This revision preserves the BL-009 dual-format test-data contract and adds appli
 | Maximum safe-independent workers | Up to 10 |
 | Productive runtime | About 30-45 productive minutes when platform capacity and eligible work permit; never idle merely to consume time |
 | Runtime reliability policy | `.orchestrator/runtime-reliability-policy.yaml` |
+| Post-approval conformance/code-rework policy | `.orchestrator/post-approval-code-conformance-policy.yaml` |
 
 ## 2. Core execution lifecycle
 
 `TRIGGER -> CREATE LIVE-RUN/EVENT -> READ/RECONCILE -> PLAN -> CLAIM -> DISPATCH -> VALIDATE -> PERSIST UNIT EVIDENCE -> RELEASE CLAIM -> CHECKPOINT -> HEARTBEAT -> REPLAN/REFILL -> GOVERNED TERMINATION GATE`
 
-There is no global backlog mutex. Work serializes only for proven dependencies, write-set conflicts, aggregate single-writer operations, or a true shared mutation boundary.
-
-`CHECKPOINT_RECONCILED` is a progress state and is never, by itself, a terminal condition.
+There is no global backlog mutex. Work serializes only for proven dependencies, write-set conflicts, aggregate single-writer operations, or a true shared mutation boundary. `CHECKPOINT_RECONCILED` is a progress state and is never, by itself, a terminal condition.
 
 ## 3. Resource-scoped claims
 
@@ -45,11 +44,7 @@ Completed work is persisted as unit-local evidence before aggregate projections.
 
 ## 6. Productive runtime and worker-pool policy
 
-The governed productive window is about 30-45 minutes when execution capacity exists. This is not a correctness minimum, and the orchestrator must never idle merely to satisfy the clock.
-
-While eligible ChatGPT-executable work remains and runtime is available, continue `REPLAN -> CLAIM -> DISPATCH`. Safe-independent worker capacity is continuously replenished up to 10. A worker completion, blocker, claim release or aggregate checkpoint returns capacity immediately to replanning/refill.
-
-A short run with eligible work remaining is not automatically a platform-forced stop. `PLATFORM_RUNTIME_FORCED_STOP` requires positive durable platform/cancellation evidence.
+The governed productive window is about 30-45 minutes when execution capacity exists. This is not a correctness minimum, and the orchestrator must never idle merely to satisfy the clock. While eligible ChatGPT-executable work remains and runtime is available, continue `REPLAN -> CLAIM -> DISPATCH`. Safe-independent worker capacity is continuously replenished up to 10.
 
 ## 7. Three-level SSOT
 
@@ -69,9 +64,7 @@ BL-002 contains 134 registered Stories: 88 R1 and 46 R2. R1 is priority 1; R2 is
 
 ## 10. BL-002 physical Story parity
 
-Mandatory parity gate: `134 registered Story IDs == 134 physical BL-002/stories/STORY-*.md files`.
-
-Missing R1 physical files are priority 1; missing R2 physical files are priority 2. `NEEDS_CLARIFICATION` does not waive physical materialization.
+Mandatory parity gate: `134 registered Story IDs == 134 physical BL-002/stories/STORY-*.md files`. Missing R1 physical files are priority 1; missing R2 physical files are priority 2. `NEEDS_CLARIFICATION` does not waive physical materialization.
 
 ## 11. BL-002 strict Story enrichment
 
@@ -81,104 +74,102 @@ Strict completion requires the deepest applicable source-proved contract:
 
 `SOURCE_DETAIL_REVIEW_REQUIRED` or another unresolved evidence gap is not strict completion.
 
-## 12. BL-002 review and approval
+## 12. BL-002 review, approval and mandatory post-approval code conformance
 
-A Story is a complete review artifact only when its physical `.md` exists and is synchronized with governed evidence. Explicit user approval is required before downstream test authority. Auto-approval is forbidden.
+A Story is a complete review artifact only when its physical `.md` exists and is synchronized with governed evidence. Explicit user approval/reapproval is required and auto-approval is forbidden.
 
-## 13. Approved Story testing fan-out
+Because BL-002 Stories are reverse engineered from application source, approval is followed by mandatory post-approval Story-to-code conformance. The orchestrator idempotently enqueues the approved Story in `BL-002/post-approval-code-conformance-task-queue.csv` and verifies the current approved Story against exact governed source for endpoint/controller, request/response, service and concrete implementation, DAO/repository, entity/view, DB identity, validation, transaction/persistence behavior, visible outcomes, related operations and selector UX where applicable.
 
-Every explicitly approved BL-002 Story is reconciled into the governed downstream testing lifecycle according to `.orchestrator/approved-story-testing-policy.yaml`.
+Possible conformance outcomes are:
+
+- `CODE_CONFORMANCE_VERIFIED_PASS` - approved Story corresponds to governed source for the verified scope.
+- `STORY_CODE_DRIFT_DETECTED` - one or more Story assertions do not correspond to governed source; exact drift evidence is required.
+
+Approval alone never releases revised BL-004/BL-005/BL-009 fan-out.
+
+## 13. Automated code rework for Story/code drift
+
+The active policy is `.orchestrator/post-approval-code-conformance-policy.yaml`.
+
+When conformance drift is an automatable code defect or approved target-behavior gap, the Production Fire automatically creates or reuses an idempotent BL-010 development task keyed by Story ID + source fingerprint + defect fingerprint. ChatGPT then performs the code rework as normal executable backlog work: resolve source binding, determine read/write sets, acquire a resource claim, implement the minimal safe change, validate exact changed source, execute available tests, persist evidence, release the claim and automatically rerun Story-to-code conformance.
+
+GitHub Actions/runners and external worker runtimes remain forbidden; GitHub stores durable source/control/audit evidence only.
+
+If runtime execution is unavailable, the maximum allowed result is `SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED`, never PASS. If code rework materially changes business purpose, fields, validation, persistence/transaction semantics, visible behavior, selector contract or downstream business impact, the Story becomes `REAPPROVAL_REQUIRED`. Auto-reapproval is forbidden. Non-material implementation fixes still require a fresh conformance PASS.
+
+## 14. Approved Story testing fan-out
+
+Testing authority requires both:
+
+1. explicit approval/reapproval of the current Story contract; and
+2. current `CODE_CONFORMANCE_VERIFIED_PASS` evidence.
+
+Only then is the Story `FANOUT_ELIGIBLE` under `.orchestrator/approved-story-testing-policy.yaml`.
 
 - BL-004: JUnit 5 unit-test generation, exact source binding, execution and durable PASS/FAIL evidence.
 - BL-005: JUnit 5 + PostgreSQL Testcontainers integration-test generation, exact source binding, execution and durable PASS/FAIL evidence.
-- BL-009: human-readable test catalogue, test data and authorized live validation.
+- BL-009: human-readable test catalogue, dual-format test data, executable test-code mapping and authorized live validation.
 
 Generated Java source is never equivalent to execution or PASS.
 
-## 14. BL-009 test-data architecture
+## 15. BL-009 test-data architecture
 
-BL-009 test data uses a mandatory dual-format representation for each approved Story:
+BL-009 test data uses a mandatory dual-format representation for each fanout-eligible Story:
 
 1. `BL-009/test-data/<story-id>.csv` - machine-readable test-data source.
 2. `BL-009/test-data/<story-id>.md` - human-readable companion.
 
-The human-readable companion is mandatory and must contain a plain-language purpose/scope statement, an explanation of how the data should be used, and a Markdown table containing the actual applicable test-data values. A reference-only or ID-only table is incomplete.
+The human-readable companion is mandatory and must contain a plain-language purpose/scope statement, explanation of how the data is used, and a Markdown table containing actual applicable test-data values. A reference-only or ID-only table is incomplete. CSV and human-readable representations must maintain semantic row/data parity. Real credentials/secrets must never be persisted.
 
-CSV and human-readable representations must maintain semantic parity for row count, `data_id`, test-case association, inputs, preconditions/flags, expected results and data classification. Real credentials/secrets must never be persisted; governed runtime placeholders are allowed.
+## 16. BL-008 current-state authority
 
-## 15. BL-008 current-state authority
+`BL-008/README.md` is the live current-state source for BL-008. Production orchestration, aggregate checkpoints and watchdog reporting must resolve current state dynamically. Waiting BL-008 work must not block independently eligible BL-002/004/005/009/010 work.
 
-`BL-008/README.md` is the live current-state source for BL-008. Production orchestration, aggregate checkpoints and watchdog reporting must resolve the current validated migration/state/mode from that file at startup and checkpoint. Waiting BL-008 work must not block independently eligible BL-002/004/005/009 work.
+## 17. Scheduler and watchdog
 
-## 16. Scheduler and watchdog
+The Production Fire is the recurring work trigger; the watchdog is read-only. Pending post-approval conformance, automatable Story/code drift, BL-010 code rework and post-rework conformance reruns are normal Production Fire candidate units and are selected dynamically through dependency/read-write-set planning and resource-scoped claims.
 
-The Production Fire is the recurring work trigger; the watchdog is read-only. Run-local blockers must not automatically disable recurring scheduler tasks. A scheduler firing alone is not proof of progress.
+Each Production Fire maintains `.orchestrator/live-run.yaml` and append-only lifecycle events. Run-local blockers must not automatically disable recurring scheduler tasks.
 
-Each Production Fire must maintain `.orchestrator/live-run.yaml` and append lifecycle events under `.orchestrator/runs/<run-id>/events.ndjson`. The watchdog determines liveness from live-run plus event/termination evidence; `.orchestrator/last-run.yaml` alone does not prove that an invocation is currently running.
+The watchdog must report approval separately from code conformance, code drift, automated code-rework state, reapproval-required state and fanout eligibility.
 
-If the heartbeat is stale and no valid terminal event exists, classify the prior invocation as `ABNORMAL_PROCESS_DISAPPEARANCE`. The next Production Fire performs recovery-first root-cause reconciliation before normal dispatch.
+## 18. Runtime reliability and terminalization
 
-## 17. Runtime reliability and terminalization
+All exits/returns from the Production Fire must pass through one governed terminalization path. Direct silent return is forbidden. `UNKNOWN_TERMINATION` is a temporary defect classification requiring recovery/root-cause investigation.
 
-All exits/returns from the Production Fire must pass through one governed terminalization path such as `terminateRun(reason, evidence)` or equivalent. Direct silent return is forbidden.
+## 19. Quality gates
 
-Allowed machine-readable terminal reasons are:
+Quality gates include:
 
-- `ALL_ELIGIBLE_WORK_COMPLETED`
-- `ALL_REMAINING_WORK_BLOCKED`
-- `TARGET_RUNTIME_REACHED`
-- `PLATFORM_RUNTIME_FORCED_STOP`
-- `UNHANDLED_EXCEPTION`
-- `RESOURCE_CLAIM_FAILURE`
-- `AGGREGATE_RECONCILIATION_FAILURE`
-- `DEPENDENCY_DEADLOCK`
-- `SCHEDULER_CANCELLED`
-- `USER_REQUESTED_STOP`
-- `DUPLICATE_FIRE_SUPPRESSED`
-- `APPLICATION_SHUTDOWN`
-- `ABNORMAL_PROCESS_DISAPPEARANCE`
-- `UNKNOWN_TERMINATION`
+- `QG-SSOT`, source/dependency/claim/parity/strict Story gates.
+- `QG-BL002-APPROVAL`: explicit approval/reapproval is durable.
+- `QG-BL002-CONFORMANCE`: post-approval Story-to-code verification is durably PASS or DRIFT against exact governed source.
+- `QG-CODE-REWORK`: automatable approved Story/code drift is routed to idempotent BL-010 work and executed/validated by ChatGPT without auto-approval.
+- `QG-FANOUT`: BL-004/BL-005/BL-009 are released only after approval + current conformance PASS.
+- BL-004/BL-005 source binding and execution evidence.
+- BL-009 dual-format data parity and executable mapping.
+- runtime heartbeat and terminalization quality gates.
 
-`UNKNOWN_TERMINATION` is a temporary defect classification only and requires recovery/root-cause investigation.
-
-The terminal record is stored at `.orchestrator/runs/<run-id>/termination.yaml` and must capture run/scheduler IDs, started/heartbeat/termination times when observable, termination reason/classification, productive runtime when measurable, worker counts/IDs, eligible/dispatchable work counts, last durable event/checkpoint, exception/platform evidence when applicable, and recovery action.
-
-## 18. Quality gates
-
-Quality gates include SSOT consistency, exact source evidence, dependency safety, Story parity, strict Story enrichment, explicit approval, BL-004/BL-005 source binding and execution evidence, BL-009 dual-format test-data parity, populated human-readable test-data tables, BL-008 live-state reconciliation and durable checkpoint readback.
-
-Additional runtime gates:
-
-- `QG-RUNTIME`: while eligible work and execution capacity remain, the coordinator must continue productive replan/claim/dispatch rather than returning after a checkpoint.
-- `QG-HEARTBEAT`: live heartbeat must remain current and consistent with worker/event evidence.
-- `QG-TERMINATION`: every terminalization must record one allowed reason and complete diagnostic evidence. Ending with `eligible_work_remaining=true` and no governed explanation fails this gate.
-
-## 19. Repository control files
+## 20. Repository control files
 
 - `.orchestrator/execution-architecture.yaml` - machine-readable active architecture.
 - `.orchestrator/lease-policy.yaml` - resource claims and execution-policy rules.
 - `.orchestrator/runtime-reliability-policy.yaml` - productive runtime, heartbeat, worker refill, termination and recovery contract.
-- `.orchestrator/approved-story-testing-policy.yaml` - approved Story downstream testing and BL-009 test-data rules.
-- `.orchestrator/architecture-current.md` - this consolidated human-readable architecture.
-- `.orchestrator/live-run.yaml` - current invocation liveness/heartbeat/worker snapshot.
-- `.orchestrator/runs/<run-id>/events.ndjson` - append-only invocation lifecycle events.
-- `.orchestrator/runs/<run-id>/termination.yaml` - governed terminal reason and root-cause evidence.
-- `BL-002/story-register.csv` - canonical Story catalogue.
-- `BL-002/materialization-task-queue.csv` - missing Story-file priority queue.
-- `BL-002/enrichment-progress.yaml` - aggregate Story progress.
-- `BL-009/stories/<story-id>.md` - human-readable test catalogue.
-- `BL-009/test-data/<story-id>.csv` - machine-readable test data.
-- `BL-009/test-data/<story-id>.md` - mandatory human-readable test data with populated table.
-- `BL-008/README.md` - live BL-008 workflow and current state.
+- `.orchestrator/post-approval-code-conformance-policy.yaml` - mandatory approved Story/code verification and automated code-rework contract.
+- `.orchestrator/approved-story-testing-policy.yaml` - testing fan-out rules after approval + conformance PASS.
+- `.orchestrator/architecture-current.md` - this consolidated architecture.
+- `BL-002/post-approval-code-conformance-task-queue.csv` - approved Story code-conformance work queue.
+- `BL-002/code-conformance-evidence/<story-id>/*.yaml` - durable source-bound PASS/DRIFT evidence.
+- `BL-010/development-change-task-queue.csv` - automated development/code-rework queue.
+- `BL-010/evidence/` - source binding, implementation, validation and test evidence.
+- BL-004/BL-005/BL-009 queues and evidence - downstream testing only after fanout eligibility.
 
-## 20. Application control-loop acceptance rule
+## 21. Application control-loop acceptance rule
 
 A worker completion, blocker or successful aggregate checkpoint must return to replanning, not return from the Production Fire invocation. The coordinator keeps dispatching while eligible work and execution capacity remain, subject to dependency/write-set safety and the productive runtime window.
 
-A Production Fire must not finish with `eligible_work_remaining=true` and no governed explanation. If eligible work remains, terminal evidence must positively prove `TARGET_RUNTIME_REACHED`, `PLATFORM_RUNTIME_FORCED_STOP`, a complete blocker/deadlock condition, explicit user/scheduler shutdown, or another allowed reason. Otherwise `QG-TERMINATION` fails and the next Production Fire enters recovery-first mode.
+## 22. Document synchronization rule
 
-## 21. Document synchronization rule
+Generated architecture PDF/DOCX artifacts must be rebuilt when this architecture, post-approval conformance policy, approved testing policy, runtime reliability policy, execution architecture or lease policy changes materially. Historical wording may be retained only as clearly superseded history and must not contradict active operating instructions.
 
-Generated architecture PDF/DOCX artifacts must be rebuilt when this architecture, `.orchestrator/runtime-reliability-policy.yaml`, execution-architecture.yaml or lease-policy.yaml changes materially. Historical wording may be retained only as clearly superseded history and must not contradict active operating instructions.
-
-**Effective runtime rule:** checkpoint success is not completion. Keep the safe-independent worker pool productively refilled, preserve a live heartbeat/event trail, and make every termination explainable and recoverable.
+**Effective Story lifecycle:** `reverse engineer -> Story rework -> explicit approval/reapproval -> mandatory Story/code conformance -> automated BL-010 code rework when required -> reapproval if material -> conformance PASS -> BL-004/BL-005/BL-009 fan-out -> execution -> JaCoCo/coverage evidence`.
