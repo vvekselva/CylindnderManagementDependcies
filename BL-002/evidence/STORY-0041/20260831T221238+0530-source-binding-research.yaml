@@ -1,0 +1,24 @@
+story_id: STORY-0041
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+evidence_type: SOURCE_BINDING_RESEARCH
+observed_at: '2026-08-31T22:12:38+05:30'
+proved:
+  controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/UC01RegisterCustomerController.java
+  controller_post_endpoint: POST /registerCustomer
+  mediator_field_type: ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
+  mediator_field_name: uC01RegisterCustomerMediator
+  controller_invocation: uC01RegisterCustomerMediator.invokeServices(requestDto)
+  address_type_binding: resolveAddressTypes maps submitted addressTypeIds to AddressDto.addressType before mediator invocation
+not_yet_proved:
+  - concrete Spring bean implementation/configuration selected for uC01RegisterCustomerMediator
+  - exact transaction boundary across mediator/service chain
+  - validator implementation proving server-side cross-reference and required-field rules
+source_search_result:
+  - repository code search for RegisterCustomerMediator returned no indexed implementation result
+  - repository code search for UC01RegisterCustomerRequestDto returned no indexed implementation result
+conclusion: FAIL_CLOSED_SOURCE_BINDING_INCOMPLETE
+application_code_mutation: false
+bl_010_execution: false
+approval_delta: 0
+next_action: locate concrete mediator bean by frozen tree/package traversal or configuration metadata, then bind validator and transaction annotations before promotion
