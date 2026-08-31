@@ -1,0 +1,21 @@
+run_id: CYL-20260831T171739-0530
+scheduler_fire_id: 20260831T171500_0530
+termination_reason: ABNORMAL_PROCESS_DISAPPEARANCE
+terminal_classification: ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING_RECOVERED
+started_at: '2026-08-31T17:17:39+05:30'
+last_heartbeat_at: '2026-08-31T17:19:30+05:30'
+terminated_at_when_observable: null
+recovery_classified_at: '2026-08-31T17:51:26+05:30'
+productive_runtime_seconds_if_measurable: null
+running_worker_count: 0
+completed_worker_count: 0
+blocked_worker_count: 0
+active_work_unit_ids: []
+eligible_work_remaining: unknown
+dispatchable_work_count: null
+eligible_work_count: null
+last_durable_event: HEARTBEAT
+last_successful_checkpoint: null
+exception_or_platform_evidence_if_applicable: 'Heartbeat stale beyond policy threshold; no terminal record existed at recovery read.'
+recovery_required: false
+next_recovery_action: 'Recovered lifecycle evidence only; current fire must reconcile durable state before dispatch.'
