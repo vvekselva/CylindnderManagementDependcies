@@ -1,0 +1,3 @@
+{"at":"2026-08-31T07:50:22Z","event":"INVOCATION_STARTED","run_id":"CYLINDER-PRODUCTION-FIRE-20260831-075022Z","mode":"CONTINUOUS"}
+{"at":"2026-08-31T07:50:22Z","event":"HEARTBEAT","state":"RECOVERY_RECONCILIATION","loop_iteration":1}
+{"at":"2026-08-31T07:50:23Z","event":"REPLAN_STARTED","reason":"previous run left eligible work with no governed termination record"}
