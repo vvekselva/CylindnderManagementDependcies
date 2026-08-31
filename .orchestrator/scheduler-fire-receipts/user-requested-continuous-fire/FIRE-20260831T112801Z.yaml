@@ -1,13 +1,19 @@
 scheduler_task: USER_REQUESTED_CONTINUOUS_FIRE
 fire_id: FIRE-20260831T112801Z
 observed_fire_time: 2026-08-31T11:28:01Z
+scheduled_fire_time: null
 receipt_time: 2026-08-31T11:28:01Z
 state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
 run_link_state: RUN_LINKED
 orchestrator_started_at: 2026-08-31T11:28:23Z
-terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
-termination_time: null
-recovery_observed_at: 2026-08-31T11:34:28Z
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+termination_time: 2026-08-31T11:50:34Z
+termination_reason: SPLIT_BRAIN_RECOVERY_OWNERSHIP_CONFLICT
+eligible_work_remaining: true
 termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-112823Z/termination.yaml
+supersedes_recovery_observation:
+  prior_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  prior_recovery_observed_at: 2026-08-31T11:34:28Z
+  reason: Later durable heartbeat and work evidence proves this invocation continued after that recovery observation; fail-closed termination is now recorded to end the ownership conflict.
