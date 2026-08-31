@@ -3,10 +3,11 @@ claim_id: 20260831-0824-FINAL-READBACK
 run_id: CYLINDER-TARGETED-BL002-STORY-0011-20260831-0812IST
 backlog: BL-002
 unit_id: FINAL_READBACK
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T08:24+05:30
 heartbeat_at: 2026-08-31T08:24+05:30
 lease_expires_at: 2026-08-31T08:39+05:30
+released_at: 2026-08-31T08:24+05:30
 owner: Primary Cylinder Automation Tool
 mode: TARGETED
 read_set:
@@ -17,4 +18,5 @@ read_set:
   - .orchestrator/claims/BL-002/20260831-0823-AGGREGATE-RECONCILIATION.yaml
 write_set:
   - .orchestrator/last-run.yaml
+result: Final readback verified same run id, strict 124/134, physical 134/134, approvals 0, and BL-008 closed through V184.
 purpose: Persist final aggregate readback verification and released-claim state for STORY-0011 targeted reconciliation.
