@@ -1,0 +1,20 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
+scheduler_fire_id: PRODUCTION-FIRE-20260831-081605Z
+termination_reason: TARGET_RUNTIME_REACHED
+terminal_classification: TARGET_RUNTIME_REACHED
+started_at: 2026-08-31T08:20:58Z
+last_heartbeat_at: 2026-08-31T08:51:04Z
+terminated_at_when_observable: 2026-08-31T08:51:04Z
+productive_runtime_seconds_if_measurable: 1806
+running_worker_count: 0
+completed_worker_count: 2
+blocked_worker_count: 6
+active_work_unit_ids: []
+eligible_work_remaining: true
+eligible_work_count: 126
+dispatchable_work_count: 1
+last_durable_event: STORY-0014 exact service/DAO reads proved; controller/template binding remains fail-closed
+last_successful_checkpoint: BL-002/enrichment-progress.yaml version 62 / CHECKPOINT_RECONCILED
+exception_or_platform_evidence_if_applicable: null
+recovery_required: false
+next_recovery_action: Next Production Fire must re-read live durable state and continue CONTINUOUS replanning from eligible safe-independent work, including STORY-0014 controller/template binding and STORY-0033 concrete service/persistence binding.
