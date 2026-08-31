@@ -1,24 +1,26 @@
 run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST
 scheduler_task: Cylinder Production Fire - i
-state: ACTIVE
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-01T05:01:48+05:30'
-last_heartbeat_at: '2026-09-01T05:04:45+05:30'
-terminated_at: null
-terminal_classification: null
-terminal_reason: null
+last_heartbeat_at: '2026-09-01T05:06:07+05:30'
+terminated_at: '2026-09-01T05:06:07+05:30'
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+terminal_reason: GOVERNED_AUTOMATION_INVOCATION_RUNTIME_BOUNDARY
 running_worker_count: 0
 completed_worker_count: 0
 blocked_worker_count: 0
 active_work_unit_ids: []
 eligible_work_remaining: true
 resumable: true
-last_action: PRIOR_RUN_RECONCILED_LOCAL_GIT_TRANSPORT_BLOCKER_RECORDED_IN_EXECUTION_MEMORY
+last_action: STORY0047_STORY0048_PARTIAL_SOURCE_ANALYSIS_EVIDENCE_PERSISTED
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
 aggregate_business_behavior_complete: 21
 aggregate_business_behavior_total: 134
 aggregate_percent: 15.7
 completion_delta_this_run: 0
 local_git_transport_state: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
-next_action: Continue safe-independent Release-1 source analysis using exact frozen-source connector reads where local Git transport is unavailable; do not mutate approval-gated STORY-0045 code.
+advanced_work_unit_ids: [STORY-0047, STORY-0048]
+completed_work_unit_ids: []
+next_action: Resume dependency-safe R1 source proof for STORY-0047/STORY-0048 using local Git when transport is available; otherwise exact frozen-source file reads only. Keep STORY-0045 drift approval-gated.
