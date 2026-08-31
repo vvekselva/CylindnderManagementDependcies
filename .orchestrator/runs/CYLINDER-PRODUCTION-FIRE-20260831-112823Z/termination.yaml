@@ -1,0 +1,15 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+termination_reason: START_EVENT_WITHOUT_HEARTBEAT_OR_TERMINAL_RECORD
+original_termination_time: null
+recovery_observed_at: 2026-08-31T11:34:28Z
+orchestrator_started_at: 2026-08-31T11:28:23Z
+last_heartbeat_at: null
+terminal_event_found: false
+termination_record_found_before_recovery: false
+eligible_work_remaining: true
+recovered_by_run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
+voluntary_early_stop: false
+notes:
+  - Exact original process termination time is unknown and is not invented.
+  - No backlog progress is inferred from scheduler or start evidence alone.
