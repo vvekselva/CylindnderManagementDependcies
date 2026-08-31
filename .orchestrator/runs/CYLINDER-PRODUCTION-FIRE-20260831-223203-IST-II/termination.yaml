@@ -1,0 +1,23 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-223203-IST-II
+scheduler_fire_id: 20260831T223203+0530
+scheduler_task: Cylinder Production Fire - ii
+termination_reason: DUPLICATE_FIRE_SUPPRESSED
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+started_at: '2026-08-31T22:32:03+05:30'
+terminated_at_when_observable: '2026-08-31T22:32:50+05:30'
+productive_runtime_seconds_if_measurable: 47
+running_worker_count: 0
+completed_worker_count: 0
+blocked_worker_count: 0
+active_work_unit_ids: []
+eligible_work_remaining: true
+recovery_required: false
+next_recovery_action: active_primary_continues
+active_primary_run_id: CYLINDER-PRODUCTION-FIRE-20260831-223009-IST
+active_primary_state: RUNNING
+active_primary_started_at: '2026-08-31T22:30:09+05:30'
+active_primary_last_heartbeat_at: '2026-08-31T22:30:09+05:30'
+application_code_mutation: false
+bl_010_execution: false
+story_approval_delta: 0
+github_actions_or_runners_used: false
