@@ -3,10 +3,10 @@
 - Release: R1
 - Endpoint: `GET /login`
 - Controller: `LoginController.showLoginPage`
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REAPPROVAL
-- Approval state: NOT APPROVED FOR CURRENT REVISED CONTRACT
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_APPROVED_AFTER_REWORK
+- Approval state: APPROVED AFTER REWORK — EXPLICIT USER REAPPROVAL ON 2026-08-31
 - Historical approval: Explicit user approval recorded on 2026-08-31 before the mandatory global business-behavior rework
-- Current approval requirement: Explicit user reapproval is required because this Story has been materially reworked
+- Current approval evidence: `BL-002/approval-evidence/STORY-0001-reapproval-20260831.md`
 - Legacy enrichment state: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
@@ -109,8 +109,6 @@ No user-requested functional or selector UX change is currently identified for t
 
 ## Approval and testing gate
 
-STORY-0001 had a historical explicit approval before the mandatory global business-behavior rework. That historical approval remains audit evidence only.
+The current revised STORY-0001 contract was explicitly reapproved by the user on 2026-08-31 with the instruction `Approved, Fanout Now`.
 
-Because the Story has now been materially reworked to the current business-behavior standard, its current revised contract is **NOT APPROVED** until the user explicitly reapproves it.
-
-Accordingly, revised BL-004 unit-test execution, BL-005 integration-test execution and BL-009 revised-contract test execution remain suspended. Existing historical downstream artifacts are preserved but do not constitute approval or PASS for this revised Story.
+The Story is therefore **APPROVED_AFTER_REWORK**. Revised BL-004 unit-test, BL-005 PostgreSQL Testcontainers integration-test, and BL-009 catalogue/test-data/executable validation fan-out is authorized immediately. Fan-out authorization does not imply execution, PASS, or JaCoCo coverage; those require separate durable downstream evidence.
