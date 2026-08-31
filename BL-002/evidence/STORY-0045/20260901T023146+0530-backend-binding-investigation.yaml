@@ -1,0 +1,30 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-022702-IST
+backlog_id: BL-002
+story_id: STORY-0045
+evidence_time: '2026-09-01T02:31:46+05:30'
+mode: CONTINUOUS
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+investigation_scope: exact GET /displayCustomer controller/model -> service -> DAO/entity/database read binding
+searches_attempted:
+  - displayCustomer
+  - CustomerFetchById
+  - CustomerFetchByIdRequestDto
+  - customerFetchByIdService
+  - CustomerFetchByIdController
+  - CustomerFetchByIdService
+result:
+  exact_backend_binding_proved_this_invocation: false
+  classification: SOURCE_INDEX_BINDING_UNRESOLVED
+  interpretation: Search/index non-match is not evidence that the implementation is absent; exact frozen-source path traversal remains required.
+drift_governance:
+  review_packet: BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
+  manifest_expanded: false
+  application_code_mutated: false
+  bl_010_created_or_executed: false
+story_state:
+  business_behavior_complete: false
+  approval_state: PENDING_USER_APPROVAL
+  fail_closed: true
+next_action: Resolve exact controller/model and service/DAO/entity/database binding from frozen source without expanding or implementing the drift manifest; dispatch other safe-independent eligible work if this source lane remains unavailable.
