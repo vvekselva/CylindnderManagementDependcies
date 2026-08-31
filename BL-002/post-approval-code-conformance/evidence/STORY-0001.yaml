@@ -1,0 +1,41 @@
+conformance_id: PAC-0001
+story_id: STORY-0001
+run_id: CYL-20260831T171739-0530
+checked_at: '2026-08-31T17:32:27+05:30'
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+approved_story: BL-002/stories/STORY-0001.md
+approval_evidence: BL-002/approval-evidence/STORY-0001-reapproval-20260831.md
+classification: CODE_CONFORMANCE_VERIFIED_PASS
+drift_detected: false
+code_change_required: false
+code_mutation_performed: false
+verified_source:
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/LoginController.java
+    anchors: [LoginController.showLoginPage, GET_/login, errorMessage, logoutMessage]
+  - path: cylindermanagement.web/src/main/resources/templates/final-version-1/login.html
+    anchors: [POST_/perform_login, userName, password, togglePw, Sign_In]
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/util/ViewConstants.java
+    anchors: [LOGIN_FORM_VIEW]
+  - path: cylindermanagement.security/src/main/java/com/sreyas/datamatics/security/config/CylinderManagementSecurityConfig.java
+    anchors: [filterChain, loginProcessingUrl, usernameParameter, passwordParameter, successHandler]
+  - path: cylindermanagement.security/src/main/java/com/sreyas/datamatics/security/handler/DailyLoginSuccessHandler.java
+    anchors: [onAuthenticationSuccess, existsByLoginDate, save, ownership-dashboard]
+  - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/DailyLoginReportJpaDao.java
+    anchors: [existsByLoginDate, CAST_loginTime_AS_date]
+  - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/DailyLoginReportDo.java
+    anchors: [tbl_daily_login_report, pk_daily_login_report_id, pk_daily_login_id_serial, login_time]
+verified_behavior:
+  - GET /login renders final-version-1/login and exposes exact error/logout feedback branches.
+  - Login form submits POST /perform_login with userName and password and browser-required fields.
+  - Spring Security binds the declared credential parameters and invokes DailyLoginSuccessHandler on success.
+  - Success handler records at most one daily login row per current date and redirects to /ownership-dashboard.
+  - Daily login DAO query and entity/table/key/sequence/login_time mapping match the approved Story.
+  - Reference-selector rework is not applicable to this credential-only page.
+fanout_gate:
+  current_story_approval: PASS
+  code_conformance: PASS
+  revised_BL004_BL005_BL009_fanout: ELIGIBLE
+limitations:
+  - This is frozen-source conformance verification, not runtime test execution.
+  - No JUnit or JaCoCo result is inferred from source conformance.
