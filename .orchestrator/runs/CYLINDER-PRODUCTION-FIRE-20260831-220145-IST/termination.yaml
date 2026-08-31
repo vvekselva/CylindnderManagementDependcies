@@ -1,0 +1,19 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
+scheduler_fire_id: 20260831T220145+0530
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: INDIVIDUAL_INVOCATION_RUNTIME_BOUNDARY
+started_at: '2026-08-31T22:01:45+05:30'
+terminated_at: '2026-08-31T22:13:54+05:30'
+productive_runtime_seconds_if_measurable: 729
+running_worker_count: 0
+completed_worker_count: 0
+blocked_worker_count: 0
+active_work_unit_ids: []
+eligible_work_remaining: true
+last_durable_event: STORY_0041_CONTROLLER_MEDIATOR_INTERFACE_PROOF_CHECKPOINTED
+last_successful_checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-220145-IST/checkpoint.yaml
+application_code_mutation: false
+bl_010_execution: false
+story_approval_delta: 0
+github_actions_or_runners_used: false
+next_recovery_action: resume from checkpoint; reconcile aggregate drift first, then continue STORY-0041 concrete mediator/transaction/validator binding or other safe-independent eligible work
