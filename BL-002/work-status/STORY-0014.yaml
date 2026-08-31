@@ -1,11 +1,11 @@
-version: 2
+version: 3
 story_id: STORY-0014
 release: R1
 canonical_register_endpoint: GET /challan-entry-aging-dashboard
 canonical_functional_area: Challan Monitoring
 frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework:
-  state: REWORK_BLOCKED_SOURCE_DETAIL_REVIEW_REQUIRED
+  state: REWORK_BLOCKED_CONTROLLER_TEMPLATE_BINDING_REQUIRED
   business_behavior_complete: false
   selector_ux_reviewed: false
   search_conversion_required: false
@@ -23,15 +23,23 @@ source_binding:
   github_code_search_incomplete_results: true
   exact_controller_bound: false
   exact_template_bound: false
-  exact_service_bound: false
-  exact_database_read_identity_bound: false
-  source_detail_gap: Exact canonical route still does not resolve from accessible frozen-source search evidence. Because GitHub code search reports incomplete_results=true, route absence is not proven and no substitute controller/template/service/database path may be invented.
+  exact_service_bound: true
+  exact_service_path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanEntryAgingDashboardService.java
+  exact_service_blob: f9070a3f78e7e6113d08caff4282c538cc9c1007
+  service_method: fetchDashboard(String trackerStatus, Long tripId)
+  exact_database_read_identity_bound: partial
+  dao_reads:
+    - TripChallanEntryTrackerJpaDao.countByTrackerStatus for PENDING/PARTIAL/COMPLETED/AGING/ESCALATED
+    - TripChallanEntryTrackerJpaDao.findDashboardRows(trackerStatus, tripId, PageRequest.of(0,200))
+    - TripChallanEntryTrackerAuditJpaDao.findDashboardRows(tripId, PageRequest.of(0,50))
+  mapper: ChallanEntryAgingDashboardMapper
+  source_detail_gap: Frozen service and DAO method identities are now proven, but the exact GET controller and rendered template remain unbound. No endpoint-to-service linkage or visible behavior is claimed until that controller/template evidence is found.
 approval:
   state: NOT_APPROVED
   explicit_user_approval_required_after_rework: true
   auto_approved: false
 next_actions:
-  - resolve exact frozen controller/source for GET /challan-entry-aging-dashboard from a complete source-tree proof
-  - trace dashboard data through service/repository/database and visible behavior if source exists
-  - if complete frozen-tree proof establishes absence, classify source-integrity gap
-  - do not substitute the previous /system-settings identity
+  - resolve exact frozen controller and template for GET /challan-entry-aging-dashboard
+  - bind controller invocation to ChallanEntryAgingDashboardService.fetchDashboard
+  - prove visible filters, counts, rows, empty/error behavior
+  - do not infer endpoint linkage solely from the service class
