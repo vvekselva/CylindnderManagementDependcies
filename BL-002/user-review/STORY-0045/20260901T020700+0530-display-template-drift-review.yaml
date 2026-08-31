@@ -1,0 +1,48 @@
+story_id: STORY-0045
+review_packet_time: '2026-09-01T02:07:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
+classification: CODE_CONFORMANCE_DRIFT_USER_REVIEW_REQUIRED
+approval_state: PENDING_USER_APPROVAL
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+current_behavior:
+  endpoint_story: GET /displayCustomer is governed as Customer Display.
+  template_path: cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html
+  source_anchor: file header and HTML head/title
+  observed: The file header identifies UC01RegisterCustomer.html and the HTML title is 'Register Customer'; the body is registration-form markup. The filename therefore does not conform to the governed Customer Display responsibility.
+approved_or_governed_behavior:
+  status: STORY-0045 remains PENDING_USER_APPROVAL; no exact field/column layout has been user-approved.
+  baseline: The governed Story requires GET /displayCustomer to render/retrieve Customer Display behavior. A registration form must not masquerade as the Customer Display template.
+business_impact:
+  - A request that resolves the DisplayCustomer view can render the wrong business operation or an incompatible model contract.
+  - Customer-display traceability cannot be closed while the template content represents registration behavior.
+  - UI tests may pass against the wrong artifact name unless semantic content is asserted.
+proposed_code_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file_path: cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html
+    component: Thymeleaf Customer Display template
+    location: whole template; first anchor is the opening comment 'UC01RegisterCustomer.html' and <title>Register Customer</title>
+    proposed_change: Replace registration-specific markup with a Customer Display template whose bindings and visible fields/actions match the exact GET /displayCustomer controller/model contract proven from frozen source. Preserve shared layout fragments and do not change fragments/_layout-styles.html.
+    reason: Restore semantic and model-contract conformance between the DisplayCustomer view name and governed STORY-0045 Customer Display behavior.
+    tests:
+      - Add/update MVC view test asserting GET /displayCustomer resolves DisplayCustomer with the required customer model.
+      - Add rendered-template test asserting display semantics and absence of registration-form submission controls.
+      - Retain error/redirect-path tests once exact controller behavior is source-bound.
+    database_impact: none expected for this template-only manifest; no schema or data migration is proposed.
+manifest_boundary:
+  approved_scope_if_user_accepts: template-only correction at the exact file above plus tests directly required to verify it.
+  excluded_until_separately_approved:
+    - controller/service/DAO changes
+    - database/schema changes
+    - BL-010 creation or execution
+    - any new display fields/actions not first bound to source/governed requirements
+  expansion_rule: If source analysis shows backend changes are necessary, stop that scope and obtain a new exact user approval before mutation.
+evidence:
+  - BL-002/evidence/STORY-0045/20260831T233456+0530-display-template-source-mismatch.yaml
+  - frozen template blob b9617edc8514b37918caeb5c8602d7520e86eb33
+application_code_mutation: false
+bl_010_created: false
+bl_010_executed: false
+auto_approval: false
