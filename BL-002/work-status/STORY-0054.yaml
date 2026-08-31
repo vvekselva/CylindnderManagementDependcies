@@ -25,7 +25,15 @@ rework:
     - bind_exact_existing_product_search_rest_endpoint
     - prove_selected_id_propagation_and_stale_id_clear_behavior
     - preserve_server_side_customer_address_ownership_validation
+    - reconcile_story_from_implemented_source
     - explicit_user_review_and_approval
+development_change:
+  backlog: BL-010
+  development_id: DEV-0001
+  queue: BL-010/development-change-task-queue.csv
+  state: READY_FOR_SOURCE_BINDING
+  implementation_required: true
+  implementation_does_not_imply_approval: true
 downstream_fanout:
   BL-004: DEFER_UNTIL_EXPLICIT_APPROVAL
   BL-005: DEFER_UNTIL_EXPLICIT_APPROVAL
@@ -33,3 +41,4 @@ downstream_fanout:
 notes:
   - Current frozen source behavior is evidence of the gap, not acceptance of the target UX.
   - Existing Walk-in Sale search behavior is the required customer-selector reference pattern.
+  - User directed that development changes be worked in the Development Changes backlog; DEV-0001 is the governed implementation unit.
