@@ -10,6 +10,8 @@ write_set:
   - BL-002/work-status/STORY-0037.yaml
   - BL-002/enrichment-progress.yaml
 claimed_at: '2026-08-31T17:37:22+05:30'
-heartbeat_at: '2026-08-31T17:37:22+05:30'
+heartbeat_at: '2026-08-31T17:37:56+05:30'
 lease_expires_at: '2026-08-31T17:52:22+05:30'
-state: ACTIVE
+released_at: '2026-08-31T17:37:56+05:30'
+state: RELEASED_RECONCILED_EXISTING_EVIDENCE
+result: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
