@@ -1,0 +1,29 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-223009-IST
+checkpoint_time: '2026-08-31T22:44:51+05:30'
+mode: CONTINUOUS
+state: RESUMABLE_RUNTIME_BOUNDARY
+previous_run_reconciled:
+  run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
+  terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+concurrent_duplicate_suppressed: CYLINDER-PRODUCTION-FIRE-II-20260831-223203-IST
+completed_units: []
+partial_units:
+  - BL-002/STORY-0041_BUSINESS_BEHAVIOR_REWORK
+story_0041:
+  business_behavior_complete: false
+  approval_delta: 0
+  evidence: BL-002/evidence/STORY-0041/20260831T224416+0530-source-binding-continuation.yaml
+  remaining_source_binding:
+    - concrete Spring mediator bean implementation/configuration
+    - exact transaction boundary around mediator/service chain
+    - validator implementation proving server-side cross-reference and required-field rules
+aggregate_checkpoint:
+  mutated: false
+  repair_remaining: true
+  reason: exact aggregate reconciliation from authoritative unit-local states remains required
+active_claims_remaining: 0
+eligible_work_remaining: true
+application_code_mutation: false
+bl_010_execution: false
+github_actions_or_runners_used: false
+next_recovery_action: reconcile aggregate projection from authoritative unit-local states, then continue STORY-0041 mediator/transaction/validator source binding or dispatch another safe-independent eligible unit
