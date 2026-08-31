@@ -3,21 +3,21 @@ claim_id: 20260831-0802-STORY-0036
 run_id: CYLINDER-TARGETED-BL002-STORY-0036-20260831-0802IST
 backlog: BL-002
 unit_id: STORY-0036
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T08:02+05:30
 heartbeat_at: 2026-08-31T08:02+05:30
 lease_expires_at: 2026-08-31T08:17+05:30
+released_at: 2026-08-31T08:02+05:30
 owner: Primary Cylinder Automation Tool
 mode: TARGETED
 read_set:
   - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
   - Releases/bl001-traceability-20260828-134/traceability-matrix.json
   - BL-002/stories/STORY-0036.md
-  - BL-002/enrichment-progress.yaml
-  - BL-008/README.md
 write_set:
   - BL-002/stories/STORY-0036.md
   - BL-002/work-status/STORY-0036.yaml
-  - BL-002/enrichment-progress.yaml
-  - .orchestrator/last-run.yaml
+result: STRICT_FIELD_UI_COMPLETE
+strict_delta: 1
+approval_delta: 0
 purpose: Reconcile STORY-0036 Yard Audit from frozen-source controller-service-DAO-database-template evidence and persist strict completion if fully proved.
