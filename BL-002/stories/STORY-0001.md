@@ -3,7 +3,8 @@
 - Release: R1
 - Endpoint: `GET /login`
 - Controller: `LoginController.showLoginPage`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED
+- Approval source: Explicit user approval in ChatGPT on 2026-08-31
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
@@ -38,4 +39,8 @@ On successful authentication, `DailyLoginSuccessHandler.onAuthenticationSuccess`
 
 The exact persistent identity is JPA entity `DailyLoginReportDo` mapped to `public.tbl_daily_login_report`. Its generated identifier is column `pk_daily_login_report_id`, backed by sequence `public.pk_daily_login_id_serial` with allocation size 1; the required timestamp is column `login_time` (`nullable=false`). Frozen migration `V1__DailyLogin.sql` creates `public.tbl_daily_login_report` with `pk_daily_login_report_id` and `login_time timestamp NOT NULL`, a uniqueness constraint on the ID, and creates sequence `public.pk_daily_login_id_serial`.
 
-The GET story therefore proves the login screen's entry path, exact rendered template, query branches, credential controls, browser behavior, authentication POST binding, failure/logout feedback, successful-authentication daily-report guard and conditional persistence, exact JPA/table/column/sequence identity, and successful redirect target. No user approval is inferred or recorded.
+The GET story therefore proves the login screen's entry path, exact rendered template, query branches, credential controls, browser behavior, authentication POST binding, failure/logout feedback, successful-authentication daily-report guard and conditional persistence, exact JPA/table/column/sequence identity, and successful redirect target.
+
+## Approval and downstream testing
+
+STORY-0001 was explicitly approved by the user on 2026-08-31. Approval fans out to BL-004 JUnit unit-test generation, BL-005 JUnit/Testcontainers integration-test creation, and BL-009 human-readable test-case/test-data generation. This approval applies only to STORY-0001 and does not auto-approve any other Story.
