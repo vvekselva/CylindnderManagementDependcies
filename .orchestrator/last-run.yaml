@@ -1,21 +1,21 @@
-run_id: CYLINDER-TARGETED-BL002-STORY-0011-20260831-0812IST
-checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-31T08:12+05:30
-checkpoint_at: 2026-08-31T08:24+05:30
-terminal_classification: TARGETED_UNIT_COMPLETE_CONTINUE_REQUIRED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-081352IST
+checkpoint_state: CHECKPOINT_RECONCILIATION_PENDING
+started_at: 2026-08-31T08:13:52+05:30
+checkpoint_at: 2026-08-31T08:26:42+05:30
+terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
-  run_scope_mode: TARGETED
+  run_scope_mode: PRODUCTION_FIRE
   compatibility_invocation_lease_global_mutex: false
 work:
-  attempted_ids: [STORY-0011]
-  completed_strict_ids: [STORY-0011]
-  blocked_ids: []
-  source_detail_refined_ids: [STORY-0011]
-  identity_repaired_ids: [STORY-0011]
-  strict_field_ui_completion_delta: 1
+  attempted_ids: [STORY-0047]
+  completed_strict_ids: []
+  blocked_ids: [STORY-0047]
+  source_detail_refined_ids: [STORY-0047]
+  strict_field_ui_completion_delta: 0
+  concurrent_durable_strict_advancement_observed: [STORY-0011]
   physical_materialization_delta: 0
   approvals_delta: 0
   next_dynamically_resolved_eligible_unit: DYNAMIC_RECONCILIATION_REQUIRED
@@ -32,7 +32,7 @@ metrics_after:
 bl001:
   state: COMPLETE_READ_ONLY
   action: NO_CHANGE_REQUIRED
-  reason: Current canonical POST /complete-trip row already matches frozen CompleteTripController.completeTrip, CompleteTripServiceImpl, CompleteTripRequestValidator and full branching evidence; no current source-integrity regression remains.
+  reason: No source-integrity regression proved in this fire.
 bl008:
   state_source: BL-008/README.md
   last_validated_migration: V184
@@ -42,19 +42,16 @@ bl008:
   database_write_delta_chatgpt: 0
 claims:
   recovered_stale: []
-  created: [20260831-0812-STORY-0011, 20260831-0823-AGGREGATE-RECONCILIATION, 20260831-0824-FINAL-READBACK]
-  completed: [20260831-0812-STORY-0011, 20260831-0823-AGGREGATE-RECONCILIATION]
+  created: [20260831-082249-STORY-0047, 20260831-082531-AGGREGATE-RECONCILIATION, 20260831-082622-AGGREGATE-RECONCILIATION-RETRY]
+  completed: [20260831-082249-STORY-0047]
+  released_deferred_conflict: [20260831-082531-AGGREGATE-RECONCILIATION]
+  active_reconciliation_claim: 20260831-082622-AGGREGATE-RECONCILIATION-RETRY
   work_unit_claims_remaining_at_checkpoint: 0
-  aggregate_claims_remaining_at_checkpoint: 0
-  final_readback_claim_status_at_checkpoint: ACTIVE_FOR_FINALIZATION
 reconciliation:
-  canonical_story_identity_verified: true
-  physical_story_identity_repaired: true
-  source_contract_frozen_baseline_verified: true
+  concurrent_newer_durable_evidence_preserved: true
   story_unit_local_evidence_persisted: true
-  bl001_reopen_required: false
-  readback_verified_same_run_id: true
-  readback_verified_metrics: true
-  readback_verified_bl008_state: true
-  aggregate_reconciliation_gate: PASS
+  readback_verified_same_run_id: false
+  readback_verified_metrics: false
+  readback_verified_bl008_state: false
+  aggregate_reconciliation_gate: PENDING_READBACK
 transient_logs_remaining: 0
