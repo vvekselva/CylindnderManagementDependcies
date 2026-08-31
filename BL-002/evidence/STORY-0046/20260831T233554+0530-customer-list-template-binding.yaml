@@ -1,0 +1,28 @@
+story_id: STORY-0046
+evidence_time: '2026-08-31T23:35:54+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-232655-IST
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  path: cylindermanagement.web/src/main/resources/templates/final-version-1/CustomerListPage.html
+  blob_sha: e1277b0aa00e9ec1015d1c9dccf7ede980725053
+proved_browser_contract:
+  - template identifies page model as CustomerFetchByPageResponseDto under model key page.
+  - page exposes customerSummaryDtos, totalItems, currentPageNumber, itemsPerPage, totalPages, hasPreviousPage and hasNextPage.
+  - additional model values documented by the frozen template are searchTerm, activeOnly, itemsPerPage, pageSizeOptions {5,10,20,50}, and basePageUrl.
+  - visible Customer List page includes search input, active-only toggle and page-size selector.
+  - row click links to GET /displayCustomer?customerId={id}.
+  - Register action links to GET /registerCustomer.
+  - inactive action is POST /setCustomerInactive with customerId rather than delete.
+  - table presentation has customer name/id, GST, phone, city, status and action columns, with a distinct empty-state presentation.
+business_behavior_complete: false
+classification: SOURCE_DETAIL_REVIEW_REQUIRED
+remaining_source_binding:
+  - exact GET /fetchCustomerByPage controller method and request parameter binding
+  - actual server-side mapping of searchTerm, activeOnly, itemsPerPage and pageNumber
+  - service/DAO/entity/database read identity and ordering/filter predicates
+  - exact server-side success/empty/error branches
+negative_inference_rule: Template comments are strong browser/model evidence but are not by themselves proof of controller or persistence implementation.
+approval: PENDING_USER_APPROVAL
+application_code_mutation: false
+bl_010_execution: false
