@@ -1,0 +1,14 @@
+claim_id: 20260831-114408-STORY-0055-BUSINESS
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+backlog: BL-002
+unit: STORY-0055_BUSINESS_BEHAVIOR_REWORK
+status: ACTIVE
+acquired_at: 2026-08-31T11:44:08Z
+heartbeat_at: 2026-08-31T11:44:08Z
+read_set:
+  - BL-002/stories/STORY-0055.md
+  - BL-002/stories/STORY-0054.md
+write_set:
+  - BL-002/stories/STORY-0055.md
+  - BL-002/work-status/STORY-0055.yaml
+purpose: Reconcile POST create-demand business behavior with the implemented searchable-selector page contract while preserving pending approval and code-change governance.
