@@ -1,5 +1,38 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
-checkpoint_time: '2026-09-01T00:02:17+05:30'
-state: RESUMABLE
+checkpoint_time: '2026-09-01T00:14:00+05:30'
+mode: CONTINUOUS
+state: RESUMABLE_RUNTIME_BOUNDARY
 eligible_work_remaining: true
 active_claims_remaining: 0
+aggregate_projection:
+  version: 72
+  mutated: false
+  reason: no Story crossed Business Behavior completion gate in this invocation
+partial_units:
+  - STORY-0041_BUSINESS_BEHAVIOR_REWORK
+  - STORY-0046_BUSINESS_BEHAVIOR_REWORK
+story_0041:
+  business_behavior_complete: false
+  advanced_this_run:
+    - concrete UC01RegisterCustomerMediator Spring component and invokeServices chain proved
+    - CustomerIngestionService validation/mapping/CustomerJpaDao.save persistence path proved
+    - CustomerIngestionRequstValidator concrete server-side validation implementation proved
+  remaining:
+    - exact effective transaction boundary around CustomerJpaDao.save in deployed Spring Data/JPA configuration
+  evidence: BL-002/evidence/STORY-0041/20260901T001252+0530-concrete-mediator-validator-persistence-binding.yaml
+story_0046:
+  business_behavior_complete: false
+  advanced_this_run:
+    - GET /fetchCustomerByPage controller parameters/service/view proved
+    - request/response pagination contracts proved
+    - CustomerFetchByPageService normalization, sort, active/search branches, summary mapping proved
+    - CustomerJpaDao derived query methods proved
+  remaining:
+    - exact CustomerDo table/column identity for list filters
+    - final CustomerListPage control-to-controller reconciliation
+  evidence: BL-002/evidence/STORY-0046/20260901T001252+0530-controller-service-dao-binding.yaml
+story_approval_delta: 0
+application_code_mutation: false
+bl_010_execution: false
+github_actions_or_runners_used: false
+next_recovery_action: Resume STORY-0041 transaction-management binding and STORY-0046 CustomerDo/UI reconciliation; then evaluate completion gates without auto-approval.
