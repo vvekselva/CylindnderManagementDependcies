@@ -1,0 +1,34 @@
+story_id: STORY-0033
+release: R1
+endpoint: POST /walkin-sale
+controller: WalkinSaleIngestionController.doPost
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
+state: REWORK_REQUIRED_SOURCE_BINDING
+approval_state: PENDING_USER_APPROVAL
+auto_approval: false
+identity_drift:
+  detected: true
+  previous_stale_identity: GET /product-uom
+  canonical_identity: POST /walkin-sale
+  repaired: true
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/WalkinSaleIngestionController.java
+  controller_blob: f69fb6a552fb8bed82cba05922cd7936deea60e7
+  request_dto_path: Cylinder.management.dto/src/main/java/com/sreyas/datamatics/application/request/dto/WalkinSaleRequestDto.java
+  request_dto_blob: 13f278d40b25af4038cececa4be8b18276f95575
+  template_path: cylindermanagement.web/src/main/resources/templates/final-version-1/WalkinSaleIngestion.html
+  template_blob: 3c6328ea72b21ac1e9363a21e8bd8d6004051bb
+proved_controller_contract:
+  service_call: walkinSaleService.processRequest(requestDto)
+  success: redirect_to_back_link
+  invalid_input: redisplay_with_validation_message_and_failed_dto_when_available
+  application_error: redisplay_with_challan_and_cylinder_selection_message
+remaining_gap:
+  concrete_service_bean_binding: UNPROVEN
+  service_validation_guards: UNPROVEN
+  transaction_boundary: UNPROVEN
+  dao_repository_chain: UNPROVEN
+  database_writes_and_state_transitions: UNPROVEN
+next_action: BIND_CONCRETE_WALKIN_SALE_SERVICE_THEN_TRACE_PERSISTENCE
