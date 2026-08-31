@@ -7,4 +7,6 @@
 {"at":"2026-08-31T08:45:55Z","event":"WORKER_BLOCKED","unit":"BL-002/STORY-0033","detail":"stale Product UOM identity repaired to canonical POST /walkin-sale; controller/request/template bound; exact concrete service and persistence chain remain unproven"}
 {"at":"2026-08-31T08:46:30Z","event":"CHECKPOINT_COMPLETED","detail":"BL-002 aggregate version 62; STORY-0032 complete awaiting review; STORY-0033 fail-closed source binding"}
 {"at":"2026-08-31T08:47:32Z","event":"HEARTBEAT","loop_iteration":9,"active":["BL-002/STORY-0014"]}
-{"at":"2026-08-31T08:49:11Z","event":"REPLAN_COMPLETED","detail":"STORY-0014 frozen source investigation continued; service architecture located, exact route/controller binding still unresolved"}
+{"at":"2026-08-31T08:49:11Z","event":"REPLAN_COMPLETED","detail":"STORY-0014 frozen source investigation continued; service architecture located"}
+{"at":"2026-08-31T08:50:23Z","event":"WORKER_BLOCKED","unit":"BL-002/STORY-0014","detail":"exact ChallanEntryAgingDashboardService and DAO reads proved; exact GET controller/template remain unbound so Story remains fail-closed"}
+{"at":"2026-08-31T08:50:23Z","event":"REPLAN_STARTED","detail":"productive target boundary approaching; preserve next eligible work for governed continuation"}
