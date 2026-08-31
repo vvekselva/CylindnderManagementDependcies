@@ -1,0 +1,18 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-123813Z
+classification: DUPLICATE_FIRE_SUPPRESSED
+termination_reason: FRESH_ACTIVE_PRIMARY_RUN_DETECTED_DURING_STARTUP_RECONCILIATION
+started_at: '2026-08-31T12:38:14Z'
+terminated_at: '2026-08-31T12:41:15Z'
+productive_runtime_seconds: 181
+scheduler_task: Cylinder Production Fire - ii
+fire_id: 20260831T123813Z
+receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire-ii/20260831T123813Z.yaml
+active_primary_run: CYL-ORCH-20260831T175004+0530
+active_primary_last_heartbeat_at: '2026-08-31T18:09:06+05:30'
+eligible_work_remaining: true
+application_code_mutation: false
+bl010_code_rework_executed: false
+auto_approvals: 0
+backlog_mutation: false
+scheduler_remains_enabled: true
+recovery_note: An initial stale-run classification was retracted after a newer durable heartbeat proved the primary run was still active. No overlapping backlog work was dispatched.
