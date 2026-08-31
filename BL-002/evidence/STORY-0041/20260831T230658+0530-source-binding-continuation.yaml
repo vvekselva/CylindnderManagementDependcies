@@ -1,0 +1,27 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-225914-IST-I
+story_id: STORY-0041
+evidence_time: '2026-08-31T23:06:58+05:30'
+work_unit: BL-002/STORY-0041_BUSINESS_BEHAVIOR_REWORK
+source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+classification: PARTIAL_SOURCE_BINDING_CONTINUE_REQUIRED
+business_behavior_complete: false
+approval: PENDING_USER_APPROVAL
+approval_delta: 0
+carried_verified_assertions:
+  - POST /registerCustomer controller invokes uC01RegisterCustomerMediator.invokeServices(requestDto)
+  - mediator injection type is ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
+  - submitted Address Type is propagated to AddressDto before mediator invocation
+research_this_run:
+  - re-opened the exact frozen repository root and confirmed the source is split across multiple Java modules including Cylinder.management.dto, cylinder.management.dao, cylindermanagement.custommapper.service, cylindermanagement.web, and framework
+  - retried repository code search for uC01RegisterCustomerMediator, UC01RegisterCustomerRequestDto, and ICylinderManagementApplicationMediator; the connector index returned no matching results, which is not treated as proof that the implementations are absent
+  - retained the prior source-proved assertions and did not infer missing behavior from search-index limitations
+remaining_source_binding:
+  - concrete Spring mediator bean implementation or configuration for the UC01 register-customer path
+  - exact transaction boundary around the mediator/service persistence chain
+  - validator implementation proving server-side required-field and cross-reference rules
+next_action: continue exact frozen-source traversal by module/path for the concrete mediator, transaction boundary, and validator; if another safe-independent unit is more productive it may be dispatched without weakening STORY-0041 gates
+application_code_mutation: false
+bl_010_execution: false
+github_actions_or_runners_used: false
