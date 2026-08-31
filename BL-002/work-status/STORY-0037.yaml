@@ -1,13 +1,13 @@
-version: 1
+version: 2
 story_id: STORY-0037
 release: R1
 endpoint: GET /cylinderDelivery
 updated_by: Primary Cylinder Automation Tool
 frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
 rework_policy: BL-002/story-business-behavior-rework-policy.yaml
-state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 approval_state: NOT_APPROVED
-business_behavior_complete: false
+business_behavior_complete: true
 selector_ux_review:
   state: COMPLETE_CURRENT_PAGE_PATTERN_ALREADY_SEARCH_BASED
   customer:
@@ -33,12 +33,33 @@ source_proved:
   - Customer selection drives customer-specific address lookup and clears stale customer/address identities when customer changes.
   - Vehicle and challan date gate the in-transit cylinder lookup; selected cylinder IDs and quantities are propagated as order lines.
   - Client submit guards require challan number/date/type, customer, driver, vehicle and at least one cylinder.
-  - POST /cylinderDelivery delegates the assembled DTO to ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>; success redirects to orderList and InvalidInputParameterException redisplays the form with errorMessage.
-missing_source_binding:
-  - Concrete mediator implementation selected for UC02Phase02CylinderDeliveryRequestDto.
-  - Exact application service transaction performed by the mediator.
-  - Exact DAO/repository/database writes and persisted identities for the delivery order and cylinder state/location effects.
-  - Source-proved downstream business state after successful Save Delivery Order.
-reason_not_review_ready: The GET page behavior is well proved, but the page embeds a Save Delivery Order business capability. The global rework policy requires that embedded action's exact system write effect and downstream business impact be explained. The controller proves only the generic mediator handoff, so marking the Story BUSINESS_BEHAVIOR_COMPLETE now would invent the missing transaction path.
-next_action: Bind the concrete UC02 Phase 02 delivery mediator/service/DAO transaction from the frozen source, update STORY-0037 with before/after persistence and business impact, then move to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW without auto-approval.
+  - POST /cylinderDelivery invokes Uc02Phase02CylinderDeliveryMediator.invokeServices, which builds OrderIngestionRequestDto and calls OrderIngestionService.processRequest.
+  - OrderIngestionService.processRequest is @Transactional and validates the request before constructing OrderDo and OrderLineDo entities.
+  - Service resolves challan type, customer, delivery address, driver, vehicle and cylinder identities through their JPA DAOs.
+  - The service defaults order_status to DELIVERED when the submitted status is null/blank, trims challan number, sets remarks and server-side created/updated timestamps.
+  - Each submitted cylinder becomes an OrderLineDo; quantity uses the submitted quantity when present or cylinder.totalQuantity otherwise; product is derived from the resolved cylinder.
+  - OrderJpaDao.save(orderDo) persists public.tbl_order. OrderDo.orderLines uses cascade CascadeType.ALL, therefore the attached OrderLineDo collection is persisted to public.tbl_order_line in the same transactional service call.
+  - public.tbl_order identity is pk_order_id; challan_number is non-null and unique; header FKs include fk_challan_type, fk_customer, fk_delivery_address, fk_driver and fk_vehicle.
+  - public.tbl_order_line identity is pk_order_line_id with fk_order, fk_cylinder, fk_product and quantity; optional per-line fk_delivery_address is supported by the entity but is not populated by this service path.
+  - The mediator contains only a commented future cylinder-state-transition example; no explicit cylinder-state-transition service is executed by this source path.
+  - InvalidInputParameterException is rethrown by the mediator. CylinderManagementApplicationException from OrderIngestionService is logged and swallowed by the mediator before it sets SUCCESS response code; this is recorded as current-source behavior, not an approved target behavior.
+validation_current_source:
+  - request DTO must be non-null.
+  - order DTO must be non-null.
+  - challan number must not be blank.
+  - challan date must be present and strictly before LocalDate.now(); today and future dates are rejected by current source.
+  - challan type ID must be positive and must exist.
+  - customer ID must be positive and must exist.
+  - delivery address ID must be positive and must exist; this is stricter than the browser guard, which does not require Delivery Address.
+  - driver ID must be positive and must exist.
+  - vehicle ID must be positive and must exist.
+  - at least one order line is required.
+  - cylinder-null validation contains a source defect: the existence lookup is guarded by cylinderIdNull rather than its inverse, so the validator does not safely prove the intended non-null cylinder existence check. This gap is documented without code mutation.
+current_state_gaps:
+  - No explicit cylinder-state-transition service is executed after order persistence; the mediator only contains a commented future example.
+  - CylinderManagementApplicationException from the order-ingestion service is swallowed by the mediator, after which the mediator sets SUCCESS response code.
+  - Browser requiredness and server validation differ for delivery address and challan date semantics.
+  - Cylinder existence validation has an unsafe/null-guard condition in OrderIngestionRequestValidator.
+review_decision: Source binding is now complete enough to explain the page's embedded Save Delivery Order capability, exact transaction, database identities, validations and current-source gaps without inventing downstream behavior.
+next_action: USER_REVIEW_REWORKED_STORY_AND_EXPLICIT_APPROVAL_OR_REWORK
 fanout_authorized: false
