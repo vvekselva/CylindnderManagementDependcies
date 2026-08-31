@@ -1,6 +1,6 @@
-version: 59
+version: 60
 backlog_id: BL-002
-updated_at: 2026-08-31T08:09:05Z
+updated_at: 2026-08-31T08:21:00Z
 updated_by: Primary Cylinder Automation Tool
 checkpoint_state: CHECKPOINT_RECONCILED
 scope:
@@ -57,10 +57,15 @@ development_changes:
   source_binding_complete: 1
   implementation_complete: 0
   implementation_in_review: 1
+  validation_state: CHANGES_REQUIRED_BEFORE_MERGE
+  validation_evidence: BL-010/evidence/DEV-0001-pr3-validation-20260831.yaml
+  merge_gate: BLOCKED
+  product_response_wrapper_contract: NOT_PROVEN
+  scope_minimization: FAIL
   application_branch: automation/bl010-dev0001-customer-demand-search
   application_head: 32a6d6fc9cc24aff74cfa8e4068241233c8e7f9d
   pull_request: 3
-  rule: Development implementation does not imply Story approval; reconcile implemented source back into BL-002 before explicit approval/reapproval.
+  rule: Development implementation does not imply Story approval; corrected implementation must reconcile back into BL-002 before explicit approval/reapproval.
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
   historical_approved_story_ids: [STORY-0001]
@@ -88,14 +93,15 @@ reconciliation:
     - STORY-0011 advanced to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW with selector review complete
     - STORY-0012 canonical identity repaired to exact frozen ChallanBookWebController/template; deepest service/database read remains fail-closed
     - STORY-0013 canonical identity repaired to exact frozen ChallanBookWebController registration POST/template; deepest ingestion service/database write remains fail-closed
-    - STORY-0054 exact Customer/Address/Product search source binding completed and implementation advanced to draft PR 3 without approval
+    - STORY-0054 exact Customer/Address/Product search source binding completed and draft PR 3 validated
+    - DEV-0001 PR 3 failed merge gate because exact ProductSearchResponseDto browser-consumed wrapper field remains unproven and the PR carries broader-than-required page presentation changes
     - shared business-behavior queue reconciled after concurrent-write refetch using newest unit evidence
   aggregate_reconciliation_gate: PASS
 cursor:
   next_global_rework_unit: STORY-0012
   fallback_dependency_safe_r1_unit: STORY-0014
   priority_development_unit: BL-010/DEV-0001
-  next_development_action: VALIDATE_DRAFT_PR_3_THEN_RECONCILE_IMPLEMENTED_SOURCE_BACK_TO_BL002
+  next_development_action: PROVE_PRODUCT_RESPONSE_JSON_CONTRACT_AND_MINIMIZE_PR_3_SCOPE_THEN_REVALIDATE
   next_testing_action: NONE_UNTIL_CURRENT_REVISED_STORY_APPROVAL_OR_REAPPROVAL
 approval_policy:
   auto_approve: false
