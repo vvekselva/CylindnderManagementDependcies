@@ -1,0 +1,21 @@
+version: 1
+claim_id: 20260831-0823-AGGREGATE-RECONCILIATION
+run_id: CYLINDER-TARGETED-BL002-STORY-0011-20260831-0812IST
+backlog: BL-002
+unit_id: AGGREGATE_RECONCILIATION
+status: ACTIVE
+claimed_at: 2026-08-31T08:23+05:30
+heartbeat_at: 2026-08-31T08:23+05:30
+lease_expires_at: 2026-08-31T08:38+05:30
+owner: Primary Cylinder Automation Tool
+mode: TARGETED
+read_set:
+  - BL-002/work-status/STORY-0011.yaml
+  - BL-002/stories/STORY-0011.md
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+  - BL-008/README.md
+write_set:
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+purpose: Recompute shared BL-002 projections from durable STORY-0011 identity repair and strict completion evidence.
