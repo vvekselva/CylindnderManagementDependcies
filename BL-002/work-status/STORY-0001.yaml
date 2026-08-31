@@ -1,0 +1,36 @@
+story_id: STORY-0001
+release: R1
+source_story: BL-002/stories/STORY-0001.md
+strict_state: STRICT_FIELD_UI_COMPLETE
+approval:
+  state: APPROVED
+  source: EXPLICIT_USER_APPROVAL
+  approved_date: 2026-08-31
+  auto_approved: false
+downstream_testing:
+  BL-004:
+    state: QUEUED
+    framework: JUNIT_5
+    human_readable: BL-004/stories/STORY-0001.md
+    generated_test: BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java
+    issue: 2
+  BL-005:
+    state: QUEUED
+    framework: JUNIT_5_TESTCONTAINERS
+    database: POSTGRESQL_TESTCONTAINERS
+    human_readable: BL-005/stories/STORY-0001.md
+    generated_test: BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java
+    issue: 3
+  BL-009:
+    state: READY_FOR_TEST_EXECUTION
+    human_readable: BL-009/stories/STORY-0001.md
+    test_data: BL-009/test-data/STORY-0001.csv
+    live_validation_issue: 4
+next_actions:
+  - resolve_exact_frozen_application_package_and_test_source_bindings
+  - execute_BL-004_JUnit_tests
+  - execute_BL-005_JUnit_Testcontainers_tests
+  - execute_authorized_live_test_data_validation
+notes:
+  - Generated Java files are durable JUnit source scaffolds; execution PASS is not claimed until bound to the application source tree and run.
+  - No credentials or production secrets are stored in generated test data.
