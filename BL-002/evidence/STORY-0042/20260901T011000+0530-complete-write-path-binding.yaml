@@ -1,0 +1,65 @@
+story_id: STORY-0042
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-010244-IST-I
+evidence_time: '2026-09-01T01:10:00+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+business_behavior_complete: true
+approval_state: AWAITING_EXPLICIT_USER_REVIEW
+source_binding:
+  controller_contract: BL-002/stories/STORY-0042.md
+  mediator_and_validator_evidence: BL-002/evidence/STORY-0041/20260901T001252+0530-concrete-mediator-validator-persistence-binding.yaml
+  transaction_evidence: BL-002/evidence/STORY-0041/20260901T003248+0530-transaction-boundary-complete.yaml
+  persistence_service:
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerIngestionService.java
+    method: processRequest
+    effects:
+      - validates CustomerIngestionRequestDto before persistence
+      - maps CustomerDto to CustomerDo
+      - maps each AddressDto to AddressDo and resolves CityDo, StateDo and CountryDo by submitted IDs
+      - creates CustomerAddressDo associations with customer and address
+      - maps each PhoneNumberDto to PhoneNumberDo and creates CustomerPhoneNumberDo associations
+      - attaches child associations to CustomerDo
+      - calls customerJpaDao.save(customerDo)
+  customer_entity:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CustomerDo.java
+    table: public.tbl_customer
+    generated_id: public.pk_customer_id_serial -> pk_customer_id
+    columns: [customer_name, gst_number, active]
+    child_cascade: [customerPhoneNumbers, customerAddresses]
+  address_entity:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/AddressDo.java
+    table: public.tbl_address
+    generated_id: public.pk_address_id_serial -> pk_address_id
+    columns: [address_line_1, address_line_2, address_line_3, landmark, fk_city, fk_state, fk_country]
+  customer_address_entity:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CustomerAddressDo.java
+    table: public.tbl_customer_address
+    generated_id: public.pk_customer_address_id_serial -> pk_customer_address_id
+    columns: [fk_customer, fk_address, fk_address_type]
+  phone_entity:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/PhoneNumberDo.java
+    table: public.tbl_phone_number
+    generated_id: public.pk_phone_number_id_serial -> pk_phone_number_id
+    columns: [phone_number]
+  customer_phone_entity:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CustomerPhoneNumberDo.java
+    table: public.tbl_customer_phone_number
+    generated_id: public.pk_customer_phone_number_id_serial -> pk_customer_phone_number_id
+    columns: [fk_customer, fk_phone_number]
+  effective_transaction_boundary:
+    repository: CustomerJpaDao extends JpaRepository<CustomerDo, Long>
+    method: SimpleJpaRepository.save
+    spring_data_jpa_version: 3.2.5
+    transactional: true
+material_business_observation:
+  address_type_controller_resolution: true
+  customer_address_entity_has_fk_address_type: true
+  ingestion_service_assigns_customer_address_address_type: false
+  impact: The frozen source proves Address Type is resolved on the request before mediator invocation, but CustomerIngestionService creates CustomerAddressDo with customer and address only and does not call setAddressType. Therefore persistence of fk_address_type is not source-proved by this write path and may remain null subject to database constraints/runtime behavior.
+  classification: SOURCE_PROVED_CURRENT_BEHAVIOR_REQUIRING_USER_REVIEW_NOT_CODE_DRIFT
+completion_reason: The POST endpoint business flow is now bound through controller, mediator, validation, service, JPA entities/tables/columns and the effective repository transaction boundary. Remaining uncertainty is documented as actual source behavior rather than an unproved gap.
+auto_approved: false
+story_approval_delta: 0
+application_code_mutation: false
+bl010_execution: false
+github_actions_or_runners_used: false
