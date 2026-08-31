@@ -1,0 +1,17 @@
+claim_id: 20260831-083820-STORY-0032-IDENTITY-REWORK
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
+backlog: BL-002
+work_unit: STORY-0032
+status: ACTIVE
+claimed_at: 2026-08-31T08:38:20Z
+heartbeat_at: 2026-08-31T08:38:20Z
+lease_expires_at: 2026-08-31T08:53:20Z
+read_set:
+  - BL-002/story-register.csv
+  - BL-002/stories/STORY-0032.md
+  - BL-010/evidence/DEV-0001-source-binding.md
+  - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+write_set:
+  - BL-002/stories/STORY-0032.md
+  - BL-002/work-status/STORY-0032.yaml
+purpose: Repair STORY-0032 canonical identity drift to GET /walkin-sale and reconstruct business behavior from exact frozen source evidence.
