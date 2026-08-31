@@ -1,7 +1,7 @@
-version: 1
+version: 2
 name: ORCHESTRATOR_RUNTIME_RELIABILITY_AND_TERMINATION_DIAGNOSTICS
 status: ACTIVE
-effective_at: 2026-08-31T13:03:00+05:30
+effective_at: 2026-08-31T16:18:34+05:30
 
 runtime_window:
   productive_target_min_minutes: 30
@@ -20,6 +20,30 @@ worker_pool:
     - claim_released
     - aggregate_checkpoint_completed
   rule: While execution capacity and eligible safe-independent work remain, continue REPLAN -> CLAIM -> DISPATCH.
+
+scheduler_handoff:
+  problem_class: SCHEDULER_TO_ORCHESTRATOR_HANDOFF_GAP
+  scheduler_last_run_time_is_execution_proof: false
+  first_orchestrator_action: PERSIST_TRIGGER_RECEIPT
+  receipt_path_pattern: .orchestrator/scheduler-fire-receipts/<scheduler-task>/<fire-id>.yaml
+  receipt_required_before_backlog_read_or_mutation: true
+  receipt_required_fields:
+    - scheduler_task
+    - fire_id
+    - scheduled_or_observed_fire_at
+    - receipt_persisted_at
+    - state
+    - intended_run_scope
+  receipt_states: [TRIGGER_RECEIVED, ORCHESTRATOR_STARTED, RUN_LINKED, TERMINATED, HANDOFF_FAILED]
+  run_link_required_after_run_id_allocation: true
+  run_link_fields: [run_id, live_run_path, event_stream_path]
+  completion_receipt_update_required: true
+  completion_receipt_fields: [terminal_classification, terminated_at_when_observable]
+  scheduler_trigger_without_receipt_classification: SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
+  receipt_without_run_start_classification: ORCHESTRATOR_START_NOT_CONFIRMED
+  run_started_without_terminal_record_classification: ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING
+  next_fire_recovery_first_for_unresolved_handoff_gap: true
+  note: A scheduler task last_run_time proves only that the scheduler attempted/delivered the task. It does not prove that the orchestrator created a run, performed work, checkpointed, or terminalized.
 
 live_run:
   path: .orchestrator/live-run.yaml
@@ -113,11 +137,31 @@ abnormal_termination_detection:
   watchdog_must_read_live_run_and_events: true
   next_fire_recovery_first_when_previous_terminal_record_invalid_or_missing: true
 
+watchdog_scheduler_correlation:
+  required: true
+  compare_sources:
+    - scheduled_task_last_run_time
+    - scheduler_fire_receipt
+    - live_run
+    - run_event_stream
+    - termination_record
+    - aggregate_checkpoint
+  report_each_scheduler_fire_after_latest_durable_run: true
+  required_statuses:
+    - TRIGGER_AND_DURABLE_RUN_CONFIRMED
+    - SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
+    - ORCHESTRATOR_START_NOT_CONFIRMED
+    - ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING
+    - DURABLE_RUN_COMPLETE
+  heading_must_include_previous_and_current_execution_times: true
+  report_previous_and_current_metric_values: true
+
 quality_gates:
+  QG_TRIGGER: Every scheduler fire counted as orchestration execution must have a durable scheduler-fire receipt linked to a run ID.
   QG_RUNTIME: Eligible work plus execution capacity implies continued productive dispatch/replan.
   QG_HEARTBEAT: Live heartbeat must remain current and consistent with worker/event evidence.
   QG_TERMINATION: Every termination must have one allowed reason and complete durable diagnostic evidence.
 
 acceptance:
-  rule: A Production Fire must not finish with eligible_work_remaining=true without a positively evidenced governed reason.
-  failure_behavior: Mark termination governance failure and make the next Production Fire perform recovery-first root-cause reconciliation before new dispatch.
+  rule: A Production Fire must not finish with eligible_work_remaining=true without a positively evidenced governed reason. A scheduled task last_run_time must never be counted as a Production Fire execution unless trigger receipt and run linkage are durable.
+  failure_behavior: Mark trigger/termination governance failure as applicable and make the next Production Fire perform recovery-first root-cause reconciliation before new dispatch.
