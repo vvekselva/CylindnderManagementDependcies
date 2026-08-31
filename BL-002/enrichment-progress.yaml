@@ -1,9 +1,9 @@
-version: 52
+version: 53
 backlog_id: BL-002
-updated_at: 2026-08-31T04:00:09Z
+updated_at: 2026-08-31T05:43:44Z
 updated_by: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
-checkpoint_state: CHECKPOINT_RECONCILED
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-054234Z
+checkpoint_state: CHECKPOINT_RECONCILIATION_IN_PROGRESS
 scope:
   total_stories: 134
   r1_stories: 88
@@ -28,40 +28,85 @@ materialization:
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
   approved_story_ids: [STORY-0001]
-  BL-004: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, execution_blocked: 1}
-  BL-005: {queued: 1, generated: 1, source_bound: 1, executed: 0, pass: 0, fail: 0, execution_blocked: 1}
-  BL-009: {catalogues: 1, test_data_sets: 1, live_validation_pending: 1, live_validation_executed: 0, pass: 0, fail: 0, execution_blocked: 1}
-  runtime_capability: {java_21: AVAILABLE, maven: UNAVAILABLE, docker: UNAVAILABLE}
+  BL-004:
+    queued: 1
+    generated: 1
+    source_bound: 1
+    executed: 0
+    pass: 0
+    fail: 0
+    execution_blocked: 1
+    coverage: NOT_EXECUTED
+  BL-005:
+    queued: 1
+    generated: 1
+    source_bound: 1
+    executed: 0
+    pass: 0
+    fail: 0
+    execution_blocked: 1
+    coverage: NOT_EXECUTED
+  BL-009:
+    catalogues: 1
+    test_data_sets: 1
+    human_readable_test_data: 1
+    executable_test_code: 1
+    test_case_code_mapping: 9_OF_9_MAPPED_TO_EXECUTABLE_LAYER_OR_EXPLICIT_RUNTIME_LAYER
+    test_data_row_code_consumption: 7_OF_7_DATA_CONTRACT_ROWS
+    code_executed: 0
+    pass: 0
+    fail: 0
+    coverage: NOT_EXECUTED
+    live_validation_pending: 1
+    live_validation_executed: 0
+    execution_blocked: 1
+  runtime_capability:
+    java_21: AVAILABLE
+    maven: UNAVAILABLE
+    gradle: UNAVAILABLE
+    ant: AVAILABLE
+    junit5_runtime: UNAVAILABLE
+    mockito_runtime: UNAVAILABLE
+    jacoco_runtime: UNAVAILABLE
+    docker: UNAVAILABLE
+    podman: UNAVAILABLE
+    local_postgresql: UNAVAILABLE
+    outbound_dependency_resolution: DNS_BLOCKED
+  substitution:
+    direct_javac_junit_console: BLOCKED_MISSING_JUNIT5_AND_DNS
+    ant_junit5_launcher: BLOCKED_MISSING_JUNIT_PLATFORM_ENGINE
+    local_postgresql_for_testcontainers: BLOCKED_NOT_INSTALLED
+    h2_for_postgresql: FORBIDDEN_NOT_BEHAVIORALLY_EQUIVALENT
 reconciliation:
   startup_projection_drift_detected: true
-  startup_projection_drift_repaired: true
-  repaired_fields:
-    - approved: 0 -> 1 from durable STORY-0001 explicit user approval evidence
-    - strict_field_ui_complete: 124 -> 125 from durable STORY-0038 strict evidence
-    - strict_field_ui_remaining: 10 -> 9
-    - testing_ready: 0 -> 1 from approved-story BL-004/BL-005/BL-009 fan-out materialization
-  current_run_strict_delta: {count: 1, stories: [STORY-0040]}
-  durable_prior_unprojected_strict_delta: {count: 1, stories: [STORY-0038]}
-  current_run_approval_projection_delta: {count: 1, stories: [STORY-0001]}
+  startup_projection_drift_repaired: false
+  current_drift:
+    - BL-008 shared projection reported V184 CLOSED while live BL-008 README reports V185 AUTHORED / WAITING_FOR_CLEAN_VALIDATION
+    - BL-009 shared projection did not include executable-code and human-readable-test-data lifecycle fields
+  durable_evidence:
+    - .orchestrator/evidence/20260831-054344-testing-runtime-and-drift-reconciliation.md
+    - BL-009/test-data/STORY-0001.md
+  current_run_strict_delta: {count: 0, stories: []}
+  current_run_approval_projection_delta: {count: 0, stories: []}
   current_run_materialization_delta: {count: 0, stories: []}
-  current_run_testing_source_binding_delta:
-    BL-004: {count: 1, stories: [STORY-0001]}
-    BL-005: {count: 1, stories: [STORY-0001]}
-    BL-009_readiness_classification: {count: 1, stories: [STORY-0001]}
+  current_run_BL-009_human_readable_test_data_delta: {count: 1, stories: [STORY-0001]}
+  current_run_BL-009_executable_test_execution_delta: {executed: 0, pass: 0, fail: 0}
+  current_run_coverage_delta: {unit: NOT_EXECUTED, integration: NOT_EXECUTED, combined: NOT_EXECUTED}
   source_detail_review_required: [STORY-0035, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047]
-  aggregate_reconciliation_gate: PASS
+  aggregate_reconciliation_gate: IN_PROGRESS
 cursor:
   next_eligible_strict_unit: DYNAMIC_RECONCILIATION_REQUIRED
   next_eligible_materialization_unit: null
-  next_approved_story_testing_unit: null
+  next_approved_story_testing_unit: RUNTIME_CAPABILITY_RECOVERY_OR_EQUIVALENT_SUBSTITUTION
   testing_execution_blocked_units: [BL-004/STORY-0001, BL-005/STORY-0001, BL-009/STORY-0001]
-approval_policy: {auto_approve: false, approvals_delta: 1}
+approval_policy: {auto_approve: false, approvals_delta: 0}
 bl008:
   state_source: BL-008/README.md
-  execution_mode: CLOSED
-  last_validated_migration: V184
-  accepted_migration_baseline: V174-V184 CLEAN_DATABASE_VALIDATED_PASS
-  current_authored_migration: null
-  active_migration_gate: NONE
-  current_state: CLOSED_WITH_ACCEPTED_DEFERRED_NON_BLOCKING_VALIDATION
+  execution_mode: USER_LOCAL_FLYWAY_HANDOFF
+  last_historical_clean_validated_migration: V184
+  current_authored_migration: V185__Align_External_Logical_Physical_Asset_Model.sql
+  active_migration_gate: V185_CLEAN_VALIDATION_REQUIRED
+  current_state: V185_AUTHORED_WAITING_FOR_CLEAN_VALIDATION
+  expected_validation_line: BL008_V185_FINAL_DATABASE_HARMONY_PASS_FAILED_CHECKS_0
+  database_freeze_declared: false
   database_write_delta_chatgpt: 0
