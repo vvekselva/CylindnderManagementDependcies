@@ -1,0 +1,18 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-003017-IST
+started_at: '2026-09-01T00:30:17+05:30'
+terminated_at: '2026-09-01T00:35:41+05:30'
+elapsed_seconds: 324
+classification: PLATFORM_RUNTIME_BOUNDARY
+reason: AUTOMATION_INVOCATION_RUNTIME_BOUNDARY
+mode: CONTINUOUS
+eligible_work_remaining: true
+active_claims_remaining: 0
+completed_business_behavior_story_ids_this_run: [STORY-0041, STORY-0046]
+business_behavior_completion_delta: 2
+approval_delta: 0
+application_code_mutation_delta: 0
+bl010_execution_delta: 0
+aggregate_projection_state: AGGREGATE_DRIFT_DETECTED
+aggregate_repair_pending: true
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-II-20260901-003017-IST/checkpoint.yaml
+next_action: Reconcile stale BL-002 aggregate projections from authoritative unit-local evidence, then continue the next eligible R1 Story.
