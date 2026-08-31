@@ -1,0 +1,16 @@
+claim_id: CYLINDER-PRODUCTION-FIRE-20260831-143227Z-AGGREGATE-DRIFT
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-143227Z
+backlog: BL-002
+work_unit: AGGREGATE_PROJECTION_DRIFT_REPAIR
+status: ACTIVE
+claimed_at: 2026-08-31T20:09:40+05:30
+read_set:
+  - BL-002/work-status/STORY-0011.yaml
+  - BL-002/work-status/STORY-0041.yaml
+  - BL-002/work-status/STORY-0042.yaml
+  - BL-002/enrichment-progress.yaml
+  - BL-002/story-business-behavior-rework-task-queue.csv
+write_set:
+  - BL-002/enrichment-progress.yaml
+  - .orchestrator/last-run.yaml
+reason: verified unit-local work-status disagrees with aggregate and queue projections
