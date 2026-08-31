@@ -1,0 +1,15 @@
+claim_id: STORY-0045-CYLINDER-PRODUCTION-FIRE-II-20260901-013227-IST
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-013227-IST
+backlog: BL-002
+work_unit: STORY-0045
+status: ACTIVE
+claimed_at: '2026-09-01T01:35:03+05:30'
+read_set:
+  - CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+  - BL-002/stories/STORY-0045.md
+  - BL-002/work-status/STORY-0045.yaml
+write_set:
+  - BL-002/work-status/STORY-0045.yaml
+  - BL-002/evidence/STORY-0045-*
+  - .orchestrator/claims/BL-002/STORY-0045-CYLINDER-PRODUCTION-FIRE-II-20260901-013227-IST.yaml
+heartbeat_at: '2026-09-01T01:35:03+05:30'
