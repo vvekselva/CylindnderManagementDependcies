@@ -1,0 +1,53 @@
+story_id: STORY-0046
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
+evidence_time: '2026-09-01T00:12:52+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+business_behavior_complete: false
+proved_this_run:
+  controller:
+    path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchByPageController.java
+    endpoint: GET /fetchCustomerByPage
+    request_parameters:
+      pageNumber: {default: 1}
+      itemsPerPage: {default: 10}
+      searchTerm: {required: false}
+      activeOnly: {default: true}
+    service_call: customerFetchByPageService.processRequest(requestDto)
+    view: CustomerListPage
+  request_contract:
+    path: Cylinder.management.dto/src/main/java/com/sreyas/datamatics/application/request/dto/CustomerFetchByPageRequestDto.java
+    inherited_fields_source: framework/src/main/java/com/sreyas/datamatics/application/dto/CylinderManagementApplicationRequestDto.java
+    fields: [pageNumber, itemsPerPage, searchTerm, activeOnly, sortOrder, sortElement]
+  service:
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerFetchByPageService.java
+    class: CustomerFetchByPageService
+    behavior:
+      - pageNumber less than 1 normalizes to 1
+      - itemsPerPage less than 1 normalizes to 10
+      - constructs zero-based PageRequest sorted by customerName ascending
+      - activeOnly plus search filters active customers by customerName OR gstNumber, case-insensitive containing
+      - activeOnly without search uses findByActive(true,pageable)
+      - inactive-inclusive search uses customerName OR gstNumber case-insensitive containing
+      - no filters uses findAll(pageable)
+      - maps CustomerDo rows to CustomerSummaryDto with id, name, GST, active, first phone, and first available address city
+      - response carries totalItems, current page, itemsPerPage, and SUCCESS response code
+  dao:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CustomerJpaDao.java
+    interface: CustomerJpaDao extends JpaRepository<CustomerDo,Long>
+    query_methods:
+      - findByActive(boolean, Pageable)
+      - findByActiveAndCustomerNameContainingIgnoreCaseOrActiveAndGstNumberContainingIgnoreCase(...)
+      - findByCustomerNameContainingIgnoreCaseOrGstNumberContainingIgnoreCase(...)
+      - inherited findAll(Pageable)
+  response_contract:
+    path: Cylinder.management.dto/src/main/java/com/sreyas/datamatics/application/response/dto/CustomerFetchByPageResponseDto.java
+    summary_rows: customerSummaryDtos
+    pagination_source: framework/src/main/java/com/sreyas/datamatics/application/dto/CylinderManagementApplicationResponseDto.java
+remaining_source_binding:
+  - exact CustomerDo table/column mapping for the list filter/read identities has not been persisted into this unit evidence yet
+  - exact browser form action/row navigation binding should be reconciled with the already-proved CustomerListPage template before completion
+fail_closed_reason: controller-service-DAO behavior is now source-bound, but exact entity/table-column identity and final UI-to-controller reconciliation remain to be persisted
+application_code_mutation: false
+story_approval_delta: 0
+next_action: Bind CustomerDo entity/table/columns and reconcile CustomerListPage controls to the exact controller parameters; then evaluate the Business Behavior completion gate.
