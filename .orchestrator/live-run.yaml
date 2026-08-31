@@ -4,16 +4,17 @@ scheduler_task: Cylinder Orchestrator Production Fire
 state: RUNNING
 mode: CONTINUOUS
 started_at: 2026-08-31T11:05:29Z
-last_heartbeat_at: 2026-08-31T11:05:29Z
-productive_runtime_seconds_if_measurable: 0
-loop_iteration: 0
-running_worker_count: 0
+last_heartbeat_at: 2026-08-31T11:10:08Z
+productive_runtime_seconds_if_measurable: 279
+loop_iteration: 1
+running_worker_count: 1
 completed_worker_count: 0
 blocked_worker_count: 0
-active_work_unit_ids: []
-eligible_work_count: null
+active_work_unit_ids:
+  - BL-002/STORY-0037_CONCRETE_SERVICE_PERSISTENCE_BINDING
+eligible_work_count: 119
 dispatchable_work_count: null
-last_action: SCHEDULER_HANDOFF_RECONCILED_ORCHESTRATOR_STARTED
+last_action: STORY_0037_FROZEN_SOURCE_BINDING_IN_PROGRESS
 prior_run_recovery:
   run_id: CYLINDER-PRODUCTION-FIRE-20260831-110154Z
   classification: ABNORMAL_PROCESS_DISAPPEARANCE
@@ -23,5 +24,5 @@ termination:
   requested: false
   reason: null
   terminated_at: null
-  eligible_work_remaining: null
+  eligible_work_remaining: true
   terminal_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-110529Z/termination.yaml
