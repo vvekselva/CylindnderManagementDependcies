@@ -1,0 +1,18 @@
+version: 1
+claim_id: 20260831-062242-STORY-0046
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
+backlog: BL-002
+unit_id: STORY-0046
+status: ACTIVE
+owner: Primary Cylinder Automation Tool
+claimed_at: 2026-08-31T06:22:42+05:30
+heartbeat_at: 2026-08-31T06:22:42+05:30
+lease_expires_at: 2026-08-31T06:37:42+05:30
+read_set:
+  - BL-002/stories/STORY-0046.md
+  - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/Cylinder.management.dto/src/main/java/com/sreyas/datamatics/application/request/dto/CustomerFetchByPageRequestDto.java
+  - vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89/cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/CustomerFetchByPageController.java
+write_set:
+  - BL-002/stories/STORY-0046.md
+  - BL-002/work-status/STORY-0046.yaml
+collision_rule: exact_story_unit_only
