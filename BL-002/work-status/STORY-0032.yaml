@@ -1,0 +1,34 @@
+story_id: STORY-0032
+release: R1
+endpoint: GET /walkin-sale
+controller: WalkinSaleIngestionController.doGet
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-082058Z
+state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+approval_state: PENDING_USER_APPROVAL
+auto_approval: false
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  commit: 3ae6e61442132d94a307275b08dd65fcef228d89
+  controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/WalkinSaleIngestionController.java
+  controller_blob: f69fb6a552fb8bed82cba05922cd7936deea60e7
+  template_path: cylindermanagement.web/src/main/resources/templates/final-version-1/WalkinSaleIngestion.html
+  template_blob: 3c6328ea72b21ac1e9363a21e8bd8d6004051bb
+proved_behavior:
+  view: final-version-1/WalkinSaleIngestion
+  initializes_customer_dto: true
+  initializes_customer_address_dto: true
+  initializes_challan_leaf: true
+  challan_type_default: DELIVERY
+  service_invocation_on_get: false
+  database_write_on_get: false
+  customer_search_endpoint: GET /cylindermanagement/search/customer/{searchText}
+  customer_search_min_chars: 3
+  customer_search_debounce_ms: 280
+  address_endpoint: GET /cylindermanagement/search/address/customer-address/{customerId}
+  yard_cylinder_endpoint: POST /cylindermanagement/search/cylinder/by-state
+  customer_cylinder_endpoint: POST /cylindermanagement/search/cylinder/by-customer
+  submit_endpoint: POST /walkin-sale
+boundary:
+  mutation_story: STORY-0033
+  rule: GET page initialization must not claim POST validation/service/DAO/database behavior.
+next_action: USER_REVIEW_THEN_EXPLICIT_APPROVAL_OR_REWORK
