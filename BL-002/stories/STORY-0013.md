@@ -5,42 +5,83 @@
 - Controller: `ChallanBookWebController`
 - Controller method: `processBookIngestion(ChallanBookIngestionRequestDto requestDto)`
 - Approval: NOT_APPROVED
-- Business-behavior rework: IN_PROGRESS_SOURCE_DETAIL_GAP
+- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
-## User story
+## Business purpose
 
-When an operator submits the Challan Book registration form, the application receives the `ingestionRequest`, delegates registration to `ChallanBookIngestionService`, and either redirects after successful processing or redisplays the registration page with the submitted values and an error message.
+This operation lets an operator register a physical Challan Book that the business will use for delivery, empty-pickup, supplier filling-note, or customer spot-check paperwork. The registered book becomes a durable Challan Book registry record that later logistics processes can identify and allocate.
 
-## Exact request and controller behavior
+The form is rendered by STORY-0012. This Story owns the submit/persistence operation only.
 
-1. The active form in `final-version-1/add-challan-book.html` posts to `/logistics/challan-books/save` using model object `ingestionRequest`.
-2. `ChallanBookWebController.processBookIngestion(...)` receives that object as `ChallanBookIngestionRequestDto`.
-3. The controller calls `challanBookIngestionService.processRequest(requestDto)`.
-4. On success, it creates a redirect `ModelAndView("redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10")`, adds `successMessage = "Challan Book registered successfully!"`, and exposes the ingested Challan Book as `bookDetails`.
-5. On `CylinderManagementApplicationException`, it returns `final-version-1/add-challan-book`, exposes `errorMessage = "Error: " + exception.getMessage()`, restores `ingestionRequest`, and repopulates summary metrics.
+## What the operator enters
 
-## Exact submitted UI identities
+| Visible control | Request field | Business meaning / current constraint |
+|---|---|---|
+| Challan Book Type | `challanBook.bookType` | Classifies the business document as `DELIVERY_CHALLAN`, `EMPTY_PICKUP_CHALLAN`, `FILLING_NOTE`, or `CUSTOMER_SPOT_CYLINDER_CHECK`. Required by the form/entity. |
+| Book Reference Code | `challanBook.bookCode` | Unique business identifier for the physical book. Form requires it and limits it to 30 characters; database column is non-null and unique, length 30. |
+| Serial Prefix | `challanBook.seriesPrefix` | Optional prefix used with the book's sheet numbering. Maximum 10 characters. |
+| Starting Sheet | `challanBook.startSheetNumber` | First sheet number represented by the book. Numeric, minimum 1 in the UI, required. |
+| Ending Sheet | `challanBook.endSheetNumber` | Last sheet number represented by the book. Numeric, minimum 1 in the UI, required. |
+| Storage Location | `challanBook.currentLocation` | Where the book is currently held. Required. The entity default is `IN_OFFICE` when not otherwise set. |
 
-Source-bound controls include:
+These controls are bounded values/text/numbers rather than large master-data reference selectors. Selector UX review therefore requires no Customer/Product/Supplier/Vehicle/Driver/Address search conversion for this Story.
 
-| Visible control | Request binding / client constraint |
-|---|---|
-| Challan Book Type | `challanBook.bookType`; radio values `DELIVERY_CHALLAN`, `EMPTY_PICKUP_CHALLAN`, `FILLING_NOTE`, `CUSTOMER_SPOT_CYLINDER_CHECK` |
-| Book Reference Code | `challanBook.bookCode`; required; maxlength 30 |
-| Serial Prefix | `challanBook.seriesPrefix`; optional; maxlength 10 |
-| Starting Sheet | `challanBook.startSheetNumber`; numeric; min 1; required |
-| Ending Sheet | `challanBook.endSheetNumber`; numeric; min 1; required |
-| Storage Location | `challanBook.currentLocation`; required |
+## What happens when Submit is clicked
 
-## Service / persistence depth
+1. `final-version-1/add-challan-book.html` posts the model object `ingestionRequest` to `POST /logistics/challan-books/save`.
+2. `ChallanBookWebController.processBookIngestion(...)` delegates the submitted `ChallanBookIngestionRequestDto` to `ChallanBookIngestionService.processRequest(...)`.
+3. The service maps the submitted `ChallanBookRegistryDto` to `ChallanBookRegistryDo` using `ChallanBookRegistryMapper`.
+4. The service sets `createdAt` and `updatedAt` to the current application time.
+5. It persists the entity using `ChallanBookRegistryJpaDao.saveAndFlush(...)`.
+6. JPA stores the registry in `public.tbl_challan_book_registry`. The database-generated identity is `pk_book_id`; `book_code` is the unique business code.
+7. The response maps the saved entity back to a DTO and returns application response code `SUCCESS`.
+8. On controller-level success, the browser is redirected to `/fetchCustomerByPage?pageNumber=1&itemsPerPage=10`, with `successMessage = "Challan Book registered successfully!"` and `bookDetails` added to the redirect `ModelAndView`.
 
-The controller boundary is exact: `com.sreyas.datamatics.cylinder.management.services.ChallanBookIngestionService.processRequest(...)`.
+## Exact persisted identity and fields
 
-The exact frozen implementation, validation branches, DAO/repository/entity path, tables changed, transaction semantics, duplicate/range validation and generated sheet/page persistence have not yet been bound in this rework. Those details are intentionally not invented.
+The frozen entity is `ChallanBookRegistryDo` mapped to `public.tbl_challan_book_registry`:
 
-Therefore STORY-0013 is **canonical-identity repaired and request/controller/template behavior is source-bound, but revised business-behavior completion remains blocked on the service/persistence trace**.
+- `pk_book_id` — generated primary key
+- `book_code` — required, unique, max 30
+- `book_type` — required enum
+- `series_prefix` — optional, max 10
+- `start_sheet_number` — required
+- `end_sheet_number` — required
+- `current_location` — required enum, entity default `IN_OFFICE`
+- `fk_assigned_vehicle` — optional; not entered by this registration form
+- `created_at` — set during ingestion
+- `updated_at` — set during ingestion
 
-## Current gate
+The DAO is `ChallanBookRegistryJpaDao extends JpaRepository<ChallanBookRegistryDo, Long>`. It also exposes `findByBookCode(...)`, but the frozen ingestion service does **not** call that method before saving.
 
-`SOURCE_DETAIL_REVIEW_REQUIRED`: bind `ChallanBookIngestionService` through its implementation, validation and exact database writes before user review. No automatic approval occurs.
+## Validation and current-state gaps
+
+The business intent is that the submitted book metadata be valid before persistence. The frozen source proves several layers, but also proves important gaps:
+
+- The HTML requires Book Code, Book Type, Starting Sheet, Ending Sheet and Storage Location, and applies numeric minimum 1 to sheet fields.
+- The entity/database mapping enforces non-null values for the required persisted columns and uniqueness of `book_code`.
+- The service contains a null-request/null-book check, but the exception throw inside that check is commented out. A null request can therefore continue and fail later rather than producing the intended controlled application error.
+- The service detects missing sheet bounds or `startSheetNumber > endSheetNumber`, but its intended `CylinderManagementApplicationException` throw is also commented out. The source therefore does **not** currently enforce start <= end at service level.
+- Although the DAO has `findByBookCode(...)`, the ingestion service does not perform an explicit duplicate-code pre-check; uniqueness is ultimately enforced by the database constraint.
+- Code for generating one `ChallanPageAuditLedgerDo` per sheet is present but commented out. The service therefore saves the book registry only; it does **not** generate/persist the per-sheet ledger rows described by the commented design.
+
+These are `CURRENT_STATE_GAP` findings. They must not be represented as functioning validations or page-ledger creation until application code is corrected and tested.
+
+## Error / visible outcome
+
+The controller explicitly catches `CylinderManagementApplicationException`. For that exception type it redisplays `final-version-1/add-challan-book`, restores `ingestionRequest`, repopulates summary metrics, and exposes `errorMessage = "Error: " + exception.getMessage()`.
+
+Because the service's intended null/range application-exception throws are commented out, those branches are not reliably reachable from those conditions in the frozen implementation. Database/JPA exceptions such as a duplicate `book_code` are not source-proved to be converted to this controller's `CylinderManagementApplicationException` branch and therefore must not be claimed as friendly form errors without additional handling.
+
+## Business impact
+
+A successful submit creates the durable Challan Book registry identity used by later challan allocation and operational paperwork. Accurate book type, code, sheet range and location are therefore important for traceability. The frozen source's disabled range validation and disabled sheet-ledger generation are development/test concerns because they can allow a registry record to exist without the intended stronger application validation or generated sheet tracking.
+
+## Related Story
+
+- STORY-0012 — `GET /logistics/challan-books/add-form`: renders the blank registration form and summary metrics.
+
+## Rework gate
+
+**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. Controller, form, service, DAO and exact database write identity are now frozen-source bound. The documented current-state gaps are retained rather than guessed away. No automatic approval or revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
