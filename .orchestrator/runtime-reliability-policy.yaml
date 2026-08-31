@@ -1,7 +1,7 @@
-version: 2
+version: 3
 name: ORCHESTRATOR_RUNTIME_RELIABILITY_AND_TERMINATION_DIAGNOSTICS
 status: ACTIVE
-effective_at: 2026-08-31T16:18:34+05:30
+effective_at: 2026-08-31
 
 runtime_window:
   productive_target_min_minutes: 30
@@ -14,84 +14,80 @@ runtime_window:
 worker_pool:
   maximum_safe_independent_workers: 10
   continuous_refill: required
-  refill_trigger:
-    - worker_completed
-    - worker_blocked
-    - claim_released
-    - aggregate_checkpoint_completed
   rule: While execution capacity and eligible safe-independent work remain, continue REPLAN -> CLAIM -> DISPATCH.
 
 scheduler_handoff:
-  problem_class: SCHEDULER_TO_ORCHESTRATOR_HANDOFF_GAP
   scheduler_last_run_time_is_execution_proof: false
   first_orchestrator_action: PERSIST_TRIGGER_RECEIPT
   receipt_path_pattern: .orchestrator/scheduler-fire-receipts/<scheduler-task>/<fire-id>.yaml
   receipt_required_before_backlog_read_or_mutation: true
-  receipt_required_fields:
-    - scheduler_task
-    - fire_id
-    - scheduled_or_observed_fire_at
-    - receipt_persisted_at
-    - state
-    - intended_run_scope
+  idempotency_key: scheduler_task + fire_id
+  duplicate_receipt_behavior: reconcile_existing_receipt_do_not_create_second_run
   receipt_states: [TRIGGER_RECEIVED, ORCHESTRATOR_STARTED, RUN_LINKED, TERMINATED, HANDOFF_FAILED]
   run_link_required_after_run_id_allocation: true
-  run_link_fields: [run_id, live_run_path, event_stream_path]
   completion_receipt_update_required: true
-  completion_receipt_fields: [terminal_classification, terminated_at_when_observable]
   scheduler_trigger_without_receipt_classification: SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
   receipt_without_run_start_classification: ORCHESTRATOR_START_NOT_CONFIRMED
   run_started_without_terminal_record_classification: ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING
   next_fire_recovery_first_for_unresolved_handoff_gap: true
-  note: A scheduler task last_run_time proves only that the scheduler attempted/delivered the task. It does not prove that the orchestrator created a run, performed work, checkpointed, or terminalized.
+
+control_plane_write_reliability:
+  optimistic_concurrency: required
+  compare_and_swap_using_blob_sha: required
+  bounded_retry_with_jitter: required
+  retryable_classes:
+    - SHA_CONFLICT
+    - TRANSIENT_GITHUB_WRITE_FAILURE
+    - RETRYABLE_CONTROL_PLANE_CONFLICT
+  on_retryable_conflict:
+    - refetch_current_blob
+    - reconcile_authoritative_unit_evidence
+    - recompute_intended_update
+    - retry_with_bounded_jitter
+  completed_unit_work_must_not_be_rerun_for_aggregate_conflict: true
+  aggregate_conflict_behavior: preserve_unit_local_evidence_and_repair_projection
+
+scheduler_resilience:
+  invocation_failure_must_not_disable_recurring_scheduler: true
+  automatic_disable_for_run_local_blocker: forbidden
+  automatic_disable_for_transient_write_failure: forbidden
+  automatic_disable_for_runtime_boundary: forbidden
+  automatic_disable_for_backlog_blocker: forbidden
+  allowed_scheduler_disable_reasons:
+    - EXPLICIT_USER_INSTRUCTION
+    - DELIBERATE_SCHEDULE_REPLACEMENT
+    - PROVEN_SCHEDULER_LEVEL_DUPLICATE_FIRE_SAFETY_DEFECT
+  disable_reason_must_be_durable: true
+  next_scheduled_fire_retries_after_failed_invocation: true
+
+primary_ownership:
+  single_primary_mutator: required
+  overlapping_fire_behavior: DUPLICATE_FIRE_SUPPRESSED
+  duplicate_fire_must_not_disable_scheduler: true
+  stale_primary_recovery_requires_revalidation: true
+  stale_revalidation_sources: [live_run, newest_heartbeat_event, termination_record, scheduler_receipt]
+  stale_heartbeat_alone_is_sufficient_for_recovery: false
+  rule: A run may be recovered as disappeared only after newest durable liveness and terminal evidence are rechecked; newer heartbeat evidence supersedes stale inference.
+
+unit_and_aggregate_consistency:
+  unit_local_evidence_authoritative: true
+  aggregate_is_projection: true
+  aggregate_writer_capacity: 1
+  aggregate_update_uses_optimistic_sha: true
+  projection_drift_repaired_from_unit_evidence: true
+  projection_repair_is_not_story_code_drift: true
 
 live_run:
   path: .orchestrator/live-run.yaml
   required: true
   heartbeat_max_interval_minutes: 2
-  refresh_on:
-    - invocation_start
-    - dispatch_wave
-    - worker_completion_or_blocker
-    - aggregate_checkpoint
-    - terminalization_start
-  required_fields:
-    - run_id
-    - scheduler_fire_id
-    - state
-    - started_at
-    - last_heartbeat_at
-    - productive_runtime_seconds_if_measurable
-    - loop_iteration
-    - running_worker_count
-    - completed_worker_count
-    - blocked_worker_count
-    - active_work_unit_ids
-    - eligible_work_count
-    - dispatchable_work_count
-    - last_action
-
-run_events:
-  path_pattern: .orchestrator/runs/<run-id>/events.ndjson
-  append_only: true
-  required_events:
-    - INVOCATION_STARTED
-    - RECONCILIATION_COMPLETED
-    - WORKER_DISPATCHED
-    - WORKER_COMPLETED
-    - WORKER_BLOCKED
-    - HEARTBEAT
-    - CHECKPOINT_COMPLETED
-    - REPLAN_STARTED
-    - REPLAN_COMPLETED
-    - EXCEPTION_CAUGHT
-    - TERMINATION_REQUESTED
-    - INVOCATION_TERMINATED
+  refresh_on: [invocation_start, dispatch_wave, worker_completion_or_blocker, aggregate_checkpoint, terminalization_start]
 
 terminalization:
   single_governed_exit_path: required
   direct_silent_return: forbidden
   terminal_record_path_pattern: .orchestrator/runs/<run-id>/termination.yaml
+  receipt_terminal_update_required: true
   allowed_reasons:
     - ALL_ELIGIBLE_WORK_COMPLETED
     - ALL_REMAINING_WORK_BLOCKED
@@ -106,62 +102,36 @@ terminalization:
     - DUPLICATE_FIRE_SUPPRESSED
     - APPLICATION_SHUTDOWN
     - ABNORMAL_PROCESS_DISAPPEARANCE
+    - SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
+    - ORCHESTRATOR_START_NOT_CONFIRMED
+    - RETRYABLE_CONTROL_PLANE_CONFLICT
     - UNKNOWN_TERMINATION
   unknown_termination_is_defect: true
   platform_forced_stop_requires_positive_evidence: true
-  required_terminal_fields:
-    - run_id
-    - scheduler_fire_id
-    - termination_reason
-    - terminal_classification
-    - started_at
-    - last_heartbeat_at
-    - terminated_at_when_observable
-    - productive_runtime_seconds_if_measurable
-    - running_worker_count
-    - completed_worker_count
-    - blocked_worker_count
-    - active_work_unit_ids
-    - eligible_work_remaining
-    - eligible_work_count
-    - dispatchable_work_count
-    - last_durable_event
-    - last_successful_checkpoint
-    - exception_or_platform_evidence_if_applicable
-    - recovery_required
-    - next_recovery_action
 
-abnormal_termination_detection:
-  heartbeat_stale_without_terminal_event: ABNORMAL_PROCESS_DISAPPEARANCE
-  last_run_aggregate_alone_proves_liveness: false
-  watchdog_must_read_live_run_and_events: true
-  next_fire_recovery_first_when_previous_terminal_record_invalid_or_missing: true
+recovery_first:
+  required_before_new_dispatch_for_unresolved_prior_gap: true
+  reconcile: [scheduler_receipts, live_run, newest_heartbeat, termination_records, active_claims, unit_local_evidence, aggregate_projection]
+  recover_stale_claims_only_after_liveness_revalidation: true
 
-watchdog_scheduler_correlation:
-  required: true
-  compare_sources:
-    - scheduled_task_last_run_time
-    - scheduler_fire_receipt
-    - live_run
-    - run_event_stream
-    - termination_record
-    - aggregate_checkpoint
-  report_each_scheduler_fire_after_latest_durable_run: true
-  required_statuses:
-    - TRIGGER_AND_DURABLE_RUN_CONFIRMED
-    - SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
-    - ORCHESTRATOR_START_NOT_CONFIRMED
-    - ORCHESTRATOR_TERMINATION_EVIDENCE_MISSING
-    - DURABLE_RUN_COMPLETE
-  heading_must_include_previous_and_current_execution_times: true
-  report_previous_and_current_metric_values: true
+story_code_drift_governance:
+  detection_and_analysis: automatic
+  durable_review_packet: required
+  application_code_mutation_before_user_approval: forbidden
+  bl010_creation_or_execution_before_user_approval: forbidden
+  scope_expansion_beyond_approved_manifest: stop_and_request_new_approval
 
 quality_gates:
-  QG_TRIGGER: Every scheduler fire counted as orchestration execution must have a durable scheduler-fire receipt linked to a run ID.
+  QG_TRIGGER: Every counted execution has a durable scheduler receipt linked to its run.
+  QG_IDEMPOTENCY: scheduler_task + fire_id identifies at most one logical run.
+  QG_CONTROL_PLANE_RETRY: Retryable write conflicts are refetched/reconciled/retried before terminal failure.
+  QG_PRIMARY: At most one primary mutator is active; duplicates are safely suppressed without disabling recurrence.
+  QG_AGGREGATE: Aggregate conflicts never discard authoritative completed unit evidence.
+  QG_SCHEDULER_RESILIENCE: Invocation-local failures do not disable recurring schedules.
   QG_RUNTIME: Eligible work plus execution capacity implies continued productive dispatch/replan.
-  QG_HEARTBEAT: Live heartbeat must remain current and consistent with worker/event evidence.
-  QG_TERMINATION: Every termination must have one allowed reason and complete durable diagnostic evidence.
+  QG_HEARTBEAT: Liveness recovery uses newest durable evidence, not stale heartbeat alone.
+  QG_TERMINATION: Every termination updates the run record and original scheduler receipt.
 
 acceptance:
-  rule: A Production Fire must not finish with eligible_work_remaining=true without a positively evidenced governed reason. A scheduled task last_run_time must never be counted as a Production Fire execution unless trigger receipt and run linkage are durable.
-  failure_behavior: Mark trigger/termination governance failure as applicable and make the next Production Fire perform recovery-first root-cause reconciliation before new dispatch.
+  delivery_model: AT_LEAST_ONCE_SCHEDULER_DELIVERY_IDEMPOTENT_ORCHESTRATOR_SINGLE_PRIMARY_EVENTUALLY_CONSISTENT_PROJECTIONS
+  rule: A failed invocation is durable evidence for recovery, not authorization to disable the recurring scheduler. The next scheduled fire resumes recovery-first unless the user explicitly pauses/disables it or a proven scheduler-level safety defect requires disablement.
