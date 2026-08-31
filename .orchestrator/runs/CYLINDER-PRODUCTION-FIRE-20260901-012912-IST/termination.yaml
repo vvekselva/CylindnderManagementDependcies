@@ -1,0 +1,23 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-012912-IST
+mode: CONTINUOUS
+started_at: '2026-09-01T01:29:13+05:30'
+terminated_at: '2026-09-01T01:36:16+05:30'
+elapsed_seconds: 423
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: INVOCATION_RUNTIME_BOUNDARY_REACHED
+resumable: true
+eligible_work_remaining: true
+active_claims_at_termination: 0
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-012912-IST/checkpoint.yaml
+unit_evidence:
+  - BL-002/evidence/STORY-0045-business-behavior-20260901-012912.yaml
+aggregate_business_behavior_complete: 21
+aggregate_total_stories: 134
+aggregate_percentage: 15.7
+queue_projection_drift_pending: [STORY-0041, STORY-0042, STORY-0046]
+next_action: Resume STORY-0045 exact service/DAO/entity/database binding and DisplayCustomer contract reconciliation, then repair stale queue projections.
+governance:
+  story_auto_approvals: 0
+  application_code_mutations: 0
+  bl010_created_or_executed: 0
+  github_actions_or_runners_used: 0
