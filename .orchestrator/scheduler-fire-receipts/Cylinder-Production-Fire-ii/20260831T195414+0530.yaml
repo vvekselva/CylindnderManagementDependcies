@@ -2,10 +2,10 @@ scheduler_task: Cylinder Production Fire - ii
 observed_fire_time: 2026-08-31T19:54:14+05:30
 scheduled_fire_time: 2026-08-31T19:54:14+05:30
 receipt_time: 2026-08-31T19:54:14+05:30
-state: RUN_LINKED
+state: TERMINATED
 orchestrator_state: ORCHESTRATOR_STARTED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-142414Z
 run_started_at: 2026-08-31T19:54:20+05:30
-terminal_classification: null
-termination_time: null
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+recovery_observed_at: 2026-08-31T20:03:23+05:30
