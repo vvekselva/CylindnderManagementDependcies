@@ -1,115 +1,83 @@
-# STORY-0036 — Yard Audit
+# STORY-0036 — Yard Audit Dashboard
 
 - Release: R1
 - Endpoint: `GET /yard-audit-dashboard`
 - Functional area: Yard Audit
-- Approval: PENDING_USER_APPROVAL
-- Review state: NEEDS_CLARIFICATION
-- Traceability state: COMPLETE
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Controller: `YardAuditDashboardController.doGet(...)`
+- Service: `YardAuditDashboardFetchService.processRequest(...)`
+- Approval: NOT_APPROVED
+- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
-## Human-readable story
+## Business purpose
 
-As an authorized Cylinder Management user, I want to open the Yard Audit Dashboard and optionally filter it by audit date or audit ID so that I can review daily yard audits, the selected audit, yard-gate status, scanned-cylinder details, third-party cylinder alerts, and the audit event timeline.
+The Yard Audit Dashboard lets yard/operations staff review daily physical cylinder checks against system records. The user can select an audit date or a specific Yard Stock Check, see what was scanned, compare observed cylinder state with the system state, inspect the associated quality-gate result, identify third-party cylinders, and follow the audit event timeline. This page is a read/reporting capability; starting a new Yard Audit is a separate navigation/action.
 
-## Source-proved controller and request contract
+## How the user enters and filters the page
 
-Frozen source proves `YardAuditDashboardController` as the controller for `GET /yard-audit-dashboard`.
+`GET /yard-audit-dashboard` accepts two optional filters:
 
-- Controller: `YardAuditDashboardController`
-- Method: `doGet(Long stockCheckId, String gateDate)`
-- Optional request parameters: `stockCheckId`, `gateDate`
-- `stockCheckId` is copied to `YardAuditDashboardFetchRequestDto.stockCheckId`.
-- Nonblank `gateDate` is parsed as `LocalDate` and copied to `YardAuditDashboardFetchRequestDto.gateDate`.
-- View: `final-version-1/YardAuditDashboard`
-- Model attributes established by the controller: `backLink`, `selectedStockCheckId`, `selectedGateDate`, `dashboard`.
-- If `CylinderManagementApplicationException` is raised by the application service, the controller renders the same view with `dashboardLoadError`.
+- **Audit Date (`gateDate`)** — the calendar date whose Yard Audits should be reviewed.
+- **Audit ID (`stockCheckId`)** — the exact Yard Stock Check to display in detail.
+- **Apply Filter** — reloads the same dashboard with the selected values.
+- **Reset** — reloads the dashboard without the filters.
+- **New Yard Audit** — navigates to `/ingestYardStockCheck`; it does not create an audit inside this GET request.
 
-Frozen-source controller evidence:
-`cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/YardAuditDashboardController.java`
+Audit Date and Audit ID are date/scalar filters rather than large reference-master selectors, so Customer/Product/Supplier/Vehicle/Driver/Address search conversion is not applicable.
 
-## Source-proved service behavior
+## What the system reads
 
-The injected application-service specialization resolves to `YardAuditDashboardFetchService`, whose `processRequest(...)` method builds `YardAuditDashboardDto` and delegates the read side to `YardQualityGateJpaDao`.
+The controller copies `stockCheckId` into `YardAuditDashboardFetchRequestDto`. A nonblank `gateDate` is parsed as `LocalDate`. The request is passed to `YardAuditDashboardFetchService`.
 
-The service proves the following behavior:
+The service:
 
-- resolves the selected/latest audit using `fetchLatestAuditSummary(stockCheckId)`;
-- derives the reporting date from `gateDate`, or from the selected audit when no date was supplied;
-- retrieves the day's audit list with `fetchAuditSummariesByDate(reportingDate)`;
-- retrieves the daily count with `countAuditsByCheckDate(reportingDate)`;
-- falls back to the first daily audit when no explicit selected audit was resolved;
-- retrieves selected-audit gate records through `findByYardStockCheckIdOrderByOpenedAtDesc(selectedStockCheckId)`;
-- retrieves line-level audit details with `fetchAuditLines(selectedStockCheckId)`;
-- retrieves audit timeline events with `fetchAuditEvents(selectedStockCheckId)`;
-- retrieves recent third-party-cylinder alerts with `fetchThirdPartyAlerts()`;
-- returns `YardAuditDashboardFetchResponseDto` with SUCCESS response code and the populated dashboard DTO.
+1. resolves the explicitly selected or latest audit with `fetchLatestAuditSummary(stockCheckId)`;
+2. determines the reporting date from the supplied `gateDate`, or from the selected audit when no date was supplied;
+3. loads that date's audit summaries and count;
+4. if no explicit selected audit was resolved, can use the first audit from the selected date as the displayed audit;
+5. loads quality-gate rows for the selected Yard Stock Check;
+6. loads line-level scanned-cylinder details;
+7. loads the selected audit's event timeline; and
+8. loads recent third-party-cylinder alerts.
 
-Frozen-source service evidence:
-`cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/YardAuditDashboardFetchService.java`
+The applicable DAO is `YardQualityGateJpaDao`.
 
-## Source-proved DAO and database read identities
+## Exact database read identities
 
-DAO: `YardQualityGateJpaDao`.
+The frozen read path uses:
 
-The applicable flow is read/reporting only; no database write is required by this GET dashboard story.
+- `public.tbl_yard_stock_check` — Yard Audit identity, date, operator, status/context and created/completed times;
+- `public.tbl_yard_stock_check_line` — scanned/observed cylinder, observed/system state, match result, scan time and auditor notes;
+- `public.tbl_yard_quality_gate` — quality-gate status/reason for the audit;
+- `public.tbl_cylinder_states` — state names used when presenting observed/system cylinder state;
+- `public.tbl_yard_check_event` — event timeline including event type/time/operator/cylinder/variance/remarks and cumulative scanned count.
 
-Proved database objects and relevant read identities include:
+This GET does not write to those objects.
 
-- `public.tbl_yard_stock_check`
-  - `pk_stock_check_id`, `check_date`, `checked_by`, `check_status`, `check_context`, `audit_context`, `created_at`, `completed_at`;
-- `public.tbl_yard_stock_check_line`
-  - `pk_stock_check_line_id`, `fk_stock_check`, `fk_cylinder`, `observed_cylinder`, `fk_observed_cylinder_state`, `system_state_name`, `fk_system_cylinder_state`, `state_matches_system`, `scanned_at`, `auditor_notes`;
-- `public.tbl_yard_quality_gate`
-  - latest/selected gate state including `gate_status`, `status_reason` and the entity-backed selected-audit gate rows;
-- `public.tbl_cylinder_states`
-  - `pk_cylinder_state_id`, `cylinder_state` for observed-state naming;
-- `public.tbl_yard_check_event`
-  - `pk_event_id`, `fk_stock_check`, `event_type`, `event_at`, `performed_by`, `fk_cylinder`, `fk_variance`, `event_remarks`, `cumulative_scanned`.
+## What the user sees
 
-The native queries prove latest-audit selection, date-scoped audit summaries and count, line details, event ordering, and third-party-cylinder alert retrieval. `YardQualityGateDo` supplies the entity-backed yard-quality-gate records.
+The page presents the selected reporting context and, where available:
 
-Frozen-source DAO evidence:
-`cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/YardQualityGateJpaDao.java`
+- number of audits for the day;
+- selected Audit ID and status;
+- who checked the yard;
+- known-cylinder and third-party-cylinder counts;
+- the list of audits for the selected date, with View links back to the same dashboard;
+- selected audit's quality-gate status;
+- third-party-cylinder alerts;
+- each scanned audit line, including observed state, system state and whether they match; and
+- the selected audit's event timeline.
 
-## Source-proved UI behavior
+The page has explicit empty outcomes including `No yard audits found.` and `No audits for selected date.`. If the application service raises `CylinderManagementApplicationException`, the controller renders the same dashboard and exposes `dashboardLoadError` rather than claiming a successful load.
 
-Template: `cylindermanagement.web/src/main/resources/templates/final-version-1/YardAuditDashboard.html`.
+## Business meaning and impact
 
-Visible/interactive behavior is proved for:
+The dashboard allows staff to answer operational questions such as: Was the yard actually checked? Which audit is being reviewed? Which physical cylinders disagree with the system? Were third-party cylinders found? Did the audit pass its quality gate? What events occurred during the check? Because the view is read-only, corrections, new scans, audit completion and any cylinder-state changes belong to their respective write operations and must not be inferred from viewing this page.
 
-- Audit Date filter (`gateDate`);
-- Audit ID filter (`stockCheckId`);
-- Apply Filter and Reset actions;
-- New Yard Audit navigation to `/ingestYardStockCheck`;
-- controller error display through `dashboardLoadError`;
-- empty-dashboard outcome: `No yard audits found.`;
-- daily audit-list empty outcome: `No audits for selected date.`;
-- selected audit metrics: total audits/day, audit ID, status, checked-by, known cylinders, third-party count;
-- audit list with per-row View links back to `/yard-audit-dashboard` using `stockCheckId` and `gateDate`;
-- selected-audit gate status and empty-gate outcome;
-- third-party-cylinder alerts and empty-alert outcome;
-- audit line details including observed/system states and match/mismatch/N/A display;
-- selected-audit event timeline.
+## Related operation
 
-## Strict completion decision
+`/ingestYardStockCheck` is the separate entry point used when the user chooses **New Yard Audit**. This Story does not claim the behavior of that creation workflow.
 
-`STRICT_FIELD_UI_COMPLETE`.
+## Rework gate
 
-The complete applicable read-side implementation chain is now source-proved from the frozen baseline:
-
-`GET /yard-audit-dashboard`
-→ `YardAuditDashboardController.doGet(...)`
-→ `YardAuditDashboardFetchService.processRequest(...)`
-→ `YardQualityGateJpaDao`
-→ `tbl_yard_stock_check` / `tbl_yard_stock_check_line` / `tbl_yard_quality_gate` / `tbl_cylinder_states` / `tbl_yard_check_event`
-→ `YardAuditDashboardDto`
-→ controller model
-→ `final-version-1/YardAuditDashboard`.
-
-No write-side persistence chain is applicable to this GET reporting endpoint. No missing write behavior is inferred.
-
-The canonical BL-001 matrix already identifies `YardAuditDashboardController`, `YardAuditDashboardFetchService`, `YardQualityGateJpaDao`, and the same database object set for this endpoint. BL-001 remains complete/read-only; no BL-001 source-integrity regression requiring reopening was found.
-
-Approval remains `PENDING_USER_APPROVAL`. The register-level `NEEDS_CLARIFICATION` value is not auto-cleared by strict source completion and remains unchanged until separately reconciled under the review-state policy.
+**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. The page purpose, filters, service/DAO read chain, exact database objects, visible metrics/details, empty/error outcomes and read-only boundary are frozen-source bound. No automatic approval and no revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
