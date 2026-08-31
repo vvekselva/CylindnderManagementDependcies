@@ -1,206 +1,141 @@
 # CylinderManagement Automation Framework - Self-Reliant E2E
 
-**Consolidated current architecture - 31 August 2026 - Revision 7 (User-Approved Drift & Code Change Manifest)**
+**Consolidated current architecture - 31 August 2026 - Revision 8 (Scheduler & Control-Plane Resilience)**
 
-GitHub is durable version control/control-state persistence. ChatGPT is the Primary Orchestrator, source analyst, validator, approved-code-rework executor, migration author and recovery coordinator. BL-008 retains its explicit user-apply handoff according to the live `BL-008/README.md`; BL-008 current state must always be resolved dynamically from that file rather than from stale architecture prose.
+GitHub is durable version-control/control-state persistence. ChatGPT is the Primary Orchestrator, source analyst, validator, approved-code-rework executor and recovery coordinator. GitHub Actions/runners and external worker runtimes are forbidden. BL-008 current state is always resolved dynamically from `BL-008/README.md`.
 
-Revision 7 changes the Story/code-drift governance rule. Detection and analysis of drift remain automatic, but **code mutation is forbidden until the user explicitly approves the drift and its exact proposed code-change manifest**. Every drift review packet must show what differs, why it matters, exactly which source files/classes/methods/templates/database objects would change, what tests would change or be added, and whether the change materially alters the approved Story contract. The Orchestrator may prepare evidence and proposals while waiting, but it must not create or execute BL-010 code-rework work outside the user-approved scope.
+Revision 8 incorporates Revision 7 user-approved Story/code-drift governance and adds the reliability corrections learned from scheduler handoff failures, overlapping fires, stale-heartbeat recovery and aggregate-write conflicts. The delivery model is **at-least-once scheduler delivery + idempotent orchestrator execution + single-primary mutation ownership + eventually consistent aggregate projections**.
 
 ## 1. Authoritative boundary
 
-| Area | Current governed state |
-|---|---|
-| Control repository | `vvekselva/CylindnderManagementDependcies` on `main` |
-| Application source | Current governed/frozen Cylinder source and evidence |
-| Primary orchestration/source-analysis/approved-code-rework host | ChatGPT |
-| GitHub role | Durable control/audit persistence and version control only |
-| GitHub Actions/runners | Forbidden |
-| External worker runtime / local bridge / agent | Forbidden |
-| BL-008 state source | `BL-008/README.md` |
-| Maximum safe-independent workers | Up to 10 |
-| Productive runtime | About 30-45 productive minutes when platform capacity and eligible work permit; never idle merely to consume time |
-| Runtime reliability policy | `.orchestrator/runtime-reliability-policy.yaml` |
-| Post-approval conformance/drift policy | `.orchestrator/post-approval-code-conformance-policy.yaml` |
+- Control repository: `vvekselva/CylindnderManagementDependcies` on `main`.
+- Application source: governed/frozen Cylinder source and exact source evidence.
+- Execution host: ChatGPT only.
+- GitHub role: durable control/audit persistence and version control only.
+- Maximum safe-independent workers: 10.
+- No global backlog mutex; serialize only proven dependencies/write conflicts/shared mutation boundaries.
+- Productive runtime: about 30-45 minutes when capacity and eligible work permit; never idle to consume time.
 
-## 2. Core execution lifecycle
+## 2. Mandatory scheduler handoff
 
-`TRIGGER -> CREATE LIVE-RUN/EVENT -> READ/RECONCILE -> PLAN -> CLAIM -> DISPATCH -> VALIDATE -> PERSIST UNIT EVIDENCE -> RELEASE CLAIM -> CHECKPOINT -> HEARTBEAT -> REPLAN/REFILL -> GOVERNED TERMINATION GATE`
+The FIRST orchestrator action for every Production Fire is to persist `.orchestrator/scheduler-fire-receipts/<scheduler-task>/<fire-id>.yaml` with scheduler task, fire ID, observed/scheduled fire time, receipt time, `TRIGGER_RECEIVED`, and intended run scope. Backlog read/mutation is forbidden before this receipt exists.
 
-There is no global backlog mutex. Work serializes only for proven dependencies, write-set conflicts, aggregate single-writer operations, or a true shared mutation boundary. `CHECKPOINT_RECONCILED` is a progress state and is never, by itself, a terminal condition.
+After run-ID allocation, the same receipt is updated to `ORCHESTRATOR_STARTED` / `RUN_LINKED` with run ID, live-run path and event-stream path. Scheduler `last_run_time` alone is never execution proof. Terminalization updates the same receipt with terminal classification and termination time.
 
-## 3. Resource-scoped claims
+The idempotency key is `scheduler_task + fire_id`. Re-delivery of the same fire reconciles the existing receipt and must not create a second logical run.
 
-Claims are stored under `.orchestrator/claims/<backlog>/<claim-id>.yaml`. The legacy `.orchestrator/invocation-lease.yaml` is compatibility-only and must not globally block unrelated work.
+## 3. Scheduler resilience - invocation failure does not disable recurrence
 
-## 4. Run scopes
+A run-local failure is not authorization to disable a recurring Production Fire. Automatic scheduler disablement is forbidden for transient GitHub write failures, handoff failures, runtime boundaries, BL-008 blockers, source-detail gaps, aggregate conflicts, Story/code drift review waits, or ordinary backlog blockers.
 
-- `TARGETED`: only explicitly requested backlog/work units.
-- `CONTINUOUS`: replan across all eligible independent units.
-- `RECOVERY`: blocker, stale-state, parity, reconciliation, architecture-recovery or previous-run termination-recovery work in scope.
+A recurring schedule may be disabled only by: (1) explicit user instruction, (2) deliberate schedule replacement/supersession, or (3) a proven scheduler-level duplicate-fire safety defect. The reason must be durably recorded. Otherwise the next scheduled fire retries/reconciles automatically.
 
-## 5. Unit-local evidence first
+## 4. Control-plane write reliability
 
-Completed work is persisted as unit-local evidence before aggregate projections. Aggregate YAML is a projection/checkpoint and must be repaired when it disagrees with verified unit evidence or physical repository state. This aggregate-projection repair is an evidence synchronization operation, not application code drift and does not authorize code mutation.
+Mutable control files use optimistic concurrency with current blob SHA. Retryable conflicts use bounded retry with jitter:
 
-## 6. Productive runtime and worker-pool policy
+`REFETCH CURRENT BLOB -> RECONCILE AUTHORITATIVE UNIT EVIDENCE -> RECOMPUTE UPDATE -> RETRY`
 
-The governed productive window is about 30-45 minutes when execution capacity exists. This is not a correctness minimum, and the orchestrator must never idle merely to satisfy the clock. While eligible ChatGPT-executable work remains and runtime is available, continue `REPLAN -> CLAIM -> DISPATCH`. Safe-independent worker capacity is continuously replenished up to 10.
+`SHA_CONFLICT`, transient GitHub write failure and `RETRYABLE_CONTROL_PLANE_CONFLICT` are retryable control-plane conditions. Completed unit-local work must never be rerun merely because an aggregate/control projection conflicted.
 
-## 7. Three-level SSOT
+## 5. Primary ownership and duplicate fires
+
+Only one primary mutator may own the active Production Fire mutation boundary. Overlapping fires are safe: one primary continues and the other terminalizes as `DUPLICATE_FIRE_SUPPRESSED`. Duplicate suppression never disables the recurring scheduler.
+
+A stale heartbeat alone is insufficient to declare an active run disappeared. Before `ABNORMAL_PROCESS_DISAPPEARANCE`, re-read `live-run`, newest heartbeat/event evidence, termination record and scheduler receipt. Newer durable heartbeat evidence supersedes stale inference.
+
+## 6. Core execution lifecycle
+
+`TRIGGER -> RECEIPT -> RUN LINK -> RECOVERY-FIRST RECONCILIATION -> PRIMARY OWNERSHIP -> PLAN -> CLAIM -> DISPATCH -> VALIDATE -> PERSIST UNIT EVIDENCE -> RELEASE CLAIM -> CHECKPOINT -> HEARTBEAT -> REPLAN/REFILL -> GOVERNED TERMINATION`
+
+A checkpoint is progress, never by itself a terminal condition. While eligible work and execution capacity remain, continue `REPLAN -> CLAIM -> DISPATCH` and refill up to 10 safe-independent workers.
+
+## 7. Three-level SSOT and aggregate consistency
 
 - Level 1: backlog/master scope.
-- Level 2: item definition, SOW, dependencies and completion path.
-- Level 3: runtime claims, work units, evidence, blockers and results.
+- Level 2: item definition, SOW, dependencies and gates.
+- Level 3: runtime claims, unit evidence, blockers, checkpoints and results.
 
-Fail-closed is local to the affected unit/dependency and must not globally block unrelated work.
+Unit-local evidence is authoritative for completed unit work. Aggregate YAML/CSV is a projection/checkpoint. Shared aggregate writes are single-writer and optimistic-SHA protected. On conflict, preserve unit evidence and repair the projection later. Aggregate projection drift is synchronization drift, not Story/code drift.
 
-## 8. BL-001
+Fail-closed is local: missing evidence blocks only the affected unit/dependency, not unrelated safe-independent work.
 
-BL-001 is complete at 134 unique HTTP method/path keys and remains read-only unless a source-integrity regression is proven.
+## 8. Recovery-first contract
 
-## 9. BL-002 Story register and priority
+Before new dispatch, reconcile unresolved scheduler handoff/start/termination gaps, live-run liveness, newest heartbeat, terminal records, stale claims, authoritative unit evidence and aggregate projection drift. Recover a stale claim only after current liveness is revalidated.
 
-BL-002 contains 134 registered Stories: 88 R1 and 46 R2. R1 is priority 1; R2 is priority 2. Auto-approval is forbidden. Canonical catalogue: `BL-002/story-register.csv`.
+Runtime cutoff preserves completed evidence, releases/reconciles claims when possible, checkpoints resumable state and terminalizes with positive evidence. The next fire resumes from the latest durable checkpoint.
 
-## 10. BL-002 physical Story parity
+## 9. BL-002 Story governance
 
-Mandatory parity gate: `134 registered Story IDs == 134 physical BL-002/stories/STORY-*.md files`. Missing R1 physical files are priority 1; missing R2 physical files are priority 2. `NEEDS_CLARIFICATION` does not waive physical materialization.
+BL-002 has 134 registered Stories (88 R1, 46 R2). R1 precedes R2 where the release gate applies. Auto-approval and auto-reapproval are forbidden. Physical Story parity remains `134 registered IDs == 134 physical BL-002/stories/STORY-*.md files`.
 
-## 11. BL-002 strict Story enrichment
+Strict Story completion requires the deepest applicable source-proved chain: screen/user intent -> visible control/event -> request/identity -> controller -> DTO/model -> service/concrete implementation -> DAO/repository -> entity/view -> exact DB read/write identity -> validation/transaction/side effects -> visible outcome. Unresolved source-detail gaps are not strict completion.
 
-Strict completion requires the deepest applicable source-proved contract:
+## 10. Revision 7 Story/code drift governance retained
 
-`screen/user intent -> visible control/event -> exact request/identity -> controller -> DTO/model -> service -> DAO/repository -> entity/view -> exact DB read/write identity -> validation/branch/side effects -> response/visible outcome`
+After explicit Story approval/reapproval, mandatory Story-to-code conformance compares the approved Story with exact governed source. Outcomes are `CODE_CONFORMANCE_VERIFIED_PASS` or `STORY_CODE_DRIFT_DETECTED`.
 
-`SOURCE_DETAIL_REVIEW_REQUIRED` or another unresolved evidence gap is not strict completion.
+When drift is detected, analysis and durable review-packet preparation are automatic, but application-code mutation and BL-010 creation/execution are forbidden until the user explicitly approves the exact drift/code-change manifest.
 
-## 12. BL-002 review, approval and mandatory post-approval code conformance
+The packet must state current vs approved behavior, business impact, repository/ref, file path, class/component, method/function/template/database object, approximate line or stable source anchor, proposed change, reason, tests, DB impact, risk/rollback and materiality/reapproval assessment.
 
-A Story is a complete review artifact only when its physical `.md` exists and is synchronized with governed evidence. Explicit user approval/reapproval is required and auto-approval is forbidden.
+If implementation needs files/methods/schema objects/business behavior beyond the approved manifest, stop that expansion and request new approval. Material Story-contract changes require explicit Story reapproval. Fanout requires current approval/reapproval plus current conformance PASS.
 
-Because BL-002 Stories are reverse engineered from application source, approval is followed by mandatory post-approval Story-to-code conformance. The orchestrator idempotently enqueues the approved Story in `BL-002/post-approval-code-conformance-task-queue.csv` and verifies the current approved Story against exact governed source for endpoint/controller, request/response, service and concrete implementation, DAO/repository, entity/view, DB identity, validation, transaction/persistence behavior, visible outcomes, related operations and selector UX where applicable.
+## 11. Testing fanout
 
-Possible conformance outcomes are:
+Only fanout-eligible Stories proceed:
+- BL-004: JUnit 5 unit tests with exact source binding and execution evidence.
+- BL-005: JUnit 5 + PostgreSQL Testcontainers integration tests with execution evidence.
+- BL-009: human-readable test catalogue/data plus executable data-driven test mapping and execution evidence.
 
-- `CODE_CONFORMANCE_VERIFIED_PASS` - approved Story corresponds to governed source for the verified scope.
-- `STORY_CODE_DRIFT_DETECTED` - one or more Story assertions do not correspond to governed source; exact drift evidence is required.
+Generated source is not PASS. Coverage is derived only from actually executed tests.
 
-Approval alone never releases revised BL-004/BL-005/BL-009 fan-out.
+## 12. BL-008
 
-## 13. Mandatory user approval of Story/code drift before code changes
+`BL-008/README.md` is the sole live state authority. Do not hard-code a stale provider/migration state into the architecture. Waiting BL-008 work must not block independent BL-002/004/005/009/010 work. PostgreSQL-specific behavior must not be substituted with H2, manual SQL, or mocked integration behavior.
 
-The active policy is `.orchestrator/post-approval-code-conformance-policy.yaml`.
+## 13. Runtime liveness and terminalization
 
-When `STORY_CODE_DRIFT_DETECTED` is produced, the Orchestrator must **stop before application-code mutation** and create a durable drift review packet. The default state is `DRIFT_REVIEW_REQUIRED`. The user must explicitly approve the proposed change scope before the Orchestrator may create or execute the corresponding BL-010 development change.
+`.orchestrator/live-run.yaml` is refreshed at invocation start, dispatch waves, worker completion/blocker, aggregate checkpoints and terminalization start, with a target heartbeat interval no greater than two minutes while execution is active.
 
-Every drift review packet must contain:
+Run lifecycle evidence is persisted under `.orchestrator/runs/<run-id>/`. Every exit uses one governed terminalization path. Direct silent return is forbidden. The original scheduler receipt and run termination record must agree on the terminal classification.
 
-1. Story ID, drift ID, source fingerprint and defect fingerprint.
-2. Current source-proved behavior.
-3. Approved Story behavior.
-4. The exact difference between current code and the approved behavior.
-5. Business/user impact of leaving the drift unresolved.
-6. Proposed change summary.
-7. **Code-change manifest** containing, for every proposed source change: repository, governed branch/ref, file path, class/component, method/function/template block, approximate line or stable source anchor, change type, current code behavior, proposed code behavior, reason, and the related Story assertion.
-8. **Test-change manifest** containing test layer, test file/planned path, scenario and expected result.
-9. **Database-change manifest when applicable** containing migration/schema object, table/view/column/constraint/function, proposed change, data-integrity impact and rollback/recovery note.
-10. Risk/rollback notes and an assessment of whether the change materially changes the approved Story contract.
+`UNKNOWN_TERMINATION` is a temporary defect classification requiring recovery. `PLATFORM_RUNTIME_FORCED_STOP` requires positive evidence; it must not be inferred merely because a run was short.
 
-Allowed user decisions are:
+## 14. Quality gates added/strengthened in Revision 8
 
-- `DRIFT_APPROVED_FOR_CODE_CHANGE` - the exact presented scope may proceed.
-- `DRIFT_REJECTED_OR_REWORK_REQUESTED` - no code change is permitted; revise the proposal or Story as instructed.
+- `QG-TRIGGER`: counted execution requires durable receipt + run link.
+- `QG-IDEMPOTENCY`: one logical run per scheduler-task + fire-id.
+- `QG-CONTROL-PLANE-RETRY`: retryable write conflicts are refetched/reconciled/retried before terminal failure.
+- `QG-PRIMARY`: at most one primary mutator; duplicate fire is suppressed without disabling recurrence.
+- `QG-LIVENESS-REVALIDATION`: stale heartbeat cannot cause recovery until newest durable evidence is rechecked.
+- `QG-AGGREGATE`: projection conflicts cannot discard completed unit evidence.
+- `QG-SCHEDULER-RESILIENCE`: invocation-local failure cannot disable recurring Production Fire.
+- `QG-DRIFT-APPROVAL`: no application-code mutation or BL-010 execution before exact user-approved manifest.
+- `QG-CODE-REWORK-SCOPE`: scope expansion requires new user approval.
+- `QG-FANOUT`: approval/reapproval + current conformance PASS required.
+- `QG-TERMINATION`: run record and original scheduler receipt terminalize consistently.
 
-No implicit approval, auto-approval or approval inferred from the original Story approval is permitted. Original Story approval authorizes conformance analysis only; it does **not** authorize later code changes discovered during conformance.
+## 15. Repository control files
 
-## 14. User-approved BL-010 code rework
+- `.orchestrator/architecture-current.md` - this active architecture.
+- `.orchestrator/execution-architecture.yaml` - machine-readable execution architecture.
+- `.orchestrator/lease-policy.yaml` - resource claims/locking.
+- `.orchestrator/runtime-reliability-policy.yaml` - Revision 8 runtime/handoff/retry/scheduler resilience contract.
+- `.orchestrator/post-approval-code-conformance-policy.yaml` - Story/code conformance and user-approved drift manifest contract.
+- `.orchestrator/approved-story-testing-policy.yaml` - downstream testing fanout gates.
+- `.orchestrator/scheduler-fire-receipts/` - durable scheduler delivery/run-link/terminal evidence.
+- `.orchestrator/live-run.yaml`, `.orchestrator/runs/<run-id>/events.ndjson`, `.orchestrator/runs/<run-id>/termination.yaml` - runtime liveness and terminal evidence.
+- `.orchestrator/claims/` - resource-scoped claims.
+- BL-002 unit evidence and aggregate projections - unit-local-first SSOT/projections.
 
-BL-010 code rework is executable only after durable `DRIFT_APPROVED_FOR_CODE_CHANGE` evidence exists and the approved code-change manifest is present.
+## 16. Operating rule
 
-After approval, ChatGPT performs the code rework through resource-scoped claims: resolve current governed source, verify that the approved manifest still matches current source, determine read/write sets, acquire the claim, implement only the approved scope, validate exact changed source, execute available tests, persist changed-file/test evidence, release the claim and rerun Story-to-code conformance.
+The framework is designed so ordinary failures become recoverable states rather than system shutdowns. A failed invocation is durable recovery evidence, not authorization to pause recurrence. The next fire performs recovery-first reconciliation and resumes eligible work.
 
-If implementation reveals that additional files, methods, database objects or business behavior must change outside the approved manifest, the Orchestrator must stop that expansion and return to `DRIFT_REVIEW_REQUIRED` with a revised change manifest. It must not silently broaden the implementation.
+**Effective lifecycle:** `at-least-once scheduler fire -> idempotent receipt/run link -> single-primary recovery-first execution -> unit-local durable work -> optimistic aggregate projection -> governed terminalization -> next-fire resume`, with explicit user approval gating all Story/code drift mutations.
 
-If runtime execution is unavailable, the maximum allowed result is `SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED`, never PASS. If the approved implementation materially changes business purpose, fields, validation, persistence/transaction semantics, visible behavior, selector contract or downstream business impact, the Story becomes `REAPPROVAL_REQUIRED`. Auto-reapproval is forbidden. Non-material implementation fixes still require a fresh conformance PASS.
+## 17. Document synchronization
 
-## 15. Approved Story testing fan-out
-
-Testing authority requires both:
-
-1. explicit approval/reapproval of the current Story contract; and
-2. current `CODE_CONFORMANCE_VERIFIED_PASS` evidence.
-
-Only then is the Story `FANOUT_ELIGIBLE` under `.orchestrator/approved-story-testing-policy.yaml`.
-
-- BL-004: JUnit 5 unit-test generation, exact source binding, execution and durable PASS/FAIL evidence.
-- BL-005: JUnit 5 + PostgreSQL Testcontainers integration-test generation, exact source binding, execution and durable PASS/FAIL evidence.
-- BL-009: human-readable test catalogue, dual-format test data, executable test-code mapping and authorized live validation.
-
-Generated Java source is never equivalent to execution or PASS.
-
-## 16. BL-009 test-data architecture
-
-BL-009 test data uses a mandatory dual-format representation for each fanout-eligible Story:
-
-1. `BL-009/test-data/<story-id>.csv` - machine-readable test-data source.
-2. `BL-009/test-data/<story-id>.md` - human-readable companion.
-
-The human-readable companion is mandatory and must contain a plain-language purpose/scope statement, explanation of how the data is used, and a Markdown table containing actual applicable test-data values. A reference-only or ID-only table is incomplete. CSV and human-readable representations must maintain semantic row/data parity. Real credentials/secrets must never be persisted.
-
-## 17. BL-008 current-state authority
-
-`BL-008/README.md` is the live current-state source for BL-008. Production orchestration, aggregate checkpoints and watchdog reporting must resolve current state dynamically. Waiting BL-008 work must not block independently eligible BL-002/004/005/009/010 work.
-
-## 18. Scheduler and watchdog
-
-The Production Fire is the recurring work trigger; the watchdog is read-only. Pending post-approval conformance, drift-packet preparation, approved BL-010 rework and post-rework conformance reruns are normal Production Fire candidate units selected dynamically through dependency/read-write-set planning and resource-scoped claims.
-
-`DRIFT_REVIEW_REQUIRED` is a non-mutating wait state. While waiting for the user's decision, the Production Fire may continue safe-independent work but must not mutate the affected application code or create an executable BL-010 change for that drift.
-
-Each Production Fire maintains `.orchestrator/live-run.yaml` and append-only lifecycle events. Run-local blockers or pending user drift approval must not automatically disable recurring scheduler tasks.
-
-The watchdog must report approval separately from code conformance, code drift, drift-review-required state, user-approved drift state, BL-010 implementation state, reapproval-required state and fanout eligibility. For each pending drift, it must surface the exact proposed code-change locations.
-
-## 19. Runtime reliability and terminalization
-
-All exits/returns from the Production Fire must pass through one governed terminalization path. Direct silent return is forbidden. `UNKNOWN_TERMINATION` is a temporary defect classification requiring recovery/root-cause investigation.
-
-## 20. Quality gates
-
-Quality gates include:
-
-- `QG-SSOT`, source/dependency/claim/parity/strict Story gates.
-- `QG-BL002-APPROVAL`: explicit approval/reapproval is durable.
-- `QG-BL002-CONFORMANCE`: post-approval Story-to-code verification is durably PASS or DRIFT against exact governed source.
-- `QG-DRIFT-REVIEW-PACKET`: every detected drift has the required current-vs-approved behavior analysis plus exact code/test/database change locations.
-- `QG-DRIFT-APPROVAL`: application code mutation is forbidden until the user has explicitly approved the exact drift change manifest.
-- `QG-CODE-REWORK-SCOPE`: implementation changes only the user-approved files/components/methods/schema objects; scope expansion requires a new approval cycle.
-- `QG-FANOUT`: BL-004/BL-005/BL-009 are released only after approval + current conformance PASS.
-- BL-004/BL-005 source binding and execution evidence.
-- BL-009 dual-format data parity and executable mapping.
-- runtime heartbeat and terminalization quality gates.
-
-## 21. Repository control files
-
-- `.orchestrator/execution-architecture.yaml` - machine-readable active architecture.
-- `.orchestrator/lease-policy.yaml` - resource claims and execution-policy rules.
-- `.orchestrator/runtime-reliability-policy.yaml` - productive runtime, heartbeat, worker refill, termination and recovery contract.
-- `.orchestrator/post-approval-code-conformance-policy.yaml` - mandatory approved Story/code verification, drift review packet and explicit user code-change approval contract.
-- `.orchestrator/approved-story-testing-policy.yaml` - testing fan-out rules after approval + conformance PASS.
-- `.orchestrator/architecture-current.md` - this consolidated architecture.
-- `BL-002/post-approval-code-conformance-task-queue.csv` - approved Story code-conformance work queue.
-- `BL-002/code-conformance-evidence/<story-id>/*.yaml` - durable source-bound PASS/DRIFT evidence.
-- `BL-002/drift-approval-evidence/<story-id>/*.yaml` - durable user decision plus approved/rejected code-change manifest.
-- `BL-010/development-change-task-queue.csv` - development/code-rework queue populated only after drift approval.
-- `BL-010/evidence/` - source binding, approved scope, implementation, validation and test evidence.
-- BL-004/BL-005/BL-009 queues and evidence - downstream testing only after fanout eligibility.
-
-## 22. Application control-loop acceptance rule
-
-A worker completion, blocker or successful aggregate checkpoint must return to replanning, not return from the Production Fire invocation. The coordinator keeps dispatching while eligible work and execution capacity remain, subject to dependency/write-set safety and the productive runtime window. A pending user drift decision removes only the affected code mutation from the executable pool; it does not globally block unrelated work.
-
-## 23. Document synchronization rule
-
-Generated architecture PDF/DOCX artifacts must be rebuilt when this architecture, post-approval conformance/drift policy, approved testing policy, runtime reliability policy, execution architecture or lease policy changes materially. Historical wording may be retained only as clearly superseded history and must not contradict active operating instructions.
-
-**Effective Story lifecycle:** `reverse engineer -> Story rework -> explicit Story approval/reapproval -> mandatory Story/code conformance -> if drift: build exact change-location manifest -> explicit user drift/code-change approval -> BL-010 implementation within approved scope -> Story reapproval if material -> conformance PASS -> BL-004/BL-005/BL-009 fan-out -> execution -> JaCoCo/coverage evidence`.
+DOCX/PDF architecture artifacts must be rebuilt whenever this architecture or its runtime/conformance/testing policies change materially. Revision 8 supersedes Revision 7 only for scheduler/control-plane reliability; Revision 7 drift/code-change approval governance remains fully active.
