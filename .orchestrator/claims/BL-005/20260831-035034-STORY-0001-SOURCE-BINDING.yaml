@@ -2,10 +2,12 @@ claim_id: 20260831-035034-STORY-0001-SOURCE-BINDING
 run_id: CYLINDER-PRODUCTION-FIRE-20260830-221327-0530
 backlog: BL-005
 unit: STORY-0001_SOURCE_BINDING
-status: ACTIVE
+status: RELEASED
 acquired_at: 2026-08-31T03:50:34Z
-heartbeat_at: 2026-08-31T03:50:34Z
+heartbeat_at: 2026-08-31T03:52:04Z
 lease_expires_at: 2026-08-31T04:05:34Z
+released_at: 2026-08-31T03:52:04Z
+result: SOURCE_BOUND_EXECUTION_BLOCKED
 read_set:
   - BL-005/stories/STORY-0001.md
   - BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java
