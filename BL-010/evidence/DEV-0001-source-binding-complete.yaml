@@ -1,0 +1,19 @@
+development_id: DEV-0001
+story_id: STORY-0054
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-075022Z
+state: SOURCE_BINDING_COMPLETE
+frozen_source: 3ae6e61442132d94a307275b08dd65fcef228d89
+customer_endpoint: GET /search/customer/{searchText}
+customer_browser_min_length: 3
+customer_browser_debounce_ms: 280
+customer_response_collection: customerDtos
+customer_id_field: customerId
+address_endpoint: GET /search/address/customer-address/{customerId}
+address_response_collection: customerAddressDtos
+address_id_field: customerAddressId
+product_endpoint: GET /search/product/{searchText}
+product_response_type: ProductSearchResponseDto
+product_id_field: productId
+implementation_next: REWORK_CUSTOMER_DEMAND_TEMPLATE_ON_DEVELOPMENT_BRANCH
+approval_state: NOT_APPROVED
+fanout_state: BLOCKED_UNTIL_EXPLICIT_STORY_APPROVAL
