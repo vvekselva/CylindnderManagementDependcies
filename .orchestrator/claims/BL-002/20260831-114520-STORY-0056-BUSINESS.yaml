@@ -1,0 +1,13 @@
+claim_id: 20260831-114520-STORY-0056-BUSINESS
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+backlog: BL-002
+unit: STORY-0056_BUSINESS_BEHAVIOR_REWORK
+status: ACTIVE
+acquired_at: 2026-08-31T11:45:20Z
+heartbeat_at: 2026-08-31T11:45:20Z
+read_set:
+  - BL-002/stories/STORY-0056.md
+write_set:
+  - BL-002/stories/STORY-0056.md
+  - BL-002/work-status/STORY-0056.yaml
+purpose: Promote source-complete Mark Customer Demand Delivered trace into the current business-behavior review state without code mutation or approval.
