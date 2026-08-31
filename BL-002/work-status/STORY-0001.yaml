@@ -1,36 +1,43 @@
 story_id: STORY-0001
 release: R1
 source_story: BL-002/stories/STORY-0001.md
-strict_state: STRICT_FIELD_UI_COMPLETE
+legacy_strict_state: STRICT_FIELD_UI_COMPLETE
+rework:
+  state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REAPPROVAL
+  business_behavior_complete: true
+  selector_ux_reviewed: true
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+  application_code_change_required: false
 approval:
-  state: APPROVED
-  source: EXPLICIT_USER_APPROVAL
-  approved_date: 2026-08-31
+  historical_state: APPROVED
+  historical_source: EXPLICIT_USER_APPROVAL
+  historical_approved_date: 2026-08-31
+  current_revised_contract_state: NOT_APPROVED_REAPPROVAL_REQUIRED
+  explicit_user_reapproval_required: true
   auto_approved: false
 downstream_testing:
   BL-004:
-    state: QUEUED
+    state: SUSPENDED_PENDING_REAPPROVAL
     framework: JUNIT_5
-    human_readable: BL-004/stories/STORY-0001.md
-    generated_test: BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java
+    historical_artifact: BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java
     issue: 2
   BL-005:
-    state: QUEUED
+    state: SUSPENDED_PENDING_REAPPROVAL
     framework: JUNIT_5_TESTCONTAINERS
     database: POSTGRESQL_TESTCONTAINERS
-    human_readable: BL-005/stories/STORY-0001.md
-    generated_test: BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java
+    historical_artifact: BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java
     issue: 3
   BL-009:
-    state: READY_FOR_TEST_EXECUTION
-    human_readable: BL-009/stories/STORY-0001.md
-    test_data: BL-009/test-data/STORY-0001.csv
+    state: SUSPENDED_PENDING_REAPPROVAL
+    historical_catalogue: BL-009/stories/STORY-0001.md
+    historical_test_data: BL-009/test-data/STORY-0001.csv
+    historical_executable_test: BL-009/generated-tests/STORY-0001/Story0001TestDataDrivenTest.java
     live_validation_issue: 4
 next_actions:
-  - resolve_exact_frozen_application_package_and_test_source_bindings
-  - execute_BL-004_JUnit_tests
-  - execute_BL-005_JUnit_Testcontainers_tests
-  - execute_authorized_live_test_data_validation
+  - user_review_reworked_STORY-0001
+  - explicit_user_reapproval_required_before_revised_testing_fanout_or_execution
 notes:
-  - Generated Java files are durable JUnit source scaffolds; execution PASS is not claimed until bound to the application source tree and run.
-  - No credentials or production secrets are stored in generated test data.
+  - Historical approval is retained for audit but does not approve the materially reworked current contract.
+  - The mandatory Customer/Product/Supplier/Vehicle/Driver/Address reference-selector review is not applicable because the Login page contains credential fields only.
+  - Existing historical downstream test artifacts are preserved but are not PASS evidence for the revised contract.
