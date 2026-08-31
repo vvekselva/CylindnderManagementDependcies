@@ -1,0 +1,53 @@
+story_id: STORY-0045
+review_type: CODE_CONFORMANCE_DRIFT
+status: PENDING_USER_APPROVAL
+prepared_at: '2026-09-01T03:37:58+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+current_behavior:
+  controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchController.java
+  component: CustomerFetchController
+  method_anchor: doGet / @GetMapping("/displayCustomer")
+  current_import: com.sreyas.datamatics.cylindermanagement.customer.dm.service.CustomerFetchByIdService
+  source_tree_result: No CustomerFetchByIdService.java is present at the imported package path in the frozen repository tree.
+  available_service_path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerFetchByIdService.java
+  available_service_package: com.sreyas.datamatics.cylinder.management.services
+  dependency_anchor: cylindermanagement.web/pom.xml -> com.sreyas.datamatics:cylindermanagement.custommapper.service:0.0.3-SNAPSHOT
+approved_behavior:
+  summary: GET /displayCustomer must bind to the source-proved CustomerFetchByIdService implementation that validates customerId, reads CustomerJpaDao.findById, maps CustomerDo/address/phone data, and returns CustomerFetchByIdResponseDto for the display view.
+business_impact:
+  summary: The source-level package mismatch leaves the display-customer controller-to-service dependency unbound from the frozen repository and can prevent clean compilation or Spring wiring, making customer detail display unavailable even though the backend implementation itself exists.
+proposed_code_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchController.java
+    class_component: CustomerFetchController
+    method_function_template_or_db_object: imports used by doGet() / GET /displayCustomer
+    approximate_line_source_anchor: import com.sreyas.datamatics.cylindermanagement.customer.dm.service.CustomerFetchByIdService
+    proposed_change: Replace the unresolved CustomerFetchByIdService import with com.sreyas.datamatics.cylinder.management.services.CustomerFetchByIdService. Do not change handler behavior or request/response mapping.
+    reason: Bind the controller to the source-proved Spring component supplied by the web module's existing custommapper-service dependency.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file_path: cylindermanagement.web/src/test/java/.../CustomerFetchControllerTest.java or the existing directly corresponding MVC test location if differently named
+    class_component: CustomerFetchController MVC test
+    method_function_template_or_db_object: GET /displayCustomer dependency binding tests
+    approximate_line_source_anchor: controller test setup/imports and successful customer-detail render test
+    proposed_change: Add or update only the directly associated MVC test to prove the controller resolves the corrected service type and preserves success/error redirects.
+    reason: Prevent recurrence of package/import drift and verify the existing endpoint contract.
+tests_impact:
+  required:
+    - compile the web module against cylindermanagement.custommapper.service
+    - MVC success path for GET /displayCustomer with customerId
+    - existing invalid-input and application-exception redirect behavior
+  scope_limit: No unrelated controller/service tests may be changed under this approval.
+database_impact:
+  schema_change: false
+  data_change: false
+  migration_required: false
+  reason: Proposed change is dependency binding only; CustomerJpaDao and public.tbl_customer mappings are unchanged.
+excluded_scope:
+  - Any CustomerFetchByIdService behavior change
+  - Any DAO/entity/schema change
+  - Any DisplayCustomer.html change; that is governed by its separate existing review manifest
+  - Any BL-010 creation or execution before explicit user approval
+approval_gate: Explicit user approval is required for this exact manifest. If implementation requires any additional file, method, behavior, schema, or test scope, stop that scope and request a new approval.
