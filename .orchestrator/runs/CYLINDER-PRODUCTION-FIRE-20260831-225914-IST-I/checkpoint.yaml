@@ -1,0 +1,38 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-225914-IST-I
+checkpoint_time: '2026-08-31T23:07:10+05:30'
+mode: CONTINUOUS
+state: RESUMABLE_RUNTIME_BOUNDARY
+recovery_first:
+  recovered_run: CYLINDER-PRODUCTION-FIRE-20260831-223009-IST
+  reconciliation_complete: true
+aggregate_checkpoint:
+  source: BL-002/enrichment-progress.yaml
+  observed_version: 72
+  projection_drift_detected_this_run: false
+  projection_repair_performed_this_run: false
+  authoritative_unit_evidence_reconciled: true
+completed_units: []
+partial_units:
+  - BL-002/STORY-0041_BUSINESS_BEHAVIOR_REWORK
+story_0041:
+  business_behavior_complete: false
+  approval: PENDING_USER_APPROVAL
+  durable_evidence: BL-002/evidence/STORY-0041/20260831T230658+0530-source-binding-continuation.yaml
+  carried_verified:
+    - POST /registerCustomer controller invokes uC01RegisterCustomerMediator.invokeServices(requestDto)
+    - mediator injection type is ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
+    - submitted Address Type is propagated to AddressDto before mediator invocation
+  researched_this_run:
+    - exact frozen repository root/module structure reconfirmed
+    - repository index searches for mediator/request DTO/interface returned no matches and were treated as index limitations, not absence proof
+  remaining_source_binding:
+    - concrete Spring mediator bean implementation or configuration
+    - exact transaction boundary around mediator/service persistence chain
+    - validator implementation proving server-side required-field and cross-reference rules
+active_claims_remaining: 0
+eligible_work_remaining: true
+application_code_mutation: false
+bl_010_execution: false
+story_approval_delta: 0
+github_actions_or_runners_used: false
+next_recovery_action: continue exact frozen-source module traversal for STORY-0041 concrete mediator/transaction/validator binding or dispatch another safe-independent eligible unit
