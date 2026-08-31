@@ -1,0 +1,44 @@
+version: 1
+story_id: STORY-0037
+release: R1
+endpoint: GET /cylinderDelivery
+updated_by: Primary Cylinder Automation Tool
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+rework_policy: BL-002/story-business-behavior-rework-policy.yaml
+state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
+approval_state: NOT_APPROVED
+business_behavior_complete: false
+selector_ux_review:
+  state: COMPLETE_CURRENT_PAGE_PATTERN_ALREADY_SEARCH_BASED
+  customer:
+    control: type_ahead_search
+    endpoint: GET /search/customer/{term}
+    stale_selected_id_clear: SOURCE_PROVED
+    dependent_address_endpoint: GET /search/address/customer/{customerId}
+    dependent_address_reset_on_customer_change_or_clear: SOURCE_PROVED
+  vehicle:
+    control: type_ahead_search
+    endpoint: GET /search/vehicle/{term}
+    stale_selected_id_clear: SOURCE_PROVED
+  driver:
+    control: type_ahead_search
+    endpoint: GET /search/driver/{term}
+    stale_selected_id_clear: SOURCE_PROVED
+  product: NOT_APPLICABLE_TO_THIS_PAGE_AS_DIRECT_REFERENCE_CONTROL
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+source_proved:
+  - GET /cylinderDelivery creates UC02Phase02CylinderDeliveryRequestDto with a blank OrderDto and renders Uc02-Phase02-CylinderDeliveryView as model attribute cylinderDelivery.
+  - The page exposes challan number/date/type, order status, driver, vehicle, remarks, customer, delivery address, in-transit cylinder search and add/remove line controls.
+  - Customer selection drives customer-specific address lookup and clears stale customer/address identities when customer changes.
+  - Vehicle and challan date gate the in-transit cylinder lookup; selected cylinder IDs and quantities are propagated as order lines.
+  - Client submit guards require challan number/date/type, customer, driver, vehicle and at least one cylinder.
+  - POST /cylinderDelivery delegates the assembled DTO to ICylinderManagementApplicationMediator<UC02Phase02CylinderDeliveryRequestDto, UC02Phase02CylinderDeliveryResponseDto>; success redirects to orderList and InvalidInputParameterException redisplays the form with errorMessage.
+missing_source_binding:
+  - Concrete mediator implementation selected for UC02Phase02CylinderDeliveryRequestDto.
+  - Exact application service transaction performed by the mediator.
+  - Exact DAO/repository/database writes and persisted identities for the delivery order and cylinder state/location effects.
+  - Source-proved downstream business state after successful Save Delivery Order.
+reason_not_review_ready: The GET page behavior is well proved, but the page embeds a Save Delivery Order business capability. The global rework policy requires that embedded action's exact system write effect and downstream business impact be explained. The controller proves only the generic mediator handoff, so marking the Story BUSINESS_BEHAVIOR_COMPLETE now would invent the missing transaction path.
+next_action: Bind the concrete UC02 Phase 02 delivery mediator/service/DAO transaction from the frozen source, update STORY-0037 with before/after persistence and business impact, then move to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW without auto-approval.
+fanout_authorized: false
