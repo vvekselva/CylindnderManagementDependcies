@@ -3,10 +3,11 @@ claim_id: 20260831-0812-STORY-0011
 run_id: CYLINDER-TARGETED-BL002-STORY-0011-20260831-0812IST
 backlog: BL-002
 unit_id: STORY-0011
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T08:12+05:30
 heartbeat_at: 2026-08-31T08:22+05:30
 lease_expires_at: 2026-08-31T08:37+05:30
+released_at: 2026-08-31T08:24+05:30
 owner: Primary Cylinder Automation Tool
 mode: TARGETED
 read_set:
@@ -23,4 +24,5 @@ write_set:
   - Releases/bl001-traceability-20260828-134/matrix-data.js
   - Releases/bl001-traceability-20260828-134/bl001-traceability-sha256.txt
   - BL-001-TRACEABILITY-MANIFEST.md
+result: STORY-0011 physical identity reconciled and strict applicable source contract proved; BL-001 canonical row already current so no BL-001 mutation required.
 purpose: Reconcile STORY-0011 canonical identity for POST /complete-trip, verify frozen-source controller/service/persistence/UI contract, and repair BL-001 only if source-integrity regression is fully proved.
