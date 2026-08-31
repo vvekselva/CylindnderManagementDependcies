@@ -1,12 +1,19 @@
 claim_id: 20260831-1303-RUNTIME-RELIABILITY
 run_id: CYLINDER-ARCHITECTURE-RUNTIME-RELIABILITY-20260831-1303IST
-status: ACTIVE
+status: RELEASED
 claimed_at: 2026-08-31T13:03:00+05:30
-heartbeat_at: 2026-08-31T13:06:00+05:30
+heartbeat_at: 2026-08-31T13:10:00+05:30
 lease_expires_at: 2026-08-31T13:21:00+05:30
+released_at: 2026-08-31T13:10:00+05:30
 write_set:
   - .orchestrator/execution-architecture.yaml
   - .orchestrator/lease-policy.yaml
   - .orchestrator/architecture-current.md
   - .orchestrator/runtime-reliability-policy.yaml
+result:
+  execution_architecture: UPDATED_TO_VERSION_9
+  lease_policy: UPDATED_TO_VERSION_10
+  architecture_current: UPDATED_TO_REVISION_5
+  runtime_reliability_policy: CREATED_VERSION_1
+  documents: DOCX_AND_PDF_REBUILT_REVISION_3
 purpose: Add runtime reliability, heartbeat, continuous worker refill, mandatory termination diagnostics and recovery-first rules.
