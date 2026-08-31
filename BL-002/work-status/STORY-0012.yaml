@@ -1,4 +1,4 @@
-version: 2
+version: 3
 story_id: STORY-0012
 release: R1
 canonical_register_endpoint: GET /logistics/challan-books/add-form
@@ -20,13 +20,18 @@ identity_drift:
   rule: CANONICAL_REGISTER_WINS
 source_binding:
   exact_controller_bound: true
-  controller: cylinermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
-  controller_method: addForm(Model model)
+  controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
+  controller_method: showAddBookForm()
   exact_template_bound: true
-  template: cylinermanagement.web/src/main/resources/templates/final-version-1/add-challan-book.html
+  template: cylindermanagement.web/src/main/resources/templates/final-version-1/add-challan-book.html
   exact_visible_form_fields_bound: true
   summary_metric_service_interface_bound: true
-  summary_metric_service: SummaryMetricLookupFetchService
+  summary_metric_service: com.sreyas.datamatics.cylinder.management.services.SummaryMetricLookupFetchService
+  metric_methods_bound:
+    - fetchChallanBookTotalMetrics()
+    - fetchChallanBookActiveMetrics()
+    - fetchChallanBookUnusedPageMetrics()
+  metric_failure_fallback_bound: true
   exact_service_implementation_bound: false
   exact_database_read_identity_bound: false
   source_detail_gap: Bind SummaryMetricLookupFetchService implementation through DAO/repository/entity/view to exact database read identity.
@@ -40,4 +45,4 @@ next_actions:
   - user_review_after_business_behavior_rework
 notes:
   - Canonical identity drift is repaired without inventing unresolved service/DAO/database behavior.
-  - GET add-form prepares the screen and does not itself create a Challan Book; the create POST is a separate endpoint boundary.
+  - GET add-form prepares the screen and summary metrics; the registration POST /logistics/challan-books/save is a separate endpoint boundary.
