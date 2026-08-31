@@ -1,0 +1,23 @@
+story_id: STORY-0001
+backlog: BL-009
+run_id: CYL-ORCH-20260831T175004+0530
+reconciled_at: '2026-08-31T18:07:01+05:30'
+source_story: BL-002/stories/STORY-0001.md
+approval_state: APPROVED_AFTER_REWORK
+code_conformance_state: CODE_CONFORMANCE_VERIFIED_PASS
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+artifacts:
+  catalogue: {path: BL-009/stories/STORY-0001.md, reconciled_to_reapproved_contract: true}
+  machine_data: {path: BL-009/test-data/STORY-0001.csv, row_count: 7, semantic_change_required: false}
+  human_data: {path: BL-009/test-data/STORY-0001.md, row_count: 7, semantic_change_required: false}
+  executable_mapping: {path: BL-009/generated-tests/STORY-0001/Story0001TestDataDrivenTest.java, canonical_csv_consumed_directly: true, reconciled_to_reapproved_contract: true}
+execution:
+  historical_data_contract_execution_rows_pass: 7
+  historical_data_contract_execution_rows_fail: 0
+  revised_contract_application_behavior: NOT_EXECUTED
+  revised_contract_application_pass: 0
+  revised_contract_application_fail: 0
+coverage:
+  jacoco_state: NOT_EXECUTED_REVISED_CONTRACT
+result: RECONCILED_TO_REAPPROVED_CONFORMANT_CONTRACT_RUNTIME_EXECUTION_PENDING
+application_code_mutation: false
