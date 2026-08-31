@@ -1,0 +1,30 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-002934-IST
+checkpoint_at: '2026-09-01T00:34:00+05:30'
+checkpoint_state: RESUMABLE
+mode: CONTINUOUS
+aggregate:
+  bl002_version: 72
+  business_behavior_complete: 18
+  total_stories: 134
+  aggregate_drift_detected: false
+work_units:
+  STORY-0041:
+    state: PARTIAL_SOURCE_BINDING_PRESERVED
+    remaining_exact_gates:
+      - TRANSACTION_BOUNDARY_AROUND_CUSTOMER_JPA_DAO_SAVE
+    note: Exact frozen-source search/index lookup did not return reliable new proof; absence was not treated as evidence.
+  STORY-0046:
+    state: PARTIAL_SOURCE_BINDING_PRESERVED
+    remaining_exact_gates:
+      - CUSTOMER_ENTITY_TABLE_COLUMN_BINDING
+      - UI_CONTROLLER_RECONCILIATION
+    note: Existing prior durable source bindings remain authoritative; no unsupported completion was inferred.
+active_claims: []
+eligible_work_remaining: true
+next_resume:
+  - STORY-0041_TRANSACTION_METADATA_AND_JPA_REPOSITORY_BINDING
+  - STORY-0046_CUSTOMER_ENTITY_TABLE_COLUMN_BINDING_AND_UI_CONTROLLER_RECONCILIATION
+approvals_delta: 0
+application_code_mutations: 0
+bl010_execution_delta: 0
+github_actions_or_runners_used: false
