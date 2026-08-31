@@ -1,0 +1,34 @@
+version: 1
+story_id: STORY-0015
+release: R1
+canonical_register_endpoint: GET /challan-heatmap
+canonical_functional_area: Challan Monitoring
+frozen_source: vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+rework:
+  state: REWORK_IN_PROGRESS_SOURCE_DETAIL_REVIEW_REQUIRED
+  business_behavior_complete: false
+  selector_ux_reviewed: false
+  search_conversion_required: false
+  dependent_selector_rework_required: false
+  needs_clarification: true
+identity_drift:
+  detected: true
+  repaired: true
+  prior_physical_story_identity: POST /system-settings
+  repaired_physical_story_identity: GET /challan-heatmap
+  rule: CANONICAL_REGISTER_WINS
+source_binding:
+  exact_route_search_attempted: true
+  exact_controller_bound: false
+  exact_template_bound: false
+  exact_service_bound: false
+  exact_database_read_identity_bound: false
+  source_detail_gap: Exact canonical route did not resolve through the accessible application search index; bind from frozen source tree or record proven route absence.
+approval:
+  state: NOT_APPROVED
+  explicit_user_approval_required_after_rework: true
+  auto_approved: false
+next_actions:
+  - resolve exact frozen source for GET /challan-heatmap
+  - trace heatmap calculation/data reads and visible behavior
+  - do not substitute the previous /system-settings identity
