@@ -1,29 +1,33 @@
+version: 2
 story_id: STORY-0041
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-054234Z
+run_id: CYL-20260831T171739-0530
 release: R1
 endpoint: GET /registerCustomer
-status: SOURCE_DETAIL_REVIEW_REQUIRED
+status: BUSINESS_BEHAVIOR_REWORK_REQUIRED_FIELD_COVERAGE
 strict_field_ui_complete: false
+business_behavior_complete: false
 approval: PENDING_USER_APPROVAL
 materialized: true
-refined_at: 2026-08-31T05:53:19Z
+updated_at: '2026-08-31T17:40:38+05:30'
 frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
-proved:
-  - exact GET endpoint and blank UC01RegisterCustomerRequestDto setup
-  - register-customer view/model binding and addressTypes model population
-  - visible Customer Name and GST controls plus GST uppercase/max-length browser behavior
-  - LookupDataCache address-type cache behavior and refresh request parameters
-  - injected ICylinderManagementApplicationService<AddressTypeFetchByPageRequestDto, AddressTypeFetchByPageResponseDto> boundary
-  - normal GET performs no customer write
-source_resolution_attempts:
-  - searched frozen authoritative repository evidence for AddressTypeFetchByPageService
-  - searched frozen authoritative repository evidence for AddressTypeJpaDao
-  - searched frozen authoritative repository evidence for AddressTypeDo
-  - searched frozen authoritative repository evidence for AddressType and address_type identities
-remaining_gap:
-  - concrete Address Type fetch application-service implementation is not source-resolvable at the governed frozen commit
-  - downstream DAO/repository implementation is not source-resolvable
-  - entity/table/column identity for the address-type cache reload is not source-proved
-strict_promotion_withheld_reason: downstream_reference_data_contract_not_source_proved
+resolved_source_detail:
+  - AddressTypeFetchByPageService is present at the frozen commit and is now source-bound.
+  - It reads Address Type reference data through AddressTypeJpaDao with pageable ascending addressType sorting and optional addressType/description search.
+  - AddressTypeJpaDao extends JpaRepository<AddressTypeDo, Long>.
+  - AddressTypeDo maps public.tbl_address_type with pk_address_type_id, sequence public.pk_address_type_id_serial, address_type and description.
+  - The GET page therefore performs an Address Type reference-data read on cache refresh and no customer write.
+remaining_rework:
+  - complete source-bound inventory of every visible/entered/selected phone and address field
+  - business meaning and validation for each field
+  - add/remove/change behavior for repeating phone/address controls
+  - submit interaction and related embedded operation behavior
+  - server-side relationship validation
+  - complete success/error outcomes
+  - applicable large-reference selector review
+selector_ux_review:
+  state: PARTIAL_REVIEW_ADDRESS_TYPE_ONLY
+  search_conversion_required: NOT_YET_DETERMINED_FOR_COMPLETE_PAGE
+strict_promotion_withheld_reason: complete_business_behavior_and_field_selector_review_not_yet_source_bound
 database_behavior_invented: false
 approval_delta: 0
+next_action: COMPLETE_RENDERED_FORM_FIELD_AND_SELECTOR_BEHAVIOR_REWORK
