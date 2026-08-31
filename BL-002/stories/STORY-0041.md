@@ -1,53 +1,103 @@
-# STORY-0041 — Customer Registration
+# STORY-0041 — Register Customer Page and Embedded Registration Capability
 
 - Release: R1
-- Endpoint: `GET /registerCustomer`
+- Primary endpoint: `GET /registerCustomer`
+- Embedded submit endpoint: `POST /registerCustomer` (cross-reference `STORY-0042`)
 - Functional area: Customer Registration
 - Approval: PENDING_USER_APPROVAL
-- Review state: REWORK_REQUIRED_FIELD_COVERAGE
-- Traceability state: DOWNSTREAM_REFERENCE_DATA_SOURCE_BOUND
-- Enrichment state: BUSINESS_BEHAVIOR_REWORK_REQUIRED
+- Rework state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
-## Human-readable story
+## Business purpose and user goal
 
-As an authorized Cylinder Management user, I want to open the Customer Registration screen through `GET /registerCustomer` so that I receive a blank customer-registration form and the reference data needed to enter a new customer.
+This page lets an authorized Cylinder Management user create a new customer record together with one or more contact phone numbers and one or more delivery/address records. The user enters through `GET /registerCustomer`; the controller prepares a fresh registration request and the page itself contains the full embedded registration form that submits to `POST /registerCustomer`.
 
-## Request and controller behavior
+The page is therefore not merely a read-only GET. Its business capability is customer master creation, and the page-level contract includes the entry fields, dynamic phone/address management, location searches, validation feedback and the post-submit success/error outcomes described below.
 
-`UC01RegisterCustomerController.doGet()` is mapped by `@GetMapping("/registerCustomer")`. The handler creates a new `UC01RegisterCustomerRequestDto`, initializes `addressDtos` and `phoneNumberDtos` as empty lists, creates a `ModelAndView` using `ViewConstants.REGISTER_CUSTOMER_VIEW`, binds the request object under model key `customer`, and binds `lookupDataCache.getAddressTypes()` under model key `addressTypes`.
+## Page entry and initial state
 
-`ViewConstants.REGISTER_CUSTOMER_VIEW` resolves to `final-version-1/UC01RegisterCustomer`, so the rendered Thymeleaf resource is `templates/final-version-1/UC01RegisterCustomer.html`.
+`UC01RegisterCustomerController.doGet()` creates a new `UC01RegisterCustomerRequestDto`, initializes empty `addressDtos` and `phoneNumberDtos`, renders `ViewConstants.REGISTER_CUSTOMER_VIEW` (`final-version-1/UC01RegisterCustomer`), binds the request as model key `customer`, and supplies `addressTypes` from `LookupDataCache`.
 
-## Screen behavior currently source-proved
+The fresh page therefore starts without a persisted customer identity. Phone and address rows are added by the user in the browser. The page includes CSRF submission support when Spring Security exposes the token.
 
-The template renders the Register Customer workflow and posts to `/registerCustomer` with `th:object="${customer}"`. Existing frozen template evidence proves Customer Name bound to `customerDto.customerName` and GST Number bound to `customerDto.gstNumber`; GST has a 15-character maximum and browser-side uppercase behavior. The page also supports phone/address collection, Address Type selection from controller-supplied `addressTypes`, CSRF when available, and validation styling/messages carried by the bound DTO.
+## Visible and entered business fields
 
-A normal GET does not persist a Customer. It prepares the blank form and reference data only.
+### Company information
 
-## Address Type reference-data read — downstream source now resolved
+- **Customer Name** (`customerDto.customerName`) — the customer's registered/business name. The rendered validation contract recognizes `CUSTOMER_NAME_INVALID`.
+- **GST Number** (`customerDto.gstNumber`) — the customer's GSTIN used as a business/tax identifier. The browser limits it to 15 characters and converts typed text to uppercase. The rendered validation contract recognizes `GST_NUMBER_NULL`, `GST_NUMBER_INVALID`, and `GST_NUMBER_ALREADY_EXISTS`.
 
-`LookupDataCache.getAddressTypes()` returns the in-memory Address Type list and refreshes it when empty. Its refresh request asks for page 1, `Integer.MAX_VALUE` items, an empty search term and `activeOnly=false` through the injected Address Type fetch service.
+The current frozen template does **not** prove a separate registration-date entry on this page; earlier aggregate/legacy descriptions mentioning such a visible field are not carried forward as current page behavior without source proof.
 
-The frozen concrete implementation is `AddressTypeFetchByPageService`. It normalizes page/size, sorts ascending by `addressType`, and:
+### Phone numbers
 
-- with a nonblank search term, calls `AddressTypeJpaDao.findByAddressTypeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(...)`;
-- without a search term, calls `AddressTypeJpaDao.findAll(pageable)`.
+The page allows multiple `phoneNumberDtos[N].phoneNumber` values. Each displayed phone input is prefixed with `+91`, limited to 10 characters and can surface service validation messages. The first row is labelled **Primary** and later rows **Secondary**. The user can add and remove rows, but the browser prevents removal of the last remaining phone row once rows exist, reflecting the page rule that at least one phone number is required.
 
-The service maps `AddressTypeDo` rows to `AddressTypeDto` values and returns the list plus paging metadata with application response code `SUCCESS`.
+### Delivery/address records
 
-`AddressTypeJpaDao` is a `JpaRepository<AddressTypeDo, Long>`. `AddressTypeDo` maps to `public.tbl_address_type` with generated primary key `pk_address_type_id` using sequence `public.pk_address_type_id_serial`; the business fields are `address_type` (required, unique, max 100) and `description` (required, max 100). Therefore the cache reload is a read of the governed Address Type reference table; it does not write Customer data.
+For each `addressDtos[N]`, the user can maintain:
 
-## Selector UX review status
+- **Address Type** — selected from the server-provided `addressTypes` domain list and submitted as `addressTypeIds[N]`; the controller resolves that identifier back to an `AddressTypeDto` before invoking the business mediator.
+- **Address Line 1** — plot/house/building information; rendered validation recognizes `ADDRESS_LINE1_INVALID`.
+- **Address Line 2** — street/colony/area information; rendered validation recognizes `ADDRESS_LINE2_INVALID`.
+- **Address Line 3** — optional additional address text.
+- **Landmark** — optional location landmark.
+- **Country** — searchable reference with submitted `countryId` plus display name.
+- **State** — searchable reference with submitted `stateId` plus display name.
+- **City** — searchable reference with submitted `cityId` plus display name.
 
-Address Type is a bounded reference classification used inside the address sub-form. The broader Customer Registration page still requires a complete control-by-control selector review before the Story can be promoted to the business-behavior-complete state. No Customer/Product/Supplier/Vehicle/Driver search conversion is inferred merely from the Address Type lookup implementation.
+The user can add or remove address cards. The browser prevents removal of the last remaining address once address rows exist, expressing the page requirement that a registration retains at least one address.
 
-## Remaining business-behavior rework
+## Reference-selector UX review
 
-The previous downstream source-resolution blocker is closed. The Story is nevertheless **not yet BUSINESS_BEHAVIOR_COMPLETE** because the complete rendered form still needs a source-bound inventory of every visible/entered/selected phone and address field, each field's business meaning and validation, add/remove/change behavior, submit interaction, related embedded operations, server-side relationship validation, success/error outcomes, and any applicable large-reference selector behavior.
+This Story has been reviewed against the mandatory large-reference selector policy.
 
-No missing behavior is invented and no application code was changed.
+Country, State and City are already implemented as type-ahead/search controls rather than static large list boxes:
 
-## Approval
+- Country: `GET /search/country/{q}` → `countryDtos[{countryId,countryName}]`
+- State: `GET /search/state/{q}` → `stateDtos[{stateId,stateName}]`
+- City: `GET /search/city/{q}` → `cityDtos[{cityId,cityName}]`
+- debounce: **280 ms**
+- search begins for any non-empty trimmed query; no higher minimum-length threshold is source-proved
+- selecting a result writes both the visible text and hidden selected ID/name
+- editing a selected value clears its hidden ID/name so stale identities are not submitted
+- changing/clearing Country clears State and City
+- changing/clearing State clears City
+- an empty result renders `No results found`
 
-Approval remains pending. Completion of this source-detail repair does not auto-approve or auto-reapprove the Story.
+Address Type is a bounded domain lookup supplied from `LookupDataCache`, not a large business-reference selector requiring conversion to a search REST service. No Customer/Product/Supplier/Vehicle/Driver selector exists on this create-customer page. Therefore **no selector search conversion is required for STORY-0041** under current source evidence.
+
+## What happens on submit
+
+The form posts the complete `customer` model to `POST /registerCustomer` (`STORY-0042`). Before the application mediator is invoked, the controller resolves every submitted `addressTypeIds[N]` against `lookupDataCache.getAddressTypes()` and assigns the matching `AddressTypeDto` to `addressDtos[N]`. A missing index, null identifier or identifier not found in the cache leaves that address type unresolved for downstream validation rather than inventing a replacement.
+
+The controller then calls the typed `ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>` through `uC01RegisterCustomerMediator.invokeServices(requestDto)`.
+
+### Visible success outcome
+
+When mediator invocation completes without `InvalidInputParameterException`, the controller treats registration as successful and redirects to `ViewConstants.REDIRECT_HOME_LINK`, which is `/ownership-dashboard` in the frozen source.
+
+### Visible validation-error outcome
+
+When `InvalidInputParameterException` carries a `CustomerIngestionRequestDto`, the controller copies the validator-flagged Customer, Phone and Address DTOs back into the page request, preserves validation error DTOs, reloads the Address Type options and re-renders the same registration page. The user therefore sees the rejected values together with field/card error highlighting and MessageSource-resolved error text instead of losing the entered data.
+
+## Exact system read/write effect — current source boundary
+
+Reads source-proved at page/controller level:
+
+- Address Type reference data from `LookupDataCache`; existing downstream evidence binds that cache refresh through `AddressTypeFetchByPageService` / `AddressTypeJpaDao` to `public.tbl_address_type`.
+- Country/State/City search results from the established `/search/country/{q}`, `/search/state/{q}`, and `/search/city/{q}` REST patterns.
+
+Write intent source-proved at page/controller level:
+
+- the submitted customer, phone and address model is handed to the UC01 customer-registration mediator after Address Type identity resolution.
+
+The exact downstream mediator implementation, customer-ingestion service transaction, DAO/repository calls, generated persisted customer/address/phone identifiers, exact table/column writes, uniqueness query implementation and transaction boundaries are **not yet source-bound in the frozen evidence available to this run**. `STORY-0042` independently records the same deepest proven write boundary. Those details must not be invented merely to declare this GET page complete.
+
+## Downstream business impact
+
+When the embedded registration operation eventually succeeds, the intended business capability is creation of a customer master that can subsequently participate in customer search, address selection, delivery/custody and other customer-linked operations. The precise persisted identities and side effects remain gated on concrete mediator/service/DAO source binding; no unproved database effect is asserted here.
+
+## Rework completion gate
+
+The page/UI/business-flow and selector-UX portions are source-bound. STORY-0041 remains `REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED` because the mandatory exact write-side persistence identity/effect cannot yet be proved. It is **not awaiting approval yet**, and no approval is inferred from historical downstream artifacts.
