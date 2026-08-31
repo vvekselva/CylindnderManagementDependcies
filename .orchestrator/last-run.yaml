@@ -1,7 +1,7 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-065142Z
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-074539Z
 checkpoint_state: CHECKPOINT_RECONCILED
-started_at: 2026-08-31T06:51:42Z
-checkpoint_at: 2026-08-31T06:51:42Z
+started_at: 2026-08-31T07:45:39Z
+checkpoint_at: 2026-08-31T07:57:39Z
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -12,33 +12,43 @@ architecture:
 work:
   attempted_ids:
     - AGGREGATE_RECONCILIATION
-    - BL-010/BOOTSTRAP_DEVELOPMENT_CHANGES
-    - BL-010/DEV-0001_STORY-0054_ROUTE
-    - STORY-0001_REVISED_APPROVAL_GATE_RECONCILIATION
-    - BL-008_V185_LIVE_STATE_RECONCILIATION
+    - STORY-0001_BUSINESS_BEHAVIOR_REWORK
+    - STORY-0011_BUSINESS_BEHAVIOR_REWORK
+    - STORY-0012_CANONICAL_IDENTITY_SOURCE_BINDING
+    - STORY-0054_UNIT_TO_AGGREGATE_DRIFT_REPAIR
+    - BL-008_LIVE_STATE_READ
   completed_ids:
-    - BL-010/BOOTSTRAP_DEVELOPMENT_CHANGES
-    - BL-010/DEV-0001_STORY-0054_ROUTE
-    - STORY-0001_REVISED_APPROVAL_GATE_RECONCILIATION
-    - BL-008_V185_LIVE_STATE_RECONCILIATION
+    - STORY-0001_BUSINESS_BEHAVIOR_REWORK
+    - STORY-0011_BUSINESS_BEHAVIOR_REWORK
+    - STORY-0012_IDENTITY_DRIFT_DURABLY_RECORDED
+    - STORY-0054_UNIT_TO_AGGREGATE_DRIFT_REPAIR
+    - BL-008_LIVE_STATE_READ
   blocked_ids:
+    - STORY-0012_EXACT_FROZEN_SOURCE_BINDING_FOR_GET_LOGISTICS_CHALLAN_BOOKS_ADD_FORM
     - BL-010/DEV-0001_IMPLEMENTATION_PENDING_EXACT_SEARCH_SOURCE_BINDING
+    - BL-008_JUNIT_EXECUTION_BLOCKED_BY_MISSING_RUNTIME_DEPENDENCIES
   approvals_delta: 0
   current_revised_contract_approved_or_reapproved: 0
-  next_dynamically_resolved_eligible_unit: BL-010/DEV-0001
+  next_dynamically_resolved_eligible_unit: STORY-0012
+  fallback_dependency_safe_r1_unit: STORY-0013
 business_behavior_rework:
   total_registered: 134
-  rework_required: 134
-  rework_in_progress: 1
-  business_behavior_complete: 0
-  awaiting_user_review: 0
+  rework_required: 132
+  rework_in_progress: 2
+  business_behavior_complete: 2
+  business_behavior_complete_ids: [STORY-0001, STORY-0011]
+  awaiting_user_review: 2
+  awaiting_user_review_ids: [STORY-0001, STORY-0011]
   approved_after_rework: 0
-  active_ids: [STORY-0054]
-  selector_ux_reviewed: 1
+  needs_clarification: 1
+  active_ids: [STORY-0012, STORY-0054]
+  selector_ux_reviewed: 3
+  selector_ux_reviewed_ids: [STORY-0001, STORY-0011, STORY-0054]
   search_conversion_required: 1
   search_conversion_required_ids: [STORY-0054]
   dependent_selector_rework_required: 1
   dependent_selector_rework_required_ids: [STORY-0054]
+  remaining_global_rework_count: 132
 legacy_metrics: {materialized_story_files: 134, materialization_pending: 0, strict_field_ui_complete: 126, strict_field_ui_remaining: 8, historical_approved: 1, reapproval_required: 1}
 development_changes:
   backlog: BL-010
@@ -62,16 +72,23 @@ bl008:
   schema_work: COMPLETE_AND_FROZEN
   active_migration_gate: null
   service_ui_acceptance_cases: 30
+  junit_execution_delta: 0
+  jacoco_coverage_delta: 0
+  junit_runtime_state: BLOCKED_BY_MISSING_MAVEN_JUNIT5_MOCKITO_RUNTIME_DEPENDENCIES
   database_write_delta_chatgpt: 0
 reconciliation:
   startup_projection_drift_detected: true
   startup_projection_drift_repaired: true
   repaired:
-    - BL-008 stale waiting-for-V185-validation projection
-    - missing global business-story rework projection
-    - STORY-0054 stale awaiting-review queue interpretation
-    - missing BL-010 Development Changes routing
-    - historical STORY-0001 approval incorrectly appearing current for revised-contract testing
+    - STORY-0001 stale APPROVED physical Story and unit status reconciled to revised-contract reapproval gate
+    - STORY-0011 advanced to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    - STORY-0012 canonical-register versus physical-story identity drift recorded fail-closed
+    - STORY-0054 stale aggregate awaiting-review state replaced by newest unit-local REWORK_REQUIRED_USER_UX_CHANGE evidence
+    - shared queue updated only after concurrent-write refetch
   aggregate_reconciliation_gate: PASS
   readback_required: true
+claims:
+  active_at_checkpoint: 0
+  shared_aggregate_writer_conflicts: 1
+  shared_aggregate_conflicts_recovered_by_refetch: 1
 transient_logs_remaining: 0
