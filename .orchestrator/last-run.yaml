@@ -1,9 +1,9 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
 checkpoint_state: CHECKPOINT_RECONCILED
 started_at: 2026-08-31T06:14:02+05:30
-checkpoint_at: 2026-08-31T06:21:40+05:30
-elapsed_seconds_at_checkpoint: 458
-elapsed_minutes_at_checkpoint: 7.633
+checkpoint_at: 2026-08-31T06:23:32+05:30
+elapsed_seconds_at_checkpoint: 570
+elapsed_minutes_at_checkpoint: 9.5
 terminal_classification: PARTIAL_CONTINUE_REQUIRED
 voluntary_early_stop: false
 eligible_work_remaining: true
@@ -11,9 +11,9 @@ architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   compatibility_invocation_lease_global_mutex: false
 work:
-  attempted_ids: [STORY-0042, STORY-0044, STORY-0045]
+  attempted_ids: [STORY-0042, STORY-0044, STORY-0045, STORY-0046]
   completed_strict_ids: []
-  blocked_ids: [STORY-0042, STORY-0044, STORY-0045]
+  blocked_ids: [STORY-0042, STORY-0044, STORY-0045, STORY-0046]
   source_detail_refined_ids: [STORY-0042, STORY-0044]
   strict_field_ui_completion_delta: 0
   physical_materialization_delta: 0
@@ -33,8 +33,8 @@ bl008:
   database_write_delta_chatgpt: 0
 claims:
   recovered_stale: []
-  created: [20260831-061654-STORY-0042, 20260831-061902-STORY-0044, 20260831-062047-STORY-0045]
-  completed: [20260831-061654-STORY-0042, 20260831-061902-STORY-0044, 20260831-062047-STORY-0045]
+  created: [20260831-061654-STORY-0042, 20260831-061902-STORY-0044, 20260831-062047-STORY-0045, 20260831-062242-STORY-0046]
+  completed: [20260831-061654-STORY-0042, 20260831-061902-STORY-0044, 20260831-062047-STORY-0045, 20260831-062242-STORY-0046]
   claims_remaining_at_checkpoint: 0
 reconciliation:
   startup_projection_drift_detected: true
@@ -49,5 +49,6 @@ transient_logs_remaining: 0
 notes:
   - Startup aggregate drift repaired to live BL-008 V182 state.
   - STORY-0042 and STORY-0044 were source-refined and released with durable unit-local evidence; both remain non-strict because downstream executable persistence paths are unresolved.
-  - STORY-0045 source-location attempts did not resolve an authoritative controller path in the frozen commit, so the source-location blocker was durably recorded without invented behavior.
+  - STORY-0045 remains blocked because its authoritative controller path was not resolved in the frozen source.
+  - STORY-0046 proves its paging/filter DTO documentation but not a concrete executable controller/service/read path; DTO comments were not promoted into executable evidence.
   - ChatGPT database writes remain zero.
