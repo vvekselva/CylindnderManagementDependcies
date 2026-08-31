@@ -1,0 +1,24 @@
+story_id: STORY-0001
+backlog_id: BL-009
+release: R1
+approval_state: APPROVED
+state: CATALOGUE_DATA_READY_EXECUTION_BLOCKED
+catalogue: BL-009/stories/STORY-0001.md
+test_data: BL-009/test-data/STORY-0001.csv
+human_readable_test_cases: 9
+catalogue_generated: true
+test_data_generated: true
+live_validation_executed: false
+pass: false
+fail: false
+dependencies:
+  BL-004: SOURCE_BOUND_EXECUTION_BLOCKED
+  BL-005: SOURCE_BOUND_EXECUTION_BLOCKED
+runtime_blockers:
+  - CHATGPT_RUNTIME_MAVEN_UNAVAILABLE
+  - CHATGPT_RUNTIME_DOCKER_UNAVAILABLE
+live_environment_blocker: AUTHORIZED_LIVE_TEST_ENVIRONMENT_NOT_AVAILABLE_IN_CURRENT_RUNTIME
+security_policy:
+  sanitized_test_data_only: true
+  credentials_or_tokens_in_git: forbidden
+next_action: EXECUTE_AFTER_UNIT_INTEGRATION_RUNTIME_AND_AUTHORIZED_LIVE_ENVIRONMENT_AVAILABLE
