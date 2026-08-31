@@ -1,11 +1,15 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260901-022702-IST
 backlog_id: BL-002
 story_id: STORY-0045
-claim_state: ACTIVE
+claim_state: RELEASED
 claimed_at: '2026-09-01T02:28:30+05:30'
+released_at: '2026-09-01T02:32:05+05:30'
+release_classification: PARTIAL_CONTINUE_REQUIRED
 mode: CONTINUOUS
 safe_independent: true
 scope: source-analysis-only
 mutation_allowed: false
 drift_review_packet: BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
-next_action: Bind exact GET /displayCustomer controller/model and service/DAO/entity/database read path from frozen source; do not expand or execute code-change manifest.
+unit_evidence: BL-002/evidence/STORY-0045/20260901T023146+0530-backend-binding-investigation.yaml
+active_claims_after_release: 0
+next_action: Resolve exact GET /displayCustomer backend binding from frozen source without expanding or implementing the drift manifest; other safe-independent eligible work may proceed meanwhile.
