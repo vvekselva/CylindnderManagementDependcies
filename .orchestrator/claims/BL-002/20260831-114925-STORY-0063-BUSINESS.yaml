@@ -1,0 +1,12 @@
+claim_id: 20260831-114925-STORY-0063-BUSINESS
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
+backlog: BL-002
+unit: STORY-0063_BUSINESS_BEHAVIOR_REVIEW
+status: ACTIVE
+acquired_at: 2026-08-31T11:49:25Z
+heartbeat_at: 2026-08-31T11:49:25Z
+read_set:
+  - BL-002/stories/STORY-0063.md
+write_set:
+  - BL-002/work-status/STORY-0063.yaml
+purpose: Validate the strict Party Custody Traceability dashboard against the current business-behavior contract without code mutation or approval.
