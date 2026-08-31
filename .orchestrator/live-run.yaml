@@ -1,28 +1,27 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260831-110529Z
-scheduler_fire_id: manual-20260831T110529Z
-scheduler_task: Cylinder Orchestrator Production Fire
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-113327Z
+scheduler_fire_id: manual-20260831T113304Z
+scheduler_task: cylinder-production-fire
 state: RUNNING
 mode: CONTINUOUS
-started_at: 2026-08-31T11:05:29Z
-last_heartbeat_at: 2026-08-31T11:26:14Z
-productive_runtime_seconds_if_measurable: 1245
-loop_iteration: 6
-running_worker_count: 1
-completed_worker_count: 4
+started_at: 2026-08-31T11:33:27Z
+last_heartbeat_at: 2026-08-31T11:35:22Z
+productive_runtime_seconds_if_measurable: 115
+loop_iteration: 1
+running_worker_count: 0
+completed_worker_count: 0
 blocked_worker_count: 0
-active_work_unit_ids:
-  - BL-002/STORY-0043_STRICT_AND_BUSINESS_SOURCE_BINDING
-eligible_work_count: 116
+active_work_unit_ids: []
+eligible_work_count: 122
 dispatchable_work_count: null
-last_action: STORY_0043_ACTIVE_CHALLAN_VIEW_AND_LOOKUP_CACHE_BINDING_IN_PROGRESS
+last_action: STARTUP_HANDOFF_AND_TERMINATION_GAP_RECONCILED
 prior_run_recovery:
-  run_id: CYLINDER-PRODUCTION-FIRE-20260831-110154Z
+  run_id: CYLINDER-PRODUCTION-FIRE-20260831-112823Z
   classification: ABNORMAL_PROCESS_DISAPPEARANCE
   original_termination_time: null
-  recovery_observed_at: 2026-08-31T11:05:29Z
+  recovery_observed_at: 2026-08-31T11:34:28Z
 termination:
   requested: false
   reason: null
   terminated_at: null
   eligible_work_remaining: true
-  terminal_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-110529Z/termination.yaml
+  terminal_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260831-113327Z/termination.yaml
