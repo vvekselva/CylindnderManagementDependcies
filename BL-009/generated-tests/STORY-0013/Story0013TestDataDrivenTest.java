@@ -3,17 +3,33 @@ package com.sreyas.datamatics.cylinder.management.bl009.story0013;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * BL-009 executable mapping for STORY-0013.
- * Generated source is not execution PASS evidence.
+ * Reads the canonical control-repository CSV directly.
+ * Generated source is not application-behavior PASS evidence.
  */
 class Story0013TestDataDrivenTest {
 
+    static Stream<Arguments> canonicalRows() throws IOException {
+        Path csv = Path.of("BL-009", "test-data", "STORY-0013.csv");
+        return Files.lines(csv)
+                .skip(1)
+                .filter(line -> !line.isBlank())
+                .map(line -> line.split(",", -1))
+                .map(columns -> Arguments.of((Object[]) columns));
+    }
+
     @ParameterizedTest(name = "{1} - {0}")
-    @CsvFileSource(resources = "/bl009/STORY-0013.csv", numLinesToSkip = 1)
+    @MethodSource("canonicalRows")
     void everyApprovedCatalogueCaseHasExecutableMapping(
             String dataId,
             String testCaseId,
