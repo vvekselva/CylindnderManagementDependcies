@@ -1,0 +1,33 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-220145-IST
+checkpoint_time: '2026-08-31T22:13:54+05:30'
+mode: CONTINUOUS
+state: RESUMABLE_RUNTIME_BOUNDARY
+recovery_first:
+  recovered_run: CYLINDER-PRODUCTION-FIRE-20260831-150658Z-II
+  classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  receipt_terminalized: true
+completed_units: []
+partial_units:
+  - BL-002/STORY-0041_BUSINESS_BEHAVIOR_REWORK
+story_0041:
+  business_behavior_complete: false
+  approval: PENDING_USER_APPROVAL
+  durable_evidence: BL-002/evidence/STORY-0041/20260831T221238+0530-source-binding-research.yaml
+  proved_this_run:
+    - POST /registerCustomer controller invokes uC01RegisterCustomerMediator.invokeServices(requestDto)
+    - mediator injection type is ICylinderManagementApplicationMediator<UC01RegisterCustomerRequestDto, UC01RegisterCustomerResponseDto>
+    - resolveAddressTypes propagates submitted Address Type to AddressDto before mediator invocation
+  remaining_source_binding:
+    - concrete Spring mediator bean implementation/configuration
+    - exact transaction boundary around mediator/service chain
+    - validator implementation proving server-side cross-reference and required-field rules
+aggregate_checkpoint:
+  mutated: false
+  reason: unit remains incomplete; aggregate projection must be reconciled from authoritative unit-local statuses on next invocation
+active_claims_remaining: 0
+eligible_work_remaining: true
+application_code_mutation: false
+bl_010_execution: false
+story_approval_delta: 0
+github_actions_or_runners_used: false
+next_recovery_action: reconcile aggregate projection against unit-local statuses, then resume STORY-0041 concrete mediator/transaction/validator binding or dispatch another safe-independent eligible unit
