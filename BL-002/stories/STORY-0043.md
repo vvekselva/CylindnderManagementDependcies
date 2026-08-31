@@ -4,48 +4,66 @@
 - Endpoint: `GET /wizard/vehicle-trip-load`
 - Functional area: Vehicle Trip Load Wizard
 - Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
+- Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Traceability state: COMPLETE
-- Enrichment state: SOURCE_DETAIL_REVIEW_REQUIRED
+- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Business-behavior rework: COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Human-readable story
 
-As an authorized Cylinder Management user, I want to open the combined Vehicle Trip + Load wizard through `GET /wizard/vehicle-trip-load` so that I can prepare a vehicle trip and its cylinder load in one guided form.
+As an authorized Cylinder Management user, I want to open the combined Vehicle Trip + Load wizard so that I can prepare the trip, choose the vehicle/driver/customer and dependent customer address, select cylinders and their load-purpose distribution, choose the four required physical challan books with starting unused pages, and finally submit one combined trip/load transaction.
 
-## Frozen-source contract proved in this run
+## GET page preparation
 
-### Request and controller
+`VehicleTripLoadWizardController` handles `GET /wizard/vehicle-trip-load`. It creates a fresh `UC02Phase01VehicleLoadRequestDto` with nested `VehicleTripDto` and `VehicleLoadDto`, then renders `final-version-1/VehicleTripLoadWizard`.
 
-`VehicleTripLoadWizardController` is rooted at `@RequestMapping("/wizard/vehicle-trip-load")`; its `@GetMapping` `showWizard()` therefore owns the registered GET endpoint. The handler creates a blank `UC02Phase01VehicleLoadRequestDto`, initializes nested `VehicleTripDto` and `VehicleLoadDto`, fetches Vehicle Load Purposes from `LookupDataCache`, and renders `final-version-1/VehicleTripLoadWizard`.
+The model contains `wizardRequest`, `/vehicle-loads/list` as the back link, Vehicle Load Purposes, product reference data and four active challan-book collections for `DELIVERY_CHALLAN`, `EMPTY_PICKUP_CHALLAN`, `FILLING_NOTE` and `CUSTOMER_SPOT_CYLINDER_CHECK`.
 
-The model is populated with:
+The GET itself does not create a trip or load. It prepares the data required for the multi-step browser workflow.
 
-- `wizardRequest` — the blank combined trip/load request DTO;
-- `backLink` — `/vehicle-loads/list`;
-- `purposes` — `lookupDataCache.getVehicleLoadPurposes()`;
-- `totalProducts` — `lookupDataCache.getTotalProducts()`;
-- `products` — `lookupDataCache.getProduct()`;
-- active challan-book collections returned by `ActiveChallanBookForTripLoadViewJpaDao.findByBookType(...)` for `DELIVERY_CHALLAN`, `EMPTY_PICKUP_CHALLAN`, `FILLING_NOTE`, and `CUSTOMER_SPOT_CYLINDER_CHECK`.
+## Reference-data reads
 
-### Screen / browser behavior
+`LookupDataCache` supplies Vehicle Load Purpose and Product reference data. The cache is populated at application startup and lazily reloads an empty cached list through the corresponding application service.
 
-The exact Thymeleaf resource is `templates/final-version-1/VehicleTripLoadWizard.html`. Frozen template evidence proves a multi-step client-side wizard wrapped in one form. Step navigation is client-side; the final submission is the single POST `/wizard/vehicle-trip-load/save`. Binding paths include `vehicleTripDto.*`, `vehicleLoadDto.*`, and cylinder identities under `vehicleLoadDto.loadLines[n].cylinder.cylinderId`.
+`VehicleLoadPurposeFetchAllService` reads `VehicleLoadPurposeJpaDao.findAll()` and maps `VehicleLoadPurposeDo`. `VehicleLoadPurposeDo` maps `public.tbl_vehicle_load_purpose`, primary key `pk_load_purpose_id`, with unique `load_purpose` and `description`.
 
-The template declares type-ahead/dependent browser requests for vehicle, driver, customer, customer-address, and cylinder-by-state lookups. The GET endpoint itself does not create a trip/load record; it supplies the blank model/reference data needed for the browser workflow.
+`ProductFetchByPageService` reads `ProductJpaDao` and maps `ProductDo`. `ProductDo` maps `public.tbl_product`, primary key `pk_product_id`, including `product_name`, `description`, tax-rate fields and product-category/UOM relationships.
 
-### Reference-data/cache boundary
+A current-source limitation is retained: when `ProductFetchByPageService` receives a nonblank search term it still executes `productJpaDao.findAll(pageable)`; the source comment says filtered DAO support is intended later. It also caps the page size at 10. Therefore this cache path is not falsely described as a fully filtered fetch-all product search.
 
-The controller obtains Vehicle Load Purposes and Products from `LookupDataCache`. The cache uses injected application services and lazy-reload behavior when its cached collections are empty. This proves the controller-to-cache/application-service boundary without attributing an unproved concrete repository implementation.
+## Physical challan-book choices
 
-### Challan-book read boundary
+The controller directly reads `ActiveChallanBookForTripLoadViewJpaDao.findByBookType(...)` for each of the four required book types.
 
-The controller directly invokes the injected `ActiveChallanBookForTripLoadViewJpaDao.findByBookType(...)` four times with the exact book-type identities listed above. This is an explicit frozen-source JPA DAO boundary used to populate the initial screen.
+The DAO is a Spring Data repository over immutable `ActiveChallanBookForTripLoadViewDo`, which maps `public.vw_active_challan_books_for_trip_load`. The view exposes the exact business data used to choose an office book: `book_id`, `book_code`, `book_type`, `series_prefix`, physical start/end sheet numbers, current location, assigned vehicle identity, unused/used/spoiled/missing counts and `next_available_sheet_number`.
 
-## Exact remaining source-detail gap
+## Browser workflow and selectors
 
-Strict completion is deliberately **not** claimed. The frozen web source proves the endpoint, blank DTO/model setup, exact template, wizard/browser contract, cache lookups, and the exact challan-book DAO calls. However, the concrete source for `ActiveChallanBookForTripLoadViewJpaDao` and the concrete implementations behind the injected lookup application services are not present in the frozen repository tree available to this run. Therefore the DAO/view/table/column identity for active challan books and the downstream repository/entity/table identities for the cache-backed lookups cannot be source-proved without inventing implementation detail.
+The exact template is a client-side multi-step wizard inside one final form. Step navigation does not persist the trip/load. The final server submission is `POST /wizard/vehicle-trip-load/save`.
 
-Until those downstream authoritative source artifacts are available, STORY-0043 remains `SOURCE_DETAIL_REVIEW_REQUIRED` and does not increase `strict_field_ui_complete`.
+The page uses source-proved search/dependent behavior for Vehicle, Driver, Customer, Customer Address and cylinders. Customer Address is dependent on the selected Customer; cylinder selection is state/search driven. The four challan-book controls are populated from the active-book view rather than an unconstrained master list.
 
-No behavior beyond frozen evidence is invented. No approval occurred.
+The request carries `vehicleTripDto.*`, `vehicleLoadDto.*`, selected cylinder identities under `vehicleLoadDto.loadLines[n].cylinder.cylinderId`, the four challan-book IDs and their four starting unused sheet numbers.
+
+## Embedded Save capability
+
+Although this registered Story is the GET entry screen, the page's business purpose includes the final Save operation. Its exact mutation is source-bound in related STORY-0044.
+
+The final Save invokes the transactional `VehicleLoadAndTripIngestionService`. That service validates the Vehicle Trip, Vehicle Load and all four physical challan-book selections; creates the trip initially in Started state; creates the load and load lines; records a `YARD_START` stop; changes the trip to Loaded; creates four `public.tbl_trip_challan_book_assignment` rows with the selected starting sheet numbers; creates an OPEN cylinder logistics execution and active logistics lines; and deactivates the selected cylinders' former active Yard Inventory lines.
+
+Thus the user is not merely filling a temporary screen: the completed wizard is designed to establish the trip/load, allocate physical challan books and move cylinder operational custody from Yard to vehicle logistics when the final Save succeeds.
+
+## Current-source gaps retained for review
+
+- The Product cache/fetch service does not implement the filtered Product DAO query suggested by its own comment; it currently performs paged `findAll` even with a search term.
+- The Product fetch service caps a request page at 10, so the cache's apparent fetch-all request does not prove all Products are loaded in a single call.
+- Code-level validation defects found in the related final Save path remain documented in STORY-0044 and are not automatically repaired by this GET Story.
+
+No application code is changed by Story rework. Any future Story/code drift correction must present the exact Drift / Code Change Manifest and receive explicit user approval before BL-010 work or source mutation.
+
+## Review and approval gate
+
+The previously unresolved active-challan-book DAO/view identity and cache-backed Product/Vehicle Load Purpose read identities are now source-bound. Together with the source-bound embedded Save behavior, STORY-0043 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW` and strict source enrichment is complete.
+
+No approval occurred. Explicit user approval/rework remains required and testing fan-out is not authorized.
