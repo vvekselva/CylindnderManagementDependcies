@@ -1,0 +1,40 @@
+story_id: STORY-0041
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-000114-IST-I
+evidence_time: '2026-09-01T00:10:36+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+business_behavior_complete: false
+new_source_binding:
+  framework_application_service_tree:
+    path: framework/src/main/java/com/sreyas/datamatics/application/service
+    tree_sha: 8f198e3c5c24580836bb666fbb2899f361241804
+    files_observed:
+      - ICylinderManagementApplicationMediator.java
+      - ICylinderManagementApplicationSearchService.java
+      - ICylinderManagementApplicationService.java
+      - ICylinderManagementApplicationValidator.java
+    conclusion: The framework application/service package at the frozen ref contains the service contracts only; it does not by itself prove the concrete UC01 mediator bean, transaction boundary, or validator implementation.
+  repository_root_modules_verified:
+    - Cylinder.management.dto
+    - NewOwnerShipModelv3
+    - cmas.database.operations
+    - cylinder.datascripts
+    - cylinder.management.dao
+    - cylindermanagement.custommapper.service
+    - cylindermanagement.offlinemap
+    - cylindermanagement.security
+    - cylindermanagement.web
+    - framework
+search_attempts:
+  - query: ICylinderManagementApplicationMediator
+    result: no indexed code-search match returned
+  - query: performInputRequestValidation
+    result: no indexed code-search match returned
+fail_closed_interpretation: Search-index misses are not proof of implementation absence; exact tree/path traversal must continue.
+remaining_source_binding:
+  - concrete Spring mediator bean implementation or configuration for UC01 register customer
+  - exact transaction boundary around mediator/service persistence chain
+  - validator implementation proving server-side required-field and cross-reference rules
+application_code_mutation: false
+story_approval_delta: 0
+next_action: Continue exact frozen-tree traversal across candidate implementation modules; do not mark complete until all remaining bindings are source-proved.
