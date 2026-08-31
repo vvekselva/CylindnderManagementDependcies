@@ -1,0 +1,24 @@
+story_id: STORY-0044
+run_id: CYLINDER-PRODUCTION-FIRE-20260831-061402IST
+release: R1
+endpoint: POST /wizard/vehicle-trip-load/save
+status: SOURCE_DETAIL_REVIEW_REQUIRED
+strict_field_ui_complete: false
+approval: PENDING_USER_APPROVAL
+materialized: true
+refined_at: 2026-08-31T06:19:44+05:30
+frozen_source: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+proved:
+  - exact POST wizard save endpoint and ModelAttribute binding
+  - vehicleTripDto, vehicleLoadDto, four challan-book ids and four starting-sheet-number fields
+  - generic application-service processRequest boundary
+  - success redirect to /vehicle-loads/list
+  - CylinderManagementApplicationException error re-render and reference-data repopulation
+  - executable source differs from commented IVehicleTripLoadWizardService narrative
+remaining_gap:
+  - concrete vehicleLoadAndTripIngestionService implementation unresolved
+  - exact validation/transaction/DAO/repository/entity/table/column path unresolved
+  - generated ids and persistent trip/load/cylinder/challan side effects unresolved
+strict_promotion_withheld_reason: executable_downstream_write_contract_not_source_proved
+database_behavior_invented: false
+approval_delta: 0
