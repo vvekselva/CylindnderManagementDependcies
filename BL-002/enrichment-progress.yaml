@@ -1,8 +1,8 @@
-version: 73
+version: 74
 backlog_id: BL-002
-updated_at: 2026-09-01T01:06:00+05:30
+updated_at: 2026-09-01T01:06:15+05:30
 updated_by: Primary Cylinder Automation Tool
-checkpoint_state: CHECKPOINT_RECONCILED_STORY0041_STORY0046_UNIT_EVIDENCE
+checkpoint_state: CHECKPOINT_RECONCILED_STORY0042_BUSINESS_BEHAVIOR_COMPLETE
 scope:
   total_stories: 134
   r1_stories: 88
@@ -11,14 +11,14 @@ scope:
 business_behavior_rework:
   policy: BL-002/story-business-behavior-rework-policy.yaml
   total_registered: 134
-  rework_required: 114
+  rework_required: 113
   rework_in_progress: 0
-  business_behavior_complete: 20
-  awaiting_user_review: 18
+  business_behavior_complete: 21
+  awaiting_user_review: 19
   approved_after_rework: 2
   needs_clarification: 0
-  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0043, STORY-0044, STORY-0046, STORY-0054]
-  awaiting_user_review_ids: [STORY-0011, STORY-0012, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0043, STORY-0044, STORY-0046, STORY-0054]
+  business_behavior_complete_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0046, STORY-0054]
+  awaiting_user_review_ids: [STORY-0011, STORY-0012, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0046, STORY-0054]
   approved_after_rework_ids: [STORY-0001, STORY-0013]
   active_rework_ids: []
   static_reference_selector_reviewed: 16
@@ -27,7 +27,7 @@ business_behavior_rework:
   search_conversion_required_ids: []
   dependent_selector_rework_required: 0
   dependent_selector_rework_required_ids: []
-  remaining_global_rework_count: 114
+  remaining_global_rework_count: 113
 legacy_metrics:
   register_ready: 131
   clarification: 3
@@ -105,21 +105,22 @@ reconciliation:
   story0037_unit_projection_drift_repaired: true
   story0041_story0046_unit_projection_drift_detected: true
   story0041_story0046_enrichment_projection_repaired: true
+  story0042_unit_projection_repaired: true
   durable_approval_evidence_ids: [STORY-0001, STORY-0013]
   testing_policy_legacy_auto_rework_wording_detected: true
   current_code_mutation_governance: USER_APPROVAL_REQUIRED_FOR_EXACT_DRIFT_MANIFEST
   unit_evidence_reconciled: true
   aggregate_queue_projection_pending: true
-  queue_projection_drift_ids: [STORY-0041, STORY-0046]
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
   aggregate_reconciliation_gate: ENRICHMENT_REPAIRED_QUEUE_ROWS_PENDING
   recovered_prior_run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-003017-IST
   recovered_prior_run_classification: PLATFORM_RUNTIME_BOUNDARY
   recovered_prior_run_termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-II-20260901-003017-IST/termination.yaml
 cursor:
   priority_post_approval_conformance_ids: []
-  next_global_rework_unit: STORY-0042
-  fallback_dependency_safe_r1_unit: STORY-0045
-  next_unstarted_dependency_safe_r1_unit: STORY-0047
+  next_global_rework_unit: STORY-0045
+  fallback_dependency_safe_r1_unit: STORY-0047
+  next_unstarted_dependency_safe_r1_unit: STORY-0048
   priority_development_unit: null
   next_development_action: NONE_WITHOUT_DRIFT_APPROVED_FOR_CODE_CHANGE
   next_testing_action: GENERATE_BL004_AND_BL005_STORY0013_THEN_RECONCILE_STORY0001_ARTIFACTS
