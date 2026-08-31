@@ -3,11 +3,15 @@ run_id: CYLINDER-PRODUCTION-FIRE-20260831-232655-IST
 backlog_id: BL-002
 work_unit_id: STORY-0045_BUSINESS_BEHAVIOR_REWORK
 resource: BL-002/STORY-0045
-state: ACTIVE
+state: RELEASED_PARTIAL_CONTINUATION
 claimed_at: '2026-08-31T23:34:56+05:30'
-heartbeat_at: '2026-08-31T23:34:56+05:30'
-lease_expires_at: '2026-08-31T23:49:56+05:30'
+heartbeat_at: '2026-08-31T23:35:19+05:30'
+released_at: '2026-08-31T23:35:19+05:30'
 write_set:
   - BL-002/evidence/STORY-0045/*
   - BL-002/stories/STORY-0045.md
 aggregate_write_deferred_to_checkpointer: true
+unit_result: PARTIAL_SOURCE_BINDING_ADVANCED
+unit_evidence: BL-002/evidence/STORY-0045/20260831T233456+0530-display-template-source-mismatch.yaml
+business_behavior_complete: false
+classification: SOURCE_DETAIL_REVIEW_REQUIRED
