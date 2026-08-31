@@ -1,0 +1,29 @@
+story_id: STORY-0045
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4
+evidence_time: "2026-09-01T02:33:00+05:30"
+frozen_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_binding:
+  file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchController.java
+  class: CustomerFetchController
+  method: doGet
+  endpoint: "GET /displayCustomer"
+  request_parameter: "customerId: Long"
+  request_dto: CustomerFetchByIdRequestDto
+  service_field: "ICylinderManagementApplicationService<CustomerFetchByIdRequestDto, CustomerFetchByIdResponseDto> customerFetchByIdService"
+  service_call: "customerFetchByIdService.processRequest(customerFetchByIdRequestDto)"
+  success_view: DisplayCustomer
+  model_key: customer
+  model_value: CustomerFetchByIdResponseDto
+  invalid_input_outcome: "redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10"
+  application_exception_outcome: "redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10"
+status:
+  business_behavior_complete: false
+  reason: CONCRETE_SERVICE_IMPLEMENTATION_DAO_ENTITY_DATABASE_READ_PATH_AND_RECONCILED_TEMPLATE_BEHAVIOR_REMAIN_TO_BE_BOUND
+  code_drift_review_packet_already_present: true
+  application_code_mutation: false
+  bl010_created_or_executed: false
+fail_closed_notes:
+  - GitHub code-search returned incomplete results and zero matches for CustomerFetchById; this is not treated as absence proof.
+  - Existing DisplayCustomer.html conformance drift remains blocked pending explicit approval of its exact code-change manifest.
