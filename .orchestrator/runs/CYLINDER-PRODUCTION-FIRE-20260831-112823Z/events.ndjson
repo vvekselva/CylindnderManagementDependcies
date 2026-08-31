@@ -4,3 +4,5 @@
 {"event":"UNIT_COMPLETED","at":"2026-08-31T11:31:29Z","unit":"BL-002/STORY-0040_BUSINESS_BEHAVIOR_REWORK","result":"BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW","approval_delta":0,"code_mutation":false}
 {"event":"AGGREGATE_RECONCILIATION_CONFLICT","at":"2026-08-31T11:35:10Z","path":"BL-002/enrichment-progress.yaml","reason":"OPTIMISTIC_CONCURRENCY_SHA_CONFLICT","completed_unit_evidence_preserved":true}
 {"event":"HEARTBEAT","at":"2026-08-31T11:38:34Z","last_action":"REFILL_SOURCE_REVIEW","active_claims":0,"eligible_work_remaining":true}
+{"event":"SPLIT_BRAIN_RECOVERY_DETECTED","at":"2026-08-31T11:50:34Z","conflicting_recovery_run":"CYLINDER-PRODUCTION-FIRE-20260831-113327Z","conflicting_recovery_observed_at":"2026-08-31T11:34:28Z","proof_current_run_continued_after_recovery":["HEARTBEAT_2026-08-31T11:38:34Z","LATER_DURABLE_UNIT_AND_CLAIM_COMMITS"],"action":"FAIL_CLOSED_TERMINATE_CURRENT_INVOCATION"}
+{"event":"TERMINATED","at":"2026-08-31T11:50:34Z","classification":"DUPLICATE_FIRE_SUPPRESSED","reason":"SPLIT_BRAIN_RECOVERY_OWNERSHIP_CONFLICT","eligible_work_remaining":true,"approval_delta":0,"application_code_mutation_delta":0}
