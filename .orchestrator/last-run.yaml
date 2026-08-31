@@ -1,7 +1,7 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
 checkpoint_state: RESUMABLE_RUNTIME_BOUNDARY
-started_at: '2026-09-01T02:31:02+05:30'
-checkpoint_at: '2026-09-01T02:33:50+05:30'
+started_at: '2026-09-01T03:30:58+05:30'
+checkpoint_at: '2026-09-01T03:38:38+05:30'
 terminal_classification: PLATFORM_RUNTIME_BOUNDARY
 termination_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY
 voluntary_early_stop: false
@@ -12,19 +12,25 @@ architecture:
   github_role: DURABLE_CONTROL_AUDIT_ONLY
   github_actions_runners_used: false
 scheduler_handoff:
-  fire_id: 20260901T023059-IST-turn4
-  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire-ii/20260901T023059-IST-turn4.yaml
+  fire_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4
+  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4.yaml
   handoff_acknowledged: true
   run_linked: true
 prior_run_reconciliation:
-  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260901-020033-IST
+  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260901-025709-IST-RUN-001
   unresolved_gap_remaining: false
 business_behavior_rework:
   active_unit: STORY-0045
-  result: PARTIAL_CONTINUE_REQUIRED
+  result: PENDING_USER_APPROVAL
   business_behavior_complete: false
-  evidence: BL-002/evidence/STORY-0045/20260901T023300-IST-controller-binding.yaml
-  review_packet: BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
+  evidence: BL-002/evidence/STORY-0045/20260901T033758-IST-backend-binding-and-import-drift.yaml
+  review_packets:
+    - BL-002/reviews/STORY-0045/20260901T033758-IST-controller-service-import-drift-review.yaml
+    - BL-002/user-review/STORY-0045/20260901T020700+0530-display-template-drift-review.yaml
+aggregate:
+  business_behavior_complete: 21
+  business_behavior_total: 134
+  percent: 15.7
 reconciliation:
   aggregate_projection_repaired: false
   aggregate_projection_repair_remaining: true
@@ -40,9 +46,9 @@ drift_governance:
   user_drift_approval_bypassed: false
 runtime_reliability:
   heartbeat_state: TERMINATED_AT_RUNTIME_BOUNDARY
-  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4/termination.yaml
-  checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-II-20260901-023059-IST-T4/checkpoint.yaml
-  next_action: Resume STORY-0045 concrete service -> DAO -> entity -> database binding; keep DisplayCustomer drift implementation blocked pending exact user approval; repair stale queue rows only with exact-preservation proof.
+  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001/termination.yaml
+  checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001/checkpoint.yaml
+  next_action: Keep both STORY-0045 drift scopes blocked pending exact user approval; continue another dependency-safe Release-1 Story; reconcile stale queue rows only with exact-preservation proof.
 claims:
   active_at_terminal: 0
 transient_logs_remaining: 0
