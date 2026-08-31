@@ -1,0 +1,16 @@
+run_id: CYL-ORCH-20260831T175004+0530
+classification: ABNORMAL_PROCESS_DISAPPEARANCE
+termination_reason: STALE_LIVE_RUN_WITHOUT_TERMINAL_EVENT
+started_at: '2026-08-31T17:50:04+05:30'
+last_heartbeat_at: '2026-08-31T18:03:23+05:30'
+latest_durable_unit_activity_at: '2026-08-31T18:05:34+05:30'
+recovery_observed_at: '2026-08-31T18:10:13+05:30'
+termination_time_original: null
+recovered_by_run: CYLINDER-PRODUCTION-FIRE-20260831-123813Z
+eligible_work_remaining: true
+active_claims_at_recovery: 0
+preserved_completed_work:
+  - BL-009/STORY-0013_GENERATED_AND_MAPPED_RUNTIME_EXECUTION_PENDING
+  - BL-004/STORY-0013_GENERATED_SOURCE_BOUND_RUNTIME_EXECUTION_PENDING
+  - BL-005/STORY-0013_GENERATED_SOURCE_BOUND_RUNTIME_EXECUTION_PENDING
+note: Original termination time is unknown; recovery records only durable evidence and does not invent it.
