@@ -1,5 +1,5 @@
-version: 1
-name: POST_APPROVAL_STORY_CODE_CONFORMANCE_AND_AUTOMATED_REWORK
+version: 2
+name: POST_APPROVAL_STORY_CODE_CONFORMANCE_AND_USER_APPROVED_REWORK
 status: ACTIVE
 scope: BL-002_REVERSE_ENGINEERED_STORIES
 execution_host: CHATGPT_ONLY
@@ -33,6 +33,54 @@ conformance:
   drift_state: STORY_CODE_DRIFT_DETECTED
   evidence_path_pattern: BL-002/code-conformance-evidence/<story-id>/<evidence-id>.yaml
 
+drift_review:
+  user_approval_required_before_any_code_change: true
+  automatic_code_mutation_on_drift: forbidden
+  review_state: DRIFT_REVIEW_REQUIRED
+  approved_state: DRIFT_APPROVED_FOR_CODE_CHANGE
+  rejected_state: DRIFT_REJECTED_OR_REWORK_REQUESTED
+  approval_record_required: true
+  approval_evidence_path_pattern: BL-002/drift-approval-evidence/<story-id>/<approval-id>.yaml
+  proposal_must_include:
+    - story_id
+    - drift_id
+    - drift_class
+    - source_fingerprint
+    - defect_fingerprint
+    - current_behavior
+    - approved_story_behavior
+    - exact_difference
+    - business_impact
+    - proposed_change_summary
+    - code_change_manifest
+    - test_change_manifest
+    - database_change_manifest_when_applicable
+    - risk_and_rollback_notes
+    - material_story_contract_change_assessment
+  code_change_manifest_required_fields:
+    - repository
+    - branch_or_governed_ref
+    - file_path
+    - class_or_component
+    - method_function_or_template_block
+    - approximate_line_or_source_anchor
+    - change_type
+    - current_code_behavior
+    - proposed_code_behavior
+    - reason_for_change
+    - related_story_assertion
+  test_change_manifest_required_fields:
+    - test_layer
+    - test_file_path_or_planned_path
+    - scenario
+    - expected_result
+  database_change_manifest_required_fields_when_applicable:
+    - migration_or_schema_object
+    - table_view_column_constraint_or_function
+    - proposed_change
+    - data_integrity_impact
+    - rollback_or_recovery_note
+
 fanout_gate:
   requires:
     - EXPLICIT_APPROVAL_OR_REAPPROVAL_CURRENT_CONTRACT
@@ -41,10 +89,12 @@ fanout_gate:
   fail_closed: true
 
 code_rework:
-  automated: true
+  automated: false
   backlog: BL-010
   queue: BL-010/development-change-task-queue.csv
-  creation_rule: CREATE_OR_REUSE_IDEMPOTENT_TASK_FOR_STORY_SOURCE_FINGERPRINT_AND_DEFECT_FINGERPRINT
+  creation_before_drift_approval: forbidden
+  execution_before_drift_approval: forbidden
+  creation_rule_after_approval: CREATE_OR_REUSE_IDEMPOTENT_TASK_FOR_STORY_SOURCE_FINGERPRINT_AND_DEFECT_FINGERPRINT
   duplicate_tasks_for_same_fingerprint: forbidden
   eligible_drift_classes:
     - CODE_DEFECT
@@ -52,17 +102,23 @@ code_rework:
     - APPROVED_VALIDATION_GAP
     - APPROVED_SELECTOR_UX_GAP
     - APPROVED_PERSISTENCE_OR_TRANSACTION_GAP
+  precondition:
+    - DRIFT_APPROVED_FOR_CODE_CHANGE
+    - DURABLE_DRIFT_APPROVAL_EVIDENCE_PRESENT
+    - APPROVED_CODE_CHANGE_MANIFEST_PRESENT
   execution:
     - resolve_governed_source
+    - verify_approved_change_manifest_against_current_source
     - determine_read_write_sets
     - acquire_resource_claim
     - stage_exact_source_binding
-    - implement_minimal_safe_change
-    - validate_source_binding
+    - implement_only_user_approved_change_scope
+    - validate_changed_source_against_approved_manifest
     - run_available_unit_integration_runtime_validation
     - persist_changed_file_and_test_evidence
     - release_claim
     - automatically_reenqueue_story_code_conformance
+  scope_expansion_rule: STOP_AND_REQUEST_NEW_USER_APPROVAL
   runtime_unavailable_state: SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED
   never_promote_runtime_not_executed_to_pass: true
   github_actions: forbidden
@@ -85,9 +141,11 @@ story_reapproval:
 scheduler:
   production_fire_must_treat_as_normal_eligible_work:
     - pending_post_approval_code_conformance
-    - STORY_CODE_DRIFT_DETECTED_with_automatable_rework
-    - BL-010_code_rework_queued_or_in_progress
+    - STORY_CODE_DRIFT_DETECTED_needing_user_review_packet_generation
+    - DRIFT_REVIEW_REQUIRED_waiting_for_user_decision_as_non_mutating_wait_state
+    - DRIFT_APPROVED_FOR_CODE_CHANGE_with_BL-010_work
     - post_rework_conformance_rerun
+  scheduler_must_not_mutate_code_while_waiting_for_drift_approval: true
   dynamic_selection_required: true
   hardcoded_story_pointer: forbidden
   resource_scoped_claims_required: true
@@ -98,6 +156,10 @@ watchdog_reporting:
     - pending_code_conformance_count_and_ids
     - conformance_pass_count_and_ids
     - story_code_drift_count_and_ids
-    - automated_code_rework_queued_in_progress_complete_count_and_ids
+    - drift_review_required_count_and_ids
+    - drift_approved_for_code_change_count_and_ids
+    - drift_rejected_or_rework_requested_count_and_ids
+    - exact_code_change_locations_for_each_pending_drift
+    - BL-010_code_rework_queued_in_progress_complete_count_and_ids
     - reapproval_required_after_code_rework_count_and_ids
     - fanout_eligible_count_and_ids
