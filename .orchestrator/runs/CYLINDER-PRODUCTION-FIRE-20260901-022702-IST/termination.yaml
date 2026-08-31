@@ -1,0 +1,13 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-022702-IST
+termination_time: '2026-09-01T02:32:15+05:30'
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+mode: CONTINUOUS
+resumable: true
+eligible_work_remaining: true
+active_claims: 0
+checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-022702-IST/checkpoint.yaml
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/20260901T022702+0530.yaml
+story_approvals: 0
+application_code_mutations: 0
+bl_010_creations_or_executions: 0
+github_actions_or_runners: 0
