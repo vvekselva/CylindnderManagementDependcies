@@ -1,25 +1,24 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-132952-IST-RUN-001
-scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260901-132952-IST
-scheduler_task: cylinder-production-fire-ii
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-140203-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-140203-IST
+scheduler_task: cylinder-production-fire-i
 state: TERMINATED
 mode: CONTINUOUS
-started_at: '2026-09-01T13:29:52+05:30'
-last_heartbeat_at: '2026-09-01T13:31:51+05:30'
-terminated_at: '2026-09-01T13:31:51+05:30'
-terminal_classification: ALL_REMAINING_WORK_BLOCKED
-terminal_reason: LOCAL_GIT_SOURCE_TRANSPORT_BLOCKED_AND_AGGREGATE_RECONCILIATION_AMBIGUOUS
+started_at: '2026-09-01T14:02:03+05:30'
+last_heartbeat_at: '2026-09-01T14:03:48+05:30'
+terminated_at: '2026-09-01T14:03:48+05:30'
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_UNIT_RECONCILIATION
 running_worker_count: 0
-completed_worker_count: 0
+completed_worker_count: 1
 blocked_worker_count: 2
 active_work_unit_ids: []
 eligible_work_remaining: true
 resumable: true
-last_action: PROJECTION_RECONCILIATION_EVIDENCE_PERSISTED_FAIL_CLOSED
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-I-20260901-125741-IST-RUN-001
+last_action: STORY-0041_UNIT_EVIDENCE_RECONCILED_TO_BUSINESS_BEHAVIOR_COMPLETE
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-II-20260901-132952-IST-RUN-001
 aggregate_business_behavior_complete: 21
 aggregate_business_behavior_total: 134
 aggregate_percent: 15.7
 completion_delta_this_run: 0
-local_git_transport_state: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
-projection_drift_ids: [STORY-0041, STORY-0046]
-next_action: Resolve authoritative evidence ordering for STORY-0041/STORY-0046; resume STORY-0047/STORY-0048 when local Git governed source becomes available; keep STORY-0045 approval-gated.
+projection_drift_ids: [STORY-0042, STORY-0046]
+next_action: Reconcile queue projections for STORY-0041/STORY-0042 and continue STORY-0046/STORY-0047/STORY-0048; keep STORY-0045 approval-gated.
