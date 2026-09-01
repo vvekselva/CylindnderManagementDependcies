@@ -1,0 +1,18 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-170052-IST-RUN-001
+terminated_at: '2026-09-01T17:03:31+05:30'
+elapsed_seconds: 159
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_CONTROL_PLANE_RECONCILIATION_AND_SOURCE_INPUT_CHECK
+eligible_work_remaining: true
+resumable: true
+running_worker_count: 0
+completed_worker_count: 1
+blocked_worker_count: 1
+completion_delta_this_run: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+source_execution_input_available: false
+application_code_changes: 0
+bl010_execution_delta: 0
+next_action: Reconcile queue projection rows safely, then resume STORY-0048/STORY-0047 source proof when governed local source becomes available; keep STORY-0045 approval-gated.
