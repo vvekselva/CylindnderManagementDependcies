@@ -1,0 +1,23 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-170052-IST-RUN-001
+checkpoint_at: '2026-09-01T17:03:31+05:30'
+state: RESUMABLE
+recovery_reconciled:
+  prior_terminal_run: CYLINDER-PRODUCTION-FIRE-I-20260901-155905-IST-RUN-001
+  prior_failed_handoff: CYLINDER-PRODUCTION-FIRE-II-20260901-162806-IST
+  failed_handoff_classification: ORCHESTRATOR_START_NOT_CONFIRMED
+control_plane_repairs:
+  live_run_projection_repaired: true
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+source_execution:
+  local_runtime_source_zip_available: false
+  file_library_source_zip_available: false
+  github_application_code_search_used: false
+  result: SOURCE_EXECUTION_INPUT_UNAVAILABLE
+story_code_mutation_delta: 0
+bl010_execution_delta: 0
+completion_delta_this_run: 0
+eligible_work_remaining: true
+next_action: Reconcile stale queue projection rows for STORY-0041/STORY-0042/STORY-0046 with a safe full-file CAS writer; then resume STORY-0048/STORY-0047 exact source proof when governed local source is available; keep STORY-0045 approval-gated.
