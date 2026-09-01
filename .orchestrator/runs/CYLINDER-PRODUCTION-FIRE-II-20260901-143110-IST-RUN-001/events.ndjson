@@ -1,0 +1,5 @@
+{"at":"2026-09-01T14:31:10+05:30","event":"TRIGGER_RECEIVED","fire_id":"CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST"}
+{"at":"2026-09-01T14:31:10+05:30","event":"RUN_LINKED","run_id":"CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST-RUN-001"}
+{"at":"2026-09-01T14:31:10+05:30","event":"PRIOR_RUN_RECONCILED","previous_run_id":"CYLINDER-PRODUCTION-FIRE-I-20260901-140203-IST-RUN-001","previous_terminal_classification":"PLATFORM_RUNTIME_BOUNDARY"}
+{"at":"2026-09-01T14:33:47+05:30","event":"WORK_UNIT_ADVANCED","story_id":"STORY-0048","result":"SOURCE_DETAIL_ADVANCED_NOT_COMPLETE","evidence":"V154 source proves tbl_challan_page_photo.pk_challan_page_photo_id, active column, entity mapping, one-active-per-page invariant and inactive retrieval behavior; exact delete request binding/browser event remains unresolved"}
+{"at":"2026-09-01T14:33:47+05:30","event":"CHECKPOINT","aggregate_business_behavior_complete":21,"aggregate_business_behavior_total":134,"completion_delta":0,"eligible_work_remaining":true}
