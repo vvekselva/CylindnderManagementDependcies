@@ -1,0 +1,22 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-140203-IST-RUN-001
+recorded_at: '2026-09-01T14:03:48+05:30'
+classification: PROGRESSED_WITH_RECONCILIATION
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+completion_delta: 0
+reconciled_unit_ids: [STORY-0041]
+unit_changes:
+  STORY-0041:
+    prior_state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
+    new_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    proof: STORY-0042 already source-binds the embedded POST /registerCustomer mediator, validator, service, JPA repository, exact persistence tables/columns, success path and validation-error path required by STORY-0041
+    application_code_changed: false
+remaining_projection_drift_ids: [STORY-0042, STORY-0046]
+blocked_safe_independent_units:
+  STORY-0047: exact visible update-screen/browser submit path to POST /updateCustomer remains unproved
+  STORY-0048: frozen source-detail proof remains incomplete from current durable evidence
+approval_gates_preserved: true
+auto_approval_performed: false
+bl010_mutation_performed: false
+eligible_work_remaining: true
