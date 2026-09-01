@@ -1,0 +1,19 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-140203-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-140203-IST
+started_at: '2026-09-01T14:02:03+05:30'
+terminated_at: '2026-09-01T14:03:48+05:30'
+elapsed_seconds: 105
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_UNIT_RECONCILIATION
+running_worker_count: 0
+completed_worker_count: 1
+blocked_worker_count: 2
+active_work_unit_ids: []
+eligible_work_remaining: true
+resumable: true
+completion_delta: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+last_action: STORY-0041_UNIT_EVIDENCE_RECONCILED_TO_BUSINESS_BEHAVIOR_COMPLETE
+next_action: Reconcile stale aggregate queue projections for STORY-0041/STORY-0042 and continue source-detail work on STORY-0046/STORY-0047/STORY-0048 while preserving STORY-0045 approval gate.
