@@ -1,0 +1,6 @@
+{"timestamp":"2026-09-01T15:27:49+05:30","event":"SCHEDULER_TRIGGER_RECEIVED","scheduler_fire_id":"CYLINDER-PRODUCTION-FIRE-II-20260901-152749-IST","state":"TRIGGER_RECEIVED"}
+{"timestamp":"2026-09-01T15:27:49+05:30","event":"ORCHESTRATOR_RUN_LINKED","run_id":"CYLINDER-PRODUCTION-FIRE-II-20260901-152749-IST-RUN-001","state":"RUN_LINKED"}
+{"timestamp":"2026-09-01T15:27:49+05:30","event":"STARTUP_RECONCILIATION","previous_run_id":"CYLINDER-PRODUCTION-FIRE-I-20260901-145728-IST-RUN-001","previous_run_state":"TERMINATED"}
+{"event":"LIVE_RUN_PROJECTION_WRITE_BLOCKED","classification":"CONTROL_PLANE_WRITE_BLOCKED_BY_PLATFORM_SAFETY_CONTROL","durable_unit_evidence_preserved":true}
+{"timestamp":"2026-09-01T15:33:35+05:30","event":"SOURCE_PROOF_ATTEMPT","stories":["STORY-0048","STORY-0047"],"result":"NO_NEW_EXACT_BINDING","application_code_mutations":0,"bl010_executions":0,"approvals":0}
+{"timestamp":"2026-09-01T15:33:35+05:30","event":"TERMINAL_CHECKPOINT","classification":"PLATFORM_RUNTIME_BOUNDARY","eligible_work_remaining":true,"resumable":true,"aggregate_business_behavior_complete":21,"aggregate_business_behavior_total":134,"completion_delta_this_run":0}
