@@ -2,9 +2,21 @@ scheduler_task: cylinder-production-fire-ii
 fire_id: CYLINDER-PRODUCTION-FIRE-II-20260901-152749-IST
 observed_scheduled_fire_time: '2026-09-01T15:27:49+05:30'
 receipt_time: '2026-09-01T15:27:49+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
 orchestrator_started_at: '2026-09-01T15:27:49+05:30'
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-152749-IST-RUN-001
-terminal_classification: null
-terminated_at: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_SOURCE_PROOF_ATTEMPT_AND_LIVE_RUN_PROJECTION_WRITE_BLOCK
+terminated_at: '2026-09-01T15:33:35+05:30'
+elapsed_seconds: 346
+eligible_work_remaining: true
+resumable: true
+completion_delta_this_run: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+projection_drift_ids: [STORY-0042, STORY-0046]
+application_code_mutations: 0
+bl010_executions: 0
+story_approvals: 0
+next_action: Resume STORY-0048 exact delete request binding/browser event proof and STORY-0047 update browser path; keep STORY-0045 approval-gated; reconcile stale queue projections from authoritative unit evidence.
