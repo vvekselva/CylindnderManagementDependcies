@@ -1,0 +1,36 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2-RUN-001
+observed_at: '2026-09-01T12:32:12+05:30'
+classification: AGGREGATE_DRIFT_DETECTED
+source_of_truth:
+  aggregate: BL-002/enrichment-progress.yaml
+  queue: BL-002/story-business-behavior-rework-task-queue.csv
+unit_local_evidence_authoritative: true
+aggregate_projection_state:
+  business_behavior_complete: 21
+  total: 134
+  percent: 15.7
+queue_projection_drift:
+  - story_id: STORY-0041
+    aggregate_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    queue_state: REWORK_REQUIRED
+    intended_projection_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    intended_next_action: USER_REVIEW_REWORKED_STORY
+  - story_id: STORY-0042
+    aggregate_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    queue_state: REWORK_REQUIRED
+    intended_projection_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    intended_next_action: USER_REVIEW_REWORKED_STORY
+  - story_id: STORY-0046
+    aggregate_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    queue_state: REWORK_REQUIRED
+    intended_projection_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    intended_next_action: USER_REVIEW_REWORKED_STORY
+repair_status: REPAIR_PREPARED_FULL_FILE_CAS_UPDATE_NOT_PERFORMED_IN_THIS_CHECKPOINT
+reason: Queue file requires whole-file compare-and-swap replacement; exact stale rows were revalidated without altering authoritative unit evidence or aggregate counts.
+source_execution:
+  requested_mode: LOCAL_GIT
+  result: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+  attached_zip_runtime_visibility: NOT_EXPOSED_AS_LOCAL_FILE_IN_AUTOMATION_RUNTIME
+story_code_mutation: false
+story_auto_approval: false
+bl010_creation_or_execution: false
