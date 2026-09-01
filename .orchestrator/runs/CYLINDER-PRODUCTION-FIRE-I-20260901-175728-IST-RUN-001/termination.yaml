@@ -1,0 +1,27 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-175728-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-175728-IST
+scheduler_task: cylinder-production-fire-i
+state: TERMINATED
+mode: CONTINUOUS
+started_at: '2026-09-01T17:57:28+05:30'
+terminated_at: '2026-09-01T17:58:57+05:30'
+elapsed_seconds: 89
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: GOVERNED_APPLICATION_SOURCE_ZIP_UNAVAILABLE_FOR_EXACT_SOURCE_PROOF_AND_QUEUE_PROJECTION_REPAIR_NOT_SAFE_WITHOUT_FULL_CANONICAL_FILE
+eligible_work_remaining: true
+resumable: true
+completion_delta_this_run: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+source_input_check:
+  file_library_search_performed: true
+  governed_cylindermanagement_source_zip_found: false
+  substitute_github_application_code_search_used: false
+queue_projection_repair:
+  attempted: false
+  reason: FULL_CANONICAL_QUEUE_CONTENT_NOT_SAFELY_AVAILABLE_FOR_NONDESTRUCTIVE_REWRITE
+application_code_changes: 0
+bl010_execution_delta: 0
+next_action: Obtain governed CylinderManagement source ZIP in active execution context, then resume STORY-0048 delete request binding/browser event proof and STORY-0047 update browser path; repair STORY-0041/STORY-0042/STORY-0046 queue projections only from authoritative unit evidence with a full canonical-file-safe write.
