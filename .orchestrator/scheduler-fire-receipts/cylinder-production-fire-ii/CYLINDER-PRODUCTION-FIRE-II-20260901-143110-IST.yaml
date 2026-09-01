@@ -3,9 +3,13 @@ fire_id: CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST
 observed_fire_time: 2026-09-01T14:31:10+05:30
 scheduled_fire_time: 2026-09-01T14:30:00+05:30
 receipt_time: 2026-09-01T14:31:10+05:30
-state: RUN_LINKED
+state: TERMINATED
 orchestrator_state: ORCHESTRATOR_STARTED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST-RUN-001
-terminal_classification: null
-terminated_at: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_STORY0048_SOURCE_DETAIL_ADVANCE
+terminated_at: 2026-09-01T14:33:47+05:30
+elapsed_seconds: 157
+resumable: true
+eligible_work_remaining: true
