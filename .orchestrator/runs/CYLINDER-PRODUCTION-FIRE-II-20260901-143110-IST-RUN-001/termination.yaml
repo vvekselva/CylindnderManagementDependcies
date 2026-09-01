@@ -1,0 +1,17 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST
+scheduler_task: cylinder-production-fire-ii
+mode: CONTINUOUS
+started_at: 2026-09-01T14:31:10+05:30
+terminated_at: 2026-09-01T14:33:47+05:30
+elapsed_seconds: 157
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_STORY0048_SOURCE_DETAIL_ADVANCE
+eligible_work_remaining: true
+resumable: true
+completion_delta: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+work_units_advanced: [STORY-0048]
+blocked_or_gated: [STORY-0045, STORY-0047, STORY-0048]
+next_action: Continue exact source proof for STORY-0048 delete request binding/browser event and STORY-0047 update browser path; keep STORY-0045 approval-gated; reconcile stale queue projections without changing authoritative completion count.
