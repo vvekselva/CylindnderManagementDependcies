@@ -1,0 +1,5 @@
+{"time":"2026-09-01T12:57:41+05:30","event":"ORCHESTRATOR_STARTED","fire_id":"CYLINDER-PRODUCTION-FIRE-I-20260901-125741-IST","mode":"CONTINUOUS"}
+{"time":"2026-09-01T12:58:00+05:30","event":"PRIOR_RUN_RECONCILED","prior_run_id":"CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2-RUN-001","prior_state":"TERMINATED"}
+{"time":"2026-09-01T13:00:00+05:30","event":"LOCAL_GIT_SOURCE_TRANSPORT_BLOCKED","command":"git clone --no-checkout https://github.com/vvekselva/CylinderManagement.git","error":"Could not resolve host: github.com"}
+{"time":"2026-09-01T13:01:00+05:30","event":"AGGREGATE_RECONCILIATION_DEFERRED","reason":"authoritative Story evidence and aggregate projection disagree for STORY-0041; destructive queue rewrite not safe without exact-preservation proof","affected_ids":["STORY-0041","STORY-0042","STORY-0046"]}
+{"time":"2026-09-01T13:03:49+05:30","event":"TERMINALIZING","classification":"ALL_REMAINING_WORK_BLOCKED","resumable":true}
