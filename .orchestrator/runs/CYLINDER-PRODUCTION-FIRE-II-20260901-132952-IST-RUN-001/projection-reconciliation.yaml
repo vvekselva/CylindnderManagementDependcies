@@ -1,0 +1,37 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-132952-IST-RUN-001
+observed_at: '2026-09-01T13:31:33+05:30'
+classification: AGGREGATE_DRIFT_DETECTED
+aggregate_snapshot:
+  source: BL-002/enrichment-progress.yaml
+  business_behavior_complete: 21
+  includes: [STORY-0041, STORY-0042, STORY-0046]
+unit_evidence:
+  STORY-0041:
+    source: BL-002/stories/STORY-0041.md
+    rework_state: REWORK_IN_PROGRESS_SOURCE_BINDING_REQUIRED
+    approval: PENDING_USER_APPROVAL
+    conclusion: DOES_NOT_SUPPORT_BUSINESS_BEHAVIOR_COMPLETE_FROM_THIS_UNIT_FILE
+  STORY-0042:
+    source: BL-002/stories/STORY-0042.md
+    rework_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    enrichment_state: BUSINESS_BEHAVIOR_COMPLETE
+    conclusion: SUPPORTS_BUSINESS_BEHAVIOR_COMPLETE
+  STORY-0046:
+    source: BL-002/stories/STORY-0046.md
+    enrichment_state: SOURCE_DETAIL_REVIEW_REQUIRED
+    approval: PENDING_USER_APPROVAL
+    conclusion: DOES_NOT_SUPPORT_BUSINESS_BEHAVIOR_COMPLETE_FROM_THIS_UNIT_FILE
+repair_action: DEFERRED_FAIL_CLOSED
+repair_reason: The aggregate conflicts with current physical Story unit files for STORY-0041 and STORY-0046. Prior run evidence may contain later source proof not yet projected back into those Story files. Exact authoritative evidence ordering must be established before changing either unit files or aggregate counts.
+source_execution:
+  mode_requested: LOCAL_GIT
+  command_result: BLOCKED
+  blocker: DNS_COULD_NOT_RESOLVE_GITHUB_COM
+  github_source_search_used_as_substitute: false
+story_code_mutation: NONE
+bl010_mutation: NONE
+auto_approval: false
+next_actions:
+  - Resolve authoritative evidence ordering for STORY-0041 and STORY-0046 before aggregate repair.
+  - Resume STORY-0047 and STORY-0048 only when governed application source is available through local Git or runtime-visible attached source package.
+  - Keep STORY-0045 drift manifests approval-gated.
