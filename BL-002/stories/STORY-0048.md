@@ -5,8 +5,9 @@
 - Release: R1
 - Endpoint: `POST /add-stop/challan-page-photo/delete-ajax`
 - Approval: `PENDING_USER_APPROVAL`
-- Source basis: canonical BL-001 traceability matrix at frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source basis: canonical BL-001 traceability matrix at frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89`, plus retained V154 source patch evidence
 - Story auto-approval: forbidden
+- Enrichment state: `SOURCE_DETAIL_REVIEW_REQUIRED`
 
 ## Human-readable story
 
@@ -23,21 +24,38 @@ As an authorized Cylinder Management user working with a delivery-stop challan, 
 7. An application-level error terminates as HTTP 400 JSON with `success=false`.
 8. An unexpected error terminates as HTTP 500 JSON with `success=false`.
 
-## Persistence effect
+## Persistence identity and exact source-proved fields
 
-The source-proved business effect is deactivation of the selected active challan-page photo through the challan-page-photo persistence path. The canonical trace proves the table dependency `public.tbl_challan_page_photo` and the DAO `findById / save` path. It does not, by itself, prove the exact physical column names changed by `deactivatePhoto`; those column-level details must be bound from exact source before this story is treated as field-contract complete.
+Retained V154 source evidence proves `public.tbl_challan_page_photo` contains:
+
+- primary key `pk_challan_page_photo_id BIGINT GENERATED ALWAYS AS IDENTITY`;
+- required page link `fk_page_audit_id` to `tbl_challan_page_audit_ledger(pk_page_audit_id)`;
+- optional vehicle/load/stop links `fk_vehicle_load`, `fk_vehicle_trip`, `fk_vehicle_trip_stop`;
+- file metadata/content columns `original_file_name`, `content_type`, `content_length`, `photo_data`;
+- audit columns `uploaded_by_user_id`, `uploaded_at`;
+- lifecycle column `active BOOLEAN NOT NULL DEFAULT TRUE`;
+- optional `remarks`.
+
+`ChallanPagePhotoDo` maps the same table and maps `challanPagePhotoId` to `pk_challan_page_photo_id` and `active` to the physical `active` column. The V154 schema also defines a partial unique index `uq_challan_page_photo_one_active_per_page` on `fk_page_audit_id` where `active = TRUE`, proving the business invariant that at most one photo is active per challan page.
+
+The canonical delete trace proves the selected `ChallanPagePhotoDo` is loaded by ID and saved through `ChallanPagePhotoJpaDao`, and the business effect is deactivation. Therefore the exact physical deactivation field is now source-proved as `public.tbl_challan_page_photo.active` changing from active to inactive/false while the row remains present.
+
+## Related retrieval behavior
+
+Retained source evidence for `GET /challan-page-photo/{challanPagePhotoId}` proves retrieval uses the same `challanPagePhotoId` identity, returns HTTP 404 when the row is missing or `active=false`, and otherwise returns the stored binary inline. This reinforces that deactivation removes the photo from active retrieval without deleting its historical database row.
 
 ## Validation and error behavior
 
-The canonical trace proves three externally visible outcomes: success (HTTP 200 JSON), application error (HTTP 400 JSON), and unexpected error (HTTP 500 JSON). The exact request-field name, null/blank checks, ownership/authorization checks, and detailed validation message text are not asserted here because they are not proved by the canonical trace excerpt used for this enrichment.
+The canonical trace proves three externally visible outcomes: success (HTTP 200 JSON), application error (HTTP 400 JSON), and unexpected error (HTTP 500 JSON).
 
-## Review contract
+The exact POST request parameter/body field used by `deleteChallanPagePhotoAjax`, its annotation/datatype/requiredness, the exact null/missing-photo guards inside `deactivatePhoto`, and the visible browser control/event that issues this AJAX request are not yet source-proved from the retained evidence available to this run. They are therefore not invented.
 
-Before user approval, exact source review must confirm any request parameter/body field used to identify the photo, its datatype and requiredness, the precise active/deactivation fields persisted in `public.tbl_challan_page_photo`, and any validation guards not represented in the canonical chain. No missing behavior may be invented.
+## Exact remaining source-detail gap
 
-## Acceptance evidence already proved
+Strict Business Behavior completion remains blocked until frozen authoritative source proves:
 
-- Controller-to-service-to-DAO-to-entity-to-table chain is complete.
-- Success/error terminal classes are represented.
-- Database dependency is identified.
-- No approval is granted by this enrichment step.
+1. the exact delete request identifier name and binding (`@RequestParam`, path/body field, datatype and requiredness);
+2. the exact service guards for null/missing/already-inactive photo identity;
+3. the exact visible page/control and browser event that invokes `POST /add-stop/challan-page-photo/delete-ajax` and how the selected photo ID is propagated.
+
+No approval occurred. No application code was changed. No BL-010 work was created or executed.
