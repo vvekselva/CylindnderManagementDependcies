@@ -1,0 +1,26 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-145728-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-145728-IST
+scheduler_task: cylinder-production-fire-i
+mode: CONTINUOUS
+started_at: '2026-09-01T14:57:28+05:30'
+terminated_at: '2026-09-01T15:03:03+05:30'
+elapsed_seconds: 335
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_EXACT_SOURCE_PROOF_ATTEMPT
+work_attempted:
+  - STORY-0048_EXACT_DELETE_BINDING_AND_BROWSER_EVENT_SOURCE_PROOF
+  - STORY-0047_UPDATE_BROWSER_PATH_SOURCE_PROOF
+completed_work_units: []
+blocked_work_units:
+  - STORY-0048
+  - STORY-0047
+completion_delta: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+eligible_work_remaining: true
+resumable: true
+application_code_mutated: false
+bl010_executed: false
+story0045_approval_gate_preserved: true
+projection_drift_ids: [STORY-0042, STORY-0046]
+next_action: Resume exact source proof for STORY-0048 and STORY-0047; keep STORY-0045 approval-gated; reconcile stale queue projections.
