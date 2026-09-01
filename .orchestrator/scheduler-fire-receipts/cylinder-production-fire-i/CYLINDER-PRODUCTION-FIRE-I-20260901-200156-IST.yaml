@@ -2,10 +2,25 @@ scheduler_task: cylinder-production-fire-i
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-200156-IST
 observed_scheduled_fire_time: '2026-09-01T20:01:56+05:30'
 receipt_time: '2026-09-01T20:01:56+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-200156-IST-RUN-001
-orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_state: TERMINATED
 started_at: '2026-09-01T20:02:12+05:30'
-terminal_classification: null
-terminated_at: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_DURING_STORY_0048_SERVICE_PATH_PROOF
+terminated_at: '2026-09-01T20:06:52+05:30'
+elapsed_seconds: 280
+eligible_work_remaining: true
+resumable: true
+completion_delta_this_run: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+projection_drift_ids: [STORY-0042, STORY-0046]
+advanced_story_ids: []
+source_proof_attempts: [STORY-0048]
+source_proof_result: PARTIAL_SERVICE_DAO_DEACTIVATION_PATH_NOT_FULLY_BOUND
+application_code_changes: 0
+bl010_execution_delta: 0
+next_action: Continue exact service/DAO/entity/database deactivation proof for STORY-0048; then resume STORY-0047 update-browser-path proof; keep STORY-0045 approval-gated; reconcile projection drift without changing authoritative completion count unless evidence supports it.
