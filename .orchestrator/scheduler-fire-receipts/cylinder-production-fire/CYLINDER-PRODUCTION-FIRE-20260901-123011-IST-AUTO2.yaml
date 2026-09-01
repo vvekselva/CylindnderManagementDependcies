@@ -2,10 +2,12 @@ scheduler_task: cylinder-production-fire
 fire_id: CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2
 observed_scheduled_fire_time: '2026-09-01T12:30:11+05:30'
 receipt_time: '2026-09-01T12:30:11+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2-RUN-001
 orchestrator_started_at: '2026-09-01T12:30:11+05:30'
 run_linked_at: '2026-09-01T12:30:11+05:30'
-terminal_classification: null
-terminated_at: null
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: LOCAL_GIT_SOURCE_TRANSPORT_BLOCKED_AND_TEST_RUNTIME_DEPENDENCIES_UNAVAILABLE
+terminated_at: '2026-09-01T12:32:45+05:30'
+resumable: true
