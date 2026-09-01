@@ -1,0 +1,43 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2
+started_at: '2026-09-01T12:30:11+05:30'
+terminated_at: '2026-09-01T12:32:45+05:30'
+elapsed_seconds: 154
+elapsed_minutes: 2.5667
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: LOCAL_GIT_SOURCE_TRANSPORT_BLOCKED_AND_TEST_RUNTIME_DEPENDENCIES_UNAVAILABLE
+eligible_work_remaining: true
+resumable: true
+active_claims_at_termination: []
+running_worker_count: 0
+completed_worker_count: 0
+blocked_worker_count: 2
+business_behavior_complete_before: 21
+business_behavior_complete_after: 21
+completion_delta: 0
+work_advanced:
+  - CONTROL_PLANE_PROJECTION_RECONCILIATION_PACKET
+work_completed: []
+source_execution:
+  mode: LOCAL_GIT
+  result: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+  attached_zip_runtime_visibility: NOT_EXPOSED_AS_LOCAL_FILE_IN_AUTOMATION_RUNTIME
+projection_reconciliation:
+  classification: AGGREGATE_DRIFT_DETECTED
+  drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+  repair_packet: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2-RUN-001/projection-reconciliation.yaml
+  queue_mutation_performed: false
+bl008:
+  database_schema: COMPLETE_AND_FROZEN_V185
+  acceptance_total: 30
+  acceptance_execution: NOT_EXECUTED_IN_THIS_RUN
+  runtime_state: BLOCKED_BY_MISSING_MAVEN_JUNIT5_MOCKITO_RUNTIME_DEPENDENCIES
+governance:
+  story_auto_approval: false
+  code_mutation: false
+  BL010_creation_or_execution: false
+  STORY0045_drift_remained_approval_gated: true
+scheduler_policy:
+  recurring_scheduler_disable_requested: false
+  recurring_scheduler_disabled_by_run: false
+next_action: Resume STORY-0047/STORY-0048 from exact frozen source when local Git or attached ZIP becomes runtime-visible; apply prepared queue projection repair through whole-file CAS; keep STORY-0045 drift approval-gated.
