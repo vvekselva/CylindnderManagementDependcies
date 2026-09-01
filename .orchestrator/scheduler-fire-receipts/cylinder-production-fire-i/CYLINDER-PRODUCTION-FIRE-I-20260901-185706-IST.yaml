@@ -2,7 +2,30 @@ scheduler_task: cylinder-production-fire-i
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-185706-IST
 observed_scheduled_fire_time: '2026-09-01T18:57:06+05:30'
 receipt_time: '2026-09-01T18:57:06+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-185706-IST-RUN-001
-orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_state: TERMINATED
+started_at: '2026-09-01T18:57:06+05:30'
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_STORY0048_BROWSER_BINDING_PROOF
+terminated_at: '2026-09-01T19:06:14+05:30'
+elapsed_seconds: 548
+eligible_work_remaining: true
+resumable: true
+completion_delta_this_run: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+advanced_story_ids: [STORY-0048]
+source_proof_attempts: [STORY-0048]
+source_proof_result: STORY0048_DELETE_BROWSER_BINDING_PROVED_CANONICAL_COMPLETION_GATE_NOT_MUTATED
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_paths:
+  - cylindermanagement.web/src/main/resources/templates/with-menu/Supplierstopselectionpage.html
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java
+application_code_changes: 0
+bl010_execution_delta: 0
+projection_drift_ids: [STORY-0042, STORY-0046]
+next_action: Reconcile STORY-0048 canonical business-behavior status from exact frozen-source browser binding proof; continue STORY-0047 exact update browser-path proof; keep STORY-0045 approval-gated; reconcile stale queue projections without weakening authoritative state.
