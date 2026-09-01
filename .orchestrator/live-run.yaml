@@ -1,22 +1,27 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2-RUN-001
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260901-123011-IST-AUTO2
 scheduler_task: cylinder-production-fire
-state: RUNNING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-01T12:30:11+05:30'
-last_heartbeat_at: '2026-09-01T12:30:11+05:30'
-terminated_at: null
-terminal_classification: null
-terminal_reason: null
+last_heartbeat_at: '2026-09-01T12:32:45+05:30'
+terminated_at: '2026-09-01T12:32:45+05:30'
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: LOCAL_GIT_SOURCE_TRANSPORT_BLOCKED_AND_TEST_RUNTIME_DEPENDENCIES_UNAVAILABLE
 running_worker_count: 0
 completed_worker_count: 0
-blocked_worker_count: 0
+blocked_worker_count: 2
 active_work_unit_ids: []
 eligible_work_remaining: true
 resumable: true
-last_action: RECOVERY_RECONCILED_PRIOR_TERMINATED_RUN_LOCAL_GIT_TRANSPORT_RECHECK_STARTED
+last_action: PROJECTION_RECONCILIATION_PACKET_PERSISTED_SOURCE_WORK_BLOCKED
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001
 aggregate_business_behavior_complete: 21
 aggregate_business_behavior_total: 134
 aggregate_percent: 15.7
 completion_delta_this_run: 0
+local_git_transport_state: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+advanced_work_unit_ids: [STORY-0047, STORY-0048]
+completed_work_unit_ids: []
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+next_action: Resume STORY-0047/STORY-0048 from exact frozen source when local Git or attached ZIP becomes runtime-visible; apply prepared queue projection repair through whole-file CAS; keep STORY-0045 drift approval-gated.
