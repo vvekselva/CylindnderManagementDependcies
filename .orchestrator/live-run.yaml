@@ -1,24 +1,24 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST-RUN-001
-scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST
-scheduler_task: cylinder-production-fire-ii
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-145728-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-145728-IST
+scheduler_task: cylinder-production-fire-i
 state: TERMINATED
 mode: CONTINUOUS
-started_at: '2026-09-01T14:31:10+05:30'
-last_heartbeat_at: '2026-09-01T14:33:47+05:30'
-terminated_at: '2026-09-01T14:33:47+05:30'
+started_at: '2026-09-01T14:57:28+05:30'
+last_heartbeat_at: '2026-09-01T15:03:03+05:30'
+terminated_at: '2026-09-01T15:03:03+05:30'
 terminal_classification: PLATFORM_RUNTIME_BOUNDARY
-terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_STORY0048_SOURCE_DETAIL_ADVANCE
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_EXACT_SOURCE_PROOF_ATTEMPT
 running_worker_count: 0
-completed_worker_count: 1
+completed_worker_count: 0
 blocked_worker_count: 2
 active_work_unit_ids: []
 eligible_work_remaining: true
 resumable: true
-last_action: STORY-0048_SOURCE_DETAIL_ADVANCED_PERSISTENCE_IDENTITY_AND_ACTIVE_FIELD_PROVED
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-I-20260901-140203-IST-RUN-001
+last_action: STORY-0048_EXACT_SOURCE_PROOF_ATTEMPT_NO_NEW_BINDING
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-II-20260901-143110-IST-RUN-001
 aggregate_business_behavior_complete: 21
 aggregate_business_behavior_total: 134
 aggregate_percent: 15.7
 completion_delta_this_run: 0
 projection_drift_ids: [STORY-0042, STORY-0046]
-next_action: Continue exact source proof for STORY-0048 delete request binding/browser event and STORY-0047 update browser path; keep STORY-0045 approval-gated; reconcile stale queue projections without changing authoritative completion count.
+next_action: Resume STORY-0048 exact delete request binding/browser event proof and STORY-0047 update browser path from governed source; keep STORY-0045 approval-gated; reconcile stale queue projections without changing authoritative completion count.
