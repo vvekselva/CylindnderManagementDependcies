@@ -1,0 +1,22 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-125741-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-125741-IST
+scheduler_task: cylinder-production-fire-i
+mode: CONTINUOUS
+started_at: '2026-09-01T12:57:41+05:30'
+terminated_at: '2026-09-01T13:03:49+05:30'
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: LOCAL_GIT_SOURCE_TRANSPORT_BLOCKED_AND_AGGREGATE_RECONCILIATION_AMBIGUOUS
+eligible_work_remaining: true
+resumable: true
+completed_work_unit_ids: []
+advanced_work_unit_ids: []
+blocked_work_unit_ids: [STORY-0047, STORY-0048]
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+local_git_transport_state: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+projection_reconciliation_state: DEFERRED_FAIL_CLOSED
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+code_mutation_delta: 0
+auto_approval_delta: 0
+next_action: Resume STORY-0047 and STORY-0048 when the governed source is available to local Git or the attached source package is runtime-visible; reconcile STORY-0041/0042/0046 projections only after exact authoritative unit-evidence proof.
