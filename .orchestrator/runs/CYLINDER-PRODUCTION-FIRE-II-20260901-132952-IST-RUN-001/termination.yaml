@@ -1,0 +1,26 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260901-132952-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260901-132952-IST
+scheduler_task: cylinder-production-fire-ii
+started_at: '2026-09-01T13:29:52+05:30'
+terminated_at: '2026-09-01T13:31:51+05:30'
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: LOCAL_GIT_SOURCE_TRANSPORT_BLOCKED_AND_AGGREGATE_RECONCILIATION_AMBIGUOUS
+eligible_work_remaining: true
+resumable: true
+completion_delta: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+source_execution:
+  mode: LOCAL_GIT
+  result: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
+  substituted_with_github_code_search: false
+projection_reconciliation:
+  classification: AGGREGATE_DRIFT_DETECTED
+  durable_evidence: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-II-20260901-132952-IST-RUN-001/projection-reconciliation.yaml
+  mutation_performed: false
+  reason: current STORY-0041 and STORY-0046 physical Story files conflict with aggregate completion projection; exact evidence ordering required
+story_code_mutation: NONE
+bl010_mutation: NONE
+auto_approval: false
+active_claims_at_termination: 0
+next_action: Resume source-dependent R1 work when local Git source is available; resolve STORY-0041/STORY-0046 authoritative evidence ordering before aggregate repair; keep STORY-0045 approval-gated.
