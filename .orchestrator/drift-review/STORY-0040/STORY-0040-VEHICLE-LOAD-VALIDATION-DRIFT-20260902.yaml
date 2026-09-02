@@ -1,0 +1,55 @@
+story_id: STORY-0040
+drift_id: STORY-0040-VEHICLE-LOAD-VALIDATION-DRIFT-20260902
+status: AWAITING_STORY_REVIEW_AND_EXACT_CODE_CHANGE_APPROVAL
+detected_by_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+governed_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  analysis_engine: EXTRACTED_LOCAL_SOURCE
+  github_code_search_used: false
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - POST /vehicleLoad delegates to VehicleLoadIngestionService after request validation.
+  - VehicleLoadIngestionValidator requires a VehicleTripDto object, but the checks for vehicleTripId null/nonpositive and database existence are commented out at approximately lines 79-97.
+  - VehicleLoadIngestionService immediately resolves vehicleTripJpaDao.findById(request.vehicleTripId) at lines ~151-154; a null/nonexistent trip therefore reaches service reference resolution rather than a controlled validator error.
+  - The validator quantity-null condition at lines ~223-230 checks quantityFullForDelivery twice and never checks quantityEmptyForSupplier, so a null empty-for-supplier quantity can pass this guard and later participate in numeric comparisons in VehicleLoadIngestionService.
+  - Cylinder lines are otherwise strongly validated for existence and Yard-only location exclusivity; after a successful load, those cylinders leave active Yard inventory, which naturally blocks replay of the same cylinder selection.
+  - The service is transactional and changes trip status to Loaded, persists the load/lines and transfers Yard inventory to vehicle logistics in one transaction.
+approved_behavior:
+  state: PENDING_USER_APPROVAL
+  note: No Story approval or new trip/load business rule is inferred. This packet isolates controlled-validation gaps visible in the current source.
+business_impact:
+  - Missing/invalid trip identity can escape field-level validation and fail deeper in the transaction.
+  - A null quantityEmptyForSupplier can escape the intended header count validation and cause a runtime numeric-comparison failure instead of stable validation feedback.
+  - Replay after success is largely blocked by cylinder location transfer, but this does not replace validating the trip identity/header before mutation.
+proposed_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/VehicleLoadIngestionValidator.java
+    class: VehicleLoadIngestionValidator
+    method: validate
+    approximate_anchor: trip validation lines ~70-106; quantity validation lines ~223-230
+    proposed_change: reinstate controlled checks for vehicleTripId null/nonpositive and vehicleTripJpaDao existence; correct the quantity-null predicate to validate quantityFullForDelivery, quantityFullForBuffer and quantityEmptyForSupplier exactly once each before service arithmetic.
+    reason: keep invalid header/reference data in the controlled validation channel.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleLoadIngestionService.java
+    class: VehicleLoadIngestionService
+    method: processRequest
+    approximate_anchor: trip resolution lines ~151-154 and quantity use lines ~139-149/~189-216
+    proposed_change: retain fail-closed orElseThrow reference resolution as a race-safety backstop after validator correction; no new duplicate-load predicate is proposed from this packet.
+    reason: validation should catch normal malformed input while service remains safe against reference disappearance.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: relevant VehicleLoadIngestionValidator/VehicleLoadIngestionService tests under src/test/java
+    component: tests
+    proposed_change: cover null/zero/nonexistent vehicleTripId; null each of the three quantity fields independently; valid pickup-only zero/empty-line scenario; successful load; replay of same cylinders rejected by Yard-location exclusivity after first successful transaction.
+    reason: protect header validation and existing location-based replay safety.
+database_impact:
+  schema_change: false
+  migration_required: false
+scope_expansion_rule: Any new trip-status precondition, load uniqueness key, schema rule or additional file requires separate approval.
+application_code_mutated: false
+bl010_created_or_executed: false
