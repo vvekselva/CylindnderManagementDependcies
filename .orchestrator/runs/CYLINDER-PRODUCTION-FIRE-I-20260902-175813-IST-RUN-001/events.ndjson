@@ -1,0 +1,5 @@
+{"at":"2026-09-02T17:58:13+05:30","event":"TRIGGER_RECEIVED","scheduler_task":"cylinder-production-fire-i","fire_id":"CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST"}
+{"at":"2026-09-02T17:58:35+05:30","event":"RUN_LINKED","run_id":"CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001"}
+{"at":"2026-09-02T18:00:03+05:30","event":"RECOVERY_RECONCILIATION","prior_run":"CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST-RUN-001","prior_state":"TERMINATED","prior_receipt_terminal":"CONFIRMED","bl002_business_behavior":"134/134","queue_projection":"CURRENT_134_OF_134","projection_drift_count":0}
+{"at":"2026-09-02T18:00:03+05:30","event":"SOURCE_RECOVERY_ATTEMPT","package":"Harinandhan-Cylinder-Backup(20260902-080237).zip","file_library_search":"ATTEMPTED","local_runtime_materialization":"NOT_PRESENT","application_analysis_required_now":false}
+{"at":"2026-09-02T18:00:03+05:30","event":"RUNTIME_PROBE","java":"OPENJDK_21_0_11_AVAILABLE","maven":"MISSING","gradle":"MISSING","docker":"MISSING","podman":"MISSING","testing_runtime":"BLOCKED"}
