@@ -1,0 +1,10 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-122627-IST-RUN-001
+mode: CONTINUOUS
+classification: PLATFORM_RUNTIME_BOUNDARY
+termination_time: '2026-09-02T12:31:18+05:30'
+elapsed_seconds: 291
+eligible_work_remaining: true
+resumable: true
+voluntary_early_stop: false
+scheduler_must_remain_enabled: true
+reason: Runtime window ended with eligible source-proof work remaining for STORY-0048 and subsequent STORY-0047. No Story was auto-approved and no application code or BL-010 mutation occurred.
