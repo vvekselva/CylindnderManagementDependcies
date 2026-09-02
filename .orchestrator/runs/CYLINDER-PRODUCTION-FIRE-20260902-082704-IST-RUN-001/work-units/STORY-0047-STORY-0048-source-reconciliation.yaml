@@ -1,0 +1,38 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-082704-IST-RUN-001
+recorded_at: '2026-09-02T08:30:13+05:30'
+work_units: [STORY-0047, STORY-0048]
+source_governance:
+  governed_repo: vvekselva/CylinderManagement
+  governed_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  local_source_zip_found_this_run: false
+  local_git_verification_performed_this_run: false
+  retained_frozen_source_evidence_available: true
+  fail_closed_on_unproved_details: true
+story_0047:
+  endpoint: 'POST /updateCustomer'
+  durable_story_state: SOURCE_DETAIL_REVIEW_REQUIRED
+  proved_chain: 'CustomerUpdateController.doPost -> CustomerUpdateService -> CustomerUpdateRequestValidator -> CustomerJpaDao -> CustomerDo -> public.tbl_customer plus phone/address replacements'
+  exact_remaining_gap: 'No frozen-source visible browser/update form is proved to submit POST /updateCustomer; UC01RegisterCustomer submits /registerCustomer instead.'
+  completion_advanced: false
+story_0048:
+  endpoint: 'POST /add-stop/challan-page-photo/delete-ajax'
+  durable_story_state: SOURCE_DETAIL_REVIEW_REQUIRED
+  retained_trace_chain: 'AddStopController.deleteChallanPagePhotoAjax -> ChallanPagePhotoUploadService.deactivatePhoto -> ChallanPagePhotoJpaDao.findById/save -> ChallanPagePhotoDo -> public.tbl_challan_page_photo.active'
+  retained_physical_identity: 'pk_challan_page_photo_id / challanPagePhotoId; active boolean; row retained when deactivated'
+  exact_remaining_gaps:
+    - 'request identifier annotation/name/datatype/requiredness not re-proved from governed local source in this run'
+    - 'service null/missing/already-inactive guards not re-proved from governed local source in this run'
+    - 'visible control/browser event and selected photo-id propagation not re-proved from governed local source in this run'
+  completion_advanced: false
+aggregate_effect:
+  business_behavior_complete_before: 21
+  business_behavior_complete_after: 21
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+  queue_repair_performed: false
+  queue_repair_reason: 'Full canonical queue rewrite could not be safely established from the truncated connector read; authoritative completion count is unchanged.'
+approval_and_code:
+  stories_auto_approved: false
+  application_code_changes: 0
+  bl010_created_or_executed: false
+  story0045_drift_gate_preserved: true
+next_action: 'Resume STORY-0048 and STORY-0047 from a governed local CylinderManagement ZIP/local Git snapshot; separately repair queue projection drift with a safe full canonical-file CAS write.'
