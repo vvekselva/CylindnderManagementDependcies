@@ -1,0 +1,33 @@
+review_packet_id: STORY-0112-CYLINDER-V185-IDENTITY-DRIFT-20260902
+story_id: STORY-0112
+state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+approved_behavior_source: BL-008 V185 frozen ownership/identifier model
+current_behavior:
+  - DomainLookupController.saveCylinder supplies logical cylinder code, actual cylinder identifier and ownership type, defaulting actual identifier to cylinderSerial.
+  - CylinderIngestionService creates an active primary CylinderIdentifierDo for every ownership type, including COMPANY_OWNED.
+  - The V185 frozen model requires COMPANY_OWNED to use tbl_cylinder.cylinder_serial as the company cylinder identity with zero separate active-primary physical-identifier rows.
+  - CylinderIngestionService maps the saved logical cylinder back to a response DTO and then overwrites responseDto.cylinderSerial with actualIdentifier for every ownership type.
+  - The V185 frozen display/transaction model requires the logical cylinder serial/code to remain the logical identity; external physical identifier belongs in the separate actual/display identifier fields.
+business_impact:
+  - Company-owned registration can create a physical-identifier row that the frozen V185 model says must not exist.
+  - The response can replace the stable logical cylinder code with the physical identifier, causing downstream UI/API consumers to lose the logical identity distinction required by the frozen model.
+proposed_manifest:
+  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CylinderIngestionService.java
+    component: CylinderIngestionService
+    methods: processRequest, createPrimaryIdentifier
+    source_anchor: processRequest around logical save/identifier/response mapping and createPrimaryIdentifier block in recovered ZIP
+    proposed_change: skip separate CylinderIdentifierDo creation for COMPANY_OWNED; continue external SUPPLIER_OWNED/CUSTOMER_OWNED identifier creation under V185 rules; preserve responseDto.cylinderSerial as the saved logical cylinder serial and expose physical identifier only through actualCylinderIdentifier/displayCylinderIdentifier/actualIdentifierType fields.
+    reason: conform registration to the frozen V185 logical/physical identity model.
+  - path: relevant CylinderIngestionService tests under src/test/java including BL008 V185 tests
+    component: tests
+    proposed_change: prove company registration creates no identifier row and keeps logical serial in cylinderSerial; prove supplier/customer registration creates the correct active-primary identifier and keeps logical/physical response fields distinct; regression-test ownership-specific owner IDs and initial yard inventory behavior.
+database_impact: NONE_SCHEMA; V185 database remains frozen and existing tables are used.
+material_story_change: false
+approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: any DomainLookup template redesign, additional service/file, schema change, or ownership rule beyond this identifier/response correction requires new approval.
+application_code_changed: false
+bl010_created_or_executed: false
