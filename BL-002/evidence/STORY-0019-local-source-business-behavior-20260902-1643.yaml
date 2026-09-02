@@ -1,0 +1,25 @@
+story_id: STORY-0019
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /customer-address-location/points.geojson
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java
+service_path: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/CustomerAddressLocationOfflineMapService.java
+dao_path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CustomerAddressLocationJpaDao.java
+query_parameters:
+  centerLatitude: optional BigDecimal
+  centerLongitude: optional BigDecimal
+  radiusMeters: optional BigDecimal
+  pendingOnly: optional boolean default false
+validation:
+  coordinate_pair_required_together: true
+  latitude_range: [-90, 90]
+  longitude_range: [-180, 180]
+  negative_radius_error: Radius must be zero or greater.
+read_source: public.vw_customer_address_location_status plus pending public.tbl_customer_order_request aggregation
+geometry: Point [longitude, latitude]
+metadata_source: CMAS_DATABASE_CUSTOMER_ADDRESS_LOCATION
+mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
