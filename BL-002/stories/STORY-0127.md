@@ -3,9 +3,10 @@
 - Release: R1
 - Endpoint: `GET /lookup`
 - Controller: `LookupManagementController.legacyRedirect`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK
+- Approval evidence: `BL-002/approval-evidence/STORY-0127-approval-20260902.md`
 - Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -23,8 +24,6 @@ There is no request DTO, application-service invocation, DAO call, database muta
 
 The business purpose is backward-compatible navigation: old links/bookmarks targeting `/lookup` continue to land on the current Lookup Management screen instead of returning a missing-page result. The operation is read/navigation-only and changes no lookup data.
 
-## Completion and approval gate
+## Approval and fan-out gate
 
-The recovered ZIP directly confirms the legacy route, exact redirect target and the destination screen context. STORY-0127 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
-
-Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 work was created or executed.
+**APPROVED_AFTER_REWORK.** The user explicitly approved this reworked Story on 2026-09-02. The approval applies only to the legacy redirect behavior documented here; it does not auto-approve or bypass review of the Lookup Management search/save Stories reached after the redirect.
