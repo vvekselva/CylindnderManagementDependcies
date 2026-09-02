@@ -1,0 +1,62 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-145720-IST-RUN-001
+scope: CONTINUOUS
+receipt_path: .orchestrator/scheduler-fire-receipts/cylinder-production-fire-i/CYLINDER-PRODUCTION-FIRE-I-20260902-145720-IST.yaml
+started_at: '2026-09-02T14:57:23+05:30'
+checkpoint_time: '2026-09-02T15:01:19+05:30'
+source:
+  file_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  library_file_id: file_00000000659c8211857bba6b09282de3
+  local_workspace: /mnt/data/cylinder_zip_work
+  zip_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_file_count: 1650
+  embedded_git_metadata: false
+  source_available: true
+reconciliation:
+  prior_run: CYLINDER-PRODUCTION-FIRE-20260902-144000-IST-RUN-001
+  prior_source_unavailable_blocker_resolved: true
+  aggregate_before: 21
+  aggregate_after_reconciliation: 24
+  aggregate_total: 134
+  aggregate_percent_after_reconciliation: 17.9
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046, STORY-0047, STORY-0048, STORY-0050]
+work:
+  STORY-0047:
+    state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    source_recovered: true
+    drift_review_gate_preserved: true
+  STORY-0048:
+    state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    source_recovered: true
+  STORY-0049:
+    state: SOURCE_DETAIL_REVIEW_REQUIRED
+    advanced: true
+    result: BACKEND_CONTRACT_FULLY_BOUND_VISIBLE_NON_AJAX_CLIENT_NOT_FOUND
+    exact_gap: visible governed client for POST /add-stop/challan-page-photo/upload not found in recovered source
+  STORY-0050:
+    state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    completed_this_run: true
+    result: AJAX_BROWSER_CONTROLLER_SERVICE_DAO_ENTITY_DATABASE_CONTRACT_BOUND
+  STORY-0051:
+    state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+    completed_this_run: true
+    result: ADD_STOP_REQUEST_STATUS_GUARD_BRANCH_MODEL_AND_READ_FLOW_BOUND
+progress:
+  authoritative_story_files_complete_count: 25
+  aggregate_projection_count: 24
+  aggregate_projection_drift_new_id: STORY-0051
+  completion_delta_from_starting_aggregate: 4
+  completion_delta_created_this_run: 2
+  approvals_delta: 0
+governance:
+  auto_approvals: 0
+  application_code_changes: 0
+  bl010_creation_or_execution: 0
+  STORY-0047_drift_manifest_approval_pending: true
+  user_review_gates_preserved: true
+runtime:
+  maven: MISSING
+  java: OPENJDK_21_0_11_AVAILABLE
+  automated_test_execution: BLOCKED_BY_MISSING_MAVEN_RUNTIME
+eligible_work_remaining: true
+resumable: true
+next_action: Reconcile STORY-0051 into aggregate/queue projection, continue STORY-0049 only if non-AJAX client applicability can be established, otherwise dispatch STORY-0052 and subsequent dependency-safe R1 stories from recovered ZIP; keep STORY-0047 code drift approval-gated.
