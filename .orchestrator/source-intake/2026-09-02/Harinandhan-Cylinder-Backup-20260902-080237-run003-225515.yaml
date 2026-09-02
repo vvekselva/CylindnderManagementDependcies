@@ -1,0 +1,16 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+library_file_id: file_00000000659c8211857bba6b09282de3
+recovery_attempt: FILE_LIBRARY_SEARCH_THEN_CHATGPT_LOCAL_MOUNT
+file_library_exact_title_search_result: NOT_RETURNED_BY_SEARCH
+local_workspace_mount_result: FOUND
+materialized_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-080237).zip
+sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+extracted_path: /mnt/data/cylinder-prod-fire-20260902-225515/source
+extracted_file_count: 1650
+local_git_present: false
+freeze_state: FROZEN_FOR_RUN
+application_source_analysis_engine: LOCAL_EXTRACTED_SOURCE
+application_source_github_code_search_used: false
+recovered_at: '2026-09-02T22:57:33+05:30'
+notes: The exact File Library semantic search did not return the named ZIP, but the governed package was already available on the ChatGPT local workspace mount and was successfully copied/extracted/fingerprinted. Source is therefore AVAILABLE, not unavailable.
