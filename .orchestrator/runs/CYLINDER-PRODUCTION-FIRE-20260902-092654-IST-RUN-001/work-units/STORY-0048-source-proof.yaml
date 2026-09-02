@@ -1,0 +1,20 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001
+work_unit_id: STORY-0048-SOURCE-PROOF
+story_id: STORY-0048
+state: PARTIAL
+validated_at: '2026-09-02T09:33:09+05:30'
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+proved:
+  controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java
+  controller_class: AddStopController
+  endpoint: POST /add-stop/challan-page-photo/delete-ajax
+  request_parameter: challanPagePhotoId
+  controller_delegate: challanPagePhotoManagementService.deactivatePhoto(challanPagePhotoId)
+  success_response: 'success=true; message instructs user to upload another photo before completing stop'
+  application_error_response: HTTP_400
+remaining_gap: Exact ChallanPagePhotoUploadService implementation path and downstream DAO/repository/entity/database deactivation identity are not yet source-bound at the frozen ref.
+strict_business_behavior_complete: false
+approval_changed: false
+application_code_changed: false
+next_action: Resolve the concrete ChallanPagePhotoUploadService source at the frozen ref and trace deactivatePhoto through DAO/repository/entity/database before promoting STORY-0048.
