@@ -4,23 +4,24 @@
 - Endpoint: `POST /domainLookup/productUom/save`
 - Controller: `DomainLookupController.saveProductUom`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Drift review packet: `BL-002/evidence/STORY-0110-product-uom-update-drift-review-20260902.yaml`
 
-## Screen entry and visible contract
-The operation belongs to the Product UOM tab of `GET /domainLookup?tab=productUom`. The GET view is `final-version-1/DomainLookup` and reads the Product UOM collection from `LookupDataCache.getProductUom()`. The save is a normal form POST; no source-proved typing-time search/debounce contract applies to this endpoint.
+## Business behavior
 
-## Exact submitted fields and controller mapping
-The handler accepts optional `productUomId` (`Long`), required `productUom` (`String`), and optional `description` defaulting to an empty string. It constructs `ProductUomDto`, preserves the submitted ID, trims and upper-cases `productUom`, and trims `description`. `isNew` is true only when the ID is null or zero.
+The Product UOM tab posts optional `productUomId`, required `productUom`, and optional description. The controller preserves the ID, trims/uppercases UOM, trims description, determines add vs update from ID null/zero, delegates `ProductUomIngestionRequestDto`, refreshes only the Product UOM cache on successful persistence and redirects back to the Product UOM tab with add/update-specific success text. User-input validation can re-render the form with the failed DTO; other failures redirect with an error flash.
 
-## DTO/service/cache path
-The controller wraps the DTO in `ProductUomIngestionRequestDto` and invokes `productUomIngestionService.processRequest(req)`. Successful processing is followed by targeted `lookupDataCache.refreshProductUom()`, invalidating the stale in-memory lookup before the next page render.
+`ProductUomIngestionService` validates the request/value, then currently rejects whenever `ProductUomJpaDao.findByProductUomContainingIgnoreCase(value)` returns any row. It maps to `ProductUomDo`, saves via the repository and returns the saved DTO.
 
-## Branch, error, and visible outcome
-Success adds a flash message distinguishing added versus updated and redirects using PRG to `/domainLookup?tab=productUom`. A user-input `InvalidInputParameterException` carrying `ProductUomIngestionRequestDto` returns the full Domain Lookup `ModelAndView` directly with `activeTab=productUom`, `formOpen=true`, and `failedProductUomDto`, preserving inline validation state. An unexpected validation DTO type or any other exception follows the error-flash redirect path to the Product UOM tab.
+The current duplicate validation does not exclude the same `productUomId` during update and uses contains rather than exact business-key equality. That creates a source-proved update/uniqueness drift. The exact service/repository/test remediation is isolated in the referenced approval-gated packet; no code implementation is authorized yet.
 
-## Persistence/read identity boundary
-The exact source-proved write identity passed downstream is `ProductUomDto.productUomId`, `productUom`, and `description` inside `ProductUomIngestionRequestDto`; the controller does not perform raw SQL. The refreshed cache is the source-proved read path used by the visible Domain Lookup screen after success.
+## Completion and approval gate
 
-## Approval boundary
-The applicable strict field/UI contract is complete from frozen authoritative controller and cache architecture. Approval remains pending; no auto-approval occurred.
+The submitted fields, normalization, controller/cache/PRG behavior, service save/validation path and exact current defect are source-bound. STORY-0110 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
