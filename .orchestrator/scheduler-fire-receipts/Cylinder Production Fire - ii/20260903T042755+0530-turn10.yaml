@@ -2,10 +2,14 @@ scheduler_task: "Cylinder Production Fire - ii"
 fire_id: "20260903T042755+0530-turn10"
 observed_scheduled_fire_time: "2026-09-03T04:27:55+05:30"
 receipt_time: "2026-09-03T04:28:03+05:30"
-state: "RUN_LINKED"
+state: "TERMINATED"
 intended_scope: "CONTINUOUS"
 run_id: "CYLINDER-PRODUCTION-FIRE-II-20260903-042755-IST-RUN-001"
 orchestrator_started_time: "2026-09-03T04:28:21+05:30"
 link_state: "ORCHESTRATOR_STARTED/RUN_LINKED"
-terminal_classification: null
-termination_time: null
+terminal_classification: "ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS"
+termination_time: "2026-09-03T04:30:34+05:30"
+productive_elapsed_seconds: 151
+resumable: true
+source_materialization: "FAILED_AFTER_EXACT_AND_BROAD_FILE_LIBRARY_SEARCH; NO_GOVERNED_ZIP_PRESENT_IN_CURRENT_LOCAL_WORKSPACE"
+runtime_recovery: "APACHE_MAVEN_3.9.16_DOWNLOAD_ATTEMPT_FAILED; DNS_UNAVAILABLE"
