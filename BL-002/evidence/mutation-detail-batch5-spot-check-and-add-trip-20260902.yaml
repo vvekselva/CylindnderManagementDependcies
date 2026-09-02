@@ -1,0 +1,26 @@
+version: 1
+recorded_at: '2026-09-02T21:14:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+findings:
+  STORY-0034:
+    classification: DUPLICATE_AND_CHALLAN_REUSE_GUARDS_PRESENT
+    component: CustomerSpotCylinderCheckService.submitSpotCheck
+    source_anchor: lines 67-139 and 159-218
+    detail:
+      - Uses a seenSerials set; repeated normalized cylinder serials in the same check are marked DUPLICATE_IN_CHECK rather than counted as separate valid observations.
+      - Resolves only an UNUSED assigned challan page; a non-UNUSED page is rejected before persistence.
+      - Existing cylinder and active customer custody are checked for each observed serial; spot check does not mutate custody.
+  STORY-0133:
+    classification: DATABASE_BACKED_LOOKUP_PRESENT
+    component: with-menu/VehicleTripIngestion.html
+    source_anchor: lines 1115-1160
+    detail: Add Vehicle Trip screen searches Vehicle, Driver and Customer while typing and then fetches addresses for the selected Customer; source dependency delta for SUC-040 is durably recorded.
+  STORY-0134:
+    classification: CREATE_EVENT_WITH_ACTIVE_OVERLAP_RULE_NOT_SOURCE_PROVED
+    component: VehicleTripIngestionServiceImpl and VehicleTripIngestionRequestValidator
+    detail: Vehicle, Driver, Customer and selected Customer Address existence/relationship are checked. Service creates a Started VehicleTrip. No active-trip overlap precheck is source-proved, while multiple historical trips per vehicle/driver are explicitly supported by DAO findByVehicle/findByDriver lists. A concurrency/overlap restriction must not be invented without a governed business invariant.
+governance:
+  auto_approve: false
+  code_mutation: false
+  bl010_creation_or_execution: false
