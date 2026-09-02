@@ -1,0 +1,37 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-144000-IST-RUN-001
+scope: CONTINUOUS
+checkpoint_time: '2026-09-02T14:43:17+05:30'
+receipt_path: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/CYLINDER-PRODUCTION-FIRE-20260902-144000-IST.yaml
+reconciliation:
+  previous_latest_durable_run: CYLINDER-PRODUCTION-FIRE-20260902-143111-IST-RUN-007
+  previous_terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+  live_run_projection_stale: true
+  live_run_points_to: CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001
+  aggregate_business_behavior_complete: 21
+  aggregate_business_behavior_total: 134
+  aggregate_percent: 15.7
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+work_attempts:
+  - unit: LOCAL_APPLICATION_SOURCE_BINDING
+    result: BLOCKED
+    evidence: No CylinderManagement source ZIP or extracted local Git working tree exists in the active /mnt/data workspace.
+  - unit: BL002_QUEUE_PROJECTION_REPAIR
+    result: DEFERRED_FAIL_CLOSED
+    evidence: Authoritative Story/aggregate evidence shows STORY-0041 complete while the queue projection is stale, but the canonical queue file cannot be safely rewritten without an untruncated full-file read/write round trip.
+  - unit: STORY-0048
+    result: BLOCKED_BY_LOCAL_SOURCE_UNAVAILABLE
+    retained_checkpoint: Exact downstream service/browser gaps remain; no GitHub code-search substitution was used for application-source analysis.
+  - unit: BL-008_SERVICE_UI_ACCEPTANCE
+    result: BLOCKED_BY_APPLICATION_SOURCE_AND_TEST_RUNTIME_UNAVAILABLE
+    evidence: BL-008 README confirms DB/schema frozen at V185 and next action is Stage 1 automated tests; active workspace lacks governed application source/test project.
+governance:
+  auto_approvals: 0
+  application_code_changes: 0
+  bl010_execution: 0
+  github_actions_or_runners_used: false
+  user_review_gates_preserved: true
+completion_delta_this_run: 0
+eligible_work_remaining: true
+resumable: true
+next_action: Restore governed CylinderManagement source ZIP/local Git workspace; continue STORY-0048 and STORY-0047 source proof; repair STORY-0041/0042/0046 queue projection only through a safe full canonical-file update; execute BL-008 Stage 1 only when governed source/test runtime is available.
+scheduler_must_remain_enabled: true
