@@ -1,0 +1,62 @@
+story_id: STORY-0042
+drift_id: STORY-0042-CUSTOMER-REGISTRATION-VALIDATION-PERSISTENCE-DRIFT-20260902
+status: AWAITING_STORY_REVIEW_AND_EXACT_CODE_CHANGE_APPROVAL
+detected_by_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+governed_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  analysis_engine: EXTRACTED_LOCAL_SOURCE
+  github_code_search_used: false
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - CustomerIngestionRequstValidator validates customer name, GST, phone collection, addresses and selected geography/address-type identities and performs exact database-backed duplicate checks for GST and phone.
+  - When GST is nonblank but fails the GST regex, the validator still executes Integer.parseInt(gstNumber.substring(0,2)); malformed short or nonnumeric input can therefore escape the intended controlled validation flow as a runtime exception.
+  - When an individual submitted phone value is blank/null, the validator records PHONE_NUMBER_INVALID but then continues to phoneNumber.replaceAll(...); a null value can therefore throw instead of returning only controlled validation evidence.
+  - CustomerIngestionService resolves City/State/Country with findById(...).get(); the validator checks submitted IDs structurally but does not source-prove existence of those IDs, so a nonexistent ID can surface as NoSuchElementException instead of controlled reference validation.
+  - Controller resolves AddressTypeDto before validation, and CustomerAddressDo has fk_address_type, but CustomerIngestionService constructs CustomerAddressDo without assigning the resolved AddressType; submitted Address Type is therefore not source-proved to persistence on this path.
+  - Customer Name candidate entry has no database-backed similar-customer suggestion while typing, although /search/customer/{searchText} exists; GST and phone remain the authoritative duplicate keys in current validation.
+business_impact:
+  - malformed GST/phone input can produce an uncontrolled server failure rather than stable field-level feedback.
+  - a stale/nonexistent geography ID can produce an uncontrolled lookup failure.
+  - an operator-selected Address Type can be validated but omitted from the persisted customer-address association.
+  - operators cannot proactively see similar Customer names before Save, although authoritative duplicate identity remains GST/phone based.
+proposed_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/CustomerIngestionRequstValidator.java
+    class: CustomerIngestionRequstValidator
+    method: validate
+    approximate_anchor: GST lines ~98-165; phone lines ~167-262
+    proposed_change: short-circuit state-code parsing unless GST format/length is valid; short-circuit phone normalization when phone is blank/null while retaining collected validation evidence.
+    reason: preserve controlled validation for malformed input.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerIngestionService.java
+    class: CustomerIngestionService
+    method: processRequest
+    approximate_anchor: address mapping/resolution lines ~80-104
+    proposed_change: resolve City/State/Country with controlled absence handling; assign the already-resolved AddressType from each AddressDto to CustomerAddressDo before persistence.
+    reason: persist the selected address classification and avoid uncontrolled missing-reference failures.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.web/src/main/resources/templates/final-version-1/UC01RegisterCustomer.html
+    component: Customer Name candidate block
+    approximate_anchor: lines ~652-654
+    proposed_change: if the global lookup-before-insert policy is confirmed applicable to Customer Name, add debounced informational suggestions through existing /search/customer/{searchText}; do not replace GST/phone duplicate checks.
+    reason: surface similar master records before insertion without redefining the authoritative business key.
+tests_required:
+  - one-character/non-numeric GST returns controlled validation and no runtime exception
+  - null/blank phone returns controlled validation and no runtime exception
+  - nonexistent City/State/Country IDs return controlled validation and no persistence
+  - selected Address Type is persisted into customer-address association
+  - duplicate GST/phone prechecks remain effective
+  - optional Customer Name suggestion behavior if explicitly approved
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_object_affected: public.tbl_customer_address.fk_address_type
+scope_expansion_rule: Any additional business-key rule, file, schema object, endpoint or field requires new approval.
+application_code_mutated: false
+bl010_created_or_executed: false
