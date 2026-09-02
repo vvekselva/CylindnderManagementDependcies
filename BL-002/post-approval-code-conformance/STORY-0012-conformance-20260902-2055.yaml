@@ -1,0 +1,22 @@
+story_id: STORY-0012
+approval_state: APPROVED_AFTER_REWORK
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+result: CODE_CONFORMANCE_VERIFIED_PASS
+repository: vvekselva/CylinderManagement
+approved_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_anchors:
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java:33-46
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java:75-90
+verified:
+  - GET /logistics/challan-books/add-form is implemented under controller-level /logistics/challan-books mapping.
+  - The handler renders final-version-1/add-challan-book.html and supplies a blank ChallanBookIngestionRequestDto as ingestionRequest.
+  - populateSummaryMetrics loads total, active and unused Challan Book metric groups through SummaryMetricLookupFetchService.
+  - The GET performs no Challan Book persistence; submit behavior remains STORY-0013.
+lookup_insertion_policy:
+  classification: UI_PRE_INSERT_REVIEW_COMPLETE_FOR_CURRENT_FORM
+  note: The GET itself does not persist. Duplicate Book Code service protection remains the separately governed STORY-0013 gap.
+code_mutation: NONE
+bl010_created_or_executed: false
+next_action: Revised BL-004/BL-005/BL-009 fan-out is eligible subject to runtime availability.
