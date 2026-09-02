@@ -4,17 +4,21 @@
 - Endpoint: `GET /search/state/{searchText}`
 - Controller: `RestfulStateServices.getStates`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Request and controller contract
-Spring binds path variable `searchText`. The controller creates `CylinderManagementApplicationRequestDto`, sets its `searchTerm` from that value, and delegates to `stateSearchService.searchWithText(requestDto, null)`.
+## Business behavior
 
-## Response/error behavior
-Success returns `StateSearchResponseDto`. `CylinderManagementApplicationException` is logged and produces a new empty response DTO. No write occurs.
+This read-only state-reference lookup accepts exact path variable `searchText`. The recovered ZIP confirms `RestfulStateServices.getStates` copies it into `CylinderManagementApplicationRequestDto.searchTerm`, delegates to the state search service and returns `StateSearchResponseDto`; a governed application exception returns an empty response DTO.
 
-## UI applicability
-The endpoint source does not establish browser debounce/minimum-length, selected state ID propagation, dependent calls, button guards, or reset semantics. They are not invented.
+Consuming address forms can use the returned persistent State identity and name for typeahead selection/dependent City behavior, but timing/clearing rules are recorded with those specific screens. This API itself performs no State mutation.
 
-## Approval boundary
-Strict contract is complete for source-applicable behavior. Approval remains pending.
+## Completion and approval gate
+
+The request/service/response/error contract and read-only reference-data role are source-bound. STORY-0101 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
