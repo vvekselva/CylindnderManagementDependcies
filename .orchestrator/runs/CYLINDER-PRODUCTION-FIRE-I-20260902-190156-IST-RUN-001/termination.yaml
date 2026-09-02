@@ -1,0 +1,23 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-190156-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-190156-IST
+scheduler_task: cylinder-production-fire-i
+mode: CONTINUOUS
+started_at: '2026-09-02T19:02:26+05:30'
+terminated_at: '2026-09-02T19:03:41+05:30'
+elapsed_seconds: 75
+productive_target_30_minutes_satisfied: false
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: BL002_BUSINESS_BEHAVIOR_COMPLETE_134_OF_134;_132_STORIES_REQUIRE_EXPLICIT_USER_APPROVAL;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_BL004_BL005_BL009_AND_BL008_SERVICE_UI_ACCEPTANCE_REQUIRE_FAITHFUL_TEST_RUNTIME
+eligible_work_remaining: false
+resumable: true
+business_behavior_complete: 134
+business_behavior_total: 134
+awaiting_user_review: 132
+approved_after_rework: 2
+projection_drift_count: 0
+bl008_database_schema_phase: COMPLETE_AND_FROZEN_AT_V185
+bl008_service_ui_acceptance_executed: 0
+bl008_service_ui_acceptance_total: 30
+source_package_recovery: FAILED_AFTER_LOCAL_WORKSPACE_AND_EXACT_FILE_LIBRARY_SEARCH
+runtime_probe_evidence: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-I-20260902-190156-IST-RUN-001/runtime-probe.yaml
+next_action: Await explicit Story/drift approvals or restored faithful test runtime; recurring scheduler remains enabled for recovery-first future fires.
