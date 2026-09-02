@@ -1,0 +1,51 @@
+development_id: DEV-0002
+story_id: STORY-0013
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
+review_type: EXACT_CODE_CHANGE_MANIFEST
+approval_state: STORY_APPROVED_AFTER_REWORK_CODE_CHANGE_NOT_AUTHORIZED
+implementation_gate: EXPLICIT_USER_APPROVAL_REQUIRED_FOR_THIS_EXACT_MANIFEST
+source_binding:
+  repository: CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  component: ChallanBookIngestionService
+  method: processRequest
+  finding: null request or null challanBook is detected, but both warning and CylinderManagementApplicationException throw are commented out; execution then dereferences requestDto at the next statement.
+  source_anchor: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java lines 38-43
+approved_behavior:
+  statement: STORY-0013 documents this as a CURRENT_STATE_GAP; the intended remediation is a controlled service-level application error before any dereference or persistence.
+business_impact:
+  - null submissions can fail as uncontrolled NullPointerException instead of returning the controller's governed form-error path
+  - error handling and audit behavior become inconsistent with the declared application exception boundary
+proposed_code_change_locations:
+  - repository: CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+    class: ChallanBookIngestionService
+    method: processRequest
+    anchor: lines 38-43 null request/null book guard
+    proposed_change: activate a fail-fast branch that logs the invalid request and throws CylinderManagementApplicationException before requestDto.getChallanBook() is dereferenced
+    reason: enforce controlled service-level validation while preserving the existing controller exception boundary
+  - repository: CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
+    class: ChallanBookWebController
+    method: processBookIngestion
+    anchor: lines 52-67 existing CylinderManagementApplicationException catch
+    proposed_change: no behavioral expansion required; retain existing catch/redisplay path, changing only tests if needed
+    reason: controller already supplies the intended visible error path
+tests:
+  unit:
+    - null ChallanBookIngestionRequestDto throws CylinderManagementApplicationException and DAO saveAndFlush is never called
+    - request with null challanBook throws CylinderManagementApplicationException and DAO saveAndFlush is never called
+  integration:
+    - POST submit reaching governed service exception redisplays add-challan-book with errorMessage and preserved ingestionRequest
+  regression:
+    - valid request continues to map timestamps and persist exactly once
+database_impact: NONE
+schema_migration_required: false
+application_code_changed: false
+expansion_rule: any code change outside the listed service guard and necessary tests requires new user approval
+state: DRIFT_REVIEW_READY_FOR_USER_APPROVAL
