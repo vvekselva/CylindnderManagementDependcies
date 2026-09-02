@@ -1,0 +1,63 @@
+story_id: STORY-0134
+title: Create Vehicle Trip
+governance_state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  - POST /addVechileTrip binds VehicleTripIngestionRequestDto and delegates to VehicleTripIngestionServiceImpl.
+  - Validator checks Vehicle, Driver, starting time, Customer, Customer Address and customer-address ownership.
+  - Null request validation incorrectly emits VehicleIngestionRequestDto rather than VehicleTripIngestionRequestDto.
+  - Driver validation can dereference/null-unbox driverId when Driver DTO exists with null ID.
+  - Customer-ID invalidity condition incorrectly checks customerAddress.customerAddressId <= 0 instead of customerId <= 0 and can dereference customerAddress after an earlier address validation failure.
+  - Service resolves vehicle, driver, customer, address and Started status using Optional.get() after validation and saves VehicleTripDo to public.tbl_vehicle_trip.
+approved_story_behavior:
+  - Every invalid required identity/request state must produce controlled VehicleTripIngestionRequestDto validation evidence without null dereference.
+  - Customer ID validation must validate customerId itself; customer-address ownership must only run when both valid entities are present.
+  - Missing configured Started status must be a controlled application error rather than Optional.get failure.
+  - Successful persistence semantics remain unchanged.
+business_impact:
+  - Certain malformed requests can fail with uncontrolled NullPointerException instead of visible validation feedback.
+  - Customer validation can test the wrong identity and produce misleading/unsafe behavior.
+  - Missing reference/status rows can surface as uncontrolled Optional.get exceptions.
+proposed_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/VehicleTripIngestionRequestValidator.java
+    component: VehicleTripIngestionRequestValidator
+    method: validate
+    approximate_anchor: request-null, Driver, Customer Address and Customer validation branches
+    proposed_change: Emit VehicleTripIngestionRequestDto evidence for null request; null-check driverId before numeric comparison; validate customerId rather than customerAddressId; guard ownership validation behind successfully resolved Customer/Address entities.
+    reason: Convert malformed input into controlled field validation and validate the correct business identities.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleTripIngestionServiceImpl.java
+    component: VehicleTripIngestionServiceImpl
+    method: processRequest
+    approximate_anchor: reference-resolution block after validator.validate
+    proposed_change: Replace Optional.get reference/status resolution with controlled not-found/configuration errors while retaining existing successful mapping/save behavior.
+    reason: Preserve fail-closed behavior if persisted references or Started status disappear between validation and mutation.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/test/java
+    component: Vehicle Trip ingestion tests
+    approximate_anchor: existing/new VehicleTripIngestionRequestValidator and VehicleTripIngestionServiceImpl tests
+    proposed_change: Cover null request DTO type, null Driver ID, null/invalid Customer ID, null/invalid Address ID, mismatched Customer/Address, missing vehicle/driver/customer/address, missing Started status and successful trip creation.
+    reason: Guard controlled validation and persistence reference integrity.
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_objects:
+    - public.tbl_vehicle_trip
+    - public.tbl_vehicle
+    - public.tbl_driver
+    - public.tbl_customer
+    - public.tbl_customer_address
+    - public.tbl_trip_status
+risk_and_rollback:
+  risk: MEDIUM
+  rollback: Revert validator/service/test changes; no database rollback required.
+scope_expansion_rule: Any additional file, schema object, field, endpoint or business behavior requires new explicit approval.
+application_code_changed: false
+bl010_created_or_executed: false
