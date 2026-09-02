@@ -1,0 +1,13 @@
+scheduler_task: Cylinder Production Fire - ii
+fire_id: 20260902-213000-IST-fire-003
+scheduled_fire_time: 2026-09-02T21:30:00+05:30
+observed_fire_time: 2026-09-02T21:32:28+05:30
+receipt_time: 2026-09-02T21:32:28+05:30
+state: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
+run_id: null
+terminal_classification: null
+termination_time: null
+notes:
+  - Scheduler last_run_time is not treated as execution proof.
+  - Receipt persisted before backlog read or mutation.
