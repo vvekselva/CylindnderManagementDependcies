@@ -1,0 +1,52 @@
+review_packet_id: STORY-0056-MARK-DELIVERED-REPEAT-ACTION-20260902
+story_id: STORY-0056
+state: AWAITING_STORY_REVIEW_AND_REPEAT_ACTION_SEMANTICS_APPROVAL
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - CustomerDemandDashboard renders Mark Delivered only when requestStatus != DELIVERED, providing a browser-side state gate for the normal screen workflow.
+  - POST /customer-demands/{requestId}/mark-delivered calls CustomerDemandService.markDelivered without passing an expected current status.
+  - CustomerDemandService.markDelivered loads by id, always replaces deliveredAt with LocalDateTime.now(), sets DELIVERED, recomputes deliveryDurationMinutes and saveAndFlushes.
+  - A repeated direct POST therefore rewrites the original completion timestamp and duration despite the normal UI hiding the button after delivery.
+approved_behavior:
+  state: PENDING_USER_APPROVAL
+  source_proved_ui_intent: MARK_DELIVERED_IS_PRESENTED_ONLY_BEFORE_DELIVERED_STATE
+business_impact:
+  - retries, double submits or direct endpoint calls after the first success can alter historical completion time and average-delivery metrics.
+  - preserving the first deliveredAt is important for stable reporting, but whether a repeat should be a no-op or a controlled error remains an explicit behavior choice.
+proposed_change_manifest_if_repeat_should_preserve_first_completion:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerDemandService.java
+    class: CustomerDemandService
+    method: markDelivered
+    approximate_anchor: lines 128-136
+    proposed_change: before creating a new deliveredAt, detect STATUS_DELIVERED; preserve existing deliveredAt/duration and either return the existing mapped row unchanged or throw an explicitly approved already-delivered controlled result. Do not rewrite completion history.
+    reason: make server behavior consistent with the screen's one-time transition intent and protect historical metrics.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerDemandController.java
+    class: CustomerDemandController
+    method: markDelivered
+    approximate_anchor: lines ~93-102
+    proposed_change: only if controlled-error semantics are chosen, map already-delivered outcome to stable flash/redirect behavior; no controller change is needed for no-op semantics.
+    reason: expose the approved repeated-action contract consistently.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: relevant CustomerDemandService/controller tests under src/test/java
+    component: tests
+    proposed_change: prove first mark sets deliveredAt/duration once; repeated action never changes them; missing request remains failure; dashboard continues hiding action for delivered rows.
+database_impact:
+  schema_change: false
+  migration_required: false
+  affected_existing_columns: delivered_at, request_status, delivery_duration_minutes
+required_user_review_decision: choose repeat semantics NO_OP_RETURN_EXISTING or CONTROLLED_ALREADY_DELIVERED_ERROR; both preserve the first completion timestamp.
+approval_gate: EXACT_REPEAT_SEMANTICS_AND_MANIFEST_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+application_code_changed: false
+bl010_created_or_executed: false
