@@ -3,11 +3,11 @@ fire_id: CYLINDER-PRODUCTION-FIRE-20260902-173124-IST
 observed_fire_time: '2026-09-02T17:31:24+05:30'
 scheduled_fire_time: '2026-09-02T17:31:24+05:30'
 receipt_time: '2026-09-02T17:31:24+05:30'
-state: RUN_LINKED
+state: HANDOFF_FAILED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260902-173124-IST-RUN-001
 orchestrator_started_at: '2026-09-02T17:31:24+05:30'
 idempotency_key: cylinder-production-fire:CYLINDER-PRODUCTION-FIRE-20260902-173124-IST
-terminal_classification: null
-terminated_at: null
+terminal_classification: ORCHESTRATOR_START_NOT_CONFIRMED
+terminated_at: '2026-09-02T17:33:38+05:30'
 scheduler_must_remain_enabled: true
