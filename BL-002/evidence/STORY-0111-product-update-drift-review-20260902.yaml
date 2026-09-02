@@ -3,15 +3,23 @@ story_id: STORY-0111
 state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
 repository: vvekselva/CylinderManagement
 ref: 3ae6e61442132d94a307275b08dd65fcef228d89
 current_behavior:
   - DomainLookupController.saveProduct supports create/update based on optional productId and refreshes Product cache after successful service processing.
-  - ProductIngestionService rejects whenever `ProductJpaDao.findByProductNameContainingIgnoreCase(name)` returns any row, without excluding the submitted productId on update and using contains rather than exact business-key equality.
-  - Category and UOM IDs are looked up with findById; when a referenced row is absent the service simply leaves the mapped relationship as-is rather than producing a specific controlled reference-validation error.
+  - ProductIngestionService rejects whenever ProductJpaDao.findByProductNameContainingIgnoreCase(name) returns any row, without excluding the submitted productId on update and using contains rather than exact business-key equality.
+  - Category and UOM IDs are looked up with findById; when a referenced row is absent the service does not produce a specific controlled reference-validation error.
+  - DomainLookup.html exposes database-backed 320 ms Product search in the table toolbar through /search/product/{text}, but the Product Name add/edit candidate input does not show database matches while typing.
+approved_story_behavior:
+  state: PENDING_USER_APPROVAL
+  note: Story approval is not inferred by this packet.
 business_impact:
   - Legitimate product updates can be rejected as self-duplicates; substring-distinct product names can be falsely rejected.
-  - Invalid category/UOM references are not explicitly rejected at the lookup branch, which can lead to incomplete/mapper-dependent persistence behavior rather than a clear user-input error.
+  - Invalid category/UOM references are not explicitly rejected at the lookup branch, which can lead to mapper-dependent persistence behavior rather than a clear user-input error.
+  - Candidate entry does not proactively show existing database-backed product-name matches.
 proposed_manifest:
   - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductIngestionService.java
     component: ProductIngestionService
@@ -22,11 +30,16 @@ proposed_manifest:
   - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ProductJpaDao.java
     component: ProductJpaDao
     method: exact duplicate lookup as required
-    source_anchor: existing repository declarations
+    source_anchor: existing declaration line ~10
     proposed_change: add/use exact ignore-case product-name lookup suitable for create/update uniqueness validation.
+  - path: cylindermanagement.web/src/main/resources/templates/with-menu/DomainLookup.html
+    component: Product Name candidate input and shared search engine
+    source_anchor: product candidate lines ~695-714; REST_BASE/searchTable lines ~1604-1660
+    proposed_change: add a debounced database-backed suggestion panel to Product Name using existing /search/product/{text}; keep submit-time validation authoritative.
+    reason: apply the governed lookup-before-insert behavior to the candidate field.
   - path: relevant Product ingestion/controller tests under src/test/java
     component: tests
-    proposed_change: cover create duplicate, unchanged-name update, collision with another product, substring-distinct name, missing category, missing UOM and successful cache-refresh path.
+    proposed_change: cover create duplicate, unchanged-name update, collision with another product, substring-distinct name, missing category, missing UOM, candidate lookup and successful cache-refresh path.
 database_impact: NONE_SCHEMA
 material_story_change: false
 approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
