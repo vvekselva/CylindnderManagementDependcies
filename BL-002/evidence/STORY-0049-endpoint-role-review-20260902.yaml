@@ -1,0 +1,29 @@
+story_id: STORY-0049
+title: Upload Challan Page Photo - Non-AJAX Endpoint Role Review
+review_state: AWAITING_USER_CONFIRMATION
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_proved_backend_behavior:
+  endpoint: POST /add-stop/challan-page-photo/upload
+  controller: AddStopController.uploadChallanPagePhoto
+  service: ChallanPagePhotoUploadService.processRequest
+  persistence: public.tbl_challan_page_photo plus challan page audit/book lookup
+  visible_redirect_feedback: challanUploadSuccess or challanUploadError back to /add-stop
+source_wide_client_result:
+  visible_form_or_javascript_client_found: false
+  actual_visible_supplier_customer_upload_endpoint: POST /add-stop/challan-page-photo/upload-ajax
+  note: Local ZIP search found no HTML/JavaScript submission to the non-AJAX endpoint.
+review_question: Confirm whether POST /add-stop/challan-page-photo/upload is intentionally retained as a non-visible fallback/compatible-form endpoint for which no browser control is applicable.
+if_confirmed:
+  story_effect: STORY-0049 may be promoted to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW using the fully proved backend/redirect contract and explicit NON_VISIBLE_FALLBACK classification.
+  application_code_change: none
+  database_change: none
+if_not_confirmed:
+  story_effect: Keep SOURCE_DETAIL_REVIEW_REQUIRED and determine the missing intended client/UI requirement before completion.
+  application_code_change: not authorized by this review
+  database_change: none
+auto_approval: false
+application_code_changed: false
+bl010_created_or_executed: false
