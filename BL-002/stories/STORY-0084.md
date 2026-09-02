@@ -4,39 +4,28 @@
 - Endpoint: `POST /trip-review/{vehicleTripId}/close-review`
 - Controller: `TripReviewController.closeReview`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Human-readable story
+## Business behavior
 
-As a reviewer on a trip-review dashboard, I can enter optional review remarks and close the review only when the dashboard says review is allowed. The selected trip identity comes from the dashboard's `vehicleTripId` path. The controller sends that trip ID and remarks to `TripReviewUpdateService`; it then redirects back to the same trip review with either a success or error flash message.
+As a reviewer on a Trip Review dashboard, I can enter optional review remarks and close the selected trip review when the dashboard's `reviewAllowed` predicate enables the form. The trip identity is carried in the URL path; the only explicit form field is optional `reviewRemarks`.
 
-## Exact screen/browser contract
+The browser form posts to `/trip-review/{vehicleTripId}/close-review`; `Close Review` is disabled when `reviewAllowed` is false. The controller binds required `vehicleTripId: Long`, optional `reviewRemarks: String`, and calls `TripReviewUpdateService.closeReview(vehicleTripId, reviewRemarks)`.
 
-The `Complete Review` card displays `dashboard.reviewBlockReason` when `!dashboard.reviewAllowed`. Its form action is `/trip-review/{dashboard.vehicleTripId}/close-review`, method POST. The only explicit form field is textarea `name="reviewRemarks"`, placeholder `Review remarks / variance notes`. `Close Review` is `th:disabled="*{!reviewAllowed}"`; therefore browser submission is enabled only when `reviewAllowed` is true. No debounce/minimum-length rule or client-side validation is present for remarks.
+The service is transactional. Blank/null remarks are normalized to `Trip review closed from Trip Review screen`; otherwise submitted remarks are trimmed. `VehicleTripReviewJpaDao.markTripReviewed(...)` executes a native update against `public.tbl_vehicle_trip`: it changes `fk_review_status` from the configured `NOT_REVIEWED` row in `public.tbl_vehicle_review_status` to the configured `REVIEWED` row and appends the review remarks to `audit_notes`. The update predicate includes the selected `pk_vehicle_trip_id` and current NOT_REVIEWED status, so an already-reviewed/nonexistent trip updates zero rows. Zero rows cause `IllegalStateException("Trip review was not closed. It may already be reviewed or may not exist.")`.
 
-## Controller/service contract
+On success the controller flashes `Trip review closed successfully.`; any `RuntimeException` is logged and its message is flashed as `errorMessage`. Both branches redirect back to `/trip-review/{vehicleTripId}`, where the GET dashboard renders the message.
 
-Path variable `vehicleTripId: Long` is required. Request parameter `reviewRemarks: String` is optional. Controller calls `tripReviewUpdateService.closeReview(vehicleTripId, reviewRemarks)`.
+The browser-side `reviewAllowed` guard is not repeated by the controller itself. The service's server-side mutation guard is specifically current review status `NOT_REVIEWED`; it does not independently re-evaluate every dashboard terminal/stop/custody predicate before the update. That is current-source behavior, not an inferred stronger guarantee.
 
-## Branch / response / visible outcome
+## Completion and approval gate
 
-- Success: flash `successMessage = "Trip review closed successfully."`.
-- Any `RuntimeException`: controller logs the failure and flashes `errorMessage = ex.getMessage()`.
-- Both branches redirect to `/trip-review/<vehicleTripId>`.
-- The GET dashboard renders `successMessage` and `errorMessage` in visible message blocks.
+The recovered ZIP proves the exact browser predicate, request contract, normalization, transactional service, native database update, idempotency/current-state predicate and visible outcomes. STORY-0084 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-The UI guard is `reviewAllowed`; the controller shown here does not independently re-check that boolean, so no duplicate server predicate is invented. Any deeper guard inside `TripReviewUpdateService.closeReview` is outside the inspected controller/template evidence.
-
-## Persistence boundary
-
-Mutation boundary is `TripReviewUpdateService.closeReview(vehicleTripId, reviewRemarks)`. Exact persisted identity is the selected `vehicleTripId`; optional remarks are propagated unchanged by the controller. No unproved table/entity mapping is invented.
-
-## Frozen source evidence
-
-- `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/TripReviewController.java`
-- `cylindermanagement.web/src/main/resources/templates/with-menu/TripReviewDashboard.html` (`Complete Review` form and `reviewAllowed` guard).
-
-## Approval boundary
-
-Strict field/UI source enrichment is complete. Approval remains `PENDING_USER_APPROVAL`; no auto-approval, Use Case grouping, or testing-readiness promotion is performed.
+Approval remains pending; no application-code or BL-010 mutation occurred.
