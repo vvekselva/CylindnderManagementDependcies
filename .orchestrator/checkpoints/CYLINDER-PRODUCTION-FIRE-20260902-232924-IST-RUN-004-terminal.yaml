@@ -1,0 +1,51 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-232924-IST-RUN-004
+mode: CONTINUOUS
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+started_at: '2026-09-02T23:29:25+05:30'
+terminated_at: '2026-09-02T23:32:26+05:30'
+productive_elapsed_seconds: 181
+runtime_target_30_minutes_satisfied: false
+early_terminalization_allowed_reason: GENUINE_SAFE_INDEPENDENT_WORK_EXHAUSTION
+source:
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  tree_hash: 20017f21b0536a643080fdaabe9b302af838d1a0224c0ddac10fbf62a3e16191
+  extracted_files: 1650
+  java_files: 1054
+completed_work_units:
+  - SCHEDULER_HANDOFF_ACK
+  - SOURCE_RECOVERY_AND_FREEZE
+  - DURABLE_STATE_RECONCILIATION
+  - APPROVAL_DELTA_RECHECK_NO_CHANGE
+  - STORY-0101_EXACT_DRIFT_SOURCE_ANCHOR_REVERIFICATION
+  - STORY-0013_DEV0002_DEV0003_DEV0004_SOURCE_ANCHOR_REVERIFICATION
+  - RUNTIME_CAPABILITY_REPROBE
+blocked_work_units:
+  - STORY-0101_CODE_CHANGE_APPROVAL
+  - DEV-0002_EXACT_DRIFT_APPROVAL
+  - DEV-0003_EXACT_DRIFT_APPROVAL
+  - DEV-0004_EXACT_DRIFT_APPROVAL
+  - EXECUTE_BL004_WITH_JACOCO
+  - EXECUTE_BL005_WITH_TESTCONTAINERS_AND_JACOCO
+  - EXECUTE_BL009_APPLICATION_BEHAVIOR_AND_COVERAGE
+approval_state:
+  approved_after_rework: 15
+  awaiting_user_review: 119
+  auto_approved_this_run: 0
+testing_state:
+  generated_source_bound: 14
+  drift_hold: [STORY-0101]
+  executed_this_run: 0
+runtime_blockers:
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  faithful_junit_mockito_runtime: UNAVAILABLE
+  faithful_testcontainers_runtime: UNAVAILABLE
+mutation_state:
+  application_code_changed: false
+  database_changed: false
+  bl010_executed: false
+resumable: true
+next_action: RESUME_ON_NEXT_FIRE; PROCESS_NEW_EXPLICIT_APPROVALS_OR_NEW_RUNTIME_CAPABILITY_IF_PRESENT; OTHERWISE_RECHECK_GATES_FAIL_CLOSED
