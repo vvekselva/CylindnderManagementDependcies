@@ -1,0 +1,45 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-003246-IST-RUN-001
+mode: CONTINUOUS
+started_at: 2026-09-03T00:33:23+05:30
+terminated_at: 2026-09-03T00:35:42+05:30
+productive_elapsed_seconds: 139
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+resumable: true
+eligible_work_remaining: false
+recoverable_work_remaining: true
+source:
+  requested_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_library_file_id: file_00000000659c8211857bba6b09282de3
+  primary_library_recovery: SEARCH_DID_NOT_RETURN_REQUESTED_FILE
+  effective_local_package: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  equivalence_basis: SHA256_EXACT_MATCH_TO_GOVERNED_PRIMARY
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_path: /mnt/data/cylinder_run_006_src
+  extracted_file_count: 1650
+  java_file_count: 1054
+  local_git_present: false
+approval_reconciliation:
+  approved_stories: 15
+  post_approval_conformance_pass: 14
+  drift_hold: [STORY-0101]
+  exact_code_change_approval_found: false
+  dev_exact_drift_gates: [DEV-0002, DEV-0003, DEV-0004]
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  maven_wrapper: MISSING
+  bundled_jars: 0
+  apache_maven_binary_download: FAILED
+  apt_repository_refresh: DNS_RESOLUTION_FAILED
+blocked_units:
+  - STORY-0101_CODE_CHANGE_APPROVAL
+  - DEV-0002_EXACT_DRIFT_APPROVAL
+  - DEV-0003_EXACT_DRIFT_APPROVAL
+  - DEV-0004_EXACT_DRIFT_APPROVAL
+  - EXECUTE_14_GENERATED_BL004_TESTS_WITH_JACOCO
+  - EXECUTE_14_GENERATED_BL005_TESTS_WITH_TESTCONTAINERS_AND_JACOCO
+  - EXECUTE_14_GENERATED_BL009_APPLICATION_BEHAVIOR_AND_COVERAGE
+next_action: RESUME_NEXT_FIRE_RECHECK_EXPLICIT_DRIFT_APPROVAL_RUNTIME_CAPABILITY_OR_NEW_SOURCE_SHA
