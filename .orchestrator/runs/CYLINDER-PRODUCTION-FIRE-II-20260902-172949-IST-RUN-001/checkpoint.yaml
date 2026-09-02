@@ -1,0 +1,28 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST
+scheduler_task: cylinder-production-fire-ii
+mode: CONTINUOUS
+started_at: '2026-09-02T17:29:49+05:30'
+checkpoint_at: '2026-09-02T17:32:37+05:30'
+productive_elapsed_seconds: 168
+previous_primary_run: CYLINDER-PRODUCTION-FIRE-I-20260902-162923-IST-RUN-001
+previous_primary_reconciliation: ABNORMAL_PROCESS_DISAPPEARANCE_AFTER_TWO_CONSISTENT_STALE_HEARTBEAT_READS_AND_NO_TERMINATION_RECORD
+work_completed:
+  - RECONCILED_ENRICHMENT_PROGRESS_ALREADY_AT_134_OF_134
+  - REPAIRED_BL002_STORY_BUSINESS_BEHAVIOR_TASK_QUEUE_TO_134_OF_134_AUTHORITATIVE_STORY_PROJECTION
+aggregate_business_behavior_complete: 134
+aggregate_business_behavior_total: 134
+aggregate_percent: 100.0
+awaiting_user_review: 132
+approved_after_rework: 2
+rework_required: 0
+queue_projection_state: REPAIRED_TO_AUTHORITATIVE_STORY_EVIDENCE
+eligible_ungated_work_remaining: false
+blocked_or_gated_work:
+  - 132_STORIES_REQUIRE_EXPLICIT_USER_APPROVAL
+  - BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL
+  - BL004_BL005_BL009_RUNTIME_EXECUTION_BLOCKED_BY_MISSING_TEST_RUNTIME_DEPENDENCIES
+  - BL008_STAGE1_REQUIRES_TEST_RUNTIME_AND_ANY_DEFECT_FIX_REMAINS_USER_DRIFT_APPROVAL_GATED
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+next_action: Await explicit Story/drift approvals or restored governed test runtime; recurring scheduler remains enabled for future resumable work.
