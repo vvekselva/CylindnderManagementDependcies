@@ -1,0 +1,17 @@
+version: 1
+recorded_at: '2026-09-02T21:19:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+review_packet: BL-002/review-packets/LOOKUP-INSERTION-DUPLICATE-SEMANTICS-20260902-2055.yaml
+story_id: STORY-0114
+classification: BUSINESS_KEY_NOT_YET_PROVED_REMOVE_FROM_IMPLEMENTABLE_PORTION_UNTIL_APPROVED_KEY_DEFINED
+source_findings:
+  - DriverIngestionService currently rejects any findByDriverNameContainingIgnoreCase match.
+  - DriverDo.driver_name is non-null but is not declared unique.
+  - DriverDo.licence_number exists but is also not declared unique in the entity, and no matching unique migration constraint was found in the governed migration search.
+reason: Two people can legitimately share a name; replacing substring matching with exact driver-name uniqueness would still invent a uniqueness rule that is not source/database-proved.
+governed_effect:
+  - Keep STORY-0114 as a confirmed current-semantics concern for review.
+  - Do not implement an exact-name duplicate rule from the earlier packet without a separately approved Driver natural/business identity (for example licence number, phone, or another combination).
+  - Other Story manifests in the packet are unaffected by this correction.
+code_mutation_authorized: false
+bl010_authorized: false
