@@ -1,0 +1,55 @@
+story_id: STORY-0013
+drift_id: STORY-0013-CHALLAN-BOOK-VALIDATION-DUPLICATE-DRIFT-20260902
+status: AWAITING_EXACT_CODE_CHANGE_APPROVAL
+detected_by_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+governed_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  analysis_engine: EXTRACTED_LOCAL_SOURCE
+  github_code_search_used: false
+story_approval_state: APPROVED_AFTER_REWORK
+code_change_approval_state: NOT_APPROVED
+current_behavior:
+  - ChallanBookIngestionService.processRequest receives ChallanBookIngestionRequestDto and persists the mapped ChallanBookRegistryDo through saveAndFlush.
+  - The null request/nested ChallanBookDto branch at lines ~38-41 only contains commented exception logic and execution continues to dereference requestDto.getChallanBook at line ~43.
+  - Invalid start/end sheet range at lines ~45-52 is logged, but the exception is commented and persistence continues.
+  - ChallanBookRegistryJpaDao already exposes findByBookCode(String bookCode) specifically documented to avoid duplicate book ingestion, but ChallanBookIngestionService does not call it before persistence.
+  - Existing page-ledger generation code in this service is commented; this packet does not authorize changing that separate behavior.
+approved_story_behavior:
+  approval: APPROVED_AFTER_REWORK
+  note: Story approval authorizes downstream testing of the documented current contract; it does not authorize application mutation. This packet isolates source-conformance corrections for separate exact approval.
+business_impact:
+  - null/malformed submissions can fail by uncontrolled dereference or persist an invalid page range instead of stable validation feedback.
+  - duplicate Book Code relies on database/save failure rather than the repository's existing explicit precheck capability, producing less predictable user feedback.
+proposed_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+    class: ChallanBookIngestionService
+    method: processRequest
+    approximate_anchor: lines ~33-90
+    proposed_change: fail closed for null request/nested book; reject missing/invalid start/end range before mapping/save; normalize/validate Book Code and call ChallanBookRegistryJpaDao.findByBookCode before save, returning controlled duplicate validation rather than relying on persistence failure. Do not activate the commented page-generation block under this manifest.
+    reason: align executable validation with the approved Story contract and existing duplicate-precheck DAO capability without expanding scope.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ChallanBookRegistryJpaDao.java
+    component: ChallanBookRegistryJpaDao
+    method: findByBookCode
+    approximate_anchor: lines ~11-20
+    proposed_change: reuse existing method; no DAO change required unless approved normalization requires an exact ignore-case variant.
+    reason: duplicate lookup capability already exists.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: relevant ChallanBookIngestionService/controller tests under src/test/java
+    component: tests
+    proposed_change: null request; null book; start>end; missing endpoints; duplicate Book Code; successful unique book; prove page-generation behavior remains unchanged by this patch.
+    reason: protect exact remediation scope.
+database_impact:
+  schema_change: false
+  migration_required: false
+approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: page-ledger generation, schema changes, Book Code normalization beyond explicitly approved semantics or additional files require new approval.
+application_code_mutated: false
+bl010_created_or_executed: false
