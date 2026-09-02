@@ -1,0 +1,5 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-082704-IST-RUN-001
+state: RUNNING
+heartbeat_at: '2026-09-02T08:29:07+05:30'
+active_work_units: [STORY-0048, STORY-0047]
+primary_owner: true
