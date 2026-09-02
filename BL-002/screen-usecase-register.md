@@ -6,13 +6,15 @@
 
 **Cross-story lookup/insertion review rule:** `BL-002/lookup-insertion-precheck-policy.yaml` applies to all 134 Stories. Applicable lookup/master-data entry must expose database-backed search while typing, and applicable insert/update operations must perform a service-level duplicate pre-check before persistence.
 
+**Latest approval/rework delta:** [Current Use Case Review — 2026-09-02](usecase-review-current-20260902.md)
+
 | Use Case | Release | Approval |
 |---|---|---|
 | [SUC-001 — Login](usecase-review.md#suc-001) | R1 | Approved |
 | [SUC-002 — Offline Map](usecase-review.md#suc-002) | R2 | Pending user approval |
 | [SUC-003 — Predefined Delivery Trips](usecase-review.md#suc-003) | R2 | Pending user approval |
 | [SUC-004 — Complete Trip](usecase-review.md#suc-004) | R1 | Pending user approval |
-| [SUC-005 — Challan Book Maintenance](usecase-review.md#suc-005) | R1 | Approved |
+| [SUC-005 — Challan Book Maintenance](usecase-review-current-20260902.md#suc-005) | R1 | Approved |
 | [SUC-006 — Challan Monitoring / Heatmap / Photo](usecase-review.md#suc-006) | R1 | Pending user approval |
 | [SUC-007 — Customer Address / Planning Map](usecase-review.md#suc-007) | R2 | Pending user approval |
 | [SUC-008 — Yard Location Upload / Map](usecase-review.md#suc-008) | R2 | Pending user approval |
@@ -46,5 +48,5 @@
 | [SUC-036 — Domain Lookup Management](usecase-review.md#suc-036) | R1 | Pending user approval |
 | [SUC-037 — Delivery Planning Main Screens](usecase-review.md#suc-037) | R2 | Pending user approval |
 | [SUC-038 — Reconciliation Dashboard](usecase-review.md#suc-038) | R2 | Pending user approval |
-| [SUC-039 — Lookup / Lookup Management](usecase-review.md#suc-039) | R1 | Partially approved |
+| [SUC-039 — Lookup / Lookup Management](usecase-review-current-20260902.md#suc-039) | R1 | Partially approved |
 | [SUC-040 — Add Vehicle Trip](usecase-review.md#suc-040) | R1 | Pending user approval |
