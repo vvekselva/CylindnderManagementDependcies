@@ -1,0 +1,34 @@
+packet_id: STORY-0056-customer-demand-repeat-delivery-review-20260902
+story_id: STORY-0056
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+current_behavior:
+  file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerDemandService.java
+  component: CustomerDemandService.markDelivered
+  anchor: around lines 124-136
+  detail: The method loads the demand, always assigns a new deliveredAt=now, sets DELIVERED and recomputes duration. It does not first check whether the demand is already DELIVERED.
+business_impact:
+  - Repeating the same mark-delivered action can replace the original delivery completion timestamp and duration.
+  - Operational/audit metrics based on deliveredAt can therefore change because of a repeated command rather than a new delivery event.
+proposed_locations:
+  - file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerDemandService.java
+    component: CustomerDemandService.markDelivered
+    anchor: around lines 129-136
+    proposal: Check current requestStatus before setting delivery fields. If already DELIVERED, preserve the original deliveredAt/duration and return a controlled already-delivered result (or no-op success according to the approved controller contract) rather than rewriting history.
+  - file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerDemandController.java
+    component: mark-delivered POST handler
+    anchor: around lines 93-99
+    proposal: Surface the controlled already-delivered outcome without reporting a second delivery completion.
+tests:
+  - first mark-delivered sets deliveredAt/status/duration
+  - repeated mark-delivered preserves original deliveredAt and duration
+  - missing demand still returns controlled error
+  - dashboard delivered metrics remain stable after repeat command
+database_impact: NONE.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
