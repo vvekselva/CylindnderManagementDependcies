@@ -1,0 +1,30 @@
+story_id: STORY-0001
+backlog: BL-004
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
+recorded_at: '2026-09-02T20:29:53+05:30'
+classification: SOURCE_BOUND_RECONCILED_CURRENT_APPROVED_CONTRACT
+approved_contract: BL-002/stories/STORY-0001.md
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_file_count: 1650
+embedded_git_present: false
+validated_generated_test: BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java
+source_anchors:
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/LoginController.java#showLoginPage
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/util/ViewConstants.java#LOGIN_FORM_VIEW
+  - cylindermanagement.web/src/main/resources/templates/final-version-1/login.html
+  - cylindermanagement.security/src/main/java/com/sreyas/datamatics/security/handler/DailyLoginSuccessHandler.java#onAuthenticationSuccess
+  - cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/DailyLoginReportJpaDao.java#existsByLoginDate
+  - cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/DailyLoginReportDo.java
+validated_behavior:
+  login_view: final-version-1/login
+  error_message: Invalid username or password.
+  logout_message: You have been successfully logged out.
+  success_target: /ownership-dashboard
+  daily_duplicate_guard: existsByLoginDate_current_date
+result: GENERATED_JUNIT_REMAINS_SOURCE_BOUND_TO_CURRENT_APPROVED_STORY
+execution_state: NOT_EXECUTED
+execution_blocker: MAVEN_JUNIT5_MOCKITO_RUNTIME_UNAVAILABLE
+application_source_mutation: NONE
+code_drift_detected: false
+next_action: EXECUTE_WITH_JACOCO_WHEN_FAITHFUL_RUNTIME_AVAILABLE
