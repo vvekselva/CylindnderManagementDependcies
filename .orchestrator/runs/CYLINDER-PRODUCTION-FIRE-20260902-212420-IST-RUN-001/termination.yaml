@@ -1,0 +1,6 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+termination_time: 2026-09-02T21:59:10+05:30
+recovered_by_run: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+reason: Prior run remained EXECUTING with last durable heartbeat at 2026-09-02T21:38:31+05:30; no run termination record, heartbeat file, or events stream existed after liveness revalidation.
+resumable: true
