@@ -1,0 +1,53 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
+reconciled_at: '2026-09-02T22:59:15+05:30'
+reconciliation_type: AUTHORITATIVE_UNIT_EVIDENCE_TO_AGGREGATE_OVERRIDE
+source_of_truth:
+  approval_register: BL-002/story-register.csv
+  unit_test_queue: BL-004/unit-test-task-queue.csv
+  integration_test_queue: BL-005/integration-test-task-queue.csv
+  test_case_queue: BL-009/test-case-task-queue.csv
+  drift_review: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+approval_projection:
+  total_stories: 134
+  approved_after_rework: 15
+  awaiting_user_review: 119
+  approved_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0101, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  pending_count: 119
+post_approval_conformance:
+  pass_count: 14
+  pass_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  drift_review_pending_count: 1
+  drift_review_pending_ids: [STORY-0101]
+  code_mutation_authorized: false
+testing_projection:
+  BL-004:
+    queued: 15
+    conformance_pass_eligible: 14
+    generated_source_bound_runtime_blocked: 14
+    drift_hold: 1
+  BL-005:
+    queued: 15
+    conformance_pass_eligible: 14
+    generated_source_bound_runtime_blocked: 14
+    drift_hold: 1
+  BL-009:
+    queued: 15
+    generated_mapped_not_executed: 14
+    drift_hold: 1
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+aggregate_drift:
+  prior_enrichment_progress_approved_after_rework: 2
+  current_authoritative_approved_after_rework: 15
+  prior_enrichment_progress_awaiting_user_review: 132
+  current_authoritative_awaiting_user_review: 119
+  state: RECONCILED_BY_DURABLE_OVERRIDE_PENDING_LEGACY_AGGREGATE_COMPACTION
+fail_closed_gates:
+  auto_approve: false
+  story0101_code_change: EXPLICIT_EXACT_DRIFT_MANIFEST_APPROVAL_REQUIRED
+  test_execution: RUNTIME_DEPENDENCIES_MISSING
+notes: Unit-local approval and testing queues are authoritative. This durable override prevents stale enrichment-progress.yaml counters from overriding 15 explicit approvals. No application code was changed.
