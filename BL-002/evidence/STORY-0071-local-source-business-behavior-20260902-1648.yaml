@@ -1,0 +1,16 @@
+story_id: STORY-0071
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /delivery-planning/demand-points.geojson
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/DeliveryPlanningApiController.java
+service: DeliveryPlanningMapService.fetchDemandPointsGeoJson
+filters: [centerLatitude, centerLongitude, radiusMeters, signalType, forecastWindow, demandCategory]
+string_filter_normalization: null_blank_ALL_to_null
+coordinate_validation: true
+geometry: Point [longitude, latitude]
+metadata_source: CMAS_DATABASE_DELIVERY_PLANNING_DEMAND_SIGNAL
+mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
