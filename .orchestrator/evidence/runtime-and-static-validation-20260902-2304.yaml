@@ -1,0 +1,40 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
+checked_at: '2026-09-02T23:04:00+05:30'
+source_root: /mnt/data/cylinder-prod-fire-20260902-225515/source
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_metrics:
+  extracted_file_count: 1650
+  java_file_count: 1054
+  pom_file_count: 10
+  source_test_directories: 47
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  result: EXECUTION_AND_JACOCO_BLOCKED
+static_validation:
+  STORY-0087:
+    generated_test: BL-009/generated-tests/STORY-0087/Story0087TestDataDrivenTest.java
+    local_controller_method: RestfulAddressTypeServices.getAddressTypes
+    result: STATIC_SOURCE_MAPPING_PASS
+  STORY-0089:
+    generated_test: BL-009/generated-tests/STORY-0089/Story0089TestDataDrivenTest.java
+    local_controller_method: RestfulCityServices.getCities
+    result: STATIC_SOURCE_MAPPING_PASS
+  STORY-0090:
+    generated_test: BL-009/generated-tests/STORY-0090/Story0090TestDataDrivenTest.java
+    local_controller_method: RestfulCountryServices.getCountries
+    result: STATIC_SOURCE_MAPPING_PASS
+  STORY-0101:
+    result: DRIFT_HOLD
+    local_anchor: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/StateSearchService.java:48
+    finding: PRODUCT_UOM_SEARCH_SERVICE is passed to validator for a State lookup
+    review_packet: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+additional_observation:
+  finding: VehicleSearchService also contains PRODUCT_UOM_SEARCH_SERVICE in the same frozen source.
+  governance: NOT_PROMOTED_TO_CODE_CHANGE_SCOPE_BECAUSE_STORY-0103_IS_NOT_APPROVED; preserve for future review only.
+application_code_changed: false
+github_actions_used: false
+next_action: NO_EXECUTABLE_TEST_RUNTIME; CONTINUE_ONLY_WITH_FAIL_CLOSED_RECONCILIATION_OR_APPROVED_STATIC_WORK
