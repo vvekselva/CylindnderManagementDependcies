@@ -1,0 +1,60 @@
+story_id: STORY-0081
+drift_id: STORY-0081-SUPPLIER-REGISTRATION-VALIDATION-DRIFT-20260902
+status: AWAITING_STORY_REVIEW_AND_EXACT_CODE_CHANGE_APPROVAL
+detected_by_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+governed_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  analysis_engine: EXTRACTED_LOCAL_SOURCE
+  github_code_search_used: false
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - SupplierIngestionRequestValidator validates Supplier name, GST, phone and address/geography and performs exact database-backed duplicate checks for GST and phone.
+  - When GST is nonblank but malformed, regex validation can flag it but code still executes Integer.parseInt(gstNumber.substring(0,2)); short/nonnumeric input can escape controlled validation as a runtime exception.
+  - supplierDto.getPhoneNumber() is dereferenced before a PhoneNumberDto-null guard, and blank/null phone text is recorded as invalid but processing then continues to phoneNumber.replaceAll(...); malformed binding can therefore cause a null dereference instead of only controlled validation.
+  - supplierDto.getAddress() is dereferenced before an AddressDto-null guard; malformed requests can escape the intended field-level validation path.
+  - SupplierIngestionService resolves City/State/Country with findById(...).get(); structurally valid but nonexistent IDs can surface as NoSuchElementException instead of controlled reference validation.
+  - Supplier Name candidate input has no database-backed similar-supplier display while typing, although /search/supplier/{searchText} exists; GST and phone are the current authoritative duplicate keys.
+business_impact:
+  - malformed GST/phone/address payloads can return an uncontrolled server error rather than stable validation feedback.
+  - stale/nonexistent geography identities can fail outside the intended input-validation branch.
+  - operators cannot proactively see similar Supplier names before Save, while current exact GST/phone checks still prevent duplicate legal/contact identities.
+proposed_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/SupplierIngestionRequestValidator.java
+    class: SupplierIngestionRequestValidator
+    method: validate
+    approximate_anchor: GST lines ~85-152; phone lines ~154-235; address lines ~237 onward
+    proposed_change: short-circuit state-code parsing unless GST format/length is valid; guard PhoneNumberDto/phone text and AddressDto before dereference; preserve accumulated validation evidence instead of falling through to runtime exceptions.
+    reason: keep malformed input in the controlled validation channel.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/SupplierIngestionService.java
+    class: SupplierIngestionService
+    method: processRequest
+    approximate_anchor: geography resolution lines ~78-95
+    proposed_change: resolve submitted City/State/Country IDs with controlled absence handling rather than Optional.get().
+    reason: prevent nonexistent reference IDs from escaping as NoSuchElementException.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.web/src/main/resources/templates/with-menu/SupplierIngestion.html
+    component: Supplier Name candidate block
+    approximate_anchor: lines ~421-423
+    proposed_change: if the global lookup-before-insert policy is confirmed applicable to Supplier Name, add debounced informational suggestions using existing /search/supplier/{searchText}; retain GST/phone duplicate validation as authoritative.
+    reason: surface similar master records before insertion without changing the legal/contact business keys.
+tests_required:
+  - malformed/short/nonnumeric GST returns controlled validation
+  - null PhoneNumberDto and blank/null phone return controlled validation
+  - null AddressDto returns controlled validation
+  - nonexistent geography IDs return controlled validation and no save
+  - duplicate GST/phone checks remain effective
+  - optional Supplier Name suggestion behavior if explicitly approved
+database_impact:
+  schema_change: false
+  migration_required: false
+scope_expansion_rule: Any additional business-key rule, file, schema object, endpoint or field requires new approval.
+application_code_mutated: false
+bl010_created_or_executed: false
