@@ -4,37 +4,30 @@
 - Endpoint: `POST /ingestSupplier`
 - Controller: `SupplierIngestionController.doPost`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Human-readable story
+## Business behavior
 
-As an operator, I can submit the Register Supplier form. Spring binds the visible and hidden supplier fields into `SupplierIngestionRequestDto`; the controller sends that DTO through the typed application service for validation and persistence. A successful request redirects using the configured home/list link. Validation failures re-render the same form with the validator-annotated DTO so field and card error messages are visible.
+As an operator, I can submit the Register Supplier form so the application validates supplier identity/contact/address data, resolves selected geography identities, and persists a new active supplier with its address and phone relationship.
 
-## Exact request/binding contract
+The form posts model `supplier` to `/ingestSupplier`. Bound fields are supplier name, GST number, phone number, address lines/landmark, and selected city/state/country IDs and names. Browser autocomplete on the GET page supplies the geography identities; CSRF is included when available.
 
-Form: `POST /ingestSupplier`, model attribute `supplier`. Bound paths are `supplierDto.supplierName`, `supplierDto.gstNumber`, `supplierDto.phoneNumber.phoneNumber`, `supplierDto.address.addressLine1`, `addressLine2`, `addressLine3`, `landmark`, plus selected `city.cityId/cityName`, `state.stateId/stateName`, and `country.countryId/countryName`. City/state/country IDs/names are populated by the autocomplete selection logic; CSRF hidden name/value is included when available. GST input is capped at 15 characters and uppercased on browser input.
+`SupplierIngestionController.doPost(...)` delegates the bound `SupplierIngestionRequestDto` to the typed application service. `SupplierIngestionService.processRequest(...)` first invokes `SupplierIngestionRequestValidator`. Source-proved validation includes: non-null request/supplier object; nonblank supplier name; GST required, GST regex/state-code validation and duplicate-GST check; phone required, formatting normalization, 10-digit/pattern validation and duplicate-phone check; address/geography validation in the same validator contract. Validation errors are attached to the request/nested DTOs and raise the input-validation flow used by the controller to re-render the form.
 
-## Controller/service path
+On successful validation, the service maps `SupplierDto` to `SupplierDo`, sets `active=true`, maps address and phone entities, resolves City/State/Country by submitted persistent IDs, links supplier↔address and supplier↔phone collections, and calls `SupplierJpaDao.save(supplierDo)`.
 
-`SupplierIngestionController.doPost(@ModelAttribute("supplier") SupplierIngestionRequestDto requestDto)` calls `ICylinderManagementApplicationService<SupplierIngestionRequestDto,SupplierIngestionResponseDto>.processRequest(requestDto)`. The controller documentation and flow identify this mediator as validation → service → persistence. No deeper repository/table identity is invented where it is not exposed by the inspected source.
+`SupplierDo` maps `public.tbl_supplier` with `supplier_name`, `gst_number`, `fk_address`, `fk_phone_number` and active state; linked address/phone entities carry their own persistence identities. The transaction creates the supplier aggregate rather than only validating it.
 
-## Branches and visible outcome
+Success redirects using the configured home/list link. `InvalidInputParameterException` re-renders `with-menu/SupplierIngestion` with validator-annotated DTO data and visible field/card errors. A general `CylinderManagementApplicationException` also re-renders the form; no separate global message is source-proved in the controller.
 
-- Success: `processRequest` returns; controller logs success and returns `new ModelAndView("redirect:" + ViewConstants.REDIRECT_HOME_LINK)` (Post/Redirect/Get).
-- `InvalidInputParameterException`: when its attached application DTO is exactly `SupplierIngestionRequestDto`, the controller copies the validator-annotated `supplierDto` back to the bound request. It then renders `with-menu/SupplierIngestion` with `supplier=requestDto` and `backLink=ViewConstants.REDIRECT_HOME_LINK`.
-- The template displays DTO validation errors, including card-level error counts/strips and field-level messages resolved from error codes. Supplier-name error code `SUPPLIER_INGESTION_VALIDATION_SUPPLIER_NAME_INVALID` is explicitly handled; GST handles `...GST_NUMBER_NULL`, `...GST_NUMBER_INVALID`, and `...GST_NUMBER_ALREADY_EXISTS`.
-- `CylinderManagementApplicationException`: stack trace is printed and the same form is re-rendered with the submitted request and back link; no custom visible global message is proved by the controller.
+## Completion and approval gate
 
-## Reset/invalidation behavior
+The recovered ZIP confirms the full field→validation→geography resolution→entity mapping→repository save path, exact supplier table identity and visible success/error outcomes. STORY-0081 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-On validation failure the submitted DTO is retained/re-rendered rather than reset. Geography hidden IDs/names are part of the bound DTO. The client autocomplete clears dependent geography selections when upstream text changes; no server-side reset beyond validator DTO replacement is asserted.
-
-## Frozen source evidence
-
-- `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/SupplierIngestionController.java`
-- `cylindermanagement.web/src/main/resources/templates/with-menu/SupplierIngestion.html`
-
-## Approval boundary
-
-Strict field/UI source enrichment is complete. Approval remains `PENDING_USER_APPROVAL`; no auto-approval, Use Case grouping, or testing-readiness promotion is performed.
+Approval remains pending; no application-code or BL-010 mutation occurred.
