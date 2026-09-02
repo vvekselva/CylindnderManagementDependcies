@@ -1,0 +1,32 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-192815-IST-RUN-001
+probed_at: '2026-09-02T19:29:43+05:30'
+application_source:
+  required_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  required_file_library_id: file_00000000659c8211857bba6b09282de3
+  file_library_exact_search_attempted: true
+  file_library_exact_match_recovered: false
+  local_workspace_checked: true
+  local_zip_present: false
+  extracted_workspace_present: false
+  github_code_search_used_for_application_analysis: false
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+reconciliation:
+  previous_live_run: CYLINDER-PRODUCTION-FIRE-I-20260902-190156-IST-RUN-001
+  previous_live_run_terminal: true
+  business_behavior_complete: 134
+  business_behavior_total: 134
+  awaiting_user_review: 132
+  approved_after_rework: 2
+  projection_drift_current_authority: 0
+  enrichment_progress_contains_stale_historical_projection_pending_fields: true
+eligibility:
+  eligible_ungated_work_remaining: false
+  blockers:
+    - EXPLICIT_STORY_USER_APPROVAL_REQUIRED
+    - EXPLICIT_DRIFT_APPROVAL_REQUIRED_BEFORE_CODE_MUTATION
+    - FAITHFUL_TEST_RUNTIME_UNAVAILABLE
