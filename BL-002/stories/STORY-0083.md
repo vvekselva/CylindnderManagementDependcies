@@ -4,36 +4,43 @@
 - Endpoint: `POST /ingestYardStockCheck`
 - Controller: `YardStockCheckIngestionController.doPost`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source field contract: STRICT_FIELD_UI_COMPLETE_WITH_DRIFT_REVIEW
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Drift review packet: `BL-002/evidence/STORY-0083-yard-stock-check-drift-review-20260902.yaml`
 
-## Human-readable story
+## Business behavior and submitted contract
 
-As a yard operator, I can complete the stock-check form after assembling cylinder audit lines. Spring binds audit metadata and each indexed cylinder/state/note line into `YardStockCheckIngestionRequestDto`; the controller sends the DTO to the typed application service. Success redirects to the configured back/home link. Validation failure keeps the submitted DTO and cylinder-state lookup available and re-renders the form.
+As a yard operator, I can submit the Yard Stock Check form after assembling audit lines. The final template posts header fields for check date, checked-by, created/completed timestamps and remarks, and dynamic line fields for selected cylinder identity, selected physical-state identity and auditor notes.
 
-## Exact submitted contract
+The controller binds model `yardStockCheck`, logs the request metadata, and delegates to the typed Yard Stock Check ingestion application service. On successful service completion it redirects to the configured back link. `InvalidInputParameterException` re-renders `final-version-1/YardStockCheckIngestion` with the submitted request, back link and refreshed cylinder-state lookup so validation evidence can be shown. A general application exception returns the same view but the controller catch branch does not source-prove the same model repopulation.
 
-`POST /ingestYardStockCheck` binds model attribute `yardStockCheck`. Header fields are `yardStockCheckDto.checkDate`, `checkedBy`, `createdAt`, `completedAt`, `remarks`. Each dynamic line submits `yardStockCheckDto.checkLines[i].cylinder.cylinderId`, `yardStockCheckDto.checkLines[i].cylinderState.cylinderStateId`, and `yardStockCheckDto.checkLines[i].auditorNotes`. Client removal re-indexes all remaining list names before submit.
+## Exact current validation and persistence path
 
-## Controller/service contract
+`YardStockCheckIngestionService.processRequest(...)` is transactional. It calls `YardStockCheckIngestionRequestValidator`, maps/saves the header through `YardStockCheckJpaDao.saveAndFlush`, sets `createdAt=now`, `checkStatus=IN_PROGRESS`, clears completedAt, then processes lines. After line processing it sets the header `checkStatus=COMPLETED`, `completedAt=now` and saves/flushed again.
 
-Controller logs the incoming DTO. If `yardStockCheckDto` is non-null it logs check date, checked-by, and line count (0 when `checkLines` is null). It calls `ICylinderManagementApplicationService<YardStockCheckIngestionRequestDto,YardStockCheckIngestionResponseDto>.processRequest(requestDto)`.
+The current validator requires check date, checked-by, created-at and at least one line. For each line it expects `observedCylinder` plus `observedCylinderState.cylinderStateId` resolving through `CylinderStateJpaDao`.
 
-## Branch / visible outcome
+The current service creates `YardStockCheckLineDo`, links the saved stock-check header, resolves and sets `observedCylinderState`, sets `scannedAt`, copies `observedCylinder`, and saves through `YardStockCheckLineJpaDao`.
 
-- Success: returns `redirect:` + configured `BACK_LINK`.
-- `InvalidInputParameterException`: re-renders `final-version-1/YardStockCheckIngestion` with submitted `yardStockCheck`, `backLink`, and refreshed `CYLINDER_STATES` from `LookupDataCache`; submitted values are therefore retained for rendering rather than replaced with a blank DTO.
-- `CylinderManagementApplicationException`: logs the application error and returns the same view name, but the catch branch does not add the form/back-link/state model objects; no richer visible error behavior is invented.
+Persistence identities are source-bound to `public.tbl_yard_stock_check` and `public.tbl_yard_stock_check_line`. The line entity/schema already supports the stock-check relation, `fk_cylinder`, `observed_cylinder`, `fk_observed_cylinder_state`, `fk_system_cylinder_state`, `state_matches_system`, `auditor_notes` and scanned timestamp.
 
-## Persistence boundary
+## Source-proved drift / current broken boundary
 
-The mutation boundary proved here is the typed `yardStockCheckIngestionService.processRequest(requestDto)` call. Exact selected identities are cylinder IDs and cylinder-state IDs propagated from the browser line list. Deeper repository/table behavior is not invented where the inspected frozen source does not expose it.
+The recovered final template posts the selected state using `yardStockCheckDto.checkLines[i].cylinderState.cylinderStateId`, but `YardStockCheckLineDto` has no `cylinderState` property; its matching field is `observedCylinderState`. The template also posts `cylinder.cylinderId` and auditor notes but does not post `observedCylinder`, even though the validator requires that string.
 
-## Frozen source evidence
+The validator dereferences `getObservedCylinderState().getCylinderStateId()` for logging/DAO lookup before its null guard, so failed binding can produce an uncontrolled null dereference instead of controlled validation evidence.
 
-- `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/YardStockCheckIngestionController.java`
-- `cylindermanagement.web/src/main/resources/templates/final-version-1/YardStockCheckIngestion.html`
+The service currently does not copy/resolve the submitted cylinder relation onto `YardStockCheckLineDo`, nor copy auditor notes, system cylinder state or `stateMatchesSystem`, although those fields exist in the line model/schema. Therefore the current browser-to-persistence contract is materially incomplete.
 
-## Approval boundary
+The exact proposed application repair, file/method/template anchors, tests, impact and zero-schema-change assessment are isolated in the referenced drift packet. No code/BL-010 implementation is authorized until the user explicitly approves that exact manifest.
 
-Strict field/UI source enrichment is complete. Approval remains `PENDING_USER_APPROVAL`; no auto-approval, Use Case grouping, or testing-readiness promotion is performed.
+## Completion and approval gate
+
+The user flow, controller branches, transaction/header behavior, exact line validation/persistence behavior, database identities and the material current-source defects are now fully source-bound. A Story may describe current defective behavior without authorizing a fix; the defect remains separately code-approval-gated.
+
+STORY-0083 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains pending. No application code was changed and no BL-010 work was created or executed.
