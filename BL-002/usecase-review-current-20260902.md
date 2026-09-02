@@ -14,10 +14,33 @@
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0012](stories/STORY-0012.md) | Primary — registration form | **Approved** |
-| [STORY-0013](stories/STORY-0013.md) | Primary — save/persistence | **Approved** |
+| [STORY-0012](stories/STORY-0012.md) | Primary — registration form | **APPROVED_AFTER_REWORK** |
+| [STORY-0013](stories/STORY-0013.md) | Primary — save/persistence | **APPROVED_AFTER_REWORK** |
 
 STORY-0013 still contains documented current-state development gaps, including the missing explicit duplicate Book Code pre-check. Approval of the Story does not mean those gaps are implemented.
+
+<a id="suc-036"></a>
+## SUC-036 — Domain Lookup Management
+
+**Release:** R1  
+**Use-case approval:** Partially approved
+
+| Story | Role | Approval |
+|---|---|---|
+| [STORY-0108](stories/STORY-0108.md) | Primary — domain lookup screen | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0109](stories/STORY-0109.md) | Primary — Product Category save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0110](stories/STORY-0110.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0111](stories/STORY-0111.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0112](stories/STORY-0112.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0113](stories/STORY-0113.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0114](stories/STORY-0114.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0092](stories/STORY-0092.md) | Dependency — driver search | PENDING_USER_APPROVAL |
+| [STORY-0098](stories/STORY-0098.md) | Dependency — product-category search | PENDING_USER_APPROVAL |
+| [STORY-0099](stories/STORY-0099.md) | Dependency — product search | PENDING_USER_APPROVAL |
+| [STORY-0100](stories/STORY-0100.md) | Dependency — product UOM search | PENDING_USER_APPROVAL |
+| [STORY-0103](stories/STORY-0103.md) | Dependency — vehicle search | PENDING_USER_APPROVAL |
+
+STORY-0108 and STORY-0109 are approved and their requested BL-004, BL-005 and BL-009 fan-out is recorded. Remaining mapped Stories are still pending approval.
 
 <a id="suc-039"></a>
 ## SUC-039 — Lookup / Lookup Management
@@ -27,15 +50,19 @@ STORY-0013 still contains documented current-state development gaps, including t
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0127](stories/STORY-0127.md) | Primary — legacy lookup redirect | **Approved** |
-| [STORY-0128](stories/STORY-0128.md) | Primary | Pending user approval |
-| [STORY-0129](stories/STORY-0129.md) | Primary — Address Type save | **Pending user approval — requirement revised** |
-| [STORY-0130](stories/STORY-0130.md) | Primary | Pending user approval |
-| [STORY-0131](stories/STORY-0131.md) | Primary | Pending user approval |
-| [STORY-0132](stories/STORY-0132.md) | Primary | Pending user approval |
+| [STORY-0127](stories/STORY-0127.md) | Primary — legacy lookup redirect | **APPROVED_AFTER_REWORK** |
+| [STORY-0128](stories/STORY-0128.md) | Primary — lookup management screen | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0129](stories/STORY-0129.md) | Primary — Address Type save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0130](stories/STORY-0130.md) | Primary — Country save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0131](stories/STORY-0131.md) | Primary — State save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0132](stories/STORY-0132.md) | Primary — City save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | PENDING_USER_APPROVAL |
+| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | PENDING_USER_APPROVAL |
+| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | PENDING_USER_APPROVAL |
+| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | PENDING_USER_APPROVAL |
 
-### STORY-0129 review requirement
+STORY-0127 through STORY-0132 are approved current-state contracts. STORY-0128 through STORY-0132 have requested testing fan-out recorded. Shared search dependencies remain pending, so this Use Case remains partially approved.
 
-When the user types an Address Type, database-backed matching Address Types must be searched and displayed before insertion so the operator can see that a value already exists. STORY-0087 is the existing governed Address Type search Story. Submit-time service validation must still perform the authoritative duplicate pre-check, and update must exclude the current record identity.
+### Lookup / insertion rule retained
 
-This same review rule is mandatory for every applicable lookup/master-data maintenance and insert/update Story under `lookup-insertion-precheck-policy.yaml`.
+When the user types a lookup/master-data candidate such as Address Type, database-backed matches must be shown before insertion where applicable. Submit-time service validation remains authoritative and must reject normalized business-equivalent duplicates while excluding the current row on update. The cross-story rule remains `lookup-insertion-precheck-policy.yaml`.
