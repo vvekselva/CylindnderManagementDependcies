@@ -3,14 +3,30 @@ fire_id: 20260902-213000-IST-fire-003
 scheduled_fire_time: 2026-09-02T21:30:00+05:30
 observed_fire_time: 2026-09-02T21:32:28+05:30
 receipt_time: 2026-09-02T21:32:28+05:30
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 link_state: RUN_LINKED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260902-213228-IST-RUN-001
 run_started_at: 2026-09-02T21:32:28+05:30
-terminal_classification: null
-termination_time: null
+source_recovery:
+  requested_file_library_id: file_00000000659c8211857bba6b09282de3
+  package_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  local_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-080237).zip
+  extracted_workspace: /mnt/data/cylinder-orchestrator/CYLINDER-PRODUCTION-FIRE-II-20260902-213228-IST-RUN-001/source
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  local_git_present: false
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+terminal_reason: ACTIVE_PRIMARY_EXECUTION_WITH_FRESH_HEARTBEAT
+termination_time: 2026-09-02T21:34:24+05:30
+primary_run_observed:
+  run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+  state: EXECUTING
+  last_heartbeat_at: 2026-09-02T21:32:21+05:30
+  active_work_unit_ids:
+    - STORY-0112_V185_IDENTITY_AND_UPDATE_CONFORMANCE_REVIEW
+  eligible_work_remaining: true
 notes:
   - Scheduler last_run_time is not treated as execution proof.
   - Receipt persisted before backlog read or mutation.
-  - Run allocation acknowledged in this durable receipt; separate run-manifest creation was unavailable at allocation time.
+  - Run allocation acknowledged in this durable receipt.
+  - Duplicate invocation did not claim or mutate backlog/application code because a fresh primary mutator was already executing.
