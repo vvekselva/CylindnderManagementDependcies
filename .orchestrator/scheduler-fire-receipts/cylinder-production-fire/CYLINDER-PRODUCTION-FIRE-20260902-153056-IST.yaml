@@ -2,7 +2,9 @@ scheduler_task: cylinder-production-fire
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260902-153056-IST
 observed_scheduled_fire_time: '2026-09-02T15:30:56+05:30'
 receipt_time: '2026-09-02T15:30:56+05:30'
-state: TRIGGER_RECEIVED
+state: RUN_LINKED
 intended_scope: CONTINUOUS
-run_id: null
-orchestrator_state: TRIGGER_RECEIVED
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-153056-IST-RUN-001
+orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_started_time: '2026-09-02T15:31:05+05:30'
+handoff_state: RUN_LINKED
