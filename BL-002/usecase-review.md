@@ -227,12 +227,15 @@
 ## SUC-017 — Customer Registration
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Partially approved  
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0041](stories/STORY-0041.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0042](stories/STORY-0042.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 
 [Back to register](screen-usecase-register.md)
 
@@ -253,13 +256,16 @@
 ## SUC-019 — Customer Display / Maintenance
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Partially approved  
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0045](stories/STORY-0045.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0046](stories/STORY-0046.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0047](stories/STORY-0047.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 
 [Back to register](screen-usecase-register.md)
 
@@ -432,12 +438,15 @@
 ## SUC-032 — Supplier Ingestion
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Partially approved  
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0080](stories/STORY-0080.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0081](stories/STORY-0081.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 
 [Back to register](screen-usecase-register.md)
 
@@ -470,15 +479,15 @@
 ## SUC-035 — Shared Screen Search / Lookup APIs
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Partially approved  
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0086](stories/STORY-0086.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0087](stories/STORY-0087.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0088](stories/STORY-0088.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0089](stories/STORY-0089.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0090](stories/STORY-0090.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0091](stories/STORY-0091.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0092](stories/STORY-0092.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0093](stories/STORY-0093.md) | Dependency | PENDING_USER_APPROVAL |
@@ -489,7 +498,7 @@
 | [STORY-0098](stories/STORY-0098.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0099](stories/STORY-0099.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0100](stories/STORY-0100.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0101](stories/STORY-0101.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0102](stories/STORY-0102.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0103](stories/STORY-0103.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0104](stories/STORY-0104.md) | Dependency | PENDING_USER_APPROVAL |
@@ -559,7 +568,7 @@
 ## SUC-039 — Lookup / Lookup Management
 
 **Release:** R1  
-**Use-case approval:** Partially approved  
+**Use-case approval:** Approved  
 
 | Story | Role | Approval |
 |---|---|---|
@@ -569,10 +578,10 @@
 | [STORY-0130](stories/STORY-0130.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0131](stories/STORY-0131.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0132](stories/STORY-0132.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0087](stories/STORY-0087.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0089](stories/STORY-0089.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0090](stories/STORY-0090.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0101](stories/STORY-0101.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 
 [Back to register](screen-usecase-register.md)
 
