@@ -1,0 +1,16 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+attempted_at: 2026-09-02T21:58:03+05:30
+required_file_library_id: file_00000000659c8211857bba6b09282de3
+required_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+recovery_attempts:
+  - exact filename plus file id File Library search
+  - same-day File Library navigation search for 2026-09-02
+result: FILE_LIBRARY_PACKAGE_NOT_RETURNED
+local_workspace_materialization: NOT_POSSIBLE_THIS_INVOCATION
+extraction: NOT_PERFORMED_THIS_INVOCATION
+fingerprint_this_invocation: NOT_COMPUTED
+prior_durable_fingerprint: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+prior_durable_source_file_count: 1650
+application_source_analysis_this_invocation: BLOCKED_BY_MATERIALIZATION_FAILURE
+github_code_search_used_as_application_source_engine: false
+resumable: true
