@@ -1,0 +1,32 @@
+reconciliation_id: DELIVERY-PLANNING-STOP-MUTATION-RECONCILIATION-20260902-2143
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+stories:
+  STORY-0121:
+    state: DRIFT_PACKET_PREPARED
+    evidence: BL-002/evidence/STORY-0121-delivery-planning-stop-single-save-drift-review-20260902.yaml
+    result: single create/update path lacks the exact active stop-name duplicate rule used by batch save; update needs current-row exclusion if that rule is approved.
+  STORY-0122:
+    state: SOURCE_CONFORMANCE_DETAIL_COMPLETE_NO_NEW_DRIFT_IN_DUPLICATE_PRECHECK
+    validator: DeliveryPlanningStopBatchSaveRequestValidator
+    anchors: lines 19-47
+    source_proof:
+      - request/list consistency is validated
+      - maximum batch size 100 is enforced
+      - duplicate names inside the same submitted batch are rejected case-insensitively through a HashSet at lines ~29-35
+      - active exact-ignore-case names already in the database are rejected through existsByActiveTrueAndStopNameIgnoreCase at line ~36
+      - coordinate/radius validation is performed before mediator calls addBatch
+    correction_to_prior_batch_note: prior mutation-detail evidence left within-request duplicate-point semantics as a possible concern; current local-source review proves same-batch duplicate names are already explicitly rejected.
+  STORY-0123:
+    state: REPEAT_ACTION_STATE_SET_NO_DUPLICATE_INSERTION
+    service: DeliveryPlanningStopService.deactivate
+    anchor: line ~38
+    source_proof: remove loads the existing stop, sets active=false and saves the same row; a repeat call is a state-set operation and does not create another stop or history row.
+governance:
+  auto_approval: false
+  application_code_mutation: false
+  bl010_created_or_executed: false
+  story_0121_code_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED
