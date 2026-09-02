@@ -1,0 +1,84 @@
+version: 1
+recorded_at: '2026-09-02T20:55:06+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+policy: BL-002/lookup-insertion-precheck-policy.yaml
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_file_count: 1650
+application_github_code_search_used: false
+scope:
+  total_stories: 134
+  applicability_triage_complete: 134
+  classification_overlap: 0
+  unclassified: 0
+classifications:
+  SEARCH_CAPABILITY:
+    count: 22
+    story_ids: [STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096, STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107]
+    rule: These Stories are reusable search/read capabilities and must be attached only to source-proved consuming screens.
+  MUTATION_DUPLICATE_OR_IDEMPOTENCY_REVIEW_REQUIRED:
+    count: 43
+    story_ids: [STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0013, STORY-0021, STORY-0024, STORY-0026, STORY-0033, STORY-0034, STORY-0038, STORY-0040, STORY-0042, STORY-0044, STORY-0047, STORY-0048, STORY-0049, STORY-0050, STORY-0053, STORY-0055, STORY-0056, STORY-0078, STORY-0079, STORY-0081, STORY-0083, STORY-0084, STORY-0085, STORY-0109, STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0121, STORY-0122, STORY-0123, STORY-0125, STORY-0129, STORY-0130, STORY-0131, STORY-0132, STORY-0134]
+    rule: Every mutation must be source-checked for natural-key duplicate prevention or, for event/action mutations where duplicates are legitimate, an explicit idempotency/not-applicable rationale.
+  UI_LOOKUP_SEARCH_REVIEW_REQUIRED:
+    count: 14
+    story_ids: [STORY-0012, STORY-0032, STORY-0037, STORY-0039, STORY-0041, STORY-0043, STORY-0045, STORY-0051, STORY-0052, STORY-0054, STORY-0080, STORY-0108, STORY-0128, STORY-0133]
+    rule: These entry/maintenance screens are source-review targets for database-backed type-ahead/search behavior before selecting or creating reference/master values.
+  READ_ONLY_NO_INSERTION_PRECHECK:
+    count: 55
+    story_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0018, STORY-0019, STORY-0020, STORY-0022, STORY-0023, STORY-0025, STORY-0027, STORY-0028, STORY-0029, STORY-0030, STORY-0031, STORY-0035, STORY-0036, STORY-0046, STORY-0057, STORY-0058, STORY-0059, STORY-0060, STORY-0061, STORY-0062, STORY-0063, STORY-0064, STORY-0065, STORY-0066, STORY-0067, STORY-0068, STORY-0069, STORY-0070, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077, STORY-0082, STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0124, STORY-0126, STORY-0127]
+    rule: No insertion duplicate-precheck requirement is assigned from endpoint semantics; any embedded form capability is still governed by its corresponding mutation Story and source-proved dependency mapping.
+source_proved_lookup_reuse:
+  evidence: BL-002/evidence/usecase-shared-search-dependency-source-map-20260902.yaml
+  confirmed_screens: [SUC-012, SUC-015, SUC-016, SUC-017, SUC-018, SUC-019, SUC-020, SUC-025, SUC-032, SUC-033, SUC-036, SUC-039]
+source_proved_duplicate_precheck_findings:
+  STORY-0013:
+    state: GAP_CONFIRMED
+    detail: ChallanBookRegistryJpaDao exposes findByBookCode but the ingestion service does not call an explicit duplicate-code pre-check before save.
+  STORY-0042:
+    state: PRECHECK_PRESENT_PARTIAL_DOMAIN_REVIEW
+    detail: Customer ingestion validator source contains explicit GST-number and phone-number already-exists checks; remaining natural-key/UI suggestion semantics require Story-specific review.
+  STORY-0081:
+    state: PRECHECK_PRESENT_PARTIAL_DOMAIN_REVIEW
+    detail: Supplier ingestion validator source contains explicit GST-number and phone-number already-exists checks; remaining natural-key/UI suggestion semantics require Story-specific review.
+  STORY-0109:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: ProductCategoryIngestionService.java:57
+    detail: Duplicate rejection uses findByProductCategoryContainingIgnoreCase; substring matching is broader than exact normalized business-equivalence.
+  STORY-0110:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: ProductUomIngestionService.java:57
+    detail: Duplicate rejection uses findByProductUomContainingIgnoreCase; substring matching is broader than exact normalized business-equivalence.
+  STORY-0111:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: ProductIngestionService.java:64
+    detail: Duplicate rejection uses findByProductNameContainingIgnoreCase; exact-equivalence/update-self-exclusion must be governed explicitly.
+  STORY-0113:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: VehicleIngestionService.java:56
+    detail: Duplicate rejection uses findByVehicleNumberContainingIgnoreCase; exact-equivalence/update-self-exclusion must be governed explicitly.
+  STORY-0114:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: DriverIngestionService.java:57
+    detail: Duplicate rejection uses findByDriverNameContainingIgnoreCase; exact-equivalence/update-self-exclusion must be governed explicitly.
+  STORY-0129:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: AddressTypeIngestionService.java:56
+    detail: Database-backed type-ahead is source-proved in LookupManagement, while save duplicate rejection uses containing-ignore-case and can reject substring/self matches.
+  STORY-0130:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: CountryIngestionService.java:56
+    detail: Database-backed type-ahead is source-proved in LookupManagement, while duplicate rejection uses containing-ignore-case.
+  STORY-0131:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: StateIngestionService.java:62
+    detail: Database-backed type-ahead is source-proved in LookupManagement, while duplicate rejection uses containing-ignore-case.
+  STORY-0132:
+    state: DRIFT_REVIEW_REQUIRED
+    source_anchor: CityIngestionService.java:59
+    detail: Database-backed type-ahead is source-proved in LookupManagement, while duplicate rejection uses containing-ignore-case.
+governance:
+  auto_approve: false
+  code_mutation_authorized: false
+  bl010_creation_authorized: false
+  next_action: Continue source-detail review of mutation Stories and create exact drift packets before any proposed application change.
