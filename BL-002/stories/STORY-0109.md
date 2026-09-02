@@ -4,20 +4,24 @@
 - Endpoint: `POST /domainLookup/productCategory/save`
 - Controller: `DomainLookupController.saveProductCategory`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Drift review packet: `BL-002/evidence/STORY-0109-product-category-update-drift-review-20260902.yaml`
 
-## Exact submitted fields
-The MVC handler accepts optional `productCategoryId` (`Long`), required form field `productCategory` (`String`), and optional `description` defaulting to an empty string. The category value is trimmed and upper-cased; description is trimmed. `isNew` is true when ID is null or zero.
+## Business behavior
 
-## DTO/service path
-The controller builds `ProductCategoryDto`, sets ID/category/description, wraps it in `ProductCategoryIngestionRequestDto`, and calls `productCategoryIngestionService.processRequest(req)`. On success it immediately invokes `lookupDataCache.refreshProductCategory()` so subsequent GET rendering uses refreshed data.
+The MVC handler accepts optional `productCategoryId`, required `productCategory`, and optional description. The controller trims/uppercases the category, trims description, uses ID null/zero to classify add vs update, builds `ProductCategoryIngestionRequestDto`, delegates to `ProductCategoryIngestionService`, refreshes only the Product Category cache on success, flashes add/update-specific success text and redirects to `/domainLookup?tab=productCategory`. User-input validation can re-render the page inline with the failed DTO; unexpected failures redirect with an error flash.
 
-## Success and validation outcome
-Success follows PRG: a flash message distinguishes added versus updated and redirects to `/domainLookup?tab=productCategory`. For `InvalidInputParameterException` representing user input, the controller's documented validation path returns a full `ModelAndView` directly so inline validation errors and the failed DTO remain visible instead of being lost by redirect. Unexpected errors use the generic error/redirect path.
+The service validates a nonblank request/category, then currently rejects whenever `ProductCategoryJpaDao.findByProductCategoryContainingIgnoreCase(value)` returns any row. It maps the DTO to `ProductCategoryDo`, saves through `ProductCategoryJpaDao`, and returns the saved DTO on success.
 
-## Screen/data consistency
-The Domain Lookup GET serves product-category data from `LookupDataCache`; therefore targeted cache refresh is the source-proved invalidation step connecting successful persistence to the visible screen.
+That current duplicate check does not exclude the same productCategoryId on update and uses contains rather than exact business-key equality. This creates a source-proved add/update conformance defect. The exact proposed service/repository/test repair is isolated in the referenced approval-gated packet; no implementation is authorized yet.
 
-## Approval boundary
-Strict field/UI contract is complete from frozen controller/page architecture. Approval remains pending; no auto-approval occurred.
+## Completion and approval gate
+
+The submitted fields, normalization, controller branches/cache refresh, service validation/save behavior, visible outcome and exact current defect are source-bound. STORY-0109 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
