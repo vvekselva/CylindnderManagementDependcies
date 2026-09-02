@@ -1,35 +1,35 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-003246-IST-RUN-001
-scheduler_fire_id: 20260903-003246-IST
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-012732-IST-RUN-001
+scheduler_fire_id: 20260903-012732-IST
 scheduler_task: Cylinder Production Fire - ii
 state: TERMINATED
 mode: CONTINUOUS
-started_at: '2026-09-03T00:33:23+05:30'
-last_heartbeat_at: '2026-09-03T00:35:42+05:30'
-terminated_at: '2026-09-03T00:35:42+05:30'
+started_at: '2026-09-03T01:27:32+05:30'
+last_heartbeat_at: '2026-09-03T01:30:20+05:30'
+terminated_at: '2026-09-03T01:30:20+05:30'
 terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
-terminal_reason: Requested primary File Library ZIP recovery was attempted but did not return the exact file. The already materialized newer library ZIP was re-fingerprinted and is byte-identical to the governed primary SHA-256, then freshly extracted for local-source analysis. Durable approvals remain 15 with 14 source-conformance passes and STORY-0101 on exact drift hold. DEV-0002/0003/0004 remain exact-manifest approval gated. Faithful test execution remains blocked by missing Maven/Gradle/Docker/Podman; direct Apache Maven download failed and apt refresh failed on DNS resolution. No safe-independent eligible unit remains.
+terminal_reason: Receipt/run linkage persisted first; requested primary File Library search did not return the exact ZIP and raw materialization is unavailable in this runtime. Byte-identical governed local source was freshly fingerprinted/extracted and STORY-0101 drift revalidated. Aggregate state remains 15 approvals, 14 conformance passes, one drift hold. Fourteen generated test mappings remain runtime-blocked; STORY-0101 and DEV-0002/0003/0004 remain exact-manifest approval gated. No safe-independent eligible unit remains.
 running_worker_count: 0
-completed_worker_count: 5
+completed_worker_count: 7
 blocked_worker_count: 7
 active_work_unit_ids: []
 eligible_work_remaining: false
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 139
+productive_elapsed_seconds: 168
 runtime_target_30_minutes_satisfied: false
-completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, SOURCE_RECOVERY_RECHECK, SOURCE_FINGERPRINT_AND_EXTRACT, APPROVAL_GATE_RECONCILIATION, RUNTIME_RECOVERY_REPROBE]
-blocked_work_unit_ids: [PRIMARY_LIBRARY_FILE_RECOVERY, STORY-0101_CODE_CHANGE_APPROVAL, DEV-0002_EXACT_DRIFT_APPROVAL, DEV-0003_EXACT_DRIFT_APPROVAL, DEV-0004_EXACT_DRIFT_APPROVAL, EXECUTE_GENERATED_TESTS_REQUIRING_MAVEN, EXECUTE_INTEGRATION_TESTS_REQUIRING_CONTAINER_RUNTIME]
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260903-002617-IST-RUN-005
+completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, RUN_LINK, PRIMARY_FILE_LIBRARY_SEARCH_RECHECK, SOURCE_FINGERPRINT_AND_FRESH_EXTRACT, STORY_0101_LOCAL_SOURCE_DRIFT_REVALIDATION, AGGREGATE_PROJECTION_RECONCILIATION, RUNTIME_RECOVERY_REPROBE]
+blocked_work_unit_ids: [PRIMARY_LIBRARY_RAW_MATERIALIZATION_CURRENT_TOOL_SURFACE, STORY_0101_CODE_CHANGE_APPROVAL, DEV_0002_EXACT_DRIFT_APPROVAL, DEV_0003_EXACT_DRIFT_APPROVAL, DEV_0004_EXACT_DRIFT_APPROVAL, EXECUTE_14_GENERATED_UNIT_MAPPINGS_REQUIRING_MAVEN, EXECUTE_14_GENERATED_INTEGRATION_MAPPINGS_REQUIRING_CONTAINER_RUNTIME]
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-II-20260903-003246-IST-RUN-001
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
-source_materialization_this_invocation: PRIMARY_SEARCH_FAILED_FALLBACK_BYTE_IDENTICAL_PASS
+source_materialization_this_invocation: PRIMARY_SEARCH_FAILED_CURRENT_RAW_MATERIALIZATION_TOOL_UNAVAILABLE_FALLBACK_BYTE_IDENTICAL_PASS
 source_package_effective: Harinandhan-Cylinder-Backup(20260902-163304).zip
 source_materialized_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-163304).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
-source_extracted_path: /mnt/data/cylinder_run_006_src
+source_extracted_path: /mnt/data/cylinder_run_007_src
 source_extracted_file_count: 1650
 source_java_file_count: 1054
 source_local_git_present: false
-runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING, maven_wrapper: MISSING, bundled_jars: 0, apache_maven_download: FAILED, apt_refresh: DNS_RESOLUTION_FAILED}
-checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-II-20260903-003246-IST-RUN-001-terminal.yaml
-next_action: RESUME_ON_NEXT_FIRE_AND_RECHECK_FOR_NEW_EXPLICIT_APPROVAL_RUNTIME_CAPABILITY_OR_NEW_SOURCE_SHA
+runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING, local_maven_repository_jars: 0, workspace_jars: 0, direct_maven_download: FAILED}
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-II-20260903-012732-IST-RUN-001-terminal.yaml
+next_action: RESUME_ON_NEXT_FIRE_AND_RECHECK_FOR_EXPLICIT_DRIFT_APPROVAL_RUNTIME_CAPABILITY_OR_NEW_SOURCE_SHA
