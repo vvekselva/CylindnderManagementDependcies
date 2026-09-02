@@ -2,11 +2,11 @@ scheduler_task: Cylinder Production Fire - ii
 observed_fire_time: '2026-09-03T02:31:47+05:30'
 scheduled_fire_time: '2026-09-03T02:30:00+05:30'
 receipt_time: '2026-09-03T02:31:47+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-023147-IST-RUN-001
 orchestrator_started_at: '2026-09-03T02:32:06+05:30'
 run_linked_at: '2026-09-03T02:32:06+05:30'
-termination_time: null
-terminal_classification: null
-terminal_reason: null
+termination_time: '2026-09-03T02:33:46+05:30'
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+terminal_reason: Exact requested Library ZIP search did not return the package; byte-identical governed fallback was freshly fingerprinted and extracted. No new approvals or source drift changes were found. STORY-0101 and DEV-0002/0003/0004 remain explicit approval gated; 14 mapped test scopes remain blocked by missing Maven/container runtime. No safe-independent eligible unit remains.
