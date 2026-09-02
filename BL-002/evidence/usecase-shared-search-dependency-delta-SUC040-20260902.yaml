@@ -1,0 +1,22 @@
+version: 1
+recorded_at: '2026-09-02T21:12:03+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+application_github_code_search_used: false
+usecase:
+  id: SUC-040
+  name: Add Vehicle Trip
+  primary_story_ids: [STORY-0133, STORY-0134]
+  dependency_story_ids: [STORY-0086, STORY-0091, STORY-0092, STORY-0103]
+  controller_anchor: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/VehicleTripIngestionController.java:27-56
+  template: cylindermanagement.web/src/main/resources/templates/with-menu/VehicleTripIngestion.html
+  anchors:
+    - lines 1115-1120 use /search/vehicle/{text} => STORY-0103
+    - lines 1122-1127 use /search/driver/{text} => STORY-0092
+    - lines 1129-1134 use /search/customer/{text} => STORY-0091
+    - lines 1136-1141 use /search/address/customer-address/{customerId} => STORY-0086
+  debounce_anchor: lines 1146-1160
+  detail: Vehicle, Driver and Customer are searched while typing; Address choices are fetched from the selected Customer identity. Hidden ids are posted for Customer and Customer Address.
+approval_rule: Dependencies remain Story-level approvals and are repeated in this Use Case; this mapping does not auto-approve any Story.
+next_reconciliation: Merge this delta into the canonical shared-search source map and SUC-040 review page projection.
