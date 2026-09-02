@@ -1,0 +1,5 @@
+scheduler_task: cylinder-production-fire
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260902-182848-IST
+receipt_time: '2026-09-02T18:28:48+05:30'
+state: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
