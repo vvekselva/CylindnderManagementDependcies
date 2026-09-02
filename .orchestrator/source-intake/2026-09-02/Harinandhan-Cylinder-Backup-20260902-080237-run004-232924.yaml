@@ -1,0 +1,22 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-232924-IST-RUN-004
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_library_file_id: file_00000000659c8211857bba6b09282de3
+materialized_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-080237).zip
+materialization_state: SUCCESS_AVAILABLE_CHATGPT_LOCAL_MOUNT
+sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+extracted_path: /mnt/data/cylinder-prod-fire-20260902-232924/source
+extracted_file_count: 1650
+java_file_count: 1054
+local_git_present: false
+source_tree_content_hash: 20017f21b0536a643080fdaabe9b302af838d1a0224c0ddac10fbf62a3e16191
+maven_wrapper_present: false
+gradle_wrapper_present: false
+bundled_jar_count: 0
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+source_analysis_engine: EXTRACTED_LOCAL_SOURCE
+control_plane: GITHUB_DURABLE_AUDIT_ONLY
