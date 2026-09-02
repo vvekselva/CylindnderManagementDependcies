@@ -3,16 +3,24 @@ story_id: STORY-0110
 state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
 repository: vvekselva/CylinderManagement
 ref: 3ae6e61442132d94a307275b08dd65fcef228d89
 current_behavior:
   - DomainLookupController.saveProductUom accepts optional productUomId and presents explicit add/update success behavior.
-  - ProductUomIngestionService rejects whenever `findByProductUomContainingIgnoreCase(value)` returns any row, without excluding the same productUomId during update.
+  - ProductUomIngestionService rejects whenever findByProductUomContainingIgnoreCase(value) returns any row, without excluding the same productUomId during update.
   - The duplicate predicate is contains/ignore-case rather than exact normalized equality, allowing substring false-positive duplicate rejection.
   - Successful service save is followed by targeted Product UOM cache refresh and PRG redirect.
+  - DomainLookup.html has a database-backed 320 ms Product UOM search in the table toolbar via /search/product-uom/{text}, but the add/edit UOM candidate input only uppercases locally and does not display database matches while typing.
+approved_story_behavior:
+  state: PENDING_USER_APPROVAL
+  note: Story approval is not inferred. This is a source-proved review packet only.
 business_impact:
   - A legitimate update, including retaining the same UOM name, can be rejected as a duplicate of itself.
   - Distinct UOM values can be rejected merely because one contains the other.
+  - Candidate entry can miss an existing value until submit even though the governed search endpoint already exists.
 proposed_manifest:
   - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductUomIngestionService.java
     component: ProductUomIngestionService
@@ -23,11 +31,16 @@ proposed_manifest:
   - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ProductUomJpaDao.java
     component: ProductUomJpaDao
     method: exact duplicate lookup as required
-    source_anchor: existing repository declaration
-    proposed_change: add/use exact ignore-case business-key lookup; no schema change.
+    source_anchor: existing declaration line ~10
+    proposed_change: add/use exact ignore-case business-key lookup with update-aware current-row exclusion; no schema change.
+  - path: cylindermanagement.web/src/main/resources/templates/with-menu/DomainLookup.html
+    component: Product UOM candidate input and shared search engine
+    source_anchor: candidate input lines ~548-565; table search ~593-599; REST_BASE/searchTable ~1604-1660
+    proposed_change: add a debounced database-backed suggestion panel to the candidate UOM input using existing /search/product-uom/{text}; retain submit-time service validation.
+    reason: satisfy the governed lookup-before-insert behavior at the candidate field, not only the table toolbar.
   - path: relevant Product UOM ingestion/controller tests under src/test/java
     component: tests
-    proposed_change: cover create duplicate, update unchanged value, update to another row's exact value, substring-but-distinct value, and cache refresh/redirect regression.
+    proposed_change: cover create duplicate, update unchanged value, update to another row's exact value, substring-but-distinct value, candidate lookup, and cache refresh/redirect regression.
 database_impact: NONE_SCHEMA
 material_story_change: false
 approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
