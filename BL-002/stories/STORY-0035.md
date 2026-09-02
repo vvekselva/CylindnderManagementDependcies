@@ -2,23 +2,33 @@
 
 - Release: R2
 - Endpoint: `GET /customer-spot-cylinder-check/fetch`
-- Functional area: Customer Spot Cylinder Check
+- Controller: `CustomerSpotCylinderCheckController.fetch`
 - Approval: PENDING_USER_APPROVAL
-- Review state: NEEDS_CLARIFICATION
-- Traceability state: PARTIAL_INTERMEDIATE_HOPS
-- Enrichment state: SOURCE_DETAIL_REVIEW_REQUIRED
+- Review state: READY_FOR_USER_REVIEW
+- Traceability state: COMPLETE
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Local-source evidence: `BL-002/evidence/STORY-0035-local-source-business-behavior-20260902-1647.yaml`
 
 ## Human-readable story
 
-As an authorized Cylinder Management user or system consumer, I want to view or retrieve **Customer Spot Cylinder Check** through **GET /customer-spot-cylinder-check/fetch** so that the corresponding business operation is available through the application.
+As an authorized Cylinder Management user, I open the Customer Spot Cylinder Check entry page for a specific vehicle load so that I can record the cylinders physically observed at a customer and submit that validation through STORY-0034.
 
-## Governed evidence
+## Exact entry contract
 
-The canonical BL-002 story register identifies STORY-0035 as R2 priority 2, review state `NEEDS_CLARIFICATION`, approval `PENDING_USER_APPROVAL`, and traceability `PARTIAL_INTERMEDIATE_HOPS`.
+`GET /customer-spot-cylinder-check/fetch` requires request parameter `vehicleLoadId` as `Long`. `CustomerSpotCylinderCheckController.fetch(vehicleLoadId)` creates a fresh `CustomerSpotCylinderCheckRequestDto`, writes the submitted vehicle-load identity into the nested `CustomerSpotCylinderCheckDto`, ensures that the line collection contains at least 10 empty entry rows, and delegates to `buildMav(...)`.
 
-## Exact remaining source-detail gap
+`buildMav` renders `final-version-1/CustomerSpotCylinderCheck` with model key `spotCheckRequest`. It also loads `activeSpotCheckBooks` through `CustomerSpotCylinderCheckService.findActiveSpotCheckBooksForLoad(vehicleLoadId)`. That service reads active assigned challan books for the same vehicle load and book type `CUSTOMER_SPOT_CYLINDER_CHECK`; this GET does not create or consume a challan page.
 
-The physical Story artifact is materialized, but the canonical trace does not yet prove the complete intermediate dependency behavior. Strict completion requires frozen-source proof of exact fetch request parameters and browser caller/event, controller binding, response DTO/model, service/DAO/entity/database read identities, selection/filter predicates, and success/empty/error behavior.
+The initial entry page therefore carries the exact vehicle-load identity into the form, provides at least 10 cylinder-observation rows, and supplies the active spot-check challan-book choices required by the submit flow. `successMessage` and `errorMessage` are null on this fresh GET.
 
-The missing intermediate behavior is not guessed. No strict-field/UI completion is claimed. No approval occurred.
+## Persistence and visible outcome
+
+This GET performs no customer/cylinder/challan mutation. Its persistence interaction is read-only assignment lookup for the active spot-check books. The visible outcome is the prepared Customer Spot Cylinder Check entry page; the actual validation/persistence/challan consumption is the separate POST flow in STORY-0034.
+
+## Completion and approval gate
+
+The recovered governed ZIP proves the exact request parameter, controller initialization, minimum line-row behavior, active-book read and rendered model/view. STORY-0035 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+No approval occurred. No application code or database schema was changed.
