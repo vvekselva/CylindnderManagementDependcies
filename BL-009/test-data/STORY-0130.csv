@@ -1,0 +1,5 @@
+test_case_id,country_id,country_name,description,expected_outcome
+TC-0130-01,,India,country,NORMALIZE_SAVE_REFRESH_REDIRECT
+TC-0130-02,42,India,updated,ID_PRESERVED_CURRENT_UPDATE_SEMANTICS
+TC-0130-03,,Ind,duplicate,CURRENT_CONTAINS_IGNORE_CASE_DUPLICATE_REJECTION
+TC-0130-04,,Nepal,country,SAVE_SUCCESS
