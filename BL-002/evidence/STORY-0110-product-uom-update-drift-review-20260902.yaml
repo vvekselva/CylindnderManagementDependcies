@@ -1,0 +1,36 @@
+review_packet_id: STORY-0110-PRODUCT-UOM-UPDATE-DRIFT-20260902
+story_id: STORY-0110
+state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+current_behavior:
+  - DomainLookupController.saveProductUom accepts optional productUomId and presents explicit add/update success behavior.
+  - ProductUomIngestionService rejects whenever `findByProductUomContainingIgnoreCase(value)` returns any row, without excluding the same productUomId during update.
+  - The duplicate predicate is contains/ignore-case rather than exact normalized equality, allowing substring false-positive duplicate rejection.
+  - Successful service save is followed by targeted Product UOM cache refresh and PRG redirect.
+business_impact:
+  - A legitimate update, including retaining the same UOM name, can be rejected as a duplicate of itself.
+  - Distinct UOM values can be rejected merely because one contains the other.
+proposed_manifest:
+  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductUomIngestionService.java
+    component: ProductUomIngestionService
+    method: processRequest
+    source_anchor: duplicate-validation block around lines 45-70 in recovered ZIP
+    proposed_change: use exact normalized case-insensitive duplicate semantics and exclude the submitted productUomId during update.
+    reason: align service validation with the controller's add/update contract.
+  - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ProductUomJpaDao.java
+    component: ProductUomJpaDao
+    method: exact duplicate lookup as required
+    source_anchor: existing repository declaration
+    proposed_change: add/use exact ignore-case business-key lookup; no schema change.
+  - path: relevant Product UOM ingestion/controller tests under src/test/java
+    component: tests
+    proposed_change: cover create duplicate, update unchanged value, update to another row's exact value, substring-but-distinct value, and cache refresh/redirect regression.
+database_impact: NONE_SCHEMA
+material_story_change: false
+approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: any additional file/field/schema/controller behavior requires new approval.
+application_code_changed: false
+bl010_created_or_executed: false
