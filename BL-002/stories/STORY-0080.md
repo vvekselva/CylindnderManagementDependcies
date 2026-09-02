@@ -4,36 +4,24 @@
 - Endpoint: `GET /ingestSupplier`
 - Controller: `SupplierIngestionController.doGet`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Human-readable story
+## Business behavior
 
-As an operator, I can open Register Supplier and receive a fully initialized supplier form whose nested phone/address/city/state/country objects are safe for Thymeleaf binding. I can enter supplier identity and address information; country/state/city are autocomplete controls that keep selected IDs/names in hidden fields for the later POST.
+As an operator, I can open Register Supplier and receive a fully initialized supplier form whose nested phone/address/city/state/country objects are safe for Thymeleaf binding. `GET /ingestSupplier` accepts no request parameters. The controller constructs `SupplierDto`, nested `PhoneNumberDto`, `AddressDto`, `CityDto`, `StateDto`, and `CountryDto`, wraps them in `SupplierIngestionRequestDto`, renders `with-menu/SupplierIngestion`, exposes the request as model `supplier`, and exposes the configured home back link.
 
-## GET/controller contract
+The form posts to `/ingestSupplier`, binds `supplierDto.supplierName`, `gstNumber`, phone, address lines/landmark, plus selected city/state/country IDs and names. GST input is capped at 15 characters and uppercased on input. Country/state/city are browser autocomplete controls backed by `/search/country/`, `/search/state/`, `/search/city/`; non-empty text triggers the template debounce wrapper and fetch, selection writes both visible name and hidden persistent identity, and upstream geography changes clear stale dependent selections. Empty search text closes the dropdown rather than calling the API.
 
-`GET /ingestSupplier` accepts no request parameters. `doGet()` constructs `SupplierDto`, nested `PhoneNumberDto`, nested `AddressDto`, and nested `CityDto`, `StateDto`, `CountryDto`; wraps that graph in `SupplierIngestionRequestDto`; renders `with-menu/SupplierIngestion`; exposes it as model `supplier`; and exposes `backLink = ViewConstants.REDIRECT_HOME_LINK`.
+This GET performs no database write. Its business purpose is correct form initialization, user entry and stable reference-ID capture for the separate POST transaction.
 
-## Exact form/binding contract
+## Completion and approval gate
 
-The rendered form posts to `/ingestSupplier`, binds `th:object="${supplier}"`, uses `method="post"`, `id="supplier-form"`, `autocomplete="off"`, and includes CSRF hidden name/value when available. Frozen controller/template evidence establishes these nested binding paths: `supplierDto.supplierName`, `supplierDto.gstNumber`, `supplierDto.phoneNumber.phoneNumber`, `supplierDto.address.addressLine1`, `supplierDto.address.addressLine2`, `supplierDto.address.addressLine3`, `supplierDto.address.landmark`, `supplierDto.address.city.cityId/cityName`, `supplierDto.address.state.stateId/stateName`, and `supplierDto.address.country.countryId/countryName`.
+The recovered ZIP confirms initialization, all visible/bound fields, autocomplete identity propagation, dependent clearing, form action and read-only effect. STORY-0080 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-Visible Supplier Name is a text input. GST Number is text with `maxlength="15"`, uppercase styling, and `oninput` uppercasing. Validation styling/messages are driven by DTO `validationFailure` / `validationErrorDtos`; e.g. supplier-name and GST error codes are rendered from `messages.properties` via `#{${ve.errorCode}}`.
-
-## Autocomplete behavior
-
-The template defines search bases `/search/country/`, `/search/state/`, `/search/city/`. Typing a non-empty query schedules `_debounce(key, fn, ms)` then fetches the corresponding URL plus `encodeURIComponent(q)`, reads JSON arrays (`countryDtos`, `stateDtos`, `cityDtos`), and on selection copies both selected ID and name into hidden fields. Clearing/changing an upstream geography clears dependent selected fields before new results are used. The inspected call sites invoke `_debounce` without an explicit `ms`; therefore no positive debounce interval is source-proved and none is invented. Empty query hides the dropdown instead of calling the API.
-
-## Persistence / outcome
-
-This GET performs no persistence. Its purpose is safe form initialization and rendering. The later POST is a separate story. No submit success/error behavior is attributed to this GET.
-
-## Frozen source evidence
-
-- `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/SupplierIngestionController.java`
-- `cylindermanagement.web/src/main/resources/templates/with-menu/SupplierIngestion.html`
-
-## Approval boundary
-
-Strict field/UI source enrichment is complete. Approval remains `PENDING_USER_APPROVAL`; no auto-approval, Use Case grouping, or testing-readiness promotion is performed.
+Approval remains pending; no application-code or BL-010 mutation occurred.
