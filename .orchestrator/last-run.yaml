@@ -1,29 +1,29 @@
-run_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001
 checkpoint_state: RESUMABLE_RUNTIME_BOUNDARY
-started_at: '2026-09-01T05:01:48+05:30'
-checkpoint_at: '2026-09-01T05:06:07+05:30'
-terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
-termination_reason: GOVERNED_AUTOMATION_INVOCATION_RUNTIME_BOUNDARY
+started_at: '2026-09-02T09:27:12+05:30'
+checkpoint_at: '2026-09-02T09:33:09+05:30'
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_PARTIAL_STORY_0048_EXACT_SOURCE_PROOF
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   run_scope: CONTINUOUS
-  github_role: DURABLE_CONTROL_AUDIT_ONLY
+  github_role: DURABLE_CONTROL_AUDIT_AND_EXACT_SOURCE_READ
   github_actions_runners_used: false
 scheduler_handoff:
-  fire_id: CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST
-  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire-i/CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST.yaml
+  fire_id: CYLINDER-PRODUCTION-FIRE-20260902-092654-IST
+  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/CYLINDER-PRODUCTION-FIRE-20260902-092654-IST.yaml
   handoff_acknowledged: true
   run_linked: true
 prior_run_reconciliation:
-  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260901-033058-IST-AUTO4-RUN-001
+  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260902-082704-IST-RUN-001
   unresolved_gap_remaining: false
 business_behavior_rework:
-  advanced_units: [STORY-0047, STORY-0048]
+  advanced_units: [STORY-0048]
   completed_units: []
   result: PARTIAL_CONTINUE_REQUIRED
-  evidence: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001/work-units/STORY-0047-STORY-0048-source-analysis.yaml
+  evidence: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001/work-units/STORY-0048-source-proof.yaml
 aggregate:
   business_behavior_complete: 21
   business_behavior_total: 134
@@ -43,14 +43,15 @@ drift_governance:
   bl010_executed: false
   user_drift_approval_bypassed: false
 source_runtime:
-  requested_method: LOCAL_GIT
-  local_git_transport_state: BLOCKED_DNS_COULD_NOT_RESOLVE_GITHUB_COM
-  fallback: EXACT_FROZEN_SOURCE_CONNECTOR_READS_ONLY
+  requested_method: EXACT_FROZEN_GITHUB_SOURCE
+  source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  result: STORY_0048_CONTROLLER_TO_SERVICE_DELEGATE_PROVED_DOWNSTREAM_IDENTITY_PENDING
 runtime_reliability:
   heartbeat_state: TERMINATED_AT_RUNTIME_BOUNDARY
-  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001/termination.yaml
-  event_stream: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-I-20260901-050148-IST-RUN-001/events.ndjson
-  next_action: Resume dependency-safe R1 source proof for STORY-0047/STORY-0048 using local Git when transport is available; otherwise exact frozen-source file reads only. Keep STORY-0045 drift approval-gated.
+  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001/termination.yaml
+  event_stream: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001/events.ndjson
+  scheduler_must_remain_enabled: true
+  next_action: Resolve exact ChallanPagePhotoUploadService implementation at frozen ref and trace deactivatePhoto through DAO/repository/entity/database; then resume STORY-0047; preserve STORY-0045 approval gate.
 claims:
   active_at_terminal: 0
 transient_logs_remaining: 0
