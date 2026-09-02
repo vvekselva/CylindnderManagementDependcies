@@ -4,9 +4,13 @@
 - Endpoint: `GET /trip-review/{vehicleTripId}`
 - Controller: `TripReviewController.showTripReview`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
 ## Entry and exact request contract
 The user enters this screen from the Trip Review Queue by selecting `Open Review`, whose href is built from the queue row's exact vehicleTripId. The endpoint is `GET /trip-review/{vehicleTripId}` and the controller binds required path variable `vehicleTripId` as `Long`.
@@ -45,4 +49,6 @@ When tripReviewMap is null, the page states that offline map data is unavailable
 This GET is read-only at the proved controller/service boundary. It assembles the review dashboard from view/base-table projection reads and offline-map reads; it does not close the review or persist review remarks.
 
 ## Governed conclusion
-The frozen controller, service and dashboard template resolve the path-variable, model, section/control, challan-photo URL, close-button predicate, map event, empty-state and navigation gaps applicable to this GET. STORY-0058 is `STRICT_FIELD_UI_COMPLETE`. Approval remains `PENDING_USER_APPROVAL`.
+The recovered ZIP confirms the controller, service and dashboard template contract above. The path-variable, model, sections/controls, challan-photo URL, close-button predicate, map event, empty states, read-only impact and user navigation are sufficiently source-bound for the business-behavior standard.
+
+STORY-0058 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no code mutation or auto-approval occurred.
