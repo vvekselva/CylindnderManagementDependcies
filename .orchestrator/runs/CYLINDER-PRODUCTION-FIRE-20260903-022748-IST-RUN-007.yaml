@@ -1,0 +1,12 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-022748-IST-RUN-007
+scheduler_fire_id: 20260903-022748-IST
+scheduler_task: Cylinder Production Fire
+state: ORCHESTRATOR_STARTED
+mode: CONTINUOUS
+started_at: '2026-09-03T02:27:49+05:30'
+receipt_path: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire/20260903-022748-IST.yaml
+source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
+terminal_classification: null
+terminated_at: null
+resumable: true
