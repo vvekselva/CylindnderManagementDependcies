@@ -1,0 +1,78 @@
+story_id: STORY-0114
+title: Save Driver
+governance_state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  - Domain Lookup posts driverId, driverName, phoneNumber and licenceNumber to POST /domainLookup/driver/save.
+  - Controller trims driverName and phoneNumber, uppercases licenceNumber, wraps phoneNumber in PhoneNumberDto and delegates DriverIngestionRequestDto.
+  - DriverIngestionService validates only request/driver/name null-or-empty and duplicate driver-name contains/ignore-case.
+  - On null/invalid request the service throws validation evidence using VehicleIngestionRequestDto instead of DriverIngestionRequestDto.
+  - Duplicate-name validation does not exclude the current driverId during update and uses contains instead of exact normalized identity.
+  - DriverMapper maps driverId, driverName and licenceNumber but does not map phoneNumber.
+  - DriverDo has fk_phone_number to public.tbl_phone_number, but current Driver ingestion therefore does not persist the submitted phone relation.
+  - The template declares required Phone Number and Licence Number fields and renders DRIVER_PHONE_* and DRIVER_LICENCE_* validation codes that the current service does not produce.
+approved_story_behavior:
+  - Save/update the selected Driver identity with the submitted required driver name, phone number and licence number.
+  - Return controlled field-level validation evidence for invalid input.
+  - Preserve update semantics without rejecting the same row as its own duplicate.
+  - Persist the submitted phone relation through the existing driver fk_phone_number model without schema change.
+business_impact:
+  - A user can submit a phone number that is displayed as required but is silently omitted from Driver persistence.
+  - Invalid phone/licence input is not enforced by the current service despite visible UI validation placeholders.
+  - Editing an existing driver can be rejected by the duplicate-name contains check even when the row is updating itself.
+  - Null/invalid request evidence may be returned as the wrong DTO type, preventing the controller's intended inline Driver validation branch.
+proposed_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/DriverIngestionService.java
+    component: DriverIngestionService
+    method: processRequest
+    approximate_anchor: lines 39-83
+    proposed_change: Replace wrong VehicleIngestionRequestDto validation payload with DriverIngestionRequestDto; validate required/normalized phone and licence fields; make duplicate checks update-aware and exact-business-key based; resolve/persist the submitted PhoneNumberDo and associate it with DriverDo before save.
+    reason: Align executable validation/persistence with the form contract and Driver table model.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mapper/DriverMapper.java
+    component: DriverMapper
+    method: mapDtoToDo / mapDoToDto
+    approximate_anchor: lines 10-45
+    proposed_change: Map Driver phone DTO/entity consistently or deliberately keep phone association in the service and map it back on response; do not silently drop phone data.
+    reason: Current mapper omits the phone relation in both directions.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/DriverJpaDao.java
+    component: DriverJpaDao
+    approximate_anchor: lines 11-16
+    proposed_change: Add exact case-insensitive lookup/existence methods needed for update-aware driver-name/licence validation rather than contains-based duplicate detection.
+    reason: Prevent false duplicate rejection on updates/substrings.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.web/src/main/resources/templates/DomainLookup.html
+    component: Driver tab form
+    approximate_anchor: lines 1251-1385
+    proposed_change: No business-field expansion. Keep current submitted fields; adjust only validation-message binding if required by the approved service validation implementation.
+    reason: Existing form already expresses the intended Driver fields.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/test/java
+    component: Driver ingestion tests
+    approximate_anchor: new or existing DriverIngestionService tests
+    proposed_change: Add positive create/update coverage; null request; blank name; invalid/blank phone; invalid/blank licence; duplicate other-row name/licence; same-row update; phone association persistence mapping.
+    reason: Guard the corrected contract.
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_objects:
+    - public.tbl_driver.fk_phone_number
+    - public.tbl_phone_number
+    - public.tbl_driver.driver_name
+    - public.tbl_driver.licence_number
+risk_and_rollback:
+  risk: MEDIUM
+  rollback: Revert the approved application-source changes; no database rollback or migration is required.
+scope_expansion_rule: Any additional file, schema object, field, endpoint or business behavior requires a new explicit approval.
+application_code_changed: false
+bl010_created_or_executed: false
