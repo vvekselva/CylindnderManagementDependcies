@@ -1,0 +1,5 @@
+test_case_id,tab,expected_view,expected_active_tab,expected_write_effect
+TC-0108-01,productCategory,final-version-1/DomainLookup,productCategory,NONE
+TC-0108-02,vehicle,final-version-1/DomainLookup,vehicle,NONE
+TC-0108-03,driver,final-version-1/DomainLookup,driver,NONE
+TC-0108-04,cylinder,final-version-1/DomainLookup,cylinder,NONE
