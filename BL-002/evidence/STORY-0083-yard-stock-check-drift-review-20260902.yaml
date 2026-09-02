@@ -1,52 +1,65 @@
 review_packet_id: STORY-0083-YARD-STOCK-CHECK-DRIFT-20260902
 story_id: STORY-0083
-state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+state: AWAITING_STORY_REVIEW_AND_EXACT_USER_CODE_CHANGE_APPROVAL
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
 repository: vvekselva/CylinderManagement
 ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+story_approval_state: PENDING_USER_APPROVAL
 current_behavior:
-  - final-version-1/YardStockCheckIngestion.html posts `yardStockCheckDto.checkLines[i].cylinder.cylinderId`, `yardStockCheckDto.checkLines[i].cylinderState.cylinderStateId`, and auditorNotes.
-  - YardStockCheckLineDto has no `cylinderState` property; the matching DTO property is `observedCylinderState`. The template therefore does not source-prove binding of the selected observed state into the DTO expected by validation/service code.
-  - The same final template does not post `observedCylinder`, but YardStockCheckIngestionRequestValidator rejects an empty observedCylinder.
-  - The validator dereferences `getObservedCylinderState().getCylinderStateId()` in logging/DAO lookup before checking whether observedCylinderState is null, allowing a null-binding path to fail before controlled validation evidence is attached.
-  - YardStockCheckIngestionService persists the stock-check header and line observed-state/scannedAt/observedCylinder, but does not set the selected cylinder relation, auditorNotes, systemCylinderState, or stateMatchesSystem on YardStockCheckLineDo before save.
-  - The existing line entity/table already contains fk_cylinder, auditor_notes, fk_observed_cylinder_state, fk_system_cylinder_state, state_matches_system and observed_cylinder fields; this is an application mapping/binding drift, not a schema absence.
-approved_or_target_behavior_for_review:
-  - The browser-selected cylinder identity and physical observed state must bind to the DTO fields actually consumed by validation/service code.
-  - Validation must fail closed with controlled validation errors rather than dereferencing a null observed state.
-  - A persisted audit line should retain the selected cylinder, observed physical state, auditor notes and the system-state comparison needed for yard reconciliation using existing schema fields.
+  - final-version-1/YardStockCheckIngestion.html posts yardStockCheckDto.checkLines[i].cylinder.cylinderId, yardStockCheckDto.checkLines[i].cylinderState.cylinderStateId and auditorNotes.
+  - YardStockCheckLineDto has no cylinderState property; the matching DTO property is observedCylinderState. The template therefore does not source-prove binding of the selected observed state into the DTO expected by validation/service code.
+  - The same final template does not post observedCylinder, but YardStockCheckIngestionRequestValidator rejects an empty observedCylinder.
+  - The validator dereferences getObservedCylinderState().getCylinderStateId() in logging/DAO lookup before checking whether observedCylinderState is null, allowing a null-binding path to fail before controlled validation evidence is attached.
+  - YardStockCheckIngestionService persists the stock-check header and line observed-state/scannedAt/observedCylinder, but does not set the selected cylinder relation, auditorNotes, systemCylinderState or stateMatchesSystem on YardStockCheckLineDo before save.
+  - The existing line entity/table already contains fk_cylinder, auditor_notes, fk_observed_cylinder_state, fk_system_cylinder_state, state_matches_system and observed_cylinder fields; this is application binding/mapping drift, not a schema absence.
+target_behavior_for_user_review:
+  approval_state: NOT_APPROVED
+  - Browser-selected cylinder identity and physical observed state should bind to the DTO fields consumed by validation/service code.
+  - Validation should fail closed with controlled validation errors rather than dereferencing a null observed state.
+  - If approved, persisted audit lines should retain selected cylinder, observed physical state, auditor notes and system-state comparison using existing schema fields.
 business_impact:
   - A valid user-selected physical state may not bind to observedCylinderState, causing rejection or an uncontrolled null dereference.
-  - The submitted cylinder ID and auditor notes are currently not persisted onto the line by the service, weakening traceability and the unique fk_stock_check/fk_cylinder audit invariant.
+  - Submitted cylinder ID and auditor notes are not source-proved to persistence on the current service path, weakening traceability and the fk_stock_check/fk_cylinder audit invariant.
   - System-vs-observed reconciliation fields can remain unset even though the UI shows current system state and the database line model supports the comparison.
 proposed_manifest:
-  - path: cylindermanagement.web/src/main/resources/templates/final-version-1/YardStockCheckIngestion.html
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.web/src/main/resources/templates/final-version-1/YardStockCheckIngestion.html
     component: Yard Stock Check Thymeleaf/JavaScript row builder
     template_block: dynamic audit-row hidden/select inputs
     source_anchor: approximately lines 231-238 in recovered ZIP
-    proposed_change: bind the selected state as `yardStockCheckDto.checkLines[i].observedCylinderState.cylinderStateId`; retain `cylinder.cylinderId` and auditorNotes; also submit the selected cylinder serial as hidden `observedCylinder` or, if service-side derivation is used, do not require browser display text as the authority.
-    reason: align Spring form binding with YardStockCheckLineDto and preserve the displayed/selected audit evidence.
-  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/YardStockCheckIngestionRequestValidator.java
+    proposed_change: bind selected state as yardStockCheckDto.checkLines[i].observedCylinderState.cylinderStateId; retain cylinder.cylinderId and auditorNotes; submit observedCylinder only if the approved contract keeps browser text authoritative, otherwise derive it server-side from cylinder identity.
+    reason: align Spring form binding with YardStockCheckLineDto and preserve selected audit evidence.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/YardStockCheckIngestionRequestValidator.java
     component: YardStockCheckIngestionRequestValidator
     method: validate
-    source_anchor: checkLines validation block, approximately lines 125-175 in recovered ZIP
-    proposed_change: validate line/cylinder/cylinderId/observedCylinderState/stateId for null before any dereference or DAO lookup; validate referenced cylinder/state existence; remove the pre-null-check dereference path; when observedCylinder is derived from the persisted cylinder, validate cylinder identity as authoritative rather than trusting free text.
+    source_anchor: checkLines validation block approximately lines 125-175
+    proposed_change: validate line/cylinder/cylinderId/observedCylinderState/stateId for null before dereference or DAO lookup; validate referenced cylinder/state existence; remove pre-null-check dereference; if observedCylinder is server-derived, validate cylinder identity as authoritative instead of free text.
     reason: produce controlled validation evidence and prevent null-pointer failure.
-  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/YardStockCheckIngestionService.java
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/YardStockCheckIngestionService.java
     component: YardStockCheckIngestionService
     method: processRequest
-    source_anchor: line-persistence loop, approximately lines 60-90 in recovered ZIP
-    proposed_change: resolve the selected cylinder by submitted cylinderId using CylinderJpaDao; set YardStockCheckLineDo.cylinder; derive/set observedCylinder from the persisted cylinder serial; resolve/set observedCylinderState; copy auditorNotes; derive/set systemCylinderState from the current cylinder state when available; set stateMatchesSystem by comparing observed and system state; retain scannedAt and existing transactional header IN_PROGRESS -> COMPLETED flow.
-    reason: persist the full audit-line identity and reconciliation evidence already represented by the DTO/entity/schema.
-  - path: relevant Yard Stock Check MVC/validator/service test sources under src/test/java
+    source_anchor: line-persistence loop approximately lines 60-90
+    proposed_change: resolve selected cylinder by cylinderId; set YardStockCheckLineDo.cylinder; derive/set observedCylinder from persisted cylinder serial if that contract is approved; resolve/set observed state; copy auditorNotes; derive/set systemCylinderState from current cylinder state when available; set stateMatchesSystem from observed/system comparison; preserve scannedAt and existing transactional header lifecycle.
+    reason: persist full audit-line identity and reconciliation evidence already represented by DTO/entity/schema.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: relevant Yard Stock Check MVC/validator/service tests under src/test/java
     component: tests
-    proposed_change: add binding test for dynamic line names; validator tests for null observed state and missing cylinder/state references; service test proving cylinder relation, observed/system state, match flag and notes are persisted; regression test for header completion transaction.
-    reason: lock the repaired contract and prevent recurrence.
+    proposed_change: binding test for dynamic line names; validator tests for null observed state/missing references; service test for cylinder relation, observed/system state, match flag and notes; header completion regression.
+    reason: lock the explicitly approved repaired contract.
 database_impact: NONE_SCHEMA; use existing tbl_yard_stock_check_line columns and relationships only.
 risk_and_rollback: application binding/validation/mapping only; rollback limited to listed template/validator/service/tests.
 material_story_change: false
-approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
-scope_expansion_rule: any schema migration, new business status, new endpoint, additional file outside the listed source/tests, or materially different audit semantics requires a new user approval packet.
+approval_gate: STORY_APPROVAL_AND_EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: any schema migration, new business status, endpoint or materially different audit semantics requires new approval.
 application_code_changed: false
 bl010_created_or_executed: false
