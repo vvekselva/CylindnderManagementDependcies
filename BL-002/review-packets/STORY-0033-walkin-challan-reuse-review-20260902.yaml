@@ -1,0 +1,38 @@
+packet_id: STORY-0033-walkin-challan-reuse-review-20260902
+story_id: STORY-0033
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+current_behavior:
+  component: WalkinSaleServiceImpl.linkDeliveryChallanLeafIfPresent
+  file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/WalkinSaleServiceImpl.java
+  anchor: around lines 344-399
+  detail: When the selected challan page already has a transaction link, the walk-in flow deletes the old link, flushes, marks the page USED_CONFIRMED and creates a replacement link to the new walk-in business job.
+comparison_behavior:
+  component: VehicleTripStopIngestionService strict challan consumption
+  file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleTripStopIngestionService.java
+  anchor: around lines 504-562
+  detail: The normal stop flow explicitly blocks a challan page that already has a transaction link and states that reuse is blocked.
+business_impact:
+  - A previously linked delivery challan page can be silently reassigned by walk-in sale while the normal stop flow forbids the same reuse.
+  - Reassignment can destroy the durable transaction-to-challan association for the earlier business event and weakens audit traceability.
+proposed_locations:
+  - file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/WalkinSaleServiceImpl.java
+    component: WalkinSaleServiceImpl.linkDeliveryChallanLeafIfPresent
+    anchor: around lines 366-393
+    proposal: Align with strict challan consumption by rejecting an already-linked page rather than deleting/replacing the existing transaction link; validate page availability/status before linking.
+  - file: corresponding Walk-in Sale controller/template error handling
+    component: Walkin Sale visible error path
+    proposal: Surface a controlled message that the challan page is already used/linked and require a different available page.
+tests:
+  - already-linked challan page is rejected and old link remains unchanged
+  - available delivery challan page is linked once and marked USED_CONFIRMED
+  - wrong/missing challan page remains rejected or skipped according to the approved Walk-in Sale contract
+  - regression comparison with VehicleTripStop strict reuse blocking
+database_impact: No schema change proposed. Existing challan page audit ledger and transaction link tables remain authoritative.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
