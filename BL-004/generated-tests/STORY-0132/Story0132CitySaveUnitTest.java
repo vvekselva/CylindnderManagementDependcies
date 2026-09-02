@@ -1,7 +1,7 @@
 package com.sreyas.datamatics.cylindermanagement.misc.web.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals; import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test; import org.mockito.ArgumentCaptor; import org.springframework.test.util.ReflectionTestUtils; import org.springframework.web.servlet.ModelAndView; import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.sreyas.datamatics.application.dto.CityIngestionRequestDto; import com.sreyas.datamatics.application.service.ICylinderManagementApplicationService; import com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache;
+import com.sreyas.datamatics.application.request.dto.CityIngestionRequestDto; import com.sreyas.datamatics.application.service.ICylinderManagementApplicationService; import com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache;
 class Story0132CitySaveUnitTest {
  @Test void currentSuccessContract() throws Exception { LookupManagementController c=new LookupManagementController(); ICylinderManagementApplicationService<CityIngestionRequestDto,?> s=mock(ICylinderManagementApplicationService.class); LookupDataCache cache=mock(LookupDataCache.class); ReflectionTestUtils.setField(c,"cityIngestionService",s); ReflectionTestUtils.setField(c,"lookupDataCache",cache); ModelAndView m=c.saveCity(null," Coimbatore ","city",mock(RedirectAttributes.class)); ArgumentCaptor<CityIngestionRequestDto> a=ArgumentCaptor.forClass(CityIngestionRequestDto.class); verify(s).processRequest(a.capture()); assertEquals("Coimbatore",a.getValue().getCityDto().getCityName()); verify(cache).refreshCities(); assertEquals("redirect:/lookupManagement?tab=city",m.getViewName()); }
 }
