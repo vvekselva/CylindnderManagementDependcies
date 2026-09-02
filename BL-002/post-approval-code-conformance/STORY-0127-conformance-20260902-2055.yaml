@@ -1,0 +1,21 @@
+story_id: STORY-0127
+approval_state: APPROVED_AFTER_REWORK
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+result: CODE_CONFORMANCE_VERIFIED_PASS
+repository: vvekselva/CylinderManagement
+approved_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_anchors:
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/LookupManagementController.java:54-57
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/LookupManagementController.java:62-70
+verified:
+  - GET /lookup is parameterless and redirects to /lookupManagement.
+  - The redirect itself performs no service, DAO or database mutation.
+  - GET /lookupManagement defaults tab to addressType and populates Address Type, Country, State and City collections from LookupDataCache.
+lookup_insertion_policy:
+  classification: NOT_APPLICABLE_TO_REDIRECT
+  note: Lookup search/save behavior is governed by STORY-0128 through STORY-0132 and their shared Search dependencies; approval of STORY-0127 does not approve them.
+code_mutation: NONE
+bl010_created_or_executed: false
+next_action: Revised BL-004/BL-005/BL-009 fan-out is eligible subject to runtime availability.
