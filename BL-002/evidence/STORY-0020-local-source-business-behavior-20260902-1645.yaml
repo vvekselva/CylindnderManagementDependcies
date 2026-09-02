@@ -1,0 +1,19 @@
+story_id: STORY-0020
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /yard-location/upload
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java
+view_path: cylindermanagement.web/src/main/resources/templates/with-menu/YardLocationUpload.html
+javascript_path: cylindermanagement.web/src/main/resources/static/offline-map/js/cmas-offline-vector-map.js
+optional_parameter: yardId Long
+defaults:
+  locationStatus: VERIFIED
+  defaultStartPoint: true
+active_yard_lookup: YardInventoryJpaDao.findByActiveTrueOrderByYardNameAsc
+visible_controls: [yardId, sourceReference, latitudeText, longitudeText, locationStatus, defaultStartPoint, previewYardLocationBtn, save]
+preview_helper: setupLocationUploadPreview
+mutation_in_get: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
