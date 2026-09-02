@@ -1,0 +1,32 @@
+backlog_id: BL-002
+release: R1
+recorded_at: '2026-09-02T16:27:00+05:30'
+r1_total: 88
+business_behavior_complete: 87
+remaining: 1
+remaining_story_id: STORY-0049
+remaining_gate:
+  type: ENDPOINT_ROLE_USER_CONFIRMATION
+  evidence: BL-002/evidence/STORY-0049-endpoint-role-review-20260902.yaml
+  exact_question: Confirm whether POST /add-stop/challan-page-photo/upload is intentionally retained as a non-visible fallback/compatible-form endpoint for which no browser control is applicable.
+  if_confirmed: Promote STORY-0049 to BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW without application or database mutation; R1 business-behavior rework becomes 88/88 and R2 may begin under R1_THEN_R2 ordering.
+  if_not_confirmed: Keep STORY-0049 SOURCE_DETAIL_REVIEW_REQUIRED and establish the missing intended client/UI requirement before R1 closure.
+source_proof:
+  non_ajax_visible_client_found: false
+  ajax_visible_clients_found: true
+  exact_non_ajax_reference_outside_controller_found: false
+story_approval_policy:
+  auto_approval: false
+  completed_r1_stories_still_require_explicit_user_review: true
+code_drift_manifests_created_this_run:
+  - BL-002/evidence/STORY-0045-customer-display-drift-review-20260902-zip.yaml
+  - BL-002/evidence/STORY-0114-driver-save-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0129-address-type-update-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0130-country-update-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0131-state-save-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0132-city-save-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0134-vehicle-trip-create-drift-review-20260902.yaml
+code_mutation_authorized: false
+application_code_changes: 0
+bl010_execution: 0
+r2_started: false
