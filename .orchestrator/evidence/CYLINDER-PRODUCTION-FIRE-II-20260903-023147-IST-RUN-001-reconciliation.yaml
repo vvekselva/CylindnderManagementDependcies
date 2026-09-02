@@ -1,0 +1,52 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-023147-IST-RUN-001
+mode: CONTINUOUS
+started_at: '2026-09-03T02:32:06+05:30'
+observed_fire_time: '2026-09-03T02:31:47+05:30'
+source_rule:
+  requested_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_library_file_id: file_00000000659c8211857bba6b09282de3
+  library_search_result: EXACT_PACKAGE_NOT_RETURNED
+  source_unavailable_classification: false
+  fallback_package: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  fallback_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-163304).zip
+  fallback_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  governed_sha_match: true
+  extracted_path: /mnt/data/cylinder-orchestrator-run008
+  extracted_file_count: 1650
+  extracted_java_file_count: 1054
+  local_git_present: false
+reconciliation:
+  prior_live_run_id: CYLINDER-PRODUCTION-FIRE-20260903-022748-IST-RUN-007
+  prior_live_state: TERMINATED
+  prior_terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+  approvals_total: 15
+  awaiting_user_review: 119
+  post_approval_conformance_pass: 14
+  drift_hold_story_ids: [STORY-0101]
+  development_exact_manifest_approval_gates: [DEV-0002, DEV-0003, DEV-0004]
+  aggregate_projection_drift_detected: false
+local_source_revalidation:
+  story_0101:
+    status: DRIFT_STILL_PRESENT
+    anchors:
+      - cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/StateSearchService.java:48
+      - cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/validator/SearchRequestValidator.java:61
+      - cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/validator/SearchRequestValidator.java:81
+    mutation_performed: false
+runtime_probe:
+  java: AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+execution_gates:
+  bl004_bl005_bl009_generated_mapped_stories: 14
+  faithful_runtime_available: false
+  exact_drift_manifest_approvals_available: false
+  safe_independent_eligible_units_remaining: false
+  recoverable_work_remaining: true
+rules_observed:
+  auto_approval: false
+  github_actions_used: false
+  application_code_mutated: false
+  bl010_rework_created_or_executed: false
