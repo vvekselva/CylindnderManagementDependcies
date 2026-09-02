@@ -4,20 +4,20 @@ scheduler_task: cylinder-production-fire-i
 state: RUNNING
 mode: CONTINUOUS
 started_at: '2026-09-02T16:01:42+05:30'
-last_heartbeat_at: '2026-09-02T16:12:12+05:30'
+last_heartbeat_at: '2026-09-02T16:21:59+05:30'
 terminal_classification: null
 terminal_reason: null
 running_worker_count: 1
-completed_worker_count: 1
-blocked_worker_count: 0
-active_work_unit_ids: [STORY-0126-BUSINESS-BEHAVIOR-REWORK]
+completed_worker_count: 7
+blocked_worker_count: 1
+active_work_unit_ids: [STORY-0049-ENDPOINT-ROLE-REVIEW, BL-002-QUEUE-PROJECTION-REPAIR]
 eligible_work_remaining: true
 resumable: true
-last_action: RECONCILED_BL002_TO_33_AND_COMPLETED_STORY_0114_WITH_DRIFT_REVIEW
+last_action: RECONCILED_BL002_TO_86_COMPLETED_STORIES_AND_COMPLETED_STORY_0045_0126_0127_0128_0129_0130_0131_0132_0133_0134
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-153056-IST-RUN-001
-aggregate_business_behavior_complete: 33
+aggregate_business_behavior_complete: 86
 aggregate_business_behavior_total: 134
-aggregate_percent: 24.6
+aggregate_percent: 64.2
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
-next_action: Complete STORY-0126 downstream service/DAO/entity read binding, then reconcile additional authoritative R1 Story completions.
+next_action: Reconcile STORY-0045 to aggregate, keep STORY-0049 pending explicit endpoint-role confirmation, and repair canonical queue projection without crossing into R2 while R1 remains review-blocked.
