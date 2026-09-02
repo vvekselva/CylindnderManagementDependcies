@@ -3,31 +3,48 @@ story_id: STORY-0112
 state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
 repository: vvekselva/CylinderManagement
 ref: 3ae6e61442132d94a307275b08dd65fcef228d89
 approved_behavior_source: BL-008 V185 frozen ownership/identifier model
 current_behavior:
-  - DomainLookupController.saveCylinder supplies logical cylinder code, actual cylinder identifier and ownership type, defaulting actual identifier to cylinderSerial.
-  - CylinderIngestionService creates an active primary CylinderIdentifierDo for every ownership type, including COMPANY_OWNED.
+  - DomainLookupController.saveCylinder supplies logical cylinder code, actual cylinder identifier and ownership type, defaulting actual identifier to cylinderSerial when no separate actual identifier is supplied.
+  - CylinderIngestionService.processRequest is transactional and always calls createPrimaryIdentifier(saved, actualIdentifierType, actualIdentifier, ownershipTypeCode) immediately after CylinderJpaDao.save(...), then always calls createInitialYardInventoryLine(saved, ownershipTypeCode).
+  - CylinderIngestionService validates active-primary identifier uniqueness with CylinderIdentifierJpaDao.findByIdentifierValueIgnoreCaseAndActiveAndPrimary(actualIdentifier,true,true) without excluding the submitted cylinderId when the request is an update.
+  - CylinderIdentifierJpaDao already contains countActivePrimaryIdentifierUsedByOtherCylinder(identifierValue,cylinderId), an exact normalized query that excludes the current cylinder identity, but this helper is not used by the ingestion validation path.
   - The V185 frozen model requires COMPANY_OWNED to use tbl_cylinder.cylinder_serial as the company cylinder identity with zero separate active-primary physical-identifier rows.
-  - CylinderIngestionService maps the saved logical cylinder back to a response DTO and then overwrites responseDto.cylinderSerial with actualIdentifier for every ownership type.
-  - The V185 frozen display/transaction model requires the logical cylinder serial/code to remain the logical identity; external physical identifier belongs in the separate actual/display identifier fields.
+  - CylinderIngestionService maps the saved logical cylinder back to a response DTO, sets actual/display identifier fields, then overwrites responseDto.cylinderSerial with actualIdentifier for every ownership type.
+  - The V185 frozen display/transaction model requires the logical cylinder serial/code to remain the logical identity; external physical identifier belongs in separate actual/display identifier fields.
+approved_story_behavior:
+  state: PENDING_USER_APPROVAL_FOR_STORY_0112
+  frozen_cross_backlog_constraint: V185_LOGICAL_PHYSICAL_IDENTITY_MODEL_IS_FROZEN
+  note: This packet does not auto-approve STORY-0112 and does not authorize implementation.
 business_impact:
   - Company-owned registration can create a physical-identifier row that the frozen V185 model says must not exist.
   - The response can replace the stable logical cylinder code with the physical identifier, causing downstream UI/API consumers to lose the logical identity distinction required by the frozen model.
+  - A legitimate edit of an external cylinder can be rejected as a duplicate of its own current active-primary identifier because current-row identity is not excluded.
+  - The same service path executes creation-oriented primary-identifier and initial-yard-inventory actions after both create and update saves; update idempotency therefore requires explicit separation and regression proof before implementation.
 proposed_manifest:
   - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CylinderIngestionService.java
     component: CylinderIngestionService
-    methods: processRequest, createPrimaryIdentifier
-    source_anchor: processRequest around logical save/identifier/response mapping and createPrimaryIdentifier block in recovered ZIP
-    proposed_change: skip separate CylinderIdentifierDo creation for COMPANY_OWNED; continue external SUPPLIER_OWNED/CUSTOMER_OWNED identifier creation under V185 rules; preserve responseDto.cylinderSerial as the saved logical cylinder serial and expose physical identifier only through actualCylinderIdentifier/displayCylinderIdentifier/actualIdentifierType fields.
-    reason: conform registration to the frozen V185 logical/physical identity model.
+    methods: processRequest, validateRequest, createPrimaryIdentifier, createInitialYardInventoryLine
+    source_anchor: processRequest lines ~85-149; identifier validation lines ~180-193 in recovered ZIP
+    proposed_change: separate create vs update by cylinderId; on external-asset update use an exact normalized duplicate check that excludes the current cylinder identity; do not rerun creation-only identifier/initial-yard side effects during ordinary updates unless an explicitly approved identifier-replacement workflow requires it; skip separate CylinderIdentifierDo creation for COMPANY_OWNED; preserve responseDto.cylinderSerial as the saved logical cylinder serial and expose physical identity only through actualCylinderIdentifier/displayCylinderIdentifier/actualIdentifierType.
+    reason: conform registration/update behavior to the frozen V185 logical/physical identity model and make update behavior idempotent.
+  - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CylinderIdentifierJpaDao.java
+    component: CylinderIdentifierJpaDao
+    method: countActivePrimaryIdentifierUsedByOtherCylinder
+    source_anchor: lines ~20-30
+    proposed_change: reuse the existing exact normalized current-row-excluding query for update duplicate validation rather than adding a broader contains predicate; retain the existing create lookup for create semantics where appropriate.
+    reason: the required current-row exclusion capability already exists in the frozen source and should be reused.
   - path: relevant CylinderIngestionService tests under src/test/java including BL008 V185 tests
     component: tests
-    proposed_change: prove company registration creates no identifier row and keeps logical serial in cylinderSerial; prove supplier/customer registration creates the correct active-primary identifier and keeps logical/physical response fields distinct; regression-test ownership-specific owner IDs and initial yard inventory behavior.
-database_impact: NONE_SCHEMA; V185 database remains frozen and existing tables are used.
+    proposed_change: prove company registration creates no identifier row and keeps logical serial in cylinderSerial; prove supplier/customer registration creates the correct active-primary identifier and keeps logical/physical response fields distinct; prove same-row external update is accepted, other-row duplicate is rejected, ordinary update does not duplicate active-primary identifiers or initial yard inventory, and ownership-specific owner IDs remain correct.
+database_impact: NONE_SCHEMA; V185 database remains frozen and existing tables/queries are reused.
 material_story_change: false
 approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
-scope_expansion_rule: any DomainLookup template redesign, additional service/file, schema change, or ownership rule beyond this identifier/response correction requires new approval.
+scope_expansion_rule: any DomainLookup template redesign, additional service/file, schema change, identifier replacement semantics, or ownership rule beyond this exact manifest requires new approval.
 application_code_changed: false
 bl010_created_or_executed: false
