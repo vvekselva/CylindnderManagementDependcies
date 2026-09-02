@@ -2,11 +2,12 @@ scheduler_task: Cylinder Orchestrator Production Fire
 fire_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST
 observed_scheduled_fire_time: '2026-09-02T18:16:03+05:30'
 receipt_time: '2026-09-02T18:16:03+05:30'
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 intended_scope: CONTINUOUS
 orchestrator_started: true
 run_linked: true
 run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST-RUN-001
 run_link_state: RUN_LINKED
-terminal_classification: null
-termination_time: null
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+termination_time: '2026-09-02T18:19:20+05:30'
+termination_record: .orchestrator/runs/CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST-RUN-001/termination.yaml
