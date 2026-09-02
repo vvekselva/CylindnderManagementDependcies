@@ -1,0 +1,27 @@
+story_id: STORY-0021
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: POST /yard-location/upload
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java
+service_path: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/CustomerAddressLocationOfflineMapService.java
+model_attribute: yardLocation
+extra_request_fields: [latitudeText, longitudeText]
+validation:
+  yard_required: Yard is required for location capture.
+  coordinate_pair_required: Latitude and longitude are required.
+  latitude_range: [-90, 90]
+  longitude_range: [-180, 180]
+  yard_missing_prefix: 'Yard not found: '
+default_start_behavior:
+  null_or_true: true
+  supersede_existing_default: true
+persistence:
+  entity: YardLocationDo
+  table: public.tbl_yard_location
+  save: YardLocationJpaDao.save
+  sourceReference_persisted: false
+visible_success: Yard location saved successfully.
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
