@@ -1,0 +1,84 @@
+version: 1
+recorded_at: '2026-09-02T20:33:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+method: LOCAL_EXTRACTED_SOURCE_STRING_AND_TEMPLATE_CONSUMER_TRACE
+application_github_code_search_used: false
+rule: Only attach shared Search/API Stories to a Use Case where the consuming template is source-proved.
+usecases:
+  SUC-012:
+    name: Walk-in Sale
+    dependency_story_ids: [STORY-0086, STORY-0091, STORY-0096, STORY-0106]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/WalkinSaleIngestion.html:133
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/WalkinSaleIngestion.html:138
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/WalkinSaleIngestion.html:142
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/WalkinSaleIngestion.html:145
+  SUC-015:
+    name: Cylinder Delivery
+    dependency_story_ids: [STORY-0088, STORY-0091, STORY-0092, STORY-0103]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/Uc02-Phase02-CylinderDeliveryView.html:917-921
+    note: Template also references additional search endpoints not represented by STORY-0086..STORY-0107; those are not invented into this mapping.
+  SUC-016:
+    name: Vehicle Load
+    dependency_story_ids: [STORY-0092, STORY-0093, STORY-0095, STORY-0103, STORY-0104, STORY-0106, STORY-0126]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/Uc02-Phase01-VehicleLoadView.html:1131-1134
+      - cylindermanagement.web/src/main/resources/templates/Uc02-Phase01-VehicleLoadView.html:1183-1184
+  SUC-017:
+    name: Customer Registration
+    dependency_story_ids: [STORY-0089, STORY-0090, STORY-0101]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/UC01RegisterCustomer.html:1002-1004
+  SUC-018:
+    name: Vehicle Trip Load Wizard
+    dependency_story_ids: [STORY-0086, STORY-0091, STORY-0092, STORY-0103, STORY-0106]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/VehicleTripLoadWizard.html:1047-1051
+  SUC-019:
+    name: Customer Display / Maintenance
+    dependency_story_ids: [STORY-0089, STORY-0090, STORY-0101]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html:984-986
+  SUC-020:
+    name: Add Stop / Challan Photo
+    dependency_story_ids: [STORY-0086, STORY-0091, STORY-0096, STORY-0097, STORY-0102, STORY-0107]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/with-menu/Customerstopselectionpage.html:440-526
+      - cylindermanagement.web/src/main/resources/templates/with-menu/Supplierstopselectionpage.html:719-810
+  SUC-025:
+    name: Vehicle Loads Listing
+    dependency_story_ids: [STORY-0107]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/Displayvehicleload.html:1320
+  SUC-032:
+    name: Supplier Ingestion
+    dependency_story_ids: [STORY-0089, STORY-0090, STORY-0101]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/SupplierIngestion.html:870-872
+  SUC-033:
+    name: Yard Stock Check
+    dependency_story_ids: [STORY-0094]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/YardStockCheckIngestion.html:185
+  SUC-036:
+    name: Domain Lookup Management
+    dependency_story_ids: [STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0103]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/DomainLookup.html:325
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/DomainLookup.html:477
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/DomainLookup.html:624
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/DomainLookup.html:1110
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/DomainLookup.html:1309
+  SUC-039:
+    name: Lookup / Lookup Management
+    dependency_story_ids: [STORY-0087, STORY-0089, STORY-0090, STORY-0101]
+    anchors:
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html:1412
+      - cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html:1534-1536
+unattached_shared_stories:
+  - story_id: STORY-0105
+    reason: No consuming template reference for /search/cylinder/ownership/by-state was found in the recovered source package.
+review_status_rule: Story approval remains Story-level and must be repeated in every consuming Use Case; this dependency map does not auto-approve any Story or Use Case.
