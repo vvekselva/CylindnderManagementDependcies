@@ -5,57 +5,94 @@
 - Release: R1
 - Endpoint: `POST /add-stop/challan-page-photo/delete-ajax`
 - Approval: `PENDING_USER_APPROVAL`
-- Source basis: canonical BL-001 traceability matrix at frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89`, plus retained V154 source patch evidence
+- Review state: `READY_FOR_USER_REVIEW`
+- Rework state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`
+- Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE`
+- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source intake evidence: `.orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237.yaml`
 - Story auto-approval: forbidden
-- Enrichment state: `SOURCE_DETAIL_REVIEW_REQUIRED`
 
 ## Human-readable story
 
-As an authorized Cylinder Management user working with a delivery-stop challan, I want to deactivate an active challan-page photo through the AJAX delete operation so that an incorrect or no-longer-current photo is no longer treated as the active photo for that challan page while the historical record remains under application control.
+As an authorized Cylinder Management user working on a supplier or customer stop, I want to delete/deactivate an uploaded challan-page photo so that an incorrect or obsolete photo is no longer the active photo for that challan page, while the historical database row is retained.
 
-## Source-proved execution flow
+## Exact request and controller behavior
 
-1. The request is handled by `AddStopController.deleteChallanPagePhotoAjax`.
-2. The controller invokes `ChallanPagePhotoUploadService.deactivatePhoto`.
-3. The service uses `ChallanPagePhotoJpaDao.findById / save`.
-4. The persisted entity is `ChallanPagePhotoDo`.
-5. The database dependency is `public.tbl_challan_page_photo`.
-6. Successful processing terminates as HTTP 200 JSON with `success=true`.
-7. An application-level error terminates as HTTP 400 JSON with `success=false`.
-8. An unexpected error terminates as HTTP 500 JSON with `success=false`.
+`AddStopController.deleteChallanPagePhotoAjax(...)` handles `POST /add-stop/challan-page-photo/delete-ajax`.
 
-## Persistence identity and exact source-proved fields
+The exact request binding is:
 
-Retained V154 source evidence proves `public.tbl_challan_page_photo` contains:
+- parameter name: `challanPagePhotoId`
+- binding: `@RequestParam("challanPagePhotoId")`
+- Java type: `Long`
+- requiredness: required by default at the Spring MVC boundary
 
-- primary key `pk_challan_page_photo_id BIGINT GENERATED ALWAYS AS IDENTITY`;
-- required page link `fk_page_audit_id` to `tbl_challan_page_audit_ledger(pk_page_audit_id)`;
-- optional vehicle/load/stop links `fk_vehicle_load`, `fk_vehicle_trip`, `fk_vehicle_trip_stop`;
-- file metadata/content columns `original_file_name`, `content_type`, `content_length`, `photo_data`;
-- audit columns `uploaded_by_user_id`, `uploaded_at`;
-- lifecycle column `active BOOLEAN NOT NULL DEFAULT TRUE`;
-- optional `remarks`.
+The controller delegates to `ChallanPagePhotoUploadService.deactivatePhoto(challanPagePhotoId)` through `challanPagePhotoManagementService`.
 
-`ChallanPagePhotoDo` maps the same table and maps `challanPagePhotoId` to `pk_challan_page_photo_id` and `active` to the physical `active` column. The V154 schema also defines a partial unique index `uq_challan_page_photo_one_active_per_page` on `fk_page_audit_id` where `active = TRUE`, proving the business invariant that at most one photo is active per challan page.
+Visible outcomes are:
 
-The canonical delete trace proves the selected `ChallanPagePhotoDo` is loaded by ID and saved through `ChallanPagePhotoJpaDao`, and the business effect is deactivation. Therefore the exact physical deactivation field is now source-proved as `public.tbl_challan_page_photo.active` changing from active to inactive/false while the row remains present.
+- success: HTTP 200 JSON, `success=true`, message `Challan photo deleted. Upload another photo before completing the stop.`
+- governed application error: HTTP 400 JSON, `success=false`, service error message
+- unexpected error: HTTP 500 JSON, `success=false`, message `Unable to delete challan photo.`
+
+## Exact service guard and persistence transition
+
+`ChallanPagePhotoUploadService.deactivatePhoto(Long challanPagePhotoId)` is transactional and proves the following behavior:
+
+1. null ID -> application/user error `Challan photo id is required.`
+2. repository lookup -> `ChallanPagePhotoJpaDao.findById(challanPagePhotoId)`
+3. missing row or already inactive row -> application/user error `Active challan photo is not found.`
+4. active row -> `photo.setActive(Boolean.FALSE)`
+5. persistence -> `challanPagePhotoJpaDao.save(photo)`
+
+`ChallanPagePhotoJpaDao` is the Spring Data JPA persistence boundary for `ChallanPagePhotoDo`.
+
+## Entity and database identity
+
+`ChallanPagePhotoDo` maps `public.tbl_challan_page_photo`.
+
+The relevant exact mappings are:
+
+- `challanPagePhotoId` -> `pk_challan_page_photo_id`
+- `active` -> `active`
+- page link -> `fk_page_audit_id`
+- optional load/trip/stop links -> `fk_vehicle_load`, `fk_vehicle_trip`, `fk_vehicle_trip_stop`
+- file data -> `original_file_name`, `content_type`, `content_length`, `photo_data`
+- audit fields -> `uploaded_by_user_id`, `uploaded_at`
+- optional note -> `remarks`
+
+The deactivation operation therefore updates `public.tbl_challan_page_photo.active` from active/true to false. It does not delete the database row.
+
+The V154 schema evidence retains the one-active-photo-per-page invariant through the partial unique index on `fk_page_audit_id` where `active = TRUE`.
+
+## Browser/UI behavior
+
+### Supplier stop
+
+`with-menu/Supplierstopselectionpage.html` renders an uploaded-photo panel containing `View photo` and a visible `Delete` button. The button invokes `deleteUploadedChallanPhoto()`.
+
+The browser keeps the selected active photo identity in `supplierUploadedPhotoId`. The delete function sends:
+
+`POST /cylindermanagement/add-stop/challan-page-photo/delete-ajax`
+
+with `Content-Type: application/x-www-form-urlencoded`, `X-Requested-With: XMLHttpRequest`, and body field:
+
+`challanPagePhotoId=<supplierUploadedPhotoId>`.
+
+On success it calls `resetSupplierUploadedPhoto()` and shows the returned success message. That reset clears the current photo identity and causes the stop-completion/upload-button state to be recalculated. On failure it displays the returned/fallback error message.
+
+### Customer stop
+
+`with-menu/Customerstopselectionpage-withoutAutoChallanUpdate.html` implements the symmetrical behavior through the visible `Delete` button and `deleteCustomerUploadedChallanPhoto()`, passing `customerUploadedPhotoId` as the same `challanPagePhotoId` request field. Success resets the uploaded customer photo and recalculates completion/upload state; failure surfaces the error message.
 
 ## Related retrieval behavior
 
-Retained source evidence for `GET /challan-page-photo/{challanPagePhotoId}` proves retrieval uses the same `challanPagePhotoId` identity, returns HTTP 404 when the row is missing or `active=false`, and otherwise returns the stored binary inline. This reinforces that deactivation removes the photo from active retrieval without deleting its historical database row.
+`GET /challan-page-photo/{challanPagePhotoId}` uses the same identity. Retrieval returns 404 when the row is absent or inactive, otherwise returning the stored content. Therefore deactivation removes the photo from active retrieval while preserving historical storage.
 
-## Validation and error behavior
+## Completion and approval gate
 
-The canonical trace proves three externally visible outcomes: success (HTTP 200 JSON), application error (HTTP 400 JSON), and unexpected error (HTTP 500 JSON).
+The exact browser control, request identifier/binding/datatype, service null/missing/already-inactive guards, repository operation, entity mapping, database field transition, and visible success/failure behavior are source-bound.
 
-The exact POST request parameter/body field used by `deleteChallanPagePhotoAjax`, its annotation/datatype/requiredness, the exact null/missing-photo guards inside `deactivatePhoto`, and the visible browser control/event that issues this AJAX request are not yet source-proved from the retained evidence available to this run. They are therefore not invented.
+STORY-0048 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-## Exact remaining source-detail gap
-
-Strict Business Behavior completion remains blocked until frozen authoritative source proves:
-
-1. the exact delete request identifier name and binding (`@RequestParam`, path/body field, datatype and requiredness);
-2. the exact service guards for null/missing/already-inactive photo identity;
-3. the exact visible page/control and browser event that invokes `POST /add-stop/challan-page-photo/delete-ajax` and how the selected photo ID is propagated.
-
-No approval occurred. No application code was changed. No BL-010 work was created or executed.
+No approval is inferred. No application code was changed and no BL-010 work was created or executed.
