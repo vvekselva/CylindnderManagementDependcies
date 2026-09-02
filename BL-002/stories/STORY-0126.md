@@ -2,43 +2,51 @@
 
 - Release: R1
 - Endpoint: `GET /vehicle-load/fetch`
+- Controller: `VehicleLoadFetchByIdController.doGet`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Screen entry and request contract
-The exact frozen handler is `VehicleLoadFetchByIdController.doGet`. It is mapped with `@GetMapping("/vehicle-load/fetch")` and requires request parameter `vehicleLoadId` as `Long` through `@RequestParam("vehicleLoadId")`. The returned Thymeleaf view is `with-menu/Displayvehicleload.html`.
+## Business purpose and screen entry
 
-The browser entry identity is therefore the selected vehicle-load database/application identity propagated as query parameter `vehicleLoadId`. The page itself links subsequent actions using the same `vehicleLoad.vehicleLoadDto.vehicleLoadId`, including `/add-stop?...actionType=CustomerStop`, `/add-stop?...actionType=SupplierStop`, `/trip-return?vehicleLoadId=...`, and hidden POST field `vehicleLoadId` for `/complete-trip`.
+An operator opens `/vehicle-load/fetch?vehicleLoadId={id}` to inspect one persisted vehicle load, its trip/vehicle/driver context and recorded stops, see live cylinders currently on that load, and access only those trip actions allowed by the current trip status.
 
-## Controller -> DTO -> application-service contract
-The controller creates `VehicleLoadDto`, assigns the request `vehicleLoadId`, creates `VehicleLoadFetchByIdRequestDto`, and sets that DTO as `requestDto.vehicleLoadDto`. It invokes `vehicleLoadFetchService.processRequest(requestDto)` through `ICylinderManagementApplicationService<VehicleLoadFetchByIdRequestDto, VehicleLoadFetchByIdResponseDto>`.
+The controller requires `vehicleLoadId: Long`, creates `VehicleLoadFetchByIdRequestDto` containing that exact ID, calls `vehicleLoadFetchService.processRequest(...)`, adds the result as model `vehicleLoad`, resolves the current trip status through `TripReturnWorkflowService`, and renders `with-menu/Displayvehicleload.html`.
 
-The response supplies the vehicle-load identity/data, trip DTO and trip-stop DTO collection. It is exposed to the view as model key `vehicleLoad`.
+## Exact service/DAO/entity read path
 
-## Trip status / guard contract
-The controller independently asks `TripReturnWorkflowService.getTripStatusByVehicleLoadId(vehicleLoadId)` and exposes exact guard model values:
-- `tripReturned`: status equals `Returned`, case-insensitive.
-- `tripProceeding`: status equals `Proceeding`.
-- `tripHalt`: status equals `Halt`.
-- `tripCanReturn`: status equals `Loaded`.
-- `tripChallanEntryAllowed`: Returned OR Proceeding.
-- `tripCanComplete`: Proceeding.
+The concrete service is `VehicleLoadFetchByIdService`. It rejects a null request, null nested `VehicleLoadDto`, null ID or negative ID through the governed invalid-input path. It then executes `VehicleLoadJpaDao.findById(vehicleLoadId)`. A missing load raises `DomainObjectNotFoundException(vehicleLoadId)`.
 
-The frozen template applies those predicates directly. Customer and Supplier Stop links are enabled only when `tripChallanEntryAllowed`; otherwise disabled buttons state that Returned Trip is required. Returned Trip is enabled only when `tripCanReturn`. Complete Trip is enabled only when `tripCanComplete`; otherwise it is disabled pending Proceeding. Complete Trip opens a confirmation modal and submits hidden `vehicleLoadId` to POST `/complete-trip` only after confirmation.
+`VehicleLoadJpaDao` is the Spring Data JPA repository for `VehicleLoadDo`. `VehicleLoadDo` maps `public.tbl_vehicle_load`, primary key `pk_vehicle_load_id`, generated from `public.pk_vehicle_load_id_serial`, and carries the non-null unique trip link `fk_vehicle_trip`. Source-proved load values mapped into the response include total cylinders loaded, loaded-by, remarks, created-at, full-for-delivery, full-for-buffer and empty-for-supplier quantities.
 
-## Visible screen/read outcome
-The page renders Vehicle Load Console information from `vehicleLoad`, including load ID, vehicle, driver, vehicle quantities, recorded journey stops and status controls. Stops are rendered from `vehicleLoad.vehicleTripStopDtos`; customer/supplier names are displayed when present, and an empty-state message is shown when no stops exist.
+From the loaded entity the service follows `VehicleLoadDo.vehicleTrip` to `VehicleTripDo`, mapped to `public.tbl_vehicle_trip` / `pk_vehicle_trip_id`. It maps the trip DTO and explicitly maps the linked `VehicleDo` (`public.tbl_vehicle`) and `DriverDo` (`public.tbl_driver`) into the displayed load DTO.
 
-On DOM load, the template propagates the selected load ID into JS constant `LOAD_ID`. When it exists, the browser makes POST `/cylindermanagement/search/cylinder/on-vehicle` with JSON search data containing `VEHICLE_LOAD_ID: LOAD_ID`, multiple-state search for `EMPTY` and `FULL`, page 1 and 10 items per page. Returned cylinders are rendered into the live vehicle table and state-count chips. An empty result shows `Vehicle is empty`; a rejected/failed fetch hides loading and displays `Failed to load live cylinder data. Please refresh the page.`
+For every `VehicleTripDo.stops` entry the service maps `VehicleTripStopDo`, which maps `public.tbl_vehicle_trip_stop` / `pk_stop_id` and the trip link `fk_vehicle_trip`. It also maps each stop's `VehicleTripStopTypeDo`, backed by `public.tbl_stop_type`. Stop source fields include sequence, supplier reference, drop-off date, planned/arrived/departed timing and stop status. Customer/supplier context remains on the stop entity where applicable.
 
-The client also derives journey presentation from the returned stop collection: YARD_START contributes Yard, CUSTOMER_DELIVERY contributes Customer, SUPPLIER_DROPOFF contributes Supplier, and YARD_END represents the journey end. These client calculations are presentation behavior; server-side action authorization remains governed by the controller's trip-status model predicates above.
+The response returns `vehicleLoadDto`, `vehicleTripDto`, the mapped stop collection and SUCCESS. This GET performs no persistence mutation.
 
-## Error/reset behavior
-If the application fetch service raises `CylinderManagementApplicationException`, the controller logs the exception, sets model `vehicleLoad` to null, and returns the same view. No alternate redirect or invented persistence behavior is claimed. This GET story performs application/database reads; it does not itself persist a vehicle-load mutation.
+## Trip-status action guards
 
-## Strict evidence boundary
-The exact frozen controller and frozen Thymeleaf template resolve the previously recorded handler/UI gap. The downstream application's internal DAO/entity implementation behind `vehicleLoadFetchService.processRequest` is not restated beyond what this handler proves; no unproved table or repository identity is invented. The applicable field/UI contract for this GET screen is complete from frozen authoritative source.
+The controller separately resolves trip status for the same load and exposes exact booleans consumed by the template: Returned, Proceeding, Halt, can-return when `Loaded`, challan-entry allowed when Returned or Proceeding, and can-complete when Proceeding.
 
-## Approval boundary
-No approval occurred. Strict enrichment completion is not business approval.
+Customer Stop and Supplier Stop navigation is enabled only when challan entry is allowed. Returned Trip is enabled only while the trip is `Loaded`. Complete Trip is enabled only while `Proceeding`, opens a confirmation modal, and submits the same persistent `vehicleLoadId` to the separate `/complete-trip` POST.
+
+## Live cylinder browser behavior
+
+On DOM load the template copies the persistent load ID into `LOAD_ID` and, when present, POSTs `/cylindermanagement/search/cylinder/on-vehicle` with `VEHICLE_LOAD_ID`, EMPTY/FULL state criteria and paging. Returned rows drive the live cylinder table and state-count chips. An empty result shows `Vehicle is empty`; failed/rejected loading displays `Failed to load live cylinder data. Please refresh the page.` This search is a separate read endpoint and does not mutate the load.
+
+## Error and visible outcomes
+
+If the vehicle-load application service raises `CylinderManagementApplicationException`, the controller logs it, sets model `vehicleLoad` to null and returns the same view rather than redirecting. A successful read displays the load console, trip/vehicle/driver data, recorded stops, live cylinder data and status-governed action controls.
+
+## Completion and approval gate
+
+The recovered ZIP now binds the previously missing downstream service, repository, entity/table and trip-stop read path in addition to the already-proved screen/UI contract. No database write is performed by this GET.
+
+STORY-0126 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 work was created or executed.
