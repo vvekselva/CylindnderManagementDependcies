@@ -1,0 +1,130 @@
+review_id: SUC-036-DOMAIN-LOOKUP-SAVE-SOURCE-DETAIL-20260902
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+governance:
+  story_auto_approval: false
+  application_code_mutation: false
+  bl010_creation_or_execution: false
+  exact_code_change_authorized: false
+  approved_behavior_for_reviewed_stories: NOT_AVAILABLE_PENDING_USER_APPROVAL
+  classification: SOURCE_DETAIL_REVIEW_WITH_POTENTIAL_DRIFT_CANDIDATES
+findings:
+  - story_id: STORY-0110
+    endpoint: POST /domainLookup/productUom/save
+    component: Product UOM
+    current_behavior:
+      controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/DomainLookupController.java
+      controller_anchor: saveProductUom lines ~240-298; preserves productUomId and classifies null/zero as add vs nonzero update
+      service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductUomIngestionService.java
+      service_anchor: lines ~56-76
+      duplicate_predicate: ProductUomJpaDao.findByProductUomContainingIgnoreCase(value)
+      repository: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ProductUomJpaDao.java
+      repository_anchor: line ~10
+      ui: cylindermanagement.web/src/main/resources/templates/with-menu/DomainLookup.html
+      ui_anchor: Product UOM candidate input lines ~548-565; table search lines ~593-599; shared search engine lines ~1604-1660
+      observation: candidate add/edit input only uppercases locally; database-backed 320ms search is attached to table toolbar, not the candidate input
+    potential_drift:
+      - contains-based duplicate predicate can reject substring names
+      - update does not exclude current productUomId and can reject the same row
+      - candidate input does not expose database-backed matches while typing even though a search endpoint exists
+    proposed_change_locations_if_later_approved:
+      - ProductUomJpaDao: add normalized exact match query with current-row exclusion for update
+      - ProductUomIngestionService.processRequest: choose create/update duplicate predicate using productUomId
+      - DomainLookup.html Product UOM candidate input block: wire debounced database-backed suggestion display without removing authoritative submit validation
+    tests: unit create duplicate; update same row; update conflicting other row; substring non-equivalent; MVC candidate lookup behavior
+    db_impact: none expected; repository/service/UI behavior only
+
+  - story_id: STORY-0111
+    endpoint: POST /domainLookup/product/save
+    component: Product
+    current_behavior:
+      controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/DomainLookupController.java
+      controller_anchor: saveProduct lines ~307-385; preserves productId and resolves category/UOM IDs
+      service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductIngestionService.java
+      service_anchor: duplicate check lines ~63-72; save lines ~83-99
+      duplicate_predicate: ProductJpaDao.findByProductNameContainingIgnoreCase(value)
+      repository: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ProductJpaDao.java
+      repository_anchor: line ~10
+      ui_anchor: DomainLookup.html product candidate input lines ~695-714; table-only REST search via shared engine ~1604-1660
+    potential_drift:
+      - contains-based duplicate predicate can reject substring product names
+      - update does not exclude current productId
+      - product candidate input does not show database-backed matches while typing
+    proposed_change_locations_if_later_approved:
+      - ProductJpaDao exact normalized duplicate query with productId exclusion
+      - ProductIngestionService.processRequest create/update-aware duplicate validation
+      - DomainLookup.html product candidate input type-ahead using existing /search/product/{text}
+    tests: unit duplicate/update matrix; MVC type-ahead; FK category/UOM regression
+    db_impact: none expected
+
+  - story_id: STORY-0112
+    endpoint: POST /domainLookup/cylinder/save
+    component: Cylinder
+    current_behavior:
+      controller: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/DomainLookupController.java
+      controller_anchor: saveCylinder begins line ~389 and accepts optional cylinderId plus actualCylinderIdentifier/ownership fields
+      service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CylinderIngestionService.java
+      service_anchor: processRequest lines ~85-149; duplicate validation lines ~180-193
+      duplicate_predicate: CylinderIdentifierJpaDao.findByIdentifierValueIgnoreCaseAndActiveAndPrimary(identifier,true,true)
+      repository: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CylinderIdentifierJpaDao.java
+      repository_anchor: exact other-cylinder query already exists lines ~20-30 as countActivePrimaryIdentifierUsedByOtherCylinder(identifierValue,cylinderId)
+      ui_anchor: DomainLookup.html cylinder section notes no dedicated table REST search around ~873-878
+      side_effects: service always calls createPrimaryIdentifier and createInitialYardInventoryLine after save at lines ~136-137
+    potential_drift:
+      - update duplicate validation ignores existing helper that excludes current cylinder identity
+      - update path appears capable of re-running creation-only primary-identifier and initial-yard-inventory side effects after entity save
+      - candidate identifier input lacks governed database-backed match display in this screen
+    business_impact: a legitimate edit may be rejected as self-duplicate; if validation is bypassed or identifier changes, creation-only side effects on an update require explicit review because they can affect identifier and yard-inventory history
+    proposed_change_locations_if_later_approved:
+      - CylinderIngestionService.validateRequest: use countActivePrimaryIdentifierUsedByOtherCylinder for nonzero cylinderId updates
+      - CylinderIngestionService.processRequest: separate create-only side effects from update semantics after explicit behavior approval
+      - DomainLookup.html cylinder candidate block: wire an existing appropriate cylinder search endpoint only after exact search identity is approved
+    tests: create; same-row update; conflicting identifier update; no duplicate primary identifier; no duplicate initial yard inventory on update; ownership regression
+    db_impact: no schema change proposed by this review; transactional data-side-effect behavior requires integration coverage
+
+  - story_id: STORY-0113
+    endpoint: POST /domainLookup/vehicle/save
+    component: Vehicle
+    current_behavior:
+      controller_anchor: DomainLookupController.saveVehicle lines ~496-558; optional vehicleId distinguishes add/update
+      service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleIngestionService.java
+      service_anchor: duplicate lines ~55-64; save lines ~71-75
+      duplicate_predicate: VehicleJpaDao.findByVehicleNumberContainingIgnoreCase(value)
+      repository_anchor: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/VehicleJpaDao.java lines ~12-16
+      ui_anchor: DomainLookup.html vehicle number candidate lines ~1128-1149; table REST search uses /search/vehicle/ via shared engine ~1604-1660
+    potential_drift:
+      - contains duplicate predicate; no vehicleId exclusion on update
+      - candidate registration-number input does not show database-backed matches while typing
+    proposed_change_locations_if_later_approved:
+      - VehicleJpaDao exact normalized vehicle-number query with vehicleId exclusion
+      - VehicleIngestionService.processRequest update-aware duplicate validation
+      - DomainLookup.html vehicle-number candidate type-ahead using existing vehicle search endpoint
+    tests: create/update duplicate matrix; candidate lookup; vehicle type/capacity regression
+    db_impact: none expected
+
+  - story_id: STORY-0114
+    endpoint: POST /domainLookup/driver/save
+    component: Driver
+    current_behavior:
+      controller_anchor: DomainLookupController.saveDriver starts ~572; optional driverId distinguishes add/update
+      service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/DriverIngestionService.java
+      service_anchor: invalid-request evidence line ~53 currently constructs VehicleIngestionRequestDto; duplicate lines ~56-65; save lines ~72-76
+      duplicate_predicate: DriverJpaDao.findByDriverNameContainingIgnoreCase(value)
+      repository_anchor: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/DriverJpaDao.java lines ~12-16
+      ui_anchor: DomainLookup.html driver candidate input begins ~1327-1340; table REST search uses /search/driver/ through shared engine ~1604-1660
+    potential_drift:
+      - invalid Driver input uses wrong request DTO type in validation evidence
+      - contains duplicate predicate; no driverId exclusion on update
+      - candidate driver-name input does not show database-backed matches while typing
+    proposed_change_locations_if_later_approved:
+      - DriverIngestionService invalid-input branch: emit DriverIngestionRequestDto
+      - DriverJpaDao exact normalized driver business-key query with current-row exclusion once business key is explicitly approved
+      - DriverIngestionService create/update-aware duplicate validation
+      - DomainLookup.html driver candidate type-ahead using existing driver search endpoint
+    tests: invalid-input DTO preservation; create/update duplicate matrix; candidate lookup; licence/phone regression
+    db_impact: none expected
+
+next_gate: USER_REVIEW_OF_STORY_BEHAVIOR_AND_ANY_EXACT_DRIFT_MANIFEST_BEFORE_APPLICATION_MUTATION
