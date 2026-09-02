@@ -1,0 +1,52 @@
+story_id: STORY-0132
+title: Save City
+governance_state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  - POST /lookupManagement/city/save submits optional cityId plus cityName and description; controller treats null/zero ID as create and nonzero as update.
+  - CityIngestionService null/blank validation incorrectly emits CountryIngestionRequestDto instead of CityIngestionRequestDto, followed by a second generic validation throw.
+  - Duplicate validation uses findByCityNameContainingIgnoreCase and does not exclude the submitted cityId during update.
+  - Successful saveAndFlush persists CityDo to public.tbl_city; controller refreshes City cache.
+approved_story_behavior:
+  - Invalid City input must return CityIngestionRequestDto validation evidence to the existing inline City branch.
+  - City-name uniqueness must use exact normalized semantics across different rows and permit same-row updates.
+  - Preserve current persistence/cache/PRG behavior.
+business_impact:
+  - Invalid input can bypass inline City validation because the wrong request DTO type is emitted.
+  - Legitimate City edits and substring names can be falsely rejected as duplicates.
+proposed_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CityIngestionService.java
+    component: CityIngestionService
+    method: processRequest
+    approximate_anchor: null/blank and duplicate-validation branches
+    proposed_change: Emit CityIngestionRequestDto validation evidence, remove redundant wrong validation throw, and implement exact case-insensitive update-aware City uniqueness.
+    reason: Align service with controller validation handling and correct update semantics.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CityJpaDao.java
+    component: CityJpaDao
+    approximate_anchor: query declarations
+    proposed_change: Add exact case-insensitive lookup/existence method for uniqueness while retaining contains methods for search.
+    reason: Separate business-key uniqueness from search behavior.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/test/java
+    component: City ingestion tests
+    approximate_anchor: existing/new CityIngestionService tests
+    proposed_change: Cover null/blank validation DTO type, create, exact duplicate create, substring nonduplicate, same-row update and other-row duplicate update.
+    reason: Guard corrected validation and uniqueness behavior.
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_object: public.tbl_city.city UNIQUE
+risk_and_rollback:
+  risk: LOW
+  rollback: Revert application/repository/test changes; no database rollback required.
+scope_expansion_rule: Any additional file, schema object, field, endpoint or business behavior requires new explicit approval.
+application_code_changed: false
+bl010_created_or_executed: false
