@@ -1,0 +1,24 @@
+story_id: STORY-0034
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: POST /customer-spot-cylinder-check/submit
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/CustomerSpotCylinderCheckController.java
+service_path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerSpotCylinderCheckService.java
+view_path: cylindermanagement.web/src/main/resources/templates/final-version-1/CustomerSpotCylinderCheck.html
+transactional: true
+validation_reads:
+  assigned_book_type: CUSTOMER_SPOT_CYLINDER_CHECK
+  page_status_required: UNUSED
+  customer_exists: true
+  active_customer_custody_read_only: true
+line_statuses: [MATCHED, DUPLICATE_IN_CHECK, UNKNOWN_CYLINDER, NOT_HELD_BY_CUSTOMER]
+persistence:
+  header: public.tbl_customer_spot_cylinder_check
+  lines: public.tbl_customer_spot_cylinder_check_line
+  challan_page_status: USED_CONFIRMED
+  transaction_link_type: CUSTOMER_SPOT_CYLINDER_CHECK
+custody_or_cylinder_state_mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
