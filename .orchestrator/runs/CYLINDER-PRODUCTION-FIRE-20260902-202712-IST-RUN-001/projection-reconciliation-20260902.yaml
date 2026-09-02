@@ -1,0 +1,42 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
+projection_at: '2026-09-02T20:47:41+05:30'
+source_package_recovered: true
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+bl002:
+  total_stories: 134
+  business_behavior_complete: 134
+  explicit_approved_story_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0127]
+  explicit_approved_count: 4
+  awaiting_user_review_count: 130
+  usecase_register_count: 40
+  dependency_source_map: BL-002/evidence/usecase-shared-search-dependency-source-map-20260902.yaml
+  machine_register: BL-002/screen-usecase-register.csv
+  human_register: BL-002/screen-usecase-register.md
+  note: enrichment-progress.yaml version 79 was observed stale for approval/use-case/testing projections; unit-local approval evidence and this reconciled run projection take precedence until that aggregate file is compactly refreshed.
+bl004:
+  queued_approved_stories: 4
+  generated_source_bound_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0127]
+  executed_current_contract: 0
+  runtime_blocked: true
+bl005:
+  queued_approved_stories: 4
+  generated_source_bound_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0127]
+  postgres_testcontainers_ids: [STORY-0001, STORY-0012, STORY-0013]
+  navigation_only_mvc_ids: [STORY-0127]
+  executed_current_contract: 0
+  runtime_blocked: true
+bl009:
+  queued_approved_stories: 4
+  catalogue_and_test_data_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0127]
+  executable_mapping_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0127]
+  revised_application_behavior_executed: 0
+  runtime_blocked: true
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  local_maven_cache: MISSING
+application_source_mutation: NONE
+auto_approval_performed: false
