@@ -1,0 +1,24 @@
+story_id: STORY-0005
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /offline-map/vector-tiles/{z}/{x}/{y}.pbf
+controller:
+  path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/OfflineMapController.java
+  method: vectorTile
+  path_variables: [z, x, y]
+service:
+  path: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/OfflineVectorTileService.java
+  method: fetchTile
+  xyz_to_tms: '((1 << z) - 1) - y'
+  tile_query: 'select tile_data from tiles where zoom_level = ? and tile_column = ? and tile_row = ?'
+  sqlite_read_only: true
+outcomes:
+  missing_or_disabled: HTTP_404
+  found: HTTP_200_TILE_BYTES
+  cache_control: no-cache
+  gzip_header_when_detected: true
+persistence_mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
