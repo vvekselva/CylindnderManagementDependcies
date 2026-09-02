@@ -4,44 +4,26 @@
 - Endpoint: `POST /setCustomerInactive`
 - Controller: `ToggleCustomerActiveStatusController.setCustomerInactive`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Human-readable story
+## Business behavior
 
-As an operator on the Customer List, I can choose to set a customer inactive. The screen first opens a confirmation modal naming the selected customer. Confirming copies that row's customer ID into a hidden form and submits it together with the current page and page-size values. The controller asks `CustomerActiveStateUpdateService` to update that customer to inactive, shows a success or not-found flash message, and returns to the customer list page.
+As an operator on the Customer List, I can set a customer inactive without deleting customer data. `confirmInactive(customerId, customerName)` opens the confirmation modal, writes the selected row ID into hidden `#inactive-form-id`, and submits hidden form `#inactive-form` to `POST /setCustomerInactive` after confirmation.
 
-## Exact screen/browser contract
+The form posts required `customerId`, `returnPage`, and `itemsPerPage`, plus CSRF when available. The inspected standard form does not post `searchTerm`, although the controller accepts it optionally, so preservation of an active search term is not claimed for this browser path.
 
-- UI JavaScript entry: `confirmInactive(customerId, customerName)`.
-- It sets modal text to `"<customerName>" will be set inactive. Their data is preserved and can be re-activated.`
-- It assigns `customerId` into hidden input `#inactive-form-id`, opens `#inactive-modal`, and wires `#inactive-modal-confirm` to close the modal then submit `#inactive-form`.
-- Hidden form action: `POST /setCustomerInactive`.
-- Hidden request fields: `customerId` from the selected row; `returnPage` from `${page.currentPageNumber}`; `itemsPerPage` from `${page.itemsPerPage}`; CSRF name/value when `_csrf` is present.
-- The inspected inactive form does **not** contain a `searchTerm` field even though the controller accepts optional `searchTerm`; therefore this UI path does not prove preservation of an active search term and none is invented.
-- No debounce or minimum-length rule applies to this action.
+The controller calls `CustomerActiveStateUpdateService.updateActiveStatus(customerId, false)`. The service is transactional and calls `CustomerJpaDao.updateActiveStatus(customerId, false)`. The repository is a direct JPQL modifying query: `UPDATE CustomerDo c SET c.active = :status WHERE c.customerId = :id`. `CustomerDo` maps the customer row in `public.tbl_customer`, so the exact persistence effect is to set the identified customer's active flag false without deleting the row.
 
-## Controller/service contract
+When at least one row is updated, flash `message` is `Customer deactivated successfully`; when no row matches, flash `error` is `Customer not found.` Both paths redirect to `/fetchCustomerByPage` with posted page/page-size, appending searchTerm only if one was actually supplied to the controller.
 
-Required controller parameters are `customerId: Long`, `returnPage: int`, and `itemsPerPage: int`; `searchTerm: String` is optional. The controller logs the customer ID and calls `customerService.updateActiveStatus(customerId, false)`.
+## Completion and approval gate
 
-If the service returns `true`, flash attribute `message` is exactly `Customer deactivated successfully`. If it returns `false`, flash attribute `error` is exactly `Customer not found.`
+The recovered ZIP confirms the modal/browser event, request identity, exact service/repository update, database row effect and visible success/not-found outcomes. STORY-0078 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-Redirect construction is `redirect:/fetchCustomerByPage?pageNumber=<returnPage>&itemsPerPage=<itemsPerPage>` and appends `&searchTerm=<term>` only when the optional controller `searchTerm` is non-null and non-blank. Because the inspected inactive form does not post that field, the standard UI action supplies only page/page-size plus customer identity.
-
-## Persistence boundary
-
-Controller → `CustomerActiveStateUpdateService.updateActiveStatus(customerId, false)`. The exact selected identity is the posted `customerId`; the target state value is the literal boolean `false`. This strict story does not invent deeper repository/entity/table behavior not proved by the inspected frozen source.
-
-## Branch / reset / visible outcome
-
-The service boolean is the only explicit controller success branch. On either branch the browser is redirected back to `/fetchCustomerByPage` with page number and page size. The action changes active status; it does not delete customer data. Modal state is closed immediately before submit. No button-disable predicate is proved in the inspected action code.
-
-## Frozen source evidence
-
-- `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/ToggleCustomerActiveStatusController.java`
-- `cylindermanagement.web/src/main/resources/templates/with-menu/CustomerListPage.html` (`inactive-form`, `confirmInactive`).
-
-## Approval boundary
-
-Strict field/UI source enrichment is complete. Approval remains `PENDING_USER_APPROVAL`; no auto-approval, Use Case grouping, or testing-readiness promotion is performed.
+Approval remains pending; no application-code or BL-010 mutation occurred.
