@@ -1,0 +1,5 @@
+test_case_id,tab_input,expected_view,expected_active_tab,expected_cache_collections,expected_write_count
+TC-0128-01,addressType,final-version-1/LookupManagement,addressType,addressTypes;countries;states;cities,0
+TC-0128-02,country,final-version-1/LookupManagement,country,addressTypes;countries;states;cities,0
+TC-0128-03,state,final-version-1/LookupManagement,state,addressTypes;countries;states;cities,0
+TC-0128-04,city,final-version-1/LookupManagement,city,addressTypes;countries;states;cities,0
