@@ -1,0 +1,19 @@
+run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-161735-IST-RUN-001
+terminated_at: '2026-09-02T16:19:08+05:30'
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+terminal_reason: ACTIVE_PRIMARY_MUTATION_OWNERSHIP_REVALIDATED_FROM_NEWER_DURABLE_PROGRESS
+active_primary_run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-160140-IST-RUN-001
+eligible_work_remaining: true
+voluntary_early_stop: false
+application_source:
+  requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_library_id: file_00000000659c8211857bba6b09282de3
+  materialized_by_this_run: false
+  active_primary_recorded_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+mutations:
+  backlog_mutation: false
+  application_code_mutation: false
+  database_mutation: false
+  approval_mutation: false
+scheduler_action: KEEP_RECURRING_TASK_ENABLED
+transient_logs_remaining: 0
