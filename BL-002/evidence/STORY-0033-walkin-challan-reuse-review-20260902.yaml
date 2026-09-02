@@ -1,0 +1,56 @@
+review_packet_id: STORY-0033-WALKIN-CHALLAN-REUSE-REVIEW-20260902
+story_id: STORY-0033
+state: AWAITING_STORY_REVIEW_AND_EXACT_USER_CODE_CHANGE_APPROVAL
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - WalkinSaleServiceImpl.linkDeliveryChallanLeafIfPresent resolves a delivery challan page by sheet number from the ledger.
+  - If ChallanTransactionLinkJpaDao.findByChallanPage(activePageDo) returns an existing link, the walk-in path deletes and flushes that existing link, then creates a new link for the walk-in business job and marks the page USED_CONFIRMED.
+  - The normal VehicleTripStopIngestionService consumption path first resolves only an unused page; if any existing transaction link is present it explicitly throws and logs that reuse is blocked.
+  - The two source paths therefore implement opposite reuse semantics for the same challan-page journal concept.
+approved_behavior:
+  state: PENDING_USER_APPROVAL
+  source_proved_comparison_rule: NORMAL_VEHICLE_STOP_PATH_BLOCKS_REUSE
+  note: This packet does not infer which behavior the user approves for walk-in sale; it isolates the inconsistency.
+business_impact:
+  - A walk-in sale can detach a challan page from its prior business transaction and relink it, weakening historical audit traceability.
+  - The same page can be treated as non-reusable in vehicle-stop processing but replaceable in walk-in processing, making challan governance dependent on endpoint rather than page state.
+proposed_change_manifest_if_walkin_should_follow_strict_nonreuse:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/WalkinSaleServiceImpl.java
+    class: WalkinSaleServiceImpl
+    method: linkDeliveryChallanLeafIfPresent
+    approximate_anchor: lines 344-399; existing-link block lines 377-381
+    proposed_change: replace delete/flush of an existing ChallanTransactionLink with fail-closed reuse rejection; resolve the page through the same unused/consumable semantics used by normal stop processing where the available repository API supports it; create the new link only when the page is available and unlinked.
+    reason: preserve immutable transaction linkage and consistent challan reuse governance.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: relevant WalkinSaleServiceImpl tests under src/test/java
+    component: tests
+    proposed_change: prove unused delivery challan page links once; already-used/already-linked page is rejected without deleting the old link; prior linkedBusinessJob remains unchanged; successful new link marks page USED_CONFIRMED.
+    reason: protect audit history.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleTripStopIngestionService.java
+    class: VehicleTripStopIngestionService
+    approximate_anchor: challan consumption lines ~528-562
+    proposed_change: no production change required by this manifest; use this existing strict behavior as the regression reference.
+    reason: source-proved comparison path already blocks reuse.
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_objects: challan page audit ledger and challan transaction link tables/entities
+risk_and_rollback:
+  risk: MEDIUM
+  rollback: revert only WalkinSaleService/tests if explicitly approved; no database migration rollback.
+approval_gate: STORY_APPROVAL_AND_EXACT_NONREUSE_MANIFEST_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: allowing reassignment under any exception, adding a new page status, schema mutation or repair of historical links requires separate approval.
+application_code_changed: false
+bl010_created_or_executed: false
