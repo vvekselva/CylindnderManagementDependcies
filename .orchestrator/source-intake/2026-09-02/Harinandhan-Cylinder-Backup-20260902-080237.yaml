@@ -1,0 +1,26 @@
+source_intake_id: SOURCE-INTAKE-20260902-144815-IST
+recorded_at: '2026-09-02T14:48:15+05:30'
+source_type: USER_UPLOADED_ZIP
+file_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+library_file_id: file_00000000659c8211857bba6b09282de3
+zip_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+extracted_file_count: 1650
+local_workspace: /mnt/data/cylinder_zip_work
+java_runtime: OPENJDK_21_0_11_AVAILABLE
+maven_runtime: MISSING
+embedded_git_metadata: false
+governed_application_repo: vvekselva/CylinderManagement
+governed_frozen_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+identity_validation:
+  method: LOCAL_ZIP_FIRST_WITH_EXACT_FROZEN_REF_SPOT_BINDING
+  exact_frozen_ref_files_checked:
+    - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java
+    - cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanPagePhotoUploadService.java
+    - cylindermanagement.web/src/main/resources/templates/with-menu/Supplierstopselectionpage.html
+    - cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html
+  result: RELEVANT_SOURCE_BINDINGS_MATCH_FROZEN_REF_FOR_ANALYSED_SCOPES
+  note: ZIP has no .git directory, so repository-wide commit identity is not asserted from archive metadata alone.
+analysis_scope:
+  - STORY-0048 challan-page-photo deactivation path
+  - STORY-0047 customer maintenance browser/update path
+application_code_mutated: false
