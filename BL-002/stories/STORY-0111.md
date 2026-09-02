@@ -4,23 +4,24 @@
 - Endpoint: `POST /domainLookup/product/save`
 - Controller: `DomainLookupController.saveProduct`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Drift review packet: `BL-002/evidence/STORY-0111-product-update-drift-review-20260902.yaml`
 
-## Screen and request contract
-The operation is submitted from the Product tab of the Domain Lookup screen. The GET populates `products`, `productCategoryOptions`, and `productUomOptions` from `LookupDataCache`, proving the visible dependent category/UOM selections are cache-backed. The POST is a form submission; no typing-time endpoint or debounce behavior is source-proved for this save operation.
+## Business behavior
 
-## Controller/service contract
-`DomainLookupController.saveProduct` receives the Product form fields, including optional product identity and the submitted product/category/UOM and tax-value fields defined by the handler. FK values are posted as IDs; the controller documentation explicitly delegates entity resolution to the ingestion service/mapper. It constructs `ProductDto`, wraps it in `ProductIngestionRequestDto`, and calls `productIngestionService.processRequest` rather than issuing database SQL itself.
+The Product tab submits Product identity/name plus selected Product Category and Product UOM reference IDs and tax/value fields through `DomainLookupController.saveProduct`. The controller builds `ProductDto`/`ProductIngestionRequestDto`, classifies create/update by submitted Product identity, delegates to `ProductIngestionService`, refreshes Product cache on success, and follows the Domain Lookup inline-validation/PRG success/error pattern.
 
-## State propagation and refresh
-Create/update branching is based on the submitted product identity. After successful service processing the Product lookup cache is refreshed, so the subsequent Product-tab render reads the newly persisted state rather than stale cached data.
+`ProductIngestionService` validates a nonblank product name, currently rejects when `findByProductNameContainingIgnoreCase(name)` returns any row, maps the DTO, resolves Category/UOM by submitted IDs when present in their repositories, saves through `ProductJpaDao`, and returns the saved product DTO.
 
-## Validation and visible outcome
-The controller follows the Domain Lookup validation pattern: user-input `InvalidInputParameterException` with the expected request DTO returns the complete Domain Lookup view directly, preserving failed Product data and inline validation state. Success follows PRG back to the Product tab with an added/updated success flash; unexpected validation DTOs and other exceptions use the error-flash redirect path.
+The recovered source therefore exposes two current conformance gaps: update duplicate validation does not exclude the same product ID and uses contains rather than exact uniqueness; category/UOM lookup absence is not converted into a specific controlled reference-validation error. The exact proposed service/repository/test remediation is isolated in the referenced approval-gated drift packet.
 
-## Persistence boundary
-The exact persisted domain identity is carried by the Product DTO/request into the application ingestion service, including submitted FK IDs; resolution and persistence occur downstream. No behavior beyond the frozen source is inferred.
+## Completion and approval gate
 
-## Approval boundary
-The applicable strict field/UI contract is complete from the frozen Domain Lookup controller/read-cache architecture. Approval remains PENDING_USER_APPROVAL and was not automated.
+The submitted identity/reference contract, controller/cache outcomes, service mapping/save behavior and exact current defects are source-bound. STORY-0111 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
