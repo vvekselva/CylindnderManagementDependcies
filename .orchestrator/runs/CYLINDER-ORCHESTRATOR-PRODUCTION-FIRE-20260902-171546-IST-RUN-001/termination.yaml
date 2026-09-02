@@ -1,0 +1,15 @@
+run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-171546-IST-RUN-001
+scheduler_fire_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-171546-IST
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+terminated_at: '2026-09-02T17:17:26+05:30'
+reason: ANOTHER_PRIMARY_MUTATOR_REMAINS_DURABLY_RUNNING_AND_HAS_NEWER_AUTHORITATIVE_PROGRESS
+primary_run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-162923-IST-RUN-001
+primary_state: RUNNING
+primary_last_heartbeat_at: '2026-09-02T16:55:30+05:30'
+primary_unit_local_business_behavior_complete: 134
+primary_business_behavior_total: 134
+primary_projection_drift_count: 47
+application_code_mutation: false
+backlog_mutation: false
+claims_created: 0
+transient_logs_remaining: 0
