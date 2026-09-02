@@ -4,20 +4,21 @@
 - Endpoint: `GET /domainLookup`
 - Controller: `DomainLookupController.showDomainLookupPage`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Screen entry and request
-The main Domain Lookup screen is `final-version-1/DomainLookup`. Optional request parameter `tab` defaults exactly to `productCategory`; the controller exposes it as model attribute `activeTab`.
+## Business behavior
 
-## Read path and visible model
-The GET performs no database call. It reads the startup/refreshed `LookupDataCache` and supplies six lookup domains: product categories, product UOMs, vehicles, drivers, products and cylinders. It also supplies product-category/UOM option lists for Product forms and UOM/Product option lists for Cylinder forms.
+Opening `/domainLookup` renders `final-version-1/DomainLookup`. Optional parameter `tab` defaults to `productCategory` and is exposed as `activeTab`. The GET performs no direct database write/read transaction; it renders current lookup DTO collections from `LookupDataCache` for product categories, product UOMs, vehicles, drivers, products and cylinders, plus the option lists needed by Product/Cylinder forms.
 
-## Cache/data identity
-The page reads cached domain DTO collections through `getProductCategories()`, `getProductUom()`, `getVehicles()`, `getDrivers()`, `getProduct()`, and `getCylinder()`. The controller documentation explicitly separates this read path from POST write paths; successful writes refresh only the corresponding cache segment.
+The cache collections are the page's read identity; POST save actions are separate Stories and refresh only their corresponding cache segment after successful persistence. This GET itself performs no save, hidden-ID mutation, debounce or dependent API call.
 
-## Outcome
-The selected tab and all lookup collections are returned in the `ModelAndView`; there is no persistence mutation, hidden-ID write, debounce, or API call performed by this GET itself.
+## Completion and approval gate
 
-## Approval boundary
-Strict field/UI contract is complete for the applicable frozen-source page-entry/read behavior. Approval remains pending.
+The page-entry parameter/default, view/model collections, cache-read behavior and no-mutation effect are source-bound. STORY-0108 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
