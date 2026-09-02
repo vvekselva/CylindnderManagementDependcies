@@ -1,0 +1,29 @@
+story_id: STORY-0002
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /offline-map/status
+controller:
+  path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/OfflineMapController.java
+  class: OfflineMapController
+  method: showStatus
+  model_key: status
+  view: with-menu/OfflineMapStatus
+service:
+  path: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/OfflineVectorTileService.java
+  method: fetchStatus
+  behavior:
+    - read enabled flag and MBTiles path
+    - inspect bundled MapLibre JS/CSS and glyph resources
+    - test local MBTiles file existence
+    - open SQLite connection read-only
+    - read metadata rows
+    - expose readable/error state and metadata fields
+ui:
+  path: cylindermanagement.web/src/main/resources/templates/with-menu/OfflineMapStatus.html
+  ready_rule: enabled && mbtilesFileExists && readable
+  read_only: true
+persistence_mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
