@@ -1,0 +1,22 @@
+version: 1
+recorded_at: '2026-09-02T21:17:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+findings:
+  STORY-0009:
+    classification: SOFT_DELETE_STATE_SET
+    component: PredefinedDeliveryTripService.removeStop
+    detail: Loads assignment by id, sets active=false, saves and resequences active assignments. A repeat request does not create a duplicate business row; it sets the same state again if the assignment still resolves.
+  STORY-0010:
+    classification: SOFT_DELETE_STATE_SET
+    component: PredefinedDeliveryTripService.deactivate
+    detail: Loads trip by id and sets active=false. Repeating the command is a state-set operation, not an insertion duplicate.
+  STORY-0007:
+    classification: EXACT_ACTIVE_NAME_PRECHECK_PRESENT
+    detail: create rejects an active trip with the same name ignoring case.
+  STORY-0008:
+    classification: EXACT_ASSIGNMENT_PRECHECK_PRESENT
+    detail: addStop rejects an already-active trip/Planning-Stop association.
+governance:
+  auto_approve: false
+  code_mutation: false
