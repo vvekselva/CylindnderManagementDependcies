@@ -1,0 +1,41 @@
+packet_id: STORY-0040-vehicle-load-duplicate-cylinder-review-20260902
+story_id: STORY-0040
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+current_behavior:
+  validator:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/VehicleLoadIngestionValidator.java
+    anchor: load-line loop around lines 124-220
+    detail: Each requested cylinder is individually checked for existence and Yard-only availability/state, but no within-request duplicate cylinder-id check is source-proved.
+  service:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleLoadIngestionService.java
+    anchor: load-line construction around lines 161-230
+    detail: Every request line becomes a VehicleLoadLineDo. Yard inventory is not deactivated until after all request lines are mapped, so the same cylinder repeated in the submitted list can pass the same pre-mutation Yard availability check more than once.
+  persistence:
+    entity: VehicleLoadLineDo
+    table: public.tbl_vehicle_load_line
+    detail: Entity mapping declares fk_vehicle_load and fk_cylinder but no unique constraint on that pair. A search of the governed migration source found no explicit matching composite unique constraint.
+business_impact:
+  - One physical cylinder can be represented multiple times in one Vehicle Load request if its id is duplicated in the submitted lines.
+  - Header quantities, total loaded count, logistics-line creation and Yard deactivation can then diverge from the physical one-cylinder-one-load-line intent.
+proposed_locations:
+  - file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/VehicleLoadIngestionValidator.java
+    component: VehicleLoadIngestionValidator.validate
+    anchor: around lines 124-220
+    proposal: Track cylinder ids seen in the request and reject a repeated id with controlled validation evidence before persistence.
+  - file: Vehicle Load UI/template request construction
+    component: Vehicle Load selected-cylinder list
+    proposal: Prevent duplicate selection client-side as an additional UX guard while retaining the service validator as authoritative.
+tests:
+  - repeated cylinder id in one request is rejected and nothing is persisted
+  - distinct FULL/EMPTY cylinder ids continue through existing Yard/state validation
+  - case does not rely on database failure for the user-facing duplicate result
+  - regression verifies totalCylindersLoaded equals distinct persisted physical cylinders
+database_impact: No database change is included in this packet. A composite database constraint would be separate scope requiring approval after migration-history review.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
