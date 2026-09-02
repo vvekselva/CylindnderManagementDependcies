@@ -1,0 +1,19 @@
+version: 1
+recorded_at: '2026-09-02T21:20:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+story_id: STORY-0087
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+proof:
+  rest_controller:
+    file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulAddressTypeServices.java
+    anchor: lines 16-40
+    endpoint: GET /search/addresstype/{searchText}
+  service:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/AddressTypeSearchService.java
+    anchor: lines 42-61
+    database_call: AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase(searchTerm)
+result: DATABASE_BACKED_TYPEAHEAD_CAPABILITY_SOURCE_PROVED
+use_in_review: This endpoint is the reusable dependency proposed for Customer Registration and Customer Maintenance Address Type controls; no new search endpoint is required by that UI drift packet.
+governance:
+  auto_approve: false
+  code_mutation: false
