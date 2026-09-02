@@ -1,0 +1,14 @@
+version: 1
+recorded_at: '2026-09-02T21:16:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+story_id: STORY-0125
+original_triage: MUTATION_DUPLICATE_OR_IDEMPOTENCY_REVIEW_REQUIRED
+corrected_classification: READ_ONLY_POST_SEARCH_NO_INSERTION_PRECHECK
+source:
+  file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ReconciliationDashboardController.java
+  anchor: lines 71-105
+  detail: POST /reconciliation-dashboard/search sends criteria to dashboardService.processRequest and renders aggregate/search results into the model; the controller path is query/search behavior, not an insertion/update command.
+impact_on_134_story_triage: Classification-only correction. Total remains 134 and no Story approval changes.
+governance:
+  auto_approve: false
+  code_mutation: false
