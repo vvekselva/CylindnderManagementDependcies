@@ -1,0 +1,21 @@
+story_id: STORY-0090
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+checked_at: 2026-09-02T22:05:00+05:30
+approval_state: APPROVED_AFTER_REWORK
+source_binding:
+  repository: CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  local_root: /mnt/data/cylinder-prod-fire-20260902-215742/source/extracted
+conformance: PASS
+proof:
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulCountryServices.java
+    anchors: lines 16-40
+    finding: GET /search/country/{searchText} copies path input to searchTerm, delegates to countrySearchService, and maps governed exception to an empty response DTO.
+  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/CountrySearchService.java
+    anchors: lines 41-61
+    finding: validates with COUNTRY_SEARCH_SERVICE, performs CountryJpaDao.findByCountryNameContainingIgnoreCase, maps Country DTOs, and returns SUCCESS.
+application_code_changed: false
+fanout_gate: SOURCE_CONFORMANCE_PASS
+next_action: GENERATE_MAP_AND_EXECUTE_GOVERNED_TESTS_WHEN_RUNTIME_AVAILABLE
