@@ -1,0 +1,57 @@
+review_packet_id: STORY-0044-WIZARD-DUPLICATE-CYLINDER-REVIEW-20260902
+story_id: STORY-0044
+state: AWAITING_STORY_REVIEW_AND_EXACT_USER_CODE_CHANGE_APPROVAL
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - POST /wizard/vehicle-trip-load/save sends one transactional request containing trip fields, load header, load-line cylinders and four challan-book selections.
+  - TripChallanBookAssignmentSelectionValidator already rejects using the same physical challan book for more than one required book type; that guard is separately source-proved.
+  - VehicleLoadIngestionValidator iterates loadLines and validates each cylinder individually for existence and Yard-only availability, but does not maintain a submitted-cylinder-id Set and does not reject the same cylinder ID appearing more than once in the same request.
+  - VehicleLoadAndTripIngestionService then iterates every line, resolves the same cylinder/active YardInventoryLine for each occurrence, creates a VehicleLoadLineDo for every occurrence, and adds the same active Yard inventory row to the deactivation list for each occurrence before persisting trip/load atomically.
+  - The request-level duplicate cylinder therefore reaches persistence/transfer logic rather than being rejected as inconsistent input.
+approved_behavior:
+  state: PENDING_USER_APPROVAL
+  note: This packet does not auto-approve a duplicate-cylinder rule. It isolates a source-proved request-consistency gap for review.
+business_impact:
+  - One physical cylinder can be counted twice toward load quantities in a single wizard request.
+  - The same Yard inventory identity can be scheduled for deactivation/transfer more than once in the same transaction, risking database-constraint failure or inconsistent quantity/purpose allocation rather than a clear field validation error.
+  - Operationally a physical cylinder cannot occupy two load lines in the same load at the same time, making duplicate request identity a strong consistency concern.
+proposed_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/VehicleLoadIngestionValidator.java
+    class: VehicleLoadIngestionValidator
+    method: validate
+    approximate_anchor: load-line loop lines ~124-220
+    proposed_change: maintain a Set<Long> of validated submitted cylinder IDs; when a non-null cylinderId repeats within the same request, add a dedicated controlled validation error to the repeated line/header and do not continue normal Yard-location processing for that duplicate occurrence.
+    reason: enforce one physical cylinder identity per load request before transactional persistence.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: relevant VehicleLoadIngestionValidator / VehicleLoadAndTripIngestionService wizard tests under src/test/java
+    component: tests
+    proposed_change: prove two distinct cylinders succeed; duplicate same cylinder in two load lines is rejected before trip/load/challan assignment persistence; quantities are not double-counted; no Yard inventory/logistics rows mutate on rejected duplicate request.
+    reason: protect transaction atomicity and physical identity consistency.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleLoadAndTripIngestionService.java
+    class: VehicleLoadAndTripIngestionService
+    method: processRequest
+    approximate_anchor: validation lines ~166-185 and load-line loop ~202-265
+    proposed_change: no separate production logic change is required if validator rejection is approved; keep the service transactional as a backstop. Any defensive duplicate assertion added here must match the exact approved validator rule.
+    reason: avoid duplicating divergent business logic across validator and service.
+database_impact:
+  schema_change: false
+  migration_required: false
+risk_and_rollback:
+  risk: LOW_TO_MEDIUM
+  rollback: revert validator/tests if approved; no DB migration rollback.
+approval_gate: STORY_APPROVAL_AND_EXACT_DUPLICATE_CYLINDER_MANIFEST_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: any new quantity rule, DB uniqueness constraint, UI redesign or additional load-purpose rule requires new approval.
+application_code_changed: false
+bl010_created_or_executed: false
