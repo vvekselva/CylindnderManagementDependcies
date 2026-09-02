@@ -4,9 +4,15 @@
 - Endpoint: `GET /ownership-dashboard`
 - Controller: `OwnershipDashboardController.showOwnershipDashboard`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Local-source evidence: `BL-002/evidence/STORY-0066-local-source-business-behavior-20260902-1650.yaml`
 
-Optional filters are `location`, `productName`, `state`, and `searchTerm`; page defaults 0 and size defaults 50. Server clamps page to >=0 and size to 10..200, builds `PageRequest`, then calls `OwnershipDashboardFetchService.fetchDashboard(...)` and `fetchOwnershipPage(...)`. Page content is copied into `dashboardDto.ownershipRows`. Maximum summary cylinder count is null-safely computed.
+Optional filters are `location`, `productName`, `state`, and `searchTerm`; page defaults 0 and size defaults 50. The controller clamps page to >=0 and size to 10..200, builds the pageable request, then calls `OwnershipDashboardFetchService.fetchDashboard(...)` and `fetchOwnershipPage(...)`. Page content is copied into `dashboardDto.ownershipRows`, and the maximum summary cylinder count is computed null-safely.
 
-The view is `final-version-2/OwnershipDashboard_PremiumEnterprise_Fixed`. It receives dashboard/page objects, page number/size/total pages/total elements, previous/next flags and indices, max summary count, and all selected filters. This is read-only; no mutation or local exception branch exists. Approval remains pending.
+The view is `final-version-2/OwnershipDashboard_PremiumEnterprise_Fixed`. It receives the dashboard/page objects, page number/size/total pages/total elements, previous/next flags and indices, maximum summary count, and all selected filters. This is read-only; no controller mutation or local exception branch exists.
+
+The recovered governed ZIP independently confirms the filters, server-side paging bounds, dashboard/page service calls and rendered model. STORY-0066 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+No approval occurred. No application code or database schema was changed.
