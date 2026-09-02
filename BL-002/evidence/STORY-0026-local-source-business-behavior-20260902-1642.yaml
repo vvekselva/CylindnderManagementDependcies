@@ -1,0 +1,23 @@
+story_id: STORY-0026
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: POST /customer-address-location/import-whatsapp-export
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java
+service_path: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/CustomerAddressLocationOfflineMapService.java
+request_fields: [rawText, importedBy]
+import_behavior:
+  empty_raw_text: zero_rows_no_write
+  split_lines: true
+  coordinate_parse_per_line: true
+  invalid_lines_skipped: true
+persistence:
+  entity: CustomerLocationImportInboxDo
+  sourceType: WHATSAPP_EXPORT_IMPORT
+  mappingStatus: UNMAPPED
+  save: CustomerLocationImportInboxJpaDao.save
+visible_success_pattern: Imported <count> location row(s) from WhatsApp text.
+controller_local_error_catch: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
