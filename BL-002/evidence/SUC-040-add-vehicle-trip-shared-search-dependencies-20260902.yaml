@@ -1,0 +1,34 @@
+usecase_id: SUC-040
+stories: [STORY-0133, STORY-0134]
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_analysis_engine: LOCAL_EXTRACTED_SOURCE
+template:
+  path: cylindermanagement.web/src/main/resources/templates/with-menu/VehicleTripIngestion.html
+  anchors:
+    vehicle_search: line ~1116
+    driver_search: line ~1123
+    customer_search: line ~1130
+    customer_address_search: line ~1137
+    debounce: line ~1153-1166
+  debounce_ms: 350
+dependency_story_ids:
+  - STORY-0103
+  - STORY-0092
+  - STORY-0091
+  - STORY-0086
+dependency_roles:
+  STORY-0103: vehicle search
+  STORY-0092: driver search
+  STORY-0091: customer search
+  STORY-0086: customer-specific address search
+behavior:
+  - Blank text sends no search request.
+  - Vehicle Driver and Customer searches are debounced 350 ms.
+  - Customer selection clears stale Address and loads only that Customer's addresses.
+  - Selected persistent identities are propagated to hidden form fields for the companion POST.
+classification: SOURCE_PROVED_SHARED_DEPENDENCIES
+approval_effect: NONE
+auto_approval_performed: false
+application_code_changed: false
