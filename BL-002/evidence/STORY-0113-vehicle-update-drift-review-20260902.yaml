@@ -3,15 +3,23 @@ story_id: STORY-0113
 state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
 repository: vvekselva/CylinderManagement
 ref: 3ae6e61442132d94a307275b08dd65fcef228d89
 current_behavior:
   - DomainLookupController.saveVehicle accepts optional vehicleId and explicitly presents add/update success behavior.
-  - VehicleIngestionService rejects whenever `findByVehicleNumberContainingIgnoreCase(vehicleNumber)` returns any row, without excluding the submitted vehicleId on update and using contains rather than exact normalized equality.
+  - VehicleIngestionService rejects whenever findByVehicleNumberContainingIgnoreCase(vehicleNumber) returns any row, without excluding the submitted vehicleId on update and using contains rather than exact normalized equality.
   - Service maps VehicleDto to VehicleDo and saves through VehicleJpaDao after that duplicate check.
+  - DomainLookup.html has database-backed 320 ms Vehicle search in the table toolbar using /search/vehicle/{text}, while the add/edit Registration Number candidate input only uppercases locally and does not show database matches while typing.
+approved_story_behavior:
+  state: PENDING_USER_APPROVAL
+  note: Story approval is not inferred by this packet.
 business_impact:
   - A legitimate vehicle edit can be rejected as a duplicate of its own existing registration number.
   - Distinct vehicle numbers can be falsely rejected when one merely contains the submitted value.
+  - Candidate entry does not proactively show matching registered vehicles even though the search endpoint already exists.
 proposed_manifest:
   - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleIngestionService.java
     component: VehicleIngestionService
@@ -22,11 +30,16 @@ proposed_manifest:
   - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/VehicleJpaDao.java
     component: VehicleJpaDao
     method: exact vehicle-number duplicate lookup as required
-    source_anchor: existing repository search declarations
-    proposed_change: add/use exact ignore-case vehicle-number lookup; no schema change.
+    source_anchor: existing search declarations lines ~11-16
+    proposed_change: add/use exact ignore-case vehicle-number lookup with current-row exclusion for updates; no schema change.
+  - path: cylindermanagement.web/src/main/resources/templates/with-menu/DomainLookup.html
+    component: Vehicle Registration Number candidate and shared search engine
+    source_anchor: vehicle candidate lines ~1128-1149; REST_BASE/searchTable lines ~1604-1660
+    proposed_change: add a debounced database-backed suggestion panel to Registration Number using existing /search/vehicle/{text}; retain authoritative service validation on submit.
+    reason: satisfy lookup-before-insert at the candidate field.
   - path: relevant Vehicle ingestion/controller tests under src/test/java
     component: tests
-    proposed_change: cover create duplicate, unchanged-number update, collision with another vehicle, substring-distinct registration, and cache refresh/PRG behavior.
+    proposed_change: cover create duplicate, unchanged-number update, collision with another vehicle, substring-distinct registration, candidate lookup, and cache refresh/PRG behavior.
 database_impact: NONE_SCHEMA
 material_story_change: false
 approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
