@@ -3,9 +3,11 @@ fire_id: 20260902-222712-IST
 observed_fire_time: '2026-09-02T22:27:12+05:30'
 scheduled_fire_time: '2026-09-02T22:27:12+05:30'
 receipt_time: '2026-09-02T22:27:12+05:30'
-state: RUN_LINKED
+state: TERMINATED_RECONCILED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260902-222712-IST-RUN-003
 orchestrator_state: ORCHESTRATOR_STARTED
-terminal_classification: null
-termination_time: null
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+termination_time: '2026-09-03T00:28:09+05:30'
+termination_time_semantics: RECOVERY_RECONCILIATION_TIME_NOT_ACTUAL_PROCESS_STOP
+reconciled_by_run_id: CYLINDER-PRODUCTION-FIRE-20260903-002617-IST-RUN-005
