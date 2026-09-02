@@ -1,0 +1,31 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-023147-IST-RUN-001
+state: TERMINATED
+mode: CONTINUOUS
+started_at: '2026-09-03T02:32:06+05:30'
+terminated_at: '2026-09-03T02:33:15+05:30'
+productive_elapsed_seconds: 69
+runtime_target_30_minutes_satisfied: false
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+terminal_reason: Exact requested Library ZIP was searched but not returned. Byte-identical governed fallback ZIP was freshly fingerprinted and extracted locally. Durable aggregates remain 15 approvals, 119 awaiting review, 14 conformance passes, STORY-0101 drift hold. DEV-0002/0003/0004 remain explicit exact-manifest approval gated. Fourteen generated test mappings remain blocked because Maven/container runtimes are unavailable. No safe-independent eligible unit remains; early terminalization is therefore fail-closed rather than idle runtime consumption.
+resumable: true
+eligible_work_remaining: false
+recoverable_work_remaining: true
+completed_work_unit_ids:
+  - SCHEDULER_HANDOFF_ACK
+  - RUN_LINK
+  - PRIMARY_FILE_LIBRARY_SEARCH_RECHECK
+  - SOURCE_FINGERPRINT_AND_FRESH_EXTRACT
+  - PRIOR_LIVE_RUN_RECONCILIATION
+  - APPROVAL_AND_AGGREGATE_PROJECTION_RECONCILIATION
+  - STORY_0101_LOCAL_SOURCE_DRIFT_REVALIDATION
+  - RUNTIME_CAPABILITY_REPROBE
+blocked_work_unit_ids:
+  - PRIMARY_LIBRARY_EXACT_PACKAGE_NOT_RETURNED
+  - STORY_0101_EXACT_DRIFT_APPROVAL
+  - DEV_0002_EXACT_DRIFT_APPROVAL
+  - DEV_0003_EXACT_DRIFT_APPROVAL
+  - DEV_0004_EXACT_DRIFT_APPROVAL
+  - EXECUTE_14_UNIT_MAPPINGS_REQUIRING_FAITHFUL_MAVEN_RUNTIME
+  - EXECUTE_14_INTEGRATION_MAPPINGS_REQUIRING_FAITHFUL_MAVEN_CONTAINER_RUNTIME
+next_action: RESUME_ON_NEXT_FIRE_RECHECK_EXPLICIT_APPROVAL_NEW_SOURCE_SHA_OR_RUNTIME_CAPABILITY
+evidence: .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-II-20260903-023147-IST-RUN-001-reconciliation.yaml
