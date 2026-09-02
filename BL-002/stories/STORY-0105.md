@@ -4,17 +4,21 @@
 - Endpoint: `POST /search/cylinder/ownership/by-state`
 - Controller: `RestfulCylinderServices.getCylindersByStateUsingOwnershipModel`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Request and service contract
-The controller accepts required JSON `@RequestBody CylinderManagementApplicationRequestDto requestDto`, creates `Pageable` through `PaginationUtils.createPageable(requestDto)`, and delegates unchanged request data to the qualified `cylinderCurrentOwnershipByStateSearchService.searchWithText(requestDto, pageable)`.
+## Business behavior
 
-## Response/error behavior
-Success returns `CylinderSearchResponseDto`. `CylinderManagementApplicationException` is logged and returns a new empty response DTO. This is an ownership-model read path and performs no mutation in the controller.
+This ownership-model POST accepts required JSON `CylinderManagementApplicationRequestDto`, creates paging with `PaginationUtils.createPageable`, and passes the unchanged request to `cylinderCurrentOwnershipByStateSearchService.searchWithText`. The response is `CylinderSearchResponseDto`; a governed application exception is logged and converted to an empty response DTO.
 
-## UI applicability
-The frozen endpoint contract does not itself prove a particular visible control, browser event, debounce, hidden-field propagation, dependent call, button guard, or reset action. Those fields are therefore not invented.
+The endpoint is the global ownership-aware by-state search path, separate from the yard-only `/search/cylinder/by-state` endpoint. It reads current ownership/location/state information for cylinders matching the requested state criteria and performs no cylinder mutation.
 
-## Approval boundary
-Strict contract is complete for all applicable source-proved behavior. Approval remains pending.
+## Completion and approval gate
+
+The request/paging/service routing, ownership-aware scope, response/error behavior and read-only effect are source-bound. STORY-0105 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
