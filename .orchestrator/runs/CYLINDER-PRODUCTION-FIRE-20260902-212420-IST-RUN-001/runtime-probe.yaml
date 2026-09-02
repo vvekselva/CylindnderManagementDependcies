@@ -1,0 +1,15 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+probe_time: 2026-09-02T21:33:00+05:30
+java: OPENJDK_21_0_11_AVAILABLE
+maven: MISSING
+gradle: MISSING
+docker: MISSING
+podman: MISSING
+python: PYTHON_3_13_5_AVAILABLE
+implications:
+  application_source_analysis: AVAILABLE_FROM_EXTRACTED_LOCAL_SOURCE
+  maven_junit_mockito_execution: BLOCKED_BY_MISSING_MAVEN
+  gradle_execution: BLOCKED_BY_MISSING_GRADLE
+  testcontainers_execution: BLOCKED_BY_MISSING_CONTAINER_RUNTIME
+  github_actions_or_runners_used: false
+state: RUNTIME_PROBE_COMPLETE
