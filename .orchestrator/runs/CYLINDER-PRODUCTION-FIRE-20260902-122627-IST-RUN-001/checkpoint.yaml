@@ -1,0 +1,31 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-122627-IST-RUN-001
+scheduler_fire_id: 20260902-122627-IST
+mode: CONTINUOUS
+started_at: '2026-09-02T12:26:27+05:30'
+handoff_state: RUN_LINKED
+reconciled_previous_checkpoint: CYLINDER-PRODUCTION-FIRE-20260902-112829-IST-RUN-001
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+work_attempted:
+  - STORY-0048
+source_proof:
+  controller_delete_endpoint: PROVED_PREVIOUS_DURABLE_EVIDENCE
+  controller_parameter_challanPagePhotoId: PROVED_PREVIOUS_DURABLE_EVIDENCE
+  service_deactivate_call: PROVED_PREVIOUS_DURABLE_EVIDENCE
+  downstream_service_dao_entity_db: INCOMPLETE_FROZEN_SOURCE_BINDING
+source_discovery_attempts:
+  - control-repository search for ChallanPagePhotoUploadService/deactivatePhoto symbols
+  - frozen application commit tree inspection continued
+source_discovery_result: NO_NEW_EXACT_DOWNSTREAM_FROZEN_SOURCE_BINDING_PROVED
+control_plane_drift:
+  scheduler_receipt_path_case_divergence: '.orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire vs existing cylinder-production-fire'
+  action: PRESERVE_CURRENT_SAME_RECEIPT_AND_RECORD_DRIFT_NO_UNPROVED_MOVE
+completion_delta_this_run: 0
+application_code_changes: 0
+bl010_execution_delta: 0
+auto_approvals: 0
+eligible_work_remaining: true
+resumable: true
+next_action: Continue exact frozen-source service/DAO/entity/database proof for STORY-0048; then reconcile STORY-0048 artifact/projection; then resume STORY-0047. Preserve STORY-0045 approval gate.
