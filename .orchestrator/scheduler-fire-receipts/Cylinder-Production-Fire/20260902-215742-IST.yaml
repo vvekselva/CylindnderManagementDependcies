@@ -3,9 +3,10 @@ fire_id: 20260902-215742-IST
 scheduled_fire_time: 2026-09-02T21:57:42+05:30
 observed_fire_time: 2026-09-02T21:57:42+05:30
 receipt_time: 2026-09-02T21:57:42+05:30
-state: TRIGGER_RECEIVED
+state: ORCHESTRATOR_STARTED
 intended_scope: CONTINUOUS
-run_id: null
-run_link_state: UNLINKED
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+run_link_state: RUN_LINKED
+run_started_at: 2026-09-02T21:57:42+05:30
 terminal_classification: null
 termination_time: null
