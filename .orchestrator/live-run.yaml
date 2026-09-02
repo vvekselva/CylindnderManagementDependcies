@@ -1,19 +1,20 @@
 run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST
 scheduler_task: cylinder-production-fire-i
-state: RUNNING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-02T17:58:35+05:30'
-last_heartbeat_at: '2026-09-02T18:00:03+05:30'
-terminal_classification: null
-terminal_reason: null
-running_worker_count: 1
-completed_worker_count: 0
-blocked_worker_count: 0
-active_work_unit_ids: [CONTROL-PLANE-RECONCILIATION]
+last_heartbeat_at: '2026-09-02T18:00:43+05:30'
+terminated_at: '2026-09-02T18:00:43+05:30'
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: BL002_BUSINESS_BEHAVIOR_COMPLETE_134_OF_134_AND_QUEUE_PROJECTION_VERIFIED_WITH_ZERO_CURRENT_DRIFT;_132_STORIES_REQUIRE_EXPLICIT_USER_APPROVAL;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_TEST_EXECUTION_RUNTIME_BLOCKED
+running_worker_count: 0
+completed_worker_count: 1
+blocked_worker_count: 4
+active_work_unit_ids: []
 eligible_work_remaining: false
 resumable: true
-last_action: RECONCILED_PRIOR_TERMINATED_PRIMARY_AND_CONFIRMED_BL002_134_OF_134_QUEUE_STATE
+last_action: PERSISTED_QUEUE_PROJECTION_RECONCILIATION_AND_CURRENT_RUNTIME_BLOCKER_EVIDENCE
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST-RUN-001
 aggregate_business_behavior_complete: 134
 aggregate_business_behavior_total: 134
@@ -26,4 +27,6 @@ approved_after_rework: 2
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
 source_materialization_this_invocation: FILE_LIBRARY_SEARCH_ATTEMPTED_NOT_RECOVERED_IN_CURRENT_RUNTIME
-next_action: Validate current runtime gates and terminalize if no newly eligible work exists.
+runtime_probe: BL-008/evidence/20260902-1800-chatgpt-runtime-stage1-probe.yaml
+queue_projection_reconciliation_evidence: BL-002/evidence/queue-projection-reconciliation-20260902-175813.yaml
+next_action: Await explicit Story/drift approvals or restored governed test runtime; recurring scheduler remains enabled for future resumable work.
