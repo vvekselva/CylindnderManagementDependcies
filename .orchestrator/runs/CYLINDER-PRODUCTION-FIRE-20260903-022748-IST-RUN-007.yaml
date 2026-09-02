@@ -1,12 +1,24 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260903-022748-IST-RUN-007
 scheduler_fire_id: 20260903-022748-IST
 scheduler_task: Cylinder Production Fire
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-03T02:27:49+05:30'
+terminated_at: '2026-09-03T02:30:32+05:30'
+productive_elapsed_seconds: 164
+runtime_target_30_minutes_satisfied: false
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+terminal_reason: Exact requested Library ZIP was searched but not returned. Existing local fallback was freshly fingerprinted and exactly matched governed SHA, then freshly extracted. Durable approvals and testing projections remain reconciled. STORY-0101 and DEV-0002/0003/0004 remain explicit approval gated. Faithful test execution remains blocked by missing Maven/container runtime. No safe-independent eligible work remains; run terminated without idling.
 receipt_path: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire/20260903-022748-IST.yaml
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
-terminal_classification: null
-terminated_at: null
+source_package_effective: Harinandhan-Cylinder-Backup(20260902-163304).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_extracted_path: /mnt/data/cylinder-orchestrator-run007
+source_extracted_file_count: 1650
+source_java_file_count: 1054
+source_local_git_present: false
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260903-022748-IST-RUN-007-terminal.yaml
+evidence: .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-20260903-022748-IST-RUN-007-reconciliation.yaml
 resumable: true
+next_action: RESUME_ON_NEXT_FIRE_RECHECK_EXPLICIT_APPROVAL_NEW_SOURCE_SHA_OR_RUNTIME_CAPABILITY
