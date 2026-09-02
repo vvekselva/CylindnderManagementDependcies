@@ -1,0 +1,72 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-022748-IST-RUN-007
+mode: CONTINUOUS
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire/20260903-022748-IST.yaml
+scheduler_handoff_acknowledged: true
+source:
+  requested_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_library_file_id: file_00000000659c8211857bba6b09282de3
+  library_search_result: EXACT_PACKAGE_NOT_RETURNED
+  exact_primary_materialization: NOT_AVAILABLE_AFTER_SEARCH_FAILURE
+  effective_local_package: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  effective_local_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-163304).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  governed_sha_match: true
+  extraction_path: /mnt/data/cylinder-orchestrator-run007
+  extracted_file_count: 1650
+  java_file_count: 1054
+  local_git_present: false
+reconciliation:
+  prior_live_run: CYLINDER-PRODUCTION-FIRE-20260903-012952-IST-RUN-006
+  prior_live_run_terminal: true
+  approval_projection: RECONCILED_15_APPROVED_119_PENDING
+  post_approval_conformance: 14_PASS_1_DRIFT_HOLD
+  bl004_projection: 14_GENERATED_RUNTIME_BLOCKED_1_DRIFT_HOLD
+  bl005_projection: 14_GENERATED_RUNTIME_BLOCKED_1_DRIFT_HOLD
+  bl009_projection: 14_GENERATED_MAPPED_RUNTIME_BLOCKED_1_DRIFT_HOLD
+local_source_revalidation:
+  STORY-0101:
+    state: DRIFT_CONFIRMED_UNCHANGED
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/StateSearchService.java
+    method: searchWithText
+    source_anchor: line 47-48 validator.validate(... PRODUCT_UOM_SEARCH_SERVICE)
+    expected_review_packet: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+    mutation_authorized: false
+  STORY-0013:
+    state: THREE_APPROVAL_GATED_GAPS_CONFIRMED_UNCHANGED
+    service_file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+    null_request_anchor: lines 38-40 intended exception commented out
+    sheet_range_anchor: lines 46-51 intended exception commented out
+    persistence_anchor: line 83 saveAndFlush without explicit duplicate precheck
+    dao_file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ChallanBookRegistryJpaDao.java
+    dao_anchor: line 20 findByBookCode(String bookCode)
+    mutation_authorized: false
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  local_junit_mockito_maven_jars: NOT_FOUND
+  faithful_unit_execution: BLOCKED
+  faithful_integration_execution: BLOCKED
+completed_units:
+  - SCHEDULER_HANDOFF_ACK
+  - RUN_LINK
+  - PRIMARY_FILE_LIBRARY_SEARCH_RECHECK
+  - SOURCE_FINGERPRINT_AND_FRESH_EXTRACT
+  - PRIOR_LIVE_RUN_RECONCILIATION
+  - APPROVAL_AND_AGGREGATE_PROJECTION_RECONCILIATION
+  - STORY_0101_LOCAL_SOURCE_DRIFT_REVALIDATION
+  - STORY_0013_LOCAL_SOURCE_DRIFT_REVALIDATION
+  - RUNTIME_RECOVERY_REPROBE
+blocked_units:
+  - PRIMARY_LIBRARY_EXACT_PACKAGE_NOT_RETURNED
+  - STORY_0101_EXACT_DRIFT_APPROVAL
+  - DEV_0002_EXACT_DRIFT_APPROVAL
+  - DEV_0003_EXACT_DRIFT_APPROVAL
+  - DEV_0004_EXACT_DRIFT_APPROVAL
+  - EXECUTE_14_UNIT_MAPPINGS_REQUIRING_FAITHFUL_MAVEN_RUNTIME
+  - EXECUTE_14_INTEGRATION_MAPPINGS_REQUIRING_FAITHFUL_MAVEN_CONTAINER_RUNTIME
+eligible_work_remaining: false
+recoverable_work_remaining: true
+terminal_recommendation: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
