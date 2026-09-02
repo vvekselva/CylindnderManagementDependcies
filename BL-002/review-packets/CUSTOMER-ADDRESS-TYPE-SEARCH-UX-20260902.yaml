@@ -1,0 +1,45 @@
+packet_id: CUSTOMER-ADDRESS-TYPE-SEARCH-UX-20260902
+story_ids: [STORY-0041, STORY-0045]
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+approved_requirement: Applicable lookup/master-data entry must search database-backed values while typing so the user sees existing values before selection/creation.
+current_behavior:
+  registration:
+    file: cylindermanagement.web/src/main/resources/templates/final-version-1/UC01RegisterCustomer.html
+    anchors: around lines 799-805 and 1014-1251
+    detail: Address Type is rendered from the preloaded addressTypes collection as a select/options list, including dynamically added address rows.
+  maintenance:
+    file: cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html
+    anchors: around lines 783-787 and 1179-1192
+    detail: Address Type is likewise rendered/reused as static select options.
+  existing_search_capability:
+    story: STORY-0087
+    endpoint: GET /search/addresstype/{searchText}
+    detail: Database-backed Address Type search already exists and is the governed reusable capability.
+business_impact:
+  - Customer entry/edit users must scan a preloaded Address Type list and do not get type-ahead visibility of matching database values.
+  - The screen behavior is inconsistent with Lookup Management and the new cross-story lookup policy.
+proposed_locations:
+  - file: cylindermanagement.web/src/main/resources/templates/final-version-1/UC01RegisterCustomer.html
+    component: Address Type control for existing and dynamically added address rows
+    proposal: Replace the static select interaction with a type-ahead control backed by STORY-0087; preserve a hidden addressTypeId; clear stale id when typed text changes; require selection of a returned database identity before submit.
+  - file: cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html
+    component: Customer address Address Type controls
+    proposal: Apply the same database-backed type-ahead/hidden-id/stale-id-clearing behavior for maintenance rows.
+  - components: Customer Registration and Customer Update server validation
+    proposal: Retain authoritative validation that submitted Address Type identity exists; do not trust display text as identity.
+tests:
+  - typing Address Type calls the existing STORY-0087 search and displays matches
+  - selecting a match stores its id
+  - changing/clearing typed text clears stale id
+  - submit without a valid selected id is rejected
+  - dynamically added Customer address rows get the same behavior
+  - existing persisted Address Type displays correctly during maintenance
+database_impact: NONE.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
