@@ -3,9 +3,11 @@
 - Release: R1
 - Endpoint: `POST /lookupManagement/addressType/save`
 - Controller: `LookupManagementController.saveAddressType`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Approval evidence: `BL-002/approval-evidence/STORY-0129-approval-20260902.md`
+- Fan-out: REQUESTED_TO_BL004_BL005_BL009
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -58,8 +60,8 @@ A successful operation creates or updates the persisted Address Type and refresh
 
 The current type-ahead already reduces accidental duplicate entry by showing database-backed matches before Save. The remaining service defect matters because authoritative submit-time uniqueness can still reject a legitimate same-row update or a non-equivalent substring match.
 
-## Completion and approval gate
+## Approval and fan-out gate
 
-The recovered ZIP binds the current form/controller normalization, implemented type-ahead search, validation, repository/entity/table path, cache refresh, visible outcomes and remaining update defect.
+**APPROVED_AFTER_REWORK.** The user explicitly approved this revised Story on 2026-09-02 and explicitly requested fan-out. BL-004 unit-test, BL-005 integration-test and BL-009 test-case/test-data work may proceed for this approved current Story contract.
 
-Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 implementation was created or executed by this Story-document reconciliation.
+This Story approval does not by itself authorize application-code mutation for the separately documented drift manifest; that remains independently governed.
