@@ -1,0 +1,58 @@
+review_packet_id: STORY-0026-WHATSAPP-IMPORT-IDEMPOTENCY-REVIEW-20260902
+story_id: STORY-0026
+state: BUSINESS_IDEMPOTENCY_KEY_NOT_SOURCE_PROVED_CODE_CHANGE_FAIL_CLOSED
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - CustomerAddressLocationOfflineMapService.importWhatsappText splits submitted text into lines, skips lines whose coordinates cannot be parsed, and creates a new CustomerLocationImportInboxDo for every parseable line.
+  - Every accepted row receives sourceType WHATSAPP_EXPORT_IMPORT, rawText equal to the line, parsed coordinates, importedBy, a fresh importedAt timestamp and mappingStatus UNMAPPED, then is saved immediately.
+  - CustomerLocationImportInboxJpaDao exposes only findByMappingStatusOrderByImportedAtDesc; no raw-text, sender, timestamp, content-hash or import-batch duplicate predicate exists.
+  - tbl_customer_location_import_inbox has a generated primary key and no source-proved unique natural-key constraint for imported messages.
+  - Re-importing the same export therefore creates additional UNMAPPED inbox rows for every parseable repeated line.
+approved_behavior:
+  state: PENDING_USER_APPROVAL
+  idempotency_key: NOT_SOURCE_PROVED
+business_impact:
+  - An accidental re-import can multiply the same location candidates in the unmapped inbox and create duplicate manual mapping work.
+  - Suppressing by raw text alone could incorrectly discard legitimate repeated messages with identical coordinates/text, so an idempotency rule cannot be invented safely from the current source.
+exact_change_locations_if_a_business_key_is_later_approved:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/CustomerAddressLocationOfflineMapService.java
+    class: CustomerAddressLocationOfflineMapService
+    method: importWhatsappText
+    approximate_anchor: lines 226-249
+    change_boundary: perform the approved idempotency lookup immediately after successful coordinate parsing and before constructing/saving CustomerLocationImportInboxDo; either skip/reuse a proven duplicate or persist normally.
+    reason: this is the sole source-proved write loop for imported WhatsApp rows.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CustomerLocationImportInboxJpaDao.java
+    component: CustomerLocationImportInboxJpaDao
+    approximate_anchor: lines 9-10
+    change_boundary: add only the repository predicate required by the explicitly approved idempotency key.
+    reason: no duplicate lookup exists today.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/CustomerLocationImportInboxDo.java
+    component: CustomerLocationImportInboxDo / public.tbl_customer_location_import_inbox
+    approximate_anchor: entity lines 19-67
+    change_boundary: no entity/schema change is proposed unless the approved idempotency design explicitly requires a durable import-message identity or unique constraint.
+    reason: current columns include raw text, sender fields, message datetime and import metadata but no proven unique identity.
+tests_required_after_key_approval:
+  - first import persists each parseable message once
+  - exact replay according to approved key does not multiply rows
+  - two legitimate repeated messages that differ according to the approved identity both persist
+  - malformed lines remain skipped as today
+  - mixed replay/new-message batch persists only new identities
+  - transaction rollback behavior remains consistent
+database_impact: UNDETERMINED_UNTIL_IDEMPOTENCY_KEY_APPROVED; no schema mutation authorized.
+required_user_review_decision: Define what uniquely identifies one WhatsApp-export message/import event (for example an external message timestamp/sender/message identity if available); raw text alone is not assumed.
+approval_gate: NO_APPLICATION_CODE_OR_BL010_MUTATION_UNTIL_STORY_AND_EXACT_IDEMPOTENCY_MANIFEST_ARE_APPROVED
+application_code_changed: false
+bl010_created_or_executed: false
