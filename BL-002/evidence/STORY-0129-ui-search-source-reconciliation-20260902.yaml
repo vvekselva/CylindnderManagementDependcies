@@ -1,0 +1,31 @@
+story_id: STORY-0129
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
+classification: UI_LOOKUP_REQUIREMENT_ALREADY_IMPLEMENTED_SERVICE_DUPLICATE_DRIFT_REMAINS
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_analysis_engine: LOCAL_EXTRACTED_SOURCE
+ui_source:
+  path: cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html
+  input_anchor: addressType input id at-code; oninput uppercases and calls searchAddressType(this.value)
+  search_block_anchor: LIVE SEARCH — Address Type
+  endpoint: /search/addresstype/
+  governed_dependency_story: STORY-0087
+  debounce_ms: 320
+  result_behavior: Displays existing Address Type and description with Already exists marker; displays No match when empty.
+  stale_display_behavior: Suggestions are hidden/cleared for empty query and on blur.
+rest_source:
+  path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulAddressTypeServices.java
+  endpoint: GET /search/addresstype/{searchText}
+  service: AddressTypeSearchService
+remaining_service_drift:
+  path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/AddressTypeIngestionService.java
+  current_duplicate_query: findByAddressTypeContainingIgnoreCase
+  current_update_self_exclusion: ABSENT
+  impact: Same-row update can be rejected; substring match can be false duplicate rejection.
+database:
+  object: public.tbl_address_type.address_type
+  unique_constraint_present: true
+  migration_required: false
+ui_code_change_required: false
+service_code_change_requires_explicit_approval: true
+auto_approval_performed: false
