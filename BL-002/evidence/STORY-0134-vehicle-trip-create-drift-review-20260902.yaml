@@ -1,49 +1,54 @@
 story_id: STORY-0134
 title: Create Vehicle Trip
-governance_state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+governance_state: AWAITING_STORY_REVIEW_AND_EXACT_USER_CODE_CHANGE_APPROVAL
 source_repository: vvekselva/CylinderManagement
 source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+story_approval_state: PENDING_USER_APPROVAL
 current_behavior:
   - POST /addVechileTrip binds VehicleTripIngestionRequestDto and delegates to VehicleTripIngestionServiceImpl.
   - Validator checks Vehicle, Driver, starting time, Customer, Customer Address and customer-address ownership.
-  - Null request validation incorrectly emits VehicleIngestionRequestDto rather than VehicleTripIngestionRequestDto.
-  - Driver validation can dereference/null-unbox driverId when Driver DTO exists with null ID.
-  - Customer-ID invalidity condition incorrectly checks customerAddress.customerAddressId <= 0 instead of customerId <= 0 and can dereference customerAddress after an earlier address validation failure.
-  - Service resolves vehicle, driver, customer, address and Started status using Optional.get() after validation and saves VehicleTripDo to public.tbl_vehicle_trip.
+  - Null request validation incorrectly emits VehicleIngestionRequestDto rather than VehicleTripIngestionRequestDto at validator lines ~53-60.
+  - Driver validation tests driverId <= 0 without first checking driverId for null at lines ~83-89, allowing null unboxing failure.
+  - Customer-ID invalidity at lines ~108-116 incorrectly tests customerAddress.customerAddressId <= 0 instead of customerId <= 0 and can dereference customerAddress after an earlier address validation failure.
+  - Customer/address ownership verification performs fresh Optional.get calls at lines ~123-125 after earlier validation branches; if prerequisites are invalid/missing it is not consistently gated.
+  - VehicleTripIngestionServiceImpl resolves vehicle, driver, customer, address and Started status using Optional.get at lines ~76-95 and saves VehicleTripDo at ~98.
+  - VehicleTripJpaDao exposes no source-proved active-trip/idempotency predicate. Multiple trips over time are legitimate, so a generic duplicate trip rule is not inferred.
 approved_story_behavior:
-  - Every invalid required identity/request state must produce controlled VehicleTripIngestionRequestDto validation evidence without null dereference.
-  - Customer ID validation must validate customerId itself; customer-address ownership must only run when both valid entities are present.
-  - Missing configured Started status must be a controlled application error rather than Optional.get failure.
-  - Successful persistence semantics remain unchanged.
+  state: PENDING_USER_APPROVAL
+  note: The prior packet incorrectly presented target remediation behavior as approved. No Story approval is inferred here. The statements below are proposed fail-closed corrections subject to explicit Story/code-manifest approval.
 business_impact:
   - Certain malformed requests can fail with uncontrolled NullPointerException instead of visible validation feedback.
-  - Customer validation can test the wrong identity and produce misleading/unsafe behavior.
+  - Customer validation can test the wrong identity and produce misleading or unsafe behavior.
   - Missing reference/status rows can surface as uncontrolled Optional.get exceptions.
+  - There is no evidence-backed idempotency key for trip creation; inventing one could incorrectly block legitimate later trips.
 proposed_manifest:
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
     path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/VehicleTripIngestionRequestValidator.java
     component: VehicleTripIngestionRequestValidator
     method: validate
-    approximate_anchor: request-null, Driver, Customer Address and Customer validation branches
-    proposed_change: Emit VehicleTripIngestionRequestDto evidence for null request; null-check driverId before numeric comparison; validate customerId rather than customerAddressId; guard ownership validation behind successfully resolved Customer/Address entities.
+    approximate_anchor: lines ~53-145
+    proposed_change: Emit VehicleTripIngestionRequestDto evidence for null request; null-check driverId before numeric comparison; validate customerId rather than customerAddressId; guard ownership validation behind successfully resolved Customer/Address identities and avoid Optional.get after failed prerequisites.
     reason: Convert malformed input into controlled field validation and validate the correct business identities.
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
     path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleTripIngestionServiceImpl.java
     component: VehicleTripIngestionServiceImpl
     method: processRequest
-    approximate_anchor: reference-resolution block after validator.validate
-    proposed_change: Replace Optional.get reference/status resolution with controlled not-found/configuration errors while retaining existing successful mapping/save behavior.
-    reason: Preserve fail-closed behavior if persisted references or Started status disappear between validation and mutation.
+    approximate_anchor: lines ~69-99
+    proposed_change: Replace Optional.get reference/status resolution with controlled not-found/configuration errors while retaining successful mapping/save behavior. Do not add a trip duplicate/idempotency predicate until an exact active-trip/overlap business invariant is separately approved.
+    reason: Preserve fail-closed behavior if persisted references or Started status disappear between validation and mutation without inventing a trip uniqueness rule.
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
     path: cylindermanagement.custommapper.service/src/test/java
     component: Vehicle Trip ingestion tests
     approximate_anchor: existing/new VehicleTripIngestionRequestValidator and VehicleTripIngestionServiceImpl tests
-    proposed_change: Cover null request DTO type, null Driver ID, null/invalid Customer ID, null/invalid Address ID, mismatched Customer/Address, missing vehicle/driver/customer/address, missing Started status and successful trip creation.
+    proposed_change: Cover null request DTO type, null Driver ID, null/invalid Customer ID, null/invalid Address ID, mismatched Customer/Address, missing vehicle/driver/customer/address, missing Started status and successful trip creation; explicitly prove no invented generic duplicate-trip rule.
     reason: Guard controlled validation and persistence reference integrity.
 database_impact:
   schema_change: false
@@ -55,9 +60,12 @@ database_impact:
     - public.tbl_customer
     - public.tbl_customer_address
     - public.tbl_trip_status
+idempotency_review:
+  current_key: NOT_SOURCE_PROVED
+  decision_gate: Any active-vehicle, driver-overlap or customer/address trip-creation uniqueness rule requires separate explicit business approval before code change.
 risk_and_rollback:
   risk: MEDIUM
   rollback: Revert validator/service/test changes; no database rollback required.
-scope_expansion_rule: Any additional file, schema object, field, endpoint or business behavior requires new explicit approval.
+scope_expansion_rule: Any additional file, schema object, field, endpoint, idempotency rule or business behavior requires new explicit approval.
 application_code_changed: false
 bl010_created_or_executed: false
