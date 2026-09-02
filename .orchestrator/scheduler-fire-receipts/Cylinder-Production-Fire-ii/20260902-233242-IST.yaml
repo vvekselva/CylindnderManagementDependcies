@@ -3,9 +3,11 @@ fire_id: 20260902-233242-IST
 scheduled_fire_time: 2026-09-02T23:32:42+05:30
 observed_fire_time: 2026-09-02T23:32:42+05:30
 receipt_time: 2026-09-02T23:32:42+05:30
-state: RUN_LINKED
-orchestrator_state: ORCHESTRATOR_STARTED
+state: TERMINATED
+orchestrator_state: RUN_LINKED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260902-233242-IST-RUN-001
-terminal_classification: null
-termination_time: null
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+termination_time: 2026-09-02T23:35:17+05:30
+productive_elapsed_seconds: 155
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-II-20260902-233242-IST-RUN-001-terminal.yaml
