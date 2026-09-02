@@ -1,0 +1,11 @@
+scheduler_task: Cylinder Orchestrator Production Fire
+fire_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-141628-IST
+observed_fire_time: '2026-09-02T14:16:28+05:30'
+scheduled_fire_time: '2026-09-02T14:16:28+05:30'
+receipt_time: '2026-09-02T14:16:28+05:30'
+state: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
+run_id: null
+run_link_state: NOT_YET_LINKED
+terminal_classification: null
+terminated_at: null
