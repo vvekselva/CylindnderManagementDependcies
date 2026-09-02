@@ -4,16 +4,27 @@
 - Endpoint: `GET /lookup`
 - Controller: `LookupManagementController.legacyRedirect`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Strict contract
-The exact frozen handler is the parameterless `LookupManagementController.legacyRedirect`, mapped by `@GetMapping("/lookup")`. There are no request parameters, form fields, DTOs, service/DAO calls, local validation, browser debounce/minimum-length behavior, or persistence operations applicable to this endpoint. The handler logs the legacy navigation and returns `redirect:/lookupManagement`.
+## Business behavior
 
-The redirect target is proved in the same frozen controller: `GET /lookupManagement` accepts optional query parameter `tab` with default `addressType`, creates view `final-version-1/LookupManagement`, exposes `activeTab`, and reads cached address types, countries, states and cities through `LookupDataCache`. Those target-screen reads are context for the visible redirect outcome; `/lookup` itself does not mutate them.
+This route exists only to preserve legacy navigation. `LookupManagementController.legacyRedirect()` is parameterless and maps exact `GET /lookup`. A browser requesting the legacy URL is immediately redirected to `/lookupManagement`; no form value, persistent identity or filter is carried by this redirect.
 
-## Visible outcome and error/reset boundary
-A browser requesting the legacy `/lookup` route is redirected to the managed Lookup screen. There is no branch or error handler in `legacyRedirect`, no hidden field propagation, and no endpoint-specific reset/invalidation behavior. Because this story is a redirect-only GET, the applicable strict field/UI contract is fully proved without inventing non-applicable input or persistence behavior.
+The destination handler is source-proved in the same controller. `GET /lookupManagement` accepts optional `tab`, defaulting to `addressType`, renders `final-version-1/LookupManagement`, exposes `activeTab`, and supplies Address Type, Country, State and City reference collections from `LookupDataCache`. That destination context explains what the user sees after redirect; it is not a write performed by `/lookup`.
 
-## Approval boundary
-No approval occurred. Strict enrichment completion is not business approval.
+There is no request DTO, application-service invocation, DAO call, database mutation, validation branch, debounce/minimum-length rule, hidden-ID propagation or endpoint-specific error handling in `legacyRedirect` itself.
+
+## Business impact and visible outcome
+
+The business purpose is backward-compatible navigation: old links/bookmarks targeting `/lookup` continue to land on the current Lookup Management screen instead of returning a missing-page result. The operation is read/navigation-only and changes no lookup data.
+
+## Completion and approval gate
+
+The recovered ZIP directly confirms the legacy route, exact redirect target and the destination screen context. STORY-0127 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 work was created or executed.
