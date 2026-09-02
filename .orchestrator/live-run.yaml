@@ -4,23 +4,23 @@ scheduler_task: cylinder-production-fire-i
 state: RUNNING
 mode: CONTINUOUS
 started_at: '2026-09-02T16:29:24+05:30'
-last_heartbeat_at: '2026-09-02T16:42:05+05:30'
+last_heartbeat_at: '2026-09-02T16:55:30+05:30'
 terminal_classification: null
 terminal_reason: null
 running_worker_count: 1
-completed_worker_count: 20
+completed_worker_count: 47
 blocked_worker_count: 0
-active_work_unit_ids: [STORY-0027-R2-BUSINESS-BEHAVIOR]
+active_work_unit_ids: [BL-002-AGGREGATE-PROJECTION-REPAIR]
 eligible_work_remaining: true
 resumable: true
-last_action: COMPLETED_R1_STORY_0049_AND_R2_STORIES_0002_TO_0010_AND_0017_TO_0026_FROM_LOCAL_GOVERNED_ZIP
+last_action: COMPLETED_ALL_134_STORY_BUSINESS_BEHAVIOR_UNITS_FROM_GOVERNED_LOCAL_ZIP_AND_CHECKPOINTED_AUTHORITATIVE_UNIT_AGGREGATE
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-I-20260902-160140-IST-RUN-001
 aggregate_business_behavior_complete: 87
 aggregate_business_behavior_total: 134
 aggregate_percent: 64.9
-unit_local_business_behavior_complete: 107
-unit_local_percent: 79.9
-projection_drift_ids: [STORY-0049, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0017, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026]
+unit_local_business_behavior_complete: 134
+unit_local_percent: 100.0
+projection_drift_count: 47
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
-next_action: Continue STORY-0027 then remaining R2 work from local governed ZIP; reconcile aggregate projection from authoritative unit evidence at checkpoint.
+next_action: Repair BL-002 enrichment-progress and task-queue projections from authoritative Story files; preserve 132 explicit user-review gates and 2 approvals.
