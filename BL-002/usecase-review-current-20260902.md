@@ -19,6 +19,38 @@
 
 STORY-0013 still contains documented current-state development gaps, including the missing explicit duplicate Book Code pre-check. Approval of the Story does not mean those gaps are implemented.
 
+<a id="suc-017"></a>
+## SUC-017 — Customer Registration
+
+**Release:** R1  
+**Use-case approval:** Partially approved
+
+The shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 are now `APPROVED_AFTER_REWORK` with fan-out requested. Primary Stories STORY-0041 and STORY-0042 remain pending.
+
+<a id="suc-019"></a>
+## SUC-019 — Customer Display / Maintenance
+
+**Release:** R1  
+**Use-case approval:** Partially approved
+
+The shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 are now `APPROVED_AFTER_REWORK` with fan-out requested. Primary Stories STORY-0045, STORY-0046 and STORY-0047 remain pending.
+
+<a id="suc-032"></a>
+## SUC-032 — Supplier Ingestion
+
+**Release:** R1  
+**Use-case approval:** Partially approved
+
+The shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 are now `APPROVED_AFTER_REWORK` with fan-out requested. Primary Stories STORY-0080 and STORY-0081 remain pending.
+
+<a id="suc-035"></a>
+## SUC-035 — Shared Screen Search / Lookup APIs
+
+**Release:** R1  
+**Use-case approval:** Partially approved
+
+The following shared search Stories are now approved and fanned out: STORY-0087, STORY-0089, STORY-0090 and STORY-0101. The remaining shared search Stories remain pending user approval.
+
 <a id="suc-036"></a>
 ## SUC-036 — Domain Lookup Management
 
@@ -46,7 +78,7 @@ STORY-0108 and STORY-0109 are approved and their requested BL-004, BL-005 and BL
 ## SUC-039 — Lookup / Lookup Management
 
 **Release:** R1  
-**Use-case approval:** Partially approved
+**Use-case approval:** Approved
 
 | Story | Role | Approval |
 |---|---|---|
@@ -56,12 +88,12 @@ STORY-0108 and STORY-0109 are approved and their requested BL-004, BL-005 and BL
 | [STORY-0130](stories/STORY-0130.md) | Primary — Country save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0131](stories/STORY-0131.md) | Primary — State save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0132](stories/STORY-0132.md) | Primary — City save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | PENDING_USER_APPROVAL |
-| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | PENDING_USER_APPROVAL |
-| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | PENDING_USER_APPROVAL |
-| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | PENDING_USER_APPROVAL |
+| [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 
-STORY-0127 through STORY-0132 are approved current-state contracts. STORY-0128 through STORY-0132 have requested testing fan-out recorded. Shared search dependencies remain pending, so this Use Case remains partially approved.
+All primary and mapped dependency Stories are explicitly approved. Requested downstream testing/test-data fan-out is recorded for the newly approved shared search Stories.
 
 ### Lookup / insertion rule retained
 
