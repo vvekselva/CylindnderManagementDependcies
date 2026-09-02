@@ -2,7 +2,22 @@ scheduler_task: cylinder-production-fire
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260902-144000-IST
 observed_scheduled_fire_time: '2026-09-02T14:40:00+05:30'
 receipt_time: '2026-09-02T14:40:00+05:30'
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260902-144000-IST-RUN-001
-orchestrator_state: RUN_LINKED
+orchestrator_state: TERMINATED
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: GOVERNED_LOCAL_APPLICATION_SOURCE_UNAVAILABLE_AND_SAFE_CANONICAL_QUEUE_REPAIR_NOT_POSSIBLE_IN_ACTIVE_RUNTIME
+termination_time: '2026-09-02T14:43:17+05:30'
+elapsed_seconds: 197
+eligible_work_remaining: true
+resumable: true
+completion_delta_this_run: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+auto_approvals: 0
+application_code_changes: 0
+bl010_execution_delta: 0
+scheduler_must_remain_enabled: true
