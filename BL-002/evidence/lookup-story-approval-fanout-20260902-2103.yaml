@@ -1,0 +1,30 @@
+version: 1
+evidence_type: EXPLICIT_STORY_APPROVAL_AND_FANOUT
+recorded_at: 2026-09-02T21:03:00+05:30
+source: direct_user_instruction
+stories:
+  - STORY-0108
+  - STORY-0128
+  - STORY-0130
+  - STORY-0131
+  - STORY-0132
+approval_state: APPROVED_AFTER_REWORK
+fanout_requested: true
+fanout_targets:
+  - BL-004
+  - BL-005
+  - BL-009
+queue_state: FANOUT_QUEUED_POST_APPROVAL_CONFORMANCE_PENDING
+queue_files:
+  - BL-004/unit-test-task-queue.csv
+  - BL-005/integration-test-task-queue.csv
+  - BL-009/test-case-task-queue.csv
+governance:
+  post_approval_source_conformance_required: true
+  test_generation_or_execution_claimed: false
+  coverage_claimed: false
+  application_code_mutation_authorized_by_story_approval: false
+  drift_manifest_rule: separately documented exact drift manifests remain independently approval-gated unless explicitly approved
+notes:
+  - STORY-0130, STORY-0131 and STORY-0132 retain their documented current-state drift as part of the approved Story contract.
+  - STORY-0129 remains pending user approval and therefore SUC-039 remains partially approved.
