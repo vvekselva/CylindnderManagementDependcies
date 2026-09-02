@@ -3,10 +3,12 @@
 - Release: R1
 - Endpoint: `POST /lookupManagement/city/save`
 - Controller: `LookupManagementController.saveCity`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Approval evidence: `BL-002/approval-evidence/STORY-0132-approval-20260902.md`
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Fan-out: REQUESTED_TO_BL004_BL005_BL009
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
 - Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
@@ -31,10 +33,8 @@ Two current defects are source-bound:
 1. Invalid City input emits the wrong request DTO type, which can prevent the controller's intended inline City validation path.
 2. Duplicate validation uses contains/ignore-case and does not exclude the submitted `cityId` on update, so same-row and substring false-positive duplicates can occur.
 
-The database already enforces exact uniqueness on the City column; no schema change is required. The exact service/repository/test correction is isolated in `BL-002/evidence/STORY-0132-city-save-drift-review-20260902.yaml` and remains blocked until explicit user approval.
+The database already enforces exact uniqueness on the City column; no schema change is required. The exact service/repository/test correction is isolated in `BL-002/evidence/STORY-0132-city-save-drift-review-20260902.yaml`. Story approval does not by itself authorize implementation of that separate exact drift manifest.
 
-## Completion and approval gate
+## Approval and fan-out gate
 
-The recovered ZIP binds the full form/controller behavior, validation, repository/entity/table path, cache refresh, visible outcomes and both current defects. STORY-0132 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
-
-Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 work was created or executed.
+**APPROVED_AFTER_REWORK.** The user explicitly approved this Story on 2026-09-02 and explicitly requested fan-out. BL-004, BL-005 and BL-009 fan-out is requested under the governed post-approval conformance/testing policy. The documented current-state defects remain part of the approved contract until separately authorized remediation is implemented and tested.
