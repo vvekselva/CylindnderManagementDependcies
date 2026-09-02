@@ -1,0 +1,26 @@
+version: 1
+created_at: '2026-09-02T16:57:10+05:30'
+source_run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-162923-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+business_behavior_complete: 134
+approved_after_rework: 2
+approved_ids: [STORY-0001, STORY-0013]
+awaiting_user_review: 132
+review_rule: User review and explicit approval remain mandatory; completion of source analysis does not imply approval.
+review_order: R1_THEN_R2_STORY_ID_ASCENDING
+review_groups:
+  - group: R1_AWAITING_REVIEW
+    release: R1
+    note: Review the R1 Story files marked BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW; STORY-0001 and STORY-0013 are the only currently approved revised contracts.
+  - group: R2_AWAITING_REVIEW
+    release: R2
+    note: Review the R2 Story files marked BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW.
+drift_governance:
+  application_code_mutation_without_exact_manifest_approval: forbidden
+  bl010_creation_or_execution_without_exact_drift_approval: forbidden
+  auto_approval: false
+next_governed_actions:
+  - repair derived BL-002 task-queue projection from authoritative Story files
+  - user review and explicit approval/rejection of completed Story contracts
+  - run approved-story fanout only for currently approved/conformance-passed Stories when runtime dependencies are available
