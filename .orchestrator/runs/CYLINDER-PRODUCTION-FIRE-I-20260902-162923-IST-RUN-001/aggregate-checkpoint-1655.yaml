@@ -1,0 +1,78 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-162923-IST-RUN-001
+checkpoint_time: '2026-09-02T16:55:14+05:30'
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+bl002:
+  total_stories: 134
+  r1_stories: 88
+  r2_stories: 46
+  authoritative_unit_local_business_behavior_complete: 134
+  authoritative_percent: 100.0
+  approved_after_rework: 2
+  approved_ids: [STORY-0001, STORY-0013]
+  awaiting_user_review: 132
+  rework_required_from_authoritative_story_files: 0
+  auto_approvals_this_run: 0
+  stories_completed_this_run:
+    - STORY-0049
+    - STORY-0002
+    - STORY-0003
+    - STORY-0004
+    - STORY-0005
+    - STORY-0006
+    - STORY-0007
+    - STORY-0008
+    - STORY-0009
+    - STORY-0010
+    - STORY-0017
+    - STORY-0018
+    - STORY-0019
+    - STORY-0020
+    - STORY-0021
+    - STORY-0022
+    - STORY-0023
+    - STORY-0024
+    - STORY-0025
+    - STORY-0026
+    - STORY-0027
+    - STORY-0028
+    - STORY-0029
+    - STORY-0030
+    - STORY-0034
+    - STORY-0035
+    - STORY-0064
+    - STORY-0065
+    - STORY-0066
+    - STORY-0071
+    - STORY-0072
+    - STORY-0073
+    - STORY-0074
+    - STORY-0075
+    - STORY-0076
+    - STORY-0077
+    - STORY-0115
+    - STORY-0116
+    - STORY-0117
+    - STORY-0118
+    - STORY-0119
+    - STORY-0120
+    - STORY-0121
+    - STORY-0122
+    - STORY-0123
+    - STORY-0124
+    - STORY-0125
+  story_completion_delta: 47
+projection:
+  prior_enrichment_projection_complete: 87
+  authoritative_unit_complete: 134
+  canonical_enrichment_progress_update_pending: true
+  canonical_queue_projection_update_pending: true
+  projection_drift_count: 47
+  rule: Unit-local Story files and evidence are authoritative; projection repair must not rerun completed Story work.
+governance:
+  application_code_changes: 0
+  bl010_changes: 0
+  database_schema_changes: 0
+  user_review_gates_preserved: true
+  auto_approval: false
+next_action: Repair BL-002 enrichment-progress and task-queue projections from these authoritative Story files, then await explicit review/approval while continuing independently eligible approved-story testing only when runtime dependencies are available.
