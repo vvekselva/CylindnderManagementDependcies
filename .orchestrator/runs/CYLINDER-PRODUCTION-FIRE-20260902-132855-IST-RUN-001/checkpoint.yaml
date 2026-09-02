@@ -1,0 +1,41 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-132855-IST-RUN-001
+mode: CONTINUOUS
+receipt_path: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/2026-09-02T132855+0530.yaml
+handoff:
+  trigger_received: true
+  run_linked: true
+reconciliation:
+  canonical_scheduler_receipt_path: .orchestrator/scheduler-fire-receipts/cylinder-production-fire
+  path_case_projection_drift_observed: true
+  last_run_projection_stale: true
+bl002:
+  completed: 21
+  total: 134
+  percent: 15.7
+  completion_delta_this_run: 0
+  projection_drift:
+    - STORY-0041
+    - STORY-0042
+    - STORY-0046
+  approval_gate:
+    - STORY-0045
+story_0048:
+  controller_proof:
+    endpoint: POST /add-stop/challan-page-photo/delete-ajax
+    parameter: challanPagePhotoId
+    delegate: challanPagePhotoManagementService.deactivatePhoto(challanPagePhotoId)
+    response_behavior: source-proved success/error handling
+  source_search_this_run: recursive frozen-tree and repository code search attempted
+  remaining_exact_proof_gap: downstream deactivatePhoto implementation through service/DAO/repository/entity/database identity at frozen commit
+  fail_closed: true
+governance:
+  auto_approvals: 0
+  application_code_changes: 0
+  bl010_executions: 0
+  story_code_drift_mutations: 0
+next_actions:
+  - complete exact downstream source trace for STORY-0048
+  - reconcile STORY-0048 artifact/projection only when source proof is complete
+  - continue STORY-0047
+resumable: true
+scheduler_must_remain_enabled: true
