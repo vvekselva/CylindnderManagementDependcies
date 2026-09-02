@@ -3,9 +3,11 @@
 - Release: R1
 - Endpoint: `GET /search/city/{searchText}`
 - Controller: `RestfulCityServices.getCities`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Approval evidence: `BL-002/approval-evidence/STORY-0089-approval-20260902.md`
+- Fan-out: REQUESTED
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -19,6 +21,6 @@ The query is a case-insensitive contains lookup. Successful results are returned
 
 ## Completion and approval gate
 
-The request input, validation/search/DAO/table path, result/error behavior and read-only effect are source-bound. STORY-0089 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The request input, validation/search/DAO/table path, result/error behavior and read-only effect are source-bound. STORY-0089 is `APPROVED_AFTER_REWORK` by explicit user instruction dated 2026-09-02, and downstream testing/test-data fan-out is requested.
 
-Approval remains pending; no application-code or BL-010 mutation occurred.
+This approval applies to the documented Story contract. It does not independently authorize unrelated application-code mutation or scope expansion.
