@@ -1,0 +1,25 @@
+story_id: STORY-0017
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /customer-address-location/planning-map
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerAddressLocationController.java
+view_path: cylindermanagement.web/src/main/resources/templates/with-menu/CustomerAddressPlanningMap.html
+javascript_path: cylindermanagement.web/src/main/resources/static/offline-map/js/cmas-offline-vector-map.js
+visible_controls: [planningCenterLatitude, planningCenterLongitude, planningRadiusMeters, planningPendingOnly, applyPlanningMapFilter]
+initial_values:
+  planningCenterLatitude: 11.024387
+  planningCenterLongitude: 76.981745
+  planningRadiusMeters: 25000
+javascript_behavior:
+  setup_function: setupCustomerPlanningMap
+  initial_render: true
+  load_button_rerender: true
+  source_retry_attempts: 20
+  retry_interval_ms: 100
+  point_api: /customer-address-location/points.geojson
+  yard_api: /yard-location/points.geojson
+mutation_in_get: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
