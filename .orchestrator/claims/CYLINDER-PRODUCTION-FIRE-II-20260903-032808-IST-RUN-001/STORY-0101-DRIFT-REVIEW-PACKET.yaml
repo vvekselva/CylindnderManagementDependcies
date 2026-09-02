@@ -2,9 +2,15 @@ run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-032808-IST-RUN-001
 work_unit_id: STORY-0101-DRIFT-REVIEW-PACKET
 story_id: STORY-0101
 claimed_at: '2026-09-03T03:30:55+05:30'
-state: CLAIMED
+completed_at: '2026-09-03T03:32:05+05:30'
+state: COMPLETED
 scope: PREPARE_DURABLE_USER_REVIEW_PACKET_ONLY
 application_code_mutation_allowed: false
+application_code_mutated: false
 bl010_creation_or_execution_allowed: false
+bl010_created_or_executed: false
 approval_required_for_implementation: true
 source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+authoritative_manifest: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+revalidation_packet: .orchestrator/drift-review/STORY-0101/DRIFT-0001.md
+result: DRIFT_STILL_PRESENT_EXACT_MANIFEST_AWAITING_USER_APPROVAL
