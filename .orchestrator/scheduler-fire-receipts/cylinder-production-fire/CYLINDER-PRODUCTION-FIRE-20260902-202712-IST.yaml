@@ -3,9 +3,11 @@ fire_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST
 observed_fire_time: '2026-09-02T20:27:12+05:30'
 scheduled_fire_time: '2026-09-02T20:27:12+05:30'
 receipt_time: '2026-09-02T20:27:12+05:30'
-state: RUN_LINKED
+state: TERMINATED
 orchestrator_started_at: '2026-09-02T20:27:45+05:30'
 run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
 intended_scope: CONTINUOUS
-terminal_classification: null
-terminated_at: null
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+terminal_reason: STALE_EXECUTING_HEARTBEAT_CONFIRMED_BY_TWO_CONSISTENT_DURABLE_REREADS
+terminated_at: '2026-09-02T20:55:06+05:30'
+resumable: true
