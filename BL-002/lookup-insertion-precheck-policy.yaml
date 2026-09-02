@@ -1,0 +1,69 @@
+version: 1
+policy_id: BL002_LOOKUP_AND_INSERTION_PRECHECK_20260902
+status: ACTIVE
+scope:
+  backlog: BL-002
+  story_count: 134
+  applies_to_all_stories: true
+  review_rule: Every Story must be explicitly classified for lookup/search and insertion/update duplicate-precheck applicability before approval is considered complete.
+user_requirement:
+  source: Direct user instruction in ChatGPT conversation on 2026-09-02
+  intent:
+    - When a user types a lookup/master-data value, search existing database-backed values and show matches so the user can see whether the value already exists before adding it.
+    - Apply the same principle to all lookup/master-data maintenance screens.
+    - For all insertion/update operations with a business identity or natural key, perform an application/service-level duplicate pre-check before persistence; the database uniqueness constraint remains the final safety net rather than the primary user-facing duplicate detector.
+mandatory_ui_behavior:
+  applicable_when: User is entering a free-text master/reference value that can be created or changed.
+  requirements:
+    - Search while typing using an existing governed search endpoint when one exists.
+    - Results must come from the authoritative database-backed lookup/search path, not only a stale static list.
+    - Display matching existing values before the user submits a new value.
+    - Clear stale selection/identity when the typed text changes.
+    - Do not silently create a duplicate when an existing value matches the normalized business identity.
+mandatory_service_behavior:
+  applicable_when: Operation inserts or updates a record having a business identity/natural key.
+  requirements:
+    - Normalize the candidate according to the domain rule before duplicate comparison.
+    - Perform an explicit repository/database duplicate pre-check before save.
+    - For update, exclude the current record identity so it is not treated as a duplicate of itself.
+    - Use exact business-equivalence semantics for rejection; substring matches may be shown as suggestions but must not by themselves cause a false duplicate rejection unless the domain explicitly defines them as equivalent.
+    - Return a controlled validation/business error that the screen can display.
+    - Keep the database unique constraint as the final concurrency/safety guard.
+known_search_story_dependencies:
+  address_by_customer: STORY-0086
+  address_type: STORY-0087
+  challan_type: STORY-0088
+  city: STORY-0089
+  country: STORY-0090
+  customer: STORY-0091
+  driver_search: STORY-0092
+  driver_by_id: STORY-0093
+  cylinder_search: STORY-0094
+  cylinder_by_serial_and_state: STORY-0095
+  cylinder_by_customer: STORY-0096
+  cylinder_by_supplier: STORY-0097
+  product_category: STORY-0098
+  product: STORY-0099
+  product_uom: STORY-0100
+  state: STORY-0101
+  supplier: STORY-0102
+  vehicle_search: STORY-0103
+  vehicle_by_id: STORY-0104
+initial_verified_findings:
+  STORY-0012:
+    classification: NOT_APPLICABLE_TO_THIS_GET
+    reason: Read/form-rendering Story; persistence belongs to STORY-0013.
+  STORY-0013:
+    classification: INSERTION_DUPLICATE_PRECHECK_GAP_CONFIRMED
+    reason: Story already documents that findByBookCode exists but the ingestion service does not explicitly pre-check duplicate book code before save.
+  STORY-0127:
+    classification: NOT_APPLICABLE_TO_REDIRECT
+    reason: Legacy navigation redirect only; no lookup save or mutation is performed by this Story.
+  STORY-0129:
+    classification: LOOKUP_UI_AND_UPDATE_DUPLICATE_REWORK_REQUIRED
+    reason: Address Type must search existing database-backed Address Types while typing; current documented service predicate also has update self-match/substring false-rejection risk.
+approval_rule:
+  auto_approval: false
+  existing_approval_preserved: true
+  new_or_reworked_story_gate: An applicable Story cannot be treated as business-review complete until this policy's search/precheck behavior or an explicitly documented NOT_APPLICABLE rationale is present.
+  code_mutation: Still requires the existing explicit drift/code-change approval gate; this policy does not itself authorize application source mutation.
