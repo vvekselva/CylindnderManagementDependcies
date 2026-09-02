@@ -24,7 +24,7 @@ This is a reconstruction, not a recovery of missing historical Story wording. Hi
 5. Every reconstructed Story starts with `PENDING_USER_APPROVAL` unless an explicit user decision is durably recorded.
 6. Stories with a complete BL-001 chain are `READY_FOR_USER_REVIEW`.
 7. Stories whose BL-001 chain is `PARTIAL_INTERMEDIATE_HOPS` are `NEEDS_CLARIFICATION`.
-8. Use-case grouping is blocked until corresponding Stories are explicitly approved by the user.
+8. Use-case grouping is allowed as a review/navigation projection before all Stories are approved. Grouping never grants approval. Story-level approval remains independently governed and is repeated in every Use Case where the Story appears.
 
 ## Canonical register and physical Story parity
 
@@ -56,29 +56,26 @@ A Story is not a complete review artifact until its physical `.md` file exists a
 
 Strict field/UI completion additionally requires the full applicable source-proved contract: screen/user intent, browser event, exact request/identity, controller, service/DAO/repository/entity/view/database path, validation/branches, persistence/read effects, response and visible outcome. A source-detail gap is not strict completion.
 
-## Reconstruction result
+For human Use Case review, use `screen-usecase-register.md` rather than the CSV preview. The Markdown register is intentionally narrow and links each Use Case to its detailed section in `usecase-review.md`. Each detailed section lists every mapped Story, its role, release and current Story-level approval status. This avoids relying on the horizontally scrolling GitHub CSV preview for review.
 
-- Total registered Story drafts: **134**
-- R1 drafts: **88**
-- R2 drafts: **46**
-- `READY_FOR_USER_REVIEW`: **131**
-- `NEEDS_CLARIFICATION`: **3**
-- Approved: **0**
+## Current approval projection
 
-The three clarification-required Stories are:
+Current durable approval projection is maintained in `enrichment-progress.yaml`.
 
-- `STORY-0011` - `POST /complete-trip`
-- `STORY-0035` - `GET /customer-spot-cylinder-check/fetch`
-- `STORY-0036` - `GET /yard-audit-dashboard`
-
-Each is flagged because BL-001 records `PARTIAL_INTERMEDIATE_HOPS`; missing dependency behavior must not be fabricated.
+- Total Stories: **134**
+- Approved after rework: **2** (`STORY-0001`, `STORY-0013`)
+- Awaiting user review: **132**
+- Use Case grouping does not change these Story approval decisions.
 
 ## Artifacts
 
+- `screen-usecase-register.md` - primary human review entry point; compact Use Case register with clickable Use Case links, release and rolled-up approval state.
+- `usecase-review.md` - detailed Use Case review page; every mapped Story is clickable and carries its Story-level approval status in every Use Case where it appears.
+- `screen-usecase-register.csv` - machine-readable Use Case grouping register; retained for automation/data processing, not the preferred human review view.
 - `story-register.csv` - canonical 134-row Story catalogue with release priority, review state, approval state and traceability state.
 - `STORY-DEFINITION.md` - deterministic Story rendering and common acceptance contract.
 - `stories/` - physical human-readable Story review artifacts.
 - `materialization-task-queue.csv` - durable priority queue for registered Story files missing from `stories/`.
 - `enrichment-progress.yaml` - aggregate BL-002 progress projection; unit-local/physical evidence wins if the aggregate lags.
 
-The register, rendering contract, physical Story files and materialization queue together form the current BL-002 Story SSOT for review readiness and materialization completeness.
+The register, rendering contract, physical Story files, Use Case review projection and materialization queue together form the current BL-002 Story SSOT for review readiness and materialization completeness.
