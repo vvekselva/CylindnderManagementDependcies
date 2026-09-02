@@ -1,0 +1,58 @@
+review_packet_id: STORY-0121-DELIVERY-PLANNING-STOP-SINGLE-SAVE-DRIFT-20260902
+story_id: STORY-0121
+state: AWAITING_STORY_REVIEW_AND_EXACT_CODE_CHANGE_APPROVAL
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - POST /delivery-planning/stops/manage/save distinguishes create vs update using optional stopId and validates name/latitude/longitude/radius before service invocation.
+  - DeliveryPlanningStopService.add validates and directly saves a new active stop; it performs no database-backed stop-name duplicate check.
+  - DeliveryPlanningStopService.update validates, loads by id, applies the submitted values and saves; it performs no duplicate check excluding the current row.
+  - The same domain's batch-save validator already rejects an active exact-ignore-case stop name through DeliveryPlanningStopJpaDao.existsByActiveTrueAndStopNameIgnoreCase(name).
+  - DeliveryPlanningStopJpaDao therefore already exposes an exact active-name existence rule used by the batch path, but the single create/update path does not apply it.
+approved_behavior:
+  state: PENDING_USER_APPROVAL
+  source_proved_domain_invariant: BATCH_SAVE_REJECTS_EXISTING_ACTIVE_EXACT_IGNORE_CASE_STOP_NAME
+  note: This packet does not infer that the user has approved applying that invariant to STORY-0121. It isolates the source inconsistency for review.
+business_impact:
+  - The single-save form can create a second active planning stop with the same name even though batch save rejects that name.
+  - A naive reuse of existsByActiveTrueAndStopNameIgnoreCase during update would reject an unchanged same-row name, so update requires current-row exclusion rather than the create predicate verbatim.
+  - Duplicate active names can make map/list selection ambiguous because stopName is the human-visible identity in the management screen.
+proposed_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/DeliveryPlanningStopService.java
+    class: DeliveryPlanningStopService
+    methods: add, update
+    approximate_anchor: add lines 17-20; update lines 28-30
+    proposed_change: on create, reject an existing active exact-ignore-case stopName before save; on update, reject only an active same-name row whose identity differs from submitted stopId.
+    reason: make the single-save path consistent with the source-proved batch-save active-name invariant without self-rejecting updates.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/DeliveryPlanningStopJpaDao.java
+    component: DeliveryPlanningStopJpaDao
+    approximate_anchor: existing existsByActiveTrueAndStopNameIgnoreCase declaration around line 10
+    proposed_change: retain existing create predicate and add an update-aware exact-ignore-case active-name query/existence predicate excluding the current stop id.
+    reason: implement the current-row exclusion explicitly at repository level.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: relevant DeliveryPlanningStopService/controller tests under src/test/java
+    component: tests
+    proposed_change: cover create unique success, create duplicate rejection, update unchanged name success, update collision with another active stop rejection, inactive same-name semantics, and batch/single rule consistency.
+    reason: protect both create and update semantics.
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_table: delivery planning stop table mapped by DeliveryPlanningStopDo
+risk_and_rollback:
+  risk: LOW_TO_MEDIUM
+  rollback: revert only the explicitly approved service/DAO/tests; no database rollback required.
+approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: any new normalization rule, stop-name business key definition, schema constraint or additional file requires new approval.
+application_code_changed: false
+bl010_created_or_executed: false
