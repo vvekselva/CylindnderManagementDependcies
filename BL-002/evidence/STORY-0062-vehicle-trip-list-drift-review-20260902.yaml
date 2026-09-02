@@ -1,0 +1,47 @@
+review_packet_id: STORY-0062-VEHICLE-TRIP-LIST-DRIFT-20260902
+story_id: STORY-0062
+state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+current_behavior:
+  - GET /vehicle-trips/list accepts and preserves searchTerm in the model and UI.
+  - VehicleTripFetchByPageService logs a filtered-search branch for nonblank searchTerm but both branches execute VehicleTripJpaDao.findAll(pageable); searchTerm has no data effect.
+  - Pagination/filter form omit size, so a non-default page size is not preserved across browser navigation.
+approved_or_target_behavior_for_review:
+  - A visible Search field should either perform a defined supported search or be removed/relabeled; proposed remediation is a defined vehicle/driver search consistent with the service comments and visible intent.
+  - Page-size state should remain stable when supplied.
+business_impact:
+  - Users can enter search text and receive an unfiltered list while the UI appears to support filtering.
+  - Paging can silently reset a non-default size to 10.
+proposed_manifest:
+  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleTripFetchByPageService.java
+    component: VehicleTripFetchByPageService
+    method: processRequest
+    source_anchor: approximately lines 45-108 in recovered ZIP
+    proposed_change: trim/normalize searchTerm and call a repository search branch for nonblank input instead of findAll; keep blank search on findAll.
+    reason: make the visible search control effective.
+  - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/VehicleTripJpaDao.java
+    component: VehicleTripJpaDao
+    method: new paged search query/repository method
+    source_anchor: existing VehicleTripJpaDao repository declaration
+    proposed_change: add a paged case-insensitive vehicle-number/driver-name search using existing trip relationships; no schema change.
+    reason: provide the service's defined search dependency.
+  - path: cylindermanagement.web/src/main/resources/templates/tst/trip-list.html
+    component: Vehicle Trip List Thymeleaf template
+    template_block: filter form and pagination links
+    source_anchor: approximately lines 22-27 and 65-80 in recovered ZIP
+    proposed_change: preserve supplied size in filter/pagination URLs or add hidden size input when a non-default size is part of the request contract.
+    reason: preserve browser paging state.
+tests:
+  - service unit test for blank vs nonblank search repository branch.
+  - repository integration test for vehicle-number and driver-name case-insensitive partial search with pagination.
+  - MVC/template test that searchTerm and size are retained in pagination navigation.
+database_impact: NONE_SCHEMA
+risk_and_rollback: query/UI-state only; rollback limited to listed files/tests.
+material_story_change: false
+approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: additional search fields, files, endpoints, schema objects, or business rules require new approval.
+application_code_changed: false
+bl010_created_or_executed: false
