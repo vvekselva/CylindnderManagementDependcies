@@ -1,0 +1,53 @@
+story_id: STORY-0130
+title: Save Country
+governance_state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  - POST /lookupManagement/country/save carries optional countryId plus required countryName and description.
+  - Controller trims countryName and uppercases/trims description, then classifies null/zero ID as create and nonzero as update.
+  - CountryIngestionService validates nonblank countryName and rejects whenever findByCountryNameContainingIgnoreCase returns any row.
+  - Duplicate validation is contains-based and does not exclude the submitted countryId on update.
+  - Successful saveAndFlush persists CountryDo to public.tbl_country and controller refreshes the Country cache.
+approved_story_behavior:
+  - Enforce exact normalized country-name uniqueness across different rows.
+  - Permit same-row updates that retain the existing normalized country name.
+  - Preserve existing controlled validation and cache refresh behavior.
+business_impact:
+  - Legitimate country edits can be rejected as duplicates of themselves.
+  - Substring country names can be falsely rejected as duplicates.
+proposed_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CountryIngestionService.java
+    component: CountryIngestionService
+    method: processRequest
+    approximate_anchor: duplicate-validation branch before CountryMapper mapping
+    proposed_change: Use exact case-insensitive normalized country-name validation and exclude the submitted countryId for update.
+    reason: Separate uniqueness semantics from contains search semantics.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CountryJpaDao.java
+    component: CountryJpaDao
+    approximate_anchor: repository query declarations
+    proposed_change: Add exact case-insensitive lookup/existence method suitable for update-aware uniqueness checks while retaining contains search methods.
+    reason: Avoid false duplicate matches and same-row rejection.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/test/java
+    component: Country ingestion tests
+    approximate_anchor: existing/new CountryIngestionService tests
+    proposed_change: Cover create, exact duplicate create, substring nonduplicate, same-row update, other-row duplicate update, blank/null request and persistence mapping.
+    reason: Guard the corrected contract.
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_object: public.tbl_country.country_name UNIQUE
+risk_and_rollback:
+  risk: LOW
+  rollback: Revert application/repository/test changes; no database rollback required.
+scope_expansion_rule: Any additional file, schema object, field, endpoint or business behavior requires new explicit approval.
+application_code_changed: false
+bl010_created_or_executed: false
