@@ -1,0 +1,56 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-012732-IST-RUN-001
+scheduler_fire_id: 20260903-012732-IST
+scheduler_task: Cylinder Production Fire - ii
+mode: CONTINUOUS
+started_at: '2026-09-03T01:27:32+05:30'
+terminated_at: '2026-09-03T01:30:20+05:30'
+productive_elapsed_seconds: 168
+runtime_target_30_minutes_satisfied: false
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+terminal_reason: >-
+  Receipt and run linkage were persisted first. The requested 080237 File Library ZIP was searched but not returned by the current File Library search surface and raw-file materialization is unavailable in this runtime. The already materialized 163304 ZIP was freshly fingerprinted and extracted; its SHA-256 exactly equals the governed primary SHA-256. Local-source analysis revalidated STORY-0101 drift at the exact three approved-review locations. Aggregate projections remain reconciled at 15 approved Stories, 14 conformance passes and one drift hold. Fourteen BL-004/BL-005/BL-009 generated mappings remain blocked because Maven/Gradle and container runtimes are absent; direct Maven recovery also failed. DEV-0002/0003/0004 and STORY-0101 remain explicit exact-manifest approval gated. No safe-independent executable unit remains.
+completed_work_unit_ids:
+  - SCHEDULER_HANDOFF_ACK
+  - RUN_LINK
+  - PRIMARY_FILE_LIBRARY_SEARCH_RECHECK
+  - SOURCE_FINGERPRINT_AND_FRESH_EXTRACT
+  - STORY_0101_LOCAL_SOURCE_DRIFT_REVALIDATION
+  - AGGREGATE_PROJECTION_RECONCILIATION
+  - RUNTIME_RECOVERY_REPROBE
+blocked_work_unit_ids:
+  - PRIMARY_LIBRARY_RAW_MATERIALIZATION_CURRENT_TOOL_SURFACE
+  - STORY_0101_CODE_CHANGE_APPROVAL
+  - DEV_0002_EXACT_DRIFT_APPROVAL
+  - DEV_0003_EXACT_DRIFT_APPROVAL
+  - DEV_0004_EXACT_DRIFT_APPROVAL
+  - EXECUTE_14_GENERATED_UNIT_MAPPINGS_REQUIRING_MAVEN
+  - EXECUTE_14_GENERATED_INTEGRATION_MAPPINGS_REQUIRING_CONTAINER_RUNTIME
+source:
+  requested_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_library_file_id: file_00000000659c8211857bba6b09282de3
+  requested_search_result: EXACT_PRIMARY_NOT_RETURNED
+  effective_local_package: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  effective_local_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-163304).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  governed_primary_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  byte_identity: PASS
+  extracted_path: /mnt/data/cylinder_run_007_src
+  extracted_file_count: 1650
+  java_file_count: 1054
+  local_git_present: false
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  local_maven_repository_jars: 0
+  workspace_jars: 0
+  direct_maven_download: FAILED
+approval_projection:
+  approved_stories: 15
+  post_approval_conformance_pass: 14
+  drift_hold: [STORY-0101]
+  executable_code_rework_now: 0
+resumable: true
+next_action: RESUME_ON_NEXT_FIRE_AND_RECHECK_FOR_EXPLICIT_DRIFT_APPROVAL_RUNTIME_CAPABILITY_OR_NEW_SOURCE_SHA
