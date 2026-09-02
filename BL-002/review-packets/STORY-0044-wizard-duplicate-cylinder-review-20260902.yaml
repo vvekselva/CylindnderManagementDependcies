@@ -1,0 +1,34 @@
+packet_id: STORY-0044-wizard-duplicate-cylinder-review-20260902
+story_id: STORY-0044
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+current_behavior:
+  controller:
+    file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/VehicleTripLoadWizardController.java
+    anchor: lines 143-185
+    detail: Wizard submits trip and load once through VehicleLoadAndTripIngestionService.
+  validator:
+    component: VehicleLoadIngestionValidator
+    detail: Shared load validator checks each cylinder's existence and Yard eligibility but does not source-prove a within-request repeated cylinder-id check.
+  combined_service:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleLoadAndTripIngestionService.java
+    anchor: lines 202-268
+    detail: Each submitted load line is mapped before Yard rows are deactivated, so a repeated cylinder id can be processed more than once in the same wizard request.
+business_impact: Same physical cylinder can be counted more than once in an atomic Trip+Load wizard submission, affecting quantities, load lines and logistics transfer.
+proposed_locations:
+  - component: VehicleLoadIngestionValidator.validate
+    proposal: Reject repeated cylinder ids within the submitted load lines using controlled validation evidence.
+  - component: VehicleTripLoadWizard selected-cylinder client state
+    proposal: Prevent duplicate selection client-side while retaining authoritative server validation.
+tests:
+  - repeated cylinder id blocks the entire atomic wizard transaction
+  - no trip, load, load-line or challan assignment persists on duplicate validation
+  - distinct valid cylinders continue through existing Yard/state checks
+database_impact: No database change included; any additional constraint would require separate approval.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
