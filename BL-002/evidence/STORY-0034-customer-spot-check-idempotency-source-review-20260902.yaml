@@ -1,0 +1,22 @@
+review_id: STORY-0034-CUSTOMER-SPOT-CHECK-IDEMPOTENCY-SOURCE-REVIEW-20260902
+story_id: STORY-0034
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+story_approval_state: PENDING_USER_APPROVAL
+classification: SOURCE_CONFORMANCE_DETAIL_COMPLETE_NO_GENERIC_DUPLICATE_INSERTION_DRIFT
+source_proof:
+  - submitSpotCheck requires an active CUSTOMER_SPOT_CYLINDER_CHECK book assignment for the load.
+  - resolveUnusedPage requires the submitted sheet to belong to that book's assigned range and to be PageStatus.UNUSED before the header is saved.
+  - after save the same transaction marks the page USED_CONFIRMED and creates the customer-spot-check transaction link.
+  - a replay using the same challan page is therefore rejected by the page-status gate before a second spot-check header is persisted.
+  - repeated observed serials inside one audit submission are detected case-insensitively through a Set and retained as DUPLICATE_IN_CHECK variance evidence rather than silently treated as distinct cylinders.
+  - unknown/not-held serials are retained as audit variance observations; the service explicitly does not mutate custody records from the spot check.
+idempotency_rationale: The challan page is the source-proved one-time transaction token for this submission path. Separate later spot checks with different unused pages can be legitimate audit events, so no generic customer/time duplicate rule is inferred.
+governance:
+  auto_approval: false
+  application_code_mutation: false
+  bl010_created_or_executed: false
+  new_drift_packet_required: false
