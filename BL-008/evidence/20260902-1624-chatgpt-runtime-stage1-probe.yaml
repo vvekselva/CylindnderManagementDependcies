@@ -1,0 +1,24 @@
+backlog_id: BL-008
+probe_time: '2026-09-02T16:24:00+05:30'
+phase: V185_SERVICE_UI_ACCEPTANCE_STAGE_1
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  docker: MISSING
+  podman: MISSING
+source_probe:
+  module_poms_present: true
+  bl008_v185_test_classes_in_recovered_zip: false
+  note: README records BL008 V185 automation on separate branch bl008-v185-test-automation; the governed File Library ZIP used for application analysis does not contain those test classes.
+execution_result:
+  junit_stage1_executed: false
+  executed_cases: 0
+  reason: MISSING_MAVEN_AND_BL008_TEST_AUTOMATION_NOT_PRESENT_IN_GOVERNED_ZIP
+policy:
+  database_schema_remains_frozen: true
+  database_write_delta: 0
+  manual_sql_substitution: false
+  github_actions_or_runners_used: false
+next_action: Keep BL-008 Stage 1 runtime-blocked until the governed source package includes the BL008 V185 test automation and a Maven-capable runtime is available; continue independent BL-002 work.
