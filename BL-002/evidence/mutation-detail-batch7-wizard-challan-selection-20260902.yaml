@@ -1,0 +1,17 @@
+version: 1
+recorded_at: '2026-09-02T21:18:15+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+finding:
+  story_id: STORY-0044
+  classification: CHALLAN_BOOK_DUPLICATE_SELECTION_GUARD_PRESENT_CYLINDER_DUPLICATE_GAP_SEPARATE
+  component: TripChallanBookAssignmentSelectionValidator.validate
+  source_anchor: lines 63-130
+  detail:
+    - Four required Challan Book ids are placed in a Set and selectedBookIds.size must equal 4.
+    - Reusing one physical book for multiple book types is rejected with TRIP_CHALLAN_BOOK_VALIDATION_DUPLICATE_BOOK_SELECTION.
+    - Each distinct book is then validated against its expected active book type and starting unused sheet.
+    - This existing Challan Book duplicate guard is independent of the repeated-cylinder-in-load gap documented in STORY-0044-wizard-duplicate-cylinder-review-20260902.yaml.
+governance:
+  auto_approve: false
+  code_mutation: false
