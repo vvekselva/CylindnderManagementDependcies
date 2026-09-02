@@ -1,0 +1,62 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-232924-IST-RUN-004
+checked_against:
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  source_tree_content_hash: 20017f21b0536a643080fdaabe9b302af838d1a0224c0ddac10fbf62a3e16191
+  analysis_engine: EXTRACTED_LOCAL_SOURCE
+approval_reconciliation:
+  durable_approved_count: 15
+  new_approval_delta_since_previous_checkpoint: 0
+  auto_approval_performed: false
+story_0101_drift_reverification:
+  state: EXACT_DRIFT_REVIEW_RECONFIRMED_NO_CODE_CHANGE
+  locations:
+    - file: framework/src/main/java/com/sreyas/datamatics/cylinder/management/service/code/CylinderManagementServiceCode.java
+      anchor: lines 31-45
+      finding: ADDRESS_TYPE/CITY/COUNTRY/CYLINDER_STATE/PRODUCT_CATEGORY/PRODUCT/PRODUCT_UOM search codes exist; no explicit STATE_SEARCH_SERVICE exists
+    - file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/StateSearchService.java
+      anchor: lines 42-52
+      finding: searchWithText validates with PRODUCT_UOM_SEARCH_SERVICE at lines 47-48 before state-name DAO lookup
+    - file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/validator/SearchRequestValidator.java
+      anchor: lines 81-87
+      finding: isStateRequiredService includes broad serviceCode.name().contains("STATE") rule
+  implementation_gate: EXPLICIT_USER_APPROVAL_REQUIRED
+story_0013_drift_reverification:
+  state: THREE_EXACT_MANIFESTS_RECONFIRMED_NO_CODE_CHANGE
+  service_file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+  null_guard_anchor: lines 38-43
+  null_guard_finding: intended warning and CylinderManagementApplicationException are commented; requestDto dereferenced at line 43
+  range_guard_anchor: lines 45-52
+  range_guard_finding: invalid bounds are logged but intended CylinderManagementApplicationException remains commented
+  duplicate_precheck_anchor: after validation and before mapping around lines 53-56; persistence occurs at line 83
+  duplicate_precheck_finding: no findByBookCode invocation exists in ingestion service
+  dao_file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ChallanBookRegistryJpaDao.java
+  dao_anchor: line 20
+  dao_finding: Optional<ChallanBookRegistryDo> findByBookCode(String bookCode) already exists
+  database_constraint_file: cylinder.datascripts/src/main/resources/db/migration/V93__DeliveryChallans.sql
+  database_constraint_finding: uq_book_code UNIQUE(book_code) exists; service precheck remains absent
+  controller_file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
+  controller_anchor: lines 52-67
+  controller_finding: existing CylinderManagementApplicationException catch redisplays controlled form error path
+  implementation_gate: EXPLICIT_USER_APPROVAL_REQUIRED_FOR_EACH_EXACT_MANIFEST
+runtime_reverification:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  maven_wrapper: MISSING
+  gradle_wrapper: MISSING
+  bundled_jars: NONE
+  faithful_junit_mockito_runtime: UNAVAILABLE
+  faithful_testcontainers_runtime: UNAVAILABLE
+safe_work_result:
+  generated_test_mapping_eligible_story_count: 14
+  code_drift_hold_story_ids: [STORY-0101]
+  executable_bl010_items: 0
+  mutation_performed: false
+next_gate:
+  - explicit user approval of STORY-0101 exact drift manifest before code change
+  - explicit user approval of DEV-0002/DEV-0003/DEV-0004 exact manifests before code change
+  - faithful Maven/JUnit/Mockito runtime for BL-004 execution
+  - faithful Maven/Testcontainers/container runtime for BL-005/BL-009 execution
