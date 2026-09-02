@@ -1,23 +1,24 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260903-002617-IST-RUN-005
 scheduler_fire_id: 20260903-002617-IST
 scheduler_task: Cylinder Production Fire
-state: EXECUTING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-03T00:26:18+05:30'
-last_heartbeat_at: '2026-09-03T00:28:09+05:30'
-terminated_at: null
-terminal_classification: null
-terminal_reason: null
-running_worker_count: 1
-completed_worker_count: 3
-blocked_worker_count: 5
-active_work_unit_ids: [LOCAL_SOURCE_DRIFT_REVALIDATION]
-eligible_work_remaining: true
+last_heartbeat_at: '2026-09-03T00:29:30+05:30'
+terminated_at: '2026-09-03T00:29:30+05:30'
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+terminal_reason: Primary requested File Library ZIP was not returned by recovery search and was not locally present. A locally materialized newer library ZIP was verified byte-identical to the governed primary SHA-256 and used only after that proof. Durable approvals remain 15 with 14 source-conformance passes and STORY-0101 on exact drift hold. DEV-0002/0003/0004 remain exact-drift approval gated. Fourteen generated test mappings remain execution-blocked by missing Maven/Gradle/Docker/Podman; outbound Maven recovery failed due DNS resolution. No safe-independent eligible unit remains.
+running_worker_count: 0
+completed_worker_count: 6
+blocked_worker_count: 8
+active_work_unit_ids: []
+eligible_work_remaining: false
 recoverable_work_remaining: true
 resumable: true
+productive_elapsed_seconds: 192
 runtime_target_30_minutes_satisfied: false
-completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, PRIOR_RECEIPT_GAP_RECONCILIATION, SOURCE_RECOVERY_AND_FREEZE]
-blocked_work_unit_ids: [PRIMARY_LIBRARY_FILE_RECOVERY, MAVEN_RUNTIME_RECOVERY, CONTAINER_RUNTIME_RECOVERY, STORY-0101_CODE_CHANGE_APPROVAL, BL010_EXACT_DRIFT_APPROVAL]
+completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, PRIOR_RECEIPT_GAP_RECONCILIATION, SOURCE_RECOVERY_AND_FREEZE, APPROVAL_AND_QUEUE_RECONCILIATION, LOCAL_SOURCE_DRIFT_REVALIDATION, RUNTIME_RECOVERY_REPROBE]
+blocked_work_unit_ids: [PRIMARY_LIBRARY_FILE_RECOVERY, STORY-0101_CODE_CHANGE_APPROVAL, DEV-0002_EXACT_DRIFT_APPROVAL, DEV-0003_EXACT_DRIFT_APPROVAL, DEV-0004_EXACT_DRIFT_APPROVAL, EXECUTE_BL004_WITH_JACOCO, EXECUTE_BL005_WITH_TESTCONTAINERS_AND_JACOCO, EXECUTE_BL009_APPLICATION_BEHAVIOR_AND_COVERAGE]
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-II-20260902-233242-IST-RUN-001
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
@@ -30,4 +31,5 @@ source_extracted_file_count: 1650
 source_java_file_count: 1054
 source_local_git_present: false
 runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING, maven_wrapper: MISSING, outbound_maven_download: DNS_RESOLUTION_FAILED}
-next_action: REVALIDATE_APPROVED_STORY_AND_BL010_DRIFT_ANCHORS_FROM_LOCAL_SOURCE_THEN_REPLAN
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260903-002617-IST-RUN-005-terminal.yaml
+next_action: RESUME_ON_NEXT_FIRE_AND_RECHECK_FOR_NEW_EXPLICIT_APPROVAL_RUNTIME_CAPABILITY_OR_NEW_SOURCE_SHA
