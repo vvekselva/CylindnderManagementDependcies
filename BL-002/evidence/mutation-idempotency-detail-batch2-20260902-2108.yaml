@@ -1,0 +1,35 @@
+version: 1
+recorded_at: '2026-09-02T21:08:30+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+findings:
+  STORY-0011:
+    classification: REPEAT_ACTION_BLOCKED_BY_STATE_GATE
+    component: CompleteTripServiceImpl.processRequest
+    source_anchor: lines 105-165
+    detail: Completion requires the current trip status to be Proceeding. A repeated completion after the first transition to Halt is rejected before the completion mutation is repeated. This is a state-machine action rather than a natural-key insertion.
+  STORY-0033:
+    classification: CHALLAN_REUSE_DRIFT_CONFIRMED
+    component: WalkinSaleServiceImpl.linkDeliveryChallanLeafIfPresent
+    source_anchor: lines 344-399
+    detail: Existing ChallanTransactionLink is deleted and replaced. This conflicts with the strict normal-stop rule that already-linked challan pages cannot be reused. Review packet STORY-0033-walkin-challan-reuse-review-20260902.yaml created; no code mutation authorized.
+  STORY-0055:
+    classification: TRANSACTION_EVENT_REPEAT_CAN_BE_LEGITIMATE
+    component: CustomerDemandService.create
+    source_anchor: lines 52-95
+    detail: Each valid submission generates a new requestNumber and pending Customer Demand. Multiple demands for the same customer/product/date can be legitimate business events; no generic duplicate block is inferred without a defined idempotency key.
+  STORY-0056:
+    classification: REPEAT_ACTION_IDEMPOTENCY_GAP_REVIEW_REQUIRED
+    component: CustomerDemandService.markDelivered
+    source_anchor: lines 124-136
+    detail: The method does not check current requestStatus before assigning a new deliveredAt and recomputing duration. A repeated mark-delivered call can rewrite delivery completion time rather than behaving as a no-op or controlled already-delivered result. Exact desired repeated-action semantics require review before code change.
+  STORY-0085:
+    classification: MULTI_GUARD_TRANSACTION
+    component: VehicleTripStopIngestionService.processRequest
+    detail: Source proves strict challan page reuse blocking, active logistics-line duplicate blocking, and state-linked stop persistence. Natural-key duplicate rules must be evaluated by stop subtype rather than imposing a generic no-repeat rule.
+governance:
+  auto_approve: false
+  application_code_mutation: false
+  bl010_creation_or_execution: false
+  next_action: Continue source-detail review and isolate repeat-action behavior only when the business invariant is source-proved.
