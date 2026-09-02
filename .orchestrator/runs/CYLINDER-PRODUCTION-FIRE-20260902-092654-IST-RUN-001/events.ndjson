@@ -1,0 +1,5 @@
+{"at":"2026-09-02T09:26:54+05:30","event":"TRIGGER_RECEIVED","fire_id":"CYLINDER-PRODUCTION-FIRE-20260902-092654-IST"}
+{"at":"2026-09-02T09:27:12+05:30","event":"ORCHESTRATOR_STARTED","run_id":"CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001"}
+{"at":"2026-09-02T09:28:30+05:30","event":"PRIOR_RUN_RECONCILED","previous_run_id":"CYLINDER-PRODUCTION-FIRE-20260902-082704-IST-RUN-001"}
+{"at":"2026-09-02T09:33:09+05:30","event":"WORK_UNIT_CHECKPOINT","story_id":"STORY-0048","result":"PARTIAL_SOURCE_PROOF","proved":"AddStopController POST /add-stop/challan-page-photo/delete-ajax -> challanPagePhotoManagementService.deactivatePhoto(challanPagePhotoId)","remaining_gap":"exact service implementation and DAO/repository/entity/database deactivation identity"}
+{"at":"2026-09-02T09:33:09+05:30","event":"TERMINATION","classification":"PLATFORM_RUNTIME_BOUNDARY","eligible_work_remaining":true,"resumable":true}
