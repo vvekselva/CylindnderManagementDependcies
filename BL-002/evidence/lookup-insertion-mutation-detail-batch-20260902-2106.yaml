@@ -1,0 +1,60 @@
+version: 1
+recorded_at: '2026-09-02T21:06:08+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+application_github_code_search_used: false
+findings:
+  STORY-0007:
+    classification: PRECHECK_PRESENT
+    component: PredefinedDeliveryTripService.create
+    detail: Active trip name is rejected by existsByActiveTrueAndTripNameIgnoreCase(name.trim()).
+  STORY-0008:
+    classification: PRECHECK_PRESENT
+    component: PredefinedDeliveryTripService.addStop
+    detail: Duplicate active trip/stop assignment is rejected by existsByPredefinedTripIdAndPlanningStopIdAndActiveTrue(...).
+  STORY-0021:
+    classification: VERSIONED_HISTORY_INTENTIONAL
+    component: CustomerAddressLocationOfflineMapService.saveYardLocation
+    detail: Existing active default yard location is made inactive/SUPERSEDED before a new location history row is saved; repeated capture is versioning rather than duplicate-master insertion.
+  STORY-0024:
+    classification: VERSIONED_HISTORY_INTENTIONAL
+    component: CustomerAddressLocationOfflineMapService.saveCustomerAddressLocation
+    detail: Existing active location for customerAddressId is made inactive/SUPERSEDED before a new location history row is saved.
+  STORY-0026:
+    classification: IDEMPOTENCY_GAP_REVIEW_REQUIRED
+    component: CustomerAddressLocationOfflineMapService.importWhatsappText
+    source_anchor: around lines 227-246
+    detail: Each parseable imported line is saved to the import inbox; no duplicate/raw-line/idempotency precheck is source-proved in this method. Re-import behavior requires an explicit business-key/idempotency decision before code change.
+  STORY-0042:
+    classification: PRECHECK_PRESENT_PARTIAL_DOMAIN_REVIEW
+    component: CustomerIngestionRequstValidator
+    detail: Source-proved validation rejects existing GST number and phone number through CustomerDetailsExistenceUtility. Other candidate customer natural keys remain subject to domain-specific review rather than being invented.
+  STORY-0081:
+    classification: PRECHECK_PRESENT_PARTIAL_DOMAIN_REVIEW
+    component: SupplierIngestionRequestValidator
+    detail: Source-proved validation includes existing GST-number and phone-number rejection. Other supplier natural keys require domain-specific evidence.
+  STORY-0112:
+    classification: PRECHECK_PRESENT
+    component: CylinderIngestionService
+    detail: Active primary physical identifier is checked case-insensitively through CylinderIdentifierJpaDao before persistence; exact identifier duplication is rejected.
+  STORY-0121:
+    classification: DUPLICATE_PRECHECK_GAP_CONFIRMED
+    component: DeliveryPlanningStopService.add/update
+    source_anchor: add around lines 17-19; update around lines 28-29
+    detail: Single add/update validates fields and directly saves; no active stop-name duplicate precheck is source-proved. The batch path separately proves an active exact-ignore-case stop-name precheck, showing an established domain rule that the single-save path does not enforce.
+  STORY-0122:
+    classification: PRECHECK_PRESENT
+    component: DeliveryPlanningStopBatchSaveRequestValidator
+    source_anchor: duplicate predicate around line 36
+    detail: Batch validation rejects a name already present among active stops via existsByActiveTrueAndStopNameIgnoreCase(name). Within-request duplicate-point semantics remain a separate validation concern if not already covered elsewhere.
+  STORY-0134:
+    classification: NEEDS_DOMAIN_IDEMPOTENCY_REVIEW
+    component: VehicleTripIngestionServiceImpl.processRequest
+    source_anchor: around lines 64-98
+    detail: Service resolves Vehicle, Driver, Customer and Address, assigns Started status and saves VehicleTripDo. No generic existsBy duplicate guard is source-proved. Multiple trips are legitimate over time, so a duplicate rule must be based on an evidence-backed active-trip/overlap business invariant rather than an invented uniqueness rule.
+governance:
+  auto_approve: false
+  application_code_mutation: false
+  bl010_creation_or_execution: false
+  next_action: Prepare exact review packet for source-proved Delivery Planning Stop single-save drift; keep WhatsApp import and Vehicle Trip idempotency gated pending a proven business identity.
