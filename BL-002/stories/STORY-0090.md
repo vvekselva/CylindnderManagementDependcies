@@ -4,16 +4,21 @@
 - Endpoint: `GET /search/country/{searchText}`
 - Controller: `RestfulCountryServices.getCountries`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Contract
-The exact request input is path variable `searchText`. Canonical trace proves controller -> `CountrySearchService.searchWithText` -> `SearchRequestValidator.validate` -> `CountryJpaDao.findByCountryNameContainingIgnoreCase` -> `CountryDo` -> `public.tbl_country` -> `ICylindermanagementApplicationDoToDtoMapper<CountryDto, CountryDo>.mapDoToDto` -> `CountrySearchResponsesDto`. Success returns matching country DTO data; service exception returns an empty response DTO. This endpoint performs no write.
+## Business behavior
 
-No frozen source evidence binds this standalone lookup to a particular typing event, debounce threshold, hidden field, or selection-reset rule, so none is asserted.
+The exact request input is path variable `searchText`. The recovered ZIP confirms `RestfulCountryServices` at `/search/country`, `CountrySearchService.searchWithText`, request validation, `CountryJpaDao.findByCountryNameContainingIgnoreCase`, `CountryDo` / `public.tbl_country`, DTO mapping and `CountrySearchResponsesDto`.
 
-## Related management behavior
-Lookup Management's Country save accepts optional `countryId`, required `description` and `countryName`; description is trim+uppercase, country name is trimmed, then `CountryIngestionRequestDto` is processed and country cache refreshed. Success redirects to the Country tab; validation can return the page directly with failed DTO. This context does not alter the GET endpoint's read-only contract.
+Successful lookup returns matching country DTOs; application-service failure returns an empty response DTO. This endpoint is read-only. Browser-specific typeahead timing, hidden-ID propagation and dependent clearing are documented only in the consuming forms that implement those interactions.
 
-## Approval boundary
-Strict applicable source contract is complete. Approval remains `PENDING_USER_APPROVAL`.
+## Completion and approval gate
+
+The request, search/DAO/table path, result/error behavior and read-only business effect are source-bound. STORY-0090 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
