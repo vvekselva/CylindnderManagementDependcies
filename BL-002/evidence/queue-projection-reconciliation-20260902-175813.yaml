@@ -1,0 +1,14 @@
+evidence_id: BL002-QUEUE-PROJECTION-RECONCILIATION-20260902-175813
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
+verified_at: '2026-09-02T18:00:03+05:30'
+authoritative_unit_business_behavior_complete: 134
+total_stories: 134
+queue_projection_verified: true
+queue_projection_business_behavior_complete_or_approved: 134
+queue_projection_drift_count: 0
+approved_after_rework_ids: [STORY-0001, STORY-0013]
+awaiting_user_review_count: 132
+note: BL-002/enrichment-progress.yaml still contains historical reconciliation metadata stating aggregate_queue_projection_pending=true and a stale drift-id list. The current task queue and live-run projection show the repair is complete; those historical fields are derived stale metadata and must not be used to downgrade authoritative unit or current queue state.
+mutation_scope: CONTROL_PLANE_EVIDENCE_ONLY
+application_code_mutated: false
+auto_approval_performed: false
