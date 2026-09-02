@@ -1,4 +1,4 @@
-version: 1
+version: 2
 policy_id: BL002_LOOKUP_AND_INSERTION_PRECHECK_20260902
 status: ACTIVE
 scope:
@@ -49,10 +49,18 @@ known_search_story_dependencies:
   supplier: STORY-0102
   vehicle_search: STORY-0103
   vehicle_by_id: STORY-0104
+audit_progress:
+  applicability_triage_complete: 134
+  applicability_triage_total: 134
+  applicability_triage_percent: 100.0
+  audit_evidence: BL-002/evidence/lookup-insertion-precheck-audit-20260902-2055.yaml
+  search_consumer_source_map: BL-002/evidence/usecase-shared-search-dependency-source-map-20260902.yaml
+  exact_drift_review_packet: BL-002/review-packets/LOOKUP-INSERTION-DUPLICATE-SEMANTICS-20260902-2055.yaml
+  detail_state: TRIAGE_COMPLETE_SOURCE_DETAIL_REVIEW_CONTINUES_FOR_MUTATION_STORIES
 initial_verified_findings:
   STORY-0012:
-    classification: NOT_APPLICABLE_TO_THIS_GET
-    reason: Read/form-rendering Story; persistence belongs to STORY-0013.
+    classification: UI_PRE_INSERT_REVIEW_COMPLETE_FOR_CURRENT_FORM
+    reason: Form-rendering Story; persistence belongs to STORY-0013. Existing bounded Challan Book metadata does not use a master-data selector, while duplicate Book Code protection belongs to the submit service.
   STORY-0013:
     classification: INSERTION_DUPLICATE_PRECHECK_GAP_CONFIRMED
     reason: Story already documents that findByBookCode exists but the ingestion service does not explicitly pre-check duplicate book code before save.
@@ -60,8 +68,8 @@ initial_verified_findings:
     classification: NOT_APPLICABLE_TO_REDIRECT
     reason: Legacy navigation redirect only; no lookup save or mutation is performed by this Story.
   STORY-0129:
-    classification: LOOKUP_UI_AND_UPDATE_DUPLICATE_REWORK_REQUIRED
-    reason: Address Type must search existing database-backed Address Types while typing; current documented service predicate also has update self-match/substring false-rejection risk.
+    classification: UI_SEARCH_PRESENT_SERVICE_DUPLICATE_SEMANTICS_DRIFT
+    reason: Recovered source proves database-backed Address Type type-ahead in LookupManagement. The save service still uses containing-ignore-case duplicate rejection, which is broader than exact business equivalence and is not source-proved to exclude the current row on update.
 approval_rule:
   auto_approval: false
   existing_approval_preserved: true
