@@ -4,9 +4,13 @@
 - Endpoint: `GET /party-custody-traceability`
 - Controller: `PartyCustodyTraceabilityController.showTraceability`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
 ## User intent and exact request contract
 Opening `/party-custody-traceability` renders the Party Custody Traceability dashboard. The GET accepts four optional query parameters: String `partyType`, String `custodyStatus`, Long `tripId`, and String `searchTerm`. The controller passes those exact values to `OwnershipObligationDashboardService.fetchDashboard` and returns `final-version-1/PartyCustodyTraceabilityDashboard` with model attributes `dashboard`, `selectedPartyType`, `selectedCustodyStatus`, `tripId`, and `searchTerm`.
@@ -44,4 +48,6 @@ No row drill-down anchor, row click handler, action button, edit/close control, 
 This GET is read-only: it obtains aggregate/detail/party-summary data from immutable projections/base-table counts and does not persist custody changes. The template iterates `dashboard.obligationRows`; no story-specific explicit empty-table message or controller error-message branch is present in the frozen source. Missing trace/timestamp fields are explicitly rendered as dashes, but a completely empty result simply yields no detail rows under the table header.
 
 ## Governed conclusion
-The frozen controller, service, detail/summary repositories, immutable subselect entities and Thymeleaf template resolve the prior filter fields, party identity/switching, aging/status predicates, limits/sorting, row actions, interaction and empty/error boundaries. STORY-0063 is `STRICT_FIELD_UI_COMPLETE` for its applicable GET/read contract. Approval remains `PENDING_USER_APPROVAL`.
+The recovered ZIP confirms the filter fields, party identity/switching, aging/status predicates, limits/sorting, row controls, interaction and empty/error boundaries. The user goal and read-only operational impact are source-bound to the business-behavior standard.
+
+STORY-0063 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no code mutation or auto-approval occurred.
