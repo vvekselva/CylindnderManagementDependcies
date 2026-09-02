@@ -1,0 +1,50 @@
+review_packet_id: STORY-0061-ALL-VEHICLE-LOADS-DRIFT-20260902
+story_id: STORY-0061
+state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+current_behavior:
+  - GET /vehicle-loads/all-list accepts page, size and searchTerm, but VehicleLoadFetchByPageService ignores searchTerm and always uses VehicleLoadJpaDao.findAll(pageable).
+  - The all-list controller renders final-version-1/VehicleLoadFetchByPageView, whose filter form and pagination URLs are hard-coded to /vehicle-loads/list, so filtering/paging from the all-list screen changes the user into the active-list endpoint.
+  - The controller does not expose searchTerm to the model, so the visible filter value is not source-proved to survive rendering.
+  - Pagination links omit size; totalPages is calculated from raw request size rather than the normalized response page size.
+intended_behavior_for_review:
+  - All Vehicle Loads should remain on /vehicle-loads/all-list while filtering and paging.
+  - A supplied all-list searchTerm should either be deliberately supported by the all-load service or deliberately removed from the endpoint/UI contract; the proposed fix is to support it consistently.
+  - Search term and selected page size should remain stable across the all-list filter/pagination workflow.
+business_impact:
+  - Current navigation can silently switch from all loads to active loads, changing the result population without the user explicitly choosing that scope.
+  - Current searchTerm is accepted but ignored by the all-load service, which can make a user believe filtering occurred when it did not.
+  - Pagination can reset page size and can calculate page counts inconsistently for invalid/non-default size values.
+proposed_manifest:
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/VehicleLoadByPageController.java
+    component: VehicleLoadByPageController
+    method: listAllVehicleLoads
+    source_anchor: approximately lines 61-81 in recovered ZIP
+    proposed_change: expose searchTerm and an all-list baseUrl/scope marker to the model; calculate totalPages using responseDto.getItemsPerPage() rather than raw size.
+    reason: preserve the user-selected all-list scope/filter/paging contract.
+  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleLoadFetchByPageService.java
+    component: VehicleLoadFetchByPageService
+    method: processRequest
+    source_anchor: approximately lines 45-71 in recovered ZIP
+    proposed_change: normalize/trim searchTerm and execute a defined all-load vehicle/driver search query when non-blank; otherwise retain findAll(pageable).
+    reason: make the accepted searchTerm parameter materially effective rather than ignored.
+  - path: cylindermanagement.web/src/main/resources/templates/final-version-1/VehicleLoadFetchByPageView.html
+    component: Thymeleaf all/active shared vehicle-load list template
+    template_block: filter form and pagination controls
+    source_anchor: form/pagination section in recovered ZIP
+    proposed_change: build form and pagination targets from the controller-provided baseUrl/scope, preserve searchTerm and size in links, without changing row navigation or Returned Trip rules.
+    reason: prevent all-list interactions from switching to active-list and preserve paging state.
+tests:
+  - MVC test: GET /vehicle-loads/all-list renders filter/pagination links targeting /vehicle-loads/all-list and preserves searchTerm/size.
+  - Service unit test: non-blank searchTerm selects the all-load search repository branch; blank search uses findAll.
+  - MVC/service regression test: /vehicle-loads/list active-list behavior remains unchanged.
+database_impact: NONE_SCHEMA; repository query addition only if needed against existing vehicle-load/trip/vehicle/driver mappings.
+risk_and_rollback: UI/query-scope only; rollback is restoration of the three listed source files/tests.
+material_story_change: false
+approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: any additional file, endpoint, schema object, business rule, or search field requires a new approval packet before implementation.
+application_code_changed: false
+bl010_created_or_executed: false
