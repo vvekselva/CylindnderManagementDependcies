@@ -1,0 +1,53 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-160140-IST-RUN-001
+scope: CONTINUOUS
+checkpoint_time: '2026-09-02T16:23:00+05:30'
+source:
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  local_extracted_source_used: true
+  local_git_present: false
+recovery:
+  prior_run_id: CYLINDER-PRODUCTION-FIRE-20260902-153056-IST-RUN-001
+  prior_run_recovered: true
+  termination_record_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  prior_receipt_terminal_classification: UNKNOWN_TERMINATION
+  classification_mismatch_preserved: true
+bl002:
+  aggregate_business_behavior_complete: 86
+  total: 134
+  aggregate_percent: 64.2
+  authoritative_unit_local_complete: 87
+  unit_to_aggregate_projection_drift_ids: [STORY-0045]
+  r1_total: 88
+  r1_business_behavior_complete: 87
+  r1_remaining_review_blocked: [STORY-0049]
+  story_0049_review_packet: BL-002/evidence/STORY-0049-endpoint-role-review-20260902.yaml
+stories_completed_this_run_from_source_or_projection_reconciliation:
+  - STORY-0045
+  - STORY-0114
+  - STORY-0126
+  - STORY-0127
+  - STORY-0128
+  - STORY-0129
+  - STORY-0130
+  - STORY-0131
+  - STORY-0132
+  - STORY-0133
+  - STORY-0134
+new_drift_review_packets:
+  - BL-002/evidence/STORY-0045-customer-display-drift-review-20260902-zip.yaml
+  - BL-002/evidence/STORY-0114-driver-save-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0129-address-type-update-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0130-country-update-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0131-state-save-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0132-city-save-drift-review-20260902.yaml
+  - BL-002/evidence/STORY-0134-vehicle-trip-create-drift-review-20260902.yaml
+governance:
+  auto_approvals: 0
+  application_code_changes: 0
+  bl010_execution: 0
+  r2_rework_started: false
+  reason_r2_not_started: R1_STORY0049_REQUIRES_ENDPOINT_ROLE_CONFIRMATION
+eligible_work_remaining: true
+resumable: true
+next_action: Reconcile STORY-0045 into BL-002 aggregate and canonical queue; await explicit STORY-0049 non-visible fallback role confirmation before opening R2 business-behavior rework.
