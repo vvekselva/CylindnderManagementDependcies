@@ -4,20 +4,23 @@
 - Endpoint: `POST /search/cylinder/on-vehicle`
 - Controller: `RestfulCylinderServices.getCylindersOnVehicle`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Supplier Stop screen behavior
-After a supplier is selected, `loadExchange(supplierId)` resets pickup/dropoff selections, renders the summary, shows the exchange section and resets loading/error/table states. Its vehicle-stock request is exactly `POST /search/cylinder/on-vehicle` with `Content-Type: application/json` and JSON `serachQueryData:{state:'FULL', MULTIPLE_STATE_SEARCH:'TRUE', SUPPLIER_STOP:'TRUE', STATES:['FULL'], VEHICLE_LOAD_ID:parseInt(LOAD_ID)}`, plus `searchTermRequiredForFiltering:''`, `pageNumber:1`, `itemsPerPage:50`.
+## Business behavior
 
-## Visible result and selection
-The response consumes `cylinderDtos`. Rows display serial, current state and quantity. Each checkbox invokes `toggle('dropoff', cylinderId, cylinderSerial, checked)`. Selection stores exact cylinder IDs/serials; deselection removes by ID. Summary rendering writes repeated hidden fields `emptyCylinderDropOffToSuppliers=<id>` for downstream Supplier Stop submission. Request failure exposes the vehicle error state.
+On Supplier Stop, selecting a supplier resets previous pickup/drop-off selections and triggers the vehicle-stock POST with `VEHICLE_LOAD_ID`, FULL-state criteria, Supplier Stop flag and page 1/50. Returned cylinder rows display serial/current state/quantity; selecting rows stores exact persistent cylinder IDs and materializes repeated `emptyCylinderDropOffToSuppliers` fields for the later stop transaction. Reloading exchange clears stale selection from a previous supplier.
 
-## Controller/service/database contract
-`RestfulCylinderServices.getCylindersOnVehicle` accepts the JSON DTO, creates `Pageable`, and delegates to `cylindersOnVehicleSearchServiceWithOwnershipModel.searchWithText`. The controller documents that active execution reads physical vehicle-load contents from active `tbl_cylinder_logistics_execution_line`, replacing the legacy current-status implementation. `CylinderSearchResponseDto` is returned; application exceptions become an empty response DTO.
+The recovered ZIP confirms `RestfulCylinderServices.getCylindersOnVehicle` creates paging and delegates to the ownership-model `cylindersOnVehicleSearchServiceWithOwnershipModel`. Active execution reads physical vehicle-load contents from active logistics execution lines rather than the legacy current-status model. Governed application failure returns an empty `CylinderSearchResponseDto`.
 
-## Reset/invalidation
-Each `loadExchange` invocation clears prior pickup/dropoff arrays before fetching new supplier/vehicle data, preventing a previous supplier's selected cylinder IDs from carrying into the new exchange.
+This endpoint is read-only; actual vehicle/supplier logistics mutation occurs only in downstream stop ingestion.
 
-## Approval boundary
-Strict field/UI contract is complete from frozen Supplier Stop UI plus active controller contract. Approval remains pending.
+## Completion and approval gate
+
+The Supplier Stop trigger/payload, selection/reset behavior, ownership-model vehicle-content path and read-only effect are source-bound. STORY-0107 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
