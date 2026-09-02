@@ -1,0 +1,21 @@
+story_id: STORY-0027
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /customer-consumption
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/CustomerConsumptionDashboardController.java
+service_path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerConsumptionDashboardService.java
+view: with-menu/CustomerConsumptionDashboard
+aliases: ['/', '/dashboard']
+request_dto: CustomerConsumptionSearchRequestDto
+read_entity: CustomerProductConsumptionProjectionViewDo
+read_view: public.vw_customer_product_consumption_projection
+pagination:
+  default_page: 1
+  default_items: 25
+  max_items: 100
+sort_default: expectedNeedDate asc
+mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
