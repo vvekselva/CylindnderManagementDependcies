@@ -1,0 +1,48 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-042755-IST-RUN-001
+mode: CONTINUOUS
+started_at: '2026-09-03T04:28:21+05:30'
+terminated_at: '2026-09-03T04:30:34+05:30'
+productive_elapsed_seconds: 151
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/Cylinder Production Fire - ii/20260903T042755+0530-turn10.yaml
+prior_live_run_reconciled: true
+prior_live_run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-032808-IST-RUN-001
+prior_live_run_state: TERMINATED
+source:
+  requested_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  exact_file_library_search: NOT_RETURNED
+  broad_file_library_search: NOT_RETURNED
+  current_local_workspace_zip_present: false
+  materialization_state: FAILED_AFTER_REQUIRED_RECOVERY_ATTEMPTS
+  governed_sha256_from_durable_prior_evidence: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  application_source_analysis_this_run: NOT_PERFORMED_FAIL_CLOSED
+approval_projection:
+  total_stories: 134
+  approved_after_rework: 15
+  awaiting_user_review: 119
+  post_approval_conformance_pass: 14
+  drift_hold_ids: [STORY-0101]
+  development_exact_manifest_approval_gates: [DEV-0002, DEV-0003, DEV-0004]
+  auto_approval_performed: false
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  dns_resolution: UNAVAILABLE_FOR_APACHE_MAVEN_HOSTS
+runtime_recovery:
+  maven_version_selected: 3.9.16
+  basis: CURRENT_STABLE_APACHE_RELEASE
+  download_attempted: true
+  download_result: FAILED
+  faithful_test_execution_possible: false
+review_packet_audit:
+  story_0101_packet: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+  story_0101_manifest_complete: true
+  dev_0002_packet: BL-010/evidence/DEV-0002-STORY-0013-null-request-drift-review-20260902-2301.yaml
+  dev_0002_manifest_complete: true
+  code_mutation_performed: false
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+resumable: true
+next_action: RESUME_ON_NEXT_FIRE_RETRY_FILE_LIBRARY_MATERIALIZATION_RUNTIME_RECOVERY_OR_EXPLICIT_MANIFEST_APPROVAL
