@@ -1,0 +1,23 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-102833-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260902-102833-IST
+checkpoint_at: '2026-09-02T10:32:19+05:30'
+mode: CONTINUOUS
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+completion_delta_this_run: 0
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+work_attempted:
+  - story_id: STORY-0048
+    result: SOURCE_PROOF_CONTINUED_NOT_COMPLETED
+    detail: Prior controller-level delete/deactivate proof retained. Exact frozen-ref downstream service/DAO/entity/database implementation could not be resolved in this invocation; GitHub code-search returned incomplete zero-result output and no unproved behavior was inferred.
+control_plane_notes:
+  - Existing live-run.yaml RUNNING projection update was blocked by platform safety checks after receipt/run-link succeeded. This is control-plane projection drift, not scheduler handoff failure.
+application_code_changes: 0
+bl010_execution_delta: 0
+auto_approvals: 0
+story_0045_approval_gate_preserved: true
+eligible_work_remaining: true
+resumable: true
+next_action: Resume exact frozen-ref source binding for ChallanPagePhotoUploadService.deactivatePhoto downstream path for STORY-0048, then STORY-0047; repair live-run projection opportunistically without weakening receipt/run evidence.
