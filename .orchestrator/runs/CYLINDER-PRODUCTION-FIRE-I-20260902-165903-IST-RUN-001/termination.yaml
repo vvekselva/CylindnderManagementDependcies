@@ -1,0 +1,12 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-165903-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-165903-IST
+scheduler_task: cylinder-production-fire-i
+mode: CONTINUOUS
+started_at: '2026-09-02T16:59:03+05:30'
+terminated_at: '2026-09-02T16:59:45+05:30'
+elapsed_seconds: 42
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+terminal_reason: FRESH_ACTIVE_PRIMARY_CONFIRMED
+backlog_mutation_performed: false
+application_code_mutation_performed: false
+scheduler_must_remain_enabled: true
