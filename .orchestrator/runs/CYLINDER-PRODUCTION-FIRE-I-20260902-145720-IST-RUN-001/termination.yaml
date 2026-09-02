@@ -1,0 +1,21 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-145720-IST-RUN-001
+started_at: '2026-09-02T14:57:23+05:30'
+terminated_at: '2026-09-02T15:01:41+05:30'
+elapsed_seconds: 258
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+terminal_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_WITH_ELIGIBLE_WORK_REMAINING
+eligible_work_remaining: true
+resumable: true
+completion_delta_created_this_run: 2
+advanced_story_ids: [STORY-0049, STORY-0050, STORY-0051]
+completed_story_ids_this_run: [STORY-0050, STORY-0051]
+auto_approvals: 0
+application_code_changes: 0
+bl010_execution_delta: 0
+aggregate_projection: 24/134
+aggregate_projection_percent: 17.9
+authoritative_story_file_complete_count: 25
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046, STORY-0047, STORY-0048, STORY-0050, STORY-0051]
+source_zip_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+next_action: Reconcile STORY-0051 aggregate projection, then continue dependency-safe R1 source analysis from recovered ZIP; preserve STORY-0047 explicit drift approval gate.
+scheduler_must_remain_enabled: true
