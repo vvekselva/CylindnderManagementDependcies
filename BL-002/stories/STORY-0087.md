@@ -4,16 +4,21 @@
 - Endpoint: `GET /search/addresstype/{searchText}`
 - Controller: `RestfulAddressTypeServices.getAddressTypes`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Contract
-This is a read-only address-type lookup. The exact path variable is `searchText`. Canonical trace proves controller -> `AddressTypeSearchService.searchWithText` -> `SearchRequestValidator.validate` -> `AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase` -> `AddressTypeDo` -> `public.tbl_address_type` -> mapper interface `ICylindermanagementApplicationDoToDtoMapper<AddressTypeDto, AddressTypeDo>.mapDoToDto` -> `AddressTypeSearchResponseDto`.
+## Business behavior
 
-The service performs containing/ignore-case lookup. Successful results are returned as the address-type response DTO; service exception produces an empty response DTO. This endpoint performs no persistence mutation and does not itself prove a particular screen's debounce/minimum-length behavior, so none is invented here.
+This is a read-only address-type lookup whose exact input is path variable `searchText`. The recovered ZIP confirms `RestfulAddressTypeServices` at `/search/addresstype` and the search flow through `AddressTypeSearchService`, request validation, `AddressTypeJpaDao.findByAddressTypeContainingIgnoreCase`, `AddressTypeDo` / `public.tbl_address_type`, DTO mapping and `AddressTypeSearchResponseDto`.
 
-## UI relationship
-Address Type is also managed through the Lookup Management page, whose visible save path normalizes the submitted address type with trim + uppercase, delegates to `AddressTypeIngestionService`, refreshes the in-memory address-type cache, and renders inline validation failures without redirect. That management behavior is contextual evidence only and is not misrepresented as behavior of this GET search endpoint.
+Lookup semantics are contains/ignore-case. Successful results are returned in the response DTO; application-service failure is converted by the REST handler to an empty response DTO. The endpoint itself has no persistence mutation and no standalone screen-specific debounce/minimum-length/hidden-ID contract is asserted where the source does not bind one.
 
-## Approval boundary
-Strict applicable contract is source-proved. Approval remains pending; no auto-approval or testing-readiness promotion is made.
+## Completion and approval gate
+
+The request identity, validation/search/DAO/table path, result/error behavior and read-only business effect are source-bound. STORY-0087 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
