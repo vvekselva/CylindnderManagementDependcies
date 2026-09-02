@@ -1,0 +1,52 @@
+run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST-RUN-001
+work_unit: APPLICATION_SOURCE_RECOVERY
+requested_primary_source:
+  file_library_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  file_library_id: file_00000000659c8211857bba6b09282de3
+recovery_attempts:
+  - method: FILE_LIBRARY_EXACT_NAME_SEARCH
+    result: NO_MATCH_RETURNED
+  - method: FILE_LIBRARY_RECENT_UPLOAD_NAVIGATION_2026-09-02
+    result: ZIP_NOT_RETURNED
+  - method: CHATGPT_LOCAL_WORKSPACE_MOUNT_CHECK
+    result: NO_MATERIALIZED_FILE_PRESENT
+materialization_state: FAILED_IN_AVAILABLE_FILE_LIBRARY_BINARY_ACCESS_PATH
+application_source_classification: FILE_LIBRARY_ZIP_RECOVERY_MATERIALIZATION_FAILED
+local_git_state: NOT_MATERIALIZED_FROM_REQUESTED_ZIP
+source_analysis_engine_used: NONE
+application_github_code_search_used: false
+control_repo_reads_after_handoff:
+  architecture_current: READ
+  execution_architecture: READ
+  runtime_reliability_policy: READ
+  post_approval_code_conformance_policy: READ
+  approved_story_testing_policy: READ
+  bl002_enrichment_progress: READ
+  bl002_rework_queue: READ
+  bl010_queue: READ
+  bl008_readme: READ
+reconciliation:
+  newest_bl002_projection_updated_at: '2026-09-02T15:01:00+05:30'
+  business_behavior_complete: 24
+  business_behavior_total: 134
+  awaiting_user_review: 22
+  approved_after_rework: 2
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046, STORY-0047, STORY-0048, STORY-0050]
+  current_next_global_rework_unit: STORY-0045
+  fallback_dependency_safe_r1_unit: STORY-0049
+  source_dependent_dispatch_blocked: true
+bl008:
+  current_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
+  service_ui_acceptance_cases: 30
+  execution_delta_this_run: 0
+bl010:
+  queued: 4
+  executable_under_current_drift_policy: 0
+  code_mutation_performed: false
+approval:
+  auto_approval_performed: false
+  code_drift_approval_bypassed: false
+safe_independent_work_result:
+  aggregate_queue_projection_repair: DEFERRED_FAIL_CLOSED_FULL_CANONICAL_FILE_SAFE_REWRITE_NOT_AVAILABLE_IN_THIS_TOOL_PATH
+  test_generation_execution: BLOCKED_BY_SOURCE_MATERIALIZATION_AND_EXISTING_RUNTIME_DEPENDENCY_BLOCKERS
+transient_logs_remaining: 0
