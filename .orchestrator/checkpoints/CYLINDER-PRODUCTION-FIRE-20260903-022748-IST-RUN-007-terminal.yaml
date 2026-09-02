@@ -1,0 +1,17 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-022748-IST-RUN-007
+checkpoint_state: TERMINAL_RESUMABLE
+checkpoint_time: '2026-09-03T02:30:32+05:30'
+productive_elapsed_seconds: 164
+runtime_target_30_minutes_satisfied: false
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+eligible_work_remaining: false
+recoverable_work_remaining: true
+resumable: true
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_stories: 15
+awaiting_user_review: 119
+post_approval_conformance_pass: 14
+post_approval_drift_hold: [STORY-0101]
+code_change_approval_holds: [DEV-0002, DEV-0003, DEV-0004]
+runtime_blockers: [MAVEN_MISSING, GRADLE_MISSING, DOCKER_MISSING, PODMAN_MISSING, JUNIT_MOCKITO_MAVEN_JARS_NOT_FOUND]
+next_action: RESUME_ON_NEXT_FIRE_RECHECK_EXPLICIT_APPROVAL_NEW_SOURCE_SHA_OR_RUNTIME_CAPABILITY
