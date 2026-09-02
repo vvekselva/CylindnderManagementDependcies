@@ -5,6 +5,9 @@ source_repository: vvekselva/CylinderManagement
 source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_validation_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_validation_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
 current_behavior:
   - Domain Lookup posts driverId, driverName, phoneNumber and licenceNumber to POST /domainLookup/driver/save.
   - Controller trims driverName and phoneNumber, uppercases licenceNumber, wraps phoneNumber in PhoneNumberDto and delegates DriverIngestionRequestDto.
@@ -14,16 +17,16 @@ current_behavior:
   - DriverMapper maps driverId, driverName and licenceNumber but does not map phoneNumber.
   - DriverDo has fk_phone_number to public.tbl_phone_number, but current Driver ingestion therefore does not persist the submitted phone relation.
   - The template declares required Phone Number and Licence Number fields and renders DRIVER_PHONE_* and DRIVER_LICENCE_* validation codes that the current service does not produce.
+  - The Driver table toolbar has database-backed 320 ms search through /search/driver/{text}, but the add/edit Driver Name candidate input itself does not show database-backed matches while typing.
 approved_story_behavior:
-  - Save/update the selected Driver identity with the submitted required driver name, phone number and licence number.
-  - Return controlled field-level validation evidence for invalid input.
-  - Preserve update semantics without rejecting the same row as its own duplicate.
-  - Persist the submitted phone relation through the existing driver fk_phone_number model without schema change.
+  state: PENDING_USER_APPROVAL
+  note: No Story approval is inferred by this packet. The business-behavior Story remains pending explicit user approval; this packet only records source-proved current behavior and an exact potential remediation scope for later review.
 business_impact:
   - A user can submit a phone number that is displayed as required but is silently omitted from Driver persistence.
   - Invalid phone/licence input is not enforced by the current service despite visible UI validation placeholders.
   - Editing an existing driver can be rejected by the duplicate-name contains check even when the row is updating itself.
   - Null/invalid request evidence may be returned as the wrong DTO type, preventing the controller's intended inline Driver validation branch.
+  - Candidate entry does not proactively show existing database matches even though a governed Driver search endpoint already exists.
 proposed_manifest:
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -50,17 +53,17 @@ proposed_manifest:
     reason: Prevent false duplicate rejection on updates/substrings.
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
-    path: cylindermanagement.web/src/main/resources/templates/DomainLookup.html
-    component: Driver tab form
-    approximate_anchor: lines 1251-1385
-    proposed_change: No business-field expansion. Keep current submitted fields; adjust only validation-message binding if required by the approved service validation implementation.
-    reason: Existing form already expresses the intended Driver fields.
+    path: cylindermanagement.web/src/main/resources/templates/with-menu/DomainLookup.html
+    component: Driver tab form and live-search engine
+    approximate_anchor: Driver candidate input lines ~1327-1340; REST_BASE/searchTable lines ~1604-1660
+    proposed_change: Preserve the submitted business fields and add a debounced database-backed suggestion panel to the Driver Name candidate input using the existing /search/driver/{text} endpoint; keep submit-time service validation authoritative.
+    reason: Apply the governed lookup-before-insert rule to the candidate field rather than only the table toolbar.
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
     path: cylindermanagement.custommapper.service/src/test/java
     component: Driver ingestion tests
     approximate_anchor: new or existing DriverIngestionService tests
-    proposed_change: Add positive create/update coverage; null request; blank name; invalid/blank phone; invalid/blank licence; duplicate other-row name/licence; same-row update; phone association persistence mapping.
+    proposed_change: Add positive create/update coverage; null request; blank name; invalid/blank phone; invalid/blank licence; duplicate other-row name/licence; same-row update; phone association persistence mapping; candidate-search MVC/UI regression.
     reason: Guard the corrected contract.
 database_impact:
   schema_change: false
