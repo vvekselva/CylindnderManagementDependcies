@@ -4,23 +4,29 @@
 - Endpoint: `GET /addVechileTrip`
 - Controller: `VehicleTripIngestionController.doGet`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Screen entry / server contract
-`@GetMapping("/addVechileTrip")` creates empty `VehicleTripDto`, wraps it in `VehicleTripIngestionRequestDto`, renders `with-menu/VehicleTripIngestion`, exposes it as `tripRequest`, and exposes `backLink=/vehicle-loads/list`. This GET performs no persistence write.
+## Business behavior
 
-## Exact visible controls and browser behavior
-The screen requires Vehicle, Driver, Starting Date & Time, Customer and Delivery Address. Vehicle/driver/customer are search inputs; address remains dependent on customer. Search input events call `handleSearch`. Blank trimmed search performs no API call. Nonblank search shows a spinner and uses a 350 ms debounce before calling the applicable endpoint: `/cylindermanagement/search/vehicle/{q}`, `/search/driver/{q}`, `/search/customer/{q}`. Address uses `/search/address/customer-address/{customerId}` and is also loaded immediately after customer selection/focus.
+This page starts creation of a vehicle trip. `GET /addVechileTrip` creates an empty `VehicleTripDto`, wraps it in `VehicleTripIngestionRequestDto`, renders `with-menu/VehicleTripIngestion`, exposes model `tripRequest`, and provides `/vehicle-loads/list` as the back link. The GET performs no persistence mutation.
 
-Selecting a result stores the full selected object in JS state, hides the text input and displays a selected chip. Customer selection invalidates any previous address, enables address search and immediately loads that customer's addresses. Clearing Customer clears/invalidate Address and disables address search again. Clearing other selections restores their search input. Search failures display `Search failed. Please try again.`.
+The user must select Vehicle, Driver, Customer and Customer Delivery Address and provide Starting Date & Time. Vehicle/Driver/Customer use browser search controls. Blank text sends no request; nonblank text uses a 350 ms debounce and calls the exact Vehicle, Driver or Customer search endpoint. Selecting a result stores its persistent identity in browser state and replaces the search input with a selected chip. Customer selection clears any prior Address and immediately loads only that Customer's addresses; clearing Customer invalidates/disables Address again.
 
-Starting Date & Time is `datetime-local`, initialized to current local time and constrained with `min` equal to now. Its input updates the trip-reference preview.
+Starting Date & Time uses `datetime-local`, initializes/min-constrains to current local time and contributes only the HH:mm value to the bound trip starting-time field. `Create Trip` validates that all five required selections/values exist; failure marks the fields and prevents form submission with `Please fill in all required fields`.
 
-## Local validation / hidden propagation
-Create Trip invokes `validate()`. Missing Vehicle, Driver, starting time, Customer, or Address marks the field invalid and prevents submit with `Please fill in all required fields`.
+On valid submit the browser writes exact selected identities into hidden Spring fields: vehicle ID/number, driver ID/name, starting time, customer ID and customer-address ID, then submits the companion `POST /addVechileTrip` while showing the Creating Vehicle Trip overlay. Search failures show `Search failed. Please try again.` and Cancel requires browser confirmation before navigating back.
 
-On valid submit the browser copies selected identities into the hidden Spring form with exact names: `vehicleTripDto.vehicle.vehicleId`, `vehicleTripDto.vehicle.vehicleNumber`, `vehicleTripDto.driver.driverId`, `vehicleTripDto.driver.driverName`, `vehicleTripDto.startingTime`, `vehicleTripDto.customerDto.customerId`, and `vehicleTripDto.customerAddress.customerAddressId`. The datetime-local value is reduced to its HH:mm component before assigning `vehicleTripDto.startingTime`. The form POSTs to `/addVechileTrip` and shows a Creating Vehicle Trip loading overlay. Cancel asks for confirmation and navigates browser history back only when confirmed.
+## Business impact
 
-## Outcome boundary
-The GET itself only prepares and displays the form. Persistence belongs to STORY-0134 POST. No approval occurs.
+The GET constructs a consistent trip-creation request using persistent reference identities, prevents stale Customer/Address combinations in the browser, and hands the validated selection set to the separate POST transaction. It does not itself create the trip.
+
+## Completion and approval gate
+
+The recovered ZIP confirms the page initialization, every required control, search timing/endpoints, dependent Address behavior, local validation, hidden identity propagation and read-only boundary. STORY-0133 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 work was created or executed.
