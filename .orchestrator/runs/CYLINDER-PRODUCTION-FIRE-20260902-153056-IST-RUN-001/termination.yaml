@@ -1,0 +1,8 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-153056-IST-RUN-001
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+terminal_reason: STALE_HEARTBEAT_REVALIDATED
+started_at: '2026-09-02T15:31:05+05:30'
+last_durable_heartbeat_at: '2026-09-02T15:33:37+05:30'
+recovered_at: '2026-09-02T16:02:42+05:30'
+eligible_work_remaining: true
+resumable: true
