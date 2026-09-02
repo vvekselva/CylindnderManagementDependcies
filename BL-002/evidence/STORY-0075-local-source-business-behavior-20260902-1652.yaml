@@ -1,0 +1,17 @@
+story_id: STORY-0075
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /delivery-planning/stops/{stopId}/nearby-customers
+controller: DeliveryPlanningApiController.nearbyCustomers
+service: DeliveryPlanningStopService.nearby
+path_variable: stopId Long
+query_parameter: radiusMeters BigDecimal
+validation:
+  inactive_or_missing_stop: Planning stop not found.
+  effective_radius_positive: true
+read: DeliveryPlanningStopCustomerProjectionDo via nearby DAO query
+mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
