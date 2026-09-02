@@ -2,10 +2,13 @@ scheduler_task: cylinder-production-fire-i
 fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST
 observed_scheduled_fire_time: '2026-09-02T17:58:13+05:30'
 receipt_time: '2026-09-02T17:58:13+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
 orchestrator_started_at: '2026-09-02T17:58:35+05:30'
 run_linked_at: '2026-09-02T17:58:35+05:30'
-terminal_classification: null
-terminated_at: null
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: BL002_134_OF_134_COMPLETE_AND_ZERO_CURRENT_QUEUE_DRIFT;_132_EXPLICIT_USER_APPROVAL_GATES;_CODE_MUTATION_DRIFT_GATED;_TEST_RUNTIME_BLOCKED
+terminated_at: '2026-09-02T18:00:43+05:30'
+elapsed_seconds: 128
+scheduler_must_remain_enabled: true
