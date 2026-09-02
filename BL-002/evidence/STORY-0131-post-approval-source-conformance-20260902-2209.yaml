@@ -1,0 +1,12 @@
+story_id: STORY-0131
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+checked_at: 2026-09-02T22:09:10+05:30
+approval_state: APPROVED_AFTER_REWORK
+source: {repository: CylinderManagement, ref: 3ae6e61442132d94a307275b08dd65fcef228d89, sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2}
+conformance: PASS_CURRENT_APPROVED_CONTRACT_WITH_SEPARATE_DRIFT_MANIFEST
+proof:
+  - {file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/LookupManagementController.java, anchor: lines 227-281, finding: controller preserves optional state ID, trims state name, delegates ingestion, refreshes State cache and preserves inline-validation/redirect behavior}
+  - {file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/StateIngestionService.java, anchor: lines 38-90, finding: current source emits CountryIngestionRequestDto on invalid State input and uses contains-ignore-case duplicate predicate without same-ID exclusion, exactly matching the approved Story's documented current-state defects}
+drift_manifest: BL-002/evidence/STORY-0131-state-save-drift-review-20260902.yaml
+application_code_changed: false
+fanout_gate: SOURCE_CONFORMANCE_PASS_FOR_CURRENT_APPROVED_CONTRACT
