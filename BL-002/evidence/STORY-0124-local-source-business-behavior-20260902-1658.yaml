@@ -1,0 +1,15 @@
+story_id: STORY-0124
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /reconciliation-dashboard
+controller: ReconciliationDashboardController.viewDashboard
+request_dto: ReconciliationDashboardFetchRequestDto
+checkpoint_date_default: LocalDate.now
+service: ReconciliationDashboardService.processRequest
+view: final-version-1/reconciliation_checkpoint_dashboard
+model_keys: [searchCriteria, dashboardData, checkpointLabels, totalCount, matchedCount, varianceCount, escalatedCount]
+mutation_in_controller: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
