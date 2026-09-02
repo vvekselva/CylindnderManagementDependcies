@@ -4,9 +4,14 @@
 - Endpoint: `GET /vehicle-trips/list`
 - Controller: `VehicleTripController.listVehicleTrips`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Drift review packet: `BL-002/evidence/STORY-0062-vehicle-trip-list-drift-review-20260902.yaml`
 
 ## User intent and exact request contract
 Opening `/vehicle-trips/list` renders the TST vehicle-trip record list. The controller accepts query parameter `page` int default `1`, `size` int default `10`, and optional String `searchTerm`. It maps those values to `VehicleTripFetchByPageRequestDto`, calls `VehicleTripFetchByPageService.processRequest`, and returns `tst/trip-list`.
@@ -41,5 +46,10 @@ When `trips` is empty, the table renders one five-column row saying `No records 
 ## Persistence effect
 This GET reads trip/vehicle/driver-related persistence only. No database write is asserted.
 
+## Drift governance
+The recovered ZIP confirms that the visible search field currently has no filtering effect and that size is not retained in browser navigation. The exact proposed remediation is isolated in the referenced review packet. No application/BL-010 mutation is allowed without explicit user approval of that manifest.
+
 ## Governed conclusion
-The frozen controller, service, trip entity and Thymeleaf template resolve the applicable pagination/default/sort, ineffective-search behavior, visible row contract, trip identity, lack of navigation, absence of status/review controls, pagination propagation, empty state and error boundary. STORY-0062 is `STRICT_FIELD_UI_COMPLETE`; approval remains `PENDING_USER_APPROVAL`.
+The current-source business behavior—including ineffective search, paging propagation, visible rows, sorting, empty state and read-only persistence effect—is completely source-bound and explicitly documented.
+
+STORY-0062 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no application code was changed and no BL-010 work was created or executed.
