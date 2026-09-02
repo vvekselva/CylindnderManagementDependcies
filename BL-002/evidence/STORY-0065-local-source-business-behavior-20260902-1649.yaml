@@ -1,0 +1,15 @@
+story_id: STORY-0065
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /reconciliation-command-center/details
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ReconciliationCommandCenterController.java
+service_path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ReconciliationCommandCenterService.java
+view: with-menu/ReconciliationCommandCenterDetails
+required_parameter: tripId Long
+optional_filters: [accountingStatus, closureStatus]
+selected_trip_rule: first dashboard trip row when present
+mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
