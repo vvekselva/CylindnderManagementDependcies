@@ -1,0 +1,29 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-042755-IST-RUN-001
+state: TERMINATED
+mode: CONTINUOUS
+started_at: '2026-09-03T04:28:21+05:30'
+terminated_at: '2026-09-03T04:30:34+05:30'
+productive_elapsed_seconds: 151
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+resumable: true
+projection:
+  total_stories: 134
+  approved_after_rework: 15
+  awaiting_user_review: 119
+  conformance_pass: 14
+  drift_hold: 1
+  drift_hold_ids: [STORY-0101]
+  development_manifest_approval_gate_ids: [DEV-0002, DEV-0003, DEV-0004]
+source:
+  requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  file_id: file_00000000659c8211857bba6b09282de3
+  recovery: FAILED_AFTER_EXACT_AND_BROAD_FILE_LIBRARY_SEARCH
+  local_materialization: ABSENT
+  application_analysis: NOT_PERFORMED_FAIL_CLOSED
+runtime:
+  java: AVAILABLE_21_0_11
+  maven: MISSING_RECOVERY_FAILED
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+next_action: retry source materialization and runtime recovery; execute only approved safe-independent work; preserve exact drift approval gates
