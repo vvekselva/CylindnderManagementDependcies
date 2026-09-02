@@ -4,13 +4,17 @@
 - Endpoint: `GET /customer-consumption/dashboard`
 - Controller: `CustomerConsumptionDashboardController.dashboard`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Local-source evidence: `BL-002/evidence/STORY-0029-local-source-business-behavior-20260902-1645.yaml`
 
-The user opens `/customer-consumption/dashboard`, the canonical URL emitted by the dashboard's filter, sorting and pagination links. The controller class is mapped at `/customer-consumption` and the `dashboard` handler explicitly maps `/dashboard` together with the root aliases. Spring binds the query string to `CustomerConsumptionSearchRequestDto`; its defaults are page 1, 25 rows, `expectedNeedDate` ascending.
+This is the canonical URL emitted by the dashboard filter, sorting and pagination links. The controller class is mapped at `/customer-consumption` and the shared dashboard handler maps `/dashboard` together with the root aliases. Spring binds the query string to `CustomerConsumptionSearchRequestDto` and returns `with-menu/CustomerConsumptionDashboard` with `requestDto` and `dashboardDto`.
 
-The visible GET filter controls are `customerId` and `productId` numeric inputs with browser min 1, `expectedNeedDateFrom` and `expectedNeedDateTo` date inputs, and `itemsPerPage` numeric input with browser min 5/max 100. Hidden fields carry `pageNumber=1`, `sortField`, and `sortDirection`. Apply Filter submits to this endpoint. There is no page-local JavaScript, debounce, typing endpoint, dependent API call, or dynamic button enable/disable condition.
+The visible filters are customerId, productId, expectedNeedDateFrom, expectedNeedDateTo and itemsPerPage, with hidden page/sort state. `CustomerConsumptionDashboardService.fetchDashboard` normalizes page/sort/date values, builds optional JPA predicates, reads the projection repository with paging and mapped sort properties, maps projection rows, and populates dashboard summary/page metadata.
 
-`CustomerConsumptionDashboardService.fetchDashboard` normalizes page/sort/date-range values, swaps From/To when reversed, caps rows at 100, and builds optional JPA predicates for customer, product and projected need date. It reads `CustomerProductConsumptionProjectionViewJpaDao` with paging and mapped sort properties. The immutable entity reads `public.vw_customer_product_consumption_projection` through Hibernate `@Subselect`; this path is read-only and performs no persistence mutation.
+The immutable data source is `public.vw_customer_product_consumption_projection`; this GET performs no persistence mutation. The recovered governed ZIP independently confirms the canonical route, shared handler/service behavior, projection read path and visible filter/sort/pagination contract.
 
-The rendered table columns are Customer, Product, Last Delivered Date, Current Cylinders, Consumption Days / Cylinder, Expected Need Date and Previous Delivery. Mapper identities are `activeHoldingCylinders -> currentCylinderCount`, `latestDeliveredAt -> lastDeliveredAt`, `avgConsumptionDaysPerCylinder -> consumptionDaysPerCylinder`, `projectedEmptyAt -> expectedNeedDate`, and `oldestDeliveredAt -> previousDeliveredAt`. Summary cards are repository-derived total rows, total active cylinders, FIRST_DELIVERY count, NEED_NOW count and average positive days/cylinder. Sort links preserve filters and reset page to 1; pagination preserves filters/sort and exposes disabled Previous/Next when no page exists. Empty rows display exactly `No customer/product delivery rows available.` The controller returns `with-menu/CustomerConsumptionDashboard` with `requestDto` and `dashboardDto`. No approval occurred.
+STORY-0029 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+No approval occurred. No application code or database schema was changed.
