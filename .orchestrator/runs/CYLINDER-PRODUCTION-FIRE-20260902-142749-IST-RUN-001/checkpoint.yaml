@@ -1,0 +1,24 @@
+run_id: "CYLINDER-PRODUCTION-FIRE-20260902-142749-IST-RUN-001"
+mode: "CONTINUOUS"
+checkpoint_time: "2026-09-02T14:31:00+05:30"
+receipt_path: ".orchestrator/scheduler-fire-receipts/cylinder-production-fire-ii/2026-09-02T14-27-49+05-30.yaml"
+handoff_state: "RUN_LINKED"
+source_repository: "vvekselva/CylinderManagement"
+source_ref: "3ae6e61442132d94a307275b08dd65fcef228d89"
+reconciliation:
+  scheduler_handoff_checked: true
+  live_state_checked: true
+  aggregate_projection_reconciliation_attempted: true
+work_attempted:
+  - story_id: "STORY-0048"
+    action: "Resume exact frozen-source trace for challan page photo deactivation downstream binding"
+    result: "No additional exact service-to-DAO/repository-to-entity-to-database deactivation binding was safely proven in this invocation"
+    fail_closed: true
+story_mutations: 0
+auto_approvals: 0
+application_code_mutations: 0
+bl010_executions: 0
+eligible_work_remaining: true
+resumable: true
+next_action: "Resume exact source trace for STORY-0048 downstream service/DAO/entity/database binding, then continue other safe-independent eligible work while preserving approval gates."
+scheduler_must_remain_enabled: true
