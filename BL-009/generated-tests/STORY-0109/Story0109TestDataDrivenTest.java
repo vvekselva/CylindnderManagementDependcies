@@ -1,0 +1,46 @@
+package com.sreyas.datamatics.cylindermanagement.misc.web.controller;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.sreyas.datamatics.application.dto.ProductCategoryIngestionRequestDto;
+import com.sreyas.datamatics.application.dto.ProductCategoryIngestionResponseDto;
+import com.sreyas.datamatics.application.service.ICylinderManagementApplicationService;
+import com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache;
+
+class Story0109TestDataDrivenTest {
+    private DomainLookupController controller;
+    private ICylinderManagementApplicationService<ProductCategoryIngestionRequestDto, ProductCategoryIngestionResponseDto> service;
+    private LookupDataCache cache;
+
+    @SuppressWarnings("unchecked")
+    @BeforeEach void setup() {
+        controller = new DomainLookupController();
+        service = mock(ICylinderManagementApplicationService.class);
+        cache = mock(LookupDataCache.class);
+        ReflectionTestUtils.setField(controller, "productCategoryIngestionService", service);
+        ReflectionTestUtils.setField(controller, "lookupDataCache", cache);
+    }
+
+    @Test void createCurrentContract() throws Exception {
+        when(service.processRequest(any(ProductCategoryIngestionRequestDto.class))).thenReturn(new ProductCategoryIngestionResponseDto());
+        RedirectAttributes ra = mock(RedirectAttributes.class);
+        ModelAndView mav = controller.saveProductCategory(null, " industrial ", " desc ", ra);
+        ArgumentCaptor<ProductCategoryIngestionRequestDto> cap = ArgumentCaptor.forClass(ProductCategoryIngestionRequestDto.class);
+        verify(service).processRequest(cap.capture());
+        assertEquals("INDUSTRIAL", cap.getValue().getProductCategoryDto().getProductCategory());
+        assertEquals("desc", cap.getValue().getProductCategoryDto().getDescription());
+        verify(cache).refreshProductCategory();
+        assertEquals("redirect:/domainLookup?tab=productCategory", mav.getViewName());
+    }
+}
