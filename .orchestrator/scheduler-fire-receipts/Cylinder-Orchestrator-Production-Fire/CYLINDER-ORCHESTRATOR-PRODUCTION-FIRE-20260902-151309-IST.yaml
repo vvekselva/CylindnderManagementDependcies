@@ -2,10 +2,14 @@ scheduler_task: Cylinder Orchestrator Production Fire
 fire_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST
 observed_scheduled_fire_time: '2026-09-02T15:13:09+05:30'
 receipt_time: '2026-09-02T15:13:19+05:30'
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST-RUN-001
 run_link_state: RUN_LINKED
 orchestrator_started_at: '2026-09-02T15:13:19+05:30'
-terminal_classification: null
-termination_time: null
+live_run_path: .orchestrator/live-run.yaml
+event_stream_path: .orchestrator/runs/CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST-RUN-001/events.ndjson
+termination_record_path: .orchestrator/runs/CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST-RUN-001/termination.yaml
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+termination_reason: FILE_LIBRARY_PRIMARY_SOURCE_ZIP_RECOVERY_MATERIALIZATION_FAILED_AND_SAFE_CANONICAL_QUEUE_REWRITE_UNAVAILABLE
+termination_time: '2026-09-02T15:14:47+05:30'
