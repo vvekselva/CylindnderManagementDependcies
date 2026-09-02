@@ -1,0 +1,20 @@
+run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST-RUN-001
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+termination_reason: FILE_LIBRARY_PRIMARY_SOURCE_ZIP_RECOVERY_MATERIALIZATION_FAILED_AND_SAFE_CANONICAL_QUEUE_REWRITE_UNAVAILABLE
+terminated_at: '2026-09-02T15:14:47+05:30'
+eligible_work_remaining: true
+resumable: true
+scheduler_must_remain_enabled: true
+handoff_acknowledged: true
+run_linked: true
+application_source_recovery_evidence: .orchestrator/runs/CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST-RUN-001/work-units/application-source-recovery.yaml
+business_behavior_complete: 24
+business_behavior_total: 134
+queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046, STORY-0047, STORY-0048, STORY-0050]
+next_global_rework_unit: STORY-0045
+fallback_dependency_safe_r1_unit: STORY-0049
+application_code_mutation: false
+bl010_execution: false
+auto_approval: false
+active_claims_at_terminal: 0
+transient_logs_remaining: 0
