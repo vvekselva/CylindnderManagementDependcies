@@ -1,0 +1,46 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260902-233242-IST-RUN-001
+state: TERMINATED
+mode: CONTINUOUS
+started_at: 2026-09-02T23:32:42+05:30
+terminated_at: 2026-09-02T23:35:17+05:30
+productive_elapsed_seconds: 155
+runtime_target_30_minutes_satisfied: false
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+source:
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  library_file_id: file_00000000659c8211857bba6b09282de3
+  materialization: SUCCESS_LOCAL_WORKSPACE
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_file_count: 1650
+  tree_manifest_sha256: 76c896a5679eba7964426597511a6ece397516edb8dac629d46b9b2c8872d694
+  local_git_present: false
+reconciliation:
+  prior_run: CYLINDER-PRODUCTION-FIRE-20260902-232924-IST-RUN-004
+  prior_terminal_state: CLEAN_TERMINAL_EXHAUSTION
+  approval_count: 15
+  testing_ready_conformance_pass: 14
+  drift_hold_ids: [STORY-0101]
+  exact_drift_manifest_holds: [DEV-0002, DEV-0003, DEV-0004]
+source_anchor_revalidation:
+  STORY-0101: CONFIRMED_NO_SOURCE_CHANGE
+  DEV-0002: CONFIRMED_NO_SOURCE_CHANGE
+  DEV-0003: CONFIRMED_NO_SOURCE_CHANGE
+  DEV-0004: CONFIRMED_NO_SOURCE_CHANGE
+runtime_probe:
+  java: OPENJDK_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  maven_wrapper: MISSING
+  bundled_jars: NONE
+  maven_recovery_attempt: FAILED_OUTBOUND_DOWNLOAD_UNAVAILABLE
+blocked_work:
+  - STORY-0101_CODE_CHANGE_APPROVAL
+  - DEV-0002_EXACT_DRIFT_APPROVAL
+  - DEV-0003_EXACT_DRIFT_APPROVAL
+  - DEV-0004_EXACT_DRIFT_APPROVAL
+  - EXECUTE_BL004_WITH_JACOCO
+  - EXECUTE_BL005_WITH_TESTCONTAINERS_AND_JACOCO
+  - EXECUTE_BL009_APPLICATION_BEHAVIOR_AND_COVERAGE
+next_action: RESUME_ON_NEXT_FIRE_AND_RECHECK_FOR_NEW_EXPLICIT_APPROVAL_OR_RUNTIME_CAPABILITY
