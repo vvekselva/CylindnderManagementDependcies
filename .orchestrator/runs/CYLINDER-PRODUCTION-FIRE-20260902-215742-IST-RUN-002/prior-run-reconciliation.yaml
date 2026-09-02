@@ -1,0 +1,14 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+reconciled_at: 2026-09-02T21:59:10+05:30
+prior_run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+prior_live_state: EXECUTING
+prior_last_heartbeat_at: 2026-09-02T21:38:31+05:30
+termination_record_before_recovery: MISSING
+run_heartbeat_file_before_recovery: MISSING
+events_stream_before_recovery: MISSING
+receipt_terminal_state_before_recovery: MISSING
+classification: ABNORMAL_PROCESS_DISAPPEARANCE
+recovery_actions:
+  - created prior termination record
+  - terminalized prior scheduler receipt
+  - preserved resumable state for current run
