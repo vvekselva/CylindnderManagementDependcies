@@ -1,0 +1,19 @@
+story_id: STORY-0008
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: POST /delivery-planning/predefined-trips/add-stop
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/PredefinedDeliveryTripController.java
+service_path: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/PredefinedDeliveryTripService.java
+view_path: cylindermanagement.web/src/main/resources/templates/with-menu/PredefinedDeliveryTrips.html
+request_fields: [tripId, stopId]
+validation:
+  trip_missing: Predefined trip not found.
+  stop_missing: Planning stop not found.
+  duplicate_assignment: This stop is already assigned to the trip.
+persistence: PredefinedDeliveryTripStopJpaDao.save
+sequence_rule: active assignment count + 1
+visible_success: Stop added to predefined trip.
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
