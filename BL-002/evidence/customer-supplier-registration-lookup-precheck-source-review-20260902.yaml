@@ -1,0 +1,80 @@
+review_id: CUSTOMER-SUPPLIER-REGISTRATION-LOOKUP-PRECHECK-20260902
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+governance:
+  auto_approval: false
+  application_code_mutation: false
+  bl010_created_or_executed: false
+  code_change_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED
+units:
+  - story_id: STORY-0042
+    endpoint: POST /registerCustomer
+    approval: PENDING_USER_APPROVAL
+    current_behavior:
+      controller:
+        path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/UC01RegisterCustomerController.java
+        anchor: doPost lines ~59-128
+      service:
+        path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerIngestionService.java
+        anchor: processRequest lines ~68-132
+      validator:
+        path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/CustomerIngestionRequstValidator.java
+        anchor: GST duplicate precheck lines ~148-164 plus phone validation/precheck later in validator
+      existence_utility:
+        path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/db/existence/utilty/CustomerDetailsExistenceUtility.java
+        anchor: phone exists lines ~22-29; GST exact ignore-case exists lines ~31-36
+      template:
+        path: cylindermanagement.web/src/main/resources/templates/final-version-1/UC01RegisterCustomer.html
+        anchor: customerName lines ~652-654; GST lines ~676-685; country/state/city candidate search lines ~904-970 and search engine ~1002-1178
+      source_proof:
+        - authoritative submit-time duplicate prechecks exist for GST and phone through database existence utilities
+        - address reference candidates Country/State/City use database-backed debounced search and hidden IDs
+        - Customer Name itself has no database-backed candidate-match display while typing even though STORY-0091 supplies /search/customer/{searchText}
+    business_impact: duplicate legal identity is guarded by GST/phone before persistence, but operators do not see similar-name Customer candidates before Save; whether name type-ahead is mandatory should be decided under the global lookup/insertion policy without weakening GST/phone authority.
+    proposed_change_if_approved:
+      repository: vvekselva/CylinderManagement
+      ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+      path: cylindermanagement.web/src/main/resources/templates/final-version-1/UC01RegisterCustomer.html
+      component: Customer Name candidate input
+      anchor: lines ~652-654
+      change: add debounced non-authoritative suggestions using existing /search/customer/{searchText}; preserve GST/phone service-level duplicate checks as authoritative.
+      tests: MVC/UI search suggestion regression plus existing GST/phone duplicate validator tests
+      db_impact: none
+
+  - story_id: STORY-0081
+    endpoint: POST /ingestSupplier
+    approval: PENDING_USER_APPROVAL
+    current_behavior:
+      controller:
+        path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/SupplierIngestionController.java
+        anchor: doPost lines ~132-190
+      service:
+        path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/SupplierIngestionService.java
+        anchor: processRequest lines ~65-111
+      validator:
+        path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/SupplierIngestionRequestValidator.java
+        anchor: GST duplicate precheck lines ~134-151; phone duplicate precheck lines ~219-230
+      existence_utility:
+        path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/db/existence/utilty/SupplierDetailsExistenceUtility.java
+        anchor: phone exists lines ~23-28; GST exact ignore-case exists lines ~33-38
+      template:
+        path: cylindermanagement.web/src/main/resources/templates/with-menu/SupplierIngestion.html
+        anchor: supplierName lines ~421-423; GST lines ~441-450; country/state/city candidate search lines ~621-730 and search engine ~766-884
+      source_proof:
+        - authoritative submit-time duplicate prechecks exist for GST and phone before Supplier persistence
+        - Country/State/City candidate inputs use database-backed debounced search with hidden identity
+        - Supplier Name itself has no database-backed candidate-match display while typing even though STORY-0102 supplies /search/supplier/{searchText}
+    business_impact: duplicate legal/contact identity is prechecked, but similar supplier names are not proactively surfaced before Save.
+    proposed_change_if_approved:
+      repository: vvekselva/CylinderManagement
+      ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+      path: cylindermanagement.web/src/main/resources/templates/with-menu/SupplierIngestion.html
+      component: Supplier Name candidate input
+      anchor: lines ~421-423
+      change: add debounced non-authoritative suggestions using existing /search/supplier/{searchText}; preserve GST/phone service duplicate checks.
+      tests: MVC/UI suggestion regression plus existing GST/phone duplicate validator tests
+      db_impact: none
+classification: REVIEW_PACKET_PREPARED_NO_MUTATION
