@@ -3,9 +3,11 @@
 - Release: R1
 - Endpoint: `GET /search/state/{searchText}`
 - Controller: `RestfulStateServices.getStates`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Approval evidence: `BL-002/approval-evidence/STORY-0101-approval-20260902.md`
+- Fan-out: REQUESTED
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -19,6 +21,6 @@ Consuming address forms can use the returned persistent State identity and name 
 
 ## Completion and approval gate
 
-The request/service/response/error contract and read-only reference-data role are source-bound. STORY-0101 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The request/service/response/error contract and read-only reference-data role are source-bound. STORY-0101 is `APPROVED_AFTER_REWORK` by explicit user instruction dated 2026-09-02, and downstream testing/test-data fan-out is requested.
 
-Approval remains pending; no application-code or BL-010 mutation occurred.
+The approval applies to the documented Story contract only.
