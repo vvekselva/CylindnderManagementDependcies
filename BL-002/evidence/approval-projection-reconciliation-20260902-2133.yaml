@@ -1,0 +1,48 @@
+reconciliation_id: BL002-APPROVAL-PROJECTION-20260902-2133
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+authoritative_sources:
+  - BL-002/approval-evidence/
+  - BL-002/stories/STORY-*.md
+  - BL-002/story-register.csv
+  - BL-002/usecase-review.md
+  - BL-002/usecase-review-current-20260902.md
+  - BL-002/screen-usecase-register.csv
+story_total: 134
+approved_after_rework_count: 11
+awaiting_user_review_count: 123
+approved_after_rework_ids:
+  - STORY-0001
+  - STORY-0012
+  - STORY-0013
+  - STORY-0108
+  - STORY-0109
+  - STORY-0127
+  - STORY-0128
+  - STORY-0129
+  - STORY-0130
+  - STORY-0131
+  - STORY-0132
+fanout_requested_ids:
+  - STORY-0108
+  - STORY-0109
+  - STORY-0128
+  - STORY-0129
+  - STORY-0130
+  - STORY-0131
+  - STORY-0132
+use_cases:
+  SUC-005: APPROVED
+  SUC-036: PARTIALLY_APPROVED
+  SUC-039: PARTIALLY_APPROVED
+projection_status:
+  story_register_csv: RECONCILED
+  usecase_review_md: RECONCILED
+  usecase_review_current_md: RECONCILED
+  screen_usecase_register_csv: RECONCILED
+  screen_usecase_register_md: RECONCILED
+  enrichment_progress_yaml: STALE_APPROVAL_AGGREGATE_PENDING_REFRESH
+safety:
+  auto_approval_performed: false
+  application_code_mutated: false
+  bl010_created_or_executed: false
+next_action: REFRESH_ENRICHMENT_PROGRESS_APPROVAL_AGGREGATE_WITHOUT_OVERRIDING_UNIT_LOCAL_APPROVAL_EVIDENCE
