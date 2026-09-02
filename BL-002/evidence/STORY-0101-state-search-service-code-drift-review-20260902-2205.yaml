@@ -1,0 +1,64 @@
+story_id: STORY-0101
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+review_type: POST_APPROVAL_CODE_CONFORMANCE_DRIFT
+checked_at: 2026-09-02T22:05:00+05:30
+approval_state: APPROVED_AFTER_REWORK
+implementation_gate: USER_APPROVAL_REQUIRED_BEFORE_CODE_CHANGE
+source_binding:
+  repository: CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  endpoint: GET /search/state/{searchText}
+  controller: RestfulStateServices.getStates
+  service: StateSearchService.searchWithText
+  finding: StateSearchService passes PRODUCT_UOM_SEARCH_SERVICE into SearchRequestValidator while performing a State lookup.
+  consequence: request validation/audit classification is coupled to an unrelated Product-UOM service code. The current validator happens not to add the state-required query-map validation under that unrelated code, so the search can proceed, but diagnostics and service identity are wrong and a naive switch to CYLINDER_STATE_SEARCH_SERVICE would trigger the validator's generic name-contains-STATE branch and incorrectly require a state filter for the State-name lookup.
+approved_behavior:
+  statement: STORY-0101 is a State reference lookup; request validation, service execution, response, and error behavior must remain bound to the State-search operation rather than an unrelated Product-UOM service identity.
+business_impact:
+  - misleading service-code evidence/logging for State lookup validation failures
+  - future validator changes keyed by service code can silently alter State-search behavior
+  - directly replacing the code with CYLINDER_STATE_SEARCH_SERVICE without validator correction could reject valid State searches because SearchRequestValidator treats every service code containing STATE as state-filter-required
+proposed_code_change_locations:
+  - repository: CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: framework/src/main/java/com/sreyas/datamatics/cylinder/management/service/code/CylinderManagementServiceCode.java
+    component: CylinderManagementServiceCode
+    anchor: enum entries around lines 31-45
+    proposed_change: add an explicit STATE_SEARCH_SERVICE code for State reference lookup, distinct from cylinder state-filter searches
+    reason: give STORY-0101 a truthful service identity without inheriting cylinder state-filter semantics
+  - repository: CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/StateSearchService.java
+    component: StateSearchService
+    method: searchWithText
+    anchor: validator.validate call around lines 47-49
+    proposed_change: replace PRODUCT_UOM_SEARCH_SERVICE with STATE_SEARCH_SERVICE
+    reason: bind validation/audit identity to State search
+  - repository: CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/validator/SearchRequestValidator.java
+    component: SearchRequestValidator
+    method: isStateRequiredService
+    anchor: lines 81-87
+    proposed_change: replace broad serviceCode.name().contains("STATE") inference with an explicit allow-list limited to searches that truly require a state filter; STATE_SEARCH_SERVICE must not require queryData[state]
+    reason: avoid circular/incorrect validation for the State reference lookup and make service-code semantics explicit
+tests:
+  unit:
+    - StateSearchService delegates validation using STATE_SEARCH_SERVICE
+    - State reference search with a nonblank searchTerm and no queryData[state] remains valid
+    - cylinder serial/state and cylinder-by-state searches still require queryData[state]
+  integration:
+    - GET /search/state/{searchText} returns matching State DTOs without a state-filter map
+    - governed invalid input still returns the current empty response behavior at REST boundary
+  regression:
+    - ProductUomSearchService continues to use PRODUCT_UOM_SEARCH_SERVICE
+    - other service-code-based validators retain current behavior
+database_impact: NONE
+schema_migration_required: false
+application_code_changed: false
+conformance: DRIFT_REVIEW_PENDING_USER_APPROVAL
+fanout_state: QUEUED_BUT_CODE_CONFORMANCE_NOT_PASS
+expansion_rule: any remediation beyond the three listed locations requires new user approval
