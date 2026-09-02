@@ -3,11 +3,13 @@ fire_id: 20260902T143111+0530
 scheduled_fire_time: 2026-09-02T14:31:11+05:30
 observed_fire_time: 2026-09-02T14:31:11+05:30
 receipt_time: 2026-09-02T14:31:11+05:30
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 handoff_state: RUN_LINKED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260902-143111-IST-RUN-007
 orchestrator_started_time: 2026-09-02T14:31:13+05:30
-terminal_classification: null
-termination_time: null
+terminal_classification: PLATFORM_RUNTIME_BOUNDARY
+termination_time: 2026-09-02T14:36:19+05:30
+eligible_work_remaining: true
+resumable: true
 scheduler_must_remain_enabled: true
