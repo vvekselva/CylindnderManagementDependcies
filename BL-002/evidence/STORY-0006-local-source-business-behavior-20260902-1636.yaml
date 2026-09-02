@@ -1,0 +1,21 @@
+story_id: STORY-0006
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /delivery-planning/predefined-trips
+controller:
+  path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/PredefinedDeliveryTripController.java
+  method: page
+  optional_parameter: tripId Long
+view:
+  path: cylindermanagement.web/src/main/resources/templates/with-menu/PredefinedDeliveryTrips.html
+  create_form: POST /delivery-planning/predefined-trips/create
+  add_stop_form: POST /delivery-planning/predefined-trips/add-stop
+  remove_stop_form: POST /delivery-planning/predefined-trips/remove-stop
+  remove_trip_form: POST /delivery-planning/predefined-trips/remove
+  remove_trip_confirmation: true
+read_models: [trips, metrics, planningStops, selectedTripId, selectedStops]
+mutation_in_this_get: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
