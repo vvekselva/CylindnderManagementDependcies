@@ -1,7 +1,6 @@
 package com.sreyas.datamatics.cylindermanagement.misc.web.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -12,7 +11,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.sreyas.datamatics.application.dto.AddressTypeIngestionRequestDto;
+import com.sreyas.datamatics.application.request.dto.AddressTypeIngestionRequestDto;
 import com.sreyas.datamatics.application.service.ICylinderManagementApplicationService;
 import com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache;
 
