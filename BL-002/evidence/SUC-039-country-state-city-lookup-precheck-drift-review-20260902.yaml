@@ -1,0 +1,93 @@
+review_scope: [STORY-0130, STORY-0131, STORY-0132]
+usecase: SUC-039
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
+governance_state: AWAITING_EXPLICIT_USER_STORY_AND_CODE_CHANGE_APPROVAL
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+policy: BL-002/lookup-insertion-precheck-policy.yaml
+current_behavior:
+  common_ui:
+    - LookupManagement has database-backed 320 ms debounced table-toolbar searches for Country, State and City using STORY-0090, STORY-0101 and STORY-0089 respectively.
+    - The add/edit text fields c-name, s-name and ci-name do not invoke those searches while the operator types a candidate value.
+    - Therefore existing matches are not displayed adjacent to the candidate add/edit field before Save.
+  STORY-0130:
+    endpoint: POST /lookupManagement/country/save
+    service: CountryIngestionService.processRequest
+    duplicate_query: CountryJpaDao.findByCountryNameContainingIgnoreCase
+    update_self_exclusion: ABSENT
+  STORY-0131:
+    endpoint: POST /lookupManagement/state/save
+    service: StateIngestionService.processRequest
+    duplicate_query: StateJpaDao.findByStateNameContainingIgnoreCase
+    update_self_exclusion: ABSENT
+  STORY-0132:
+    endpoint: POST /lookupManagement/city/save
+    service: CityIngestionService.processRequest
+    duplicate_query: CityJpaDao.findByCityNameContainingIgnoreCase
+    update_self_exclusion: ABSENT
+business_impact:
+  - Operators can type a Country/State/City candidate without seeing database-backed matching values directly in the add/edit form before Save.
+  - Legitimate updates can be rejected as duplicates of the same row.
+  - Contains-based duplicate predicates can reject non-equivalent substring names.
+target_behavior:
+  - Reuse existing governed search Stories while typing in the corresponding add/edit field with controlled debounce and visible suggestions.
+  - Clear stale suggestion/selection state when candidate text changes or clears.
+  - Keep table toolbar searches unchanged.
+  - Submit-time service validation must use normalized exact business-key equivalence and exclude the current row identity on update.
+  - Database unique constraints remain final concurrency guards.
+proposed_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html
+    component: Country/State/City inline add-edit forms and JavaScript search helpers
+    approximate_anchor: inputs c-name, s-name, ci-name; LIVE API SEARCH Country/State/City block around SEARCH_BASE and _apiTableSearch
+    proposed_change: Reuse STORY-0090/0101/0089 endpoint bases to add debounced candidate suggestions beside each add/edit field without replacing the existing table-search behavior.
+    reason: Show database-backed existing values before insert/update as required by active lookup policy.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CountryIngestionService.java
+    component: CountryIngestionService
+    method: processRequest
+    approximate_anchor: duplicate check using findByCountryNameContainingIgnoreCase
+    proposed_change: Use normalized exact Country business-key comparison and exclude submitted countryId during update.
+    reason: Avoid self-match and substring false duplicate rejection.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/StateIngestionService.java
+    component: StateIngestionService
+    method: processRequest
+    approximate_anchor: duplicate check using findByStateNameContainingIgnoreCase
+    proposed_change: Use normalized exact State business-key comparison and exclude submitted stateId during update.
+    reason: Avoid self-match and substring false duplicate rejection.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CityIngestionService.java
+    component: CityIngestionService
+    method: processRequest
+    approximate_anchor: duplicate check using findByCityNameContainingIgnoreCase
+    proposed_change: Use normalized exact City business-key comparison and exclude submitted cityId during update.
+    reason: Avoid self-match and substring false duplicate rejection.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao
+    component: CountryJpaDao, StateJpaDao, CityJpaDao
+    approximate_anchor: existing contains-ignore-case query methods
+    proposed_change: Add exact case-insensitive lookup/existence methods needed by update-aware service validation; retain contains queries for suggestion/search Stories.
+    reason: Separate search semantics from authoritative uniqueness semantics.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/test/java and cylindermanagement.web/src/test/java
+    component: Country/State/City ingestion and Lookup Management tests
+    approximate_anchor: new/existing service and MVC/template tests
+    proposed_change: Cover exact duplicate create, substring nonduplicate, same-row update, other-row duplicate update, search suggestion request/debounce/result rendering, stale suggestion clearing and regression of table searches.
+    reason: Prove both pre-submit assistance and authoritative submit-time validation.
+database_impact:
+  schema_change: false
+  migration_required: false
+  note: Existing uniqueness remains final guard; exact constraint identities must be rechecked before implementation but no schema change is proposed by this manifest.
+scope_expansion_rule: Any additional production file, endpoint, schema object, field or behavior requires a new explicit approval manifest.
+application_code_changed: false
+bl010_created_or_executed: false
+auto_approval_performed: false
