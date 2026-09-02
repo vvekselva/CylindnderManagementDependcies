@@ -1,0 +1,30 @@
+evidence_id: STORY-0092-0097-IDENTITY-DRIFT-REPAIR-20260902
+state: REPAIR_IN_PROGRESS
+authoritative_numbering_rule: BL-002/README.md rule 1 - release-classification.csv No maps one-to-one to STORY-NNNN
+authoritative_source: release-classification.csv
+application_source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+application_source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+detected_drift:
+  STORY-0092:
+    canonical: GET /search/driver/{searchText}
+    physical_file_before_repair: POST /search/cylinder/by-customer
+  STORY-0093:
+    canonical: GET /find/Driver-by-Id/{driverId}
+    physical_file_before_repair: POST /search/cylinder/by-serial-and-state
+  STORY-0094:
+    canonical: GET /search/cylinder/{searchText}
+    physical_file_before_repair: POST /search/cylinder/by-state
+  STORY-0095:
+    canonical: POST /search/cylinder/by-serial-and-state
+    physical_file_before_repair: POST /search/cylinder/by-supplier
+  STORY-0096:
+    canonical: POST /search/cylinder/by-customer
+    physical_file_before_repair: POST /search/cylinder/on-vehicle
+  STORY-0097:
+    canonical: POST /search/cylinder/by-supplier
+    physical_file_before_repair: POST /search/cylinder/by-supplier
+impact: Story IDs 0092-0096 were bound to the wrong endpoint identities; any completion status attached to those mismatched documents is not valid for the canonical Story ID until repaired.
+repair_rule: rewrite each affected physical Story to the exact canonical HTTP method/path and source-proved controller/service contract from the recovered ZIP; preserve explicit approval=PENDING_USER_APPROVAL; do not auto-approve; treat repair as Story SSOT identity reconciliation, not application code drift.
+application_code_changes: 0
+bl010_changes: 0
+user_approval_required_for_identity_repair: false
