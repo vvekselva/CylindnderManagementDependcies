@@ -4,35 +4,26 @@
 - Endpoint: `GET /ownership-dashboard/supplier`
 - Controller: `OwnershipDashboardController.showSupplierOwnership`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Human-readable story
+## Business behavior
 
-As an operator reviewing cylinder ownership, I can open Supplier Ownership to see current ownership-location rows classified as `SUPPLIER`. The location selector is a fixed server-side literal and the flow is read-only.
+As an operator reviewing cylinder ownership, I can open Supplier Ownership to see current ownership-location rows classified as `SUPPLIER`. The location selector is fixed server-side.
 
-## Strict browser/controller contract
+`showSupplierOwnership()` handles `GET /ownership-dashboard/supplier`, accepts no browser fields or path variables, creates `ModelAndView("with-menu/OwnershipLocationDetail")`, sets `title = "Supplier Ownership"`, and exposes `rows = ownershipDashboardFetchService.fetchByLocation("SUPPLIER")`.
 
-Browser navigation is `GET /ownership-dashboard/supplier`. No request parameter, path variable, form/hidden field, request DTO, debounce/minimum-length rule, client validation, or dependent browser API applies. `showSupplierOwnership()` creates `ModelAndView("with-menu/OwnershipLocationDetail")`, sets `title = "Supplier Ownership"`, and sets `rows = ownershipDashboardFetchService.fetchByLocation("SUPPLIER")`.
+The shared table renders cylinder serial, product, state, customer, supplier, yard, vehicle trip, vehicle load and entered/since values. `Back to Dashboard` targets `/ownership-dashboard`. No editable controls, submit actions, hidden IDs, client lookups, pagination, debounce or local validation are applicable.
 
-## Exact visible UI contract
+The read chain is `OwnershipDashboardFetchService.fetchByLocation("SUPPLIER")` → current-location DAO/projection → `public.vw_ownership_current_cylinder_location` → DTO rows → Thymeleaf table. No database mutation or endpoint-specific error mapping is asserted.
 
-The terminal template iterates `row : ${rows}` and renders exactly: `Cylinder`→`row.cylinderSerial`; `Product`→`row.productName`; `State`→`row.cylinderState`; `Customer`→`row.customerName`; `Supplier`→`row.supplierName`; `Yard`→`row.yardName`; `Vehicle Trip`→`row.vehicleTripId`; `Vehicle Load`→`row.vehicleLoadId`; `Since`→`row.enteredAt`. Heading binds `${title}`. `Back to Dashboard` targets `/ownership-dashboard`. No editable controls, row actions, submit buttons, enable predicates, reset actions, or pagination controls exist in this detail template.
+## Completion and approval gate
 
-## Service/data identity
+The recovered ZIP confirms the controller literal, title/model contract, terminal template and read-only data identity. STORY-0069 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-`GET /ownership-dashboard/supplier` → `showSupplierOwnership()` → `OwnershipDashboardFetchService.fetchByLocation("SUPPLIER")` → ownership current-location DAO/projection → `public.vw_ownership_current_cylinder_location` → DTO rows → `rows` → Thymeleaf table. No write occurs; no unproved base-table behavior is inferred.
-
-## Branch / outcome
-
-There is no request-dependent controller branch. Normal success renders returned rows. Null/empty cells render as supplied. No endpoint-specific catch/error mapping is declared, so no custom error response is asserted.
-
-## Frozen source evidence
-
-- `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/OwnershipDashboardController.java`
-- `cylindermanagement.web/src/main/resources/templates/with-menu/OwnershipLocationDetail.html`
-- Existing BL-002 ownership current-location DAO/view trace.
-
-## Approval boundary
-
-Strict source enrichment is complete; approval remains `PENDING_USER_APPROVAL`. No auto-approval, Use Case grouping, or testing-readiness promotion is performed.
+Approval remains pending; no application code or BL-010 mutation occurred.
