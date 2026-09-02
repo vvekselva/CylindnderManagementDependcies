@@ -1,0 +1,17 @@
+story_id: STORY-0072
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /delivery-planning/demand-bubbles.geojson
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/DeliveryPlanningApiController.java
+service: DeliveryPlanningMapService.fetchDemandBubblesGeoJson
+parameter: segmentMeters optional BigDecimal
+segment_default: 5000
+segment_valid_range: [500, 50000]
+geometry: Point [longitude, latitude]
+metadata_source: CMAS_DATABASE_DELIVERY_PLANNING_YARD_DISTANCE_CUSTOMER_DENSITY
+populationDensityMode: false
+mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
