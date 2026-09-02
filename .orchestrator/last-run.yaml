@@ -1,46 +1,33 @@
-run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
+run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST-RUN-001
 checkpoint_state: BLOCKED_RESUMABLE
-started_at: '2026-09-02T17:58:35+05:30'
-checkpoint_at: '2026-09-02T18:00:43+05:30'
-terminated_at: '2026-09-02T18:00:43+05:30'
-elapsed_seconds: 128
+started_at: '2026-09-02T18:16:03+05:30'
+checkpoint_at: '2026-09-02T18:19:20+05:30'
+terminated_at: '2026-09-02T18:19:20+05:30'
+elapsed_seconds: 197
 terminal_classification: ALL_REMAINING_WORK_BLOCKED
-termination_reason: BL002_134_OF_134_BUSINESS_BEHAVIOR_COMPLETE_AND_QUEUE_PROJECTION_CURRENT;_132_STORIES_AWAIT_EXPLICIT_USER_APPROVAL;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_GOVERNED_TEST_EXECUTION_RUNTIME_BLOCKED
+termination_reason: NO_CURRENTLY_ELIGIBLE_UNGATED_WORK;_132_STORIES_AWAIT_EXPLICIT_USER_REVIEW;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_BL004_BL005_BL009_AND_BL008_ACCEPTANCE_EXECUTION_REQUIRE_FAITHFUL_RUNTIME
 voluntary_early_stop: true
 voluntary_early_stop_permitted: true
 eligible_work_remaining: false
-architecture:
-  mode: RESOURCE_SCOPED_CLAIMS
-  run_scope: CONTINUOUS
-  github_role: DURABLE_CONTROL_AUDIT_ONLY
-  github_actions_runners_used: false
 scheduler_handoff:
-  fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST
-  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire-i/CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST.yaml
+  fire_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST
+  receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Orchestrator-Production-Fire/CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST.yaml
   handoff_acknowledged: true
   run_linked: true
-  receipt_terminalized: true
 application_source:
   requested_file_library_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
   requested_file_library_id: file_00000000659c8211857bba6b09282de3
-  recovery_state_this_invocation: FILE_LIBRARY_SEARCH_ATTEMPTED_NOT_RECOVERED_IN_CURRENT_RUNTIME
-  application_source_analysis_required_for_eligible_work: false
+  recovery_state_this_invocation: FILE_LIBRARY_AND_LOCAL_WORKSPACE_RECOVERY_FAILED_THIS_INVOCATION
   github_code_search_used_for_application_analysis: false
 business_behavior_rework:
   business_behavior_complete: 134
   business_behavior_total: 134
   awaiting_user_review: 132
   approved_after_rework: 2
-  active_rework: 0
-  rework_required: 0
 reconciliation:
-  prior_run: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST-RUN-001
-  prior_run_terminal_receipt_confirmed: true
+  prior_run: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
   queue_projection_drift_count: 0
   queue_projection_evidence: BL-002/evidence/queue-projection-reconciliation-20260902-175813.yaml
-approval:
-  auto_approve: false
-  approval_delta: 0
 drift_governance:
   application_code_mutation: false
   bl010_executed: false
@@ -49,13 +36,9 @@ bl008:
   state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
   service_ui_acceptance_cases: 30
   service_ui_execution_delta: 0
-  runtime_state: TEST_EXECUTION_RUNTIME_BLOCKED
-  runtime_probe_evidence: BL-008/evidence/20260902-1800-chatgpt-runtime-stage1-probe.yaml
 runtime_reliability:
-  productive_runtime_target_minutes: 30
-  target_satisfied: false
   early_exit_basis: NO_CURRENTLY_ELIGIBLE_UNGATED_WORK
-  next_action: Await explicit Story/drift approvals or restored governed test runtime; recurring scheduler resumes recovery-first.
+  next_action: Await explicit Story/drift approvals or restored faithful test runtime; recurring scheduler remains enabled.
 claims:
   active_at_terminal: 0
 transient_logs_remaining: 0
