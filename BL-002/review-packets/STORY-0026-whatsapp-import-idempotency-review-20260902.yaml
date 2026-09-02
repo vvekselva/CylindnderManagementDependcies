@@ -1,0 +1,43 @@
+packet_id: STORY-0026-whatsapp-import-idempotency-review-20260902
+story_id: STORY-0026
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+current_behavior:
+  service:
+    file: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/CustomerAddressLocationOfflineMapService.java
+    component: importWhatsappText
+    anchor: lines 227-248
+    detail: Every parseable line is inserted as a new WHATSAPP_EXPORT_IMPORT inbox row with mappingStatus UNMAPPED. No prior-row equivalence/idempotency lookup is source-proved.
+  database:
+    file: cylinder.datascripts/src/main/resources/db/migration/V155__Customer_Address_Location_Offline_Map_Provision.sql
+    anchor: lines 40-58
+    table: public.tbl_customer_location_import_inbox
+    detail: The schema explicitly permits mapping_status DUPLICATE, but no unique constraint or automatic duplicate classifier is defined.
+business_impact:
+  - Importing the same WhatsApp export more than once can create repeated UNMAPPED inbox rows for the same location evidence.
+  - Review/mapping queues and unmapped counts can be inflated by repeated ingestion rather than new customer-location evidence.
+proposed_behavior_for_approval:
+  equivalence_key: Same source_type plus normalized raw_text plus parsed latitude/longitude. This proposed key is part of this review request and is not claimed to exist in current source.
+  handling: Before inserting an UNMAPPED row, query for an existing equivalent import. Preserve the incoming evidence as DUPLICATE or skip insertion according to the approved implementation choice; default manifest proposal is to persist it with mappingStatus DUPLICATE so the duplicate event remains auditable.
+proposed_locations:
+  - file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/CustomerLocationImportInboxJpaDao.java
+    component: repository lookup
+    proposal: Add an equivalence lookup using sourceType, normalized raw text and parsed coordinates.
+  - file: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/CustomerAddressLocationOfflineMapService.java
+    component: importWhatsappText
+    anchor: lines 227-248
+    proposal: Normalize each parsed line, run the equivalence precheck, and mark repeat evidence DUPLICATE rather than creating another UNMAPPED work item.
+tests:
+  - first import of a parseable line creates UNMAPPED
+  - exact equivalent re-import is classified DUPLICATE and does not increase UNMAPPED count
+  - changed coordinates or materially different normalized raw text remain new evidence
+  - malformed/non-coordinate lines remain skipped as today
+database_impact: No schema change proposed. Existing DUPLICATE status is reused. Any unique index would be additional scope requiring separate approval.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
+  equivalence_key_requires_approval_as_part_of_manifest: true
