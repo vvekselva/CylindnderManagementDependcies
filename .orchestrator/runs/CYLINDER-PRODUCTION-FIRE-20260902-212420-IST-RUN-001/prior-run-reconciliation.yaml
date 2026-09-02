@@ -1,0 +1,16 @@
+current_run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+reconciled_run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+prior_started_at: 2026-09-02T20:55:06+05:30
+prior_last_heartbeat_at: 2026-09-02T21:16:35+05:30
+prior_live_state: EXECUTING
+prior_terminal_classification: null
+prior_termination_time: null
+observed_at_current_fire: 2026-09-02T21:24:20+05:30
+reconciliation:
+  heartbeat_stale: true
+  governed_terminal_evidence_found: false
+  classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  resumable_state_preserved: true
+  completed_worker_evidence_preserved: true
+  active_unit_to_recover: BL002_MUTATION_DUPLICATE_IDEMPOTENCY_SOURCE_DETAIL_REVIEW
+next_action: RECOVER_DURABLE_UNIT_STATE_AND_REPLAN_WITH_CURRENT_APPROVAL_PROJECTIONS
