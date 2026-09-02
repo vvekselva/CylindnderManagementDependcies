@@ -1,0 +1,5 @@
+test_case_id,product_category_id,product_category,description,expected_outcome
+TC-0109-01,,industrial,desc,NORMALIZE_UPPERCASE_SAVE_REFRESH_REDIRECT
+TC-0109-02,42,industrial,updated,UPDATE_ID_PRESERVED_PRG
+TC-0109-03,,IND,duplicate,CURRENT_CONTAINS_IGNORE_CASE_DUPLICATE_REJECTION
+TC-0109-04,,NEW_CATEGORY,new,SAVE_AND_SUCCESS_RESPONSE
