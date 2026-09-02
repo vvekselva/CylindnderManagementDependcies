@@ -1,0 +1,44 @@
+packet_id: STORY-0083-yard-stock-check-line-validation-review-20260902
+story_id: STORY-0083
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+current_behavior:
+  validator:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/YardStockCheckIngestionRequestValidator.java
+    anchor: around lines 116-170
+    findings:
+      - No within-check duplicate observed-cylinder validation is source-proved.
+      - Diagnostic logging dereferences observedCylinderState.getCylinderStateId before the subsequent null guard, so a missing state can fail before controlled validation.
+  service:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/YardStockCheckIngestionService.java
+    anchor: around lines 70-83
+    detail: Each submitted line saves observedCylinder text and observed state, but this block does not resolve/set YardStockCheckLineDo.cylinder from the request line's CylinderDto.
+  entity:
+    file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/YardStockCheckLineDo.java
+    anchor: lines 19-52
+    detail: Table mapping declares unique (fk_stock_check, fk_cylinder), but fk_cylinder is nullable and the inspected service does not set it in this line-save block; the database constraint therefore cannot be relied on to reject repeated observed-cylinder text.
+business_impact:
+  - The same observed cylinder identifier can be submitted more than once in one stock check without an explicit user-facing duplicate guard.
+  - Missing observed state can cause an uncontrolled dereference during validation logging.
+  - The intended stock-check/cylinder relational identity is not populated by the inspected save block, weakening the usefulness of the composite unique constraint and traceability.
+proposed_locations:
+  - file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/YardStockCheckIngestionRequestValidator.java
+    component: validate
+    proposal: Null-check observed state before dereferencing; normalize and track the governed cylinder identifier within the request and reject repeated entries with controlled validation evidence.
+  - file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/YardStockCheckIngestionService.java
+    component: processRequest
+    proposal: Resolve and set the source-proved Cylinder identity on each line when available/required by the approved stock-check contract rather than persisting only observed text.
+tests:
+  - missing observed state returns controlled validation rather than dereference failure
+  - repeated cylinder identifier in one check is rejected
+  - distinct lines persist once each
+  - persisted line carries the approved cylinder relational identity when the source contract supplies one
+  - existing composite uniqueness remains a final database guard when fk_cylinder is populated
+database_impact: No migration change proposed. Existing composite uniqueness is retained; any non-null constraint change would be separate scope requiring approval.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
