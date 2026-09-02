@@ -1,0 +1,13 @@
+story_id: STORY-0116
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /delivery-planning/dashboard
+controller: DeliveryPlanningController.showDeliveryPlanningDashboard
+alias_of_story: STORY-0115
+view: with-menu/DeliveryPlanningDashboard
+reads: [DeliveryPlanningDemandJpaDao.findSignalMatches, DeliveryPlanningDemandJpaDao.findSignalMatchKpi]
+mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
