@@ -4,11 +4,15 @@
 - Endpoint: `GET /customer-consumption/`
 - Controller: `CustomerConsumptionDashboardController.dashboard`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Local-source evidence: `BL-002/evidence/STORY-0028-local-source-business-behavior-20260902-1644.yaml`
 
-The user opens `/customer-consumption/`. The class-level mapping is `/customer-consumption` and the same `dashboard` handler explicitly maps `GET {"", "/", "/dashboard"}`, so the trailing-slash URL enters exactly the same read-only screen flow proven for STORY-0027. Spring binds query parameters to `CustomerConsumptionSearchRequestDto`; defaults are page 1, 25 rows, `expectedNeedDate` ascending. The visible GET form contains `customerId`, `productId`, `expectedNeedDateFrom`, `expectedNeedDateTo`, and `itemsPerPage`, with hidden `pageNumber=1`, `sortField`, and `sortDirection`. It submits to `/customer-consumption/dashboard`; there is no page-local JavaScript/debounce/dependent typing API or button gating.
+The trailing-slash route enters exactly the same `dashboard` handler as the root and `/dashboard` aliases under `/customer-consumption`. Spring binds the same dashboard search DTO, the controller delegates to `CustomerConsumptionDashboardService.fetchDashboard`, and the same Thymeleaf dashboard is rendered.
 
-`CustomerConsumptionDashboardService.fetchDashboard` sanitizes paging/sort/date-range values, builds optional customer/product/projected-empty-date JPA predicates, and reads a pageable projection through `CustomerProductConsumptionProjectionViewJpaDao`. The immutable entity reads `public.vw_customer_product_consumption_projection` via Hibernate `@Subselect`; the path performs no database write. Rows are mapped to Customer, Product, Last Delivered Date, Current Cylinders, Consumption Days / Cylinder, Expected Need Date, and Previous Delivery. Summary cards show customer/product row count, active cylinders, FIRST_DELIVERY count, NEED_NOW count, and average positive consumption days/cylinder.
+The visible filter, sorting and pagination contracts are the same as STORY-0027. Service-side normalization, optional customer/product/expected-need-date predicates, paging, sort mapping, summary reads and projection mapping are identical. The immutable data source remains `public.vw_customer_product_consumption_projection`; no persistence mutation occurs.
 
-Column-sort links preserve filters, reset to page 1 and toggle direction; pager links preserve filter/sort state and disable Previous/Next when unavailable. An empty result shows exactly `No customer/product delivery rows available.` The handler places `requestDto` and `dashboardDto` in the model and returns `with-menu/CustomerConsumptionDashboard`. There is no controller-local error conversion or mutation branch. No approval occurred.
+The recovered governed ZIP independently confirms the explicit slash alias in `@GetMapping({"", "/", "/dashboard"})` and the shared handler/service path. STORY-0028 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+No approval occurred. No application code or database schema was changed.
