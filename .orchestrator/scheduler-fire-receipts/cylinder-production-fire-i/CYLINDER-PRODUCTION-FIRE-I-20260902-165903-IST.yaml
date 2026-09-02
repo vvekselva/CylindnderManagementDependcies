@@ -2,8 +2,11 @@ scheduler_task: cylinder-production-fire-i
 fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-165903-IST
 observed_scheduled_fire_time: '2026-09-02T16:59:03+05:30'
 receipt_time: '2026-09-02T16:59:03+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-165903-IST-RUN-001
 orchestrator_started_at: '2026-09-02T16:59:03+05:30'
 idempotency_key: cylinder-production-fire-i:CYLINDER-PRODUCTION-FIRE-I-20260902-165903-IST
+terminated_at: '2026-09-02T16:59:45+05:30'
+elapsed_seconds: 42
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
