@@ -1,0 +1,20 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
+terminated_at: '2026-09-02T18:00:43+05:30'
+elapsed_seconds: 128
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: BL002_BUSINESS_BEHAVIOR_COMPLETE_134_OF_134_AND_QUEUE_PROJECTION_VERIFIED_WITH_ZERO_CURRENT_DRIFT;_132_STORIES_REQUIRE_EXPLICIT_USER_APPROVAL;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_BL004_BL005_BL009_AND_BL008_SERVICE_UI_EXECUTION_BLOCKED_BY_MISSING_MAVEN_AND_CONTAINER_RUNTIME
+eligible_work_remaining: false
+resumable: true
+productive_runtime_target_minutes: 30
+productive_runtime_target_satisfied: false
+voluntary_early_stop: true
+voluntary_early_stop_permitted_by_policy: true
+voluntary_early_stop_basis: NO_CURRENTLY_ELIGIBLE_UNGATED_WORK
+completed_worker_count: 1
+blocked_worker_count: 4
+application_code_mutation: false
+bl010_execution: false
+auto_approval: false
+database_write_delta: 0
+scheduler_must_remain_enabled: true
+next_action: Await explicit Story/drift approvals or restored governed test runtime; next recurring fire resumes recovery-first.
