@@ -1,21 +1,21 @@
-run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST-RUN-001
-scheduler_fire_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST
-scheduler_task: Cylinder Orchestrator Production Fire
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260902-182724-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260902-182724-IST
+scheduler_task: cylinder-production-fire-ii
 state: TERMINATED
 mode: CONTINUOUS
-started_at: '2026-09-02T18:16:03+05:30'
-last_heartbeat_at: '2026-09-02T18:19:20+05:30'
-terminated_at: '2026-09-02T18:19:20+05:30'
-terminal_classification: ALL_REMAINING_WORK_BLOCKED
-terminal_reason: NO_CURRENTLY_ELIGIBLE_UNGATED_WORK;_132_STORIES_AWAIT_EXPLICIT_USER_REVIEW;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_BL004_BL005_BL009_AND_BL008_ACCEPTANCE_EXECUTION_REQUIRE_FAITHFUL_RUNTIME
+started_at: '2026-09-02T18:27:25+05:30'
+last_heartbeat_at: '2026-09-02T18:28:43+05:30'
+terminated_at: '2026-09-02T18:28:43+05:30'
+terminal_classification: ALL_REMAINING_WORK_GATED_OR_RUNTIME_BLOCKED
+terminal_reason: BL002_BUSINESS_BEHAVIOR_COMPLETE_134_OF_134;_132_STORIES_AWAIT_EXPLICIT_USER_APPROVAL;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_BL004_BL005_BL009_AND_BL008_ACCEPTANCE_REQUIRE_FAITHFUL_TEST_RUNTIME
 running_worker_count: 0
 completed_worker_count: 0
-blocked_worker_count: 0
+blocked_worker_count: 4
 active_work_unit_ids: []
 eligible_work_remaining: false
 resumable: true
-last_action: GOVERNED_TERMINALIZATION_AFTER_RECOVERY_FIRST_RECONCILIATION
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
+last_action: RECOVERY_FIRST_RECONCILIATION_CONFIRMED_NO_CURRENTLY_ELIGIBLE_UNGATED_WORK
+previous_run_reconciled: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-181603-IST-RUN-001
 aggregate_business_behavior_complete: 134
 aggregate_business_behavior_total: 134
 aggregate_percent: 100.0
@@ -25,7 +25,9 @@ projection_drift_count: 0
 awaiting_user_review: 132
 approved_after_rework: 2
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
-source_materialization_this_invocation: FILE_LIBRARY_AND_LOCAL_WORKSPACE_RECOVERY_FAILED_THIS_INVOCATION
+source_materialization_this_invocation: FILE_LIBRARY_EXACT_SEARCH_AND_LOCAL_WORKSPACE_RECOVERY_FAILED_THIS_INVOCATION
 github_code_search_used_for_application_analysis: false
 bl008_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
+runtime_target_30_minutes_satisfied: false
+early_terminalization_reason: GENUINE_EXHAUSTION_OF_CURRENTLY_ELIGIBLE_UNGATED_WORK
 next_action: Await explicit Story/drift approvals or restored faithful test runtime; recurring scheduler remains enabled for recovery-first future runs.
