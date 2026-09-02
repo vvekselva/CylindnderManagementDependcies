@@ -3,58 +3,91 @@
 - Release: R1
 - Endpoint: `POST /updateCustomer`
 - Functional area: Customer Maintenance
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Traceability state: COMPLETE
-- Enrichment state: SOURCE_DETAIL_REVIEW_REQUIRED
+- Approval: `PENDING_USER_APPROVAL`
+- Review state: `READY_FOR_USER_REVIEW`
+- Rework state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`
+- Traceability state: `COMPLETE`
+- Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE`
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source intake evidence: `.orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237.yaml`
+- Drift review: `.orchestrator/drift-review/STORY-0047/STORY-0047-CUSTOMER-MAINTENANCE-DRIFT-20260902.yaml`
 
 ## Human-readable story
 
-As an authorized Cylinder Management user or system consumer, I want to submit a customer-maintenance request to **POST `/updateCustomer`** so that the application validates the supplied customer identity/details and, when valid, updates the persistence-backed customer relationships proven by the frozen source.
+As an authorized Cylinder Management user, I want to open an existing customer, edit the maintenance form and submit the changes so that the application validates the customer identity/details and persists the supported customer updates while preserving the existing customer identity.
 
-## Exact frozen-source contract proved
+## Browser entry and update form
 
-### HTTP/controller boundary
+The customer list links a selected row to `GET /displayCustomer?customerId={id}`. `CustomerFetchController.doGet(...)` binds `customerId` as `Long`, invokes the customer-fetch-by-id service and renders `DisplayCustomer` with model key `customer`.
 
-`CustomerUpdateController.doPost(...)` is the exact `@PostMapping("/updateCustomer")` handler. Spring binds model attribute `customer` to `CustomerUpdateRequestDto`. The controller invokes the injected `ICylinderManagementApplicationService<CustomerUpdateRequestDto, CustomerUpdateResponseDto>` via `customerUpdateService.processRequest(requestDto)`.
+The frozen `final-version-1/DisplayCustomer.html` is the actual maintenance form. It contains:
 
-On successful service completion the controller redirects to `/fetchCustomerByPage?pageNumber=1&itemsPerPage=10`. On `InvalidInputParameterException` it returns the Thymeleaf view `UC01RegisterCustomer` with the submitted `CustomerUpdateRequestDto` under model key `customer`. A general `CylinderManagementApplicationException` builds a `ModelAndView` using the back-link string and returns the submitted customer object.
+- `th:action="@{/updateCustomer}"`
+- `th:object="${customer}"`
+- `method="post"`
+- hidden `customerDto.customerId`
+- CSRF field when available
+- editable customer, phone and address fields
 
-### Validation contract
+This resolves the prior browser-path gap: the visible `DisplayCustomer` form submits directly to STORY-0047's exact endpoint `POST /updateCustomer`.
 
-`CustomerUpdateRequestValidator` proves the update request must contain a customer object and customer ID. It validates a non-blank customer name; a non-blank GST number matching the configured GST regex with state code 01–38; at least one phone number with normalization/10-digit/pattern checks; and at least one address. The validator also checks address fields and referenced location identities as applicable in the frozen implementation. Validation errors are attached to the request/nested DTOs and can raise input-validation failure.
+The same template currently displays the page title `Register Customer` and breadcrumb `New Registration` even though its form posts to `/updateCustomer`. That mismatch is recorded as code/UI drift and is not silently corrected without approval.
 
-### Service/branch/side-effect contract
+## Controller behavior
 
-The concrete bean is `CustomerUpdateService`; no separate `CustomerUpdateApplicationService` is required or proved for this path. The service:
+`CustomerUpdateController.doPost(...)` is `@PostMapping("/updateCustomer")` and binds model attribute `customer` to `CustomerUpdateRequestDto`.
 
-1. validates using `CustomerUpdateRequestValidator` with service code `UPDATE_CUSTOMER`;
-2. reads `customerDto.customerId` and loads the existing entity with `CustomerJpaDao.findById(customerId)`;
-3. when the requested GST differs from the stored GST, checks global ownership and rejects a GST owned by another customer;
-4. normalizes requested phone numbers, checks newly introduced numbers for ownership by another customer, and constructs replacement `CustomerPhoneNumberDo` mappings;
-5. constructs replacement `CustomerAddressDo` mappings from requested addresses;
-6. assigns the rebuilt phone/address collections to the managed `CustomerDo` and calls `CustomerJpaDao.save(existingCustomerDo)`;
-7. returns `CustomerUpdateResponseDto` with SUCCESS response code when processing succeeds.
+On successful service completion it redirects to `/fetchCustomerByPage?pageNumber=1&itemsPerPage=10`.
 
-The frozen service contains `modelMapper.map(customerDto, existingCustomerDo)` only as commented-out code and logs `TO DO Mapper updates`. Therefore this Story **does not claim** that customer-name or GST scalar values are actively assigned to the persisted `CustomerDo` by this implementation. The GST value is actively validated/ownership-checked when changed, but a scalar GST assignment is not source-proved.
+Current validation-error behavior is source-proved but drift-gated: the controller tests/casts the exception DTO as `CustomerIngestionRequestDto` and returns `UC01RegisterCustomer`, although the update service/validator operate on `CustomerUpdateRequestDto` and the actual update browser form is `DisplayCustomer`.
 
-### DAO/entity/database identity
+The general `CylinderManagementApplicationException` branch currently constructs `ModelAndView(BACK_LINK)` rather than an explicit redirect. These behaviors are preserved as current-state evidence and are included in the durable review packet.
 
-`CustomerJpaDao` extends `JpaRepository<CustomerDo, Long>`, so the active `findById`/`save` operations are Spring Data JPA persistence operations on `CustomerDo`. `CustomerDo` is `@Entity @Table(name="tbl_customer", schema="public")`; its primary key is `pk_customer_id`, generated from sequence `public.pk_customer_id_serial`. The entity maps `customer_name`, unique non-null `gst_number`, `active`, and one-to-many customer phone/address relationships. The active update service rebuilds the phone/address mappings and saves this managed customer aggregate.
+## Validation contract
 
-## Visible/browser evidence and strict-completion blocker
+`CustomerUpdateRequestValidator` requires the update request/customer identity and validates customer name, GST format, phone numbers and address/location values. Validation failures are attached to the update DTO/nested DTOs where the executable validator does so.
 
-The frozen controller's validation-error view is `UC01RegisterCustomer`. The frozen `UC01RegisterCustomer.html` form is explicitly:
+The validator contains update-specific inconsistencies: some structural failures use the registration service code `UC_001_RESGISTER_CUSTOMER` and some create a new empty `CustomerUpdateRequestDto` for exception evidence. These are recorded in the drift-review manifest rather than auto-fixed.
 
-`th:action="@{/registerCustomer}" th:object="${customer}" method="post"`
+## Service and persistence behavior
 
-and the template contains no `/updateCustomer` action. Therefore the available frozen visible UI proves a **registration** browser submission, not a browser event that submits to STORY-0047's exact endpoint `POST /updateCustomer`.
+`CustomerUpdateService.processRequest(...)`:
 
-This endpoint can be source-traced through controller, validator, service, DAO, entity and database identity, but the strict BL-002 standard also requires the exact applicable visible-control/browser-event contract. The frozen source currently does not prove such an update form. Treating the registration form as if it posted to `/updateCustomer` would invent behavior.
+1. validates with `CustomerUpdateRequestValidator`;
+2. loads the existing `CustomerDo` using `CustomerJpaDao.findById(customerId)`;
+3. checks GST uniqueness when the submitted GST differs from the stored GST;
+4. normalizes submitted phone numbers and rejects numbers owned by another customer;
+5. rebuilds `CustomerPhoneNumberDo` relationships;
+6. rebuilds `CustomerAddressDo` relationships;
+7. saves the managed `CustomerDo` through `CustomerJpaDao.save(existingCustomerDo)`;
+8. returns SUCCESS when processing completes.
 
-## Exact remaining source-detail gap
+The executable scalar mapping remains incomplete: `modelMapper.map(customerDto, existingCustomerDo)` is commented out. Therefore current code does not source-prove assignment of submitted `customerName` or `gstNumber` to the managed entity before save. This means the maintenance operation validates those values but can save phone/address relationship changes without persisting the intended scalar customer-name/GST edits.
 
-Strict completion is blocked until frozen authoritative source proves the user-visible update screen/control path and browser event that actually submits `CustomerUpdateRequestDto` to `POST /updateCustomer` (or proves that no browser UI is applicable under the governed Story contract). The commented scalar mapper also means no customer-name/GST database mutation may be asserted beyond what executable code proves.
+## DAO/entity/database identity
 
-No approval occurred. Physical materialization remains complete. No strict-field/UI completion is claimed for this Story in this run.
+`CustomerJpaDao` extends `JpaRepository<CustomerDo, Long>`. `CustomerDo` maps `public.tbl_customer`; its primary key is `pk_customer_id`. The entity maps `customer_name`, `gst_number`, `active` and customer phone/address relationships. No database-schema change is required for the currently identified update defects.
+
+## Current drift requiring explicit user approval
+
+The exact code-change manifest is stored at:
+
+`.orchestrator/drift-review/STORY-0047/STORY-0047-CUSTOMER-MAINTENANCE-DRIFT-20260902.yaml`
+
+It covers only:
+
+1. update-page title/breadcrumb correction in `final-version-1/DisplayCustomer.html`;
+2. update-specific validation/view/error handling in `CustomerUpdateController`;
+3. explicit customerName/GST scalar assignment in `CustomerUpdateService`;
+4. update-specific validation evidence/service-code cleanup in `CustomerUpdateRequestValidator`;
+5. associated unit/MVC/template tests.
+
+No application mutation is authorized until the user explicitly approves that exact manifest. Any scope expansion requires a new approval.
+
+## Completion and approval gate
+
+The exact browser entry, update form action, hidden customer identity, controller/service/validator path, persistence operations, current partial-update behavior, visible navigation behavior and identified code/UI drift are now source-bound.
+
+STORY-0047 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW` with `DRIFT_REVIEW_REQUIRED` for the proposed implementation changes.
+
+No Story approval was inferred. No application code was changed. No BL-010 development task was created or executed.
