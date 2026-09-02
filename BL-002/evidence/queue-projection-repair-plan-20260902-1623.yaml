@@ -1,0 +1,26 @@
+backlog_id: BL-002
+source_of_truth: unit_local_story_files_plus_enrichment_progress_v77
+generated_at: '2026-09-02T16:23:30+05:30'
+canonical_queue: BL-002/story-business-behavior-rework-task-queue.csv
+current_queue_blob_sha: fc032faaaec40c9198e649118f284a74d601412d
+desired_projection:
+  total_rows: 134
+  approved_after_rework: 2
+  business_behavior_complete_awaiting_user_review: 85
+  source_detail_review_required: 1
+  rework_required: 46
+  approved_ids: [STORY-0001, STORY-0013]
+  source_detail_review_required_ids: [STORY-0049]
+  r1_business_behavior_complete: 87
+  r1_total: 88
+  r1_remaining: [STORY-0049]
+local_regenerated_queue:
+  path_runtime_only: /mnt/data/story-business-behavior-rework-task-queue.reconciled.csv
+  sha256: 7244454da853f9640279963803e789651f114872a2344b50e790fec160629092
+  bytes: 23186
+  rule: Regenerated deterministically from all 134 Story identities; approved rows preserved, authoritative completed Story files projected to awaiting-user-review, STORY-0049 retained source-detail-review-required, all remaining R2 rows retained rework-required.
+write_status: DEFERRED_SAFE_FULL_PAYLOAD_TRANSFER_NOT_AVAILABLE_IN_CURRENT_GITHUB_CONNECTOR
+safety_reason: GitHub contents update requires complete UTF-8 replacement payload. The connector exposes no local-file upload action, so the regenerated 23KB payload is retained as a runtime artifact/hash and the existing canonical queue is not partially overwritten.
+aggregate_projection: BL-002/enrichment-progress.yaml already repaired independently from authoritative unit evidence; queue remains the only pending projection.
+application_code_changed: false
+bl010_created_or_executed: false
