@@ -1,0 +1,52 @@
+story_id: STORY-0131
+title: Save State
+governance_state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  - POST /lookupManagement/state/save submits optional stateId plus stateName and description; controller treats null/zero ID as create and nonzero as update.
+  - StateIngestionService null/blank validation incorrectly calls throwInputValidationFailure with CountryIngestionRequestDto rather than StateIngestionRequestDto, followed by a second generic validation throw.
+  - Duplicate validation uses findByStateNameContainingIgnoreCase and does not exclude the submitted stateId on update.
+  - Successful saveAndFlush persists StateDo to public.tbl_state and controller refreshes the State cache.
+approved_story_behavior:
+  - Invalid State input must return StateIngestionRequestDto validation evidence so the existing controller inline-validation branch can render it.
+  - Create/update uniqueness must use exact normalized state-name semantics and allow a row to retain its own business key during update.
+  - Persist the same State fields and preserve current cache/PRG behavior.
+business_impact:
+  - Invalid input can bypass the intended inline State validation branch because the service emits the wrong DTO type.
+  - Legitimate state edits can be rejected as self-duplicates and substring names can be falsely rejected.
+proposed_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/StateIngestionService.java
+    component: StateIngestionService
+    method: processRequest
+    approximate_anchor: initial null/blank validation and duplicate-validation branches
+    proposed_change: Emit StateIngestionRequestDto validation evidence; remove redundant/wrong follow-up validation throw; implement exact case-insensitive update-aware state-name uniqueness.
+    reason: Align service validation with controller handling and correct update semantics.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/StateJpaDao.java
+    component: StateJpaDao
+    approximate_anchor: repository query declarations
+    proposed_change: Add exact case-insensitive lookup/existence method for uniqueness while retaining contains methods for search.
+    reason: Separate business-key uniqueness from search semantics.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/test/java
+    component: State ingestion tests
+    approximate_anchor: existing/new StateIngestionService tests
+    proposed_change: Cover null/blank validation DTO type, create, exact duplicate create, substring nonduplicate, same-row update and other-row duplicate update.
+    reason: Guard corrected validation and uniqueness behavior.
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_object: public.tbl_state.state_name UNIQUE
+risk_and_rollback:
+  risk: LOW
+  rollback: Revert application/repository/test changes; no database rollback required.
+scope_expansion_rule: Any additional file, schema object, field, endpoint or business behavior requires new explicit approval.
+application_code_changed: false
+bl010_created_or_executed: false
