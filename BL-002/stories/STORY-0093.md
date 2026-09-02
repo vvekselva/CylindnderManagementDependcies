@@ -1,24 +1,28 @@
-# STORY-0093 — Cylinder by Serial and State
+# STORY-0093 — Driver by ID
 
 - Release: R1
-- Endpoint: `POST /search/cylinder/by-serial-and-state`
-- Controller: `RestfulCylinderServices.getCylinderBySerialAndState`
+- Endpoint: `GET /find/Driver-by-Id/{driverId}`
+- Controller: `RestfulDriverServices.getDriverById`
 - Approval: PENDING_USER_APPROVAL
 - Review state: READY_FOR_USER_REVIEW
 - Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Canonical identity: `release-classification.csv` No. 93
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
 - Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Identity repair evidence: `BL-002/evidence/STORY-0092-0097-identity-drift-repair-20260902.yaml`
 
 ## Business behavior
 
-This is an ownership-aware, read-only cylinder lookup combining a cylinder serial/identifier search with requested cylinder-state constraints. The recovered ZIP confirms the controller and two material branches: state validation through `CylinderCurrentOwnershipBySerialAndStateSearchService` / `CylinderStateJpaDao.findByCylinderStateIn` against `public.tbl_cylinder_states`, then identifier/state matching through `CylinderGlobalSearchViewJpaDao.searchBySerialAndStateNames` over `public.vw_cylinder_global_search`, returning `CylinderSearchResponseDto`.
+This read-only API fetches one driver by persistent ID. The exact path variable is required `driverId: Long`. `RestfulDriverServices.getDriverById` builds `DriverFetchByIdRequestDto`, sets the driver ID and delegates to `DriverFetchByIdService.processRequest`.
 
-Requested state names are therefore validated against persisted state identities before the global cylinder view search. The endpoint performs no cylinder state/custody/ownership mutation. No particular browser event or timing rule is attributed where the endpoint is consumed generically rather than by one source-proved screen.
+The service rejects a null driver ID with `InvalidInputParameterException`, reads `DriverJpaDao.findById(driverId)`, throws `DomainObjectNotFoundException` when the row is absent, maps the found `DriverDo` to `DriverDto`, and returns it in `DriverFetchByIdResponseDto`. The REST handler catches the governed application exception family and returns an empty response DTO rather than mutating data.
+
+The operation therefore resolves an exact persisted driver identity for consuming screens/services and performs no driver write.
 
 ## Completion and approval gate
 
-The request semantics, state-validation path, ownership-aware view query and read-only business effect are source-bound. STORY-0093 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The canonical Story identity, required path ID, service validation/not-found branches, repository lookup, DTO mapping and read-only effect are source-bound. STORY-0093 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 Approval remains pending; no application-code or BL-010 mutation occurred.
