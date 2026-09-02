@@ -4,16 +4,21 @@
 - Endpoint: `GET /search/city/{searchText}`
 - Controller: `RestfulCityServices.getCities`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Contract
-Exact input is path variable `searchText`. Canonical trace proves `RestfulCityServices.getCities` -> `CitySearchService.searchWithText` -> `SearchRequestValidator.validate` -> `CityJpaDao.findByCityNameContainingIgnoreCase` -> `CityDo` -> `public.tbl_city` -> `ICylindermanagementApplicationDoToDtoMapper<CityDto, CityDo>.mapDoToDto` -> `CitySearchResponseDto`. Successful results are returned in the response DTO; service exception returns an empty response DTO. The endpoint is read-only.
+## Business behavior
 
-No frozen evidence attaches a particular browser event, debounce/minimum-length rule, selected hidden field, or dependent call to this standalone endpoint, so those details are not invented.
+This read-only lookup accepts exact path variable `searchText`. The recovered ZIP confirms `RestfulCityServices` at `/search/city`, `CitySearchService.searchWithText`, request validation, `CityJpaDao.findByCityNameContainingIgnoreCase`, `CityDo` / `public.tbl_city`, DTO mapping and `CitySearchResponseDto`.
 
-## Related management behavior
-The Lookup Management City form uses `cityId` optional, required `cityName`, required `description`; controller trims `cityName`, delegates `CityIngestionRequestDto` to `cityIngestionService`, refreshes city cache, redirects with add/update success, or returns inline validation DTO on user-input validation error. This is contextual management behavior, not a mutation performed by the GET search endpoint.
+The query is a case-insensitive contains lookup. Successful results are returned in the response DTO; service failure is converted to an empty response DTO. This endpoint performs no database write. Browser-specific debounce/minimum-length/hidden-ID behavior is documented only in the consuming screens that actually implement it, not invented as a property of this standalone API.
 
-## Approval boundary
-Applicable strict contract is complete. Approval remains pending and testing readiness remains unchanged.
+## Completion and approval gate
+
+The request input, validation/search/DAO/table path, result/error behavior and read-only effect are source-bound. STORY-0089 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
