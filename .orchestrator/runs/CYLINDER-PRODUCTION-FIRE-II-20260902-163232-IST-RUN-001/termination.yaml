@@ -1,0 +1,13 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260902-163232-IST-RUN-001
+state: TERMINATED
+terminal_classification: DUPLICATE_FIRE_SUPPRESSED
+terminal_reason: NEWER_PRIMARY_RUN_CYLINDER_PRODUCTION_FIRE_I_20260902_162923_IST_RUN_001_ALREADY_RUN_LINKED_AND_NOT_TERMINATED
+started_at: '2026-09-02T16:32:58+05:30'
+terminated_at: '2026-09-02T16:33:46+05:30'
+elapsed_seconds: 48
+eligible_work_remaining: true
+resumable: true
+application_code_changes: 0
+bl010_execution_delta: 0
+auto_approvals: 0
+scheduler_must_remain_enabled: true
