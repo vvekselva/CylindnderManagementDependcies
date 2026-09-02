@@ -1,0 +1,25 @@
+story_id: STORY-0013
+backlog: BL-005
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
+recorded_at: '2026-09-02T20:38:10+05:30'
+classification: GENERATED_SOURCE_BOUND_CURRENT_APPROVED_CONTRACT_REVALIDATED
+approved_contract: BL-002/stories/STORY-0013.md
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+validated_generated_test: BL-005/generated-tests/STORY-0013/Story0013ChallanBookIntegrationTest.java
+source_anchors:
+  - cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+  - cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ChallanBookRegistryJpaDao.java
+  - cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/entity/ChallanBookRegistryDo.java
+  - cylinder.datascripts/src/main/resources/db/migration
+validated_current_state:
+  normal_save_path: SERVICE_TO_JPA_SAVE_AND_FLUSH
+  database_unique_book_code: PRESENT
+  invalid_range_can_reach_persistence: APPROVED_CURRENT_STATE_GAP
+  per_sheet_ledger_generation: COMMENTED_OUT
+  test_runtime_model: POSTGRESQL_TESTCONTAINERS_FLYWAY_JPA
+result: GENERATED_INTEGRATION_TEST_ALIGNED_WITH_APPROVED_CURRENT_STATE_GAPS
+code_drift_detected: false
+application_source_mutation: NONE
+execution_state: NOT_EXECUTED
+execution_blocker: POSTGRESQL_TESTCONTAINERS_RUNTIME_UNAVAILABLE
