@@ -1,0 +1,25 @@
+version: 1
+recorded_at: '2026-09-02T21:14:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+unit_local_source: BL-002/approval-evidence/
+aggregate_source: BL-002/enrichment-progress.yaml
+aggregate_observed_version: 79
+aggregate_observed_approved_count: 2
+aggregate_observed_approved_ids: [STORY-0001, STORY-0013]
+durable_approval_evidence_count: 4
+durable_approval_evidence_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0127]
+authoritative_projection:
+  total_stories: 134
+  approved_after_rework: 4
+  awaiting_user_review: 130
+  approved_percent: 2.99
+  awaiting_percent: 97.01
+  r1_total: 88
+  r1_approved: 4
+  r1_awaiting: 84
+  r2_total: 46
+  r2_approved: 0
+  r2_awaiting: 46
+classification: AGGREGATE_APPROVAL_PROJECTION_STALE_UNIT_LOCAL_EVIDENCE_WINS
+repair_state: DURABLE_RECONCILIATION_EVIDENCE_RECORDED_AGGREGATE_FILE_REWRITE_PENDING_SAFE_PROJECTION_UPDATE
+rule: Explicit Story approval evidence must not be lost or overridden by a stale aggregate projection; no additional Story is inferred approved.
