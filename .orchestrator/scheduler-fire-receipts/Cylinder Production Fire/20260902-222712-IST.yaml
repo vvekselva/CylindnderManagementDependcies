@@ -1,0 +1,15 @@
+scheduler_task: Cylinder Production Fire
+fire_id: 20260902-222712-IST
+scheduled_fire_time: '2026-09-02T22:27:12+05:30'
+observed_fire_time: '2026-09-02T22:27:12+05:30'
+receipt_time: null
+state: RECOVERED_TERMINAL
+intended_scope: CONTINUOUS
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-222712-IST-RUN-003
+orchestrator_started_at: '2026-09-02T22:27:12+05:30'
+run_linked_at: null
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+termination_time: null
+termination_detected_at: '2026-09-02T22:57:33+05:30'
+resumable: true
+notes: Reconstructed from stale live-run during next scheduler fire. Original scheduler handoff receipt was absent, so scheduler handoff proof for this prior run is incomplete; work is recovered fail-closed and resumed by the current acknowledged run.
