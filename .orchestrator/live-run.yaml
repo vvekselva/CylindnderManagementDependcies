@@ -1,23 +1,24 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260902-232924-IST-RUN-004
 scheduler_fire_id: 20260902-232924-IST
 scheduler_task: Cylinder Production Fire
-state: EXECUTING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-02T23:29:25+05:30'
-last_heartbeat_at: '2026-09-02T23:31:30+05:30'
-terminated_at: null
-terminal_classification: null
-terminal_reason: null
-running_worker_count: 1
-completed_worker_count: 2
-blocked_worker_count: 0
-active_work_unit_ids: [DURABLE_STATE_RECONCILIATION]
-eligible_work_remaining: true
+last_heartbeat_at: '2026-09-02T23:32:26+05:30'
+terminated_at: '2026-09-02T23:32:26+05:30'
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+terminal_reason: All currently safe-independent work was exhausted after source recovery, durable-state reconciliation, exact drift source-anchor reverification, and runtime reprobe. Remaining work requires explicit user drift approval or unavailable faithful test runtime; no idle time was used to satisfy the 30-minute target.
+running_worker_count: 0
+completed_worker_count: 7
+blocked_worker_count: 7
+active_work_unit_ids: []
+eligible_work_remaining: false
 recoverable_work_remaining: true
 resumable: true
+productive_elapsed_seconds: 181
 runtime_target_30_minutes_satisfied: false
-completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, SOURCE_RECOVERY_AND_FREEZE]
-blocked_work_unit_ids: []
+completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, SOURCE_RECOVERY_AND_FREEZE, DURABLE_STATE_RECONCILIATION, APPROVAL_DELTA_RECHECK_NO_CHANGE, STORY-0101_EXACT_DRIFT_SOURCE_ANCHOR_REVERIFICATION, STORY-0013_DEV0002_DEV0003_DEV0004_SOURCE_ANCHOR_REVERIFICATION, RUNTIME_CAPABILITY_REPROBE]
+blocked_work_unit_ids: [STORY-0101_CODE_CHANGE_APPROVAL, DEV-0002_EXACT_DRIFT_APPROVAL, DEV-0003_EXACT_DRIFT_APPROVAL, DEV-0004_EXACT_DRIFT_APPROVAL, EXECUTE_BL004_WITH_JACOCO, EXECUTE_BL005_WITH_TESTCONTAINERS_AND_JACOCO, EXECUTE_BL009_APPLICATION_BEHAVIOR_AND_COVERAGE]
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id: file_00000000659c8211857bba6b09282de3
@@ -30,5 +31,5 @@ source_extracted_file_count: 1650
 source_local_git_present: false
 source_intake_evidence: .orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237-run004-232924.yaml
 runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING, maven_wrapper: MISSING, gradle_wrapper: MISSING, bundled_jars: NONE}
-checkpoint: BL-002/enrichment-progress.yaml@version-80
-next_action: RECONCILE_DURABLE_STATE_THEN_REPLAN_CLAIM_DISPATCH_SAFE_INDEPENDENT_WORK
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260902-232924-IST-RUN-004-terminal.yaml
+next_action: RESUME_ON_NEXT_FIRE; PROCESS_NEW_EXPLICIT_APPROVALS_OR_NEW_RUNTIME_CAPABILITY_IF_PRESENT; OTHERWISE_RECHECK_GATES_FAIL_CLOSED
