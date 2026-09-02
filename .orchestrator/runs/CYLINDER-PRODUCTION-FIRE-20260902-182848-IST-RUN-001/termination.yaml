@@ -1,0 +1,32 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-182848-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260902-182848-IST
+scheduler_task: cylinder-production-fire
+mode: CONTINUOUS
+started_at: '2026-09-02T18:28:48+05:30'
+terminated_at: '2026-09-02T18:31:20+05:30'
+elapsed_seconds: 152
+elapsed_minutes: 2.53
+runtime_target_30_minutes_satisfied: false
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: BL002_BUSINESS_BEHAVIOR_COMPLETE_134_OF_134_AND_CURRENT_QUEUE_ZERO_DRIFT;_132_STORIES_REQUIRE_EXPLICIT_USER_APPROVAL;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_BL004_BL005_BL009_AND_BL008_SERVICE_UI_ACCEPTANCE_REQUIRE_FAITHFUL_TEST_RUNTIME;_GOVERNED_ZIP_EXACT_FILE_LIBRARY_SEARCH_AND_LOCAL_WORKSPACE_RECOVERY_FAILED_THIS_INVOCATION
+productive_work_completed:
+  - BL002_CURRENT_QUEUE_PROJECTION_VERIFIED_ZERO_DRIFT
+completed_worker_count: 1
+blocked_work_categories: 4
+eligible_work_remaining: false
+resumable: true
+application_code_mutation: false
+bl010_execution: false
+auto_approval: false
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_materialization_this_invocation: FAILED_AFTER_EXACT_FILE_LIBRARY_SEARCH_AND_LOCAL_WORKSPACE_CHECK
+source_analysis_from_github_code_search: false
+aggregate_business_behavior_complete: 134
+aggregate_business_behavior_total: 134
+aggregate_percent: 100.0
+awaiting_user_review: 132
+approved_after_rework: 2
+projection_drift_count: 0
+bl008_database_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
+bl008_service_ui_acceptance: 0/30
+next_action: Await explicit Story/drift approvals or restoration of faithful Maven/container/source runtime; next recurring fire resumes recovery-first.
