@@ -1,8 +1,8 @@
-version: 79
+version: 80
 backlog_id: BL-002
-updated_at: 2026-09-02T16:56:20+05:30
+updated_at: 2026-09-02T23:03:00+05:30
 updated_by: Primary Cylinder Automation Tool
-checkpoint_state: CHECKPOINT_RECONCILED_BUSINESS_BEHAVIOR_COMPLETE_134_OF_134
+checkpoint_state: CHECKPOINT_RECONCILED_15_APPROVALS_14_CONFORMANCE_PASS_1_DRIFT_HOLD
 scope:
   total_stories: 134
   r1_stories: 88
@@ -14,12 +14,12 @@ business_behavior_rework:
   rework_required: 0
   rework_in_progress: 0
   business_behavior_complete: 134
-  awaiting_user_review: 132
-  approved_after_rework: 2
+  awaiting_user_review: 119
+  approved_after_rework: 15
   needs_clarification: 0
   business_behavior_complete_ids: [STORY-0001, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026, STORY-0027, STORY-0028, STORY-0029, STORY-0030, STORY-0031, STORY-0032, STORY-0033, STORY-0034, STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047, STORY-0048, STORY-0049, STORY-0050, STORY-0051, STORY-0052, STORY-0053, STORY-0054, STORY-0055, STORY-0056, STORY-0057, STORY-0058, STORY-0059, STORY-0060, STORY-0061, STORY-0062, STORY-0063, STORY-0064, STORY-0065, STORY-0066, STORY-0067, STORY-0068, STORY-0069, STORY-0070, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077, STORY-0078, STORY-0079, STORY-0080, STORY-0081, STORY-0082, STORY-0083, STORY-0084, STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096, STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109, STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0121, STORY-0122, STORY-0123, STORY-0124, STORY-0125, STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132, STORY-0133, STORY-0134]
-  awaiting_user_review_ids: [STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0012, STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026, STORY-0027, STORY-0028, STORY-0029, STORY-0030, STORY-0031, STORY-0032, STORY-0033, STORY-0034, STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047, STORY-0048, STORY-0049, STORY-0050, STORY-0051, STORY-0052, STORY-0053, STORY-0054, STORY-0055, STORY-0056, STORY-0057, STORY-0058, STORY-0059, STORY-0060, STORY-0061, STORY-0062, STORY-0063, STORY-0064, STORY-0065, STORY-0066, STORY-0067, STORY-0068, STORY-0069, STORY-0070, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077, STORY-0078, STORY-0079, STORY-0080, STORY-0081, STORY-0082, STORY-0083, STORY-0084, STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096, STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109, STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0121, STORY-0122, STORY-0123, STORY-0124, STORY-0125, STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132, STORY-0133, STORY-0134]
-  approved_after_rework_ids: [STORY-0001, STORY-0013]
+  awaiting_user_review_ids: [STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008, STORY-0009, STORY-0010, STORY-0011, STORY-0014, STORY-0015, STORY-0016, STORY-0017, STORY-0018, STORY-0019, STORY-0020, STORY-0021, STORY-0022, STORY-0023, STORY-0024, STORY-0025, STORY-0026, STORY-0027, STORY-0028, STORY-0029, STORY-0030, STORY-0031, STORY-0032, STORY-0033, STORY-0034, STORY-0035, STORY-0036, STORY-0037, STORY-0038, STORY-0039, STORY-0040, STORY-0041, STORY-0042, STORY-0043, STORY-0044, STORY-0045, STORY-0046, STORY-0047, STORY-0048, STORY-0049, STORY-0050, STORY-0051, STORY-0052, STORY-0053, STORY-0054, STORY-0055, STORY-0056, STORY-0057, STORY-0058, STORY-0059, STORY-0060, STORY-0061, STORY-0062, STORY-0063, STORY-0064, STORY-0065, STORY-0066, STORY-0067, STORY-0068, STORY-0069, STORY-0070, STORY-0071, STORY-0072, STORY-0073, STORY-0074, STORY-0075, STORY-0076, STORY-0077, STORY-0078, STORY-0079, STORY-0080, STORY-0081, STORY-0082, STORY-0083, STORY-0084, STORY-0085, STORY-0086, STORY-0088, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096, STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0115, STORY-0116, STORY-0117, STORY-0118, STORY-0119, STORY-0120, STORY-0121, STORY-0122, STORY-0123, STORY-0124, STORY-0125, STORY-0126, STORY-0133, STORY-0134]
+  approved_after_rework_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0101, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
   active_rework_ids: []
   static_reference_selector_reviewed: 16
   static_reference_selector_reviewed_ids: [STORY-0001, STORY-0011, STORY-0012, STORY-0013, STORY-0014, STORY-0015, STORY-0016, STORY-0031, STORY-0032, STORY-0033, STORY-0036, STORY-0037, STORY-0039, STORY-0040, STORY-0043, STORY-0054]
@@ -32,16 +32,16 @@ legacy_metrics:
   register_ready: 131
   clarification: 3
   historical_approved: 1
-  current_revised_contract_approved_or_reapproved: 2
-  current_revised_contract_approved_or_reapproved_ids: [STORY-0001, STORY-0013]
+  current_revised_contract_approved_or_reapproved: 15
+  current_revised_contract_approved_or_reapproved_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0101, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
   reapproval_required: 0
   reapproval_required_ids: []
   materialized_story_files: 134
   materialization_pending: 0
   strict_field_ui_complete: 126
   strict_field_ui_remaining: 8
-  use_case_grouped: 0
-  testing_ready_current_revised_contract: 2
+  use_case_grouped: 40
+  testing_ready_current_revised_contract: 14
 materialization:
   parity_target: 134
   queue: BL-002/materialization-task-queue.csv
@@ -57,39 +57,39 @@ development_changes:
   source_binding_complete: 4
   implementation_complete: 1
   not_started: 3
-  code_mutation_gate: EXPLICIT_DRIFT_APPROVAL_REQUIRED_UNDER_CURRENT_POLICY
+  exact_drift_review_ready: 3
+  exact_drift_review_ready_ids: [DEV-0002, DEV-0003, DEV-0004]
+  code_mutation_gate: EXPLICIT_EXACT_DRIFT_MANIFEST_APPROVAL_REQUIRED
   executable_now: 0
-  DEV-0001_validation_state: IMPLEMENTATION_SOURCE_VALIDATED_RUNTIME_NOT_EXECUTED
-  DEV-0001_validation_evidence: BL-010/evidence/DEV-0001-pr3-validation-20260831.yaml
-  DEV-0001_merge_gate: SOURCE_VALIDATED_PR_REMAINS_DRAFT_PENDING_GOVERNED_REVIEW
-  rule: Existing queued development items do not authorize code mutation. Current post-approval conformance and explicit DRIFT_APPROVED_FOR_CODE_CHANGE evidence are required before any new BL-010 mutation.
+  rule: Existing queued development items do not authorize code mutation. Exact drift/code-change manifest approval is required before any BL-010 mutation.
 approved_story_testing:
   policy: .orchestrator/approved-story-testing-policy.yaml
   current_governance_override: .orchestrator/post-approval-code-conformance-policy.yaml
   historical_approved_story_ids: [STORY-0001]
-  current_revised_contract_approved_or_reapproved_story_ids: [STORY-0001, STORY-0013]
-  post_approval_code_conformance_pending_ids: []
-  post_approval_code_conformance_pass_ids: [STORY-0001, STORY-0013]
-  revised_fanout_eligible_ids: [STORY-0001, STORY-0013]
-  BL-004: {queued: 2, revised_execution_eligible: 2, generated_current_contract: 1, status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED, coverage: NOT_EXECUTED_REVISED_CONTRACT}
-  BL-005: {queued: 2, revised_execution_eligible: 2, generated_current_contract: 1, status: FANOUT_ELIGIBLE_RUNTIME_EXECUTION_BLOCKED, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  current_revised_contract_approved_or_reapproved_story_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0101, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  post_approval_code_conformance_pending_ids: [STORY-0101]
+  post_approval_code_conformance_pass_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  revised_fanout_eligible_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  BL-004: {queued: 15, revised_execution_eligible: 14, generated_current_contract: 14, drift_hold: 1, status: GENERATED_SOURCE_BOUND_RUNTIME_EXECUTION_BLOCKED_WITH_ONE_DRIFT_HOLD, coverage: NOT_EXECUTED_REVISED_CONTRACT}
+  BL-005: {queued: 15, revised_execution_eligible: 14, generated_current_contract: 14, drift_hold: 1, status: GENERATED_SOURCE_BOUND_RUNTIME_EXECUTION_BLOCKED_WITH_ONE_DRIFT_HOLD, coverage: NOT_EXECUTED_REVISED_CONTRACT}
   BL-009:
-    queued: 2
-    catalogues_present: 2
-    machine_test_data_present: 2
-    human_readable_test_data_present: 2
-    executable_test_code_present: 2
-    current_contract_generated_mapped_ids: [STORY-0013]
+    queued: 15
+    catalogues_present: 14
+    machine_test_data_present: 14
+    human_readable_test_data_present: 14
+    executable_test_code_present: 14
+    current_contract_generated_mapped_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
     historical_data_contract_rows_pass: 7
     historical_data_contract_rows_fail: 0
     revised_application_behavior_executed: 0
     revised_application_behavior_pass: 0
     revised_application_behavior_fail: 0
     revised_coverage: NOT_EXECUTED
-    status: FANOUT_ELIGIBLE_GENERATED_MAPPING_RUNTIME_EXECUTION_BLOCKED
-  runtime_blocker: MISSING_MAVEN_JUNIT5_MOCKITO_AND_CONTAINER_RUNTIME_DEPENDENCIES
-  runtime_probe_at: 2026-09-02T16:24:00+05:30
-  runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: NOT_PROBED_THIS_RUN, docker: MISSING, podman: MISSING, bl008_v185_test_classes_in_source_zip: MISSING}
+    drift_hold_ids: [STORY-0101]
+    status: GENERATED_MAPPING_RUNTIME_EXECUTION_BLOCKED_WITH_ONE_DRIFT_HOLD
+  runtime_blocker: MAVEN_AND_CONTAINER_RUNTIME_UNAVAILABLE
+  runtime_probe_at: 2026-09-02T22:58:00+05:30
+  runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING, maven_wrapper: MISSING, local_maven_repository: MISSING, docker_socket: MISSING}
   jacoco_unit_line: NOT_EXECUTED
   jacoco_unit_branch: NOT_EXECUTED
   jacoco_integration_line: NOT_EXECUTED
@@ -97,38 +97,31 @@ approved_story_testing:
   jacoco_combined_line: NOT_EXECUTED
   jacoco_combined_branch: NOT_EXECUTED
 reconciliation:
-  startup_projection_drift_detected: true
-  startup_projection_drift_repaired: true
+  scheduler_handoff_current_receipt_persisted: true
+  prior_live_run_gap_detected: true
+  prior_live_run_gap_repaired: true
+  recovered_prior_run_id: CYLINDER-PRODUCTION-FIRE-20260902-222712-IST-RUN-003
+  recovered_prior_run_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  source_recovered_from_chatgpt_local_mount: true
+  source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  source_local_git_present: false
   approval_projection_drift_detected: true
   approval_projection_drift_repaired: true
-  story0037_unit_projection_drift_detected: true
-  story0037_unit_projection_drift_repaired: true
-  story0041_story0046_unit_projection_drift_detected: true
-  story0041_story0046_enrichment_projection_repaired: true
-  story0042_unit_projection_repaired: true
-  story0045_unit_projection_repaired: true
-  story0047_story0048_story0050_unit_projection_repaired: true
-  story0051_story0052_story0053_story0055_story0056_story0057_story0058_story0059_story0060_unit_projection_repaired: true
-  story0061_to_story0134_authoritative_completed_units_projection_repaired: true
-  story0049_and_all_remaining_r2_unit_projection_repaired: true
-  durable_approval_evidence_ids: [STORY-0001, STORY-0013]
-  testing_policy_legacy_auto_rework_wording_detected: true
-  current_code_mutation_governance: USER_APPROVAL_REQUIRED_FOR_EXACT_DRIFT_MANIFEST
-  unit_evidence_reconciled: true
-  aggregate_queue_projection_pending: true
-  queue_projection_repair_plan: BL-002/evidence/queue-projection-repair-plan-20260902-1623.yaml
-  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0045, STORY-0046, STORY-0047, STORY-0048, STORY-0049, STORY-0050, STORY-0051, STORY-0052, STORY-0053, STORY-0055, STORY-0056, STORY-0057, STORY-0058, STORY-0059, STORY-0060, STORY-0061, STORY-0062, STORY-0063, STORY-0067, STORY-0068, STORY-0069, STORY-0070, STORY-0078, STORY-0079, STORY-0080, STORY-0081, STORY-0082, STORY-0083, STORY-0084, STORY-0085, STORY-0086, STORY-0087, STORY-0088, STORY-0089, STORY-0090, STORY-0091, STORY-0092, STORY-0093, STORY-0094, STORY-0095, STORY-0096, STORY-0097, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0102, STORY-0103, STORY-0104, STORY-0105, STORY-0106, STORY-0107, STORY-0108, STORY-0109, STORY-0110, STORY-0111, STORY-0112, STORY-0113, STORY-0114, STORY-0126, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132, STORY-0133, STORY-0134]
-  aggregate_reconciliation_gate: ENRICHMENT_REPAIRED_QUEUE_ROWS_PENDING
-  recovered_prior_run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-160140-IST-RUN-001
-  recovered_prior_run_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+  approval_projection_prior_approved: 2
+  approval_projection_current_approved: 15
+  durable_approval_evidence_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0101, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  testing_queue_projection_reconciled: true
+  story0101_drift_review_packet: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+  story0013_dev_drift_packets: [BL-010/evidence/DEV-0002-STORY-0013-null-request-drift-review-20260902-2301.yaml, BL-010/evidence/DEV-0003-STORY-0013-sheet-range-drift-review-20260902-2301.yaml, BL-010/evidence/DEV-0004-STORY-0013-duplicate-book-code-drift-review-20260902-2302.yaml]
+  aggregate_reconciliation_gate: RECONCILED
 cursor:
-  priority_post_approval_conformance_ids: []
+  priority_post_approval_conformance_ids: [STORY-0101]
   next_global_rework_unit: null
   fallback_dependency_safe_r1_unit: null
   next_unstarted_dependency_safe_r1_unit: null
   priority_development_unit: null
-  next_development_action: NONE_WITHOUT_DRIFT_APPROVED_FOR_CODE_CHANGE
-  next_testing_action: GENERATE_BL004_AND_BL005_STORY0013_THEN_RECONCILE_STORY0001_ARTIFACTS
+  next_development_action: WAIT_FOR_EXPLICIT_EXACT_DRIFT_MANIFEST_APPROVAL
+  next_testing_action: EXECUTE_14_GENERATED_MAPPED_STORIES_WHEN_FAITHFUL_RUNTIME_AVAILABLE
 approval_policy:
   auto_approve: false
   explicit_user_approval_required: true
