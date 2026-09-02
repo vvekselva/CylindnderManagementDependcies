@@ -4,8 +4,10 @@
 - Endpoint: `GET /offline-map/status`
 - Controller: `OfflineMapController.showStatus`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Local-source evidence: `BL-002/evidence/STORY-0002-local-source-business-behavior-20260902-1633.yaml`
 
 ## User intent and screen entry
 The user opens the Offline Map Status page to inspect whether the local vector-map runtime is usable. This is a read-only GET; the page has no form input, typing event, debounce, hidden field, button mutation, or persistence action.
@@ -23,4 +25,7 @@ There is no PostgreSQL/entity mutation path for this story; its data identity is
 ## Visible outcome
 `with-menu/OfflineMapStatus` renders `READY` only when `enabled && mbtilesFileExists && readable`; otherwise it renders `NOT READY`. Any service error message is shown. The screen displays Enabled, Exists, Readable, configured Path, map Name/Format/Bounds/Center/Zoom, and PRESENT/MISSING pills for MapLibre JavaScript, MapLibre CSS, glyph folder, and sample glyph range. When glyphs are not ready it warns that labels will not display; when the MBTiles source is unreadable it warns that the source must be converted/placed at the configured path. Raw metadata key/value rows are rendered from `status.metadata`.
 
-No approval occurred.
+## Completion and approval gate
+The recovered governed ZIP independently confirms the controller, service, read-only SQLite metadata path, bundled-resource checks, and visible READY/NOT READY rendering contract. STORY-0002 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+No approval occurred. No application code or database schema was changed.
