@@ -1,22 +1,20 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST-RUN-001
-scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST
-scheduler_task: cylinder-production-fire-ii
-state: TERMINATED
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST
+scheduler_task: cylinder-production-fire-i
+state: RUNNING
 mode: CONTINUOUS
-started_at: '2026-09-02T17:29:49+05:30'
-last_heartbeat_at: '2026-09-02T17:32:37+05:30'
-terminated_at: '2026-09-02T17:32:37+05:30'
-terminal_classification: ALL_REMAINING_WORK_GATED_OR_RUNTIME_BLOCKED
-terminal_reason: BL002_BUSINESS_BEHAVIOR_AND_QUEUE_PROJECTION_COMPLETE_134_OF_134;_132_STORIES_AWAIT_EXPLICIT_USER_APPROVAL;_CODE_MUTATION_DRIFT_GATED;_TEST_EXECUTION_RUNTIME_BLOCKED
-running_worker_count: 0
-completed_worker_count: 1
-blocked_worker_count: 4
-active_work_unit_ids: []
+started_at: '2026-09-02T17:58:35+05:30'
+last_heartbeat_at: '2026-09-02T18:00:03+05:30'
+terminal_classification: null
+terminal_reason: null
+running_worker_count: 1
+completed_worker_count: 0
+blocked_worker_count: 0
+active_work_unit_ids: [CONTROL-PLANE-RECONCILIATION]
 eligible_work_remaining: false
 resumable: true
-last_action: REPAIRED_BL002_TASK_QUEUE_PROJECTION_TO_AUTHORITATIVE_134_OF_134_STORY_EVIDENCE
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-I-20260902-162923-IST-RUN-001
-previous_run_reconciliation_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+last_action: RECONCILED_PRIOR_TERMINATED_PRIMARY_AND_CONFIRMED_BL002_134_OF_134_QUEUE_STATE
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST-RUN-001
 aggregate_business_behavior_complete: 134
 aggregate_business_behavior_total: 134
 aggregate_percent: 100.0
@@ -27,4 +25,5 @@ awaiting_user_review: 132
 approved_after_rework: 2
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
-next_action: Await explicit Story/drift approvals or restored governed test runtime; recurring scheduler remains enabled for future resumable work.
+source_materialization_this_invocation: FILE_LIBRARY_SEARCH_ATTEMPTED_NOT_RECOVERED_IN_CURRENT_RUNTIME
+next_action: Validate current runtime gates and terminalize if no newly eligible work exists.
