@@ -1,0 +1,55 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-012952-IST-RUN-006
+recorded_at: '2026-09-03T01:31:36+05:30'
+mode: CONTINUOUS
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/Cylinder Production Fire/20260903-012952-IST.yaml
+source:
+  requested_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_library_file_id: file_00000000659c8211857bba6b09282de3
+  library_search_result: EXACT_PACKAGE_NOT_RETURNED
+  exact_raw_materialization_tool_available: false
+  governed_fallback_package: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  fallback_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-163304).zip
+  fallback_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  prior_governed_primary_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  byte_identity_status: PASS
+  extracted_path: /mnt/data/cylinder-run006
+  extracted_file_count: 1650
+  java_file_count: 1054
+  local_git_present: false
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  maven_wrapper: MISSING
+  gradle_wrapper: MISSING
+  local_maven_repository_jars: 0
+  workspace_jars: 0
+  docker_socket: MISSING
+  maven_central_dns_probe: FAILED_COULD_NOT_RESOLVE_HOST
+reconciliation:
+  durable_story_approval_count: 15
+  awaiting_user_review_count: 119
+  post_approval_conformance_pass_count: 14
+  post_approval_drift_hold_ids: [STORY-0101]
+  generated_unit_test_mappings: 14
+  generated_integration_test_mappings: 14
+  generated_data_driven_mappings: 14
+  story0101_local_anchor: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/StateSearchService.java:47-48
+  story0101_current_service_code: PRODUCT_UOM_SEARCH_SERVICE
+  story0101_gate: EXPLICIT_EXACT_DRIFT_MANIFEST_APPROVAL_REQUIRED
+  story0013_dev_gates: [DEV-0002, DEV-0003, DEV-0004]
+  story0013_current_source:
+    null_guard_throw: COMMENTED_OUT
+    sheet_range_throw: COMMENTED_OUT
+    duplicate_book_code_dao_method: PRESENT
+    duplicate_book_code_service_precheck: ABSENT
+mutation:
+  application_code_changes: 0
+  database_changes: 0
+  story_auto_approvals: 0
+terminal_basis:
+  eligible_safe_independent_work: 0
+  recoverable_work: true
+  blockers: [STORY_0101_EXPLICIT_DRIFT_APPROVAL, DEV_0002_EXPLICIT_DRIFT_APPROVAL, DEV_0003_EXPLICIT_DRIFT_APPROVAL, DEV_0004_EXPLICIT_DRIFT_APPROVAL, MAVEN_RUNTIME_UNAVAILABLE, CONTAINER_RUNTIME_UNAVAILABLE]
