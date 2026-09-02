@@ -1,21 +1,21 @@
-run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-190156-IST-RUN-001
-scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-190156-IST
-scheduler_task: cylinder-production-fire-i
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-192815-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260902-192815-IST
+scheduler_task: cylinder-production-fire
 state: TERMINATED
 mode: CONTINUOUS
-started_at: '2026-09-02T19:02:26+05:30'
-last_heartbeat_at: '2026-09-02T19:03:41+05:30'
-terminated_at: '2026-09-02T19:03:41+05:30'
-terminal_classification: ALL_REMAINING_WORK_BLOCKED
+started_at: '2026-09-02T19:28:15+05:30'
+last_heartbeat_at: '2026-09-02T19:30:04+05:30'
+terminated_at: '2026-09-02T19:30:04+05:30'
+terminal_classification: ALL_REMAINING_WORK_GATED_OR_RUNTIME_BLOCKED
 terminal_reason: BL002_BUSINESS_BEHAVIOR_COMPLETE_134_OF_134;_132_STORIES_REQUIRE_EXPLICIT_USER_APPROVAL;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_BL004_BL005_BL009_AND_BL008_SERVICE_UI_ACCEPTANCE_REQUIRE_FAITHFUL_TEST_RUNTIME
 running_worker_count: 0
-completed_worker_count: 0
+completed_worker_count: 1
 blocked_worker_count: 4
 active_work_unit_ids: []
 eligible_work_remaining: false
 resumable: true
-last_action: VERIFIED_NO_NEW_UNGATED_WORK_AND_PERSISTED_RUNTIME_SOURCE_RECOVERY_PROBE
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-182848-IST-RUN-001
+last_action: RECONCILED_PRIOR_TERMINAL_STATE_AND_PERSISTED_FRESH_RUNTIME_SOURCE_RECOVERY_PROBE
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-I-20260902-190156-IST-RUN-001
 aggregate_business_behavior_complete: 134
 aggregate_business_behavior_total: 134
 aggregate_percent: 100.0
@@ -28,4 +28,5 @@ source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_materialization_this_invocation: FAILED_AFTER_EXACT_FILE_LIBRARY_SEARCH_AND_LOCAL_WORKSPACE_CHECK
 runtime_target_30_minutes_satisfied: false
 early_terminalization_reason: GENUINE_EXHAUSTION_OF_CURRENTLY_ELIGIBLE_UNGATED_WORK
+elapsed_seconds: 109
 next_action: Await explicit Story/drift approvals or restored faithful test runtime; recurring scheduler remains enabled for recovery-first future runs.
