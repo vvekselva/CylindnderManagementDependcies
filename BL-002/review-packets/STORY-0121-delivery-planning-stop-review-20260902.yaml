@@ -1,0 +1,39 @@
+packet_id: STORY-0121-delivery-planning-stop-review-20260902
+story_id: STORY-0121
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+current_behavior:
+  - DeliveryPlanningStopManagementController.saveStop handles both create and edit and delegates to DeliveryPlanningStopService.
+  - DeliveryPlanningStopService.add and update validate fields and save without checking an existing active stop name.
+  - DeliveryPlanningStopJpaDao already has existsByActiveTrueAndStopNameIgnoreCase.
+  - DeliveryPlanningStopBatchSaveRequestValidator already uses that predicate to reject an existing active stop name.
+business_impact:
+  - Single-save can create two active planning stops with the same visible name even though batch-save rejects that condition.
+  - Update needs to exclude its own stop identity so an unchanged name remains valid.
+proposed_locations:
+  - file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/DeliveryPlanningStopJpaDao.java
+    component: DeliveryPlanningStopJpaDao
+    anchor: around lines 8-10
+    proposal: Provide an active exact-ignore-case name check that can exclude the current id for update.
+  - file: cylindermanagement.offlinemap/src/main/java/com/sreyas/datamatics/cylindermanagement/offlinemap/service/DeliveryPlanningStopService.java
+    component: DeliveryPlanningStopService
+    anchor: add around lines 17-19; update around lines 28-29
+    proposal: Apply the existing active-name business rule before save, excluding current id during update, and return controlled validation evidence.
+  - file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/DeliveryPlanningStopManagementController.java
+    component: DeliveryPlanningStopManagementController.saveStop
+    anchor: around lines 49-87
+    proposal: Display the controlled duplicate-name validation using the existing management-page error feedback path.
+tests:
+  - duplicate create rejected regardless of case
+  - distinct create accepted
+  - unchanged-name update accepted
+  - update to another active stop name rejected
+  - inactive historical name follows the existing active-only rule
+database_impact: No database change is proposed. A database constraint or index would be additional scope requiring separate approval.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
