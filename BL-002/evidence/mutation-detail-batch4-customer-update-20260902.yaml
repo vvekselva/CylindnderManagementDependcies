@@ -1,0 +1,19 @@
+version: 1
+recorded_at: '2026-09-02T21:12:00+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+findings:
+  STORY-0047:
+    classification: DUPLICATE_PRECHECK_PRESENT_FOR_GST_AND_PHONE
+    component: CustomerUpdateService.processRequest
+    source_anchor: around lines 77-138
+    detail:
+      - When GST changes, getCustomerIdByGstNumber is called and a different owning customer id is rejected; unchanged GST skips the lookup.
+      - For new phone numbers, getCustomerIdByPhoneNumber is called and a different owning customer id is rejected.
+      - Current customer id is explicitly excluded from both duplicate decisions, so the customer is not treated as a duplicate of itself.
+    separate_known_drift: The existing STORY-0047 customer-maintenance drift packet concerning scalar update/rendering behavior remains separately approval-gated and is not expanded by this audit.
+policy_result: The new global duplicate-precheck rule does not require an additional GST/phone duplicate change for STORY-0047 based on current source evidence.
+governance:
+  auto_approve: false
+  code_mutation: false
+  bl010_creation_or_execution: false
