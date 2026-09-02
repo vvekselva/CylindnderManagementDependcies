@@ -4,21 +4,23 @@
 - Endpoint: `GET /search/customer/{searchText}`
 - Controller: `RestfulCustomerServices.getCustomers`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Customer Stop screen contract
-Visible input is Customer Name (`#custSearch`). On every browser `input` event the previous timer is cleared and text is trimmed. Fewer than 3 characters closes the result dropdown and performs no request. At 3+ characters a 280 ms debounce invokes `fetchCustomers(q)`.
+## Business behavior
 
-The exact request is `GET /cylindermanagement/search/customer/${encodeURIComponent(q)}`. The UI reads `customerDtos`; each result displays `customerName` and `customerId`. `onmousedown` selection captures the exact result ID/name. No result displays `No customers found`; request failure displays `Search failed — try again`. Blur closes the dropdown after 180 ms.
+The Customer Stop page uses visible input `#custSearch`: under 3 trimmed characters it performs no request; at 3+ characters it waits 280 ms and calls `GET /search/customer/{encoded searchText}`. Results expose customer name and persistent customer ID. Selecting a result writes that ID to hidden `vehicleTripStop.customer.customerId`, invalidates stale address/exchange state, and triggers the dependent customer-address lookup. Clearing customer clears customer/address identities and downstream state.
 
-## Selected identity and invalidation
-Selecting a customer writes `customerId` to hidden `vehicleTripStop.customer.customerId`, shows the selected-customer banner, hides stale address/exchange state, and triggers dependent `GET /search/address/customer-address/{customerId}`. Clearing customer clears customer/address hidden IDs, hides downstream state, and recomputes completion eligibility.
+The recovered ZIP confirms the REST path through `RestfulCustomerServices.getCustomers`, `CustomerSearchService.searchWithText`, request validation, `CustomerJpaDao.findByCustomerNameContainingIgnoreCase`, `CustomerDo` / `public.tbl_customer`, DTO mapping and `CustomerSearchResponseDto`. The API is read-only; selected IDs are consumed later by Customer Stop persistence.
 
-## Service/database path
-Canonical trace proves `RestfulCustomerServices.getCustomers` -> `CustomerSearchService.searchWithText` -> `SearchRequestValidator.validate` -> `CustomerJpaDao.findByCustomerNameContainingIgnoreCase` -> `CustomerDo` -> `public.tbl_customer` -> `CustomerMapper.mapDoToDto` -> `CustomerSearchResponseDto`.
+No-result and request-failure browser messages are source-bound by the Customer Stop template, as is delayed dropdown closing on blur.
 
-The endpoint is read-only. Its persisted/read identity is customer ID from `public.tbl_customer`; the selected ID is propagated to the later Customer Stop write but is not modified by this search call.
+## Completion and approval gate
 
-## Approval boundary
-Strict field/UI contract is complete from frozen Customer Stop UI plus canonical trace. Approval remains pending; no auto-approval occurs.
+The typeahead event/timing, selected identity propagation/reset behavior, search/DAO/table path and read-only business impact are source-bound. STORY-0091 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
