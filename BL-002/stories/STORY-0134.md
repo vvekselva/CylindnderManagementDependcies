@@ -4,21 +4,47 @@
 - Endpoint: `POST /addVechileTrip`
 - Controller: `VehicleTripIngestionController.doPost`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Drift review packet: `BL-002/evidence/STORY-0134-vehicle-trip-create-drift-review-20260902.yaml`
 
-## Request / binding contract
-The POST binds `@ModelAttribute("tripRequest") VehicleTripIngestionRequestDto`. The frozen screen submits exact nested fields for selected vehicle ID/number, driver ID/name, starting time, customer ID, and customer-address ID. Browser validation in the paired form prevents submission when any required selection/time is absent and converts datetime-local to HH:mm for the starting-time field.
+## Business behavior
 
-## Service / success contract
-The controller invokes `vehicleTripIngestionService.processRequest(requestDto)`. On success it resolves driver ID/name and vehicle ID/number preferring the service response and falling back to the submitted request when necessary. It creates flash attributes `REDIRECT_REQUEST=true`, `DRIVER_ID`, `DRIVER_NAME`, `VEHICLE_ID`, `VEHICLE_NUMBER`, and `VEHICLE_TRIP_ID` from the response trip identity, then redirects to `/vehicleLoad` so the next Vehicle Load step can consume the created trip context.
+The New Vehicle Trip form posts model `tripRequest` to `POST /addVechileTrip` after browser validation has selected persistent Vehicle, Driver, Customer and Customer Address identities and converted the selected datetime to the trip starting-time value.
 
-The application service is the mutation boundary proved by this controller. No raw SQL or unproved database table/repository identity is asserted here.
+`VehicleTripIngestionController.doPost(...)` delegates the bound `VehicleTripIngestionRequestDto` to `VehicleTripIngestionServiceImpl`. On success it builds the next-step redirect context, preferring persisted response Driver/Vehicle values and falling back to submitted values when necessary, flashes Driver ID/name, Vehicle ID/number and the generated Vehicle Trip ID, then redirects to `/vehicleLoad`.
 
-## Validation / error visible outcome
-On `InvalidInputParameterException`, if the exception carries `VehicleTripIngestionRequestDto`, the controller copies the failed `vehicleTripDto` and `validationErrorDtos` back into the submitted request, logs each validation error code when present, and returns the same `with-menu/VehicleTripIngestion` view with `tripRequest` and `backLink=/vehicle-loads/list`. There is no success redirect in this branch.
+A controlled `InvalidInputParameterException` carrying `VehicleTripIngestionRequestDto` restores failed trip/validation data and re-renders `with-menu/VehicleTripIngestion`; other application exceptions also keep the user on the form rather than advancing to Vehicle Load.
 
-On other `CylinderManagementApplicationException`, it logs the system error and returns the same form with submitted request and back link. Thus failure preserves the form context rather than advancing to Vehicle Load.
+## Exact validation and service behavior
 
-## Approval boundary
-No approval occurred. Strict enrichment completion is not business approval.
+`VehicleTripIngestionRequestValidator` checks the request/trip object, Vehicle identity/existence, Driver identity/existence, Starting Time, Customer Address identity/existence, Customer identity/existence and the persisted Customer-to-Address relationship. Accumulated validation errors are attached to the trip/request and are intended to raise controlled input-validation evidence.
+
+`VehicleTripIngestionServiceImpl.processRequest(...)` is transactional. After validation it maps `VehicleTripDto` to `VehicleTripDo`, resolves the selected `VehicleDo`, `DriverDo`, `CustomerDo` and `CustomerAddressDo`, sets them on the trip, resolves trip status `Started`, and saves through `VehicleTripJpaDao.save(...)`.
+
+`VehicleTripDo` maps to `public.tbl_vehicle_trip`, primary key `pk_vehicle_trip_id`, sequence `pk_vehicle_trip_id_serial`, with persisted links including `fk_vehicle`, `fk_driver`, `fk_customer`, `fk_customer_address`, and `fk_trip_status`. The generated trip is mapped back into `VehicleTripIngestionResponseDto` with SUCCESS.
+
+## Source-proved validation/reference drift
+
+The recovered ZIP exposes several current defects:
+
+1. A null top-level trip request emits validation evidence using `VehicleIngestionRequestDto` instead of `VehicleTripIngestionRequestDto`, conflicting with the controller's intended inline validation branch.
+2. Driver validation checks `driverId <= 0` without first guarding a null Driver ID when the Driver DTO itself exists, allowing a null-unboxing failure.
+3. The Customer-ID invalidity condition checks `customerAddress.customerAddressId <= 0` instead of the submitted `customerId`; it can also dereference Customer Address after an earlier invalid-address condition.
+4. Service reference/status resolution uses `Optional.get()` after validation, including the configured `Started` status, so a missing/raced reference can surface as an uncontrolled exception rather than a controlled application error.
+
+The exact validator/service/test remediation is isolated in `BL-002/evidence/STORY-0134-vehicle-trip-create-drift-review-20260902.yaml`. The accepted persistence model needs no schema change.
+
+## Business impact and outcome
+
+A successful transaction creates the persisted trip and advances the user to Vehicle Load with the exact new trip identity. Validation/reference defects can currently produce uncontrolled failures or test the wrong identity for malformed inputs; those defects are review-gated and not silently changed.
+
+## Completion and approval gate
+
+The recovered ZIP binds the browser-submitted identity contract, controller branches, validator predicates, transaction/reference resolution, repository/entity/table persistence and all identified current defects. STORY-0134 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 work was created or executed.
