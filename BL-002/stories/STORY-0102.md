@@ -4,20 +4,21 @@
 - Endpoint: `GET /search/supplier/{searchText}`
 - Controller: `RestfulSupplierSearchService.getSuppliers`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Screen entry and visible control
-On the frozen Supplier Stop page, the visible supplier search control `supSearch` listens to the browser `input` event. Input is trimmed; fewer than 3 characters closes the dropdown and sends no request. Eligible input is debounced for 280 ms before `fetchSuppliers(q)`. Blur closes the dropdown after 180 ms.
+## Business behavior
 
-## Exact API call and result handling
-`fetchSuppliers` calls `GET /search/supplier/${encodeURIComponent(q)}`. The response list is `supplierDtos`. Each dropdown row shows `supplierName` and `supplierId`. No matches displays `No suppliers found`; request failure displays `Search failed — try again`.
+On Supplier Stop, visible `supSearch` trims input, performs no request under 3 characters, and at 3+ characters waits 280 ms before calling `GET /search/supplier/{encoded query}`. Results display supplier name and persistent supplier ID; selecting one writes the exact ID to hidden `f-supplierId`, updates the selected-supplier banner and loads the supplier exchange. Clearing selection removes the ID and downstream exchange state. No-result, request-failure and delayed blur-close behavior are source-bound.
 
-## Selected value and propagation
-Choosing a result invokes `selectSupplier(supplierId, supplierName)`, stores both values in `selectedSupplier`, writes the name back to the visible search control, writes the exact ID to hidden field `f-supplierId`, updates the supplier banner, then calls `loadExchange(id)`. Clearing supplier resets the visible value and hidden supplier ID, hides the banner and exchange section.
+The recovered ZIP confirms the REST controller binds required `searchText`, sets `CylinderManagementApplicationRequestDto.searchTerm`, creates paging, and delegates to `supplierSearchService`. The search covers supplier name or GST number and returns `SupplierSearchResponseDto`; governed application failure returns an empty response DTO. The API is read-only.
 
-## Controller/service contract
-The REST controller binds required path variable `searchText`, creates `CylinderManagementApplicationRequestDto`, sets `searchTerm`, creates `Pageable` through `PaginationUtils.createPageable`, and calls `supplierSearchService.searchWithText(requestDto, pageable)`. The endpoint searches supplier name or GST number. Success returns `SupplierSearchResponseDto`; `CylinderManagementApplicationException` is logged and converted to an empty response DTO.
+## Completion and approval gate
 
-## Approval boundary
-Strict field/UI contract is complete from frozen UI and controller source. Approval remains pending.
+The typeahead timing, selected identity propagation/reset, controller/search-service contract and read-only business role are source-bound. STORY-0102 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
