@@ -4,17 +4,17 @@ scheduler_task: Cylinder Production Fire
 state: EXECUTING
 mode: CONTINUOUS
 started_at: '2026-09-02T21:24:21+05:30'
-last_heartbeat_at: '2026-09-02T21:32:21+05:30'
+last_heartbeat_at: '2026-09-02T21:38:31+05:30'
 terminated_at: null
 terminal_classification: null
 terminal_reason: null
 running_worker_count: 1
-completed_worker_count: 5
+completed_worker_count: 10
 blocked_worker_count: 0
-active_work_unit_ids: [STORY-0112_V185_IDENTITY_AND_UPDATE_CONFORMANCE_REVIEW]
+active_work_unit_ids: [PRIOR_MUTATION_EVIDENCE_RECONCILIATION]
 eligible_work_remaining: true
 resumable: true
-last_action: SUC036_SOURCE_DETAIL_PACKET_AND_STORY0110_0111_0113_0114_DRIFT_PACKETS_RECONCILED_FROM_LOCAL_SOURCE
+last_action: STORY0112_PACKET_RECONCILED_RUNTIME_PROBED_APPROVAL_PROJECTION_EVIDENCE_PERSISTED_AND_CUSTOMER_SUPPLIER_VALIDATION_DRIFT_PACKETS_CREATED
 previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
 previous_run_reconciliation_classification: ABNORMAL_PROCESS_DISAPPEARANCE
 aggregate_business_behavior_complete: 134
@@ -29,4 +29,4 @@ source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f
 source_file_count: 1650
 source_local_git_present: false
 runtime_target_30_minutes_satisfied: false
-next_action: RECONCILE_STORY0112_PACKET_THEN_RUNTIME_PROBE_AND_APPROVAL_AGGREGATE
+next_action: RECONCILE_PRIOR_MUTATION_DETAIL_PACKETS_WITH_CURRENT_LOCAL_SOURCE_THEN_REFRESH_STALE_AGGREGATE_IF_SAFE
