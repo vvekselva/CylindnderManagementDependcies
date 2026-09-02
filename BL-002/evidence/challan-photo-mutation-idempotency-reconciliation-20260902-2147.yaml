@@ -1,0 +1,26 @@
+reconciliation_id: CHALLAN-PHOTO-MUTATION-IDEMPOTENCY-20260902-2147
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+stories:
+  STORY-0048:
+    endpoint: POST /add-stop/challan-page-photo/delete-ajax
+    classification: REPEAT_DELETE_CONTROLLED_REJECTION
+    source_proof:
+      - controller delegates to ChallanPagePhotoUploadService.deactivatePhoto
+      - deactivatePhoto rejects null id
+      - it rejects a missing photo or an already inactive photo with controlled userError Active challan photo is not found
+      - first successful call updates the same photo row active=false; no deletion history row or duplicate object is created
+    anchor: ChallanPagePhotoUploadService lines ~74-88; AddStopController lines ~162-184
+  STORY-0049:
+    classification: VERSIONED_REPLACEMENT_INTENTIONAL
+    source_proof: upload service deactivates currently active photos for the same challan page before saving a new active photo, retaining historical rows and one current active photo.
+  STORY-0050:
+    classification: SAME_SERVICE_VERSIONED_REPLACEMENT
+    source_proof: AJAX upload reaches the same upload service and therefore the same one-active-photo replacement semantics.
+result: NO_NEW_CODE_DRIFT_PACKET_REQUIRED_FOR_IDEMPOTENCY
+story_approval_effect: NONE
+application_code_mutated: false
+bl010_created_or_executed: false
