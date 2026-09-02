@@ -3,11 +3,14 @@ fire_id: 20260902-225515-IST
 scheduled_fire_time: '2026-09-02T22:55:15+05:30'
 observed_fire_time: '2026-09-02T22:55:15+05:30'
 receipt_time: '2026-09-02T22:55:15+05:30'
-state: RUN_LINKED
+state: TERMINALIZED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
 orchestrator_started_at: '2026-09-02T22:55:17+05:30'
 run_linked_at: '2026-09-02T22:55:18+05:30'
-terminal_classification: null
-termination_time: null
-notes: Scheduler handoff acknowledged and run allocated before backlog read or mutation.
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+termination_time: '2026-09-02T23:04:49+05:30'
+productive_elapsed_seconds: 572
+runtime_target_30_minutes_satisfied: false
+resumable: true
+notes: Scheduler handoff was acknowledged before backlog access. Run terminalized early only after safe-independent work was exhausted: 119 Stories remain explicit-user-approval gated; STORY-0101 and DEV-0002/0003/0004 remain exact drift-manifest approval gated; generated test execution/Jacoco is blocked by missing Maven and container runtime. Recurring execution remains eligible to resume on the next fire.
