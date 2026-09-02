@@ -1,0 +1,40 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-002617-IST-RUN-005
+checked_source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_analysis_engine: LOCAL_EXTRACTED_SOURCE
+approved_story_endpoint_presence:
+  STORY-0001: PASS
+  STORY-0012: PASS
+  STORY-0013: PASS
+  STORY-0087: PASS
+  STORY-0089: PASS
+  STORY-0090: PASS
+  STORY-0101: PASS_WITH_EXISTING_CODE_DRIFT_HOLD
+  STORY-0108: PASS
+  STORY-0109: PASS
+  STORY-0127: PASS
+  STORY-0128: PASS
+  STORY-0129: PASS
+  STORY-0130: PASS
+  STORY-0131: PASS
+  STORY-0132: PASS
+story_0101_revalidation:
+  file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/StateSearchService.java
+  method: searchWithText
+  anchor: validator.validate around lines 47-49
+  observed: PRODUCT_UOM_SEARCH_SERVICE
+  expected_review_manifest: STATE_SEARCH_SERVICE plus validator allow-list correction
+  state: UNCHANGED_DRIFT_REVIEW_PENDING_USER_APPROVAL
+story_0013_revalidation:
+  ingestion_service: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+  null_guard_throw: COMMENTED_OUT_UNCHANGED
+  sheet_range_throw: COMMENTED_OUT_UNCHANGED
+  duplicate_precheck: ABSENT_UNCHANGED
+  dao_finder:
+    file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ChallanBookRegistryJpaDao.java
+    method: findByBookCode
+    state: PRESENT
+  drift_manifests: [DEV-0002, DEV-0003, DEV-0004]
+  state: UNCHANGED_EXACT_DRIFT_APPROVAL_REQUIRED
+application_code_changed: false
+database_changed: false
+new_drift_detected: false
