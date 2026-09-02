@@ -1,0 +1,27 @@
+story_id: STORY-0049
+evidence_type: LOCAL_SOURCE_ENDPOINT_ROLE_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+analysis_runtime: CHATGPT_LOCAL_EXTRACTED_SOURCE
+frozen_repository_ref: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+endpoint: POST /add-stop/challan-page-photo/upload
+proof:
+  - path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java
+    anchor: '@PostMapping("/add-stop/challan-page-photo/upload")'
+    finding: EXACT_NON_AJAX_ENDPOINT_PRESENT
+  - path: cylindermanagement.web/src/main/resources/templates/with-menu/Customerstopselectionpage-withoutAutoChallanUpdate.html
+    anchor: 'th:action="@{/add-stop/challan-page-photo/upload-ajax}"'
+    finding: ACTIVE_CUSTOMER_STOP_UI_USES_AJAX_ENDPOINT
+  - path: cylindermanagement.web/src/main/resources/templates/with-menu/Supplierstopselectionpage.html
+    anchor: 'th:action="@{/add-stop/challan-page-photo/upload-ajax}"'
+    finding: ACTIVE_SUPPLIER_STOP_UI_USES_AJAX_ENDPOINT
+source_wide_exact_non_ajax_path_reference_count: 1
+source_wide_exact_non_ajax_path_reference_locations:
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/AddStopController.java:84
+visible_client_for_non_ajax_endpoint_in_recovered_source: false
+classification: BACKEND_NON_AJAX_FALLBACK_CAPABILITY_WITH_NO_VISIBLE_CLIENT_IN_CURRENT_SOURCE
+ui_contract_applicability: NOT_APPLICABLE_TO_THIS_EXACT_ENDPOINT_IN_CURRENT_SOURCE
+inference_guard: No intent beyond current frozen-source behavior is asserted; no hidden browser client is invented.
+auto_approval: false
+application_code_changes: 0
+bl010_changes: 0
