@@ -4,17 +4,21 @@
 - Endpoint: `GET /search/product/{searchText}`
 - Controller: `RestfulProductServices.getProducts`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Request and controller contract
-Spring binds required path variable `searchText`. The controller creates `CylinderManagementApplicationRequestDto`, sets `searchTerm` to that exact path value, and delegates to `productSearchService.searchWithText(requestDto, null)`.
+## Business behavior
 
-## Response/error behavior
-Success returns `ProductSearchResponseDto`. `CylinderManagementApplicationException` is logged and returns a new empty `ProductSearchResponseDto`. This is read-only search; no persistence mutation is performed by the controller.
+The endpoint accepts required path variable `searchText`, places it in `CylinderManagementApplicationRequestDto.searchTerm`, delegates to the product search service and returns `ProductSearchResponseDto`; a governed application exception is logged and converted to an empty response DTO. The API is read-only.
 
-## UI applicability
-The frozen endpoint does not itself define browser debounce/minimum-length, selected-ID propagation, button state, reset behavior, or a second API call. Such call-site behavior is not inferred without a specific source-proved caller.
+A source-proved consuming flow is Customer Demand: its Product typeahead starts after 3 characters with a 280 ms debounce, calls this endpoint, displays product names and writes the selected persistent `productId` into the demand form; changing/clearing the visible product invalidates stale selected identity. Other callers may use the same API without inheriting that screen-specific timing rule.
 
-## Approval boundary
-Strict contract is complete for all applicable source-proved behavior. Approval remains pending.
+## Completion and approval gate
+
+The exact API request/response/error role plus the source-proved Customer Demand selector behavior and selected product identity propagation are bound. STORY-0099 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
