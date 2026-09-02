@@ -1,30 +1,31 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260902-222712-IST-RUN-003
-scheduler_fire_id: 20260902-222712-IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
+scheduler_fire_id: 20260902-225515-IST
 scheduler_task: Cylinder Production Fire
 state: EXECUTING
 mode: CONTINUOUS
-started_at: '2026-09-02T22:27:12+05:30'
-last_heartbeat_at: '2026-09-02T22:27:12+05:30'
+started_at: '2026-09-02T22:55:17+05:30'
+last_heartbeat_at: '2026-09-02T22:57:33+05:30'
 terminated_at: null
 terminal_classification: null
 terminal_reason: null
-running_worker_count: 1
+running_worker_count: 4
 completed_worker_count: 0
 blocked_worker_count: 0
-active_work_unit_ids: [CONTROL_PLANE_RECONCILIATION]
+active_work_unit_ids: [CONTROL_PLANE_RECONCILIATION, STORY-0087_POST_APPROVAL_CONFORMANCE, STORY-0089_POST_APPROVAL_CONFORMANCE, STORY-0090_POST_APPROVAL_CONFORMANCE, STORY-0101_POST_APPROVAL_CONFORMANCE]
 eligible_work_remaining: true
 resumable: true
-last_action: SOURCE_RECOVERED_EXTRACTED_FINGERPRINTED_AND_FROZEN
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+last_action: SOURCE_RECOVERED_EXTRACTED_FINGERPRINTED_FROZEN_AND_PRIOR_RUN_GAP_RECONCILED
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-222712-IST-RUN-003
 previous_run_reconciliation_classification: ABNORMAL_PROCESS_DISAPPEARANCE
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id: file_00000000659c8211857bba6b09282de3
 source_materialized_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-080237).zip
-source_materialization_this_invocation: SUCCESS_AVAILABLE_CHATGPT_LIBRARY_MOUNT
+source_materialization_this_invocation: SUCCESS_AVAILABLE_CHATGPT_LOCAL_MOUNT
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
-source_extracted_path: /mnt/data/cylinder-prod-fire-20260902-222712/source/extracted
+source_extracted_path: /mnt/data/cylinder-prod-fire-20260902-225515/source
 source_extracted_file_count: 1650
 source_local_git_present: false
-source_intake_evidence: .orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237-run003.yaml
+source_intake_evidence: .orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237-run003-225515.yaml
+runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING}
 runtime_target_30_minutes_satisfied: false
-next_action: RECONCILE_LIVE_APPROVAL_AND_FANOUT_PROJECTIONS_FROM_DURABLE_UNIT_EVIDENCE
+next_action: COMPLETE_POST_APPROVAL_CONFORMANCE_FOR_STORY_0087_0089_0090_0101_THEN_RECONCILE_AGGREGATES
