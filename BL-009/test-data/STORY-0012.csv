@@ -1,0 +1,6 @@
+case_id,scenario,metric_behavior,expected_view,expected_model,expected_write
+TC-0012-01,open form metrics available,all groups return rows,final-version-1/add-challan-book.html,ingestionRequest plus three metric groups,NONE
+TC-0012-02,total metric lookup throws,RuntimeException,final-version-1/add-challan-book.html,empty metric groups plus summaryMetricErrorMessage,NONE
+TC-0012-03,refresh form,normal,final-version-1/add-challan-book.html,blank ingestionRequest,NONE
+TC-0012-04,some metric keys absent,partial rows,final-version-1/add-challan-book.html,only source-returned metric rows,NONE
+TC-0012-05,form submit relationship,not executed by GET,final-version-1/add-challan-book.html,submit belongs to STORY-0013,NONE
