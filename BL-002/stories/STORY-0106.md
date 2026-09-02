@@ -4,17 +4,21 @@
 - Endpoint: `POST /search/cylinder/by-state`
 - Controller: `RestfulCylinderServices.getCylindersByState`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Request and controller contract
-The endpoint accepts required JSON `CylinderManagementApplicationRequestDto`. The source documents state/state-list criteria in `serachQueryData`; the controller creates paging with `PaginationUtils.createPageable(requestDto)` and delegates to qualified `availableYardCylinderByStateSearchService.searchWithText(requestDto, pageable)`.
+## Business behavior
 
-## Response/error behavior
-Success returns `YardCylinderStockResponseDto`. `CylinderManagementApplicationException` is logged and returns a new empty yard-stock response. The active implementation is a read path; legacy current-status behavior is retained only as comments elsewhere and is not treated as active execution.
+This yard-only POST accepts required JSON `CylinderManagementApplicationRequestDto`, takes state/state-list criteria from `serachQueryData`, creates paging and delegates to `availableYardCylinderByStateSearchService`. Successful processing returns `YardCylinderStockResponseDto`; a governed application exception returns an empty yard-stock response.
 
-## UI applicability
-No single frozen caller is asserted here, so browser debounce, hidden selected IDs, button guards and reset semantics are not invented. The request DTO and state criteria are the source-proved API contract.
+The recovered source distinguishes this endpoint from the global ownership-state search: `/by-state` is the available-yard inventory path. Its downstream service reads active yard inventory/cylinder/identifier information and performs no state, custody or inventory mutation.
 
-## Approval boundary
-Strict contract is complete for applicable frozen-source behavior. Approval remains pending.
+## Completion and approval gate
+
+The request state criteria, paging, yard-only routing, response/error behavior and read-only business effect are source-bound. STORY-0106 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+Approval remains pending; no application-code or BL-010 mutation occurred.
