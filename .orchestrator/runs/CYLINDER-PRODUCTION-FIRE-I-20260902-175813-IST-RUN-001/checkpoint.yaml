@@ -1,0 +1,32 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
+checkpoint_at: '2026-09-02T18:00:43+05:30'
+state: BLOCKED_RESUMABLE
+productive_runtime_target_minutes: 30
+productive_runtime_target_satisfied: false
+early_terminalization_allowed: true
+early_terminalization_reason: NO_CURRENTLY_ELIGIBLE_UNGATED_WORK
+bl002:
+  business_behavior_complete: 134
+  total: 134
+  percent: 100.0
+  awaiting_user_review: 132
+  approved_after_rework: 2
+  rework_required: 0
+  queue_projection_drift_count: 0
+  queue_projection_reconciliation_evidence: BL-002/evidence/queue-projection-reconciliation-20260902-175813.yaml
+bl008:
+  database_schema_phase: COMPLETE_AND_FROZEN_V185
+  service_ui_acceptance_executed: 0
+  service_ui_acceptance_total: 30
+  runtime_probe: BL-008/evidence/20260902-1800-chatgpt-runtime-stage1-probe.yaml
+  runtime_state: TEST_EXECUTION_RUNTIME_BLOCKED
+bl010:
+  executable_without_explicit_drift_approval: 0
+source:
+  required_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  file_library_recovery_attempted: true
+  current_runtime_materialization: NOT_RECOVERED
+  application_source_analysis_required_for_current_eligible_work: false
+application_code_mutation: false
+auto_approval: false
+next_action: Await explicit Story/drift approval or restored governed test runtime; retry source-package materialization when application-source analysis becomes eligible.
