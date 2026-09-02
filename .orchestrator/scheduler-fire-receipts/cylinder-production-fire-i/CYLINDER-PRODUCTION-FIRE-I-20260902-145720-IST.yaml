@@ -2,8 +2,13 @@ scheduler_task: cylinder-production-fire-i
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-145720-IST
 observed_scheduled_fire_time: '2026-09-02T14:57:20+05:30'
 receipt_time: '2026-09-02T14:57:20+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-145720-IST-RUN-001
-orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_state: RUN_LINKED
 orchestrator_started_time: '2026-09-02T14:57:23+05:30'
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+termination_time: '2026-09-02T15:01:41+05:30'
+eligible_work_remaining: true
+resumable: true
+scheduler_must_remain_enabled: true
