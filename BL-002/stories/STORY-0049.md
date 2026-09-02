@@ -5,44 +5,62 @@
 - Release: R1
 - Endpoint: `POST /add-stop/challan-page-photo/upload`
 - Approval: `PENDING_USER_APPROVAL`
-- Source basis: canonical BL-001 traceability matrix at frozen source commit `3ae6e61442132d94a307275b08dd65fcef228d89`
+- Rework state: `SOURCE_DETAIL_REVIEW_REQUIRED`
+- Enrichment state: `SOURCE_DETAIL_REVIEW_REQUIRED`
+- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source intake evidence: `.orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237.yaml`
 - Story auto-approval: forbidden
 
 ## Human-readable story
 
-As an authorized Cylinder Management user working with a delivery-stop challan, I want to upload a photo for a challan page so that the system can associate the current uploaded evidence with the resolved challan page and retain that photo through the governed challan-photo persistence path.
+As an authorized Cylinder Management user or compatible form client, I want to submit a challan-page photo through the non-AJAX upload endpoint so that the system resolves the selected challan leaf, replaces any previous active evidence for that leaf, stores the newly uploaded evidence and redirects back to the Add Stop flow with a success or error message.
 
-## Source-proved execution flow
+## Exact controller contract
 
-1. The request is handled by `AddStopController.uploadChallanPagePhoto`, which delegates through `uploadChallanPhotoInternal`.
-2. The controller invokes `ChallanPagePhotoUploadService.processRequest`.
-3. The service resolves the challan page by full number through `ChallanPageAuditLedgerJpaDao.findPageByFullNumber`.
-4. The resolved ledger entity is `ChallanPageAuditLedgerDo`, backed by `public.tbl_challan_page_audit_ledger`; the chain also depends on `public.tbl_challan_book_registry`.
-5. Any previous active photo for the page is deactivated through `ChallanPagePhotoJpaDao.deactivateActivePhotosForPage` against `public.tbl_challan_page_photo`.
-6. The uploaded photo is persisted through `ChallanPagePhotoJpaDao.save` as `ChallanPagePhotoDo` in `public.tbl_challan_page_photo`.
-7. Successful processing redirects to `/add-stop?vehicleLoadId=...&actionType=...` with flash success.
-8. Error processing redirects to the same add-stop flow with flash error.
+`AddStopController.uploadChallanPagePhoto(...)` is `@PostMapping("/add-stop/challan-page-photo/upload")` and binds:
 
-## Persistence effect
+- `vehicleLoadId` — required `Long`;
+- `actionType` — optional `String`, default `SupplierStop`;
+- `challanType` — optional `String`;
+- `bookCode` — optional `String`;
+- `seriesPrefix` — optional `String`;
+- `sheetNumber` — optional `Integer` at the MVC boundary;
+- `challanPhoto` — required `MultipartFile`;
+- `RedirectAttributes` for redirect feedback.
 
-The source-proved effects are resolution of the target challan page, deactivation of any previous active photo for that page, and persistence of the uploaded photo in `public.tbl_challan_page_photo`. The canonical trace also proves dependencies on `public.tbl_challan_page_audit_ledger` and `public.tbl_challan_book_registry`. Exact physical column names, uploaded-file storage representation, and field-level transformations are not asserted here because they are not proved by the canonical BL-001 trace used for this enrichment.
+The redirect target is always `/add-stop?vehicleLoadId={vehicleLoadId}&actionType={actionType}`.
 
-## Validation and error behavior
+`uploadChallanPhotoInternal(...)` rejects a null/empty multipart file with `Please select a challan photo to upload.` It builds `ChallanPagePhotoUploadRequestDto` containing vehicle load, book type/code/series/sheet identity, original filename, content type, content length, raw bytes and remark `Uploaded from Add Stop page` before calling `ChallanPagePhotoUploadService.processRequest(...)`.
 
-The canonical trace proves both success and error redirect terminals. It does not by itself prove the exact multipart parameter names, datatype/size/content-type constraints, null/blank checks, ownership checks, or precise validation-message text. Those details remain source-detail review items and must not be invented.
+## Service validation and persistence
 
-## Unique-key reconciliation
+`ChallanPagePhotoUploadService` requires a non-null request, sheet number, a book identity (`bookId` or non-blank `bookCode`), non-empty photo bytes, positive content length, a maximum size of 5 MiB, and one of JPEG/PNG/WEBP/PDF after content-type normalization.
 
-The BL-002 register identifies STORY-0049 as `POST /add-stop/challan-page-photo/upload`. The canonical BL-001 matrix contains the same HTTP method and path and identifies `AddStopController.uploadChallanPagePhoto` as the controller method. Therefore the previously recorded `STORY-0049_UNIQUE_KEY_MISMATCH` is resolved by exact authoritative method+path identity; no remapping to another endpoint was performed.
+The target challan page is resolved either by book ID + sheet number or by `ChallanPageAuditLedgerJpaDao.findPageByFullNumber(bookType, bookCode, seriesPrefix, sheetNumber)`. The full-number query joins `public.tbl_challan_page_audit_ledger` and `public.tbl_challan_book_registry`. Missing page produces `Challan page is not found for the selected book and sheet number.`
 
-## Review contract
+Before saving the new photo, `ChallanPagePhotoJpaDao.deactivateActivePhotosForPage(pageAuditId)` performs `UPDATE public.tbl_challan_page_photo SET active=false` for the same active `fk_page_audit_id`.
 
-Before user approval, exact source review must confirm multipart/request field names, requiredness, datatype and file constraints, exact persisted photo/active-state columns, any filesystem/blob-storage behavior, and validation guards not represented in the canonical chain. No missing behavior may be invented.
+The new `ChallanPagePhotoDo` stores the page audit link, vehicle/load/stop references where supplied, original filename, normalized content type, content length, raw PostgreSQL `bytea` photo data, uploader, upload timestamp, `active=true`, and remarks, then persists through `ChallanPagePhotoJpaDao.save(...)`. This path stores the uploaded bytes in the database rather than a filesystem.
 
-## Acceptance evidence already proved
+## Redirect outcomes
 
-- Story unique key matches canonical BL-001 exactly.
-- Controller-to-service-to-DAO/entity/table chains are represented.
-- Prior-photo deactivation and new-photo persistence paths are represented.
-- Success/error redirect terminal classes are represented.
-- No approval is granted by this enrichment step.
+Successful processing sets flash attribute `challanUploadSuccess` to the service response message and redirects to the Add Stop URL.
+
+A governed application validation error sets `challanUploadError` to the service message. An `IOException` sets `Unable to read the uploaded challan photo.` Any other exception sets `Unable to upload challan photo.` All of these redirect back to the same Add Stop URL.
+
+## Browser/UI source review
+
+The recovered source contains the non-AJAX controller endpoint, but the current visible Supplier and Customer stop templates do **not** submit to this endpoint. Their actual upload forms point to `POST /add-stop/challan-page-photo/upload-ajax` and intercept submission with JavaScript (`STORY-0050`). A source-wide local search of the recovered ZIP found no HTML/JS reference that submits to the non-AJAX `/upload` path.
+
+Therefore the backend non-AJAX contract is fully source-proved, but the strict BL-002 visible-control/browser-event contract for this exact endpoint is not. Treating the AJAX form as if it submitted here would invent behavior.
+
+## Exact remaining source-detail gap
+
+Strict completion requires either:
+
+1. authoritative source proving a visible/browser form or other governed client that submits to `POST /add-stop/challan-page-photo/upload`; or
+2. governed confirmation that this endpoint is intentionally a non-visible fallback/API endpoint for which no browser control is applicable.
+
+Until that is established, STORY-0049 remains `SOURCE_DETAIL_REVIEW_REQUIRED` rather than being promoted to business-behavior complete.
+
+No approval occurred. No application code was changed and no BL-010 work was created or executed.
