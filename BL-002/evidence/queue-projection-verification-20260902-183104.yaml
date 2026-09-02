@@ -1,0 +1,19 @@
+evidence_type: BL002_QUEUE_PROJECTION_CURRENT_VERIFICATION
+observed_at: '2026-09-02T18:31:04+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-182848-IST-RUN-001
+authoritative_unit_total: 134
+authoritative_business_behavior_complete: 134
+current_queue_rows: 134
+current_queue_approved_after_rework: 2
+current_queue_awaiting_user_review: 132
+current_queue_rework_required: 0
+current_queue_rework_in_progress: 0
+current_projection_drift_count: 0
+enrichment_progress_historical_metadata:
+  aggregate_queue_projection_pending: true
+  queue_projection_drift_ids_present: true
+classification: STALE_DERIVED_RECONCILIATION_METADATA
+current_authority_rule: AUTHORITATIVE_STORY_EVIDENCE_AND_CURRENT_QUEUE_WIN_OVER_STALE_DERIVED_METADATA
+action: CURRENT_QUEUE_VERIFIED_ZERO_DRIFT_NO_STORY_MUTATION
+application_code_mutation: false
+bl010_execution: false
