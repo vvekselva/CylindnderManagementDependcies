@@ -2,30 +2,26 @@
 
 - Release: R1
 - Endpoint: `GET /search/address/customer-address/{customerId}`
-- Register controller group: `Restful Address Services`
+- Controller: `RestfulAddressServices.getCustomerAddressByCustomerId`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_COMPLETE
-- Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## User intent and screen trigger
-On Customer Stop, after the operator selects a customer from the customer-name search results, `selectCustomer(id,name)` stores the exact selected customer ID in hidden `vehicleTripStop.customer.customerId` and immediately calls `fetchAddresses(id)`. The address card is displayed with a loading indicator while the dependent lookup runs.
+## Business behavior
 
-## Browser/API contract
-The browser calls exactly `GET /cylindermanagement/search/address/customer-address/${customerId}`. There is no free-text debounce for this dependent lookup: it is triggered by selecting a customer. The path value is the selected result's numeric `customerId`.
+On Customer Stop, selecting a customer stores that exact persistent customer ID and immediately triggers the dependent address lookup `GET /search/address/customer-address/{customerId}`. There is no independent text/debounce rule for this dependent lookup; the path identity comes from the selected customer result.
 
-The response contract is `CustomerAddressSearchResponseDto`; the UI reads `customerAddressDtos`. Each result exposes `customerAddressId` plus nested address data used for the visible address cards (`addressLine1`, `addressLine2`, `city`). If the list is empty, the screen displays `No addresses on file`; fetch failure displays `Failed to load addresses`.
+The recovered ZIP confirms `RestfulAddressServices.getCustomerAddressByCustomerId` and `CustomerAddressFetchByIDService`. The service reads customer-address relationships through `CustomerAddressJpaDao` and returns `CustomerAddressSearchResponseDto.customerAddressDtos`. Browser address cards use the returned `customerAddressId` as the selectable persistent identity, display address data, and write the selected ID to `vehicleTripStop.deliveryAddress.customerAddressId`; clearing/changing the customer invalidates the dependent address selection.
 
-## Selection propagation
-Clicking an address card clears the previous selected-card CSS state, marks the clicked card selected, writes the exact `item.customerAddressId` to hidden field `vehicleTripStop.deliveryAddress.customerAddressId`, recomputes Customer Stop completion eligibility, and triggers exchange loading for the already-selected customer. Clearing the customer clears this address ID and hides downstream exchange state.
+Blank customer identity returns no usable address response; invalid/service-failure paths return an empty response DTO. Empty results display no-address feedback and fetch failures display the address-load failure message. This search itself is read-only; its result identity is consumed later by Customer Stop persistence.
 
-## Controller/service/database path
-The canonical BL-001 trace proves `RestfulAddressServices.getCustomerAddressByCustomerId` -> `CustomerAddressFetchByIDService.searchWithText` -> `CustomerAddressJpaDao` over `public.tbl_customer_address`, `public.tbl_customer`, and `public.tbl_address` -> `CustomerAddressSearchResponseDto`.
+## Completion and approval gate
 
-The controller has explicit alternate outcomes: blank customer ID returns a null response body; invalid numeric ID or service exception returns an empty `CustomerAddressSearchResponseDto`. The UI consequently treats an empty DTO/list as no addresses rather than inventing an address.
+The trigger, path identity, service/DAO read path, selectable address identity, dependent reset behavior, empty/error outcomes and read-only business effect are source-bound. STORY-0086 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-## Persisted/read identity
-This endpoint is read-only. The governing identity is the selected `customerId`; the returned selectable identity is `customerAddressId`. The downstream Customer Stop form persists the chosen address identity under `vehicleTripStop.deliveryAddress.customerAddressId`, but this search endpoint itself performs no write.
-
-## Approval boundary
-Strict field/UI enrichment is complete from frozen source plus canonical BL-001 trace. This is **not** approval; approval remains `PENDING_USER_APPROVAL`.
+Approval remains pending; no application-code or BL-010 mutation occurred.
