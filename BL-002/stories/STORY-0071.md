@@ -4,13 +4,17 @@
 - Endpoint: `GET /delivery-planning/demand-points.geojson`
 - Controller: `DeliveryPlanningApiController.demandPointsGeoJson`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Local-source evidence: `BL-002/evidence/STORY-0071-local-source-business-behavior-20260902-1648.yaml`
 
 This read-only API accepts optional BigDecimal `centerLatitude`, `centerLongitude`, `radiusMeters` and optional String `signalType`, `forecastWindow`, `demandCategory`. The controller passes all six to `DeliveryPlanningMapService.fetchDemandPointsGeoJson`.
 
-The service requires center latitude/longitude either both absent or both present; latitude must be -90..90, longitude -180..180. Negative radius is rejected. String filters are normalized: null, blank or `ALL` become null; otherwise trimmed uppercase values are passed to `DeliveryPlanningDemandJpaDao.findDemandPoints`.
+The service requires center latitude/longitude either both absent or both present, validates latitude -90..90 and longitude -180..180, and rejects negative radius. String filters normalize null, blank or `ALL` to null; otherwise trimmed uppercase values are passed to the demand DAO.
 
-Each DAO projection becomes a GeoJSON Point `[longitude, latitude]`. Properties include customer/customer-address/product identity, order request counts/quantities and dates, phone verification counts/time, spot-check counts/time, active holdings, closed sample count, consumption/projection fields, forecast/demand classifications, markerColor, priorityRank, demandScore, distanceMeters, and `selectedForPlanning=false`. Metadata identifies source `CMAS_DATABASE_DELIVERY_PLANNING_DEMAND_SIGNAL`, no tile dependency, normalized filters and pointCount.
+Each DAO projection becomes a GeoJSON Point `[longitude, latitude]` with customer/address/product identities, demand/order/holding/forecast fields, priority/demand scores, distance and selection status. Metadata identifies source `CMAS_DATABASE_DELIVERY_PLANNING_DEMAND_SIGNAL`, no tile dependency, normalized filters and pointCount. No persistence mutation occurs.
 
-There is no persistence mutation or local controller error conversion. No approval occurred.
+The recovered governed ZIP independently confirms the parameter normalization/validation, demand DAO delegation, GeoJSON mapping and read-only response. STORY-0071 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+
+No approval occurred. No application code or database schema was changed.
