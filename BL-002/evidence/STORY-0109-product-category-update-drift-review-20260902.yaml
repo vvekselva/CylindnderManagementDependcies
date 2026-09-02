@@ -1,0 +1,36 @@
+review_packet_id: STORY-0109-PRODUCT-CATEGORY-UPDATE-DRIFT-20260902
+story_id: STORY-0109
+state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+repository: vvekselva/CylinderManagement
+ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+current_behavior:
+  - DomainLookupController.saveProductCategory accepts optional productCategoryId and explicitly presents add-vs-update success behavior.
+  - ProductCategoryIngestionService performs `findByProductCategoryContainingIgnoreCase(value)` and rejects whenever any result exists, without excluding the submitted productCategoryId during an update.
+  - Because the duplicate query is a containing match rather than exact normalized equality, an update can be rejected by its own existing row and a new value can also be rejected by a different category containing the submitted text.
+  - On successful service save the controller refreshes only the Product Category cache and redirects to the Product Category tab.
+business_impact:
+  - The visible edit/update path can report a duplicate-validation failure for a legitimate update, including an unchanged category name.
+  - Contains matching can block distinct category values that are substrings of existing categories, making uniqueness behavior stricter than exact business-key uniqueness.
+proposed_manifest:
+  - path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductCategoryIngestionService.java
+    component: ProductCategoryIngestionService
+    method: processRequest
+    source_anchor: duplicate-validation block around lines 48-70 in recovered ZIP
+    proposed_change: validate duplicate category using exact normalized case-insensitive business-key semantics and, when productCategoryId is present, exclude that same persistent row from duplicate rejection before mapping/saving.
+    reason: align service validation with the controller's source-proved add/update contract and avoid substring/self-duplicate false positives.
+  - path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ProductCategoryJpaDao.java
+    component: ProductCategoryJpaDao
+    method: exact normalized duplicate lookup as needed by service
+    source_anchor: existing repository search declarations
+    proposed_change: add/use an exact ignore-case lookup suitable for create/update duplicate validation; no schema change.
+  - path: relevant Product Category ingestion/controller tests under src/test/java
+    component: tests
+    proposed_change: cover create duplicate, update unchanged name, update to another row's exact name, and substring-but-distinct name; preserve cache refresh/PRG behavior.
+database_impact: NONE_SCHEMA
+material_story_change: false
+approval_gate: EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+scope_expansion_rule: additional fields, schema constraints, controller behavior or files beyond the listed service/repository/tests require new approval.
+application_code_changed: false
+bl010_created_or_executed: false
