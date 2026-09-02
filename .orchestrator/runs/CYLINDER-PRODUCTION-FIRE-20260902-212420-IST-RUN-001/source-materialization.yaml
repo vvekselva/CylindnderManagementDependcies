@@ -1,0 +1,18 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+file_library_id: file_00000000659c8211857bba6b09282de3
+recovery_sequence:
+  file_library_exact_search_attempted: true
+  file_library_exact_search_result: NOT_RETURNED_BY_FILE_LIBRARY_SEARCH
+  local_chatgpt_workspace_recovery_attempted: true
+  local_chatgpt_workspace_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-080237).zip
+  local_chatgpt_workspace_recovery_result: SUCCESS
+materialization:
+  extracted_path: /mnt/data/cylinder-prod-fire-20260902-212420/source/extracted
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  file_count: 1650
+  local_git_present: false
+  frozen_for_run: true
+application_analysis_engine: EXTRACTED_LOCAL_SOURCE
+application_github_code_search_used: false
+state: SOURCE_MATERIALIZED_AND_FROZEN
