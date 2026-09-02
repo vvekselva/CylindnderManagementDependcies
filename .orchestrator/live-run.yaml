@@ -1,35 +1,34 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
-scheduler_fire_id: 20260902-225515-IST
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-232924-IST-RUN-004
+scheduler_fire_id: 20260902-232924-IST
 scheduler_task: Cylinder Production Fire
-state: TERMINATED
+state: EXECUTING
 mode: CONTINUOUS
-started_at: '2026-09-02T22:55:17+05:30'
-last_heartbeat_at: '2026-09-02T23:04:49+05:30'
-terminated_at: '2026-09-02T23:04:49+05:30'
-terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
-terminal_reason: All remaining safe-independent work is gated by explicit user approval or unavailable faithful test runtime; no idle time was used to satisfy the 30-minute target.
-running_worker_count: 0
-completed_worker_count: 7
-blocked_worker_count: 5
-active_work_unit_ids: []
-eligible_work_remaining: false
+started_at: '2026-09-02T23:29:25+05:30'
+last_heartbeat_at: '2026-09-02T23:31:30+05:30'
+terminated_at: null
+terminal_classification: null
+terminal_reason: null
+running_worker_count: 1
+completed_worker_count: 2
+blocked_worker_count: 0
+active_work_unit_ids: [DURABLE_STATE_RECONCILIATION]
+eligible_work_remaining: true
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 572
 runtime_target_30_minutes_satisfied: false
-completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, PRIOR_RUN_GAP_RECONCILIATION, SOURCE_RECOVERY_AND_FREEZE, APPROVAL_AGGREGATE_RECONCILIATION, STORY-0087_0089_0090_STATIC_CONFORMANCE_CONFIRMATION, STORY-0101_DRIFT_REVIEW_CONFIRMATION, STORY-0013_DEV_DRIFT_PACKET_PREPARATION]
-blocked_work_unit_ids: [STORY-0101_CODE_CHANGE_APPROVAL, DEV-0002_EXACT_DRIFT_APPROVAL, DEV-0003_EXACT_DRIFT_APPROVAL, DEV-0004_EXACT_DRIFT_APPROVAL, EXECUTE_GENERATED_TESTS_WITH_JACOCO]
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-222712-IST-RUN-003
-previous_run_reconciliation_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, SOURCE_RECOVERY_AND_FREEZE]
+blocked_work_unit_ids: []
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id: file_00000000659c8211857bba6b09282de3
 source_materialized_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_materialization_this_invocation: SUCCESS_AVAILABLE_CHATGPT_LOCAL_MOUNT
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
-source_extracted_path: /mnt/data/cylinder-prod-fire-20260902-225515/source
+source_tree_content_hash: 20017f21b0536a643080fdaabe9b302af838d1a0224c0ddac10fbf62a3e16191
+source_extracted_path: /mnt/data/cylinder-prod-fire-20260902-232924/source
 source_extracted_file_count: 1650
 source_local_git_present: false
-source_intake_evidence: .orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237-run003-225515.yaml
-runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING}
+source_intake_evidence: .orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237-run004-232924.yaml
+runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING, maven_wrapper: MISSING, gradle_wrapper: MISSING, bundled_jars: NONE}
 checkpoint: BL-002/enrichment-progress.yaml@version-80
-next_action: RESUME_ON_NEXT_FIRE; PROCESS_NEW_EXPLICIT_APPROVALS_OR_NEW_RUNTIME_CAPABILITY_IF_PRESENT; OTHERWISE_RECHECK_GATES_FAIL_CLOSED
+next_action: RECONCILE_DURABLE_STATE_THEN_REPLAN_CLAIM_DISPATCH_SAFE_INDEPENDENT_WORK
