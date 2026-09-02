@@ -1,0 +1,59 @@
+story_id: STORY-0038
+drift_id: STORY-0038-CYLINDER-DELIVERY-MEDIATOR-FAILURE-DRIFT-20260902
+status: AWAITING_STORY_REVIEW_AND_EXACT_CODE_CHANGE_APPROVAL
+detected_by_run: CYLINDER-PRODUCTION-FIRE-20260902-212420-IST-RUN-001
+governed_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  analysis_engine: EXTRACTED_LOCAL_SOURCE
+  github_code_search_used: false
+story_approval_state: PENDING_USER_APPROVAL
+current_behavior:
+  - POST /cylinderDelivery calls Uc02Phase02CylinderDeliveryMediator.invokeServices and redirects to the order list whenever the mediator returns normally.
+  - The mediator constructs OrderIngestionRequestDto and invokes OrderIngestionService.
+  - InvalidInputParameterException is rethrown to the controller as expected.
+  - CylinderManagementApplicationException from OrderIngestionService is logged but swallowed at mediator lines ~67-70; execution then continues and sets UC02Phase02CylinderDeliveryResponseDto responseCode to SUCCESS at line ~87.
+  - The controller therefore can report a normal successful redirect even when the underlying delivery-order service raised an application exception and did not provide a successful order response.
+  - The mediator comment also shows cylinder-state transition is only a future example and is not currently executed by this endpoint.
+approved_behavior:
+  state: PENDING_USER_APPROVAL
+  note: This packet does not infer approval of delivery-state transition or any new service sequence. It isolates failure propagation in the currently implemented order-ingestion boundary.
+business_impact:
+  - An application-layer delivery failure can be presented to the operator as a successful save/redirect.
+  - Downstream screens can be reached with no successfully returned order while audit/logs contain the only indication of failure.
+  - False-success handling makes retry/idempotency analysis unreliable because the user may retry an operation whose actual persistence outcome was hidden.
+proposed_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/mediator/Uc02Phase02CylinderDeliveryMediator.java
+    class: Uc02Phase02CylinderDeliveryMediator
+    method: invokeServices
+    approximate_anchor: lines ~42-89, especially catch block ~67-70 and SUCCESS assignment ~87
+    proposed_change: do not swallow CylinderManagementApplicationException; propagate it through the mediator contract or convert it to an explicit non-success response that the controller must handle. Set SUCCESS only after OrderIngestionService returns a valid successful response/order.
+    reason: prevent false-success completion when persistence/service execution fails.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/Uc02Phase02CylinderDeliveryController.java
+    class: Uc02Phase02CylinderDeliveryController
+    method: doPost
+    approximate_anchor: lines ~64-85
+    proposed_change: if the approved mediator contract propagates CylinderManagementApplicationException, catch it and render/redirect with a stable failure message rather than the success redirect. Preserve the existing InvalidInputParameterException form-validation path.
+    reason: show the actual transaction outcome to the operator.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: relevant Uc02Phase02CylinderDeliveryMediator/controller tests under src/test/java
+    component: tests
+    proposed_change: prove validation failure remains form-visible; OrderIngestionService application exception never yields SUCCESS or success redirect; successful service response yields success exactly once.
+    reason: guard failure propagation.
+database_impact:
+  schema_change: false
+  migration_required: false
+out_of_scope_without_new_approval:
+  - adding the commented future cylinder-state transition service
+  - redefining delivery order idempotency or natural keys
+  - schema changes
+approval_gate: STORY_APPROVAL_AND_EXACT_FAILURE_PROPAGATION_MANIFEST_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_OR_BL010_MUTATION
+application_code_mutated: false
+bl010_created_or_executed: false
