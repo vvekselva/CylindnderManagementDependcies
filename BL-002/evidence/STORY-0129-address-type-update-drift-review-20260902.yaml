@@ -5,19 +5,25 @@ source_repository: vvekselva/CylinderManagement
 source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_reconciliation: BL-002/evidence/STORY-0129-ui-search-source-reconciliation-20260902.yaml
 current_behavior:
   - POST /lookupManagement/addressType/save normalizes addressType to trimmed uppercase and description to trimmed text.
   - addressTypeId null/zero is treated as create; nonzero as update.
+  - The recovered LookupManagement template already provides database-backed Address Type search while typing through STORY-0087 GET /search/addresstype/{searchText}, with a 320 ms debounce and visible existing-match suggestions.
+  - Therefore no new Address Type type-ahead UI implementation is required by this manifest.
   - AddressTypeIngestionService rejects any nonempty findByAddressTypeContainingIgnoreCase result.
   - Duplicate validation uses contains rather than exact normalized business-key equality and does not exclude the current addressTypeId on update.
   - Successful repository saveAndFlush writes AddressTypeDo to public.tbl_address_type and controller refreshes the Address Type cache.
-approved_story_behavior:
+approved_or_target_behavior:
+  - Existing database-backed search-while-typing behavior must be preserved and continue using STORY-0087.
   - Create must reject another row with the same normalized address type.
   - Update must allow the existing row to retain its own normalized address type and reject only another row using that business key.
+  - Substring search suggestions must not themselves become duplicate rejection unless the normalized business keys are equivalent.
   - Controlled validation evidence must remain visible through the existing Lookup Management form.
 business_impact:
-  - A legitimate update can be rejected as a duplicate of itself.
-  - A category whose name merely contains/is contained by another category can be falsely treated as a duplicate.
+  - The pre-submit UI already helps the operator see existing Address Types.
+  - A legitimate update can still be rejected as a duplicate of itself by the service.
+  - A category whose name merely contains/is contained by another category can still be falsely treated as a duplicate.
 proposed_manifest:
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
@@ -26,14 +32,14 @@ proposed_manifest:
     method: processRequest
     approximate_anchor: duplicate validation branch before AddressTypeMapper mapping
     proposed_change: Replace contains-based unconditional duplicate rejection with exact case-insensitive normalized business-key validation that excludes the submitted addressTypeId during update.
-    reason: Preserve correct create uniqueness while allowing same-row updates.
+    reason: Preserve correct create uniqueness while allowing same-row updates and avoiding substring false rejections.
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
     path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/AddressTypeJpaDao.java
     component: AddressTypeJpaDao
-    approximate_anchor: repository query methods
-    proposed_change: Add exact case-insensitive lookup/existence method required by update-aware validation; retain contains methods for search use.
-    reason: Separate search semantics from business-key uniqueness semantics.
+    approximate_anchor: repository query methods near findByAddressTypeContainingIgnoreCase
+    proposed_change: Add exact case-insensitive lookup/existence method required by update-aware validation; retain contains methods for STORY-0087 search/suggestion behavior.
+    reason: Separate suggestion/search semantics from business-key uniqueness semantics.
   - repository: vvekselva/CylinderManagement
     ref: 3ae6e61442132d94a307275b08dd65fcef228d89
     path: cylindermanagement.custommapper.service/src/test/java
@@ -41,6 +47,13 @@ proposed_manifest:
     approximate_anchor: existing/new AddressTypeIngestionService tests
     proposed_change: Cover create success, exact duplicate create, substring nonduplicate, same-row update, other-row duplicate update, null/blank request and persistence success/failure response.
     reason: Prevent regression of update/uniqueness behavior.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.web/src/test/java
+    component: Lookup Management regression test
+    approximate_anchor: Address Type Lookup Management MVC/template behavior
+    proposed_change: Add regression coverage proving the existing Address Type type-ahead continues to call the governed STORY-0087 search path and remains independent from submit-time exact duplicate validation. No production template change is proposed.
+    reason: Preserve the already-implemented pre-submit lookup behavior while service uniqueness is corrected.
 database_impact:
   schema_change: false
   migration_required: false
@@ -48,6 +61,6 @@ database_impact:
 risk_and_rollback:
   risk: LOW
   rollback: Revert application/repository/test changes; no database rollback required.
-scope_expansion_rule: Any additional file, schema object, field, endpoint or business behavior requires new explicit approval.
+scope_expansion_rule: Any production template change, additional production file, schema object, field, endpoint or business behavior beyond this manifest requires new explicit approval.
 application_code_changed: false
 bl010_created_or_executed: false
