@@ -1,0 +1,19 @@
+story_id: STORY-0066
+evidence_type: LOCAL_SOURCE_BUSINESS_BEHAVIOR_PROOF
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+endpoint: GET /ownership-dashboard
+controller_path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/OwnershipDashboardController.java
+service_path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/OwnershipDashboardFetchService.java
+view: final-version-2/OwnershipDashboard_PremiumEnterprise_Fixed
+filters: [location, productName, state, searchTerm]
+paging:
+  page_default: 0
+  size_default: 50
+  page_min: 0
+  size_min: 10
+  size_max: 200
+mutation: false
+application_code_changes: 0
+auto_approval: false
+classification: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
