@@ -1,0 +1,8 @@
+reconciled_run_id: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+reconciled_by_run_id: CYLINDER-PRODUCTION-FIRE-20260902-222712-IST-RUN-003
+observed_state: EXECUTING
+last_heartbeat_at: '2026-09-02T21:59:10+05:30'
+reconciled_at: '2026-09-02T22:27:12+05:30'
+classification: ABNORMAL_PROCESS_DISAPPEARANCE
+reason: prior durable live-run remained EXECUTING without terminalization across a later scheduler fire; state preserved as resumable and superseded by this linked run
+resumable: true
