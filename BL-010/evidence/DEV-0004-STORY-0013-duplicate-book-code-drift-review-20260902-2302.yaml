@@ -1,0 +1,62 @@
+development_id: DEV-0004
+story_id: STORY-0013
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-225515-IST-RUN-003
+review_type: EXACT_CODE_CHANGE_MANIFEST
+approval_state: STORY_APPROVED_AFTER_REWORK_CODE_CHANGE_NOT_AUTHORIZED
+implementation_gate: EXPLICIT_USER_APPROVAL_REQUIRED_FOR_THIS_EXACT_MANIFEST
+source_binding:
+  repository: CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  component: ChallanBookIngestionService
+  method: processRequest
+  finding: the service maps and calls saveAndFlush without an explicit duplicate Book Code pre-check; ChallanBookRegistryJpaDao already exposes findByBookCode(String), so uniqueness is left to the database constraint and JPA exception path.
+  source_anchor: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java lines 54-84
+approved_behavior:
+  statement: STORY-0013 documents the missing duplicate-code pre-check as a CURRENT_STATE_GAP; remediation must detect an existing business code before persistence and return a controlled application error.
+business_impact:
+  - duplicate book submissions can surface as uncontrolled persistence exceptions rather than a friendly governed form error
+  - validation behavior depends on database constraint failure timing instead of explicit business validation
+proposed_code_change_locations:
+  - repository: CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ChallanBookIngestionService.java
+    class: ChallanBookIngestionService
+    method: processRequest
+    anchor: after request/range validation and before DTO-to-entity mapping, approximately lines 53-56
+    proposed_change: call challanBookRegistryJpaDao.findByBookCode(bookDto.getBookCode()) and throw CylinderManagementApplicationException when an existing record is present; do not call saveAndFlush on the duplicate path
+    reason: enforce business-key uniqueness at service level before persistence
+  - repository: CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/ChallanBookRegistryJpaDao.java
+    class: ChallanBookRegistryJpaDao
+    method: findByBookCode
+    anchor: line 20
+    proposed_change: no DAO signature change required; reuse existing Optional<ChallanBookRegistryDo> finder
+    reason: source already provides the required exact-code lookup
+  - repository: CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java
+    class: ChallanBookWebController
+    method: processBookIngestion
+    anchor: lines 52-67 existing CylinderManagementApplicationException catch
+    proposed_change: no production behavior expansion required; retain existing error redisplay path
+    reason: the controller already converts the governed application exception into the visible form error outcome
+tests:
+  unit:
+    - existing exact book code causes CylinderManagementApplicationException and saveAndFlush is never called
+    - absent book code permits mapping and one saveAndFlush call
+    - DAO lookup is performed before persistence
+  integration:
+    - duplicate submission leaves row count unchanged and redisplays add-challan-book with controlled errorMessage
+    - unique submission persists successfully
+  regression:
+    - database unique constraint remains intact as final integrity protection
+database_impact: READ_ONLY_PRECHECK_ONLY
+schema_migration_required: false
+existing_database_constraint_changed: false
+application_code_changed: false
+expansion_rule: normalization/case-folding semantics or any database constraint change are outside this manifest and require new user approval
+state: DRIFT_REVIEW_READY_FOR_USER_APPROVAL
