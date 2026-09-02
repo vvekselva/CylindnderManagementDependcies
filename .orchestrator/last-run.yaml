@@ -1,57 +1,51 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001
-checkpoint_state: RESUMABLE_RUNTIME_BOUNDARY
-started_at: '2026-09-02T09:27:12+05:30'
-checkpoint_at: '2026-09-02T09:33:09+05:30'
-terminal_classification: PLATFORM_RUNTIME_BOUNDARY
-termination_reason: GOVERNED_INVOCATION_RUNTIME_BOUNDARY_AFTER_PARTIAL_STORY_0048_EXACT_SOURCE_PROOF
+run_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST-RUN-001
+checkpoint_state: BLOCKED_RESUMABLE
+started_at: '2026-09-02T15:13:19+05:30'
+checkpoint_at: '2026-09-02T15:14:47+05:30'
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+termination_reason: FILE_LIBRARY_PRIMARY_SOURCE_ZIP_RECOVERY_MATERIALIZATION_FAILED_AND_SAFE_CANONICAL_QUEUE_REWRITE_UNAVAILABLE
 voluntary_early_stop: false
 eligible_work_remaining: true
 architecture:
   mode: RESOURCE_SCOPED_CLAIMS
   run_scope: CONTINUOUS
-  github_role: DURABLE_CONTROL_AUDIT_AND_EXACT_SOURCE_READ
+  github_role: DURABLE_CONTROL_AUDIT_ONLY
   github_actions_runners_used: false
 scheduler_handoff:
-  fire_id: CYLINDER-PRODUCTION-FIRE-20260902-092654-IST
-  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/CYLINDER-PRODUCTION-FIRE-20260902-092654-IST.yaml
+  fire_id: CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST
+  receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Orchestrator-Production-Fire/CYLINDER-ORCHESTRATOR-PRODUCTION-FIRE-20260902-151309-IST.yaml
   handoff_acknowledged: true
   run_linked: true
-prior_run_reconciliation:
-  previous_run_id: CYLINDER-PRODUCTION-FIRE-20260902-082704-IST-RUN-001
-  unresolved_gap_remaining: false
+application_source:
+  requested_file_library_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_library_id: file_00000000659c8211857bba6b09282de3
+  recovery_state: FILE_LIBRARY_ZIP_RECOVERY_MATERIALIZATION_FAILED
+  github_code_search_used_for_application_analysis: false
 business_behavior_rework:
-  advanced_units: [STORY-0048]
-  completed_units: []
-  result: PARTIAL_CONTINUE_REQUIRED
-  evidence: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001/work-units/STORY-0048-source-proof.yaml
-aggregate:
-  business_behavior_complete: 21
+  business_behavior_complete: 24
   business_behavior_total: 134
-  percent: 15.7
-reconciliation:
-  aggregate_projection_repaired: false
-  aggregate_projection_repair_remaining: true
-  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+  awaiting_user_review: 22
+  approved_after_rework: 2
+  active_rework: 0
   completion_delta_this_run: 0
+reconciliation:
+  newest_authoritative_projection: BL-002/enrichment-progress.yaml@2026-09-02T15:01:00+05:30
+  aggregate_projection_repair_remaining: true
+  queue_projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046, STORY-0047, STORY-0048, STORY-0050]
+  stale_last_run_projection_repaired: true
 approval:
   auto_approve: false
   approval_delta: 0
 drift_governance:
-  story0045_approval_gate_preserved: true
   application_code_mutation: false
-  bl010_created: false
   bl010_executed: false
   user_drift_approval_bypassed: false
-source_runtime:
-  requested_method: EXACT_FROZEN_GITHUB_SOURCE
-  source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
-  result: STORY_0048_CONTROLLER_TO_SERVICE_DELEGATE_PROVED_DOWNSTREAM_IDENTITY_PENDING
+bl008:
+  state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
+  service_ui_acceptance_cases: 30
+  execution_delta: 0
 runtime_reliability:
-  heartbeat_state: TERMINATED_AT_RUNTIME_BOUNDARY
-  termination_record: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001/termination.yaml
-  event_stream: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260902-092654-IST-RUN-001/events.ndjson
-  scheduler_must_remain_enabled: true
-  next_action: Resolve exact ChallanPagePhotoUploadService implementation at frozen ref and trace deactivatePhoto through DAO/repository/entity/database; then resume STORY-0047; preserve STORY-0045 approval gate.
+  next_action: Recover/materialize the specified File Library ZIP, freeze/fingerprint local source, then resume STORY-0045 with fallback STORY-0049 and repair pending queue projection drift.
 claims:
   active_at_terminal: 0
 transient_logs_remaining: 0
