@@ -1,0 +1,24 @@
+story_id: STORY-0012
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-202712-IST-RUN-001
+recorded_at: '2026-09-02T20:45:00+05:30'
+approval_evidence: BL-002/approval-evidence/STORY-0012-approval-20260902.md
+approved_contract: BL-002/stories/STORY-0012.md
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_analysis_engine: LOCAL_EXTRACTED_SOURCE
+source_anchors:
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java#showAddBookForm
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java#populateSummaryMetrics
+  - cylindermanagement.web/src/main/resources/templates/final-version-1/add-challan-book.html
+validated_behavior:
+  endpoint: GET /logistics/challan-books/add-form
+  view: final-version-1/add-challan-book.html
+  blank_request_model: ingestionRequest
+  summary_metric_groups: [challanBookTotalMetrics, challanBookActiveMetrics, challanBookUnusedMetrics]
+  write_effect: NONE
+additional_source_behavior:
+  summary_metric_runtime_failure: renders_empty_metric_lists_and_summaryMetricErrorMessage
+conformance: PASS_NO_APPROVED_BEHAVIOR_DRIFT
+code_change_required: false
+fanout_eligible: true
+application_source_mutation: NONE
