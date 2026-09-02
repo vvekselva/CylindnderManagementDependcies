@@ -13,8 +13,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.sreyas.datamatics.application.dto.ProductCategoryIngestionRequestDto;
-import com.sreyas.datamatics.application.dto.ProductCategoryIngestionResponseDto;
+import com.sreyas.datamatics.application.request.dto.ProductCategoryIngestionRequestDto;
+import com.sreyas.datamatics.application.response.dto.ProductCategoryIngestionResponseDto;
 import com.sreyas.datamatics.application.service.ICylinderManagementApplicationService;
 import com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache;
 
