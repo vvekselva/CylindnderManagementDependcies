@@ -1,0 +1,10 @@
+scheduler_task: cylinder-production-fire-ii
+fire_id: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST
+observed_or_scheduled_fire_time: '2026-09-02T17:29:49+05:30'
+receipt_time: '2026-09-02T17:29:49+05:30'
+state: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
+run_id: null
+idempotency_key: cylinder-production-fire-ii:CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST
+terminal_classification: null
+terminated_at: null
