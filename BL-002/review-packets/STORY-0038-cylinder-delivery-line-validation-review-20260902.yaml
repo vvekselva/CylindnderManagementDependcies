@@ -1,0 +1,42 @@
+packet_id: STORY-0038-cylinder-delivery-line-validation-review-20260902
+story_id: STORY-0038
+state: AWAITING_EXPLICIT_USER_APPROVAL
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+current_behavior:
+  validator:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/OrderIngestionRequestValidator.java
+    anchor: order-line loop around lines 278-303
+    findings:
+      - No within-request duplicate cylinder-id check is source-proved.
+      - The existence check is guarded by cylinderIdNull instead of its inverse and then dereferences lineDto.getCylinder().getCylinderId(); this can skip existence validation for a non-null id and can dereference an invalid/null cylinder path.
+  persistence:
+    entity: OrderLineDo
+    table: public.tbl_order_line
+    migration_anchor: cylinder.datascripts/src/main/resources/db/migration/V21__OrderLineI.sql around line 14
+    detail: Database has tbl_order_line_unique on (fk_order, fk_cylinder), so a repeated cylinder can ultimately fail at persistence, but the application validator does not provide the required controlled pre-check.
+business_impact:
+  - Duplicate physical cylinder selection can reach the database rather than being rejected as a clear form/service validation error.
+  - A non-existent cylinder id is not reliably rejected by the current branch condition before service mapping.
+  - Invalid/null line data can fail through an uncontrolled dereference instead of the intended validation evidence.
+proposed_locations:
+  - file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/OrderIngestionRequestValidator.java
+    component: OrderIngestionRequestValidator.validate
+    anchor: around lines 278-303
+    proposal: Correct the cylinder-existence branch to run only after a non-null cylinder id is available; track seen cylinder ids and reject a repeated id in the same Order request with controlled validation evidence.
+  - file: Cylinder Delivery UI/template request construction
+    component: selected full-cylinder list
+    proposal: Prevent duplicate cylinder selection client-side as an additional UX guard while keeping server validation authoritative.
+tests:
+  - null cylinder and null cylinder id produce controlled validation without dereference failure
+  - non-existent non-null cylinder id is rejected
+  - repeated cylinder id in one delivery order is rejected before persistence
+  - distinct valid cylinders continue to save
+  - database composite uniqueness remains final safety guard, not primary user feedback
+database_impact: NONE. Existing (fk_order, fk_cylinder) unique constraint is retained.
+governance:
+  code_change_authorized: false
+  bl010_authorized: false
+  explicit_user_approval_required: true
