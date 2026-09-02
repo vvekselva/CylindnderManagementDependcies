@@ -12,37 +12,45 @@ current_behavior:
   ui:
     - LookupManagement already calls database-backed Address Type, Country, State and City search endpoints while typing.
     - DomainLookup already calls database-backed Product Category, Product UOM, Product, Vehicle and Driver search endpoints while typing.
+  update_identity_source_proof:
+    - LookupManagementController sets addressTypeId, countryId, stateId and cityId in the save DTOs.
+    - DomainLookupController sets productCategoryId, productUomId, productId, cylinderId, vehicleId and driverId in the save DTOs.
   service:
-    - The affected ingestion services use findBy...ContainingIgnoreCase predicates for duplicate rejection.
+    - Product Category, Product UOM, Product, Vehicle, Driver, Address Type, Country, State and City ingestion services use findBy...ContainingIgnoreCase predicates for duplicate rejection.
     - A substring hit can therefore be treated as a duplicate even when it is not business-equivalent.
-    - Where the same save flow is used for update, the current record identity is not source-proved to be excluded by these predicates.
+    - Because update identities are source-proved to be submitted but these duplicate predicates do not exclude them, a current row can be returned by the duplicate query and reject its own update.
+    - Cylinder ingestion is different: it performs an exact case-insensitive active-primary physical identifier pre-check through CylinderIdentifierJpaDao; STORY-0112 is not included in this drift manifest.
 business_impact:
-  - Users can see existing lookup/master values before creating another value, which satisfies the discovery part of the requirement on the source-proved LookupManagement and DomainLookup screens.
+  - Users can see existing lookup/master values before creating another value on the source-proved LookupManagement and DomainLookup screens.
   - Duplicate rejection can still be overly broad, blocking legitimate values whose names merely contain one another.
-  - Update flows can reject legitimate edits if the current row is returned by the duplicate search.
+  - Update flows can reject legitimate edits because the current row identity is not excluded from the duplicate query.
 proposed_change_manifest:
   - story_id: STORY-0109
+    controller_identity_anchor: DomainLookupController.java around lines 177-187 sets productCategoryId
     component: ProductCategoryIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductCategoryIngestionService.java
     method: processRequest
     source_anchor: around lines 38-61; duplicate predicate around line 57
-    proposed_change: Replace substring duplicate rejection with normalized exact-equivalence lookup and exclude the current Product Category identity when an update identity is present.
-    repository_change: Add/reuse an exact ignore-case predicate and, if update is supported, an ID-excluding predicate in ProductCategoryJpaDao.
+    proposed_change: Replace substring duplicate rejection with normalized exact-equivalence lookup and exclude the current Product Category identity during update.
+    repository_change: Add/reuse exact ignore-case and ID-excluding predicate in ProductCategoryJpaDao.
   - story_id: STORY-0110
+    controller_identity_anchor: DomainLookupController.java around lines 240-249 sets productUomId
     component: ProductUomIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductUomIngestionService.java
     method: processRequest
     source_anchor: around lines 38-62; duplicate predicate around line 57
-    proposed_change: Use normalized exact-equivalence duplicate lookup and exclude the current Product UOM identity for update.
+    proposed_change: Use normalized exact-equivalence duplicate lookup and exclude the current Product UOM identity during update.
     repository_change: Add/reuse exact ignore-case and ID-excluding predicate in ProductUomJpaDao.
   - story_id: STORY-0111
+    controller_identity_anchor: DomainLookupController.java around lines 307-328 sets productId
     component: ProductIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductIngestionService.java
     method: processRequest
     source_anchor: around lines 46-68; duplicate predicate around line 64
-    proposed_change: Use the domain natural key with normalized exact-equivalence semantics and exclude current Product identity during update.
-    repository_change: Add/reuse exact business-key predicate in ProductJpaDao.
+    proposed_change: Use the governed Product business key with normalized exact-equivalence semantics and exclude current Product identity during update.
+    repository_change: Add/reuse exact business-key and ID-excluding predicate in ProductJpaDao.
   - story_id: STORY-0113
+    controller_identity_anchor: DomainLookupController.java around lines 495-506 sets vehicleId
     component: VehicleIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleIngestionService.java
     method: processRequest
@@ -50,13 +58,15 @@ proposed_change_manifest:
     proposed_change: Compare normalized vehicle business identity exactly rather than substring matching and exclude the current Vehicle identity during update.
     repository_change: Add/reuse exact vehicle-number ignore-case and ID-excluding predicate in VehicleJpaDao.
   - story_id: STORY-0114
+    controller_identity_anchor: DomainLookupController.java around lines 571-583 sets driverId
     component: DriverIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/DriverIngestionService.java
     method: processRequest
     source_anchor: around lines 39-61; duplicate predicate around line 57
     proposed_change: Compare the governed Driver business identity exactly and exclude current Driver identity during update.
-    repository_change: Add/reuse exact business-key predicate in DriverJpaDao.
+    repository_change: Add/reuse exact business-key and ID-excluding predicate in DriverJpaDao.
   - story_id: STORY-0129
+    controller_identity_anchor: LookupManagementController.java around lines 101-110 sets addressTypeId
     component: AddressTypeIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/AddressTypeIngestionService.java
     method: processRequest
@@ -67,6 +77,7 @@ proposed_change_manifest:
     proposed_change: Replace containing-ignore-case duplicate rejection with normalized exact-equivalence and exclude addressTypeId during update.
     repository_change: Add/reuse exact ignore-case and ID-excluding predicate in AddressTypeJpaDao.
   - story_id: STORY-0130
+    controller_identity_anchor: LookupManagementController.java around lines 169-178 sets countryId
     component: CountryIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CountryIngestionService.java
     method: processRequest
@@ -77,6 +88,7 @@ proposed_change_manifest:
     proposed_change: Replace containing-ignore-case rejection with normalized exact-equivalence and exclude current Country identity during update.
     repository_change: Add/reuse exact ignore-case and ID-excluding predicate in CountryJpaDao.
   - story_id: STORY-0131
+    controller_identity_anchor: LookupManagementController.java around lines 227-236 sets stateId
     component: StateIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/StateIngestionService.java
     method: processRequest
@@ -84,9 +96,10 @@ proposed_change_manifest:
     template: cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html
     template_anchor: State search base around line 1535
     current_ui: Database-backed type-ahead already present; preserve it.
-    proposed_change: Replace containing-ignore-case rejection with normalized exact-equivalence, include required parent-country identity in equivalence if that is the domain key, and exclude current State identity during update.
+    proposed_change: Replace containing-ignore-case rejection with normalized exact-equivalence, include required parent-country identity in equivalence if source/table constraints prove it belongs to the natural key, and exclude current State identity during update.
     repository_change: Add/reuse exact domain-key and ID-excluding predicate in StateJpaDao.
   - story_id: STORY-0132
+    controller_identity_anchor: LookupManagementController.java around lines 286-295 sets cityId
     component: CityIngestionService
     file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CityIngestionService.java
     method: processRequest
@@ -94,7 +107,7 @@ proposed_change_manifest:
     template: cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html
     template_anchor: City search base around line 1536
     current_ui: Database-backed type-ahead already present; preserve it.
-    proposed_change: Replace containing-ignore-case rejection with normalized exact-equivalence, include required parent-state identity in equivalence if that is the domain key, and exclude current City identity during update.
+    proposed_change: Replace containing-ignore-case rejection with normalized exact-equivalence, include required parent-state identity in equivalence if source/table constraints prove it belongs to the natural key, and exclude current City identity during update.
     repository_change: Add/reuse exact domain-key and ID-excluding predicate in CityJpaDao.
 tests:
   - Unit tests for exact duplicate rejection after normalization.
