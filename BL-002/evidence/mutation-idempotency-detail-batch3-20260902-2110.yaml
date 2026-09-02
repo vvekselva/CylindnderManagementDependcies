@@ -1,0 +1,37 @@
+version: 1
+recorded_at: '2026-09-02T21:10:30+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+findings:
+  STORY-0049:
+    classification: VERSIONED_REPLACEMENT_INTENTIONAL
+    component: ChallanPagePhotoUploadService.processRequest
+    source_anchor: lines 34-71
+    detail: Before saving a new photo, the service deactivates active photos for the same challan page. The model intentionally keeps history while enforcing one current active photo; identical binary upload deduplication is not inferred as a business requirement.
+  STORY-0050:
+    classification: SAME_SERVICE_VERSIONED_REPLACEMENT
+    detail: AJAX upload reaches the same ChallanPagePhotoUploadService behavior, so the same one-active-photo versioning rule applies.
+  STORY-0078:
+    classification: STATE_SET_OPERATION
+    component: CustomerActiveStateUpdateService.updateActiveStatus
+    source_anchor: lines 26-39
+    detail: Deactivation directly sets the requested active flag by customer id; repeat deactivation is a state-set operation rather than insertion. No new business record is created.
+  STORY-0079:
+    classification: STATE_SET_OPERATION
+    component: CustomerActiveStateUpdateService.updateActiveStatus
+    source_anchor: lines 26-39
+    detail: Activation directly sets the requested active flag by customer id; repeat activation is a state-set operation rather than insertion.
+  STORY-0084:
+    classification: REPEAT_ACTION_BLOCKED_BY_UPDATE_PREDICATE
+    component: TripReviewUpdateService.closeReview
+    source_anchor: lines 15-23
+    detail: The repository update returns zero when the review cannot be closed, and the service reports that it may already be reviewed or missing; repeat close does not silently create a second review event.
+  STORY-0053:
+    classification: REPEAT_ACTION_BLOCKED_BY_TRIP_STATE
+    component: TripReturnWorkflowService.returnTripAndBooks
+    source_anchor: around lines 106-113
+    detail: The workflow explicitly rejects a trip already Halt/closed before challan-book return is changed.
+governance:
+  auto_approve: false
+  code_mutation: false
+  bl010_creation_or_execution: false
