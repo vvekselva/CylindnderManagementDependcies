@@ -4,9 +4,14 @@
 - Endpoint: `GET /vehicle-loads/all-list`
 - Controller: `VehicleLoadByPageController.listAllVehicleLoads`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Drift review packet: `BL-002/evidence/STORY-0061-all-vehicle-loads-drift-review-20260902.yaml`
 
 ## User intent and exact request contract
 Opening `/vehicle-loads/all-list` requests the paged vehicle-load table without the active-trip view restriction. The controller accepts `page` int default 1, `size` int default 10, and optional String `searchTerm`, maps them to `VehicleLoadFetchByPageRequestDto`, calls `VehicleLoadFetchByPageService.processRequest`, and returns `final-version-1/VehicleLoadFetchByPageView`.
@@ -33,5 +38,10 @@ Controller totalPages is `ceil(totalItems / size)` using raw request size, while
 ## Persistence effect
 This endpoint reads vehicle-load/trip/driver/vehicle data and trip status only. No database write is asserted.
 
+## Drift governance
+The recovered ZIP confirms the all-list/template mismatch and ineffective `searchTerm` behavior. The exact proposed remediation is isolated in the durable drift-review packet referenced above. Application code and BL-010 mutation remain forbidden until the user explicitly approves that exact manifest; any scope expansion requires new approval.
+
 ## Governed conclusion
-The frozen controller, all-load service/entity, trip-status helper and shared final template resolve the applicable request, ordering, row identity, action state, endpoint mismatch, pagination and empty-state contract. STORY-0061 is `STRICT_FIELD_UI_COMPLETE`; approval remains `PENDING_USER_APPROVAL`.
+The current-source business behavior, including its user-visible scope-switch/search/pagination gaps, is completely source-bound. Those gaps are not silently corrected or omitted from the Story.
+
+STORY-0061 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no application code was changed and no BL-010 work was created or executed.
