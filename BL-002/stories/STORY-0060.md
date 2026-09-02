@@ -4,9 +4,13 @@
 - Endpoint: `GET /vehicle-loads/list`
 - Controller: `VehicleLoadByPageController.listVehicleLoads`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
 ## User intent and entry
 Opening `/vehicle-loads/list` shows active-trip vehicle loads. The screen lets the operator filter active loads, page through them, open a load detail by clicking a row, start a new trip/load, and enter the Returned Trip workflow when the row's trip status allows it.
@@ -26,7 +30,7 @@ When searchTerm is non-null/non-blank it calls `VehicleActiveTripJpaDao.searchAc
 ## Exact visible filter/navigation controls
 The page has a normal GET filter form to `/vehicle-loads/list` containing hidden `page=1`, text input `searchTerm` with placeholder `Search loads…`, and `Filter` submit. There is no story-specific AJAX, keyup search, debounce, minimum-length rule or dependent lookup. `+ New Trip & Load` navigates to `/wizard/vehicle-trip-load`.
 
-The controller does not add `searchTerm` as a model attribute even though the template references `${searchTerm}`. Therefore preserving the entered search value after the request is not proved by this controller contract; this is recorded as an implementation gap rather than invented behavior.
+The controller does not add `searchTerm` as a model attribute even though the template references `${searchTerm}`. Therefore preserving the entered search value after the request is not proved by this controller contract; this is recorded as a current implementation characteristic rather than invented behavior.
 
 ## Exact row identity and click behavior
 Each load row carries `data-href=/vehicle-load/fetch?vehicleLoadId={load.vehicleLoadId}`. Its row `onclick` assigns that URL to `window.location.href`, so the selected persisted load identity is propagated as query parameter `vehicleLoadId`. The Returned Trip control calls `event.stopPropagation()` so activating it does not also trigger row navigation.
@@ -41,10 +45,12 @@ The template renders an enabled `Returned Trip` anchor to `/trip-return?vehicleL
 ## Pagination and source-proved edge behavior
 `totalPages` is computed by the controller as `ceil(totalItems / size)` using the raw controller `size` parameter, while the service response exposes the normalized pageSize separately. The template renders pagination only when totalPages > 1. Previous is disabled at currentPage == 1; Next is disabled at currentPage == totalPages; numbered links span 1..totalPages.
 
-Pagination links preserve `searchTerm` only if that model value is available and change `page`; they do not include `size`, so pagination navigation falls back to the controller default size 10 unless size is supplied elsewhere. These are source-proved implementation characteristics, not corrected assumptions.
+Pagination links preserve `searchTerm` only if that model value is available and change `page`; they do not include `size`, so pagination navigation falls back to the controller default size 10 unless size is supplied elsewhere. These are source-proved characteristics retained for user review.
 
 ## Empty and persistence behavior
 When `loads` is empty the table shows `No load records found` and `Start a new trip to create a vehicle load`. This GET performs active-trip/load/status reads only; no database write is asserted.
 
 ## Governed conclusion
-The frozen controller, active-trip service, DAO/view entity, trip-status service and final Thymeleaf template resolve the applicable request, search, identity propagation, row event, Return-button predicate, pagination, empty-state and read-path contract. Source-proved filter/pagination model inconsistencies are explicitly retained as gaps. STORY-0060 is `STRICT_FIELD_UI_COMPLETE`; approval remains `PENDING_USER_APPROVAL`.
+The recovered ZIP confirms the active-list controller, service, active-trip view/entity, trip-status helper and final Thymeleaf contract. User intent, filters, identity propagation, row events, Returned Trip predicate, paging, empty state and read-only impact satisfy the business-behavior standard while retaining the source-proved filter/paging quirks for review.
+
+STORY-0060 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no code mutation or auto-approval occurred.
