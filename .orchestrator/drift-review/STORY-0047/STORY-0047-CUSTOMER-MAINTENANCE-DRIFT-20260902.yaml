@@ -1,0 +1,76 @@
+story_id: STORY-0047
+drift_id: STORY-0047-CUSTOMER-MAINTENANCE-DRIFT-20260902
+status: DRIFT_REVIEW_REQUIRED
+detected_at: '2026-09-02T14:48:15+05:30'
+source_intake: .orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237.yaml
+governed_source:
+  repository: vvekselva/CylinderManagement
+  ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  uploaded_zip_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  - DisplayCustomer.html is the actual customer-maintenance form and POSTs to /updateCustomer with hidden customerDto.customerId.
+  - The same update page is visibly titled 'Register Customer' and breadcrumbed 'New Registration', which misrepresents the operation.
+  - CustomerUpdateController handles POST /updateCustomer but its validation-error branch tests/casts the exception DTO as CustomerIngestionRequestDto even though CustomerUpdateService/validator throw CustomerUpdateRequestDto evidence.
+  - CustomerUpdateController returns UC01RegisterCustomer on validation failure rather than the DisplayCustomer update form.
+  - The general CylinderManagementApplicationException branch constructs ModelAndView(BACK_LINK) without the redirect: prefix.
+  - CustomerUpdateService validates customerName/GST and checks changed GST ownership, but the executable scalar mapper is commented out; customerName and gstNumber are not assigned to the managed CustomerDo before save.
+approved_story_behavior:
+  - Customer maintenance must preserve the customer identity, validate submitted customer data, persist intended customer changes, keep the user on the maintenance context when validation fails, and visibly identify the page as customer maintenance rather than new registration.
+business_impact:
+  - A user can believe customer name/GST were updated although the service currently persists phone/address collection changes without source-proved scalar customerName/GST assignment.
+  - Validation errors can return the wrong page/form context and can fail to propagate update-specific validation state because of the ingestion-DTO type check.
+  - The page title/breadcrumb can cause operational confusion by presenting an edit as a new registration.
+  - General application exceptions may resolve an invalid view name instead of redirecting safely to the customer list.
+proposed_change_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.web/src/main/resources/templates/final-version-1/DisplayCustomer.html
+    component: Thymeleaf customer-maintenance template
+    anchor: page header around current lines 568-570
+    current: "Register Customer / New Registration"
+    proposed: "Change visible title/breadcrumb to Update Customer / Customer Maintenance while retaining POST /updateCustomer and hidden customer ID."
+    reason: "Visible operation identity must match actual maintenance submission."
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerUpdateController.java
+    class: CustomerUpdateController
+    method: doPost
+    anchor: lines approximately 32, 47-88, 89-95
+    current: "Validation branch expects CustomerIngestionRequestDto; validation view is UC01RegisterCustomer; general application exception uses ModelAndView(BACK_LINK)."
+    proposed: "Use update-specific CustomerUpdateRequestDto handling; return DisplayCustomer with the submitted/validator-marked update model and required backLink; change general failure navigation to an explicit redirect or governed maintenance-error response."
+    reason: "Preserve update context and correctly propagate update-validation state."
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CustomerUpdateService.java
+    class: CustomerUpdateService
+    method: processRequest
+    anchor: lines approximately 140-150, commented modelMapper.map(customerDto, existingCustomerDo)
+    current: "Phone/address relationships are rebuilt and saved; customerName and gstNumber scalar updates are not executable."
+    proposed: "After validation/uniqueness checks and before save, explicitly assign the approved mutable scalar fields customerName and gstNumber to existingCustomerDo, without broad reflective mapping."
+    reason: "Make the customer-maintenance operation persist the scalar values it validates and presents as editable."
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/validator/CustomerUpdateRequestValidator.java
+    class: CustomerUpdateRequestValidator
+    method: validate
+    anchor: early null/customer-id failures and update error-code calls
+    current: "Several update validation failures use UC_001_RESGISTER_CUSTOMER and some create a new empty CustomerUpdateRequestDto for exception evidence."
+    proposed: "Use UPDATE_CUSTOMER consistently and preserve the submitted update request as validation evidence wherever structurally available."
+    reason: "Keep error classification and returned validation model aligned with the update operation."
+tests_required:
+  - CustomerUpdateService unit test: changing customerName/GST persists both scalar fields when uniqueness validation passes.
+  - CustomerUpdateService unit test: duplicate GST belonging to another customer is rejected and no save occurs.
+  - CustomerUpdateController MVC test: validation failure renders DisplayCustomer and preserves customerId plus validation errors.
+  - CustomerUpdateController MVC test: successful update redirects to /fetchCustomerByPage?pageNumber=1&itemsPerPage=10.
+  - CustomerUpdateController MVC test: governed application error follows the approved redirect/error behavior.
+  - Template/MVC assertion: DisplayCustomer identifies the page as Update Customer and posts to /updateCustomer.
+database_impact: NONE_EXPECTED
+schema_change: false
+flyway_change: false
+risk_and_rollback:
+  risk: "Existing callers may depend on current partial-update semantics; tests must prove only intended editable scalars are changed."
+  rollback: "Revert only the approved files in this manifest; no database rollback is required."
+implementation_gate: DRIFT_APPROVED_FOR_CODE_CHANGE_REQUIRED
+scope_expansion_rule: Any additional file, field, endpoint, database object, or behavior requires new explicit user approval before mutation.
+application_code_mutated: false
+bl010_created_or_executed: false
