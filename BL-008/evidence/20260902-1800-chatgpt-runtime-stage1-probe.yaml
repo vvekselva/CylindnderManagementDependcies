@@ -1,0 +1,15 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-175813-IST-RUN-001
+probed_at: '2026-09-02T18:00:03+05:30'
+java: OPENJDK_21_0_11_AVAILABLE
+maven: MISSING
+gradle: MISSING
+docker: MISSING
+podman: MISSING
+service_ui_acceptance_baseline: 30
+executed_cases_this_run: 0
+junit_execution_delta: 0
+jacoco_coverage_delta: 0
+classification: TEST_EXECUTION_RUNTIME_BLOCKED
+reason: MISSING_MAVEN_AND_CONTAINER_RUNTIME_DEPENDENCIES
+schema_state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
+database_write_delta: 0
