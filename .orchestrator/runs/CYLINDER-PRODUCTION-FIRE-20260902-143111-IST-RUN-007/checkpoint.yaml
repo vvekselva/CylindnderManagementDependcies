@@ -1,0 +1,41 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-143111-IST-RUN-007
+scope: CONTINUOUS
+receipt_path: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/20260902T143111+0530.yaml
+checkpoint_time: 2026-09-02T14:36:03+05:30
+reconciliation:
+  scheduler_handoff: linked
+  scheduler_receipt: authoritative
+  known_projection_drift:
+    - STORY-0041
+    - STORY-0042
+    - STORY-0046
+work:
+  story_0048:
+    status: NEEDS_CLARIFICATION
+    source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    retained_proof:
+      - "POST /add-stop/challan-page-photo/delete-ajax"
+      - "request parameter challanPagePhotoId"
+      - "controller delegates to challanPagePhotoManagementService.deactivatePhoto(challanPagePhotoId)"
+      - "ChallanPagePhotoDAOImpl.findActiveById(int) uses an active-row status=1 query"
+      - "updateChallanPagePhoto(...) uses session.update"
+      - "ChallanPagePhoto maps challan_page_photo.status"
+    newly_proved: []
+    remaining_gaps:
+      - exact controller identifier datatype and handling
+      - exact deactivatePhoto service guard and transition logic
+      - complete browser behavior and visible outcome
+    note: "Frozen-commit tree/code searches did not establish sufficient additional exact binding in this invocation; no inference was promoted."
+bl002:
+  completed: 21
+  total: 134
+  percent: 15.7
+governance:
+  auto_approvals: 0
+  application_code_changes: 0
+  bl010_execution: 0
+  user_review_gates_preserved: true
+eligible_work_remaining: true
+resumable: true
+next_action: "Continue exact STORY-0048 service/source binding at the frozen commit; then STORY-0047."
+scheduler_must_remain_enabled: true
