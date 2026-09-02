@@ -1,0 +1,19 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260902-172949-IST
+scheduler_task: cylinder-production-fire-ii
+state: TERMINATED
+started_at: '2026-09-02T17:29:49+05:30'
+terminated_at: '2026-09-02T17:32:37+05:30'
+elapsed_seconds: 168
+minimum_30_minute_target_satisfied: false
+early_termination_authorization: GENUINE_EXHAUSTION_OF_CURRENTLY_ELIGIBLE_UNGATED_WORK
+terminal_classification: ALL_REMAINING_WORK_GATED_OR_RUNTIME_BLOCKED
+terminal_reason: BL002_BUSINESS_BEHAVIOR_AND_QUEUE_PROJECTION_COMPLETE_134_OF_134;_132_STORIES_AWAIT_EXPLICIT_USER_APPROVAL;_CODE_MUTATION_DRIFT_GATED;_TEST_EXECUTION_RUNTIME_BLOCKED
+work_delta:
+  business_behavior_complete_delta: 0
+  queue_projection_repair: 134_OF_134_SYNCHRONIZED
+  application_code_mutation: 0
+  bl010_execution_delta: 0
+  approvals_delta: 0
+scheduler_must_remain_enabled: true
+resumable: true
