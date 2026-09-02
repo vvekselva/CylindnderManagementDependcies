@@ -4,32 +4,26 @@
 - Endpoint: `POST /setCustomerActive`
 - Controller: `ToggleCustomerActiveStatusController.setCustomerActive`
 - Approval: PENDING_USER_APPROVAL
-- Enrichment state: STRICT_FIELD_UI_COMPLETE
+- Review state: READY_FOR_USER_REVIEW
+- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
+- Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
+- Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Human-readable story
+## Business behavior
 
-As an operator on the Customer List, I can reactivate an inactive customer. The screen opens an activation confirmation modal for the selected customer; confirming propagates that row's customer ID into a hidden form and posts it with the current pagination context. The controller asks the active-state service to set the customer active, displays a success or not-found flash message, then returns to the customer list.
+As an operator on the Customer List, I can reactivate an inactive customer without recreating or replacing the customer row. `confirmActivate(customerId, customerName)` opens the activation confirmation modal, writes the selected row identity into hidden `#activate-form-id`, and submits `#activate-form` to `POST /setCustomerActive` after confirmation.
 
-## Exact screen/browser contract
+The standard form posts required `customerId`, `returnPage`, and `itemsPerPage`, with CSRF when available. It does not source-prove a posted `searchTerm`, although the controller accepts one optionally.
 
-The UI uses `confirmActivate(customerId, customerName)` and hidden form `#activate-form` whose action is `POST /setCustomerActive`. The form posts `customerId` through `#activate-form-id`, `returnPage` from `${page.currentPageNumber}`, `itemsPerPage` from `${page.itemsPerPage}`, and CSRF name/value when `_csrf` is present. The inspected form does not prove a posted `searchTerm`, although the controller accepts it optionally. No debounce/minimum-length rule applies.
+The controller calls `CustomerActiveStateUpdateService.updateActiveStatus(customerId, true)`. The transactional service invokes `CustomerJpaDao.updateActiveStatus(customerId, true)`. The repository uses JPQL `UPDATE CustomerDo c SET c.active = :status WHERE c.customerId = :id`; therefore the exact persistence effect is to set the identified `public.tbl_customer` row's active flag true without inserting or deleting the customer.
 
-## Controller/service contract
+When a row is updated, flash `message` is `Customer activated successfully`; when no row matches, flash `error` is `Customer not found.` Both paths redirect to `/fetchCustomerByPage` with posted page/page-size, appending searchTerm only if one is supplied to the controller.
 
-Required request parameters: `customerId: Long`, `returnPage: int`, `itemsPerPage: int`. Optional: `searchTerm: String`. The controller calls `customerService.updateActiveStatus(customerId, true)`. A `true` service result sets flash `message = "Customer activated successfully"`; `false` sets flash `error = "Customer not found."`.
+## Completion and approval gate
 
-Redirect is `redirect:/fetchCustomerByPage?pageNumber=<returnPage>&itemsPerPage=<itemsPerPage>` with `&searchTerm=<term>` appended only when the optional controller value is non-null and non-blank.
+The recovered ZIP confirms the modal/browser event, selected identity propagation, exact service/repository update, database effect and visible outcomes. STORY-0079 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-## Persistence / branch / outcome
-
-The exact selected identity is posted `customerId`; target active state is literal boolean `true`. The service boolean is the explicit success branch. No delete occurs. The action returns to the customer list with pagination preserved by posted hidden fields. No deeper repository/table mutation is invented beyond the proved service boundary.
-
-## Frozen source evidence
-
-- `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/ToggleCustomerActiveStatusController.java`
-- `cylindermanagement.web/src/main/resources/templates/with-menu/CustomerListPage.html` (`activate-form`, activation modal/JavaScript).
-
-## Approval boundary
-
-Strict field/UI source enrichment is complete. Approval remains `PENDING_USER_APPROVAL`; no auto-approval, Use Case grouping, or testing-readiness promotion is performed.
+Approval remains pending; no application-code or BL-010 mutation occurred.
