@@ -1,0 +1,28 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-215742-IST-RUN-002
+generated_at: 2026-09-02T22:22:00+05:30
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+stories:
+  STORY-0087:
+    catalogue: BL-009/stories/STORY-0087.md
+    machine_data: BL-009/test-data/STORY-0087.csv
+    human_data: BL-009/test-data/STORY-0087.md
+    executable_mapping: BL-009/generated-tests/STORY-0087/Story0087TestDataDrivenTest.java
+    catalogued_rows: 3
+    executable_controller_cases: 2
+  STORY-0089:
+    catalogue: BL-009/stories/STORY-0089.md
+    machine_data: BL-009/test-data/STORY-0089.csv
+    human_data: BL-009/test-data/STORY-0089.md
+    executable_mapping: BL-009/generated-tests/STORY-0089/Story0089TestDataDrivenTest.java
+    catalogued_rows: 3
+    executable_controller_cases: 2
+  STORY-0090:
+    catalogue: BL-009/stories/STORY-0090.md
+    machine_data: BL-009/test-data/STORY-0090.csv
+    human_data: BL-009/test-data/STORY-0090.md
+    executable_mapping: BL-009/generated-tests/STORY-0090/Story0090TestDataDrivenTest.java
+    catalogued_rows: 3
+    executable_controller_cases: 2
+execution_state: NOT_EXECUTED
+execution_blocker: MISSING_MAVEN_JUNIT_RUNTIME
+coverage_state: NOT_EXECUTED
