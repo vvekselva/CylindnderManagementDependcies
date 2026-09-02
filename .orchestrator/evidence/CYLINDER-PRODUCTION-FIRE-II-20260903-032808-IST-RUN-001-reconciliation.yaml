@@ -1,0 +1,65 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-032808-IST-RUN-001
+mode: CONTINUOUS
+started_at: '2026-09-03T03:28:10+05:30'
+checked_at: '2026-09-03T03:33:00+05:30'
+source:
+  requested_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_library_file_id: file_00000000659c8211857bba6b09282de3
+  exact_library_search_result: NOT_RETURNED
+  durable_requested_source_intake: .orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237.yaml
+  governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  fallback_package: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  fallback_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  identity_result: BYTE_IDENTICAL_TO_REQUESTED_GOVERNED_SOURCE
+  extracted_path: /mnt/data/cylinder-orchestrator-run009
+  extracted_files: 1650
+  java_files: 1054
+  embedded_git_present: false
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  maven_wrapper: MISSING
+  local_maven_repository_files: 0
+  docker_socket: MISSING
+durable_projection:
+  total_stories: 134
+  approved_after_rework: 15
+  awaiting_user_review: 119
+  post_approval_conformance_pass: 14
+  post_approval_conformance_pending: [STORY-0101]
+  generated_test_mappings_execution_eligible_if_runtime_available: 14
+  development_exact_manifest_waiting: [DEV-0002, DEV-0003, DEV-0004]
+story0101:
+  local_source_revalidated: true
+  drift_still_present: true
+  authoritative_manifest: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+  supplemental_revalidation: .orchestrator/drift-review/STORY-0101/DRIFT-0001.md
+  application_code_mutated: false
+  bl010_created_or_executed: false
+  next_gate: EXPLICIT_USER_APPROVAL_OF_AUTHORITATIVE_EXACT_MANIFEST
+story0013:
+  drift_packet: .orchestrator/drift-review/STORY-0013/STORY-0013-CHALLAN-BOOK-VALIDATION-DUPLICATE-DRIFT-20260902.yaml
+  code_change_approval_state: NOT_APPROVED
+  application_code_mutated: false
+completed_units:
+  - SCHEDULER_HANDOFF_ACK
+  - RUN_LINK
+  - PRIMARY_FILE_LIBRARY_SEARCH_RECHECK
+  - SOURCE_FINGERPRINT_AND_FRESH_EXTRACT
+  - PRIOR_LIVE_RUN_RECONCILIATION
+  - APPROVAL_AND_AGGREGATE_PROJECTION_RECONCILIATION
+  - STORY_0101_DRIFT_REVIEW_REVALIDATION
+  - RUNTIME_CAPABILITY_REPROBE
+blocked_units:
+  - PRIMARY_LIBRARY_EXACT_PACKAGE_NOT_RETURNED
+  - STORY_0101_EXACT_DRIFT_APPROVAL
+  - DEV_0002_EXACT_DRIFT_APPROVAL
+  - DEV_0003_EXACT_DRIFT_APPROVAL
+  - DEV_0004_EXACT_DRIFT_APPROVAL
+  - EXECUTE_14_UNIT_MAPPINGS_REQUIRING_FAITHFUL_MAVEN_RUNTIME
+  - EXECUTE_14_INTEGRATION_MAPPINGS_REQUIRING_FAITHFUL_MAVEN_CONTAINER_RUNTIME
+result: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+resumable: true
