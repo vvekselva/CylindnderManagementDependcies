@@ -1,0 +1,20 @@
+intake_id: SOURCE-INTAKE-20260902-163304
+observed_at: '2026-09-02T22:06+05:30'
+state: MATERIALIZED_AND_VERIFIED
+source_package: Harinandhan-Cylinder-Backup(20260902-163304).zip
+library_file_id: file_00000000fe9c8211869e2c82da911925
+materialized_path: /mnt/data/Harinandhan-Cylinder-Backup(20260902-163304).zip
+mime_type: application/zip
+size_bytes: 6402574
+sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+zip_entry_count: 1945
+uncompressed_bytes_reported_by_zip: 17077510
+prior_source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+prior_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+identity_relation_to_prior: BYTE_IDENTICAL_SHA256_MATCH
+orchestrator_binding: ACTIVE_SOURCE_PACKAGE
+notes:
+  - User explicitly supplied this Library file as the updated workspace source.
+  - Materialization from the supplied Library file ID succeeded.
+  - SHA-256 exactly matches the previously governed source package, so source content identity is unchanged even though the Library filename/file ID changed.
+  - This intake update removes the prior source-materialization blocker for source-dependent orchestration work in the current workspace.
