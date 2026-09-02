@@ -1,0 +1,13 @@
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-160140-IST-RUN-001
+state: TERMINATED
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE
+terminal_reason: STALE_HEARTBEAT_CONFIRMED_BY_TWO_CONSISTENT_LIVE_RUN_REREADS_NO_NEWER_EVENTS_AND_NO_TERMINATION_RECORD
+started_at: '2026-09-02T16:01:42+05:30'
+last_durable_heartbeat_at: '2026-09-02T16:21:59+05:30'
+recovered_at: '2026-09-02T16:30:43+05:30'
+terminated_at: null
+eligible_work_remaining: true
+resumable: true
+recovered_by_run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-162923-IST-RUN-001
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
