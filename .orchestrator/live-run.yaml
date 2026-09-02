@@ -1,23 +1,26 @@
-run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-160140-IST-RUN-001
-scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-160140-IST
+run_id: CYLINDER-PRODUCTION-FIRE-I-20260902-162923-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-I-20260902-162923-IST
 scheduler_task: cylinder-production-fire-i
 state: RUNNING
 mode: CONTINUOUS
-started_at: '2026-09-02T16:01:42+05:30'
-last_heartbeat_at: '2026-09-02T16:21:59+05:30'
+started_at: '2026-09-02T16:29:24+05:30'
+last_heartbeat_at: '2026-09-02T16:36:13+05:30'
 terminal_classification: null
 terminal_reason: null
 running_worker_count: 1
-completed_worker_count: 7
-blocked_worker_count: 1
-active_work_unit_ids: [STORY-0049-ENDPOINT-ROLE-REVIEW, BL-002-QUEUE-PROJECTION-REPAIR]
+completed_worker_count: 8
+blocked_worker_count: 0
+active_work_unit_ids: [STORY-0009-R2-BUSINESS-BEHAVIOR]
 eligible_work_remaining: true
 resumable: true
-last_action: RECONCILED_BL002_TO_86_COMPLETED_STORIES_AND_COMPLETED_STORY_0045_0126_0127_0128_0129_0130_0131_0132_0133_0134
-previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-20260902-153056-IST-RUN-001
-aggregate_business_behavior_complete: 86
+last_action: COMPLETED_R1_STORY_0049_AND_R2_STORIES_0002_TO_0008_FROM_LOCAL_GOVERNED_ZIP
+previous_run_reconciled: CYLINDER-PRODUCTION-FIRE-I-20260902-160140-IST-RUN-001
+aggregate_business_behavior_complete: 87
 aggregate_business_behavior_total: 134
-aggregate_percent: 64.2
+aggregate_percent: 64.9
+unit_local_business_behavior_complete: 95
+unit_local_percent: 70.9
+projection_drift_ids: [STORY-0049, STORY-0002, STORY-0003, STORY-0004, STORY-0005, STORY-0006, STORY-0007, STORY-0008]
 source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
-next_action: Reconcile STORY-0045 to aggregate, keep STORY-0049 pending explicit endpoint-role confirmation, and repair canonical queue projection without crossing into R2 while R1 remains review-blocked.
+next_action: Complete STORY-0009 then STORY-0010 and continue earliest R2 source-proved work; reconcile aggregate projection from authoritative unit evidence at checkpoint.
