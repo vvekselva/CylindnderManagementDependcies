@@ -1,0 +1,109 @@
+packet_id: LOOKUP-INSERTION-DUPLICATE-SEMANTICS-20260902-2055
+state: AWAITING_EXPLICIT_USER_APPROVAL
+recorded_at: '2026-09-02T20:55:06+05:30'
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-205506-IST-RUN-001
+repository: vvekselva/CylinderManagement
+approved_source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+analysis_source: Harinandhan-Cylinder-Backup(20260902-080237).zip
+analysis_source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+application_github_code_search_used: false
+business_requirement: Before creating or updating lookup/master data, show database-backed matching values while typing and reject only a normalized business-equivalent duplicate; an update must not reject the row as a duplicate of itself.
+current_behavior:
+  ui:
+    - LookupManagement already calls database-backed Address Type, Country, State and City search endpoints while typing.
+    - DomainLookup already calls database-backed Product Category, Product UOM, Product, Vehicle and Driver search endpoints while typing.
+  service:
+    - The affected ingestion services use findBy...ContainingIgnoreCase predicates for duplicate rejection.
+    - A substring hit can therefore be treated as a duplicate even when it is not business-equivalent.
+    - Where the same save flow is used for update, the current record identity is not source-proved to be excluded by these predicates.
+business_impact:
+  - Users can see existing lookup/master values before creating another value, which satisfies the discovery part of the requirement on the source-proved LookupManagement and DomainLookup screens.
+  - Duplicate rejection can still be overly broad, blocking legitimate values whose names merely contain one another.
+  - Update flows can reject legitimate edits if the current row is returned by the duplicate search.
+proposed_change_manifest:
+  - story_id: STORY-0109
+    component: ProductCategoryIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductCategoryIngestionService.java
+    method: processRequest
+    source_anchor: around lines 38-61; duplicate predicate around line 57
+    proposed_change: Replace substring duplicate rejection with normalized exact-equivalence lookup and exclude the current Product Category identity when an update identity is present.
+    repository_change: Add/reuse an exact ignore-case predicate and, if update is supported, an ID-excluding predicate in ProductCategoryJpaDao.
+  - story_id: STORY-0110
+    component: ProductUomIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductUomIngestionService.java
+    method: processRequest
+    source_anchor: around lines 38-62; duplicate predicate around line 57
+    proposed_change: Use normalized exact-equivalence duplicate lookup and exclude the current Product UOM identity for update.
+    repository_change: Add/reuse exact ignore-case and ID-excluding predicate in ProductUomJpaDao.
+  - story_id: STORY-0111
+    component: ProductIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/ProductIngestionService.java
+    method: processRequest
+    source_anchor: around lines 46-68; duplicate predicate around line 64
+    proposed_change: Use the domain natural key with normalized exact-equivalence semantics and exclude current Product identity during update.
+    repository_change: Add/reuse exact business-key predicate in ProductJpaDao.
+  - story_id: STORY-0113
+    component: VehicleIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/VehicleIngestionService.java
+    method: processRequest
+    source_anchor: around lines 38-60; duplicate predicate around line 56
+    proposed_change: Compare normalized vehicle business identity exactly rather than substring matching and exclude the current Vehicle identity during update.
+    repository_change: Add/reuse exact vehicle-number ignore-case and ID-excluding predicate in VehicleJpaDao.
+  - story_id: STORY-0114
+    component: DriverIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/DriverIngestionService.java
+    method: processRequest
+    source_anchor: around lines 39-61; duplicate predicate around line 57
+    proposed_change: Compare the governed Driver business identity exactly and exclude current Driver identity during update.
+    repository_change: Add/reuse exact business-key predicate in DriverJpaDao.
+  - story_id: STORY-0129
+    component: AddressTypeIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/AddressTypeIngestionService.java
+    method: processRequest
+    source_anchor: around lines 42-79; duplicate predicate around line 56
+    template: cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html
+    template_anchor: Address Type search base around line 1412
+    current_ui: Database-backed type-ahead already present; preserve it.
+    proposed_change: Replace containing-ignore-case duplicate rejection with normalized exact-equivalence and exclude addressTypeId during update.
+    repository_change: Add/reuse exact ignore-case and ID-excluding predicate in AddressTypeJpaDao.
+  - story_id: STORY-0130
+    component: CountryIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CountryIngestionService.java
+    method: processRequest
+    source_anchor: around lines 39-85; duplicate predicate around line 56
+    template: cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html
+    template_anchor: Country search base around line 1534
+    current_ui: Database-backed type-ahead already present; preserve it.
+    proposed_change: Replace containing-ignore-case rejection with normalized exact-equivalence and exclude current Country identity during update.
+    repository_change: Add/reuse exact ignore-case and ID-excluding predicate in CountryJpaDao.
+  - story_id: STORY-0131
+    component: StateIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/StateIngestionService.java
+    method: processRequest
+    source_anchor: around lines 39-81; duplicate predicate around line 62
+    template: cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html
+    template_anchor: State search base around line 1535
+    current_ui: Database-backed type-ahead already present; preserve it.
+    proposed_change: Replace containing-ignore-case rejection with normalized exact-equivalence, include required parent-country identity in equivalence if that is the domain key, and exclude current State identity during update.
+    repository_change: Add/reuse exact domain-key and ID-excluding predicate in StateJpaDao.
+  - story_id: STORY-0132
+    component: CityIngestionService
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/services/CityIngestionService.java
+    method: processRequest
+    source_anchor: around lines 40-82; duplicate predicate around line 59
+    template: cylindermanagement.web/src/main/resources/templates/final-version-1/LookupManagement.html
+    template_anchor: City search base around line 1536
+    current_ui: Database-backed type-ahead already present; preserve it.
+    proposed_change: Replace containing-ignore-case rejection with normalized exact-equivalence, include required parent-state identity in equivalence if that is the domain key, and exclude current City identity during update.
+    repository_change: Add/reuse exact domain-key and ID-excluding predicate in CityJpaDao.
+tests:
+  - Unit tests for exact duplicate rejection after normalization.
+  - Unit tests proving substring-only values are not rejected as duplicates.
+  - Update tests proving the current row is excluded from duplicate detection.
+  - MVC/template tests proving database-backed type-ahead remains active on LookupManagement and DomainLookup.
+  - Repository tests for exact case-insensitive predicates and parent-scoped uniqueness where applicable.
+database_impact: No schema change proposed by this packet. Existing database unique constraints remain the final concurrency/safety guard; if source review proves the database uniqueness key differs from the approved business-equivalence key, that would be scope expansion requiring a new approval packet.
+governance:
+  application_code_mutation: FORBIDDEN_UNTIL_EXPLICIT_APPROVAL
+  bl010_creation_or_execution: FORBIDDEN_UNTIL_EXPLICIT_APPROVAL
+  scope_expansion_requires_new_approval: true
