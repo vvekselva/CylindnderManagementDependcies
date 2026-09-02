@@ -1,0 +1,21 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-144000-IST-RUN-001
+scheduler_task: cylinder-production-fire
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-20260902-144000-IST
+scope: CONTINUOUS
+terminal_classification: ALL_REMAINING_WORK_BLOCKED
+terminal_reason: GOVERNED_LOCAL_APPLICATION_SOURCE_UNAVAILABLE_AND_SAFE_CANONICAL_QUEUE_REPAIR_NOT_POSSIBLE_IN_ACTIVE_RUNTIME
+termination_time: '2026-09-02T14:43:17+05:30'
+elapsed_seconds: 197
+eligible_work_remaining: true
+resumable: true
+completion_delta_this_run: 0
+aggregate_business_behavior_complete: 21
+aggregate_business_behavior_total: 134
+aggregate_percent: 15.7
+projection_drift_ids: [STORY-0041, STORY-0042, STORY-0046]
+auto_approvals: 0
+application_code_changes: 0
+bl010_execution_delta: 0
+github_actions_or_runners_used: false
+scheduler_must_remain_enabled: true
+next_action: Restore governed CylinderManagement source ZIP/local Git workspace, resume STORY-0048 then STORY-0047, and repair stale BL-002 queue projections only with a safe full canonical-file update.
