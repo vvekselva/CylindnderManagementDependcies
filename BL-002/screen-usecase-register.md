@@ -28,9 +28,9 @@
 | [SUC-014 — Yard Audit Dashboard](usecase-review.md#suc-014) | R1 | Pending user approval |
 | [SUC-015 — Cylinder Delivery](usecases/SUC-015.md) | R1 | Pending user approval |
 | [SUC-016 — Vehicle Load](usecases/SUC-016.md) | R1 | Pending user approval |
-| [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | Pending user approval |
+| [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | Partially approved |
 | [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | Pending user approval |
-| [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | Pending user approval |
+| [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | Partially approved |
 | [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | Pending user approval |
 | [SUC-021 — Trip Return](usecase-review.md#suc-021) | R1 | Pending user approval |
 | [SUC-022 — Customer Demands](usecase-review.md#suc-022) | R1 | Pending user approval |
@@ -43,12 +43,12 @@
 | [SUC-029 — Ownership Dashboard](usecase-review.md#suc-029) | MIXED_R1_R2 | Pending user approval |
 | [SUC-030 — Delivery Planning Maps / Stops](usecase-review.md#suc-030) | R2 | Pending user approval |
 | [SUC-031 — Customer Activation / Deactivation](usecase-review.md#suc-031) | R1 | Pending user approval |
-| [SUC-032 — Supplier Ingestion](usecases/SUC-032.md) | R1 | Pending user approval |
+| [SUC-032 — Supplier Ingestion](usecases/SUC-032.md) | R1 | Partially approved |
 | [SUC-033 — Yard Stock Check](usecases/SUC-033.md) | R1 | Pending user approval |
 | [SUC-034 — Delivery Stop Submission](usecase-review.md#suc-034) | R1 | Pending user approval |
-| [SUC-035 — Shared Screen Search / Lookup APIs](usecase-review.md#suc-035) | R1 | Pending user approval |
+| [SUC-035 — Shared Screen Search / Lookup APIs](usecase-review.md#suc-035) | R1 | Partially approved |
 | [SUC-036 — Domain Lookup Management](usecases/SUC-036.md) | R1 | Partially approved |
 | [SUC-037 — Delivery Planning Main Screens](usecase-review.md#suc-037) | R2 | Pending user approval |
 | [SUC-038 — Reconciliation Dashboard](usecase-review.md#suc-038) | R2 | Pending user approval |
-| [SUC-039 — Lookup / Lookup Management](usecases/SUC-039.md) | R1 | Partially approved |
+| [SUC-039 — Lookup / Lookup Management](usecases/SUC-039.md) | R1 | Approved |
 | [SUC-040 — Add Vehicle Trip](usecase-review.md#suc-040) | R1 | Pending user approval |
