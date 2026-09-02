@@ -3,9 +3,10 @@ fire_id: CYLINDER-PRODUCTION-FIRE-20260902-173124-IST
 observed_fire_time: '2026-09-02T17:31:24+05:30'
 scheduled_fire_time: '2026-09-02T17:31:24+05:30'
 receipt_time: '2026-09-02T17:31:24+05:30'
-state: TRIGGER_RECEIVED
+state: RUN_LINKED
 intended_scope: CONTINUOUS
-run_id: null
+run_id: CYLINDER-PRODUCTION-FIRE-20260902-173124-IST-RUN-001
+orchestrator_started_at: '2026-09-02T17:31:24+05:30'
 idempotency_key: cylinder-production-fire:CYLINDER-PRODUCTION-FIRE-20260902-173124-IST
 terminal_classification: null
 terminated_at: null
