@@ -4,8 +4,9 @@
 - Endpoint: `GET /logistics/challan-books/add-form`
 - Functional area: Challan Management
 - Controller: `ChallanBookWebController`
-- Approval: NOT_APPROVED
-- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Approval evidence: `BL-002/approval-evidence/STORY-0012-approval-20260902.md`
+- Business-behavior rework: APPROVED_AFTER_REWORK
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Business purpose
@@ -50,13 +51,13 @@ The controller uses `SummaryMetricLookupFetchService` to load three ordered metr
 - `TOTAL_UNUSED_PAGES_ACTIVE_EMPTY_PICKUP_BOOKS`
 - `TOTAL_UNUSED_PAGES_ACTIVE_SUPPLIER_EMPTY_DROPOFF_BOOKS`
 
-The service is read-only and queries those keys through `SummaryMetricLookupJpaDao.findByLookUpKeyIn(...)`. It reconstructs the result in the business-defined key order and silently omits a requested key when no matching row exists. fileciteturn144file0L2-L2
+The service is read-only and queries those keys through `SummaryMetricLookupJpaDao.findByLookUpKeyIn(...)`. It reconstructs the result in the business-defined key order and silently omits a requested key when no matching row exists.
 
 ## Exact database read identity
 
-`SummaryMetricLookupDo` maps to `public.tbl_summary_metric_lookup` with generated primary key `pk_summary_metric_lookup_id`. `look_up_key` is non-null and unique; each record also stores a UI label, explanatory meaning, numeric value and decimal-value flag. fileciteturn146file0L2-L2
+`SummaryMetricLookupDo` maps to `public.tbl_summary_metric_lookup` with generated primary key `pk_summary_metric_lookup_id`. `look_up_key` is non-null and unique; each record also stores a UI label, explanatory meaning, numeric value and decimal-value flag.
 
-The DAO is `SummaryMetricLookupJpaDao extends JpaRepository<SummaryMetricLookupDo, Long>` and provides lookup by one key or a collection of keys. fileciteturn145file0L2-L2
+The DAO is `SummaryMetricLookupJpaDao extends JpaRepository<SummaryMetricLookupDo, Long>` and provides lookup by one key or a collection of keys.
 
 ## What happens when the page opens
 
@@ -74,6 +75,6 @@ Browser-required fields and numeric minima are enforced by the form. Deeper pers
 
 The page combines data entry with a live operational summary so the operator can see current book counts/availability while preparing a new registration. Because it is read-only until Submit, merely opening or refreshing the page cannot change Challan inventory.
 
-## Rework gate
+## Approval and fan-out gate
 
-**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. Controller/template form behavior plus the exact summary-metric service, DAO and `public.tbl_summary_metric_lookup` read identity are frozen-source bound. No automatic approval and no revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
+**APPROVED_AFTER_REWORK.** The user explicitly approved this reworked Story on 2026-09-02. The approval applies to the GET form/read behavior documented here. It does not imply that STORY-0013 development gaps or downstream tests are implemented, executed or passing.
