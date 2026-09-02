@@ -1,7 +1,7 @@
 package com.sreyas.datamatics.cylindermanagement.misc.web.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals; import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test; import org.mockito.ArgumentCaptor; import org.springframework.test.util.ReflectionTestUtils; import org.springframework.web.servlet.ModelAndView; import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.sreyas.datamatics.application.dto.StateIngestionRequestDto; import com.sreyas.datamatics.application.service.ICylinderManagementApplicationService; import com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache;
+import com.sreyas.datamatics.application.request.dto.StateIngestionRequestDto; import com.sreyas.datamatics.application.service.ICylinderManagementApplicationService; import com.sreyas.datamatics.cylindermanagement.misc.cache.LookupDataCache;
 class Story0131StateSaveUnitTest {
  @Test void currentSuccessContract() throws Exception { LookupManagementController c=new LookupManagementController(); ICylinderManagementApplicationService<StateIngestionRequestDto,?> s=mock(ICylinderManagementApplicationService.class); LookupDataCache cache=mock(LookupDataCache.class); ReflectionTestUtils.setField(c,"stateIngestionService",s); ReflectionTestUtils.setField(c,"lookupDataCache",cache); ModelAndView m=c.saveState(null," Tamil Nadu ","state",mock(RedirectAttributes.class)); ArgumentCaptor<StateIngestionRequestDto> a=ArgumentCaptor.forClass(StateIngestionRequestDto.class); verify(s).processRequest(a.capture()); assertEquals("Tamil Nadu",a.getValue().getStateDto().getStateName()); verify(cache).refreshStates(); assertEquals("redirect:/lookupManagement?tab=state",m.getViewName()); }
 }
