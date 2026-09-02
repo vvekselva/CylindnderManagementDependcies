@@ -1,0 +1,59 @@
+story_id: STORY-0045
+title: Customer Display / Edit Entry
+governance_state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+current_behavior:
+  - Customer List row click navigates to GET /displayCustomer?customerId=<persistent id>.
+  - CustomerFetchController reads the customer through CustomerFetchByIdService and returns view name DisplayCustomer with model key customer.
+  - CustomerFetchByIdService reads CustomerJpaDao.findById and maps public.tbl_customer plus linked customer-address and customer-phone entities into CustomerFetchByIdResponseDto.
+  - The resolved root DisplayCustomer.html is not a read-only details page: it is an editable form posting to POST /updateCustomer with hidden customerId and customer/address/phone fields.
+  - The same template is labelled Register Customer / New Registration despite being reached for an existing customer and posting to updateCustomer.
+  - The template references backLink and addressTypes, but CustomerFetchController currently adds only model customer on the success path.
+  - Invalid/not-found governed errors redirect to /fetchCustomerByPage?pageNumber=1&itemsPerPage=10.
+approved_story_behavior:
+  - Opening a Customer List row must clearly present the selected existing customer as Customer Details/Edit Customer, not New Registration.
+  - The update form must retain the existing customer identity and POST to /updateCustomer.
+  - Required view model data such as backLink and addressTypes must be populated for the resolved DisplayCustomer template.
+  - The underlying read service/table behavior remains unchanged.
+business_impact:
+  - Existing-customer maintenance is visually mislabelled as registration, which can mislead operators about whether they are creating or editing a customer.
+  - Missing backLink/addressTypes model data can produce incomplete navigation/address-type choices on the edit screen.
+proposed_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/CustomerFetchController.java
+    component: CustomerFetchController
+    method: doGet
+    approximate_anchor: success ModelAndView construction after customerFetchByIdService.processRequest
+    proposed_change: Populate the exact model attributes required by DisplayCustomer for existing-customer maintenance, including backLink and addressTypes from the established lookup source; preserve customer model and current error redirect.
+    reason: Make the resolved edit template fully renderable without inventing new fields or behavior.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.web/src/main/resources/templates/DisplayCustomer.html
+    component: existing-customer Display/Edit template
+    approximate_anchor: document title, topbar/page heading/crumb and existing update form block around the form opening
+    proposed_change: Relabel Register Customer/New Registration wording to Customer Details/Edit Customer while retaining th:action=@{/updateCustomer}, th:object=${customer}, hidden customerId and existing fields/actions.
+    reason: Align visible semantics with the actual GET-selected existing customer and POST update behavior.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.web/src/test/java
+    component: Customer display/edit MVC tests
+    approximate_anchor: existing/new CustomerFetchController MVC coverage
+    proposed_change: Verify customerId propagation, CustomerFetchByIdResponseDto model, backLink/addressTypes presence, resolved edit labels, updateCustomer form action and error redirect.
+    reason: Guard the corrected display/edit contract.
+database_impact:
+  schema_change: false
+  migration_required: false
+  existing_read_objects:
+    - public.tbl_customer
+    - customer-address relationship/entity tables
+    - customer-phone relationship/entity tables
+risk_and_rollback:
+  risk: LOW
+  rollback: Revert controller/template/test changes; no database rollback required.
+scope_expansion_rule: Any additional file, schema object, endpoint, field or business behavior requires new explicit approval.
+application_code_changed: false
+bl010_created_or_executed: false
