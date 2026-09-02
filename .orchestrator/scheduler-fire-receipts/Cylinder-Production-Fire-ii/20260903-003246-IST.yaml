@@ -2,10 +2,11 @@ scheduler_task: Cylinder Production Fire - ii
 fire_id: 20260903-003246-IST
 observed_fire_time: 2026-09-03T00:32:46+05:30
 receipt_time: 2026-09-03T00:32:46+05:30
-state: RUN_LINKED
+state: TERMINATED
 mode: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-003246-IST-RUN-001
 orchestrator_started_at: 2026-09-03T00:33:23+05:30
 run_linked_at: 2026-09-03T00:33:23+05:30
-terminal_classification: null
-terminated_at: null
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+terminated_at: 2026-09-03T00:35:42+05:30
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-II-20260903-003246-IST-RUN-001-terminal.yaml
