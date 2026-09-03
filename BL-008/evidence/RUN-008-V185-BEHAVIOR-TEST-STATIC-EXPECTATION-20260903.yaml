@@ -1,0 +1,34 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+classification: STATIC_EXPECTATION_NOT_JUNIT_EXECUTION
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+recovered_automation_delta_sha256: 30708ed546b6cd3c7dc2ce7162b3b2a9f46bab130560677c892185d2cc6d3c61
+BL008V185TestCatalogTest:
+  catalogueContainsAllThirtyUniqueAcceptanceCases: EXPECT_PASS_STATICALLY_VERIFIED
+  testDataContainsCompanySupplierCustomerAndNegativeDatasets: EXPECT_PASS_STATICALLY_VERIFIED
+BL008V185CylinderIngestionServiceTest:
+  companyRegistrationCreatesNoSeparatePhysicalIdentifier:
+    expected_current_source: FAIL
+    reason: CylinderIngestionService unconditionally invokes createPrimaryIdentifier; Mockito never-save assertion would fail.
+  supplierRegistrationKeepsLogicalAndPhysicalSeparate:
+    expected_current_source: FAIL
+    reason: response cylinderSerial is overwritten with actualIdentifier, while test expects logical LS-TST-001.
+  customerRegistrationKeepsLogicalAndPhysicalSeparate:
+    expected_current_source: FAIL
+    reason: response cylinderSerial is overwritten with actualIdentifier, while test expects logical LC-TST-001.
+BL008V185SupplierReplacementServiceTest:
+  currentRefillSupplierMayReplaceWithoutBecomingOwner:
+    expected_current_source: FAIL
+    reason: current service rejects supplierDo when it differs from permanent ownerSupplierId.
+  blankReplacementIsNoOp:
+    expected_current_source: PASS
+    reason: current method returns false before ownership validation for blank new identifier.
+  companyCylinderCannotUseSupplierReplacement:
+    expected_current_source: PASS
+    reason: current service rejects non-SUPPLIER_OWNED/non-exchangeable cylinder.
+execution:
+  junit_executed: false
+  compilation_executed: false
+  blocker: MAVEN_GRADLE_AND_DEPENDENCY_CACHE_UNAVAILABLE
+  use: PRIORITIZATION_ONLY
+application_code_changed: false
+test_code_changed: false
