@@ -1,29 +1,25 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-042755-IST-RUN-001
-scheduler_fire_id: 20260903-042755-IST
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST-RUN-001
+scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST
 scheduler_task: Cylinder Production Fire - ii
-state: TERMINATED
+state: EXECUTING
 mode: CONTINUOUS
-started_at: '2026-09-03T04:28:21+05:30'
-last_heartbeat_at: '2026-09-03T04:30:34+05:30'
-terminated_at: '2026-09-03T04:30:34+05:30'
-terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
-terminal_reason: Required File Library recovery was attempted with exact and broad searches but did not return the governed ZIP, and no governed ZIP exists in this invocation's local workspace. Application-source analysis therefore remained fail-closed. Maven 3.9.16 runtime recovery was attempted but failed because the runtime cannot resolve/download Apache hosts. STORY-0101 and DEV-0002/0003/0004 remain exact-manifest approval gated. No safe-independent executable unit remains.
-running_worker_count: 0
-completed_worker_count: 6
-blocked_worker_count: 6
-active_work_unit_ids: []
-eligible_work_remaining: false
+started_at: '2026-09-03T05:31:46+05:30'
+last_heartbeat_at: '2026-09-03T05:33:00+05:30'
+terminated_at: null
+terminal_classification: null
+running_worker_count: 1
+completed_worker_count: 2
+blocked_worker_count: 1
+active_work_unit_ids: [CONTROL_PLANE_RECONCILIATION]
+eligible_work_remaining: true
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 151
+productive_elapsed_seconds: 74
 runtime_target_30_minutes_satisfied: false
-completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, RUN_LINK, PRIOR_LIVE_RUN_RECONCILIATION, PRIMARY_FILE_LIBRARY_EXACT_AND_BROAD_SEARCH, APPROVAL_PROJECTION_RECONCILIATION, DRIFT_REVIEW_PACKET_AUDIT]
-blocked_work_unit_ids: [PRIMARY_LIBRARY_PACKAGE_NOT_RETURNED, LOCAL_GOVERNED_ZIP_ABSENT, MAVEN_RUNTIME_RECOVERY_DOWNLOAD_FAILED, STORY_0101_EXACT_DRIFT_APPROVAL, DEV_0002_0003_0004_EXACT_DRIFT_APPROVAL, EXECUTE_14_GENERATED_TEST_MAPPINGS]
+completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, RUN_LINK]
+blocked_work_unit_ids: [PRIMARY_FILE_LIBRARY_PACKAGE_NOT_RETURNED]
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
-source_materialization_this_invocation: FAILED_AFTER_REQUIRED_FILE_LIBRARY_RECOVERY_ATTEMPTS
-source_package_sha256_governed_prior_evidence: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_materialization_this_invocation: FILE_LIBRARY_RECOVERY_ATTEMPTED_NOT_RETURNED
 source_local_git_present: UNKNOWN_SOURCE_NOT_MATERIALIZED
-runtime_probe: {java: OPENJDK_21_0_11_AVAILABLE, maven: MISSING, gradle: MISSING, docker: MISSING, podman: MISSING, dns_resolution: UNAVAILABLE}
-evidence: .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-II-20260903-042755-IST-RUN-001-reconciliation.yaml
-next_action: RESUME_ON_NEXT_FIRE_RETRY_FILE_LIBRARY_MATERIALIZATION_RUNTIME_RECOVERY_OR_EXPLICIT_MANIFEST_APPROVAL
+next_action: RECONCILE_CONTROL_PLANE_AND_AGGREGATE_PROJECTIONS_THEN_REPLAN
