@@ -1,0 +1,50 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+checkpoint_time: 2026-09-03T14:58:00+05:30
+mode: CONTINUOUS
+supersedes: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008/checkpoint-01.yaml
+bl002_projection:
+  total: 134
+  approved: 20
+  awaiting_user_review: 114
+  conformance_pass: 18
+  drift_hold: 2
+  drift_hold_ids: [STORY-0101, STORY-0103]
+bl004_projection: {queued: 20, generated: 18, drift_hold: 2, executed: 0}
+bl005_projection: {queued: 20, generated: 18, drift_hold: 2, executed: 0}
+bl009_projection: {queued: 20, generated_catalogue_data_code: 18, drift_hold: 2, executed: 0}
+bl008:
+  database: V185_FROZEN_COMPLETE
+  canonical_acceptance_cases: 30
+  test_automation_delta_recovered: true
+  test_automation_delta_sha256: 30708ed546b6cd3c7dc2ce7162b3b2a9f46bab130560677c892185d2cc6d3c61
+  canonical_catalogue_testdata_parity: EXACT_AFTER_BOM_CRLF_NORMALIZATION
+  catalog_static_checks: PASS
+  source_contract_static_assertions: {true: 19, false: 11, junit_executed: false}
+  genuine_application_ui_drift_case_ids: [BL008-SUI-001, BL008-SUI-002, BL008-SUI-006, BL008-SUI-007, BL008-SUI-008, BL008-SUI-015]
+  test_contract_self_consistency_case_ids: [BL008-SUI-011, BL008-SUI-012, BL008-SUI-017, BL008-SUI-019, BL008-SUI-030]
+  application_path_gap_discovery_ids: [BL008-SUI-017, BL008-SUI-023]
+  review_packets:
+    - BL-008/evidence/RUN-008-V185-APPLICATION-DRIFT-REVIEW-20260903.md
+    - BL-008/evidence/RUN-008-DOMAIN-LOOKUP-IDENTITY-UI-DRIFT-REVIEW-20260903.md
+    - BL-008/evidence/RUN-008-V185-TEST-AUTOMATION-DRIFT-REVIEW-20260903.md
+  discovery_hold: BL-008/evidence/RUN-008-SUI017-SUI023-APPLICATION-PATH-GAP-20260903.yaml
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  m2_files: 0
+  local_test_dependency_jars: NONE_FOUND
+  library_maven_distribution: NOT_FOUND
+  external_raw_maven_github_dns: UNAVAILABLE
+mutation_guard:
+  application_code_changed: false
+  test_code_changed: false
+  database_changed: false
+  bl010_created_or_executed_this_run: false
+  stories_auto_approved: false
+next_actions:
+  - continue exact source-bound gap analysis while runtime remains unavailable
+  - preserve all explicit approval gates
+  - execute generated tests only when faithful Maven/container runtime is recovered
