@@ -1,0 +1,36 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+static_only: true
+modules:
+  cylinder.management.dao:
+    test_java_files: 25
+    support_config_files: 1
+    tests_named_star_Test_java: 24
+    tests_named_star_IT_java: 0
+    testcontainers_referencing_tests: 24
+    surefire_plugin_version: '3.1.2'
+    selection_finding: ALL_24_DAO_INTEGRATION_TESTS_MATCH_SUREFIRE_DEFAULT_STAR_TEST_PATTERN
+    runtime_implication: MAVEN_TEST_FOR_THIS_MODULE_REQUIRES_CONTAINER_ENGINE_FOR_THESE_TESTS
+  cylindermanagement.custommapper.service:
+    test_java_files: 3
+    tests_named_star_Test_java: 3
+    testcontainers_referencing_tests: 0
+    mockito_referencing_tests: 2
+    surefire_plugin_version: '3.2.5'
+    runtime_implication: CONTAINER_ENGINE_NOT_STATICALLY_REQUIRED_BUT_MAVEN_AND_DEPENDENCIES_REQUIRED
+  cylindermanagement.web:
+    test_java_files: 2
+    tests_named_star_IT_java: 1
+    tests_named_star_Test_java: 1
+    spring_boot_test_refs: 1
+    testcontainers_refs: 1
+    failsafe_plugin_version: '3.2.5'
+    runtime_implication: WEB_INTEGRATION_TEST_LIFECYCLE_REQUIRES_MAVEN_DEPENDENCIES_AND_CONTAINER_ENGINE
+jacoco:
+  recovered_pom_references: 0
+  coverage_execution_ready_from_current_pom_configuration: false
+claims:
+  test_execution_performed: false
+  test_pass_claimed: false
+  coverage_claimed: false
+  application_code_changed: false
