@@ -1,0 +1,38 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+preflight_time: 2026-09-03T14:55:00+05:30
+automation_delta:
+  library_file: BL008_V185_Test_Automation_Delta_20260831.zip
+  file_id: file_000000007e988211b8e86d09c97c1a3d
+  sha256: 30708ed546b6cd3c7dc2ce7162b3b2a9f46bab130560677c892185d2cc6d3c61
+  extracted_files: 7
+  junit_suites: 4
+  resource_files: 3
+catalog_preflight:
+  service_ui_case_rows: 30
+  unique_ids: 30
+  all_bl008_sui_001_through_030_present: true
+  required_dataset_tokens_present: [TD-COMP-01, TD-SUP-01, TD-CUST-01, TD-CUST-CLOSE, TD-CUST-LOSS, TD-DUP-01, TD-MIXED-E2E]
+  equivalent_BL008V185TestCatalogTest_assertions: PASS
+source_contract_static_preflight:
+  assertions_evaluated: 30
+  true: 19
+  false: 11
+  genuine_application_or_ui_drift_ids: [BL008-SUI-001, BL008-SUI-002, BL008-SUI-006, BL008-SUI-007, BL008-SUI-008, BL008-SUI-015]
+  genuine_drift_review_packets:
+    - BL-008/evidence/RUN-008-V185-APPLICATION-DRIFT-REVIEW-20260903.md
+    - BL-008/evidence/RUN-008-DOMAIN-LOOKUP-IDENTITY-UI-DRIFT-REVIEW-20260903.md
+  test_contract_self_consistency_failure_ids: [BL008-SUI-011, BL008-SUI-012, BL008-SUI-017, BL008-SUI-019, BL008-SUI-030]
+  test_contract_findings:
+    BL008-SUI-011: expected exact token `Ownership and custody are intentionally independent`; contract text prefixes it with `Customer ownership`, so Java contains() fails case-sensitively.
+    BL008-SUI-012: test expects `tbl_cylinder_party_custody` and exact `custody_status = 'ACTIVE'`; supplied frozen contract resource does not contain those exact tokens.
+    BL008-SUI-017: test expects `replacement_party_type`; supplied contract resource does not contain that token.
+    BL008-SUI-019: test expects exact `LOST/DECOMMISSIONED retire the current physical marking`; supplied contract uses different wording.
+    BL008-SUI-030: test asserts contract must not contain literal `fk_physical_cylinder`, while supplied contract itself says `there is no fk_physical_cylinder operational foreign key`, making the negative assertion fail.
+execution_classification:
+  junit_executed: false
+  static_equivalent_preflight_only: true
+  reason: MAVEN_GRADLE_RUNTIME_MISSING
+  no_junit_pass_claimed: true
+application_code_changed: false
+test_code_changed: false
+bl010_created_or_executed: false
