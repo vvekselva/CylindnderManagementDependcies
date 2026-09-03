@@ -3,5 +3,7 @@ fire_id: 20260903T150145Z
 observed_fire_time: 2026-09-03T15:01:45Z
 scheduled_fire_time: 2026-09-03T15:01:45Z
 receipt_time: 2026-09-03T15:01:45Z
-state: TRIGGER_RECEIVED
+state: RUN_LINKED
+orchestrator_state: ORCHESTRATOR_STARTED
 intended_scope: CONTINUOUS
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-150145-UTC-RUN-013
