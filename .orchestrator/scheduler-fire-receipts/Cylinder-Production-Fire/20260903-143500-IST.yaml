@@ -3,11 +3,14 @@ fire_id: 20260903-143500-IST
 scheduled_fire_time: 2026-09-03T14:35:00+05:30
 observed_fire_time: 2026-09-03T14:35:00+05:30
 receipt_time: 2026-09-03T14:35:00+05:30
-state: RUN_LINKED
+state: TERMINAL_RECONCILED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
 orchestrator_started_time: 2026-09-03T14:36:10+05:30
 run_link_time: 2026-09-03T14:36:10+05:30
-prior_state: ORCHESTRATOR_STARTED
-terminal_classification: null
-termination_time: null
+terminal_classification: ABNORMAL_PROCESS_DISAPPEARANCE_RECONCILED
+termination_time: unknown
+reconciliation_time: 2026-09-03T09:58:30Z
+elapsed_time_exact: UNKNOWN_NOT_DURABLY_OBSERVED
+resumable_state: true
+note: Prior invocation disappeared without a terminal receipt. Recovery does not fabricate a stop instant or elapsed duration.
