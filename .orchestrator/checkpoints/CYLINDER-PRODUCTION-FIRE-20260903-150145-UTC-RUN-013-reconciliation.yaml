@@ -1,0 +1,46 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-150145-UTC-RUN-013
+checkpoint_at: '2026-09-03T15:03:30Z'
+state: BLOCKED_RESUMABLE
+mode: CONTINUOUS
+scheduler_fire_id: 20260903T150145Z
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire/20260903T150145Z.yaml
+scheduler_handoff_acknowledged: true
+run_linked: true
+application_source:
+  primary_requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  primary_requested_file_id: file_00000000659c8211857bba6b09282de3
+  primary_library_recovery: NOT_RETURNED_BY_FILE_LIBRARY_SEARCH
+  fallback_local_recovery_zip: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  fallback_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_file_count: 1650
+  extracted_java_file_count: 1054
+  local_git_present: false
+  github_code_search_used_for_application_analysis: false
+runtime_probe:
+  java: 21.0.11
+  maven_available: false
+  gradle_available: false
+  docker_available: false
+  podman_available: false
+  local_maven_repository_files: 0
+  maven_bootstrap_download_attempted: true
+  maven_bootstrap_download_result: FAILED
+  source_pom_count: 10
+  existing_test_java_count: 30
+external_test_evidence:
+  new_surefire_failsafe_jacoco_evidence_found: false
+current_state:
+  approved_story_count: 20
+  conformance_pass_count: 18
+  drift_hold_story_ids: [STORY-0101, STORY-0103]
+  test_handoff_story_count: 18
+  test_execution_status: TESTS_GENERATED_AWAITING_EXTERNAL_EXECUTION
+governance:
+  application_code_mutation: false
+  bl010_executed: false
+  auto_approval: false
+  recurring_task_enabled: true
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_OR_EXPLICIT_APPROVAL_PENDING
+eligible_work_remaining: false
+recoverable_work_remaining: true
+next_action: ingest newly uploaded Surefire/Failsafe/JaCoCo/Maven evidence or explicit exact drift-manifest approval; then replan immediately
