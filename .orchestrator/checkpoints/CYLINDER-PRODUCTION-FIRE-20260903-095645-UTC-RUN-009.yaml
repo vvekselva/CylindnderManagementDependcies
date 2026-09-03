@@ -1,0 +1,58 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009
+mode: CONTINUOUS
+checkpoint_time: 2026-09-03T10:00:17Z
+source:
+  requested_file: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  requested_library_recovery: NOT_VISIBLE_IN_CURRENT_FILE_LIBRARY_SEARCH_SURFACE
+  recovered_candidate: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  candidate_origin: prior ChatGPT local materialization
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  frozen_match: true
+  extracted_files: 1650
+  java_files: 1054
+  local_git_present: false
+scheduler_reconciliation:
+  current_receipt_persisted: true
+  current_run_linked: true
+  prior_run: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+  prior_run_gap: RECONCILED_AS_ABNORMAL_PROCESS_DISAPPEARANCE_RECONCILED
+approval_projection:
+  total_stories: 134
+  explicitly_approved_after_rework: 20
+  awaiting_user_review: 114
+  post_approval_conformance_pass: 18
+  drift_hold: 2
+  drift_hold_ids: [STORY-0101, STORY-0103]
+  story0103_review_packet: BL-002/review-packets/STORY-0103-VEHICLE-SEARCH-SERVICE-CODE-DRIFT-20260903.md
+  application_code_mutation: NONE
+  auto_approval: false
+downstream:
+  BL-004: {queued: 20, generated_source_bound: 18, drift_hold: 2, runtime_execution: BLOCKED}
+  BL-005: {queued: 20, generated_source_bound: 18, drift_hold: 2, runtime_execution: BLOCKED}
+  BL-009: {queued: 20, generated_mapped: 18, drift_hold: 2, application_behavior_execution: NOT_EXECUTED}
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+projection_repairs_completed:
+  - BL-002/README.md
+  - BL-004/README.md
+  - BL-005/README.md
+  - BL-009/README.md
+residual_projection_drift:
+  - file: BL-002/story-register.csv
+    rows: [STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0103]
+    current_cell: PENDING_USER_APPROVAL
+    durable_truth: APPROVED_AFTER_REWORK
+    blocker: SAFE_WHOLE_FILE_PATCH_NOT_AVAILABLE_FROM_CURRENT_CONNECTOR_RESPONSE
+  - file: BL-002/enrichment-progress.yaml
+    current_projection: 15_APPROVED_14_PASS_1_HOLD
+    durable_truth: 20_APPROVED_18_PASS_2_HOLD
+    blocker: SAFE_WHOLE_FILE_PATCH_DEFERRED_TO_NEXT_RESUMABLE_FIRE
+next_actions:
+  - repair residual aggregate projection drift when safe full-file mutation is available
+  - preserve exact approval gate for STORY-0101 and STORY-0103
+  - execute 18 generated test scopes only when faithful Maven/JUnit/Testcontainers runtime is available
