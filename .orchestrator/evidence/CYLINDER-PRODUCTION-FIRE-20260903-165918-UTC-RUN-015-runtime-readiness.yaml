@@ -1,0 +1,51 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015
+observed_at: 2026-09-03T17:01:26Z
+source:
+  requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  exact_library_search_result: NOT_RETURNED
+  exact_direct_materialization_result: CURRENT_FILES_SURFACE_UNAVAILABLE
+  recovered_local_zip: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_files: 1650
+  java_files: 1054
+  pom_files: 10
+  test_java_files: 30
+  local_git_present: false
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  mvnw: MISSING
+  gradlew: MISSING
+  local_maven_repository_files: 0
+  outbound_repo_maven_probe: FAILED
+static_test_wiring:
+  cylinder_management_dao:
+    junit5: PRESENT
+    spring_boot_starter_test: PRESENT
+    testcontainers: PRESENT
+    maven_surefire_plugin: '3.1.2'
+  cylinermanagement_custommapper_service:
+    junit5: PRESENT
+    mockito_junit_jupiter: PRESENT
+    maven_surefire_plugin: '3.2.5'
+  cylindermanagement_web:
+    spring_boot_starter_test: PRESENT
+    testcontainers: PRESENT
+    maven_failsafe_plugin: '3.2.5'
+    integration_test_pattern_support: '*IT.java through Failsafe lifecycle'
+  jacoco:
+    pom_references_found: 0
+    status: NOT_CONFIGURED_IN_RECOVERED_APPLICATION_POMS
+classification:
+  unit_execution: BLOCKED_RUNTIME_MAVEN_AND_DEPENDENCIES_UNAVAILABLE
+  integration_execution: BLOCKED_RUNTIME_MAVEN_DEPENDENCIES_AND_CONTAINER_ENGINE_UNAVAILABLE
+  jacoco_coverage: BLOCKED_RUNTIME_AND_NO_RECOVERED_POM_CONFIGURATION
+  execution_pass_claimed: false
+  coverage_claimed: false
+application_mutation: false
+story_auto_approval: false
+bl010_execution: false
