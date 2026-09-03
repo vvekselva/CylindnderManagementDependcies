@@ -1,50 +1,40 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260902-192815-IST-RUN-001
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-113119-IST-RUN-001
 checkpoint_state: BLOCKED_RESUMABLE
-started_at: '2026-09-02T19:28:15+05:30'
-checkpoint_at: '2026-09-02T19:30:04+05:30'
-terminated_at: '2026-09-02T19:30:04+05:30'
+started_at: '2026-09-03T11:31:26+05:30'
+checkpoint_at: '2026-09-03T11:33:05+05:30'
+terminated_at: '2026-09-03T11:33:15+05:30'
 elapsed_seconds: 109
-terminal_classification: ALL_REMAINING_WORK_GATED_OR_RUNTIME_BLOCKED
-termination_reason: NO_CURRENTLY_ELIGIBLE_UNGATED_WORK;_132_STORIES_AWAIT_EXPLICIT_USER_REVIEW;_BL010_CODE_MUTATION_REQUIRES_EXPLICIT_DRIFT_APPROVAL;_BL004_BL005_BL009_AND_BL008_ACCEPTANCE_EXECUTION_REQUIRE_FAITHFUL_RUNTIME
-voluntary_early_stop: true
-voluntary_early_stop_permitted: true
+productive_elapsed_seconds: 109
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_AND_SOURCE_MATERIALIZATION_PENDING
 eligible_work_remaining: false
+recoverable_work_remaining: true
 scheduler_handoff:
-  fire_id: CYLINDER-PRODUCTION-FIRE-20260902-192815-IST
-  receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/CYLINDER-PRODUCTION-FIRE-20260902-192815-IST.yaml
+  fire_id: 20260903T113119+0530-auto11
+  receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire-ii/20260903T113119+0530-auto11.yaml
   handoff_acknowledged: true
   run_linked: true
 application_source:
-  requested_file_library_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
-  requested_file_library_id: file_00000000659c8211857bba6b09282de3
-  recovery_state_this_invocation: FILE_LIBRARY_EXACT_SEARCH_AND_LOCAL_WORKSPACE_RECOVERY_FAILED_THIS_INVOCATION
+  requested_file_library_zip: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  requested_file_library_id: file_00000000fe9c8211869e2c82da911925
+  governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  recovery_state_this_invocation: SEARCHED_NOT_RETURNED_BY_FILE_LIBRARY
   github_code_search_used_for_application_analysis: false
-business_behavior_rework:
-  business_behavior_complete: 134
-  business_behavior_total: 134
-  awaiting_user_review: 132
-  approved_after_rework: 2
-reconciliation:
-  prior_run: CYLINDER-PRODUCTION-FIRE-I-20260902-190156-IST-RUN-001
-  queue_projection_drift_count: 0
-  stale_enrichment_projection_pending_metadata_detected: true
+test_handoff:
+  status: TESTS_GENERATED_AWAITING_EXTERNAL_EXECUTION
+  eligible_story_count: 14
+  executed_by_chatgpt: 0
+  new_uploaded_execution_artifacts_found: false
+  manifest: BL-009/handoffs/CYLINDER-PRODUCTION-FIRE-II-20260903-113119-IST-RUN-001.yaml
+pending_source_conformance_story_count: 5
 drift_governance:
+  STORY-0101: EXACT_DRIFT_MANIFEST_AWAITING_EXPLICIT_USER_APPROVAL
   application_code_mutation: false
   bl010_executed: false
-  user_drift_approval_bypassed: false
-bl008:
-  state: V185_CLEAN_DATABASE_VALIDATED_PASS_DATABASE_FROZEN
-  service_ui_acceptance_cases: 30
-  service_ui_execution_delta: 0
 runtime_reliability:
-  java: OPENJDK_21_0_11_AVAILABLE
-  maven: MISSING
-  gradle: MISSING
-  docker: MISSING
-  podman: MISSING
   runtime_target_30_minutes_satisfied: false
-  early_exit_basis: NO_CURRENTLY_ELIGIBLE_UNGATED_WORK
-  next_action: Await explicit Story/drift approvals or restored faithful test runtime; recurring scheduler remains enabled.
+  early_exit_basis: ONLY_EXTERNAL_EXECUTION_REQUIRED_OR_SOURCE_MATERIALIZATION_OR_EXPLICIT_APPROVAL_REMAINED
 claims:
   active_at_terminal: 0
 transient_logs_remaining: 0
+resumable: true
+next_action: Retry primary source materialization and ingest newly uploaded JaCoCo/Surefire/Failsafe evidence; otherwise preserve external handoff state.
