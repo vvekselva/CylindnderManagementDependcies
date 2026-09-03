@@ -1,0 +1,26 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-102758-IST-RUN-001
+checkpoint_time: '2026-09-03T10:29:01+05:30'
+mode: CONTINUOUS
+capability_split:
+  chatgpt_executable_now_status: EXHAUSTED_FOR_CURRENT_AVAILABLE_INPUTS
+  external_execution_required_status: PENDING_USER_LOCAL_RUNTIME
+source:
+  requested: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  library_file_id: file_00000000fe9c8211869e2c82da911925
+  durable_governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  current_materialization: FILE_LIBRARY_SEARCHED_NOT_RETURNED
+coverage_result_ingestion:
+  newly_found_jacoco: false
+  newly_found_surefire: false
+  newly_found_failsafe: false
+eligible_test_handoff_story_count: 14
+eligible_test_handoff_stories: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+pending_source_conformance_stories: [STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0103]
+approval_gated_stories: [STORY-0101]
+handoff_manifest: BL-009/handoffs/CYLINDER-PRODUCTION-FIRE-II-20260903-102758-IST-RUN-001.yaml
+test_execution_claim: NONE
+next_resume_actions:
+  - retry exact File Library ZIP materialization and run conformance for pending five Stories
+  - search for uploaded JaCoCo/Surefire/Failsafe evidence and bind to exact handoff/source SHA
+  - if evidence appears, ingest only evidenced results and generate coverage-gap-closing tests
+  - otherwise preserve TESTS_GENERATED_AWAITING_EXTERNAL_EXECUTION
