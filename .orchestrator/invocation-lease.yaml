@@ -1,11 +1,10 @@
 holder: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001
 acquired_at: 2026-09-03T06:31:14+05:30
-released_at: null
-status: ACTIVE
+released_at: 2026-09-03T06:38:02+05:30
+status: RELEASED
 scope: [CONTROL_PLANE_RECONCILIATION, BL-002, SOURCE_RECOVERY, RUNTIME_RELIABILITY]
-claims:
-  - CONTROL_PLANE_EVIDENCE_RECONCILIATION
+claims: []
 policy:
   execution_host: ChatGPT
   github_role: durable_control_audit_plane
@@ -14,18 +13,17 @@ policy:
   bl008_database_write_parallelism: 1
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-09-03T06:33:55+05:30
-result: EXECUTING
+heartbeat_at: 2026-09-03T06:38:02+05:30
+result: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
 recovery:
   prior_live_run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST-RUN-001
   prior_live_run_state: TERMINATED
-  prior_terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+  conformance_false_gap_repaired: true
 progress:
-  work_units_attempted: 2
-  work_units_completed: 1
-  completed_ids: [SCHEDULER_HANDOFF_ACK_AND_RUN_LINK]
-  active_ids: [CONTROL_PLANE_EVIDENCE_RECONCILIATION]
+  work_units_attempted: 4
+  work_units_completed: 4
+  completed_ids: [SCHEDULER_HANDOFF_ACK_AND_RUN_LINK, FILE_LIBRARY_EXACT_AND_RECENT_RECOVERY_ATTEMPT, CONTROL_PLANE_EVIDENCE_RECONCILIATION, DOWNSTREAM_BL004_BL005_PROJECTION_RECONCILIATION]
 notes:
-  - Scheduler receipt persisted and run-linked before backlog inspection.
-  - Governed File Library ZIP exact-identity recovery attempted and not returned in this invocation.
-  - Conformance aggregate/unit-evidence mismatch is being repaired fail-closed.
+  - 14 durable conformance PASS records confirmed; STORY-0101 remains drift approval hold.
+  - Governed File Library ZIP did not materialize in this invocation; no GitHub application-source analysis used.
+  - Java 21 available; Maven/Gradle/Docker/Podman unavailable.
