@@ -3,7 +3,7 @@
 Purpose: generate and execute JUnit 5 integration tests with PostgreSQL Testcontainers for every explicitly approved BL-002 Story that has an applicable persistence/runtime integration boundary.
 
 ## Entry gate
-A Story enters BL-005 only after explicit user approval is durably recorded in BL-002. BL-004 unit-test generation may proceed independently when write sets do not conflict, but BL-005 execution must preserve normal application/Flyway behavior.
+A Story enters BL-005 only after explicit user approval is durably recorded in BL-002 and post-approval code conformance passes. A Story with detected drift remains held until the exact drift/code-change manifest is explicitly approved. BL-004 generation may proceed independently when write sets do not conflict, but BL-005 execution must preserve normal application/Flyway behavior.
 
 ## Required outputs per approved Story
 - `BL-005/stories/<story-id>.md` — human-readable integration-test contract.
@@ -12,10 +12,16 @@ A Story enters BL-005 only after explicit user approval is durably recorded in B
 - durable execution evidence after Testcontainers tests actually run.
 
 ## Integration standard
-Use JUnit 5 and Testcontainers. Use PostgreSQL containers, normal Spring/Flyway startup, isolated disposable test data, and assertions across both HTTP/application behavior and persisted state where applicable. Do not replace the integration path with raw/manual SQL or external hosted databases.
+Use JUnit 5 and Testcontainers where PostgreSQL is applicable. Preserve normal Spring/Flyway startup, isolated disposable test data, and assertions across application behavior and persisted state. Do not substitute raw/manual SQL or an external hosted database for the governed integration path.
 
-## Approval fan-out rule
-Every orchestrator invocation must reconcile all approved BL-002 Stories into BL-004, BL-005 and BL-009. Missing downstream artifacts are first-class work.
+## Current projection
+Reconciled by `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009`:
 
-## Current approved Story
-- STORY-0001 — queued for JUnit/Testcontainers integration generation and execution.
+- Explicitly approved Stories: **20**
+- Code-conformance pass / generated source-bound: **18**
+- Drift holds: **2** (`STORY-0101`, `STORY-0103`)
+- Integration execution: **blocked by missing faithful Maven/Testcontainers/container runtime**
+- Java available: **OpenJDK 21.0.11**
+- Maven/Gradle/Docker/Podman: **unavailable in current runtime**
+
+No integration PASS or JaCoCo coverage is claimed until actual execution evidence exists.
