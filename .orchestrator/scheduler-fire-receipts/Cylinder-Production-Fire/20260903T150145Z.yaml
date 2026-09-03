@@ -3,7 +3,12 @@ fire_id: 20260903T150145Z
 observed_fire_time: 2026-09-03T15:01:45Z
 scheduled_fire_time: 2026-09-03T15:01:45Z
 receipt_time: 2026-09-03T15:01:45Z
-state: RUN_LINKED
-orchestrator_state: ORCHESTRATOR_STARTED
+state: TERMINATED
+orchestrator_state: RUN_LINKED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260903-150145-UTC-RUN-013
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_OR_EXPLICIT_APPROVAL_PENDING
+termination_time: 2026-09-03T15:03:30Z
+elapsed_seconds: 105
+productive_elapsed_seconds: 105
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260903-150145-UTC-RUN-013-reconciliation.yaml
