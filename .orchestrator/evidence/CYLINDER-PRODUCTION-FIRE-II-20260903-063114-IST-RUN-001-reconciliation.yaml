@@ -1,0 +1,47 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001
+captured_at: '2026-09-03T06:34:45+05:30'
+mode: CONTINUOUS
+scheduler_handoff:
+  receipt_path: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire-ii/20260903T063114+0530.yaml
+  receipt_persisted_before_backlog_read: true
+  run_linked: true
+  prior_recent_receipts_checked:
+    - 20260903-003246-IST: TERMINATED
+    - 20260903-032808-IST: TERMINATED
+    - CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST: TERMINATED
+application_source:
+  requested_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_library_id: file_00000000659c8211857bba6b09282de3
+  exact_identity_search_attempted: true
+  recent_upload_recovery_attempted: true
+  file_library_result: NOT_RETURNED
+  local_workspace_zip_candidates: 0
+  materialized: false
+  github_code_search_used_for_application_analysis: false
+  classification: GOVERNED_SOURCE_RECOVERY_CURRENTLY_BLOCKED
+control_plane_reconciliation:
+  approved_story_count: 15
+  approved_story_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0101, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  aggregate_claimed_conformance_pass_count: 14
+  unit_local_verified_pass_count: 4
+  unit_local_verified_pass_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0127]
+  drift_hold_ids: [STORY-0101]
+  missing_conformance_evidence_ids: [STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  queue_rebuilt_fail_closed: true
+  queue_path: BL-002/post-approval-code-conformance-task-queue.csv
+  aggregate_projection_status: STALE_FOR_CONFORMANCE_SECTION_LEVEL1_EVIDENCE_WINS
+  application_code_mutation: false
+  bl010_created_or_executed: false
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  git: AVAILABLE
+  governed_test_execution_possible: false
+remaining_gates:
+  - RECOVER_GOVERNED_FILE_LIBRARY_SOURCE_FOR_REVALIDATION_OF_10_MISSING_CONFORMANCE_UNITS
+  - EXPLICIT_STORY_0101_DRIFT_MANIFEST_APPROVAL_REQUIRED
+  - FAITHFUL_BUILD_TEST_RUNTIME_REQUIRED_FOR_BL004_BL005_BL009_EXECUTION
+next_safe_action: NEXT_FIRE_RETRY_FILE_LIBRARY_SOURCE_RECOVERY_THEN_REVALIDATE_MISSING_CONFORMANCE_UNITS
