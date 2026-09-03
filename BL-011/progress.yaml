@@ -1,5 +1,5 @@
 backlog_id: BL-011
-checkpoint_run: CYLINDER-PRODUCTION-FIRE-20260903-155816-UTC-RUN-014
+checkpoint_run: CYLINDER-PRODUCTION-FIRE-20260903-175851-UTC-RUN-016
 eligible_story_denominator: 18
 eligible_rule: EXPLICIT_APPROVAL_AND_POST_APPROVAL_CONFORMANCE_PASS
 human_readable_packets_complete: 18
@@ -23,6 +23,7 @@ source_recovery:
   requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
   requested_file_id: file_00000000659c8211857bba6b09282de3
   exact_library_recovery_this_run: NOT_RETURNED_BY_CURRENT_FILE_LIBRARY_SEARCH
+  exact_materialization_capability_current_session: UNAVAILABLE_FOR_HIDDEN_FILE_ID
   recovered_local_equivalent: Harinandhan-Cylinder-Backup(20260902-163304).zip
   sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
   extracted_files: 1650
@@ -39,6 +40,14 @@ runtime_probe:
   local_maven_repository_files: 0
   pom_files_present: 10
   source_test_java_files_present: 30
+static_test_readiness:
+  surefire_name_matched_files: 28
+  dao_testcontainers_test_classes: 24
+  custommapper_non_container_unit_test_classes: 3
+  abstract_testcontainers_base_classes: 1
+  failsafe_it_classes: 1
+  testcontainers_referencing_test_files: 25
+  jacoco_pom_references: 0
 file_library_execution_evidence:
   new_surefire_results: false
   new_failsafe_results: false
