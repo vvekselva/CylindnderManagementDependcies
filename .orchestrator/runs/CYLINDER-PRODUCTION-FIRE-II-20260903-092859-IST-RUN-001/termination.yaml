@@ -1,0 +1,15 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-092859-IST-RUN-001
+termination_time: 2026-09-03T09:31:52+05:30
+elapsed_seconds: 173
+classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_AND_SOURCE_MATERIALIZATION_PENDING
+productive_work_completed:
+  - durable scheduler receipt/run link
+  - exact Library ZIP recovery attempt
+  - new coverage/test-result artifact scan
+  - explicit approval reconciliation for STORY-0092 STORY-0098 STORY-0099 STORY-0100 STORY-0103
+  - post-approval conformance queue repair
+  - 14-story generated-test inventory validation
+  - executable external test handoff refresh
+reason_for_pre_30_minute_terminalization: Only EXTERNAL_EXECUTION_REQUIRED work, explicit drift approval, and a currently unavailable File Library binary materialization remain; no safe CHATGPT_EXECUTABLE_NOW unit remains in this invocation.
+resumable: true
+recurring_fire_should_continue: true
