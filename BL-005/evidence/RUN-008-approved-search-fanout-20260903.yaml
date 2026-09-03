@@ -1,0 +1,13 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+stories_generated: [STORY-0092, STORY-0098, STORY-0099, STORY-0100]
+story_held: STORY-0103
+hold_reason: POST_APPROVAL_CODE_DRIFT_REQUIRES_EXPLICIT_EXACT_MANIFEST_APPROVAL
+dao_signature_validation:
+  STORY-0092: {dao: DriverJpaDao.findByDriverNameContainingIgnoreCase, pageable_variant_present: true, entity_setters_verified: [setDriverName,setLicenceNumber], status: PASS}
+  STORY-0098: {dao: ProductCategoryJpaDao.findByProductCategoryContainingIgnoreCase, entity_setter_verified: setProductCategory, status: PASS}
+  STORY-0099: {dao: ProductJpaDao.findByProductNameContainingIgnoreCase, entity_setters_verified: [setProductName,setIgstRate], status: PASS}
+  STORY-0100: {dao: ProductUomJpaDao.findByProductUomContainingIgnoreCase, entity_setter_verified: setProductUom, status: PASS}
+runtime_execution: NOT_EXECUTED
+runtime_blocker: MAVEN_AND_DOCKER_UNAVAILABLE
+application_code_changed: false
