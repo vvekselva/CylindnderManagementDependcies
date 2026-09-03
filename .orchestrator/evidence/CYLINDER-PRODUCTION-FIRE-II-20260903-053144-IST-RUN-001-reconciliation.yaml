@@ -1,0 +1,59 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST-RUN-001
+fire_id: CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST
+recorded_at: '2026-09-03T05:38:41+05:30'
+mode: CONTINUOUS
+scheduler_handoff:
+  receipt_persisted_before_backlog_read: true
+  receipt_state_after_link: ORCHESTRATOR_STARTED
+  run_link_state: RUN_LINKED
+prior_primary_reconciliation:
+  active_primary_collision: false
+  prior_run_terminal_and_resumable: true
+application_source:
+  requested_filename: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_library_id: file_00000000659c8211857bba6b09282de3
+  exact_file_library_recovery_attempted: true
+  recent_file_library_scan_attempted: true
+  returned_by_file_library_this_invocation: false
+  governed_zip_present_in_current_local_workspace: false
+  github_code_search_used_as_application_analysis_engine: false
+  source_analysis_status: FAIL_CLOSED_SOURCE_NOT_MATERIALIZED_THIS_INVOCATION
+runtime_capability:
+  java: AVAILABLE_OPENJDK_21_0_11
+  maven: UNAVAILABLE
+  gradle: UNAVAILABLE
+  docker: UNAVAILABLE
+  podman: UNAVAILABLE
+  local_maven_repository: ABSENT
+projection_reconciliation:
+  enrichment_progress_claims:
+    total_stories: 134
+    approved: 15
+    awaiting_user_review: 119
+    post_approval_conformance_pass: 14
+    conformance_drift_hold: 1
+  unit_local_post_approval_queue:
+    verified_pass_rows: 4
+    story_ids: [STORY-0013, STORY-0014, STORY-0016, STORY-0025]
+  unit_local_evidence_directory:
+    verified_evidence_files: 4
+    story_ids: [STORY-0013, STORY-0014, STORY-0016, STORY-0025]
+  classification: AGGREGATE_PROJECTION_UNIT_EVIDENCE_GAP
+  action: FAIL_CLOSED_DO_NOT_SYNTHESIZE_MISSING_CONFORMANCE_RESULTS
+  note: Aggregate 14-pass projection cannot be treated as execution-proof until corresponding unit-local evidence is recovered or regenerated from the governed application source.
+governance:
+  stories_auto_approved: false
+  application_code_mutated: false
+  bl_010_code_rework_created_or_executed: false
+  github_actions_or_runners_used: false
+  user_review_gates_preserved: true
+terminal_blockers:
+  - PRIMARY_FILE_LIBRARY_PACKAGE_NOT_RETURNED
+  - BUILD_RUNTIME_UNAVAILABLE
+  - CONFORMANCE_PROJECTION_UNIT_EVIDENCE_GAP
+resumable: true
+next_fire_recheck:
+  - FILE_LIBRARY_PRIMARY_PACKAGE_RECOVERY
+  - UNIT_LOCAL_CONFORMANCE_EVIDENCE_RECOVERY_OR_REGENERATION
+  - BUILD_RUNTIME_CAPABILITY
+  - EXPLICIT_DRIFT_APPROVALS
