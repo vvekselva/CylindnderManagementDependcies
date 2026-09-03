@@ -3,12 +3,17 @@ fire_id: 20260903T092859+0530
 observed_fire_time: 2026-09-03T09:28:59+05:30
 scheduled_fire_time: 2026-09-03T09:28:59+05:30
 receipt_time: 2026-09-03T09:28:59+05:30
-state: TRIGGER_RECEIVED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-092859-IST-RUN-001
-run_state: ORCHESTRATOR_STARTED
+run_state: TERMINATED
 link_state: RUN_LINKED
 source_binding:
   library_file: Harinandhan-Cylinder-Backup(20260902-163304).zip
   library_file_id: file_00000000fe9c8211869e2c82da911925
 capability_split_required: true
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_AND_SOURCE_MATERIALIZATION_PENDING
+termination_time: 2026-09-03T09:31:52+05:30
+elapsed_seconds: 173
+resumable: true
+recurring_fire_should_continue: true
