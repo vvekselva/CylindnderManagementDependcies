@@ -1,0 +1,14 @@
+scheduler_task: Cylinder Production Fire - ii
+fire_id: 20260903T092859+0530
+observed_fire_time: 2026-09-03T09:28:59+05:30
+scheduled_fire_time: 2026-09-03T09:28:59+05:30
+receipt_time: 2026-09-03T09:28:59+05:30
+state: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-092859-IST-RUN-001
+run_state: ORCHESTRATOR_STARTED
+link_state: RUN_LINKED
+source_binding:
+  library_file: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  library_file_id: file_00000000fe9c8211869e2c82da911925
+capability_split_required: true
