@@ -1,25 +1,27 @@
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST-RUN-001
 scheduler_fire_id: CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST
 scheduler_task: Cylinder Production Fire - ii
-state: EXECUTING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-03T05:31:46+05:30'
-last_heartbeat_at: '2026-09-03T05:33:00+05:30'
-terminated_at: null
-terminal_classification: null
-running_worker_count: 1
-completed_worker_count: 2
-blocked_worker_count: 1
-active_work_unit_ids: [CONTROL_PLANE_RECONCILIATION]
-eligible_work_remaining: true
+last_heartbeat_at: '2026-09-03T05:38:41+05:30'
+terminated_at: '2026-09-03T05:38:41+05:30'
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+running_worker_count: 0
+completed_worker_count: 3
+blocked_worker_count: 3
+active_work_unit_ids: []
+eligible_work_remaining: false
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 74
+productive_elapsed_seconds: 417
 runtime_target_30_minutes_satisfied: false
-completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, RUN_LINK]
-blocked_work_unit_ids: [PRIMARY_FILE_LIBRARY_PACKAGE_NOT_RETURNED]
+completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK, RUN_LINK, CONTROL_PLANE_RECONCILIATION]
+blocked_work_unit_ids: [PRIMARY_FILE_LIBRARY_PACKAGE_NOT_RETURNED, BUILD_RUNTIME_UNAVAILABLE, CONFORMANCE_PROJECTION_UNIT_EVIDENCE_GAP]
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
 source_materialization_this_invocation: FILE_LIBRARY_RECOVERY_ATTEMPTED_NOT_RETURNED
 source_local_git_present: UNKNOWN_SOURCE_NOT_MATERIALIZED
-next_action: RECONCILE_CONTROL_PLANE_AND_AGGREGATE_PROJECTIONS_THEN_REPLAN
+projection_reconciliation: AGGREGATE_14_PASS_VS_4_UNIT_LOCAL_PASS_EVIDENCE_FAIL_CLOSED
+reconciliation_evidence: .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST-RUN-001-reconciliation.yaml
+next_action: NEXT_RECURRING_FIRE_RECHECK_SOURCE_EVIDENCE_RUNTIME_AND_APPROVAL_GATES
