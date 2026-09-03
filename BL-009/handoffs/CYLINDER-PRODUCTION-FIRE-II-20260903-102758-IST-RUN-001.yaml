@@ -1,0 +1,67 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-102758-IST-RUN-001
+status: TESTS_GENERATED_AWAITING_EXTERNAL_EXECUTION
+capability_split:
+  CHATGPT_EXECUTABLE_NOW:
+    - durable_queue_reconciliation
+    - source_bound_test_artifact_handoff_refresh
+    - file_library_test_result_search
+    - source_materialization_retry
+  EXTERNAL_EXECUTION_REQUIRED:
+    - maven_junit_execution
+    - testcontainers_docker_execution
+    - jacoco_surefire_failsafe_report_production
+source_binding:
+  primary_artifact: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  library_file_id: file_00000000fe9c8211869e2c82da911925
+  durable_governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  materialization_this_run: SEARCHED_NOT_RETURNED_BY_FILE_LIBRARY
+eligible_stories:
+  - STORY-0001
+  - STORY-0012
+  - STORY-0013
+  - STORY-0087
+  - STORY-0089
+  - STORY-0090
+  - STORY-0108
+  - STORY-0109
+  - STORY-0127
+  - STORY-0128
+  - STORY-0129
+  - STORY-0130
+  - STORY-0131
+  - STORY-0132
+excluded_by_gate:
+  STORY-0101: CODE_DRIFT_REVIEW_PACKET_PENDING_EXPLICIT_APPROVAL
+pending_source_conformance:
+  - STORY-0092
+  - STORY-0098
+  - STORY-0099
+  - STORY-0100
+  - STORY-0103
+generated_test_files:
+  - BL-009/generated-tests/STORY-0001/Story0001TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0001/Story0001TestDataContractRunner.java
+  - BL-009/generated-tests/STORY-0012/Story0012TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0013/Story0013TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0087/Story0087TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0089/Story0089TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0090/Story0090TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0108/Story0108TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0109/Story0109TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0127/Story0127TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0128/Story0128TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0129/Story0129TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0130/Story0130TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0131/Story0131TestDataDrivenTest.java
+  - BL-009/generated-tests/STORY-0132/Story0132TestDataDrivenTest.java
+external_commands:
+  - mvn -B clean test jacoco:report
+  - mvn -B verify
+expected_uploaded_evidence:
+  - target/surefire-reports/**
+  - target/failsafe-reports/**
+  - target/site/jacoco/jacoco.xml
+  - target/site/jacoco/**
+  - maven-execution.log
+result_ingestion_rule: Bind uploaded evidence to this handoff and exact source fingerprint before marking any execution state.
+execution_claim: NOT_EXECUTED_BY_CHATGPT
