@@ -1,0 +1,40 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260904-012717-IST-RUN-018
+scheduler_fire_id: 20260904T012717-0530
+mode: CONTINUOUS
+checkpoint_time: 2026-09-04T01:29:19+05:30
+scheduler_handoff:
+  receipt_persisted_before_backlog_read: true
+  run_linked: true
+  prior_run_017_terminal_gap: false
+source_recovery:
+  requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  exact_library_search: NOT_RETURNED
+  recent_library_scan: NOT_RETURNED
+  current_runtime_local_copy: NOT_FOUND
+  materialization_state: FAILED_IN_CURRENT_RUNTIME
+runtime:
+  java: AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  local_maven_repository_files: 0
+story_projection:
+  approved: 20
+  post_approval_conformance_pass: 18
+  drift_hold: 2
+  drift_hold_story_ids: [STORY-0101, STORY-0103]
+execution_evidence:
+  new_surefire_results: false
+  new_failsafe_results: false
+  new_jacoco_results: false
+  new_maven_execution_logs: false
+mutations:
+  application_code: NONE
+  test_code: NONE
+  database: NONE
+  story_auto_approval: NONE
+  bl_010_rework: NONE
+resumable: true
+next_action: RETRY_EXACT_LIBRARY_RECOVERY_INGEST_NEW_EXECUTION_EVIDENCE_OR_PROCESS_EXPLICIT_APPROVED_DRIFT_MANIFEST
