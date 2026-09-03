@@ -1,0 +1,30 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-092859-IST-RUN-001
+reconciliation_state: COMPLETE_FOR_CURRENT_CAPABILITIES
+approval_projection:
+  prior_aggregate_approved_count: 15
+  newly_durable_explicit_approval_ids: [STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0103]
+  reconciled_authoritative_approved_count: 20
+  aggregate_file_stale: BL-002/enrichment-progress.yaml
+  level1_evidence_wins: true
+post_approval_conformance:
+  pass_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  source_materialization_pending_ids: [STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0103]
+  drift_hold_ids: [STORY-0101]
+coverage_ingest:
+  new_jacoco_evidence_found: false
+  new_surefire_evidence_found: false
+  new_failsafe_evidence_found: false
+capability_split:
+  CHATGPT_EXECUTABLE_NOW:
+    completed: [scheduler_receipt_link, approval_evidence_reconciliation, conformance_queue_reconciliation, coverage_artifact_scan, existing_generated_test_inventory_validation, executable_handoff_refresh]
+    remaining: []
+  EXTERNAL_EXECUTION_REQUIRED:
+    - execute generated tests for 14 conformance-pass stories in local Maven/Eclipse/Docker environment
+    - upload Surefire/Failsafe reports and JaCoCo coverage bound to source SHA
+source_recovery:
+  requested_library_file: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  requested_library_file_id: file_00000000fe9c8211869e2c82da911925
+  current_run_binary_materialization: FAILED_NOT_RETURNED_BY_FILE_LIBRARY_SEARCH
+  durable_prior_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  new_source_analysis_performed: false
+  github_application_code_search_used: false
