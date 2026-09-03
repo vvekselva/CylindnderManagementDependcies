@@ -1,0 +1,21 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+comparison: RECOVERED_AUTOMATION_DELTA_RESOURCES_TO_DURABLE_TESTDATA_BACKLOG
+network_raw_fetch: FAILED_DNS_RAW_GITHUB_UNRESOLVABLE
+comparison_method: NORMALIZE_RECOVERED_UTF8_BOM_AND_CRLF_THEN_CALCULATE_GIT_BLOB_SHA1
+files:
+  BL008_V185_Service_UI_Test_Cases.csv:
+    recovered_raw_size: 12312
+    recovered_raw_sha256: 3d8e8291e26b0cb54a4531e85ab99c7c409766695470680a24662329b432100e
+    normalized_size: 12278
+    normalized_git_blob_sha1: e409f3f789d5127efd851b0a935aac06f2fe3a91
+    durable_git_blob_sha1: e409f3f789d5127efd851b0a935aac06f2fe3a91
+    parity: EXACT_AFTER_TRANSPORT_NORMALIZATION
+  BL008_V185_Test_Data.csv:
+    recovered_raw_size: 3324
+    recovered_raw_sha256: de290b6e896cab870d019e813ae4fb289cd51108f0a2b3c4b31ac9fc657a5305
+    normalized_size: 3301
+    normalized_git_blob_sha1: 02ad699d58f7e36409709744e4ab0f687abd69f9
+    durable_git_blob_sha1: 02ad699d58f7e36409709744e4ab0f687abd69f9
+    parity: EXACT_AFTER_TRANSPORT_NORMALIZATION
+conclusion: RECOVERED_BL008_TEST_AUTOMATION_USES_CANONICAL_V185_CATALOGUE_AND_TEST_DATA
+application_code_changed: false
