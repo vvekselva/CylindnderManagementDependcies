@@ -1,0 +1,60 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-175851-UTC-RUN-016
+scheduler_fire_id: 20260903-175851-UTC
+mode: CONTINUOUS
+checkpoint_time_utc: 2026-09-03T18:01:07Z
+scheduler_handoff:
+  current_receipt_persisted_before_backlog_read: true
+  run_linked: true
+  prior_run_015_terminal_gap: false
+source_recovery:
+  requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  exact_library_search: NOT_RETURNED
+  exact_materialization_capability_current_session: UNAVAILABLE_FOR_HIDDEN_FILE_ID
+  recovered_local_candidate: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  governed_sha256_reconfirmed: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_files: 1650
+  java_files: 1054
+  poms: 10
+  src_test_java_files: 30
+  git_directories: 0
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  local_maven_repository_files: 0
+static_test_reconciliation:
+  surefire_name_matched_files: 28
+  runnable_surefire_projection: 27
+  dao_testcontainers_classes: 24
+  non_container_unit_classes: 3
+  abstract_testcontainers_base_classes: 1
+  failsafe_it_classes: 1
+  testcontainers_referencing_test_files: 25
+  jacoco_pom_references: 0
+  projection_delta_resolved: ABSTRACT_BASE_CLASS_WAS_FILENAME_MATCH_NOT_INDEPENDENT_RUNNABLE_TEST
+story_projection:
+  approved: 20
+  post_approval_conformance_pass: 18
+  drift_hold: 2
+  drift_hold_story_ids: [STORY-0101, STORY-0103]
+additional_approval_gated_review_scopes:
+  story_0013_dev_items: [DEV-0002, DEV-0003, DEV-0004]
+  bl_008_review_index_present: true
+file_library_execution_evidence:
+  new_surefire_results: false
+  new_failsafe_results: false
+  new_jacoco_results: false
+  new_maven_execution_logs: false
+mutations:
+  application_code: NONE
+  test_code: NONE
+  database: NONE
+  story_auto_approval: NONE
+control_plane_updates:
+  runtime_static_readiness_evidence: .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-20260903-175851-UTC-RUN-016-runtime-static-readiness.yaml
+  bl_011_progress_reconciled: true
+resumable: true
+next_action: RETRY_EXACT_LIBRARY_RECOVERY_INGEST_NEW_EXECUTION_EVIDENCE_OR_PROCESS_EXPLICIT_APPROVED_DRIFT_MANIFEST
