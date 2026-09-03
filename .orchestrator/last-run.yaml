@@ -1,31 +1,29 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-145248-IST-RUN-001
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-150145-UTC-RUN-013
 checkpoint_state: BLOCKED_RESUMABLE
-started_at: '2026-09-03T14:52:48+05:30'
-checkpoint_at: '2026-09-03T14:55:36+05:30'
-terminated_at: '2026-09-03T14:55:36+05:30'
-elapsed_seconds: 168
-productive_elapsed_seconds: 168
+started_at: '2026-09-03T15:01:45Z'
+checkpoint_at: '2026-09-03T15:03:30Z'
+terminated_at: '2026-09-03T15:03:30Z'
+elapsed_seconds: 105
+productive_elapsed_seconds: 105
 terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_OR_EXPLICIT_APPROVAL_PENDING
 eligible_work_remaining: false
 recoverable_work_remaining: true
 scheduler_handoff:
-  fire_id: 20260903T145248+0530
-  receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire-ii/20260903T145248+0530.yaml
+  fire_id: 20260903T150145Z
+  receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire/20260903T150145Z.yaml
   handoff_acknowledged: true
   run_linked: true
 application_source:
-  requested_file_library_zip: Harinandhan-Cylinder-Backup(20260902-163304).zip
-  requested_file_library_id: file_00000000fe9c8211869e2c82da911925
+  requested_file_library_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_library_id: file_00000000659c8211857bba6b09282de3
+  primary_recovery_state: NOT_RETURNED_BY_FILE_LIBRARY_SEARCH
+  fallback_local_zip: Harinandhan-Cylinder-Backup(20260902-163304).zip
   governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
-  recovery_state_this_invocation: MATERIALIZED_EXTRACTED_FINGERPRINTED
-  extracted_tree_manifest_sha256: dcc4894b532b34910bd2e2ea423b430a3338a349529a23ff93ebb99644851427
   github_code_search_used_for_application_analysis: false
 test_handoff:
   status: TESTS_GENERATED_AWAITING_EXTERNAL_EXECUTION
   eligible_story_count: 18
-  executed_by_chatgpt: 0
   new_uploaded_execution_artifacts_found: false
-  manifest: BL-009/handoffs/CYLINDER-PRODUCTION-FIRE-II-20260903-145248-IST-RUN-001.yaml
 drift_governance:
   STORY-0101: EXACT_DRIFT_MANIFEST_AWAITING_EXPLICIT_USER_APPROVAL
   STORY-0103: EXACT_DRIFT_MANIFEST_AWAITING_EXPLICIT_USER_APPROVAL
@@ -33,9 +31,9 @@ drift_governance:
   bl010_executed: false
 runtime_reliability:
   runtime_target_30_minutes_satisfied: false
-  early_exit_basis: ONLY_EXTERNAL_EXECUTION_REQUIRED_OR_EXPLICIT_APPROVAL_REMAINED
-claims:
-  active_at_terminal: 0
-transient_logs_remaining: 0
+  early_exit_basis: ONLY_EXTERNAL_EXECUTION_REQUIRED_OR_EXPLICIT_APPROVAL_REMAINED_AFTER_RUNTIME_RECOVERY_ATTEMPT
+  maven_bootstrap_attempted: true
+  maven_bootstrap_result: FAILED
 resumable: true
-next_action: Ingest newly uploaded JaCoCo/Surefire/Failsafe/Maven evidence; bind to this handoff/source SHA; analyze failures and coverage gaps; generate the next permitted gap-closing test batch.
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260903-150145-UTC-RUN-013-reconciliation.yaml
+next_action: Ingest new Surefire/Failsafe/JaCoCo/Maven evidence or explicit exact drift-manifest approval, then replan.
