@@ -2,8 +2,14 @@ scheduler_task: Cylinder Production Fire - ii
 fire_id: 20260903T113119+0530-auto11
 observed_scheduled_fire_time: '2026-09-03T11:31:19+05:30'
 receipt_time: '2026-09-03T11:31:26+05:30'
-state: TRIGGER_RECEIVED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-113119-IST-RUN-001
 orchestrator_state: ORCHESTRATOR_STARTED
 run_link_state: RUN_LINKED
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_AND_SOURCE_MATERIALIZATION_PENDING
+termination_time: '2026-09-03T11:33:15+05:30'
+productive_elapsed_seconds: 109
+resumable: true
+handoff_manifest: BL-009/handoffs/CYLINDER-PRODUCTION-FIRE-II-20260903-113119-IST-RUN-001.yaml
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-II-20260903-113119-IST-RUN-001-reconciliation.yaml
