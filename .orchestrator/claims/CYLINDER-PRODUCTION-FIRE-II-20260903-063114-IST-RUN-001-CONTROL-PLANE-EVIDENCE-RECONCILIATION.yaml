@@ -1,8 +1,11 @@
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001
 work_unit_id: CONTROL_PLANE_EVIDENCE_RECONCILIATION
 resource: BL-002/post-approval-code-conformance
-claim_state: CLAIMED
+claim_state: RELEASED_COMPLETE
 claimed_at: '2026-09-03T06:31:14+05:30'
+released_at: '2026-09-03T06:34:45+05:30'
 claim_scope: RECONCILE_AGGREGATE_PROJECTION_AGAINST_UNIT_LOCAL_EVIDENCE
 application_source_required: false
 application_code_mutation_allowed: false
+result: CONFORMANCE_QUEUE_REBUILT_FAIL_CLOSED_LEVEL1_EVIDENCE_WINS
+evidence: .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001-reconciliation.yaml
