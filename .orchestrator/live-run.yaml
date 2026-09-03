@@ -1,47 +1,47 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015
-scheduler_fire_id: 20260903-165918-UTC
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-175851-UTC-RUN-016
+scheduler_fire_id: 20260903-175851-UTC
 scheduler_task: Cylinder Production Fire
 state: TERMINATED
 mode: CONTINUOUS
-started_at: '2026-09-03T16:59:31Z'
-last_heartbeat_at: '2026-09-03T17:03:03Z'
-terminated_at: '2026-09-03T17:03:03Z'
+started_at: '2026-09-03T17:58:51Z'
+last_heartbeat_at: '2026-09-03T18:01:29Z'
+terminated_at: '2026-09-03T18:01:29Z'
 terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_RUNTIME_OR_EXPLICIT_APPROVAL_PENDING
 running_worker_count: 0
-completed_worker_count: 7
+completed_worker_count: 6
 blocked_worker_count: 2
 active_work_unit_ids: []
 eligible_work_remaining: false
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 212
-elapsed_seconds_from_fire_receipt: 225
+productive_elapsed_seconds: 150
+elapsed_seconds_from_fire_receipt: 158
 runtime_target_30_minutes_satisfied: false
-early_termination_basis: ALL_CURRENT_SAFE_INDEPENDENT_WORK_EXHAUSTED_REMAINING_EXECUTION_REQUIRES_MAVEN_DEPENDENCIES_AND_CONTAINER_ENGINE_OR_EXPLICIT_APPROVAL
+early_termination_basis: ALL_CURRENT_SAFE_INDEPENDENT_WORK_EXHAUSTED_REMAINING_EXECUTION_REQUIRES_MAVEN_DEPENDENCIES_CONTAINER_ENGINE_OR_EXPLICIT_APPROVAL
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
-source_primary_recovery: NOT_RETURNED_BY_CURRENT_FILE_LIBRARY_SEARCH_AND_DIRECT_MATERIALIZATION_UNAVAILABLE
+source_primary_recovery: NOT_RETURNED_BY_CURRENT_FILE_LIBRARY_SEARCH_AND_CURRENT_SESSION_HAS_NO_HIDDEN_ID_MATERIALIZATION_ACTION
 source_fallback_local_zip: Harinandhan-Cylinder-Backup(20260902-163304).zip
 source_governed_sha: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
 current_test_handoff_story_count: 18
 current_test_handoff_status: TESTS_GENERATED_AWAITING_EXECUTION
 drift_approval_hold_story_ids: [STORY-0101, STORY-0103]
 new_test_execution_evidence_found: false
-runtime_recovery_attempted: true
 runtime_probe:
   java: OPENJDK_21_0_11_AVAILABLE
   maven: MISSING
   gradle: MISSING
   docker: MISSING
   podman: MISSING
-  maven_wrapper_count: 0
-  gradle_wrapper_count: 0
   local_maven_repository_files: 0
-  outbound_maven_repository_probe: FAILED
 static_test_readiness:
-  dao_surefire_selected_testcontainers_tests: 24
+  surefire_name_matched_files: 28
+  runnable_surefire_projection: 27
+  dao_testcontainers_test_classes: 24
   custommapper_unit_tests: 3
-  web_failsafe_it_files: 1
+  abstract_testcontainers_base_classes: 1
+  failsafe_it_files: 1
+  testcontainers_referencing_test_files: 25
   jacoco_pom_references: 0
-checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015-reconciliation.yaml
-next_action: NEXT_FIRE_INGEST_RUNTIME_TEST_EVIDENCE_OR_EXPLICIT_DRIFT_APPROVAL_RETRY_EXACT_LIBRARY_RECOVERY_THEN_REPLAN
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260903-175851-UTC-RUN-016-reconciliation.yaml
+next_action: NEXT_FIRE_RETRY_EXACT_LIBRARY_RECOVERY_INGEST_RUNTIME_TEST_EVIDENCE_OR_EXPLICIT_DRIFT_APPROVAL_THEN_REPLAN
