@@ -3,9 +3,11 @@ fire_id: "CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST"
 observed_fire_time: "2026-09-03T05:31:44+05:30"
 scheduled_fire_time: "2026-09-03T05:30:00+05:30"
 receipt_time: "2026-09-03T05:31:44+05:30"
-state: "ORCHESTRATOR_STARTED"
+state: "TERMINATED"
 intended_scope: "CONTINUOUS"
 run_id: "CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST-RUN-001"
 run_link_state: "RUN_LINKED"
-terminal_classification: null
-termination_time: null
+terminal_classification: "ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS"
+termination_time: "2026-09-03T05:38:41+05:30"
+productive_elapsed_seconds: 417
+resumable: true
