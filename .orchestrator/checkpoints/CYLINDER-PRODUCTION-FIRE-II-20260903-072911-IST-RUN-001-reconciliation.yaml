@@ -1,0 +1,59 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-072911-IST-RUN-001
+checkpoint_time: 2026-09-03T07:32:52+05:30
+mode: CONTINUOUS
+scheduler_handoff:
+  receipt_path: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire-ii/20260903T072911-0530.yaml
+  receipt_persisted_before_backlog_read: true
+  run_linked: true
+  prior_primary_terminal: true
+  unresolved_start_or_termination_gap: false
+application_source:
+  requested_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_library_id: file_00000000659c8211857bba6b09282de3
+  recovery_attempts_this_run:
+    - exact_filename_and_file_id_search
+    - recent_file_library_upload_navigation
+    - broader_filename_timestamp_search
+    - current_local_workspace_scan
+  result: SEARCHED_NOT_RETURNED_AND_NOT_LOCALLY_MATERIALIZED
+  governed_sha_from_durable_control_evidence: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  application_source_analysis_this_run: NOT_PERFORMED_FAIL_CLOSED
+  github_code_search_used_as_application_source_engine: false
+projection_reconciliation:
+  BL-002:
+    approved_story_count: 15
+    conformance_pass_count: 14
+    drift_hold_count: 1
+    drift_story: STORY-0101
+  BL-004:
+    unit_test_rows_for_conformance_pass_stories: 14
+    state: RUNTIME_BLOCKED
+  BL-005:
+    integration_test_rows_for_conformance_pass_stories: 14
+    state: RUNTIME_BLOCKED
+  BL-009:
+    completed_test_case_mappings: 14
+    approval_gated_story: STORY-0101
+  aggregate_projection_drift_detected: false
+story_code_drift_governance:
+  story: STORY-0101
+  review_packet: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+  exact_change_locations: 3
+  explicit_user_approval_required: true
+  application_code_mutated: false
+  BL-010_rework_created_or_executed: false
+runtime_capability:
+  java: OpenJDK 21.0.11
+  maven: unavailable
+  gradle: unavailable
+  docker: unavailable
+  podman: unavailable
+  maven_wrapper_or_local_dependency_cache: unavailable
+  outbound_dependency_recovery: blocked_by_dns_resolution
+remaining_gates:
+  - PRIMARY_FILE_LIBRARY_SOURCE_NOT_MATERIALIZED
+  - FAITHFUL_MAVEN_OR_CONTAINER_RUNTIME_UNAVAILABLE
+  - STORY-0101_EXACT_DRIFT_MANIFEST_AWAITING_EXPLICIT_USER_APPROVAL
+safe_independent_work_remaining_after_reconciliation: false
+recoverable_on_future_fire: true
+resumable: true
