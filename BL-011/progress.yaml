@@ -1,0 +1,37 @@
+backlog_id: BL-011
+checkpoint_run: CYLINDER-PRODUCTION-FIRE-20260903-115923-UTC-RUN-011
+eligible_story_denominator: 18
+eligible_rule: EXPLICIT_APPROVAL_AND_POST_APPROVAL_CONFORMANCE_PASS
+human_readable_packets_complete: 18
+unit_test_stories_complete: 18
+integration_test_stories_complete: 18
+test_data_stories_complete: 18
+use_case_end_to_end_stories_complete: 18
+traceability_packets_complete: 18
+execution:
+  unit: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+  integration: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+  application_behavior: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+coverage:
+  durable_current_coverage_evidence: 0
+  state: NO_DURABLE_COVERAGE_EVIDENCE
+approved_but_not_eligible_due_to_code_drift:
+  count: 2
+  stories: [STORY-0101, STORY-0103]
+  gate: EXPLICIT_EXACT_DRIFT_CODE_CHANGE_MANIFEST_APPROVAL_REQUIRED
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  maven_wrapper_count: 0
+  gradle_wrapper_count: 0
+  pom_files_present: 10
+  source_test_java_files_present: 30
+rules:
+  auto_approval: false
+  application_code_mutation: NONE
+  infer_execution_success: false
+  infer_coverage: false
+next_action: EXECUTE_SOURCE_BOUND_BL004_BL005_BL009_SCOPES_WHEN_FAITHFUL_RUNTIME_AVAILABLE_AND_ATTACH_DURABLE_RESULTS_TO_BL011_PACKETS
