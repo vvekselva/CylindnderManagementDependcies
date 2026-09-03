@@ -2,7 +2,9 @@ scheduler_task: Cylinder Production Fire
 fire_id: fire-20260904-023116-ist
 observed_scheduled_fire_time: '2026-09-04T02:31:16+05:30'
 receipt_time: '2026-09-04T02:31:16+05:30'
-state: RUN_LINKED
+state: TERMINATED
 intended_scope: CONTINUOUS
-orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_state: TERMINATED
 run_id: CYLINDER-PRODUCTION-FIRE-20260904-023116-IST-RUN-019
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_RUNTIME_OR_EXACT_SOURCE_RECOVERY_PENDING
+termination_time: '2026-09-04T02:32:36+05:30'
