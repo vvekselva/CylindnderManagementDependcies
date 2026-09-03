@@ -1,22 +1,23 @@
 run_id: CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015
 scheduler_fire_id: 20260903-165918-UTC
 scheduler_task: Cylinder Production Fire
-state: RUNNING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-03T16:59:31Z'
-last_heartbeat_at: '2026-09-03T17:01:26Z'
-terminated_at: null
-terminal_classification: null
-running_worker_count: 1
-completed_worker_count: 3
-blocked_worker_count: 0
-active_work_unit_ids: [RUNTIME_RECOVERY_AND_STATIC_TEST_READINESS_AUDIT]
-eligible_work_remaining: true
+last_heartbeat_at: '2026-09-03T17:03:03Z'
+terminated_at: '2026-09-03T17:03:03Z'
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_RUNTIME_OR_EXPLICIT_APPROVAL_PENDING
+running_worker_count: 0
+completed_worker_count: 7
+blocked_worker_count: 2
+active_work_unit_ids: []
+eligible_work_remaining: false
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 115
-elapsed_seconds_from_fire_receipt: 128
+productive_elapsed_seconds: 212
+elapsed_seconds_from_fire_receipt: 225
 runtime_target_30_minutes_satisfied: false
+early_termination_basis: ALL_CURRENT_SAFE_INDEPENDENT_WORK_EXHAUSTED_REMAINING_EXECUTION_REQUIRES_MAVEN_DEPENDENCIES_AND_CONTAINER_ENGINE_OR_EXPLICIT_APPROVAL
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
 source_primary_recovery: NOT_RETURNED_BY_CURRENT_FILE_LIBRARY_SEARCH_AND_DIRECT_MATERIALIZATION_UNAVAILABLE
@@ -37,4 +38,10 @@ runtime_probe:
   gradle_wrapper_count: 0
   local_maven_repository_files: 0
   outbound_maven_repository_probe: FAILED
-next_action: COMPLETE_STATIC_TEST_RUNTIME_READINESS_AUDIT_THEN_REPLAN
+static_test_readiness:
+  dao_surefire_selected_testcontainers_tests: 24
+  custommapper_unit_tests: 3
+  web_failsafe_it_files: 1
+  jacoco_pom_references: 0
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015-reconciliation.yaml
+next_action: NEXT_FIRE_INGEST_RUNTIME_TEST_EVIDENCE_OR_EXPLICIT_DRIFT_APPROVAL_RETRY_EXACT_LIBRARY_RECOVERY_THEN_REPLAN
