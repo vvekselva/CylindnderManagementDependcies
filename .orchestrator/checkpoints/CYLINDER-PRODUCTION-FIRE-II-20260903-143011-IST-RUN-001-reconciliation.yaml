@@ -1,0 +1,34 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-143011-IST-RUN-001
+mode: CONTINUOUS
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_AND_SOURCE_MATERIALIZATION_PENDING
+terminated_at: '2026-09-03T14:35:18+05:30'
+capability_split:
+  CHATGPT_EXECUTABLE_NOW_completed:
+    - scheduler_handoff_ack_and_run_link
+    - durable_queue_and_handoff_reconciliation
+    - primary_source_library_recovery_attempt
+    - focused_file_library_test_result_search
+    - source_bound_test_handoff_refresh
+  EXTERNAL_EXECUTION_REQUIRED:
+    - maven_junit_execution
+    - testcontainers_docker_execution
+    - jacoco_surefire_failsafe_report_production
+source:
+  artifact: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  library_file_id: file_00000000fe9c8211869e2c82da911925
+  governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  materialization_this_run: SEARCHED_NOT_RETURNED_BY_FILE_LIBRARY
+external_test_evidence:
+  new_qualifying_artifacts_found: false
+  search_result: focused File Library search returned no qualifying JaCoCo/Surefire/Failsafe execution reports
+handoff:
+  status: TESTS_GENERATED_AWAITING_EXTERNAL_EXECUTION
+  manifest: BL-009/handoffs/CYLINDER-PRODUCTION-FIRE-II-20260903-143011-IST-RUN-001.yaml
+  eligible_story_count: 14
+  eligible_stories: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+pending_source_conformance: [STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0103]
+approval_gate:
+  STORY-0101: CODE_DRIFT_REVIEW_PACKET_PENDING_EXPLICIT_APPROVAL
+execution_claim: NO_TEST_EXECUTION_CLAIMED
+resumable: true
+next_action: NEXT_FIRE_RETRY_SOURCE_MATERIALIZATION_AND_INGEST_ANY_UPLOADED_TEST_RESULTS
