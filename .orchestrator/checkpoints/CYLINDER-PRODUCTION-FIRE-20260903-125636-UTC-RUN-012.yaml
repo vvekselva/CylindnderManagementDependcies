@@ -1,0 +1,60 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-125636-UTC-RUN-012
+mode: CONTINUOUS
+checkpoint_time: 2026-09-03T12:59:20Z
+source:
+  requested_file: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  requested_library_recovery: NOT_VISIBLE_IN_CURRENT_FILE_LIBRARY_SEARCH_SURFACE
+  recovered_candidate: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  frozen_match: true
+  extracted_files: 1650
+  java_files: 1054
+  local_git_present: false
+scheduler_reconciliation:
+  receipt_persisted_before_backlog: true
+  run_linked_before_backlog: true
+  prior_run: CYLINDER-PRODUCTION-FIRE-20260903-115923-UTC-RUN-011
+  prior_run_gap: NONE_PRIOR_RECEIPT_TERMINALIZED
+approval_projection:
+  total_stories: 134
+  explicitly_approved_after_rework: 20
+  awaiting_user_review: 114
+  post_approval_conformance_pass: 18
+  drift_hold: 2
+  drift_hold_ids: [STORY-0101, STORY-0103]
+  auto_approval: false
+  application_code_mutation: NONE
+bl011:
+  eligible_story_denominator: 18
+  human_readable_packets_complete: 18
+  execution_state: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+  durable_current_coverage_evidence_count: 0
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  maven_wrapper_count: 0
+  gradle_wrapper_count: 0
+  pom_files_present: 10
+  source_test_java_files_present: 30
+new_execution_evidence:
+  surefire: NONE_FOUND
+  failsafe: NONE_FOUND
+  jacoco: NONE_FOUND
+  maven: NONE_FOUND
+drift_hold_revalidation:
+  STORY-0101: PRODUCT_UOM_SEARCH_SERVICE_AT_VALIDATOR_VALIDATE_WAITING_EXPLICIT_APPROVAL
+  STORY-0103: PRODUCT_UOM_SEARCH_SERVICE_AT_VALIDATOR_VALIDATE_WAITING_EXPLICIT_APPROVAL
+bl010:
+  executable_now: 0
+  mutation_performed: false
+next_actions:
+  - ingest new durable test execution or coverage artifacts when available
+  - execute 18 generated scopes only when faithful Maven/JUnit/Testcontainers runtime is available
+  - preserve STORY-0101 and STORY-0103 exact manifest approval gates
+terminal_candidate: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+productive_elapsed_seconds_at_checkpoint: 164
+resumable_state: true
