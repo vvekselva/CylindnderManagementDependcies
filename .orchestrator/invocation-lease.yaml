@@ -1,35 +1,31 @@
 holder: Primary Cylinder Automation Tool
-run_id: CYLINDER-PRODUCTION-FIRE-20260830-111416IST
-acquired_at: 2026-08-30T11:14:16+05:30
-released_at: 2026-08-30T11:15:32+05:30
-status: RELEASED
-scope: [BL-002, BL-008]
-claims: []
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001
+acquired_at: 2026-09-03T06:31:14+05:30
+released_at: null
+status: ACTIVE
+scope: [CONTROL_PLANE_RECONCILIATION, BL-002, SOURCE_RECOVERY, RUNTIME_RELIABILITY]
+claims:
+  - CONTROL_PLANE_EVIDENCE_RECONCILIATION
 policy:
   execution_host: ChatGPT
-  github_role: repository_storage_only
+  github_role: durable_control_audit_plane
   github_runner: forbidden
   shared_ssot_single_writer: true
   bl008_database_write_parallelism: 1
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-08-30T11:15:32+05:30
-result: RUNTIME_WINDOW_FORCED_STOP
+heartbeat_at: 2026-09-03T06:33:55+05:30
+result: EXECUTING
 recovery:
-  classification: FRESH_LEASE_AFTER_RECOVERED_STALE_INVOCATION
-  prior_run_id: CYLINDER-BL008-TESTCONTAINERS-20260830-061203IST
-  durable_evidence_reconciled: true
+  prior_live_run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-053144-IST-RUN-001
+  prior_live_run_state: TERMINATED
+  prior_terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
 progress:
-  work_units_attempted: 1
-  work_units_completed: 0
-  completed_ids: []
-  strict_field_ui_completion_delta: 0
-  materialization_delta: 0
-  approval_delta: 0
-  bl008_migration_write_delta_persistent_target: 0
-  next_eligible_strict_unit: STORY-0034
-  transient_lane_logs_remaining: 0
+  work_units_attempted: 2
+  work_units_completed: 1
+  completed_ids: [SCHEDULER_HANDOFF_ACK_AND_RUN_LINK]
+  active_ids: [CONTROL_PLANE_EVIDENCE_RECONCILIATION]
 notes:
-  - STORY-0034 controller/template contract was deepened from frozen source; strict completion withheld pending service/DAO/entity/database trace.
-  - BL-008 environment evidence unchanged; no repeated network/container probe and no database write.
-  - Runtime window ended before the required 30 productive minutes; lease and claim released cleanly.
+  - Scheduler receipt persisted and run-linked before backlog inspection.
+  - Governed File Library ZIP exact-identity recovery attempted and not returned in this invocation.
+  - Conformance aggregate/unit-evidence mismatch is being repaired fail-closed.
