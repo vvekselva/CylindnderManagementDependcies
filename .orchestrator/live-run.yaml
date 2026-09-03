@@ -1,30 +1,29 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260903-155816-UTC-RUN-014
-scheduler_fire_id: 20260903-155816-UTC
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015
+scheduler_fire_id: 20260903-165918-UTC
 scheduler_task: Cylinder Production Fire
-state: TERMINATED
+state: RUNNING
 mode: CONTINUOUS
-started_at: '2026-09-03T15:58:16Z'
-last_heartbeat_at: '2026-09-03T16:01:12Z'
-terminated_at: '2026-09-03T16:01:12Z'
-terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_OR_EXPLICIT_APPROVAL_PENDING
-running_worker_count: 0
-completed_worker_count: 9
-blocked_worker_count: 2
-active_work_unit_ids: []
-eligible_work_remaining: false
+started_at: '2026-09-03T16:59:31Z'
+last_heartbeat_at: '2026-09-03T17:01:26Z'
+terminated_at: null
+terminal_classification: null
+running_worker_count: 1
+completed_worker_count: 3
+blocked_worker_count: 0
+active_work_unit_ids: [RUNTIME_RECOVERY_AND_STATIC_TEST_READINESS_AUDIT]
+eligible_work_remaining: true
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 176
-elapsed_seconds_from_fire_receipt: 176
+productive_elapsed_seconds: 115
+elapsed_seconds_from_fire_receipt: 128
 runtime_target_30_minutes_satisfied: false
-early_termination_basis: ALL_CHATGPT_EXECUTABLE_SAFE_INDEPENDENT_WORK_EXHAUSTED_REMAINING_WORK_REQUIRES_FAITHFUL_TEST_RUNTIME_OR_EXPLICIT_APPROVAL
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
-source_primary_recovery: NOT_RETURNED_BY_CURRENT_FILE_LIBRARY_SEARCH
+source_primary_recovery: NOT_RETURNED_BY_CURRENT_FILE_LIBRARY_SEARCH_AND_DIRECT_MATERIALIZATION_UNAVAILABLE
 source_fallback_local_zip: Harinandhan-Cylinder-Backup(20260902-163304).zip
 source_governed_sha: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
 current_test_handoff_story_count: 18
-current_test_handoff_status: TESTS_GENERATED_AWAITING_EXTERNAL_EXECUTION
+current_test_handoff_status: TESTS_GENERATED_AWAITING_EXECUTION
 drift_approval_hold_story_ids: [STORY-0101, STORY-0103]
 new_test_execution_evidence_found: false
 runtime_recovery_attempted: true
@@ -37,5 +36,5 @@ runtime_probe:
   maven_wrapper_count: 0
   gradle_wrapper_count: 0
   local_maven_repository_files: 0
-checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260903-155816-UTC-RUN-014-reconciliation.yaml
-next_action: NEXT_FIRE_INGEST_UPLOADED_TEST_RESULTS_OR_EXPLICIT_DRIFT_APPROVAL_THEN_REPLAN
+  outbound_maven_repository_probe: FAILED
+next_action: COMPLETE_STATIC_TEST_RUNTIME_READINESS_AUDIT_THEN_REPLAN
