@@ -1,5 +1,5 @@
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001
-captured_at: '2026-09-03T06:34:45+05:30'
+captured_at: '2026-09-03T06:37:35+05:30'
 mode: CONTINUOUS
 scheduler_handoff:
   receipt_path: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire-ii/20260903T063114+0530.yaml
@@ -14,22 +14,28 @@ application_source:
   requested_file_library_id: file_00000000659c8211857bba6b09282de3
   exact_identity_search_attempted: true
   recent_upload_recovery_attempted: true
-  file_library_result: NOT_RETURNED
+  file_library_result: NOT_RETURNED_THIS_INVOCATION
   local_workspace_zip_candidates: 0
-  materialized: false
+  materialized_this_invocation: false
   github_code_search_used_for_application_analysis: false
   classification: GOVERNED_SOURCE_RECOVERY_CURRENTLY_BLOCKED
 control_plane_reconciliation:
   approved_story_count: 15
   approved_story_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0101, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
   aggregate_claimed_conformance_pass_count: 14
-  unit_local_verified_pass_count: 4
-  unit_local_verified_pass_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0127]
+  unit_local_verified_pass_count: 14
+  unit_local_verified_pass_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
   drift_hold_ids: [STORY-0101]
-  missing_conformance_evidence_ids: [STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
-  queue_rebuilt_fail_closed: true
-  queue_path: BL-002/post-approval-code-conformance-task-queue.csv
-  aggregate_projection_status: STALE_FOR_CONFORMANCE_SECTION_LEVEL1_EVIDENCE_WINS
+  recovered_durable_evidence_ids: [STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  recovered_evidence_root: BL-002/evidence
+  recovered_source_binding_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+  recovered_source_binding_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  projection_gap_classification: FALSE_GAP_CAUSED_BY_INCOMPLETE_EVIDENCE_DIRECTORY_SCAN
+  conformance_queue_restored_14_pass_1_drift_hold: true
+  downstream_BL004_statuses_restored: true
+  downstream_BL005_statuses_restored: true
+  BL009_mapping_already_consistent: true
+  aggregate_projection_status: RECONCILED_LEVEL1_EVIDENCE_MATCHES_14_PASS_AGGREGATE
   application_code_mutation: false
   bl010_created_or_executed: false
 runtime_probe:
@@ -41,7 +47,7 @@ runtime_probe:
   git: AVAILABLE
   governed_test_execution_possible: false
 remaining_gates:
-  - RECOVER_GOVERNED_FILE_LIBRARY_SOURCE_FOR_REVALIDATION_OF_10_MISSING_CONFORMANCE_UNITS
+  - FILE_LIBRARY_PRIMARY_SOURCE_NOT_MATERIALIZED_THIS_INVOCATION_FOR_ANY_NEW_SOURCE_ANALYSIS
   - EXPLICIT_STORY_0101_DRIFT_MANIFEST_APPROVAL_REQUIRED
   - FAITHFUL_BUILD_TEST_RUNTIME_REQUIRED_FOR_BL004_BL005_BL009_EXECUTION
-next_safe_action: NEXT_FIRE_RETRY_FILE_LIBRARY_SOURCE_RECOVERY_THEN_REVALIDATE_MISSING_CONFORMANCE_UNITS
+next_safe_action: RETRY_FILE_LIBRARY_SOURCE_RECOVERY_AND_RUNTIME_ON_NEXT_FIRE; IF_UNCHANGED_KEEP_14_PASS_EVIDENCE_AND_STORY0101_HOLD
