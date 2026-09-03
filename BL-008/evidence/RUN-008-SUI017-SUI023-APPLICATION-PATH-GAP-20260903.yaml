@@ -1,0 +1,34 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+classification: APPLICATION_PATH_GAP_DISCOVERY_NOT_CODE_CHANGE_AUTHORIZATION
+SUI017:
+  acceptance_case: Current customer holder can replace customer physical ID
+  database_capability:
+    migration: V185__Align_External_Logical_Physical_Asset_Model.sql
+    function: fn_replace_cylinder_primary_identifier
+    customer_reason: CUSTOMER_REPLACED_IDENTIFIER
+    replacement_party_type: CUSTOMER
+    custody_validation: PRESENT_IN_V185
+  java_source_search:
+    CUSTOMER_REPLACED_IDENTIFIER_reference: NOT_FOUND
+    customer_identifier_replacement_service: NOT_FOUND
+    fn_replace_cylinder_primary_identifier_reference: ONLY_SUPPLIER_WRAPPER_IN_CylinderIdentifierJpaDao
+  state: APPLICATION_ENTRYPOINT_AND_SERVICE_PATH_NOT_IMPLEMENTED_OR_NOT_PRESENT_IN_FROZEN_SOURCE
+SUI023:
+  acceptance_case: Final return to owner allows explicit logical closure
+  database_capability:
+    migration: V185__Align_External_Logical_Physical_Asset_Model.sql
+    function: fn_close_external_logical_asset
+    CUSTOMER_ASSET_CLOSED_ledger_behavior: PRESENT_IN_V185
+  java_source_search:
+    fn_close_external_logical_asset_reference: NOT_FOUND
+    CUSTOMER_ASSET_CLOSED_reference: NOT_FOUND
+    explicit_customer_logical_close_service_or_controller: NOT_FOUND
+  state: APPLICATION_ENTRYPOINT_AND_SERVICE_PATH_NOT_IMPLEMENTED_OR_NOT_PRESENT_IN_FROZEN_SOURCE
+governance:
+  exact_code_change_manifest_ready: false
+  reason: ACCEPTANCE_BEHAVIOR_IS_CLEAR_BUT_NO_APPROVED_UI_OR_SERVICE_ENTRYPOINT_IS_SOURCE_BOUND; INVENTING_A_NEW_ENTRYPOINT_WOULD_EXPAND_SCOPE
+  next_action: PREPARE_EXACT_MANIFEST_ONLY_AFTER_SOURCE_BOUND_ENTRYPOINT_OR_USER_APPROVED_NEW_ENTRYPOINT_SCOPE_IS_ESTABLISHED
+  application_code_changed: false
+  database_changed: false
+  bl010_created: false
