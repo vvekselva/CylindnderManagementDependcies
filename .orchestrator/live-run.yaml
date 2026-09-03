@@ -1,36 +1,36 @@
-run_id: CYLINDER-PRODUCTION-FIRE-20260904-012717-IST-RUN-018
-scheduler_fire_id: 20260904T012717-0530
+run_id: CYLINDER-PRODUCTION-FIRE-20260904-023116-IST-RUN-019
+scheduler_fire_id: fire-20260904-023116-ist
 scheduler_task: Cylinder Production Fire
 state: TERMINATED
 mode: CONTINUOUS
-started_at: '2026-09-04T01:27:17+05:30'
-last_heartbeat_at: '2026-09-04T01:29:19+05:30'
-terminated_at: '2026-09-04T01:29:19+05:30'
-terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_RUNTIME_OR_EXPLICIT_APPROVAL_PENDING
+started_at: '2026-09-04T02:31:16+05:30'
+last_heartbeat_at: '2026-09-04T02:32:36+05:30'
+terminated_at: '2026-09-04T02:32:36+05:30'
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_RUNTIME_OR_EXACT_SOURCE_RECOVERY_PENDING
 running_worker_count: 0
-completed_worker_count: 4
-blocked_worker_count: 3
+completed_worker_count: 3
+blocked_worker_count: 2
 active_work_unit_ids: []
 eligible_work_remaining: false
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 112
-elapsed_seconds_from_fire_receipt: 122
+productive_elapsed_seconds: 80
+elapsed_seconds_from_fire_receipt: 80
 runtime_target_30_minutes_satisfied: false
 early_termination_basis: ALL_CURRENT_SAFE_INDEPENDENT_WORK_EXHAUSTED_REMAINING_WORK_REQUIRES_EXACT_PRIMARY_ZIP_MATERIALIZATION_FAITHFUL_MAVEN_CONTAINER_RUNTIME_NEW_EXECUTION_EVIDENCE_OR_EXPLICIT_DRIFT_APPROVAL
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
-source_primary_recovery: EXACT_LIBRARY_SEARCH_AND_RECENT_LIBRARY_SCAN_NOT_RETURNED_CURRENT_RUNTIME_LOCAL_COPY_NOT_FOUND
+source_primary_recovery: EXACT_LIBRARY_SEARCH_NOT_RETURNED_CURRENT_RUNTIME_LOCAL_COPY_NOT_FOUND
 current_test_handoff_story_count: 18
 current_test_handoff_status: TESTS_GENERATED_AWAITING_EXECUTION
 drift_approval_hold_story_ids: [STORY-0101, STORY-0103]
 new_test_execution_evidence_found: false
 runtime_probe:
-  java: AVAILABLE
+  java: AVAILABLE_21_0_11
   maven: MISSING
   gradle: MISSING
   docker: MISSING
   podman: MISSING
   local_maven_repository_files: 0
-checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260904-012717-IST-RUN-018-reconciliation.yaml
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-20260904-023116-IST-RUN-019-reconciliation.yaml
 next_action: NEXT_FIRE_RETRY_EXACT_LIBRARY_RECOVERY_INGEST_RUNTIME_TEST_EVIDENCE_OR_EXPLICIT_DRIFT_APPROVAL_THEN_REPLAN
