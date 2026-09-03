@@ -1,0 +1,39 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001
+state: TERMINATED
+mode: CONTINUOUS
+started_at: '2026-09-03T06:31:14+05:30'
+terminated_at: '2026-09-03T06:38:02+05:30'
+productive_elapsed_seconds: 408
+runtime_target_30_minutes_satisfied: false
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+completed_work_units:
+  - SCHEDULER_HANDOFF_ACK_AND_RUN_LINK
+  - FILE_LIBRARY_EXACT_AND_RECENT_RECOVERY_ATTEMPT
+  - CONTROL_PLANE_EVIDENCE_RECONCILIATION
+  - DOWNSTREAM_BL004_BL005_PROJECTION_RECONCILIATION
+reconciliation:
+  approved_story_count: 15
+  conformance_pass_count: 14
+  conformance_drift_hold_count: 1
+  conformance_pass_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  drift_hold_ids: [STORY-0101]
+  false_gap_repaired: true
+  false_gap_root_cause: INCOMPLETE_EVIDENCE_DIRECTORY_SCAN
+application_source:
+  requested_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_library_id: file_00000000659c8211857bba6b09282de3
+  recovery_this_invocation: ATTEMPTED_NOT_RETURNED
+  materialized_this_invocation: false
+  github_code_search_used_for_application_analysis: false
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+remaining_gates:
+  - PRIMARY_FILE_LIBRARY_SOURCE_NOT_RETURNED_THIS_INVOCATION
+  - STORY_0101_EXPLICIT_EXACT_DRIFT_MANIFEST_APPROVAL_REQUIRED
+  - MAVEN_OR_FAITHFUL_CONTAINER_RUNTIME_REQUIRED_FOR_BL004_BL005_BL009_EXECUTION
+resumable: true
+next_action: NEXT_RECURRING_FIRE_RETRY_SOURCE_RECOVERY_AND_RUNTIME; PRESERVE_14_PASS_AND_STORY0101_HOLD_UNLESS_NEW_EVIDENCE
