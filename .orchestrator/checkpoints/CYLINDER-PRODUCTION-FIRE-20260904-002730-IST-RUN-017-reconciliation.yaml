@@ -1,0 +1,56 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260904-002730-IST-RUN-017
+scheduler_fire_id: 20260904-002730-IST
+mode: CONTINUOUS
+checkpoint_time: 2026-09-04T00:30:35+05:30
+scheduler_handoff:
+  receipt_persisted_before_backlog_read: true
+  run_linked: true
+  prior_run_016_terminal_gap: false
+source_recovery:
+  requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  exact_library_search: NOT_RETURNED
+  direct_materialization_surface: UNAVAILABLE_AFTER_RESOURCE_RESOLUTION_FAILURE
+  recovered_local_candidate: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  governed_sha256_reconfirmed: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_files: 1650
+  java_files: 1054
+  poms: 10
+  src_test_java_files: 30
+  git_directories: 0
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  local_maven_repository_files: 0
+frozen_source_runtime_artifacts:
+  jar_files: 0
+  mvnw_files: 0
+  gradlew_files: 0
+  surefire_report_files: 0
+  failsafe_report_files: 0
+  jacoco_execution_or_xml_files: 0
+  target_directories: 0
+  embedded_m2_directories: 0
+story_projection:
+  approved: 20
+  post_approval_conformance_pass: 18
+  drift_hold: 2
+  drift_hold_story_ids: [STORY-0101, STORY-0103]
+file_library_execution_evidence:
+  new_surefire_results: false
+  new_failsafe_results: false
+  new_jacoco_results: false
+  new_maven_execution_logs: false
+mutations:
+  application_code: NONE
+  test_code: NONE
+  database: NONE
+  story_auto_approval: NONE
+  bl_010_rework: NONE
+control_plane_updates:
+  evidence: .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-20260904-002730-IST-RUN-017-runtime-source-reconciliation.yaml
+resumable: true
+next_action: RETRY_EXACT_LIBRARY_RECOVERY_INGEST_NEW_EXECUTION_EVIDENCE_OR_PROCESS_EXPLICIT_APPROVED_DRIFT_MANIFEST
