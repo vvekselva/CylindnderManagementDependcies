@@ -1,0 +1,15 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-092859-IST-RUN-001
+state: CHECKPOINTED
+terminal_ready: true
+chatgpt_executable_now_remaining: 0
+external_execution_required:
+  story_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  status: TESTS_GENERATED_AWAITING_EXTERNAL_EXECUTION
+post_approval_conformance_pending_source_materialization: [STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0103]
+explicit_user_approval_blocked: [STORY-0101]
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+next_fire_actions:
+  - retry exact Library ZIP recovery/materialization
+  - run conformance for five newly approved Stories if local extracted source becomes available
+  - ingest newly uploaded JaCoCo/Surefire/Failsafe evidence if present
+  - generate coverage gap-closing tests where permitted
