@@ -1,0 +1,13 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+generated_complete_ids: [STORY-0092, STORY-0098, STORY-0099, STORY-0100]
+for_each_generated:
+  catalogue: PRESENT
+  machine_readable_test_data: PRESENT
+  human_readable_test_data: PRESENT
+  executable_mapping: PRESENT
+held_ids: [STORY-0101, STORY-0103]
+hold_reason: POST_APPROVAL_CODE_DRIFT_REQUIRES_EXPLICIT_EXACT_MANIFEST_APPROVAL
+runtime_execution: NOT_EXECUTED
+coverage: NOT_EXECUTED
+application_code_changed: false
