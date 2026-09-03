@@ -1,0 +1,51 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_requested_file_id: file_00000000659c8211857bba6b09282de3
+requested_materialization_result: FAILED_NOT_VISIBLE
+recovery_candidate: Harinandhan-Cylinder-Backup(20260902-163304).zip
+recovery_candidate_file_id: file_00000000fe9c8211869e2c82da911925
+sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+extracted_file_count: 1650
+java_file_count: 1054
+local_git_present: false
+approval_evidence: BL-002/approval-evidence/USER-APPROVAL-STORY-0092-0098-0099-0100-0103-20260902-2159-IST.md
+results:
+  STORY-0092:
+    status: CODE_CONFORMANCE_VERIFIED_PASS
+    anchors:
+      - RestfulDriverServices.getDrivers
+      - DriverSearchService.searchWithText
+      - SearchRequestValidator with DRIVER_SEARCH_SERVICE
+      - DriverJpaDao.findByDriverNameContainingIgnoreCase
+  STORY-0098:
+    status: CODE_CONFORMANCE_VERIFIED_PASS
+    anchors:
+      - RestfulProductCategoryServices.getProductCategories
+      - ProductCategorySearchService.searchWithText
+      - SearchRequestValidator with PRODUCT_CATEGORY_SEARCH_SERVICE
+      - ProductCategoryJpaDao.findByProductCategoryContainingIgnoreCase
+  STORY-0099:
+    status: CODE_CONFORMANCE_VERIFIED_PASS
+    anchors:
+      - RestfulProductServices.getProducts
+      - ProductSearchService.searchWithText
+      - SearchRequestValidator with PRODUCT_SEARCH_SERVICE
+      - ProductJpaDao.findByProductNameContainingIgnoreCase
+  STORY-0100:
+    status: CODE_CONFORMANCE_VERIFIED_PASS
+    anchors:
+      - RestfulProductUomServices.getProductUoms
+      - ProductUomSearchService.searchWithText
+      - SearchRequestValidator with PRODUCT_UOM_SEARCH_SERVICE
+      - ProductUomJpaDao.findByProductUomContainingIgnoreCase
+  STORY-0103:
+    status: CODE_DRIFT_REVIEW_PACKET_PENDING_EXPLICIT_APPROVAL
+    drift:
+      component: VehicleSearchService
+      method: searchWithText
+      current_validator_service_code: PRODUCT_UOM_SEARCH_SERVICE
+      approved_behavior_service_code: VEHICLE_SEARCH_SERVICE
+      dao_path_conforms: VehicleJpaDao.findByVehicleNumberContainingIgnoreCase
+      controller_path_conforms: RestfulVehicleServices.getVehicles
+application_code_mutated: false
+bl010_code_rework_created_or_executed: false
