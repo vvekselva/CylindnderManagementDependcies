@@ -1,0 +1,11 @@
+scheduler_task: "Cylinder-Production-Fire-ii"
+fire_id: "20260903T063114+0530"
+observed_fire_time: "2026-09-03T06:31:14+05:30"
+scheduled_fire_time: "2026-09-03T06:31:14+05:30"
+receipt_time: "2026-09-03T06:31:14+05:30"
+state: "RUN_LINKED"
+intended_scope: "CONTINUOUS"
+run_id: "CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001"
+run_link_state: "ORCHESTRATOR_STARTED"
+terminal_classification: null
+termination_time: null
