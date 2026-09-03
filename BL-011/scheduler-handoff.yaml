@@ -1,0 +1,50 @@
+backlog_id: BL-011
+handoff_type: SCHEDULER_EXECUTION_HANDOFF
+state: READY_FOR_NEXT_PRODUCTION_FIRE
+created_at: '2026-09-03T13:58:24+05:30'
+source_policy: BL-011/human-readable-testing-policy.yaml
+queue: BL-011/test-story-task-queue.csv
+execution_mode: CHATGPT_EXECUTABLE_NOW
+scope:
+  eligible_story_count: 14
+  eligible_story_ids:
+    - STORY-0001
+    - STORY-0012
+    - STORY-0013
+    - STORY-0087
+    - STORY-0089
+    - STORY-0090
+    - STORY-0108
+    - STORY-0109
+    - STORY-0127
+    - STORY-0128
+    - STORY-0129
+    - STORY-0130
+    - STORY-0131
+    - STORY-0132
+  excluded_drift_hold_ids:
+    - STORY-0101
+required_outputs_per_story:
+  - HUMAN_READABLE_UNIT_TEST_STORY
+  - HUMAN_READABLE_INTEGRATION_TEST_STORY
+  - HUMAN_READABLE_TEST_DATA_STORY
+  - HUMAN_READABLE_USE_CASE_END_TO_END_TEST_STORY
+  - TRACEABILITY_PACKET
+  - REVIEWER_PACKET
+required_source_backlogs:
+  - BL-002
+  - BL-004
+  - BL-005
+  - BL-009
+rules:
+  require_current_approval_or_reapproval: true
+  require_code_conformance_pass: true
+  do_not_claim_test_execution: true
+  do_not_claim_coverage: true
+  do_not_wait_for_external_execution_when_readable_packet_work_is_possible: true
+  no_application_code_mutation: true
+  approval_is_explicit_user_only: true
+  story0101_remains_gated: true
+scheduler_next_action: READ_BL011_POLICY_AND_QUEUE_THEN_GENERATE_HUMAN_READABLE_TEST_PACKETS_FOR_ALL_READY_STORIES
+completion_rule: MARK_PER_STORY_HUMAN_READABLE_TEST_PACKET_COMPLETE_ONLY_WHEN_ALL_APPLICABLE_BL011_ARTIFACTS_AND_TRACEABILITY_LINKS_EXIST
+whole_backlog_percentage_rule: PERCENTAGE_NOT_DURABLY_DERIVABLE_UNTIL_ELIGIBLE_DENOMINATOR_IS_RECONCILED
