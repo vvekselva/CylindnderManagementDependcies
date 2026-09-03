@@ -1,0 +1,21 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-133302-IST-RUN-001
+checkpoint_time: 2026-09-03T13:34:19+05:30
+scope: CONTINUOUS
+capability_split:
+  CHATGPT_EXECUTABLE_NOW_remaining: []
+  EXTERNAL_EXECUTION_REQUIRED:
+    - execute generated JUnit/Testcontainers suite with Maven/Docker
+    - upload Surefire/Failsafe/JaCoCo reports and Maven log
+  USER_APPROVAL_REQUIRED:
+    - STORY-0101 exact drift/code-change manifest
+source_materialization:
+  requested_library_file_id: file_00000000fe9c8211869e2c82da911925
+  result: SEARCHED_NOT_RETURNED_BY_FILE_LIBRARY
+  governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+test_result_ingestion:
+  new_bound_execution_evidence_found: false
+handoff: BL-009/handoffs/CYLINDER-PRODUCTION-FIRE-II-20260903-133302-IST-RUN-001.yaml
+eligible_test_story_count: 14
+pending_source_conformance_count: 5
+transient_logs_remaining: 0
+resumable: true
