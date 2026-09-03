@@ -1,0 +1,14 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-125636-UTC-RUN-012
+claim_id: RUN-012-RECONCILE
+state: CLAIMED
+unit: SOURCE_RUNTIME_EVIDENCE_RECONCILIATION
+safe_independent: true
+application_source_mutation: false
+claimed_at: 2026-09-03T12:59:00Z
+scope:
+  - verify prior scheduler terminalization
+  - recover/fingerprint/extract governed source candidate after exact Library recovery attempt
+  - scan File Library for new Surefire/Failsafe/JaCoCo/Maven execution evidence
+  - reprobe faithful local test runtime
+  - revalidate existing drift anchors without code mutation
+  - reconcile BL-002 and BL-011 executable/blocked projections
