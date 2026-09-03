@@ -1,0 +1,59 @@
+backlog_id: BL-011
+title: Human-Readable Testing Stories, Test Data and Test Cases
+mode: SINGLE_UMBRELLA_BACKLOG
+approval_policy: EXPLICIT_USER_ONLY
+source_backlogs:
+  - BL-002
+  - BL-004
+  - BL-005
+  - BL-009
+artifacts:
+  unit_test_story:
+    required_when_applicable: true
+  integration_test_story:
+    required_when_applicable: true
+  test_data_story:
+    required_when_applicable: true
+  use_case_end_to_end_test_story:
+    required_when_applicable: true
+mandatory_traceability:
+  - source_story_id
+  - approval_or_reapproval_evidence
+  - conformance_gate_status
+  - business_behavior
+  - preconditions
+  - input_test_data
+  - validation_rules
+  - happy_path
+  - negative_cases
+  - boundary_cases
+  - expected_result
+  - expected_persistence_state
+  - executable_test_reference
+  - unit_test_linkage
+  - integration_test_linkage
+  - use_case_catalogue_linkage
+  - execution_evidence_status
+  - coverage_evidence_status
+rules:
+  auto_approval: false
+  infer_execution_success: false
+  infer_coverage: false
+  conflate_generation_execution_coverage: false
+  downstream_fanout_requires_current_approval: true
+  downstream_fanout_requires_conformance_pass: true
+  missing_evidence_is_blocker: true
+completion:
+  story_packet_terminal_status: HUMAN_READABLE_TEST_PACKET_COMPLETE
+  whole_backlog_percentage: PERCENTAGE_NOT_DURABLY_DERIVABLE_UNTIL_ELIGIBLE_DENOMINATOR_RECONCILED
+status_vocabulary:
+  - NOT_STARTED
+  - INVENTORY_COMPLETE
+  - IN_PROGRESS
+  - HUMAN_READABLE_STORY_COMPLETE
+  - AWAITING_SOURCE_MATERIALIZATION
+  - AWAITING_EXECUTION_EVIDENCE
+  - AWAITING_COVERAGE_EVIDENCE
+  - APPROVAL_OR_CONFORMANCE_GATED
+  - NEEDS_CLARIFICATION
+  - HUMAN_READABLE_TEST_PACKET_COMPLETE
