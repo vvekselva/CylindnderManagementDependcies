@@ -1,0 +1,57 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260904-002730-IST-RUN-017
+observed_at: 2026-09-04T00:30:16+05:30
+mode: CONTINUOUS
+source_recovery:
+  requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  exact_file_library_search: NOT_RETURNED
+  direct_files_materialization_surface: UNAVAILABLE_AFTER_RESOURCE_RESOLUTION_FAILURE
+  recovered_local_candidate: /mnt/data/cylinder-orchestrator-run-008/source/Harinandhan-Cylinder-Backup(20260902-163304).zip
+  run_local_copy: /mnt/data/cylinder-orchestrator-run-017/source/Harinandhan-Cylinder-Backup-recovered.zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_files: 1650
+  java_files: 1054
+  poms: 10
+  src_test_java_files: 30
+  git_directories: 0
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  local_maven_repository_files: 0
+frozen_source_runtime_artifacts:
+  jar_files: 0
+  mvnw_files: 0
+  gradlew_files: 0
+  surefire_report_files: 0
+  failsafe_report_files: 0
+  jacoco_execution_or_xml_files: 0
+  target_directories: 0
+  embedded_m2_directories: 0
+file_library_execution_evidence:
+  new_surefire_results: false
+  new_failsafe_results: false
+  new_jacoco_results: false
+  new_maven_execution_logs: false
+story_projection:
+  approved: 20
+  post_approval_conformance_pass: 18
+  drift_hold: 2
+  drift_hold_story_ids: [STORY-0101, STORY-0103]
+governance:
+  application_code_mutation: NONE
+  database_mutation: NONE
+  bl_010_rework: NONE
+  story_auto_approval: NONE
+  github_actions_or_runners_used: false
+exhaustion_basis:
+  safe_independent_runtime_execution_available: false
+  new_external_execution_evidence_available: false
+  explicit_drift_manifest_approval_available: false
+  next_recoverable_events:
+    - exact File Library source becomes materializable
+    - Maven dependencies/runtime and container engine become available
+    - new test execution evidence arrives
+    - explicit exact drift/code-change manifest approval arrives
