@@ -1,0 +1,10 @@
+scheduler_task: Cylinder Production Fire - ii
+fire_id: 20260903T145248+0530
+observed_fire_time: 2026-09-03T14:52:48+05:30
+receipt_time: 2026-09-03T14:52:48+05:30
+state: TRIGGER_RECEIVED
+intended_scope: CONTINUOUS
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-145248-IST-RUN-001
+run_state: RUN_LINKED
+orchestrator_state: ORCHESTRATOR_STARTED
+runtime_target_minutes: 30-45
