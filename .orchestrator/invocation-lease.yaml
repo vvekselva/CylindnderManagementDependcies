@@ -1,10 +1,10 @@
 holder: Primary Cylinder Automation Tool
 run_id: CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015
 acquired_at: 2026-09-03T16:59:31Z
-released_at: null
-status: ACTIVE
+released_at: 2026-09-03T17:03:03Z
+status: RELEASED
 scope: [CONTROL_PLANE_RECONCILIATION, BL-002, BL-004, BL-005, BL-009, BL-011, SOURCE_RECOVERY, TEST_HANDOFF]
-claims: [RUNTIME_RECOVERY_AND_STATIC_TEST_READINESS_AUDIT]
+claims: []
 policy:
   execution_host: ChatGPT
   github_role: durable_control_audit_plane
@@ -13,13 +13,15 @@ policy:
   bl008_database_write_parallelism: 1
   minimum_productive_minutes: 30
   stale_after_minutes: 15
-heartbeat_at: 2026-09-03T17:01:26Z
-result: null
+heartbeat_at: 2026-09-03T17:03:03Z
+result: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_RUNTIME_OR_EXPLICIT_APPROVAL_PENDING
 progress:
-  work_units_attempted: 4
-  work_units_completed: 3
-  completed_ids: [SCHEDULER_HANDOFF_ACK_AND_RUN_LINK, PREVIOUS_RUN_GAP_RECONCILIATION, GOVERNED_SOURCE_RECOVERY_RETRY_AND_FINGERPRINT]
+  work_units_attempted: 7
+  work_units_completed: 7
+  completed_ids: [SCHEDULER_HANDOFF_ACK_AND_RUN_LINK, PREVIOUS_RUN_GAP_RECONCILIATION, GOVERNED_SOURCE_RECOVERY_RETRY_AND_FINGERPRINT, TEST_EXECUTION_EVIDENCE_LIBRARY_INTAKE, RUNTIME_CAPABILITY_REPROBE, STATIC_TEST_RUNTIME_READINESS_AUDIT, TEST_SELECTION_AND_COVERAGE_WIRING_AUDIT]
 notes:
-  - Exact requested Library ZIP was searched by title and supplied file ID but was not returned; direct materialization through the current Files surface is unavailable.
-  - Local recovered ZIP independently matches governed SHA-256 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2.
-  - Runtime recovery is being actively re-probed before terminalization.
+  - Exact requested Library ZIP remains unavailable through current search/materialization surfaces.
+  - Recovered local ZIP matches governed SHA-256 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2.
+  - 24 DAO integration tests are selected by Surefire default *Test naming and all reference Testcontainers, requiring a container engine.
+  - No recovered POM configures JaCoCo; no coverage is claimed.
+  - STORY-0101 and STORY-0103 remain exact-manifest approval gated; no code mutation occurred.
