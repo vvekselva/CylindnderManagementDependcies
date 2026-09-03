@@ -1,0 +1,59 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-125636-UTC-RUN-012
+observed_at: 2026-09-03T12:59:20Z
+source_recovery:
+  requested_file: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  exact_library_search_result: NOT_FOUND
+  exact_materialization_state: UNAVAILABLE_FROM_CURRENT_FILE_LIBRARY_SURFACE
+  recovered_candidate: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  recovered_candidate_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_files: 1650
+  java_files: 1054
+  local_git_present: false
+  extracted_tree_manifest_sha256: 1bc6445ebeebd57cf67a02d5c52c27a59947ccca7e485448c2da237c8ba9c167
+scheduler_reconciliation:
+  prior_run: CYLINDER-PRODUCTION-FIRE-20260903-115923-UTC-RUN-011
+  prior_receipt_terminalized: true
+  prior_handoff_gap: NONE
+library_execution_evidence_scan:
+  new_surefire_artifact_found: false
+  new_failsafe_artifact_found: false
+  new_jacoco_artifact_found: false
+  new_maven_execution_artifact_found: false
+runtime_probe:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  maven_wrapper_count: 0
+  gradle_wrapper_count: 0
+  pom_count: 10
+  source_test_java_count: 30
+approval_and_conformance:
+  total_approved: 20
+  conformance_pass: 18
+  drift_hold: 2
+  drift_hold_ids: [STORY-0101, STORY-0103]
+  application_code_mutation: false
+bl011:
+  eligible_test_packets: 18
+  human_readable_packets_complete: 18
+  execution_status: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+  durable_coverage_evidence_count: 0
+drift_revalidation:
+  STORY-0101:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/StateSearchService.java
+    anchor: validator.validate
+    approximate_line: 47-48
+    current_service_code: PRODUCT_UOM_SEARCH_SERVICE
+    action: WAIT_EXPLICIT_EXACT_MANIFEST_APPROVAL
+  STORY-0103:
+    file: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/VehicleSearchService.java
+    anchor: validator.validate
+    approximate_line: 48-49
+    current_service_code: PRODUCT_UOM_SEARCH_SERVICE
+    action: WAIT_EXPLICIT_EXACT_MANIFEST_APPROVAL
+eligible_chatgpt_work_remaining: false
+recoverable_work_remaining: true
+next_action: ingest future Surefire/Failsafe/JaCoCo/Maven execution evidence or resume if explicit drift approval/runtime capability becomes available
