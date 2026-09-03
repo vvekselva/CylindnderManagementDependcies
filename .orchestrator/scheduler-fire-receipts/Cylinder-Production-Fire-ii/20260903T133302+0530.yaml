@@ -3,9 +3,9 @@ fire_id: 20260903T133302+0530
 scheduled_fire_time: 2026-09-03T13:33:02+05:30
 observed_fire_time: 2026-09-03T13:33:02+05:30
 receipt_time: 2026-09-03T13:33:02+05:30
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-133302-IST-RUN-001
 run_link_state: RUN_LINKED
-terminal_classification: null
-termination_time: null
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_EXTERNAL_EXECUTION_AND_SOURCE_MATERIALIZATION_PENDING
+termination_time: 2026-09-03T13:34:19+05:30
