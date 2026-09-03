@@ -1,28 +1,25 @@
-run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001
-scheduler_fire_id: 20260903T063114+0530
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-072911-IST-RUN-001
+scheduler_fire_id: 20260903T072911-0530
 scheduler_task: Cylinder Production Fire - ii
-state: TERMINATED
+state: EXECUTING
 mode: CONTINUOUS
-started_at: '2026-09-03T06:31:14+05:30'
-last_heartbeat_at: '2026-09-03T06:38:02+05:30'
-terminated_at: '2026-09-03T06:38:02+05:30'
-terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
+started_at: '2026-09-03T07:29:39+05:30'
+last_heartbeat_at: '2026-09-03T07:31:00+05:30'
+terminated_at: null
+terminal_classification: null
 running_worker_count: 0
-completed_worker_count: 4
-blocked_worker_count: 3
-active_work_unit_ids: []
-eligible_work_remaining: false
+completed_worker_count: 2
+blocked_worker_count: 1
+active_work_unit_ids: [CONTROL_PLANE_RECONCILIATION]
+eligible_work_remaining: unknown
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 408
+productive_elapsed_seconds: 81
 runtime_target_30_minutes_satisfied: false
-completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK_AND_RUN_LINK, FILE_LIBRARY_EXACT_AND_RECENT_RECOVERY_ATTEMPT, CONTROL_PLANE_EVIDENCE_RECONCILIATION, DOWNSTREAM_BL004_BL005_PROJECTION_RECONCILIATION]
-blocked_work_unit_ids: [PRIMARY_FILE_LIBRARY_PACKAGE_NOT_RETURNED_THIS_INVOCATION, BUILD_RUNTIME_UNAVAILABLE, STORY_0101_EXPLICIT_DRIFT_APPROVAL_REQUIRED]
+completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK_AND_RUN_LINK, FILE_LIBRARY_RECOVERY_ATTEMPT]
+blocked_work_unit_ids: [PRIMARY_FILE_LIBRARY_PACKAGE_NOT_RETURNED_YET]
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
-source_materialization_this_invocation: FILE_LIBRARY_RECOVERY_ATTEMPTED_NOT_RETURNED
+source_materialization_this_invocation: SEARCHED_NOT_RETURNED
 source_local_git_present: UNKNOWN_SOURCE_NOT_MATERIALIZED
-projection_reconciliation: AGGREGATE_14_PASS_CONFIRMED_FROM_DURABLE_UNIT_EVIDENCE_FALSE_GAP_REPAIRED
-reconciliation_evidence: .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001-reconciliation.yaml
-checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-II-20260903-063114-IST-RUN-001-terminal.yaml
-next_action: NEXT_RECURRING_FIRE_RECHECK_SOURCE_RUNTIME_AND_APPROVAL_GATES
+next_action: RECONCILE_CONTROL_PLANE_AND_RETRY_RECOVERABLE_RUNTIME
