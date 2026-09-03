@@ -1,0 +1,77 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015
+fire_id: 20260903-165918-UTC
+mode: CONTINUOUS
+started_at: 2026-09-03T16:59:31Z
+checkpoint_at: 2026-09-03T17:03:03Z
+elapsed_seconds: 225
+productive_elapsed_seconds: 212
+state: BLOCKED_RESUMABLE
+scheduler_handoff:
+  receipt: .orchestrator/scheduler-fire-receipts/Cylinder-Production-Fire/20260903-165918-UTC.yaml
+  acknowledged: true
+  run_linked: true
+previous_run_reconciliation:
+  run_id: CYLINDER-PRODUCTION-FIRE-20260903-155816-UTC-RUN-014
+  receipt_terminalized: true
+  unresolved_handoff_gap: false
+  unresolved_termination_gap: false
+application_source:
+  requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  exact_library_search_result: NOT_RETURNED
+  exact_materialization_result: CURRENT_FILES_SURFACE_UNAVAILABLE
+  recovered_local_zip: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  recovered_local_path: /mnt/data/cylinder-orchestrator-run-015/source/recovery-candidate.zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_files: 1650
+  java_files: 1054
+  pom_files: 10
+  test_java_files: 30
+  local_git_present: false
+  github_code_search_used_for_application_analysis: false
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+  mvnw: MISSING
+  gradlew: MISSING
+  local_maven_repository_files: 0
+  outbound_maven_repository_probe: FAILED
+test_execution_evidence_intake:
+  new_surefire: false
+  new_failsafe: false
+  new_jacoco: false
+  new_maven_execution_log: false
+static_test_readiness:
+  dao_test_files_selected_by_surefire: 24
+  dao_testcontainers_refs: 24
+  custommapper_unit_tests: 3
+  web_it_files: 1
+  jacoco_pom_references: 0
+  evidence:
+    - .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015-runtime-readiness.yaml
+    - .orchestrator/evidence/CYLINDER-PRODUCTION-FIRE-20260903-165918-UTC-RUN-015-test-selection-audit.yaml
+backlog_projection:
+  eligible_conformant_story_count: 18
+  bl011_human_readable_packets_complete: 18
+  drift_holds: [STORY-0101, STORY-0103]
+  application_code_mutation: false
+  bl010_execution: false
+  story_auto_approval: false
+work_units_completed:
+  - SCHEDULER_HANDOFF_ACK_AND_RUN_LINK
+  - PREVIOUS_RUN_GAP_RECONCILIATION
+  - GOVERNED_SOURCE_RECOVERY_RETRY_AND_FINGERPRINT
+  - TEST_EXECUTION_EVIDENCE_LIBRARY_INTAKE
+  - RUNTIME_CAPABILITY_REPROBE
+  - STATIC_TEST_RUNTIME_READINESS_AUDIT
+  - TEST_SELECTION_AND_COVERAGE_WIRING_AUDIT
+eligible_work_remaining: false
+recoverable_work_remaining: true
+runtime_target_30_minutes_satisfied: false
+early_termination_basis: ALL_CURRENT_SAFE_INDEPENDENT_WORK_EXHAUSTED; REMAINING_EXECUTION_REQUIRES_MAVEN_DEPENDENCIES_AND_CONTAINER_ENGINE_OR_EXPLICIT_EXACT_DRIFT_MANIFEST_APPROVAL
+terminal_classification: CHATGPT_EXECUTABLE_NOW_EXHAUSTED_RUNTIME_OR_EXPLICIT_APPROVAL_PENDING
+resumable: true
+next_action: On the next fire ingest any new runtime/test evidence or explicit drift-manifest approval, retry exact Library source recovery, then replan.
