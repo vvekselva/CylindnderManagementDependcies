@@ -1,0 +1,28 @@
+run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-113119-IST-RUN-001
+checkpoint_time: '2026-09-03T11:33:05+05:30'
+mode: CONTINUOUS
+capability_split:
+  CHATGPT_EXECUTABLE_NOW:
+    completed:
+      - scheduler_receipt_persisted_and_run_linked
+      - durable_live_state_reconciled
+      - primary_file_library_source_recovery_retried
+      - new_test_result_artifact_search_completed
+      - source_bound_external_execution_handoff_refreshed
+    remaining: []
+  EXTERNAL_EXECUTION_REQUIRED:
+    - local Maven/JUnit execution for 14 conformance-PASS Stories
+    - local Docker/Testcontainers integration execution
+    - JaCoCo/Surefire/Failsafe report production and upload
+approval_gates:
+  STORY-0101: exact code-drift manifest requires explicit user approval before application mutation
+source_materialization:
+  requested: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  file_id: file_00000000fe9c8211869e2c82da911925
+  status: SEARCHED_NOT_RETURNED_BY_FILE_LIBRARY
+  governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+execution_evidence_ingestion:
+  new_jacoco_surefire_failsafe_artifacts_found: false
+  tests_marked_executed: 0
+handoff_manifest: BL-009/handoffs/CYLINDER-PRODUCTION-FIRE-II-20260903-113119-IST-RUN-001.yaml
+resumable: true
