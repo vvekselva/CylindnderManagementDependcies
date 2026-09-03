@@ -1,0 +1,61 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260903-143500-IST-RUN-008
+checkpoint_time: 2026-09-03T14:49:00+05:30
+mode: CONTINUOUS
+source:
+  primary_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  primary_file_id: file_00000000659c8211857bba6b09282de3
+  primary_recovery_result: NOT_VISIBLE_AND_DIRECT_MATERIALIZATION_FAILED
+  recovered_equivalent: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  recovered_file_id: file_00000000fe9c8211869e2c82da911925
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_files: 1650
+  java_files: 1054
+  local_git_present: false
+bl002:
+  total_stories: 134
+  business_behavior_complete: 134
+  approved_after_rework: 20
+  awaiting_user_review: 114
+  approved_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0101, STORY-0103, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  post_approval_conformance_pass: 18
+  post_approval_conformance_pass_ids: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+  drift_hold: 2
+  drift_hold_ids: [STORY-0101, STORY-0103]
+  story0103_review_packet: BL-002/review-packets/STORY-0103-VEHICLE-SEARCH-SERVICE-CODE-DRIFT-20260903.md
+  story0101_review_packet: BL-002/evidence/STORY-0101-state-search-service-code-drift-review-20260902-2205.yaml
+bl004:
+  queued_approved: 20
+  generated_source_bound: 18
+  drift_hold: 2
+  runtime_execution_blocked: 18
+bl005:
+  queued_approved: 20
+  generated_source_bound: 18
+  drift_hold: 2
+  runtime_execution_blocked: 18
+bl009:
+  queued_approved: 20
+  catalogue_and_test_data_generated: 18
+  drift_hold: 2
+  runtime_execution_blocked: 18
+bl010:
+  existing_development_items: 4
+  new_story0103_rework_created: false
+  code_mutation_this_run: false
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: MISSING
+  gradle: MISSING
+  docker: MISSING
+  podman: MISSING
+projection_reconciliation:
+  stale_enrichment_progress_detected: true
+  stale_values: {approved: 15, awaiting_review: 119, conformance_pass: 14, drift_hold: 1}
+  current_values: {approved: 20, awaiting_review: 114, conformance_pass: 18, drift_hold: 2}
+  authority_for_new_approvals: BL-002/approval-evidence/USER-APPROVAL-STORY-0092-0098-0099-0100-0103-20260902-2159-IST.md
+  auto_approval_used: false
+next_safe_actions:
+  - validate newly generated artifacts against local source signatures
+  - reconcile aggregate projections using this checkpoint without rewriting approval history
+  - re-probe faithful test runtime
+  - preserve drift and user-review gates
