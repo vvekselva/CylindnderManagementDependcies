@@ -1,25 +1,37 @@
 run_id: CYLINDER-PRODUCTION-FIRE-II-20260903-072911-IST-RUN-001
 scheduler_fire_id: 20260903T072911-0530
 scheduler_task: Cylinder Production Fire - ii
-state: EXECUTING
+state: TERMINATED
 mode: CONTINUOUS
 started_at: '2026-09-03T07:29:39+05:30'
-last_heartbeat_at: '2026-09-03T07:31:00+05:30'
-terminated_at: null
-terminal_classification: null
+last_heartbeat_at: '2026-09-03T07:33:17+05:30'
+terminated_at: '2026-09-03T07:33:17+05:30'
+terminal_classification: ELIGIBLE_WORK_EXHAUSTED_BY_FAIL_CLOSED_GATES_AND_RUNTIME_BLOCKERS
 running_worker_count: 0
-completed_worker_count: 2
-blocked_worker_count: 1
-active_work_unit_ids: [CONTROL_PLANE_RECONCILIATION]
-eligible_work_remaining: unknown
+completed_worker_count: 4
+blocked_worker_count: 3
+active_work_unit_ids: []
+eligible_work_remaining: false
 recoverable_work_remaining: true
 resumable: true
-productive_elapsed_seconds: 81
+productive_elapsed_seconds: 218
+elapsed_seconds_from_fire_receipt: 246
 runtime_target_30_minutes_satisfied: false
-completed_work_unit_ids: [SCHEDULER_HANDOFF_ACK_AND_RUN_LINK, FILE_LIBRARY_RECOVERY_ATTEMPT]
-blocked_work_unit_ids: [PRIMARY_FILE_LIBRARY_PACKAGE_NOT_RETURNED_YET]
+early_termination_basis: GENUINE_HARD_GLOBAL_BLOCKER_AND_SAFE_INDEPENDENT_WORK_EXHAUSTION
+completed_work_unit_ids:
+  - SCHEDULER_HANDOFF_ACK_AND_RUN_LINK
+  - FILE_LIBRARY_RECOVERY_ATTEMPT
+  - CONTROL_PLANE_AGGREGATE_RECONCILIATION
+  - DRIFT_GOVERNANCE_REVALIDATION
+blocked_work_unit_ids:
+  - PRIMARY_FILE_LIBRARY_SOURCE_NOT_MATERIALIZED
+  - FAITHFUL_MAVEN_OR_CONTAINER_RUNTIME_UNAVAILABLE
+  - STORY-0101_EXACT_DRIFT_MANIFEST_AWAITING_EXPLICIT_USER_APPROVAL
 source_package_requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
 source_library_file_id_requested: file_00000000659c8211857bba6b09282de3
-source_materialization_this_invocation: SEARCHED_NOT_RETURNED
+source_materialization_this_invocation: SEARCHED_NOT_RETURNED_AND_NOT_LOCALLY_MATERIALIZED
+source_governed_sha_from_durable_control_evidence: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
 source_local_git_present: UNKNOWN_SOURCE_NOT_MATERIALIZED
-next_action: RECONCILE_CONTROL_PLANE_AND_RETRY_RECOVERABLE_RUNTIME
+projection_reconciliation: CONSISTENT_14_PASS_PLUS_STORY-0101_DRIFT_HOLD
+checkpoint: .orchestrator/checkpoints/CYLINDER-PRODUCTION-FIRE-II-20260903-072911-IST-RUN-001-reconciliation.yaml
+next_action: NEXT_FIRE_RETRY_FILE_LIBRARY_SOURCE_AND_RUNTIME_THEN_RESUME_FROM_CHECKPOINT
