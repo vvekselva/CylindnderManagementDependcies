@@ -1,9 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0128 Lookup Management Page
 
 ## Rework state
-Reworked under the BL-011 code-required policy.
+Reworked under the mandatory per-test-case adjacent-code rule.
 
-## Reviewer-readable business/test narrative
+## Business behavior and scope
 - Source `BL-002/stories/STORY-0128.md`; approval `APPROVED_AFTER_REWORK`; conformance PASS.
 - Behavior: the governed Lookup Management page must render current cache/reference information and navigation/model state without unintended persistence during page display.
 - Unit: verify page/model population, normal/empty/error conditions and cache interaction; `BL-004/generated-tests/STORY-0128/Story0128LookupManagementPageUnitTest.java`.
@@ -13,8 +13,6 @@ Reworked under the BL-011 code-required policy.
 - Execution `NOT EXECUTED`; coverage `NO DURABLE COVERAGE EVIDENCE`; packet `HUMAN_READABLE_TEST_PACKET_COMPLETE`.
 
 ## Production Code Evidence
-File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/LookupManagementController.java`
-
 ```java
 @GetMapping("/lookupManagement")
 public ModelAndView showLookupPage(
@@ -29,12 +27,19 @@ public ModelAndView showLookupPage(
 }
 ```
 
-## Unit Test Story + Code — BL-004
-Executable: `BL-004/generated-tests/STORY-0128/Story0128LookupManagementPageUnitTest.java`
+## BL-004 Unit Test Cases
+### explicitTabIsPreserved
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0128/Story0128LookupManagementPageUnitTest.java#explicitTabIsPreserved`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `explicitTabIsPreserved()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    }
-
     @Test void rendersExpectedViewAndCachedCollections() {
         List<AddressTypeDto> addressTypes = List.of(new AddressTypeDto());
         List<CountryDto> countries = List.of(new CountryDto());
@@ -61,14 +66,23 @@ Executable: `BL-004/generated-tests/STORY-0128/Story0128LookupManagementPageUnit
         when(cache.getStates()).thenReturn(List.of());
         when(cache.getCities()).thenReturn(List.of());
         assertEquals("city", controller.showLookupPage("city").getModel().get("activeTab"));
+    }
 ```
 
-## Integration Test Story + Code — BL-005
-Executable: `BL-005/generated-tests/STORY-0128/Story0128LookupManagementPageMvcIntegrationTest.java`
+
+## BL-005 Integration Test Cases
+### getWithTabPreservesRequestedTab
+
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0128/Story0128LookupManagementPageMvcIntegrationTest.java#getWithTabPreservesRequestedTab`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `getWithTabPreservesRequestedTab()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    }
-
     @Test void getWithoutTabUsesAddressTypeDefault() throws Exception {
         mvc.perform(get("/lookupManagement"))
             .andExpect(status().isOk())
@@ -82,16 +96,22 @@ Executable: `BL-005/generated-tests/STORY-0128/Story0128LookupManagementPageMvcI
             .andExpect(view().name("final-version-1/LookupManagement"))
             .andExpect(model().attribute("activeTab", "city"));
     }
-}
-
 ```
 
-## Test Data / Executable Mapping Code — BL-009
-Executable: `BL-009/generated-tests/STORY-0128/Story0128TestDataDrivenTest.java`
+
+## BL-009 Test Data / Use-case Cases
+### tc012801AddressTypeRenderContract
+
+**Layer:** BL-009  
+**Executable:** `BL-009/generated-tests/STORY-0128/Story0128TestDataDrivenTest.java#tc012801AddressTypeRenderContract`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `tc012801AddressTypeRenderContract()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    }
-
     @Test
     void tc012801AddressTypeRenderContract() {
         ModelAndView mav = controller.showLookupPage("addressType");
@@ -102,14 +122,40 @@ Executable: `BL-009/generated-tests/STORY-0128/Story0128TestDataDrivenTest.java`
         assertSame(Collections.emptyList(), mav.getModel().get("states"));
         assertSame(Collections.emptyList(), mav.getModel().get("cities"));
     }
+```
 
+### tc012802ExplicitCountryTabIsPreserved
+
+**Layer:** BL-009  
+**Executable:** `BL-009/generated-tests/STORY-0128/Story0128TestDataDrivenTest.java#tc012802ExplicitCountryTabIsPreserved`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `tc012802ExplicitCountryTabIsPreserved()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
     @Test
     void tc012802ExplicitCountryTabIsPreserved() {
         ModelAndView mav = controller.showLookupPage("country");
         assertEquals("country", mav.getModel().get("activeTab"));
         assertEquals("final-version-1/LookupManagement", mav.getViewName());
     }
+```
 
+### tc012804GetDoesNotRefreshCaches
+
+**Layer:** BL-009  
+**Executable:** `BL-009/generated-tests/STORY-0128/Story0128TestDataDrivenTest.java#tc012804GetDoesNotRefreshCaches`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `tc012804GetDoesNotRefreshCaches()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
     @Test
     void tc012804GetDoesNotRefreshCaches() {
         controller.showLookupPage("state");
@@ -120,13 +166,14 @@ Executable: `BL-009/generated-tests/STORY-0128/Story0128TestDataDrivenTest.java`
     }
 ```
 
-## Code-path trace
-BL-002 -> frozen production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
+
+## Traceability
+BL-002 -> production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
 
 ## Execution and coverage
-Packet/code rework: `COMPLETE`; unit/integration/application execution: `NOT EXECUTED`; durable coverage evidence: `NONE`; coverage percentage: `NOT INFERRED`.
+Packet rework `COMPLETE_PER_CASE_CODE`; all test execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
 
-## BL-011 validation
-Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present and remains separate from execution evidence.
+## Validation
+Every executable test method has adjacent code in its own case section.
 
-Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
+Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
