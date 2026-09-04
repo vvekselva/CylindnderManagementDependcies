@@ -1,0 +1,101 @@
+development_id: DEV-0006
+story_id: STORY-0052
+release: R1
+approval_state: APPROVED_AFTER_REWORK_CODE_CHANGE_NOT_AUTHORIZED
+classification: TRIP_RETURN_YARD_AUDIT_CHALLAN_RECONCILIATION
+
+approved_business_behavior:
+  - returning trip may physically carry EMPTY and FULL cylinders collected from Customers and Suppliers
+  - physical unloading at Yard does not immediately mean reconciled system Yard inventory
+  - next Yard Audit establishes the physical cylinder set
+  - challans may be entered after the Yard Audit
+  - Yard Audit cylinder identities must reconcile against later challan/trip transactions
+  - mismatch must be visible to operations
+  - pending challan entry may be time-bound AMBER
+  - successful reconciliation becomes GREEN
+  - unresolved mismatch after the entry window escalates to RED/human investigation
+
+current_behavior:
+  implemented_parts:
+    - TripReturnWorkflowService returns physical challan books and sets trip Returned
+    - Yard Stock Check records physically observed cylinders and variance/quality-gate information
+    - database gate logic includes a next-day-audit-before-challan-entry AMBER -> GREEN on challan entry -> RED on expiry lifecycle
+  missing_end_to_end_parts:
+    - no source-proved durable returned-cylinder manifest tied to the returning trip/load
+    - no complete identity-level linkage from physically returned cylinders to next Yard Audit lines
+    - no complete identity-level linkage from those audit lines to later exact challan transaction links
+    - no source-proved application workflow guaranteeing every unexplained/missing cylinder is visibly notified
+
+business_impact: >
+  Physical Yard stock may differ from system movement records overnight. Without an
+  explicit identity-level reconciliation chain, a returned cylinder can remain
+  unexplained or a challan can omit/add a cylinder without a guaranteed end-to-end
+  operational notification.
+
+proposed_change_manifest:
+  repository: CylinderManagement
+  ref: current governed application source
+  components:
+    - area: Trip Return
+      components:
+        - TripReturnController
+        - TripReturnWorkflowService
+      proposed_change: >
+        Preserve/derive the trip/load identity set of cylinders physically returning
+        to Yard without prematurely promoting them into reconciled Yard inventory.
+        Record enough durable trip-return evidence for the next Yard Audit to correlate.
+    - area: Yard Audit
+      components:
+        - YardStockCheckIngestionController
+        - Yard Stock Check ingestion/service/validator stack
+        - Yard quality/reconciliation gate services or database functions
+      proposed_change: >
+        Correlate observed cylinder identities with outstanding returned-trip evidence,
+        classify pending challan explanation as AMBER, and preserve unexplained
+        cylinder-level variances.
+    - area: Challan Entry
+      components:
+        - governed delivery/empty-pickup/supplier challan entry services
+        - tbl_challan_transaction_link integration
+      proposed_change: >
+        On later challan entry, resolve matching audited cylinder variances at identity
+        level and close the corresponding reconciliation gate only when all required
+        movements match.
+    - area: Notification / dashboard
+      components:
+        - Yard Audit Dashboard / Reconciliation Command Center
+      proposed_change: >
+        Show unexplained cylinders, missing expected cylinders, duplicate/conflicting
+        challan explanations, current AMBER deadline and RED escalation state.
+
+database_impact:
+  status: TO_BE_SOURCE_BOUND
+  rule: >
+    Reuse existing tbl_yard_stock_check, tbl_yard_stock_check_line,
+    tbl_yard_quality_gate/tbl_reconciliation_gate, tbl_challan_transaction_link,
+    trip/load/logistics records where sufficient. Add Flyway-managed schema only if
+    existing objects cannot durably represent returned-trip cylinder identity and
+    reconciliation links. No manual SQL.
+
+tests:
+  unit:
+    - returned EMPTY and FULL cylinders can be represented as physically returned but not yet reconciled Yard stock
+    - audit-before-challan creates pending variance/AMBER
+    - matching later challan resolves each cylinder identity
+    - unmatched audited cylinder remains variance
+    - challan cylinder missing from audit remains variance
+    - duplicate/conflicting challan explanation remains variance
+    - expiry escalates pending mismatch to RED
+  integration:
+    - trip returns at night with customer/supplier EMPTY/FULL cylinders
+    - no premature reconciled Yard inventory update
+    - next-day Yard Audit scans exact returned identities
+    - later matching challans turn gate GREEN
+    - one missing challan cylinder keeps mismatch and notification
+    - one extra challan cylinder keeps mismatch and notification
+    - unresolved AMBER expires to RED
+  e2e:
+    - vehicle trip -> physical return -> next-day yard audit -> challan entry -> reconciliation dashboard outcome
+
+implementation_state: NOT_STARTED
+implementation_gate: EXPLICIT_USER_APPROVAL_OF_THIS_EXACT_MANIFEST_REQUIRED
