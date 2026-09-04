@@ -442,7 +442,7 @@
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0080](stories/STORY-0080.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0080](stories/STORY-0080.md) | Primary — ingestion screen | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0081](stories/STORY-0081.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
