@@ -2,9 +2,16 @@ scheduler_task: Cylinder Production Fire
 fire_id: 20260904-155804
 observed_scheduled_fire_time: '2026-09-04T15:58:04+05:30'
 receipt_time: '2026-09-04T15:58:04+05:30'
-state: RUN_LINKED
+state: TERMINALIZED
 intended_scope: CONTINUOUS
 run_id: CYL-PROD-20260904-155804-07
-orchestrator_state: ORCHESTRATOR_STARTED
-terminal_classification: null
-termination_time: null
+orchestrator_state: ORCHESTRATOR_COMPLETED_CURRENT_ELIGIBLE_BL011_REDO
+terminal_classification: ELIGIBLE_BL011_REDO_EXHAUSTED_WITH_EXECUTION_AND_DRIFT_GATES_PRESERVED
+termination_time: '2026-09-04T16:28:45+05:30'
+productive_elapsed: '00:30:41'
+bl011_reworked_this_run: [STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+bl011_progress: '18/18 (100.0%) mandatory packet redo'
+execution_status: NOT_EXECUTED
+coverage_status: NO_DURABLE_COVERAGE_EVIDENCE
+application_code_mutation: NONE
+next_continuous_scope: reconcile execution-runtime availability, coverage evidence, approval-gated drift, and new test-artifact conformance gap
