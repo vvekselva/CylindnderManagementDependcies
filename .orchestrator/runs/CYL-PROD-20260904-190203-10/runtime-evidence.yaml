@@ -1,0 +1,24 @@
+run_id: CYL-PROD-20260904-190203-10
+source:
+  requested: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_file_id: file_00000000659c8211857bba6b09282de3
+  requested_recovery: NOT_FOUND_AFTER_LIBRARY_SEARCH_AND_LISTING
+  recovery: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  recovery_file_id: file_00000000fe9c8211869e2c82da911925
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_files: 1650
+  java_files: 1054
+runtime:
+  java: OPENJDK_21_0_11_AVAILABLE
+  maven: UNAVAILABLE_COMMAND_NOT_FOUND
+execution:
+  unit: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+  integration: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+  application_behavior: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+coverage: NO_DURABLE_COVERAGE_EVIDENCE
+bl011:
+  packet_rework: COMPLETE_18_OF_18
+  remaining: 0
+  code_mutation: NONE
+  auto_approval: false
+next_action: AWAIT_EXECUTION_RUNTIME_OR_USER_APPROVAL_FOR_EXACT_DRIFT_MANIFESTS
