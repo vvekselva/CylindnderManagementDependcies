@@ -3,7 +3,13 @@ fire_id: 20260904-092909-IST
 scheduled_fire_time: 2026-09-04T09:29:09+05:30
 observed_fire_time: 2026-09-04T09:29:09+05:30
 receipt_time: 2026-09-04T09:29:09+05:30
-state: ORCHESTRATOR_STARTED
+state: TERMINATED
 link_state: RUN_LINKED
 intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260904-092909-IST-RUN-019
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+termination_time: 2026-09-04T09:36:53+05:30
+elapsed_seconds: 464
+productive_scope: BL-011_MANDATORY_REDO
+resume_checkpoint: BL-011/rework-checkpoint.yaml
+resume_next_story: STORY-0089
