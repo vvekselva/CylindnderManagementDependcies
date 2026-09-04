@@ -2,7 +2,15 @@ scheduler_task: Cylinder Production Fire
 fire_id: '20260904-190203'
 observed_scheduled_fire_time: '2026-09-04T19:02:03+05:30'
 receipt_time: '2026-09-04T19:02:03+05:30'
-state: RUN_LINKED
+state: TERMINAL_RESUMABLE
 intended_scope: CONTINUOUS
 run_id: CYL-PROD-20260904-190203-10
 orchestrator_state: ORCHESTRATOR_STARTED
+terminal_classification: ELIGIBLE_CHATGPT_EXECUTABLE_WORK_EXHAUSTED_RUNTIME_AND_APPROVAL_GATED
+termination_time: '2026-09-04T19:05:00+05:30'
+productive_elapsed_seconds: 177
+resume:
+  bl011_packet_rework: COMPLETE_18_OF_18
+  test_execution: BLOCKED_MAVEN_UNAVAILABLE
+  coverage: NO_DURABLE_COVERAGE_EVIDENCE
+  drift_implementation: AWAITING_EXPLICIT_USER_APPROVAL
