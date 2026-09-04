@@ -39,6 +39,7 @@ per_story_validation:
   STORY-0098: PASS_README_AND_POLICY
   STORY-0099: PASS_README_AND_POLICY
   STORY-0100: PASS_README_AND_POLICY
+  STORY-0087: NOT_COUNTED_WRITE_BLOCKED_BEFORE_COMMIT
 next_story: STORY-0087
 corrected_progress:
   complete: 7
@@ -58,6 +59,8 @@ source:
   sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
   extracted_files: 1650
   java_files: 1054
+run_blockers:
+  - STORY-0087 packet replacement was prepared from source and BL-004/005/009 evidence but repository update was blocked by connector safety checks before commit; do not count it complete.
 rules:
   existing_packet_file_is_not_completion_proof: true
   auto_approval: false
