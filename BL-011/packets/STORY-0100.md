@@ -1,5 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0100 Product UOM Search
 
+## Rework state
+Reworked under the BL-011 code-required policy.
+
+## Reviewer-readable business/test narrative
 ## 1. Story, governance and source
 - Source Story: `BL-002/stories/STORY-0100.md`
 - Endpoint: `GET /search/product-uom/{searchText}`
@@ -59,3 +63,109 @@ Three mapped rows cover successful lookup, no-match and governed validation/erro
 Fresh validation against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml` confirms business behavior, preconditions, inputs, validation, happy/no-match/error/boundary cases, expected service/API/database outcomes, executable references, BL-002/004/005/009 traceability and explicit execution/coverage separation.
 
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
+
+## Production Code Evidence
+File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulProductUomServices.java`
+
+```java
+@GetMapping("/{searchText}")
+public ProductUomSearchResponseDto getProductUoms(@PathVariable String searchText) {
+    try {
+        CylinderManagementApplicationRequestDto request =
+            new CylinderManagementApplicationRequestDto();
+        request.setSearchTerm(searchText);
+        return productUomSearchService.searchWithText(request, null);
+    } catch (CylinderManagementApplicationException e) {
+        return new ProductUomSearchResponseDto();
+    }
+}
+```
+
+## Unit Test Story + Code — BL-004
+Executable: `BL-004/generated-tests/STORY-0100/Story0100ProductUomSearchUnitTest.java`
+
+```java
+    @InjectMocks RestfulProductUomServices controller;
+
+    @Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+        ProductUomSearchResponseDto expected = new ProductUomSearchResponseDto();
+        when(productUomSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
+        ProductUomSearchResponseDto actual = controller.getProductUoms("KG");
+        ArgumentCaptor<CylinderManagementApplicationRequestDto> captor = ArgumentCaptor.forClass(CylinderManagementApplicationRequestDto.class);
+        org.mockito.Mockito.verify(productUomSearchService).searchWithText(captor.capture(), isNull());
+        assertEquals("KG", captor.getValue().getSearchTerm());
+        assertSame(expected, actual);
+    }
+
+    @Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+        when(productUomSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
+            .thenThrow(mock(CylinderManagementApplicationException.class));
+        assertNotNull(controller.getProductUoms("KG"));
+    }
+}
+
+```
+
+## Integration Test Story + Code — BL-005
+Executable: `BL-005/generated-tests/STORY-0100/Story0100ProductUomSearchIntegrationTest.java`
+
+```java
+@DataJpaTest
+@ContextConfiguration(classes = TestApplication.class)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class Story0100ProductUomSearchIntegrationTest {
+    @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16").withUsername("test").withPassword("test");
+    @DynamicPropertySource static void properties(DynamicPropertyRegistry registry) {
+        POSTGRES.start();
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+    }
+    @Autowired ProductUomJpaDao dao;
+    @Test void containsIgnoreCaseReturnsOnlyMatchingUoms() {
+        ProductUomDo kg = new ProductUomDo(); kg.setProductUom("KG_STORY0100"); kg.setDescription("Kilogram");
+        ProductUomDo litre = new ProductUomDo(); litre.setProductUom("LITRE_STORY0100"); litre.setDescription("Litre");
+        dao.saveAndFlush(kg); dao.saveAndFlush(litre);
+        assertEquals(1, dao.findByProductUomContainingIgnoreCase("kg_story0100").size());
+        assertEquals(0, dao.findByProductUomContainingIgnoreCase("ZZZ_STORY0100").size());
+    }
+}
+
+```
+
+## Test Data / Executable Mapping Code — BL-009
+Executable: `BL-009/generated-tests/STORY-0100/Story0100TestDataDrivenTest.java`
+
+```java
+    @InjectMocks RestfulProductUomServices controller;
+
+    @Test void tc0100_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+        ProductUomSearchResponseDto expected = new ProductUomSearchResponseDto();
+        when(productUomSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
+        ProductUomSearchResponseDto actual = controller.getProductUoms("KG");
+        ArgumentCaptor<CylinderManagementApplicationRequestDto> captor = ArgumentCaptor.forClass(CylinderManagementApplicationRequestDto.class);
+        org.mockito.Mockito.verify(productUomSearchService).searchWithText(captor.capture(), isNull());
+        assertEquals("KG", captor.getValue().getSearchTerm());
+        assertSame(expected, actual);
+    }
+
+    @Test void tc0100_02_governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+        when(productUomSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
+            .thenThrow(mock(CylinderManagementApplicationException.class));
+        assertNotNull(controller.getProductUoms("KG"));
+    }
+}
+
+```
+
+## Code-path trace
+BL-002 -> frozen production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
+
+## Execution and coverage
+Packet/code rework: `COMPLETE`; unit/integration/application execution: `NOT EXECUTED`; durable coverage evidence: `NONE`; coverage percentage: `NOT INFERRED`.
+
+## BL-011 validation
+Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present and remains separate from execution evidence.
+
+Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
