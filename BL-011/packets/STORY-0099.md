@@ -1,5 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0099 Product Search
 
+## Rework state
+Reworked under the BL-011 code-required policy.
+
+## Reviewer-readable business/test narrative
 ## 1. Story, governance and source
 - Source Story: `BL-002/stories/STORY-0099.md`
 - Endpoint: `GET /search/product/{searchText}`
@@ -63,3 +67,109 @@ Four catalogue rows cover successful product lookup, no-match/error behavior and
 Fresh validation against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml` confirms business behavior, preconditions, inputs, validation, happy/no-match/error/boundary/stale-identity cases, expected API/UI/database outcomes, executable references, BL-002/004/005/009 traceability and explicit non-execution/coverage state.
 
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
+
+## Production Code Evidence
+File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulProductServices.java`
+
+```java
+@GetMapping("/{searchText}")
+public ProductSearchResponseDto getProducts(@PathVariable String searchText) {
+    try {
+        CylinderManagementApplicationRequestDto request =
+            new CylinderManagementApplicationRequestDto();
+        request.setSearchTerm(searchText);
+        return productSearchService.searchWithText(request, null);
+    } catch (CylinderManagementApplicationException e) {
+        return new ProductSearchResponseDto();
+    }
+}
+```
+
+## Unit Test Story + Code — BL-004
+Executable: `BL-004/generated-tests/STORY-0099/Story0099ProductSearchUnitTest.java`
+
+```java
+    @InjectMocks RestfulProductServices controller;
+
+    @Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+        ProductSearchResponseDto expected = new ProductSearchResponseDto();
+        when(productSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
+        ProductSearchResponseDto actual = controller.getProducts("Oxygen");
+        ArgumentCaptor<CylinderManagementApplicationRequestDto> captor = ArgumentCaptor.forClass(CylinderManagementApplicationRequestDto.class);
+        org.mockito.Mockito.verify(productSearchService).searchWithText(captor.capture(), isNull());
+        assertEquals("Oxygen", captor.getValue().getSearchTerm());
+        assertSame(expected, actual);
+    }
+
+    @Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+        when(productSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
+            .thenThrow(mock(CylinderManagementApplicationException.class));
+        assertNotNull(controller.getProducts("Oxygen"));
+    }
+}
+
+```
+
+## Integration Test Story + Code — BL-005
+Executable: `BL-005/generated-tests/STORY-0099/Story0099ProductSearchIntegrationTest.java`
+
+```java
+@DataJpaTest
+@ContextConfiguration(classes = TestApplication.class)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class Story0099ProductSearchIntegrationTest {
+    @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16").withUsername("test").withPassword("test");
+    @DynamicPropertySource static void properties(DynamicPropertyRegistry registry) {
+        POSTGRES.start();
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+    }
+    @Autowired ProductJpaDao dao;
+    @Test void containsIgnoreCaseReturnsOnlyMatchingProducts() {
+        ProductDo oxygen = new ProductDo(); oxygen.setProductName("Oxygen_STORY0099"); oxygen.setDescription("Oxygen"); oxygen.setIgstRate(new BigDecimal("5.00"));
+        ProductDo argon = new ProductDo(); argon.setProductName("Argon_STORY0099"); argon.setDescription("Argon"); argon.setIgstRate(new BigDecimal("5.00"));
+        dao.saveAndFlush(oxygen); dao.saveAndFlush(argon);
+        assertEquals(1, dao.findByProductNameContainingIgnoreCase("oxygen_story0099").size());
+        assertEquals(0, dao.findByProductNameContainingIgnoreCase("ZZZ_STORY0099").size());
+    }
+}
+
+```
+
+## Test Data / Executable Mapping Code — BL-009
+Executable: `BL-009/generated-tests/STORY-0099/Story0099TestDataDrivenTest.java`
+
+```java
+    @InjectMocks RestfulProductServices controller;
+
+    @Test void tc0099_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+        ProductSearchResponseDto expected = new ProductSearchResponseDto();
+        when(productSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
+        ProductSearchResponseDto actual = controller.getProducts("Oxygen");
+        ArgumentCaptor<CylinderManagementApplicationRequestDto> captor = ArgumentCaptor.forClass(CylinderManagementApplicationRequestDto.class);
+        org.mockito.Mockito.verify(productSearchService).searchWithText(captor.capture(), isNull());
+        assertEquals("Oxygen", captor.getValue().getSearchTerm());
+        assertSame(expected, actual);
+    }
+
+    @Test void tc0099_02_governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+        when(productSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
+            .thenThrow(mock(CylinderManagementApplicationException.class));
+        assertNotNull(controller.getProducts("Oxygen"));
+    }
+}
+
+```
+
+## Code-path trace
+BL-002 -> frozen production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
+
+## Execution and coverage
+Packet/code rework: `COMPLETE`; unit/integration/application execution: `NOT EXECUTED`; durable coverage evidence: `NONE`; coverage percentage: `NOT INFERRED`.
+
+## BL-011 validation
+Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present and remains separate from execution evidence.
+
+Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
