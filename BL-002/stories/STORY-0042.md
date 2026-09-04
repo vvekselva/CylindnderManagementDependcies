@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /registerCustomer`
 - Functional area: Customer Registration
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Traceability state: COMPLETE
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -77,4 +77,4 @@ If mediator invocation completes without `InvalidInputParameterException`, the c
 
 The Story is Business Behavior Complete because its browser submission, controller request identity, address-type resolution, concrete mediator, validator, service mapping, repository persistence path, entity/table/column identities, generated IDs, transaction boundary, error behavior and success outcome are source-bound. The Address Type persistence omission is explicitly documented as source-proved current behavior rather than hidden or invented.
 
-This Story now awaits explicit user review. No approval is inferred or automatically applied.
+This Story is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with fan-out requested. The documented Address Type persistence omission remains approved current-source behavior and is not treated as corrected or implemented by this approval.
