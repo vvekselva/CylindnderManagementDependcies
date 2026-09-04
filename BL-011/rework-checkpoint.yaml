@@ -7,6 +7,7 @@ accepted_as_already_reworked:
 reworked_this_run:
   - STORY-0001
   - STORY-0013
+  - STORY-0087
   - STORY-0092
   - STORY-0098
   - STORY-0099
@@ -15,12 +16,12 @@ freshly_validated_complete:
   - STORY-0001
   - STORY-0012
   - STORY-0013
+  - STORY-0087
   - STORY-0092
   - STORY-0098
   - STORY-0099
   - STORY-0100
 remaining:
-  - STORY-0087
   - STORY-0089
   - STORY-0090
   - STORY-0108
@@ -35,16 +36,16 @@ per_story_validation:
   STORY-0012: ACCEPTED_USER_REVIEWED_ALREADY_REWORKED
   STORY-0001: PASS_README_AND_POLICY
   STORY-0013: PASS_README_AND_POLICY
+  STORY-0087: PASS_README_AND_POLICY
   STORY-0092: PASS_README_AND_POLICY
   STORY-0098: PASS_README_AND_POLICY
   STORY-0099: PASS_README_AND_POLICY
   STORY-0100: PASS_README_AND_POLICY
-  STORY-0087: NOT_COUNTED_WRITE_BLOCKED_BEFORE_COMMIT
-next_story: STORY-0087
+next_story: STORY-0089
 corrected_progress:
-  complete: 7
+  complete: 8
   denominator: 18
-  percentage: 38.9
+  percentage: 44.4
 execution_separation:
   bl004: NOT_EXECUTED
   bl005: NOT_EXECUTED
@@ -59,8 +60,6 @@ source:
   sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
   extracted_files: 1650
   java_files: 1054
-run_blockers:
-  - STORY-0087 packet replacement was prepared from source and BL-004/005/009 evidence but repository update was blocked by connector safety checks before commit; do not count it complete.
 rules:
   existing_packet_file_is_not_completion_proof: true
   auto_approval: false
