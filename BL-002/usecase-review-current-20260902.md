@@ -23,9 +23,9 @@ STORY-0013 still contains documented current-state development gaps, including t
 ## SUC-017 — Customer Registration
 
 **Release:** R1  
-**Use-case approval:** Partially approved
+**Use-case approval:** Approved
 
-Primary STORY-0041 is now `APPROVED_AFTER_REWORK` with fan-out requested. STORY-0042 remains pending user approval. Shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 remain approved/fanned out.
+Primary Stories STORY-0041 and STORY-0042 are now `APPROVED_AFTER_REWORK` with fan-out requested. Shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 remain approved/fanned out. All mapped Stories for Customer Registration are now approved.
 
 <a id="suc-019"></a>
 ## SUC-019 — Customer Display / Maintenance
