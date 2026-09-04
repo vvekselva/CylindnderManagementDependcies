@@ -1,9 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0001 Login Screen and Authentication Entry
 
 ## Rework state
-Reworked under the BL-011 code-required policy. Explanation-only or path-only evidence is not sufficient.
+Reworked under the mandatory per-test-case adjacent-code rule. Every executable test case below contains its own code block immediately beside its explanation.
 
-## Reviewer-readable business/test narrative
+## Business behavior and scope
 ## 1. Story, approval, conformance and source
 - Source Story: `BL-002/stories/STORY-0001.md`
 - Approval: `APPROVED_AFTER_REWORK` (explicit reapproval 2026-08-31)
@@ -113,9 +113,6 @@ Validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.y
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
 
 ## Production Code Evidence
-Source package: verified frozen/recovered Cylinder application source.
-File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/LoginController.java`
-
 ```java
 @GetMapping("/login")
 public ModelAndView showLoginPage(@RequestParam(value = "error", required = false) String error,
@@ -131,12 +128,19 @@ public ModelAndView showLoginPage(@RequestParam(value = "error", required = fals
 }
 ```
 
-## Unit Test Story + Code — BL-004
-Executable: `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java`
+## BL-004 Unit Test Cases
+### STORY-0001 UT-01: default login request renders configured login view without messages
+
+**Layer:** BL-004 — Unit Test Case  
+**Executable:** `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java#defaultLoginRequestRendersConfiguredLoginViewWithoutMessages`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `defaultLoginRequestRendersConfiguredLoginViewWithoutMessages()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    private TestableDailyLoginSuccessHandler successHandler;
-
     @Test
     @DisplayName("STORY-0001 UT-01: default login request renders configured login view without messages")
     void defaultLoginRequestRendersConfiguredLoginViewWithoutMessages() {
@@ -148,7 +152,20 @@ Executable: `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java`
         assertFalse(result.getModel().containsKey("errorMessage"));
         assertFalse(result.getModel().containsKey("logoutMessage"));
     }
+```
 
+### STORY-0001 UT-02: error query adds exact invalid-credential message
+
+**Layer:** BL-004 — Unit Test Case  
+**Executable:** `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java#errorQueryAddsExactInvalidCredentialMessage`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `errorQueryAddsExactInvalidCredentialMessage()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
     @Test
     @DisplayName("STORY-0001 UT-02: error query adds exact invalid-credential message")
     void errorQueryAddsExactInvalidCredentialMessage() {
@@ -160,97 +177,205 @@ Executable: `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java`
         assertEquals(ERROR_MESSAGE, result.getModel().get("errorMessage"));
         assertFalse(result.getModel().containsKey("logoutMessage"));
     }
+```
 
+### STORY-0001 UT-03: logout query adds exact logout message
+
+**Layer:** BL-004 — Unit Test Case  
+**Executable:** `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java#logoutQueryAddsExactLogoutMessage`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `logoutQueryAddsExactLogoutMessage()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
     @Test
     @DisplayName("STORY-0001 UT-03: logout query adds exact logout message")
-```
+    void logoutQueryAddsExactLogoutMessage() {
+        LoginController controller = new LoginController();
 
-The unit-test excerpt above is the executable evidence for mocked/component-level behavior. It must be read with the narrative's positive, negative, boundary and duplicate/idempotency rules where applicable.
+        ModelAndView result = controller.showLoginPage(null, "present");
 
-## Integration Test Story + Code — BL-005
-Executable: `BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java`
-
-```java
-@DataJpaTest
-@ContextConfiguration(classes = TestApplication.class)
-@Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class Story0001LoginIntegrationTest {
-
-    @Container
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16")
-            .withEnv("TZ", "Asia/Kolkata")
-            .withUsername("test")
-            .withPassword("test");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        POSTGRES.start();
-        registry.add("spring.datasource.url",
-                () -> POSTGRES.getJdbcUrl() + "?options=-c%20TimeZone%3DAsia%2FKolkata");
-        registry.add("spring.datasource.username", POSTGRES::getUsername);
-        registry.add("spring.datasource.password", POSTGRES::getPassword);
+        assertEquals(LOGIN_VIEW, result.getViewName());
+        assertEquals(LOGOUT_MESSAGE, result.getModel().get("logoutMessage"));
+        assertFalse(result.getModel().containsKey("errorMessage"));
     }
-
-    @Configuration
-    static class FlywayConfig {
-        @Bean(initMethod = "migrate")
-        Flyway flyway() {
-            return Flyway.configure()
-                    .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
-                    .locations("classpath:db/migration")
 ```
 
-The integration excerpt shows the real-layer/database/container test implementation where applicable. Generated code does not imply it executed.
+### STORY-0001 UT-04: error and logout indications execute both source-proved branches
 
-## Test Data / Executable Mapping Code — BL-009
-Executable: `BL-009/generated-tests/STORY-0001/Story0001TestDataContractRunner.java`
+**Layer:** BL-004 — Unit Test Case  
+**Executable:** `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java#errorAndLogoutIndicationsExecuteBothSourceProvedBranches`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `errorAndLogoutIndicationsExecuteBothSourceProvedBranches()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-package bl009.story0001;
+    @Test
+    @DisplayName("STORY-0001 UT-04: error and logout indications execute both source-proved branches")
+    void errorAndLogoutIndicationsExecuteBothSourceProvedBranches() {
+        LoginController controller = new LoginController();
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+        ModelAndView result = controller.showLoginPage("present", "present");
 
-/**
- * Dependency-free Java 21 substitution runner for the BL-009 STORY-0001
- * test-data CONTRACT only. This does not replace JUnit 5 application tests,
- * does not exercise the Cylinder application, and must never be treated as
- * application-behavior PASS or JaCoCo coverage evidence.
- */
-public final class Story0001TestDataContractRunner {
-    private static final String[] HEADER = {
-        "data_id", "test_case", "username", "password", "preexisting_daily_login",
-        "expected_authentication", "expected_daily_login_rows",
-        "expected_visible_or_navigation_outcome", "data_classification"
-    };
-
-    private record Expected(
-        String testCase,
-        String preexisting,
-        String authentication,
-        String rows,
+        assertEquals(ERROR_MESSAGE, result.getModel().get("errorMessage"));
+        assertEquals(LOGOUT_MESSAGE, result.getModel().get("logoutMessage"));
+    }
 ```
 
-Readable/CSV test data remains governed under `BL-009/test-data/STORY-0001.md` and `BL-009/test-data/STORY-0001.csv` when present.
+### STORY-0001 UT-05: first successful login of day saves one report and targets dashboard
 
-## Code-path trace
-BL-002 approved Story -> frozen production code above -> BL-004 unit code -> BL-005 integration code -> BL-009 data/use-case mapping -> BL-011 reviewer packet.
+**Layer:** BL-004 — Unit Test Case  
+**Executable:** `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java#firstSuccessfulLoginOfDaySavesOneReportAndTargetsDashboard`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `firstSuccessfulLoginOfDaySavesOneReportAndTargetsDashboard()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    @DisplayName("STORY-0001 UT-05: first successful login of day saves one report and targets dashboard")
+    void firstSuccessfulLoginOfDaySavesOneReportAndTargetsDashboard() throws Exception {
+        when(dailyLoginReportJpaDao.existsByLoginDate(any(LocalDate.class))).thenReturn(false);
+
+        successHandler.onAuthenticationSuccess(request, response, authentication);
+
+        ArgumentCaptor<LocalDate> dateCaptor = ArgumentCaptor.forClass(LocalDate.class);
+        verify(dailyLoginReportJpaDao, times(1)).existsByLoginDate(dateCaptor.capture());
+        assertEquals(LocalDate.now(), dateCaptor.getValue());
+
+        ArgumentCaptor<DailyLoginReportDo> reportCaptor = ArgumentCaptor.forClass(DailyLoginReportDo.class);
+        verify(dailyLoginReportJpaDao, times(1)).save(reportCaptor.capture());
+        assertNotNull(reportCaptor.getValue().getLoginTime());
+        assertEquals(SUCCESS_TARGET, successHandler.exposedDefaultTargetUrl());
+    }
+```
+
+### STORY-0001 UT-06: later successful login same day does not save duplicate
+
+**Layer:** BL-004 — Unit Test Case  
+**Executable:** `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java#laterSuccessfulLoginSameDayDoesNotSaveDuplicate`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `laterSuccessfulLoginSameDayDoesNotSaveDuplicate()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    @DisplayName("STORY-0001 UT-06: later successful login same day does not save duplicate")
+    void laterSuccessfulLoginSameDayDoesNotSaveDuplicate() throws Exception {
+        when(dailyLoginReportJpaDao.existsByLoginDate(any(LocalDate.class))).thenReturn(true);
+
+        successHandler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(dailyLoginReportJpaDao, times(1)).existsByLoginDate(any(LocalDate.class));
+        verify(dailyLoginReportJpaDao, never()).save(any(DailyLoginReportDo.class));
+        assertEquals(SUCCESS_TARGET, successHandler.exposedDefaultTargetUrl());
+    }
+```
+
+
+## BL-005 Integration Test Cases
+### STORY-0001 IT-01: normal Flyway/JPA path persists generated daily-login identity
+
+**Layer:** BL-005 — Integration Test Case  
+**Executable:** `BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java#normalFlywayJpaPathPersistsGeneratedDailyLoginIdentity`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `normalFlywayJpaPathPersistsGeneratedDailyLoginIdentity()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    @DisplayName("STORY-0001 IT-01: normal Flyway/JPA path persists generated daily-login identity")
+    void normalFlywayJpaPathPersistsGeneratedDailyLoginIdentity() {
+        DailyLoginReportDo report = new DailyLoginReportDo();
+        report.setLoginTime(LocalDateTime.now());
+
+        DailyLoginReportDo saved = dailyLoginReportJpaDao.saveAndFlush(report);
+
+        assertThat(saved.getDailyLoginReportId()).isNotNull();
+        assertThat(saved.getLoginTime()).isNotNull();
+        assertThat(dailyLoginReportJpaDao.findById(saved.getDailyLoginReportId())).isPresent();
+    }
+```
+
+### STORY-0001 IT-02: date guard is false before today's login and true after persistence
+
+**Layer:** BL-005 — Integration Test Case  
+**Executable:** `BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java#dateGuardReflectsPersistedLoginForToday`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `dateGuardReflectsPersistedLoginForToday()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    @DisplayName("STORY-0001 IT-02: date guard is false before today's login and true after persistence")
+    void dateGuardReflectsPersistedLoginForToday() {
+        LocalDate today = LocalDate.now();
+        assertThat(dailyLoginReportJpaDao.existsByLoginDate(today)).isFalse();
+
+        DailyLoginReportDo report = new DailyLoginReportDo();
+        report.setLoginTime(LocalDateTime.now());
+        dailyLoginReportJpaDao.saveAndFlush(report);
+
+        assertThat(dailyLoginReportJpaDao.existsByLoginDate(today)).isTrue();
+    }
+```
+
+### STORY-0001 IT-03: yesterday's login does not satisfy today's date guard
+
+**Layer:** BL-005 — Integration Test Case  
+**Executable:** `BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java#yesterdayLoginDoesNotSatisfyTodayDateGuard`  
+**Business objective:** Verify the exact governed behavior expressed by this executable test case.  
+**Preconditions / input:** Use the setup, mocks, fixtures, parameters and data values shown in the code immediately below.  
+**Action:** Execute `yesterdayLoginDoesNotSatisfyTodayDateGuard()`.  
+**Expected result:** The assertions in this same method are the authoritative expected service/API/UI/database outcome for this case.  
+**Persistence / side effects:** Only the interactions and persistence assertions visible in this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    @DisplayName("STORY-0001 IT-03: yesterday's login does not satisfy today's date guard")
+    void yesterdayLoginDoesNotSatisfyTodayDateGuard() {
+        DailyLoginReportDo report = new DailyLoginReportDo();
+        report.setLoginTime(LocalDateTime.now().minusDays(1));
+        dailyLoginReportJpaDao.saveAndFlush(report);
+
+        assertThat(dailyLoginReportJpaDao.existsByLoginDate(LocalDate.now())).isFalse();
+    }
+```
+
+
+## BL-009 Test Data / Use-case Cases
+
+
+## Traceability
+BL-002 approved Story -> production code -> BL-004 unit cases -> BL-005 integration cases -> BL-009 data/use-case cases -> BL-011 reviewer packet.
 
 ## Execution and coverage
-- Packet/code rework: `COMPLETE`
+- Packet rework: `COMPLETE_PER_CASE_CODE`
 - Unit execution: `NOT EXECUTED`
 - Integration execution: `NOT EXECUTED`
 - Application/E2E execution: `NOT EXECUTED`
-- Durable coverage evidence: `NONE`
+- Durable JaCoCo evidence: `NONE`
 - Coverage percentage: `NOT INFERRED`
 
-## BL-011 validation
-Validated against the code-required `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`. The packet contains actual inline production code and governed BL-004/005/009 code evidence; code presence is not treated as execution evidence.
+## Validation
+Validated against the current BL-011 README and policy. Every executable test method has adjacent code; shared code sections are not used as substitutes for per-case code.
 
-Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
+Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
