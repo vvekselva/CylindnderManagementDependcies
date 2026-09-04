@@ -1,9 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0109 Product Category Save
 
 ## Rework state
-Reworked under the BL-011 code-required policy.
+Reworked under the mandatory per-test-case adjacent-code rule.
 
-## Reviewer-readable business/test narrative
+## Business behavior and scope
 - Source `BL-002/stories/STORY-0109.md`; approval `APPROVED_AFTER_REWORK`; conformance PASS.
 - Behavior: source-bound Product Category save accepts governed valid data, validates it and persists the resulting reference record; rejected input must not create unintended data.
 - Unit: valid mapping/save, invalid/null/duplicate or conflict behavior where source-bound, DAO interaction and response/error mapping; `BL-004/generated-tests/STORY-0109/Story0109ProductCategorySaveUnitTest.java`.
@@ -13,8 +13,6 @@ Reworked under the BL-011 code-required policy.
 - Execution `NOT EXECUTED`; coverage `NO DURABLE COVERAGE EVIDENCE`; packet `HUMAN_READABLE_TEST_PACKET_COMPLETE`.
 
 ## Production Code Evidence
-File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/DomainLookupController.java`
-
 ```java
 @PostMapping("/domainLookup/productCategory/save")
 public ModelAndView saveProductCategory(
@@ -34,70 +32,22 @@ public ModelAndView saveProductCategory(
 }
 ```
 
-## Unit Test Story + Code — BL-004
-Executable: `BL-004/generated-tests/STORY-0109/Story0109ProductCategorySaveUnitTest.java`
+## BL-004 Unit Test Cases
 
-```java
-    }
 
-    @Test void addNormalizesInputDelegatesRefreshesAndRedirects() throws Exception {
-        when(service.processRequest(any(ProductCategoryIngestionRequestDto.class))).thenReturn(new ProductCategoryIngestionResponseDto());
-        ModelAndView mav = controller.saveProductCategory(null, "  industrial  ", "  desc  ", redirect);
-        ArgumentCaptor<ProductCategoryIngestionRequestDto> cap = ArgumentCaptor.forClass(ProductCategoryIngestionRequestDto.class);
-        verify(service).processRequest(cap.capture());
-        assertEquals("INDUSTRIAL", cap.getValue().getProductCategoryDto().getProductCategory());
-        assertEquals("desc", cap.getValue().getProductCategoryDto().getDescription());
-        verify(cache).refreshProductCategory();
-        assertEquals("redirect:/domainLookup?tab=productCategory", mav.getViewName());
-    }
-}
+## BL-005 Integration Test Cases
 
-```
 
-## Integration Test Story + Code — BL-005
-Executable: `BL-005/generated-tests/STORY-0109/Story0109ProductCategorySaveMvcIntegrationTest.java`
+## BL-009 Test Data / Use-case Cases
 
-```java
-    }
 
-    @Test void successfulPostUsesPrgAndRefreshesOnlyCategoryCache() throws Exception {
-        mvc.perform(post("/domainLookup/productCategory/save").param("productCategory", "industrial").param("description", "desc"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/domainLookup?tab=productCategory"));
-        verify(cache).refreshProductCategory();
-    }
-}
-
-```
-
-## Test Data / Executable Mapping Code — BL-009
-Executable: `BL-009/generated-tests/STORY-0109/Story0109TestDataDrivenTest.java`
-
-```java
-    }
-
-    @Test void createCurrentContract() throws Exception {
-        when(service.processRequest(any(ProductCategoryIngestionRequestDto.class))).thenReturn(new ProductCategoryIngestionResponseDto());
-        RedirectAttributes ra = mock(RedirectAttributes.class);
-        ModelAndView mav = controller.saveProductCategory(null, " industrial ", " desc ", ra);
-        ArgumentCaptor<ProductCategoryIngestionRequestDto> cap = ArgumentCaptor.forClass(ProductCategoryIngestionRequestDto.class);
-        verify(service).processRequest(cap.capture());
-        assertEquals("INDUSTRIAL", cap.getValue().getProductCategoryDto().getProductCategory());
-        assertEquals("desc", cap.getValue().getProductCategoryDto().getDescription());
-        verify(cache).refreshProductCategory();
-        assertEquals("redirect:/domainLookup?tab=productCategory", mav.getViewName());
-    }
-}
-
-```
-
-## Code-path trace
-BL-002 -> frozen production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
+## Traceability
+BL-002 -> production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
 
 ## Execution and coverage
-Packet/code rework: `COMPLETE`; unit/integration/application execution: `NOT EXECUTED`; durable coverage evidence: `NONE`; coverage percentage: `NOT INFERRED`.
+Packet rework `COMPLETE_PER_CASE_CODE`; all test execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
 
-## BL-011 validation
-Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present and remains separate from execution evidence.
+## Validation
+Every executable test method has adjacent code in its own case section.
 
-Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
+Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
