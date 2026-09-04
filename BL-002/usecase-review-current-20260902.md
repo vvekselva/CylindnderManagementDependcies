@@ -39,9 +39,9 @@ The shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-01
 ## SUC-032 — Supplier Ingestion
 
 **Release:** R1  
-**Use-case approval:** Partially approved
+**Use-case approval:** Approved
 
-Primary STORY-0080 is now `APPROVED_AFTER_REWORK` with fan-out requested. STORY-0081 remains pending user approval. Shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 remain approved/fanned out.
+Primary Stories STORY-0080 and STORY-0081 are now `APPROVED_AFTER_REWORK` with fan-out requested. Shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 remain approved/fanned out. All mapped Stories for Supplier Ingestion are now approved.
 
 <a id="suc-035"></a>
 ## SUC-035 — Shared Screen Search / Lookup APIs
