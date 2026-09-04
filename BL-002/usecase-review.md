@@ -247,7 +247,7 @@
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0043](stories/STORY-0043.md) | Primary — wizard entry/read model | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0044](stories/STORY-0044.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0044](stories/STORY-0044.md) | Primary — wizard save/transaction | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DEV-0005 DRIFT-GATED** |
 
 [Back to register](screen-usecase-register.md)
 
