@@ -1,59 +1,84 @@
 backlog_id: BL-011
-title: Human-Readable Testing Stories, Test Data and Test Cases
+title: Human-Readable Testing Stories, Test Data, Test Cases and Code
 mode: SINGLE_UMBRELLA_BACKLOG
 approval_policy: EXPLICIT_USER_ONLY
-source_backlogs:
-  - BL-002
-  - BL-004
-  - BL-005
-  - BL-009
+source_backlogs: [BL-002, BL-004, BL-005, BL-009]
 artifacts:
+  production_code_evidence:
+    required_when_applicable: true
+    inline_fenced_code_required: true
   unit_test_story:
     required_when_applicable: true
+    inline_test_code_required: true
   integration_test_story:
     required_when_applicable: true
+    inline_test_code_required: true
   test_data_story:
     required_when_applicable: true
+    inline_data_or_mapping_code_required: true
   use_case_end_to_end_test_story:
     required_when_applicable: true
+    code_path_trace_required: true
 mandatory_traceability:
   - source_story_id
   - approval_or_reapproval_evidence
   - conformance_gate_status
   - business_behavior
+  - business_impact
   - preconditions
   - input_test_data
   - validation_rules
   - happy_path
   - negative_cases
   - boundary_cases
-  - expected_result
+  - duplicate_conflict_idempotency_cases_when_applicable
+  - expected_service_api_ui_result
   - expected_persistence_state
-  - executable_test_reference
+  - production_code_file_path
+  - production_code_class_component
+  - production_code_method_block
+  - production_code_excerpt
   - unit_test_linkage
+  - unit_test_code_excerpt
   - integration_test_linkage
+  - integration_test_code_excerpt
+  - test_data_linkage
+  - test_data_or_mapping_code_excerpt
   - use_case_catalogue_linkage
   - execution_evidence_status
   - coverage_evidence_status
 rules:
+  explanation_only_packet_is_complete: false
+  path_only_code_reference_is_complete: false
+  inline_actual_code_required: true
+  source_bound_code_only: true
+  pseudocode_may_replace_available_source: false
   auto_approval: false
+  application_code_mutation_authorized_by_packet_rework: false
   infer_execution_success: false
   infer_coverage: false
-  conflate_generation_execution_coverage: false
+  conflate_generation_rework_execution_coverage: false
   downstream_fanout_requires_current_approval: true
   downstream_fanout_requires_conformance_pass: true
-  missing_evidence_is_blocker: true
+  missing_code_evidence_is_blocker: true
+  missing_execution_evidence_is_blocker_for_execution_status: true
 completion:
-  story_packet_terminal_status: HUMAN_READABLE_TEST_PACKET_COMPLETE
-  whole_backlog_percentage: PERCENTAGE_NOT_DURABLY_DERIVABLE_UNTIL_ELIGIBLE_DENOMINATOR_RECONCILED
+  story_packet_terminal_status: HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE
+  validation_requires:
+    - README
+    - human-readable-testing-policy.yaml
+    - inline_production_code
+    - inline_unit_test_code_when_applicable
+    - inline_integration_test_code_when_applicable
+    - inline_test_data_or_mapping_code
+    - code_path_trace
 status_vocabulary:
   - NOT_STARTED
-  - INVENTORY_COMPLETE
   - IN_PROGRESS
-  - HUMAN_READABLE_STORY_COMPLETE
+  - CODE_EVIDENCE_INCOMPLETE
   - AWAITING_SOURCE_MATERIALIZATION
   - AWAITING_EXECUTION_EVIDENCE
   - AWAITING_COVERAGE_EVIDENCE
   - APPROVAL_OR_CONFORMANCE_GATED
   - NEEDS_CLARIFICATION
-  - HUMAN_READABLE_TEST_PACKET_COMPLETE
+  - HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE
