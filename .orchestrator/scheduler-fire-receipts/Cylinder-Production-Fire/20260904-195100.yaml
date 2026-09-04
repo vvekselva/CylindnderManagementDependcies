@@ -5,5 +5,5 @@ receipt_time: 2026-09-04T19:51:00+05:30
 state: TRIGGER_RECEIVED
 intended_scope: CONTINUOUS
 run_id: null
-terminal_classification: null
-termination_time: null
+terminal_classification: SCHEDULER_HANDOFF_NOT_ACKNOWLEDGED
+termination_time: 2026-09-04T19:51:35+05:30
