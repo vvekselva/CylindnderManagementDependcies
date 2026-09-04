@@ -41,7 +41,7 @@ The shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-01
 **Release:** R1  
 **Use-case approval:** Partially approved
 
-The shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 are now `APPROVED_AFTER_REWORK` with fan-out requested. Primary Stories STORY-0080 and STORY-0081 remain pending.
+Primary STORY-0080 is now `APPROVED_AFTER_REWORK` with fan-out requested. STORY-0081 remains pending user approval. Shared City/Country/State search Stories STORY-0089, STORY-0090 and STORY-0101 remain approved/fanned out.
 
 <a id="suc-035"></a>
 ## SUC-035 — Shared Screen Search / Lookup APIs
