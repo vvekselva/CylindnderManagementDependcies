@@ -81,19 +81,19 @@ public ProductCategorySearchResponseDto getProductCategories(@PathVariable Strin
 ```
 
 ## BL-004 Unit Test Cases
-### governedServiceFailureReturnsEmptyResponseObject
+### delegatesExactSearchTextAndReturnsServiceResponse
 
 **Layer:** BL-004  
-**Executable:** `BL-004/generated-tests/STORY-0098/Story0098ProductCategorySearchUnitTest.java#governedServiceFailureReturnsEmptyResponseObject`  
-**Business objective:** Verify the governed behavior represented by this exact executable case.  
-**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
-**Action:** Execute `governedServiceFailureReturnsEmptyResponseObject()`.  
-**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
-**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Executable:** `BL-004/generated-tests/STORY-0098/Story0098ProductCategorySearchUnitTest.java#delegatesExactSearchTextAndReturnsServiceResponse`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `delegatesExactSearchTextAndReturnsServiceResponse()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
 **Execution status:** `NOT EXECUTED`
 
 ```java
-    @Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+@Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
         ProductCategorySearchResponseDto expected = new ProductCategorySearchResponseDto();
         when(productCategorySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
         ProductCategorySearchResponseDto actual = controller.getProductCategories("Industrial");
@@ -102,8 +102,21 @@ public ProductCategorySearchResponseDto getProductCategories(@PathVariable Strin
         assertEquals("Industrial", captor.getValue().getSearchTerm());
         assertSame(expected, actual);
     }
+```
 
-    @Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+### governedServiceFailureReturnsEmptyResponseObject
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0098/Story0098ProductCategorySearchUnitTest.java#governedServiceFailureReturnsEmptyResponseObject`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `governedServiceFailureReturnsEmptyResponseObject()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+@Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
         when(productCategorySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
             .thenThrow(mock(CylinderManagementApplicationException.class));
         assertNotNull(controller.getProductCategories("Industrial"));
@@ -112,22 +125,42 @@ public ProductCategorySearchResponseDto getProductCategories(@PathVariable Strin
 
 
 ## BL-005 Integration Test Cases
+### containsIgnoreCaseReturnsOnlyMatchingCategories
 
-
-## BL-009 Test Data / Use-case Cases
-### tc0098_02_governedServiceFailureReturnsEmptyResponseObject
-
-**Layer:** BL-009  
-**Executable:** `BL-009/generated-tests/STORY-0098/Story0098TestDataDrivenTest.java#tc0098_02_governedServiceFailureReturnsEmptyResponseObject`  
-**Business objective:** Verify the governed behavior represented by this exact executable case.  
-**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
-**Action:** Execute `tc0098_02_governedServiceFailureReturnsEmptyResponseObject()`.  
-**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
-**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0098/Story0098ProductCategorySearchIntegrationTest.java#containsIgnoreCaseReturnsOnlyMatchingCategories`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `containsIgnoreCaseReturnsOnlyMatchingCategories()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
 **Execution status:** `NOT EXECUTED`
 
 ```java
-    @Test void tc0098_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+@Test void containsIgnoreCaseReturnsOnlyMatchingCategories() {
+        ProductCategoryDo a = new ProductCategoryDo(); a.setProductCategory("Industrial_STORY0098"); a.setDescription("Industrial");
+        ProductCategoryDo b = new ProductCategoryDo(); b.setProductCategory("Medical_STORY0098"); b.setDescription("Medical");
+        dao.saveAndFlush(a); dao.saveAndFlush(b);
+        assertEquals(1, dao.findByProductCategoryContainingIgnoreCase("industrial_story0098").size());
+        assertEquals(0, dao.findByProductCategoryContainingIgnoreCase("ZZZ_STORY0098").size());
+    }
+```
+
+
+## BL-009 Test Data / Use-case Cases
+### tc0098_01_delegatesExactSearchTextAndReturnsServiceResponse
+
+**Layer:** BL-009  
+**Executable:** `BL-009/generated-tests/STORY-0098/Story0098TestDataDrivenTest.java#tc0098_01_delegatesExactSearchTextAndReturnsServiceResponse`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `tc0098_01_delegatesExactSearchTextAndReturnsServiceResponse()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+@Test void tc0098_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
         ProductCategorySearchResponseDto expected = new ProductCategorySearchResponseDto();
         when(productCategorySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
         ProductCategorySearchResponseDto actual = controller.getProductCategories("Industrial");
@@ -136,8 +169,21 @@ public ProductCategorySearchResponseDto getProductCategories(@PathVariable Strin
         assertEquals("Industrial", captor.getValue().getSearchTerm());
         assertSame(expected, actual);
     }
+```
 
-    @Test void tc0098_02_governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+### tc0098_02_governedServiceFailureReturnsEmptyResponseObject
+
+**Layer:** BL-009  
+**Executable:** `BL-009/generated-tests/STORY-0098/Story0098TestDataDrivenTest.java#tc0098_02_governedServiceFailureReturnsEmptyResponseObject`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `tc0098_02_governedServiceFailureReturnsEmptyResponseObject()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+@Test void tc0098_02_governedServiceFailureReturnsEmptyResponseObject() throws Exception {
         when(productCategorySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
             .thenThrow(mock(CylinderManagementApplicationException.class));
         assertNotNull(controller.getProductCategories("Industrial"));
@@ -149,9 +195,9 @@ public ProductCategorySearchResponseDto getProductCategories(@PathVariable Strin
 BL-002 -> production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
 
 ## Execution and coverage
-Packet rework `COMPLETE_PER_CASE_CODE`; all test execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
+Packet rework `COMPLETE_PER_CASE_CODE`; all execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
 
 ## Validation
-Every executable test method has adjacent code in its own case section.
+Every executable JUnit test method has adjacent code in its own case section.
 
 Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
