@@ -1,5 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0092 Driver Search
 
+## Rework state
+Reworked under the BL-011 code-required policy.
+
+## Reviewer-readable business/test narrative
 ## 1. Story, governance and source
 - Source Story: `BL-002/stories/STORY-0092.md`
 - Endpoint: `GET /search/driver/{searchText}`
@@ -85,3 +89,114 @@ Generated tests and packet rework are not execution evidence.
 Freshly validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`. Required business behavior, preconditions, inputs, validation, positive/negative/boundary paths, expected service/API/database outcomes, executable references, BL-002/004/005/009 traceability and execution/coverage separation are present.
 
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
+
+## Production Code Evidence
+File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulDriverServices.java`
+
+```java
+@GetMapping("/search/driver/{searchText}")
+public DriverSearchResponseDto getDrivers(@PathVariable String searchText) {
+    try {
+        CylinderManagementApplicationRequestDto requestDto =
+            new CylinderManagementApplicationRequestDto();
+        requestDto.setSearchTerm(searchText);
+        Pageable pageable = PaginationUtils.createPageable(requestDto);
+        return driverSearchService.searchWithText(requestDto, pageable);
+    } catch (CylinderManagementApplicationException exception) {
+        return new DriverSearchResponseDto();
+    }
+}
+```
+
+## Unit Test Story + Code — BL-004
+Executable: `BL-004/generated-tests/STORY-0092/Story0092DriverSearchUnitTest.java`
+
+```java
+    @InjectMocks RestfulDriverServices controller;
+
+    @Test void delegatesExactSearchTextWithPagingAndReturnsServiceResponse() throws Exception {
+        DriverSearchResponseDto expected = new DriverSearchResponseDto();
+        when(driverSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), any(Pageable.class))).thenReturn(expected);
+        DriverSearchResponseDto actual = controller.getDrivers("Ravi");
+        ArgumentCaptor<CylinderManagementApplicationRequestDto> captor = ArgumentCaptor.forClass(CylinderManagementApplicationRequestDto.class);
+        org.mockito.Mockito.verify(driverSearchService).searchWithText(captor.capture(), any(Pageable.class));
+        assertEquals("Ravi", captor.getValue().getSearchTerm());
+        assertSame(expected, actual);
+    }
+
+    @Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+        when(driverSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), any(Pageable.class)))
+            .thenThrow(mock(CylinderManagementApplicationException.class));
+        assertNotNull(controller.getDrivers("Ravi"));
+    }
+}
+
+```
+
+## Integration Test Story + Code — BL-005
+Executable: `BL-005/generated-tests/STORY-0092/Story0092DriverSearchIntegrationTest.java`
+
+```java
+@DataJpaTest
+@ContextConfiguration(classes = TestApplication.class)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class Story0092DriverSearchIntegrationTest {
+    @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16")
+        .withUsername("test").withPassword("test");
+
+    @DynamicPropertySource static void properties(DynamicPropertyRegistry registry) {
+        POSTGRES.start();
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+    }
+
+    @Autowired DriverJpaDao dao;
+
+    @Test void containsIgnoreCaseReturnsOnlyMatchingDriversWithPaging() {
+        DriverDo ravi = new DriverDo(); ravi.setDriverName("Ravi_STORY0092"); ravi.setLicenceNumber("DL0092A");
+        DriverDo kumar = new DriverDo(); kumar.setDriverName("Kumar_STORY0092"); kumar.setLicenceNumber("DL0092B");
+        dao.saveAndFlush(ravi); dao.saveAndFlush(kumar);
+        assertEquals(1, dao.findByDriverNameContainingIgnoreCase("ravi_story0092", PageRequest.of(0, 10)).getTotalElements());
+        assertEquals(0, dao.findByDriverNameContainingIgnoreCase("ZZZ_STORY0092", PageRequest.of(0, 10)).getTotalElements());
+    }
+}
+
+```
+
+## Test Data / Executable Mapping Code — BL-009
+Executable: `BL-009/generated-tests/STORY-0092/Story0092TestDataDrivenTest.java`
+
+```java
+    @InjectMocks RestfulDriverServices controller;
+
+    @Test void tc0092_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+        DriverSearchResponseDto expected = new DriverSearchResponseDto();
+        when(driverSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), any(Pageable.class))).thenReturn(expected);
+        DriverSearchResponseDto actual = controller.getDrivers("Ravi");
+        ArgumentCaptor<CylinderManagementApplicationRequestDto> captor = ArgumentCaptor.forClass(CylinderManagementApplicationRequestDto.class);
+        org.mockito.Mockito.verify(driverSearchService).searchWithText(captor.capture(), any(Pageable.class));
+        assertEquals("Ravi", captor.getValue().getSearchTerm());
+        assertSame(expected, actual);
+    }
+
+    @Test void tc0092_02_governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+        when(driverSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), any(Pageable.class)))
+            .thenThrow(mock(CylinderManagementApplicationException.class));
+        assertNotNull(controller.getDrivers("Ravi"));
+    }
+}
+
+```
+
+## Code-path trace
+BL-002 -> frozen production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
+
+## Execution and coverage
+Packet/code rework: `COMPLETE`; unit/integration/application execution: `NOT EXECUTED`; durable coverage evidence: `NONE`; coverage percentage: `NOT INFERRED`.
+
+## BL-011 validation
+Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present and remains separate from execution evidence.
+
+Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
