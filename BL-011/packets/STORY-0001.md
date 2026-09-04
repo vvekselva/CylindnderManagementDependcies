@@ -1,5 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0001 Login Screen and Authentication Entry
 
+## Rework state
+Reworked under the BL-011 code-required policy. Explanation-only or path-only evidence is not sufficient.
+
+## Reviewer-readable business/test narrative
 ## 1. Story, approval, conformance and source
 - Source Story: `BL-002/stories/STORY-0001.md`
 - Approval: `APPROVED_AFTER_REWORK` (explicit reapproval 2026-08-31)
@@ -107,3 +111,146 @@ Generated source and data-contract mapping are preparation evidence only.
 Validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`: business behavior, preconditions, inputs, validation, happy/negative/boundary/duplicate scenarios, API/UI/database outcomes, executable references, four-backlog traceability, and execution/coverage separation are present.
 
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
+
+## Production Code Evidence
+Source package: verified frozen/recovered Cylinder application source.
+File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/LoginController.java`
+
+```java
+@GetMapping("/login")
+public ModelAndView showLoginPage(@RequestParam(value = "error", required = false) String error,
+        @RequestParam(value = "logout", required = false) String logout) {
+    ModelAndView modelAndView = new ModelAndView(LOGIN_FORM_VIEW);
+    if (error != null) {
+        modelAndView.addObject("errorMessage", "Invalid username or password.");
+    }
+    if (logout != null) {
+        modelAndView.addObject("logoutMessage", "You have been successfully logged out.");
+    }
+    return modelAndView;
+}
+```
+
+## Unit Test Story + Code — BL-004
+Executable: `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java`
+
+```java
+    private TestableDailyLoginSuccessHandler successHandler;
+
+    @Test
+    @DisplayName("STORY-0001 UT-01: default login request renders configured login view without messages")
+    void defaultLoginRequestRendersConfiguredLoginViewWithoutMessages() {
+        LoginController controller = new LoginController();
+
+        ModelAndView result = controller.showLoginPage(null, null);
+
+        assertEquals(LOGIN_VIEW, result.getViewName());
+        assertFalse(result.getModel().containsKey("errorMessage"));
+        assertFalse(result.getModel().containsKey("logoutMessage"));
+    }
+
+    @Test
+    @DisplayName("STORY-0001 UT-02: error query adds exact invalid-credential message")
+    void errorQueryAddsExactInvalidCredentialMessage() {
+        LoginController controller = new LoginController();
+
+        ModelAndView result = controller.showLoginPage("present", null);
+
+        assertEquals(LOGIN_VIEW, result.getViewName());
+        assertEquals(ERROR_MESSAGE, result.getModel().get("errorMessage"));
+        assertFalse(result.getModel().containsKey("logoutMessage"));
+    }
+
+    @Test
+    @DisplayName("STORY-0001 UT-03: logout query adds exact logout message")
+```
+
+The unit-test excerpt above is the executable evidence for mocked/component-level behavior. It must be read with the narrative's positive, negative, boundary and duplicate/idempotency rules where applicable.
+
+## Integration Test Story + Code — BL-005
+Executable: `BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java`
+
+```java
+@DataJpaTest
+@ContextConfiguration(classes = TestApplication.class)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class Story0001LoginIntegrationTest {
+
+    @Container
+    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16")
+            .withEnv("TZ", "Asia/Kolkata")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        POSTGRES.start();
+        registry.add("spring.datasource.url",
+                () -> POSTGRES.getJdbcUrl() + "?options=-c%20TimeZone%3DAsia%2FKolkata");
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+    }
+
+    @Configuration
+    static class FlywayConfig {
+        @Bean(initMethod = "migrate")
+        Flyway flyway() {
+            return Flyway.configure()
+                    .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
+                    .locations("classpath:db/migration")
+```
+
+The integration excerpt shows the real-layer/database/container test implementation where applicable. Generated code does not imply it executed.
+
+## Test Data / Executable Mapping Code — BL-009
+Executable: `BL-009/generated-tests/STORY-0001/Story0001TestDataContractRunner.java`
+
+```java
+package bl009.story0001;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Dependency-free Java 21 substitution runner for the BL-009 STORY-0001
+ * test-data CONTRACT only. This does not replace JUnit 5 application tests,
+ * does not exercise the Cylinder application, and must never be treated as
+ * application-behavior PASS or JaCoCo coverage evidence.
+ */
+public final class Story0001TestDataContractRunner {
+    private static final String[] HEADER = {
+        "data_id", "test_case", "username", "password", "preexisting_daily_login",
+        "expected_authentication", "expected_daily_login_rows",
+        "expected_visible_or_navigation_outcome", "data_classification"
+    };
+
+    private record Expected(
+        String testCase,
+        String preexisting,
+        String authentication,
+        String rows,
+```
+
+Readable/CSV test data remains governed under `BL-009/test-data/STORY-0001.md` and `BL-009/test-data/STORY-0001.csv` when present.
+
+## Code-path trace
+BL-002 approved Story -> frozen production code above -> BL-004 unit code -> BL-005 integration code -> BL-009 data/use-case mapping -> BL-011 reviewer packet.
+
+## Execution and coverage
+- Packet/code rework: `COMPLETE`
+- Unit execution: `NOT EXECUTED`
+- Integration execution: `NOT EXECUTED`
+- Application/E2E execution: `NOT EXECUTED`
+- Durable coverage evidence: `NONE`
+- Coverage percentage: `NOT INFERRED`
+
+## BL-011 validation
+Validated against the code-required `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`. The packet contains actual inline production code and governed BL-004/005/009 code evidence; code presence is not treated as execution evidence.
+
+Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
