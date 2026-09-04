@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /domainLookup/driver/save`
 - Controller: `DomainLookupController.saveDriver`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -55,6 +55,6 @@ The business impact of the current gaps is that a Driver can appear to accept a 
 
 The recovered ZIP now binds the complete visible form/edit behavior, submitted fields, normalization, controller success/error branches, exact service validation/save behavior, database identity and the current persistence/validation defects.
 
-STORY-0114 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+STORY-0114 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with downstream fan-out requested.
 
-Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 work was created or executed. Any implementation must remain inside the exact manifest in `BL-002/evidence/STORY-0114-driver-save-drift-review-20260902.yaml` after explicit user approval; any scope expansion requires new approval.
+Approval is explicitly recorded. Existing drift/code-remediation packets remain independently approval-gated; no application-code or BL-010 mutation is authorized by this Story approval.
