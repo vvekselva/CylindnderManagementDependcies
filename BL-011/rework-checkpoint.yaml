@@ -8,24 +8,25 @@ freshly_reworked_and_validated_before_this_fire:
   - STORY-0001
   - STORY-0013
   - STORY-0087
+  - STORY-0089
   - STORY-0092
   - STORY-0098
   - STORY-0099
   - STORY-0100
 reworked_this_run:
-  - STORY-0089
+  - STORY-0090
 reworked_and_validated_total:
   - STORY-0001
   - STORY-0012
   - STORY-0013
   - STORY-0087
   - STORY-0089
+  - STORY-0090
   - STORY-0092
   - STORY-0098
   - STORY-0099
   - STORY-0100
 remaining:
-  - STORY-0090
   - STORY-0108
   - STORY-0109
   - STORY-0127
@@ -39,21 +40,31 @@ per_story_validation:
   STORY-0001: PASS_FRESH_POST_DIRECTIVE
   STORY-0013: PASS_FRESH_POST_DIRECTIVE
   STORY-0087: PASS_FRESH_POST_DIRECTIVE
+  STORY-0089: PASS_FRESH_POST_DIRECTIVE
+  STORY-0090: PASS_FRESH_THIS_RUN_README_AND_POLICY
   STORY-0092: PASS_FRESH_POST_DIRECTIVE
   STORY-0098: PASS_FRESH_POST_DIRECTIVE
   STORY-0099: PASS_FRESH_POST_DIRECTIVE
   STORY-0100: PASS_FRESH_POST_DIRECTIVE
-  STORY-0089: PASS_FRESH_THIS_RUN_README_AND_POLICY
-next_story: STORY-0090
+next_story: STORY-0108
 corrected_progress:
-  complete: 9
+  complete: 10
   denominator: 18
-  percentage: 50.0
+  percentage: 55.6
 execution_separation:
   bl004: NOT_EXECUTED
   bl005: NOT_EXECUTED
   bl009_application_behavior: NOT_EXECUTED
   coverage: NO_DURABLE_COVERAGE_EVIDENCE
+source_recovery_this_fire:
+  requested_library_file_id: file_00000000659c8211857bba6b09282de3
+  requested_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  requested_recovery: NOT_FOUND_IN_LIBRARY_SEARCH_OR_CURRENT_LISTING
+  recovery_file_id: file_00000000fe9c8211869e2c82da911925
+  recovery_name: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  recovery_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  approved_story_0090_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  equivalence: BYTE_IDENTICAL_BY_SHA256
 rules:
   file_presence_is_not_rework_proof: true
   prior_aggregate_18_of_18_marker_is_not_accepted_as_proof: true
