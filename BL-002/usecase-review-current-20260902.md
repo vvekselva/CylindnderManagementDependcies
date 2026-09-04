@@ -34,7 +34,7 @@ Primary Stories STORY-0041 and STORY-0042 are now `APPROVED_AFTER_REWORK` with f
 **Release:** R1  
 **Use-case approval:** Partially approved
 
-STORY-0043 is now `APPROVED_AFTER_REWORK` with fan-out requested. STORY-0044 remains pending user approval. Shared dependency STORY-0092 is approved; STORY-0103 is Story-approved but remains code-drift gated. Other mapped dependencies remain pending.
+STORY-0043 and STORY-0044 are now `APPROVED_AFTER_REWORK` with fan-out requested. STORY-0044's earlier Driver-ID null-guard issue is recorded as fixed by user report pending source read-back; the remaining quantity-null defect is tracked as BL-010 DEV-0005 and remains code-change approval-gated. Shared dependency STORY-0092 is approved; STORY-0103 is Story-approved but remains separately code-drift gated. STORY-0086, STORY-0091 and STORY-0106 remain pending.
 
 <a id="suc-019"></a>
 ## SUC-019 — Customer Display / Maintenance
