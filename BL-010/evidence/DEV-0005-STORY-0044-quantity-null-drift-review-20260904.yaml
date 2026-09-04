@@ -1,0 +1,57 @@
+development_id: DEV-0005
+story_id: STORY-0044
+release: R1
+approval_state: APPROVED_AFTER_REWORK_CODE_CHANGE_NOT_AUTHORIZED
+classification: VEHICLE_LOAD_QUANTITY_NULL_VALIDATION
+
+current_behavior:
+  component: VehicleLoadIngestionValidator
+  method: validate
+  source_anchor: quantity null-validation block before per-cylinder validation
+  behavior: >
+    The null-check condition tests quantityFullForDelivery twice and does not
+    explicitly include quantityEmptyForSupplier. A null EMPTY-for-supplier
+    quantity can therefore bypass the intended aggregate quantity guard and
+    fail later or produce inconsistent validation behavior.
+
+target_behavior:
+  behavior: >
+    Validate quantityFullForDelivery, quantityFullForBuffer and
+    quantityEmptyForSupplier explicitly and exactly once before any load-line
+    allocation logic. Any required missing quantity must fail through the
+    governed controlled validation path.
+
+proposed_code_change_manifest:
+  repository: CylinderManagement
+  ref: current governed application source corresponding to STORY-0044
+  files:
+    - component: VehicleLoadIngestionValidator
+      method: validate
+      approximate_anchor: quantity summary null-check immediately after loadedBy/request validation
+      proposed_change: >
+        Replace the duplicated quantityFullForDelivery null predicate with an
+        explicit quantityEmptyForSupplier null predicate while retaining the
+        existing quantityFullForDelivery and quantityFullForBuffer checks.
+      reason: >
+        Ensure all three business quantity inputs are validated before cylinder
+        allocation and prevent null EMPTY-for-supplier values from escaping the
+        intended guard.
+  tests:
+    unit:
+      - null quantityFullForDelivery is rejected
+      - null quantityFullForBuffer is rejected
+      - null quantityEmptyForSupplier is rejected
+      - all three non-null quantities proceed to subsequent validation
+    integration:
+      - POST /wizard/vehicle-trip-load/save with null quantityEmptyForSupplier is rejected with no trip/load/challan/logistics/yard mutation
+      - valid EMPTY-for-supplier quantity continues through the governed transaction
+  database_impact: NONE
+  migration_required: false
+
+business_impact: >
+  The defect weakens validation for EMPTY cylinders sent to the supplier and
+  can cause late failures or inconsistent load-allocation behavior.
+
+implementation_state: NOT_STARTED
+implementation_gate: EXPLICIT_USER_APPROVAL_OF_THIS_EXACT_MANIFEST_REQUIRED
+fanout_state: TEST_DESIGN_MAY_REFERENCE_DEFECT_BUT_CODE_FIX_AND_POST_FIX_EXECUTION_ARE_BLOCKED
