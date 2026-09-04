@@ -219,7 +219,6 @@
 |---|---|---|
 | [STORY-0039](stories/STORY-0039.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0040](stories/STORY-0040.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0126](stories/STORY-0126.md) | Dependency | PENDING_USER_APPROVAL |
 
 [Back to register](screen-usecase-register.md)
 
@@ -347,6 +346,7 @@
 |---|---|---|
 | [STORY-0060](stories/STORY-0060.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0061](stories/STORY-0061.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0126](stories/STORY-0126.md) | Dependency — selected vehicle-load detail/fetch | PENDING_USER_APPROVAL |
 
 [Back to register](screen-usecase-register.md)
 
