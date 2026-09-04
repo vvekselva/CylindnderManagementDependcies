@@ -4,9 +4,9 @@
 - Primary endpoint: `GET /registerCustomer`
 - Embedded submit endpoint: `POST /registerCustomer` (cross-reference `STORY-0042`)
 - Functional area: Customer Registration
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Traceability state: COMPLETE
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -76,4 +76,4 @@ On successful mediator execution the controller redirects to `/ownership-dashboa
 
 The page entry, visible controls, selector behavior, submit identity, validation flow, concrete mediator/service/repository chain, exact persistence table identities, success path and error path are now source-bound through the page plus its embedded source-proved POST companion STORY-0042.
 
-STORY-0041 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. No approval is inferred or automatically applied, and the Address Type persistence omission remains explicitly review-gated.
+STORY-0041 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with fan-out requested. The documented Address Type persistence omission remains current-source behavior and is not treated as implemented or corrected by this approval.
