@@ -28,19 +28,19 @@ public AddressTypeSearchResponseDto getAddressTypes(@PathVariable String searchT
 ```
 
 ## BL-004 Unit Test Cases
-### governedServiceFailureReturnsEmptyResponseObject
+### delegatesExactSearchTextAndReturnsServiceResponse
 
 **Layer:** BL-004  
-**Executable:** `BL-004/generated-tests/STORY-0087/Story0087AddressTypeSearchUnitTest.java#governedServiceFailureReturnsEmptyResponseObject`  
-**Business objective:** Verify the governed behavior represented by this exact executable case.  
-**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
-**Action:** Execute `governedServiceFailureReturnsEmptyResponseObject()`.  
-**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
-**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Executable:** `BL-004/generated-tests/STORY-0087/Story0087AddressTypeSearchUnitTest.java#delegatesExactSearchTextAndReturnsServiceResponse`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `delegatesExactSearchTextAndReturnsServiceResponse()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
 **Execution status:** `NOT EXECUTED`
 
 ```java
-    @Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+@Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
         AddressTypeSearchResponseDto expected = new AddressTypeSearchResponseDto();
         when(addressTypeSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
         AddressTypeSearchResponseDto actual = controller.getAddressTypes("HOME");
@@ -49,8 +49,21 @@ public AddressTypeSearchResponseDto getAddressTypes(@PathVariable String searchT
         assertEquals("HOME", captor.getValue().getSearchTerm());
         assertSame(expected, actual);
     }
+```
 
-    @Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+### governedServiceFailureReturnsEmptyResponseObject
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0087/Story0087AddressTypeSearchUnitTest.java#governedServiceFailureReturnsEmptyResponseObject`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `governedServiceFailureReturnsEmptyResponseObject()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+@Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
         when(addressTypeSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
             .thenThrow(mock(CylinderManagementApplicationException.class));
         assertNotNull(controller.getAddressTypes("HOME"));
@@ -59,6 +72,26 @@ public AddressTypeSearchResponseDto getAddressTypes(@PathVariable String searchT
 
 
 ## BL-005 Integration Test Cases
+### containsIgnoreCaseReturnsOnlyMatchingAddressTypes
+
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0087/Story0087AddressTypeSearchIntegrationTest.java#containsIgnoreCaseReturnsOnlyMatchingAddressTypes`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `containsIgnoreCaseReturnsOnlyMatchingAddressTypes()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+@Test void containsIgnoreCaseReturnsOnlyMatchingAddressTypes() {
+        AddressTypeDo home = new AddressTypeDo(); home.setAddressType("HOME_STORY0087"); home.setDescription("Home");
+        AddressTypeDo office = new AddressTypeDo(); office.setAddressType("OFFICE_STORY0087"); office.setDescription("Office");
+        dao.saveAndFlush(home); dao.saveAndFlush(office);
+        assertEquals(1, dao.findByAddressTypeContainingIgnoreCase("home_story0087").size());
+        assertEquals(0, dao.findByAddressTypeContainingIgnoreCase("ZZZ_STORY0087").size());
+    }
+```
 
 
 ## BL-009 Test Data / Use-case Cases
@@ -66,15 +99,15 @@ public AddressTypeSearchResponseDto getAddressTypes(@PathVariable String searchT
 
 **Layer:** BL-009  
 **Executable:** `BL-009/generated-tests/STORY-0087/Story0087TestDataDrivenTest.java#tc0087_01_delegatesExactSearchTextAndReturnsServiceResponse`  
-**Business objective:** Verify the governed behavior represented by this exact executable case.  
-**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
 **Action:** Execute `tc0087_01_delegatesExactSearchTextAndReturnsServiceResponse()`.  
-**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
-**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
 **Execution status:** `NOT EXECUTED`
 
 ```java
-    @Test
+@Test
     void tc0087_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
         AddressTypeSearchResponseDto expected = new AddressTypeSearchResponseDto();
         when(addressTypeSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
@@ -93,15 +126,15 @@ public AddressTypeSearchResponseDto getAddressTypes(@PathVariable String searchT
 
 **Layer:** BL-009  
 **Executable:** `BL-009/generated-tests/STORY-0087/Story0087TestDataDrivenTest.java#tc0087_02_governedServiceFailureReturnsEmptyResponseObject`  
-**Business objective:** Verify the governed behavior represented by this exact executable case.  
-**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
 **Action:** Execute `tc0087_02_governedServiceFailureReturnsEmptyResponseObject()`.  
-**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
-**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
 **Execution status:** `NOT EXECUTED`
 
 ```java
-    @Test
+@Test
     void tc0087_02_governedServiceFailureReturnsEmptyResponseObject() throws Exception {
         CylinderManagementApplicationException failure = mock(CylinderManagementApplicationException.class);
         when(addressTypeSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
@@ -116,9 +149,9 @@ public AddressTypeSearchResponseDto getAddressTypes(@PathVariable String searchT
 BL-002 -> production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
 
 ## Execution and coverage
-Packet rework `COMPLETE_PER_CASE_CODE`; all test execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
+Packet rework `COMPLETE_PER_CASE_CODE`; all execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
 
 ## Validation
-Every executable test method has adjacent code in its own case section.
+Every executable JUnit test method has adjacent code in its own case section.
 
 Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
