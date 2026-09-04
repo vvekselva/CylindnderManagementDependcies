@@ -242,11 +242,11 @@
 ## SUC-018 — Vehicle Trip Load Wizard
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Partially approved  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0043](stories/STORY-0043.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0043](stories/STORY-0043.md) | Primary — wizard entry/read model | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0044](stories/STORY-0044.md) | Primary | PENDING_USER_APPROVAL |
 
 [Back to register](screen-usecase-register.md)
