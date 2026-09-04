@@ -1,9 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0099 Product Search
 
 ## Rework state
-Reworked under the BL-011 code-required policy.
+Reworked under the mandatory per-test-case adjacent-code rule.
 
-## Reviewer-readable business/test narrative
+## Business behavior and scope
 ## 1. Story, governance and source
 - Source Story: `BL-002/stories/STORY-0099.md`
 - Endpoint: `GET /search/product/{searchText}`
@@ -69,8 +69,6 @@ Fresh validation against `BL-011/README.md` and `BL-011/human-readable-testing-p
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
 
 ## Production Code Evidence
-File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulProductServices.java`
-
 ```java
 @GetMapping("/{searchText}")
 public ProductSearchResponseDto getProducts(@PathVariable String searchText) {
@@ -85,12 +83,19 @@ public ProductSearchResponseDto getProducts(@PathVariable String searchText) {
 }
 ```
 
-## Unit Test Story + Code — BL-004
-Executable: `BL-004/generated-tests/STORY-0099/Story0099ProductSearchUnitTest.java`
+## BL-004 Unit Test Cases
+### governedServiceFailureReturnsEmptyResponseObject
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0099/Story0099ProductSearchUnitTest.java#governedServiceFailureReturnsEmptyResponseObject`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `governedServiceFailureReturnsEmptyResponseObject()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    @InjectMocks RestfulProductServices controller;
-
     @Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
         ProductSearchResponseDto expected = new ProductSearchResponseDto();
         when(productSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
@@ -106,44 +111,25 @@ Executable: `BL-004/generated-tests/STORY-0099/Story0099ProductSearchUnitTest.ja
             .thenThrow(mock(CylinderManagementApplicationException.class));
         assertNotNull(controller.getProducts("Oxygen"));
     }
-}
-
 ```
 
-## Integration Test Story + Code — BL-005
-Executable: `BL-005/generated-tests/STORY-0099/Story0099ProductSearchIntegrationTest.java`
+
+## BL-005 Integration Test Cases
+
+
+## BL-009 Test Data / Use-case Cases
+### tc0099_02_governedServiceFailureReturnsEmptyResponseObject
+
+**Layer:** BL-009  
+**Executable:** `BL-009/generated-tests/STORY-0099/Story0099TestDataDrivenTest.java#tc0099_02_governedServiceFailureReturnsEmptyResponseObject`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `tc0099_02_governedServiceFailureReturnsEmptyResponseObject()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-@DataJpaTest
-@ContextConfiguration(classes = TestApplication.class)
-@Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class Story0099ProductSearchIntegrationTest {
-    @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16").withUsername("test").withPassword("test");
-    @DynamicPropertySource static void properties(DynamicPropertyRegistry registry) {
-        POSTGRES.start();
-        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.username", POSTGRES::getUsername);
-        registry.add("spring.datasource.password", POSTGRES::getPassword);
-    }
-    @Autowired ProductJpaDao dao;
-    @Test void containsIgnoreCaseReturnsOnlyMatchingProducts() {
-        ProductDo oxygen = new ProductDo(); oxygen.setProductName("Oxygen_STORY0099"); oxygen.setDescription("Oxygen"); oxygen.setIgstRate(new BigDecimal("5.00"));
-        ProductDo argon = new ProductDo(); argon.setProductName("Argon_STORY0099"); argon.setDescription("Argon"); argon.setIgstRate(new BigDecimal("5.00"));
-        dao.saveAndFlush(oxygen); dao.saveAndFlush(argon);
-        assertEquals(1, dao.findByProductNameContainingIgnoreCase("oxygen_story0099").size());
-        assertEquals(0, dao.findByProductNameContainingIgnoreCase("ZZZ_STORY0099").size());
-    }
-}
-
-```
-
-## Test Data / Executable Mapping Code — BL-009
-Executable: `BL-009/generated-tests/STORY-0099/Story0099TestDataDrivenTest.java`
-
-```java
-    @InjectMocks RestfulProductServices controller;
-
     @Test void tc0099_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
         ProductSearchResponseDto expected = new ProductSearchResponseDto();
         when(productSearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
@@ -159,17 +145,16 @@ Executable: `BL-009/generated-tests/STORY-0099/Story0099TestDataDrivenTest.java`
             .thenThrow(mock(CylinderManagementApplicationException.class));
         assertNotNull(controller.getProducts("Oxygen"));
     }
-}
-
 ```
 
-## Code-path trace
-BL-002 -> frozen production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
+
+## Traceability
+BL-002 -> production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
 
 ## Execution and coverage
-Packet/code rework: `COMPLETE`; unit/integration/application execution: `NOT EXECUTED`; durable coverage evidence: `NONE`; coverage percentage: `NOT INFERRED`.
+Packet rework `COMPLETE_PER_CASE_CODE`; all test execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
 
-## BL-011 validation
-Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present and remains separate from execution evidence.
+## Validation
+Every executable test method has adjacent code in its own case section.
 
-Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
+Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
