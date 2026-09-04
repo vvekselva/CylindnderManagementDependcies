@@ -28,19 +28,19 @@ public CountrySearchResponsesDto getCountries(@PathVariable String searchText) {
 ```
 
 ## BL-004 Unit Test Cases
-### governedServiceFailureReturnsEmptyResponseObject
+### delegatesExactSearchTextAndReturnsServiceResponse
 
 **Layer:** BL-004  
-**Executable:** `BL-004/generated-tests/STORY-0090/Story0090CountrySearchUnitTest.java#governedServiceFailureReturnsEmptyResponseObject`  
-**Business objective:** Verify the governed behavior represented by this exact executable case.  
-**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
-**Action:** Execute `governedServiceFailureReturnsEmptyResponseObject()`.  
-**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
-**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Executable:** `BL-004/generated-tests/STORY-0090/Story0090CountrySearchUnitTest.java#delegatesExactSearchTextAndReturnsServiceResponse`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `delegatesExactSearchTextAndReturnsServiceResponse()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
 **Execution status:** `NOT EXECUTED`
 
 ```java
-    @Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+@Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
         CountrySearchResponsesDto expected = new CountrySearchResponsesDto();
         when(countrySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
         CountrySearchResponsesDto actual = controller.getCountries("India");
@@ -49,8 +49,21 @@ public CountrySearchResponsesDto getCountries(@PathVariable String searchText) {
         assertEquals("India", captor.getValue().getSearchTerm());
         assertSame(expected, actual);
     }
+```
 
-    @Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+### governedServiceFailureReturnsEmptyResponseObject
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0090/Story0090CountrySearchUnitTest.java#governedServiceFailureReturnsEmptyResponseObject`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `governedServiceFailureReturnsEmptyResponseObject()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+@Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
         when(countrySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
             .thenThrow(mock(CylinderManagementApplicationException.class));
         assertNotNull(controller.getCountries("India"));
@@ -59,6 +72,26 @@ public CountrySearchResponsesDto getCountries(@PathVariable String searchText) {
 
 
 ## BL-005 Integration Test Cases
+### containsIgnoreCaseReturnsOnlyMatchingCountries
+
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0090/Story0090CountrySearchIntegrationTest.java#containsIgnoreCaseReturnsOnlyMatchingCountries`  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
+**Action:** Execute `containsIgnoreCaseReturnsOnlyMatchingCountries()`.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+@Test void containsIgnoreCaseReturnsOnlyMatchingCountries() {
+        CountryDo india = new CountryDo(); india.setCountryName("India_STORY0090"); india.setDescription("India");
+        CountryDo nepal = new CountryDo(); nepal.setCountryName("Nepal_STORY0090"); nepal.setDescription("Nepal");
+        dao.saveAndFlush(india); dao.saveAndFlush(nepal);
+        assertEquals(1, dao.findByCountryNameContainingIgnoreCase("india_story0090").size());
+        assertEquals(0, dao.findByCountryNameContainingIgnoreCase("ZZZ_STORY0090").size());
+    }
+```
 
 
 ## BL-009 Test Data / Use-case Cases
@@ -66,15 +99,15 @@ public CountrySearchResponsesDto getCountries(@PathVariable String searchText) {
 
 **Layer:** BL-009  
 **Executable:** `BL-009/generated-tests/STORY-0090/Story0090TestDataDrivenTest.java#tc0090_01_delegatesExactSearchTextAndReturnsServiceResponse`  
-**Business objective:** Verify the governed behavior represented by this exact executable case.  
-**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
 **Action:** Execute `tc0090_01_delegatesExactSearchTextAndReturnsServiceResponse()`.  
-**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
-**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
 **Execution status:** `NOT EXECUTED`
 
 ```java
-    @Test
+@Test
     void tc0090_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
         CountrySearchResponsesDto expected = new CountrySearchResponsesDto();
         when(countrySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
@@ -92,15 +125,15 @@ public CountrySearchResponsesDto getCountries(@PathVariable String searchText) {
 
 **Layer:** BL-009  
 **Executable:** `BL-009/generated-tests/STORY-0090/Story0090TestDataDrivenTest.java#tc0090_02_governedServiceFailureReturnsEmptyResponseObject`  
-**Business objective:** Verify the governed behavior represented by this exact executable case.  
-**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Business objective:** Verify this exact governed test case.  
+**Preconditions / input:** The adjacent code contains the authoritative setup and values.  
 **Action:** Execute `tc0090_02_governedServiceFailureReturnsEmptyResponseObject()`.  
-**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
-**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Expected result:** The assertions in this exact method define the expected result.  
+**Persistence / side effects:** Only effects explicitly verified by this code are claimed.  
 **Execution status:** `NOT EXECUTED`
 
 ```java
-    @Test
+@Test
     void tc0090_02_governedServiceFailureReturnsEmptyResponseObject() throws Exception {
         CylinderManagementApplicationException failure = mock(CylinderManagementApplicationException.class);
         when(countrySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenThrow(failure);
@@ -113,9 +146,9 @@ public CountrySearchResponsesDto getCountries(@PathVariable String searchText) {
 BL-002 -> production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
 
 ## Execution and coverage
-Packet rework `COMPLETE_PER_CASE_CODE`; all test execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
+Packet rework `COMPLETE_PER_CASE_CODE`; all execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
 
 ## Validation
-Every executable test method has adjacent code in its own case section.
+Every executable JUnit test method has adjacent code in its own case section.
 
 Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
