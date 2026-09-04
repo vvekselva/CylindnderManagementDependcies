@@ -1,9 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0013 Challan Book Registration Submit
 
 ## Rework state
-Reworked under the BL-011 code-required policy. Explanation-only or path-only evidence is incomplete.
+Reworked under the mandatory per-test-case adjacent-code rule.
 
-## Reviewer-readable business/test narrative
+## Business behavior and scope
 ## 1. Story, approval, conformance and source
 - Source Story: `BL-002/stories/STORY-0013.md`
 - Endpoint: `POST /logistics/challan-books/save`
@@ -131,8 +131,6 @@ Validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.y
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
 
 ## Production Code Evidence
-File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java`
-
 ```java
 @PostMapping("/save")
 public ModelAndView processBookIngestion(
@@ -155,12 +153,19 @@ public ModelAndView processBookIngestion(
 }
 ```
 
-## Unit Test Story + Code — BL-004
-Executable: `BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServiceTest.java`
+## BL-004 Unit Test Cases
+### STORY-0013 UT-01 valid book is timestamped persisted and returned as SUCCESS
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServiceTest.java#validBookIsTimestampedPersistedAndReturnedAsSuccess`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `validBookIsTimestampedPersistedAndReturnedAsSuccess()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    private ChallanBookIngestionService service;
-
     @Test
     @DisplayName("STORY-0013 UT-01 valid book is timestamped persisted and returned as SUCCESS")
     void validBookIsTimestampedPersistedAndReturnedAsSuccess() throws Exception {
@@ -185,50 +190,225 @@ Executable: `BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServ
         assertEquals(CylinderManagementApplicationResponseCode.SUCCESS.ordinal(), response.getResponseCode());
         assertEquals(101L, response.getIngestedChallanBook().getBookId());
     }
-
-    @Test
 ```
 
-## Integration Test Story + Code — BL-005
-Executable: `BL-005/generated-tests/STORY-0013/Story0013ChallanBookIntegrationTest.java`
+### STORY-0013 UT-02 invalid sheet range still reaches save in frozen source
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServiceTest.java#invalidSheetRangeStillReachesSaveBecauseControlledThrowIsCommented`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `invalidSheetRangeStillReachesSaveBecauseControlledThrowIsCommented()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
- * Normal Flyway/JPA initialization is required; no H2/manual-SQL substitution is allowed.
- */
-@Testcontainers
-@SpringBootTest(classes = Story0013ChallanBookIntegrationTest.TestApplication.class)
-class Story0013ChallanBookIntegrationTest {
+    @Test
+    @DisplayName("STORY-0013 UT-02 invalid sheet range still reaches save in frozen source")
+    void invalidSheetRangeStillReachesSaveBecauseControlledThrowIsCommented() throws Exception {
+        ChallanBookRegistryDto dto = book("RANGE-GAP", 50, 1);
+        ChallanBookRegistryDo entity = new ChallanBookRegistryDo();
+        ChallanBookRegistryDo saved = new ChallanBookRegistryDo();
+        saved.setBookId(102L);
 
-    @Container
-    static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
+        when(mapper.mapDtoToDo(dto)).thenReturn(entity);
+        when(dao.saveAndFlush(entity)).thenReturn(saved);
+        when(mapper.mapDoToDto(saved)).thenReturn(dto);
 
-    @DynamicPropertySource
-    static void postgresProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
-        registry.add("spring.flyway.enabled", () -> "true");
+        service.processRequest(request(dto));
+
+        verify(dao, times(1)).saveAndFlush(entity);
     }
+```
 
-    @Autowired
-    private ChallanBookIngestionService service;
+### STORY-0013 UT-03 null request exposes current null-guard defect
 
-    @Autowired
-    private ChallanBookRegistryJpaDao dao;
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServiceTest.java#nullRequestCurrentlyThrowsNullPointerException`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `nullRequestCurrentlyThrowsNullPointerException()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
 
+```java
+    @Test
+    @DisplayName("STORY-0013 UT-03 null request exposes current null-guard defect")
+    void nullRequestCurrentlyThrowsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> service.processRequest(null));
+        verify(dao, never()).saveAndFlush(any());
+    }
+```
+
+### STORY-0013 UT-04 service performs no duplicate-code precheck
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServiceTest.java#serviceDoesNotCallFindByBookCodeBeforeSave`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `serviceDoesNotCallFindByBookCodeBeforeSave()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    @DisplayName("STORY-0013 UT-04 service performs no duplicate-code precheck")
+    void serviceDoesNotCallFindByBookCodeBeforeSave() throws Exception {
+        ChallanBookRegistryDto dto = book("DUP-CHECK", 1, 5);
+        ChallanBookRegistryDo entity = new ChallanBookRegistryDo();
+        ChallanBookRegistryDo saved = new ChallanBookRegistryDo();
+        saved.setBookId(103L);
+
+        when(mapper.mapDtoToDo(dto)).thenReturn(entity);
+        when(dao.saveAndFlush(entity)).thenReturn(saved);
+        when(mapper.mapDoToDto(saved)).thenReturn(dto);
+
+        service.processRequest(request(dto));
+
+        verify(dao, never()).findByBookCode("DUP-CHECK");
+        verify(dao, times(1)).saveAndFlush(entity);
+    }
+```
+
+### STORY-0013 UT-05 service does not generate per-sheet ledger rows
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServiceTest.java#serviceDoesNotGeneratePerSheetLedgerRows`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `serviceDoesNotGeneratePerSheetLedgerRows()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    @DisplayName("STORY-0013 UT-05 service does not generate per-sheet ledger rows")
+    void serviceDoesNotGeneratePerSheetLedgerRows() throws Exception {
+        ChallanBookRegistryDto dto = book("NO-LEDGER", 1, 3);
+        ChallanBookRegistryDo entity = new ChallanBookRegistryDo();
+        ChallanBookRegistryDo saved = new ChallanBookRegistryDo();
+        saved.setBookId(104L);
+
+        when(mapper.mapDtoToDo(dto)).thenReturn(entity);
+        when(dao.saveAndFlush(entity)).thenReturn(saved);
+        when(mapper.mapDoToDto(saved)).thenReturn(dto);
+
+        service.processRequest(request(dto));
+
+        assertNotNull(entity.getPages());
+        assertEquals(0, entity.getPages().size());
+    }
+```
+
+
+## BL-005 Integration Test Cases
+### validBookPersistsWithGeneratedIdentityAndTimestamps
+
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0013/Story0013ChallanBookIntegrationTest.java#validBookPersistsWithGeneratedIdentityAndTimestamps`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `validBookPersistsWithGeneratedIdentityAndTimestamps()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
     @Test
     void validBookPersistsWithGeneratedIdentityAndTimestamps() throws Exception {
         var response = service.processRequest(request("IT-BOOK-001", 1, 10));
 
+        assertNotNull(response.getIngestedChallanBook().getBookId());
+        var persisted = dao.findByBookCode("IT-BOOK-001").orElseThrow();
+        assertNotNull(persisted.getCreatedAt());
+        assertNotNull(persisted.getUpdatedAt());
+        assertEquals(1, persisted.getStartSheetNumber());
+        assertEquals(10, persisted.getEndSheetNumber());
+    }
 ```
 
-## Test Data / Executable Mapping Code — BL-009
-Executable: `BL-009/generated-tests/STORY-0013/Story0013TestDataDrivenTest.java`
+### duplicateBookCodeIsRejectedByPostgresqlUniquenessConstraint
+
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0013/Story0013ChallanBookIntegrationTest.java#duplicateBookCodeIsRejectedByPostgresqlUniquenessConstraint`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `duplicateBookCodeIsRejectedByPostgresqlUniquenessConstraint()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    }
+    @Test
+    void duplicateBookCodeIsRejectedByPostgresqlUniquenessConstraint() throws Exception {
+        service.processRequest(request("IT-DUP-001", 1, 5));
 
+        assertThrows(DataIntegrityViolationException.class,
+                () -> service.processRequest(request("IT-DUP-001", 6, 10)));
+    }
+```
+
+### invalidRangeCurrentlyCanPersistBecauseServiceThrowIsCommented
+
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0013/Story0013ChallanBookIntegrationTest.java#invalidRangeCurrentlyCanPersistBecauseServiceThrowIsCommented`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `invalidRangeCurrentlyCanPersistBecauseServiceThrowIsCommented()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    void invalidRangeCurrentlyCanPersistBecauseServiceThrowIsCommented() throws Exception {
+        service.processRequest(request("IT-RANGE-GAP", 50, 1));
+
+        var persisted = dao.findByBookCode("IT-RANGE-GAP").orElseThrow();
+        assertEquals(50, persisted.getStartSheetNumber());
+        assertEquals(1, persisted.getEndSheetNumber());
+    }
+```
+
+### registrationPathDoesNotGeneratePerSheetLedgerRows
+
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0013/Story0013ChallanBookIntegrationTest.java#registrationPathDoesNotGeneratePerSheetLedgerRows`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `registrationPathDoesNotGeneratePerSheetLedgerRows()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
+    @Test
+    void registrationPathDoesNotGeneratePerSheetLedgerRows() throws Exception {
+        service.processRequest(request("IT-NO-LEDGER", 1, 3));
+
+        var persisted = dao.findByBookCode("IT-NO-LEDGER").orElseThrow();
+        assertEquals(0, persisted.getPages().size());
+    }
+```
+
+
+## BL-009 Test Data / Use-case Cases
+### everyApprovedCatalogueCaseHasExecutableMapping
+
+**Layer:** BL-009  
+**Executable:** `BL-009/generated-tests/STORY-0013/Story0013TestDataDrivenTest.java#everyApprovedCatalogueCaseHasExecutableMapping`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** The mocks, fixtures, parameters and data in the adjacent method are the source-bound setup.  
+**Action:** Execute `everyApprovedCatalogueCaseHasExecutableMapping()`.  
+**Expected result:** The assertions in this method define the expected service/API/UI/database result.  
+**Persistence / side effects:** Only writes/interactions explicitly asserted by this method are claimed.  
+**Execution status:** `NOT EXECUTED`
+
+```java
     @ParameterizedTest(name = "{1} - {0}")
     @MethodSource("canonicalRows")
     void everyApprovedCatalogueCaseHasExecutableMapping(
@@ -255,20 +435,21 @@ Executable: `BL-009/generated-tests/STORY-0013/Story0013TestDataDrivenTest.java`
             case "TC-0013-06" -> assertEquals("TIMESTAMPS_ASSIGNED", expectedCurrentSource);
             case "TC-0013-07" -> assertEquals("TBL_CHALLAN_BOOK_REGISTRY_IDENTITY", expectedCurrentSource);
             case "TC-0013-08" -> assertEquals("NO_PER_SHEET_LEDGER_GENERATION", expectedCurrentSource);
+            case "TC-0013-09" -> assertEquals("CONTROLLER_SUCCESS_REDIRECT", expectedCurrentSource);
+            case "TC-0013-10" -> assertEquals("CONTROLLER_APPLICATION_EXCEPTION_REDISPLAY", expectedCurrentSource);
+            default -> throw new AssertionError("Unmapped BL-009 case: " + testCaseId);
+        }
+    }
 ```
 
-## Code-path trace
-BL-002 approved Story -> frozen production code -> BL-004 unit code -> BL-005 integration code -> BL-009 data/use-case mapping -> BL-011 packet.
+
+## Traceability
+BL-002 -> production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
 
 ## Execution and coverage
-- Packet/code rework: `COMPLETE`
-- Unit execution: `NOT EXECUTED`
-- Integration execution: `NOT EXECUTED`
-- Application/E2E execution: `NOT EXECUTED`
-- Durable coverage evidence: `NONE`
-- Coverage percentage: `NOT INFERRED`
+Packet rework `COMPLETE_PER_CASE_CODE`; all test execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
 
-## BL-011 validation
-Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present. Code presence is not execution evidence.
+## Validation
+Every executable test method has adjacent code in its own case section.
 
-Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
+Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
