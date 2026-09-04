@@ -1,5 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0013 Challan Book Registration Submit
 
+## Rework state
+Reworked under the BL-011 code-required policy. Explanation-only or path-only evidence is incomplete.
+
+## Reviewer-readable business/test narrative
 ## 1. Story, approval, conformance and source
 - Source Story: `BL-002/stories/STORY-0013.md`
 - Endpoint: `POST /logistics/challan-books/save`
@@ -125,3 +129,146 @@ Packet rework does not imply BL-004/005/009 execution.
 Validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`. The packet explicitly covers business behavior, preconditions, inputs, validation rules, happy path, negative/current-gap paths, boundary/range case, duplicate conflict, controller/API/UI/database outcomes, executable references, backlog traceability and separated execution/coverage state.
 
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
+
+## Production Code Evidence
+File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java`
+
+```java
+@PostMapping("/save")
+public ModelAndView processBookIngestion(
+        @ModelAttribute("ingestionRequest") ChallanBookIngestionRequestDto requestDto) {
+    try {
+        ChallanBookIngestionResponseDto responseDto =
+            challanBookIngestionService.processRequest(requestDto);
+        ModelAndView mav =
+            new ModelAndView("redirect:/fetchCustomerByPage?pageNumber=1&itemsPerPage=10");
+        mav.addObject("successMessage", "Challan Book registered successfully!");
+        mav.addObject("bookDetails", responseDto.getIngestedChallanBook());
+        return mav;
+    } catch (CylinderManagementApplicationException exception) {
+        ModelAndView mav = new ModelAndView("final-version-1/add-challan-book");
+        mav.addObject("errorMessage", "Error: " + exception.getMessage());
+        mav.addObject("ingestionRequest", requestDto);
+        populateSummaryMetrics(mav);
+        return mav;
+    }
+}
+```
+
+## Unit Test Story + Code — BL-004
+Executable: `BL-004/generated-tests/STORY-0013/Story0013ChallanBookIngestionServiceTest.java`
+
+```java
+    private ChallanBookIngestionService service;
+
+    @Test
+    @DisplayName("STORY-0013 UT-01 valid book is timestamped persisted and returned as SUCCESS")
+    void validBookIsTimestampedPersistedAndReturnedAsSuccess() throws Exception {
+        ChallanBookRegistryDto dto = book("BOOK-001", 1, 10);
+        ChallanBookIngestionRequestDto request = request(dto);
+        ChallanBookRegistryDo entity = new ChallanBookRegistryDo();
+        ChallanBookRegistryDo saved = new ChallanBookRegistryDo();
+        saved.setBookId(101L);
+        ChallanBookRegistryDto savedDto = new ChallanBookRegistryDto();
+        savedDto.setBookId(101L);
+
+        when(mapper.mapDtoToDo(dto)).thenReturn(entity);
+        when(dao.saveAndFlush(entity)).thenReturn(saved);
+        when(mapper.mapDoToDto(saved)).thenReturn(savedDto);
+
+        ChallanBookIngestionResponseDto response = service.processRequest(request);
+
+        ArgumentCaptor<ChallanBookRegistryDo> persisted = ArgumentCaptor.forClass(ChallanBookRegistryDo.class);
+        verify(dao, times(1)).saveAndFlush(persisted.capture());
+        assertNotNull(persisted.getValue().getCreatedAt());
+        assertNotNull(persisted.getValue().getUpdatedAt());
+        assertEquals(CylinderManagementApplicationResponseCode.SUCCESS.ordinal(), response.getResponseCode());
+        assertEquals(101L, response.getIngestedChallanBook().getBookId());
+    }
+
+    @Test
+```
+
+## Integration Test Story + Code — BL-005
+Executable: `BL-005/generated-tests/STORY-0013/Story0013ChallanBookIntegrationTest.java`
+
+```java
+ * Normal Flyway/JPA initialization is required; no H2/manual-SQL substitution is allowed.
+ */
+@Testcontainers
+@SpringBootTest(classes = Story0013ChallanBookIntegrationTest.TestApplication.class)
+class Story0013ChallanBookIntegrationTest {
+
+    @Container
+    static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
+
+    @DynamicPropertySource
+    static void postgresProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
+        registry.add("spring.flyway.enabled", () -> "true");
+    }
+
+    @Autowired
+    private ChallanBookIngestionService service;
+
+    @Autowired
+    private ChallanBookRegistryJpaDao dao;
+
+    @Test
+    void validBookPersistsWithGeneratedIdentityAndTimestamps() throws Exception {
+        var response = service.processRequest(request("IT-BOOK-001", 1, 10));
+
+```
+
+## Test Data / Executable Mapping Code — BL-009
+Executable: `BL-009/generated-tests/STORY-0013/Story0013TestDataDrivenTest.java`
+
+```java
+    }
+
+    @ParameterizedTest(name = "{1} - {0}")
+    @MethodSource("canonicalRows")
+    void everyApprovedCatalogueCaseHasExecutableMapping(
+            String dataId,
+            String testCaseId,
+            String bookType,
+            String bookCode,
+            String seriesPrefix,
+            String startSheet,
+            String endSheet,
+            String currentLocation,
+            String expectedCurrentSource) {
+
+        assertNotNull(dataId);
+        assertNotNull(testCaseId);
+        assertNotNull(expectedCurrentSource);
+
+        switch (testCaseId) {
+            case "TC-0013-01" -> assertEquals("SAVE_SUCCESS", expectedCurrentSource);
+            case "TC-0013-02" -> assertEquals("SAVE_SUCCESS_OPTIONAL_PREFIX", expectedCurrentSource);
+            case "TC-0013-03" -> assertEquals("CURRENT_GAP_NULL_GUARD_NOT_CONTROLLED", expectedCurrentSource);
+            case "TC-0013-04" -> assertEquals("CURRENT_GAP_RANGE_THROW_COMMENTED", expectedCurrentSource);
+            case "TC-0013-05" -> assertEquals("DB_UNIQUE_EFFECTIVE_GUARD_NO_SERVICE_PRECHECK", expectedCurrentSource);
+            case "TC-0013-06" -> assertEquals("TIMESTAMPS_ASSIGNED", expectedCurrentSource);
+            case "TC-0013-07" -> assertEquals("TBL_CHALLAN_BOOK_REGISTRY_IDENTITY", expectedCurrentSource);
+            case "TC-0013-08" -> assertEquals("NO_PER_SHEET_LEDGER_GENERATION", expectedCurrentSource);
+```
+
+## Code-path trace
+BL-002 approved Story -> frozen production code -> BL-004 unit code -> BL-005 integration code -> BL-009 data/use-case mapping -> BL-011 packet.
+
+## Execution and coverage
+- Packet/code rework: `COMPLETE`
+- Unit execution: `NOT EXECUTED`
+- Integration execution: `NOT EXECUTED`
+- Application/E2E execution: `NOT EXECUTED`
+- Durable coverage evidence: `NONE`
+- Coverage percentage: `NOT INFERRED`
+
+## BL-011 validation
+Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present. Code presence is not execution evidence.
+
+Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
