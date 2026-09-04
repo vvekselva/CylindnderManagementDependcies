@@ -230,7 +230,7 @@
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0041](stories/STORY-0041.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0041](stories/STORY-0041.md) | Primary — registration page | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0042](stories/STORY-0042.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
