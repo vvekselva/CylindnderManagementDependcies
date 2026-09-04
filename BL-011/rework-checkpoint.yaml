@@ -1,17 +1,31 @@
 backlog_id: BL-011
-directive: USER_REDO_ALL_FILES_EVERY_TEST_CASE_WITH_ADJACENT_CODE_2026-09-04
+directive: USER_MANDATORY_REDO_EXCEPT_STORY_0012
 eligible_story_denominator: 18
-reworked_and_validated:
+baseline_rule: STORY-0012 is the only packet accepted as already reworked by user directive; other completion is earned only by fresh post-directive per-Story evidence.
+accepted_as_already_reworked:
+  - STORY-0012
+freshly_reworked_and_validated_before_this_fire:
+  - STORY-0001
+  - STORY-0013
+  - STORY-0087
+  - STORY-0092
+  - STORY-0098
+  - STORY-0099
+  - STORY-0100
+reworked_this_run:
+  - STORY-0089
+reworked_and_validated_total:
   - STORY-0001
   - STORY-0012
   - STORY-0013
   - STORY-0087
   - STORY-0089
-  - STORY-0090
   - STORY-0092
   - STORY-0098
   - STORY-0099
   - STORY-0100
+remaining:
+  - STORY-0090
   - STORY-0108
   - STORY-0109
   - STORY-0127
@@ -20,44 +34,29 @@ reworked_and_validated:
   - STORY-0130
   - STORY-0131
   - STORY-0132
-remaining: []
 per_story_validation:
-  STORY-0001: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0012: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0013: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0087: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0089: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0090: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0092: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0098: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0099: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0100: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0108: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0109: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0127: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0128: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0129: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0130: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0131: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
-  STORY-0132: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0012: ACCEPTED_AS_ALREADY_REWORKED_BY_USER_DIRECTIVE
+  STORY-0001: PASS_FRESH_POST_DIRECTIVE
+  STORY-0013: PASS_FRESH_POST_DIRECTIVE
+  STORY-0087: PASS_FRESH_POST_DIRECTIVE
+  STORY-0092: PASS_FRESH_POST_DIRECTIVE
+  STORY-0098: PASS_FRESH_POST_DIRECTIVE
+  STORY-0099: PASS_FRESH_POST_DIRECTIVE
+  STORY-0100: PASS_FRESH_POST_DIRECTIVE
+  STORY-0089: PASS_FRESH_THIS_RUN_README_AND_POLICY
+next_story: STORY-0090
 corrected_progress:
-  complete: 18
+  complete: 9
   denominator: 18
-  percentage: 100.0
-completion_status: HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE
-validation_rules:
-  each_documented_executable_case_has_own_subsection: true
-  each_case_has_immediately_adjacent_fenced_code: true
-  unit_integration_bl009_layers_checked: true
-  production_code_present_per_packet: true
-  shared_code_section_not_used_as_substitute: true
+  percentage: 50.0
 execution_separation:
   bl004: NOT_EXECUTED
   bl005: NOT_EXECUTED
   bl009_application_behavior: NOT_EXECUTED
   coverage: NO_DURABLE_COVERAGE_EVIDENCE
 rules:
-  previous_packet_completion_markers_superseded: true
+  file_presence_is_not_rework_proof: true
+  prior_aggregate_18_of_18_marker_is_not_accepted_as_proof: true
   code_presence_does_not_imply_execution: true
   auto_approval: false
   infer_execution: false
