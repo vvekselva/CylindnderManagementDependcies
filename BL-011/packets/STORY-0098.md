@@ -1,5 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0098 Product Category Search
 
+## Rework state
+Reworked under the BL-011 code-required policy.
+
+## Reviewer-readable business/test narrative
 ## 1. Story, governance and source
 - Source Story: `BL-002/stories/STORY-0098.md`
 - Endpoint: `GET /search/product-category/{searchText}`
@@ -60,3 +64,109 @@ Three mapped rows cover successful lookup, no-match behavior and governed valida
 Freshly validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`: business behavior, preconditions, inputs, validation, positive/negative/boundary cases, expected API/database outcomes, executable references, four-backlog traceability, and execution/coverage separation are present.
 
 Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
+
+## Production Code Evidence
+File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulProductCategoryServices.java`
+
+```java
+@GetMapping("/{searchText}")
+public ProductCategorySearchResponseDto getProductCategories(@PathVariable String searchText) {
+    try {
+        CylinderManagementApplicationRequestDto request =
+            new CylinderManagementApplicationRequestDto();
+        request.setSearchTerm(searchText);
+        return productCategorySearchService.searchWithText(request, null);
+    } catch (CylinderManagementApplicationException e) {
+        return new ProductCategorySearchResponseDto();
+    }
+}
+```
+
+## Unit Test Story + Code — BL-004
+Executable: `BL-004/generated-tests/STORY-0098/Story0098ProductCategorySearchUnitTest.java`
+
+```java
+    @InjectMocks RestfulProductCategoryServices controller;
+
+    @Test void delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+        ProductCategorySearchResponseDto expected = new ProductCategorySearchResponseDto();
+        when(productCategorySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
+        ProductCategorySearchResponseDto actual = controller.getProductCategories("Industrial");
+        ArgumentCaptor<CylinderManagementApplicationRequestDto> captor = ArgumentCaptor.forClass(CylinderManagementApplicationRequestDto.class);
+        org.mockito.Mockito.verify(productCategorySearchService).searchWithText(captor.capture(), isNull());
+        assertEquals("Industrial", captor.getValue().getSearchTerm());
+        assertSame(expected, actual);
+    }
+
+    @Test void governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+        when(productCategorySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
+            .thenThrow(mock(CylinderManagementApplicationException.class));
+        assertNotNull(controller.getProductCategories("Industrial"));
+    }
+}
+
+```
+
+## Integration Test Story + Code — BL-005
+Executable: `BL-005/generated-tests/STORY-0098/Story0098ProductCategorySearchIntegrationTest.java`
+
+```java
+@DataJpaTest
+@ContextConfiguration(classes = TestApplication.class)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class Story0098ProductCategorySearchIntegrationTest {
+    @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16").withUsername("test").withPassword("test");
+    @DynamicPropertySource static void properties(DynamicPropertyRegistry registry) {
+        POSTGRES.start();
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+    }
+    @Autowired ProductCategoryJpaDao dao;
+    @Test void containsIgnoreCaseReturnsOnlyMatchingCategories() {
+        ProductCategoryDo a = new ProductCategoryDo(); a.setProductCategory("Industrial_STORY0098"); a.setDescription("Industrial");
+        ProductCategoryDo b = new ProductCategoryDo(); b.setProductCategory("Medical_STORY0098"); b.setDescription("Medical");
+        dao.saveAndFlush(a); dao.saveAndFlush(b);
+        assertEquals(1, dao.findByProductCategoryContainingIgnoreCase("industrial_story0098").size());
+        assertEquals(0, dao.findByProductCategoryContainingIgnoreCase("ZZZ_STORY0098").size());
+    }
+}
+
+```
+
+## Test Data / Executable Mapping Code — BL-009
+Executable: `BL-009/generated-tests/STORY-0098/Story0098TestDataDrivenTest.java`
+
+```java
+    @InjectMocks RestfulProductCategoryServices controller;
+
+    @Test void tc0098_01_delegatesExactSearchTextAndReturnsServiceResponse() throws Exception {
+        ProductCategorySearchResponseDto expected = new ProductCategorySearchResponseDto();
+        when(productCategorySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull())).thenReturn(expected);
+        ProductCategorySearchResponseDto actual = controller.getProductCategories("Industrial");
+        ArgumentCaptor<CylinderManagementApplicationRequestDto> captor = ArgumentCaptor.forClass(CylinderManagementApplicationRequestDto.class);
+        org.mockito.Mockito.verify(productCategorySearchService).searchWithText(captor.capture(), isNull());
+        assertEquals("Industrial", captor.getValue().getSearchTerm());
+        assertSame(expected, actual);
+    }
+
+    @Test void tc0098_02_governedServiceFailureReturnsEmptyResponseObject() throws Exception {
+        when(productCategorySearchService.searchWithText(any(CylinderManagementApplicationRequestDto.class), isNull()))
+            .thenThrow(mock(CylinderManagementApplicationException.class));
+        assertNotNull(controller.getProductCategories("Industrial"));
+    }
+}
+
+```
+
+## Code-path trace
+BL-002 -> frozen production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
+
+## Execution and coverage
+Packet/code rework: `COMPLETE`; unit/integration/application execution: `NOT EXECUTED`; durable coverage evidence: `NONE`; coverage percentage: `NOT INFERRED`.
+
+## BL-011 validation
+Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present and remains separate from execution evidence.
+
+Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
