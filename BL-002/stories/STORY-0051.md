@@ -4,9 +4,9 @@
 
 - Release: R1
 - Endpoint: `GET /add-stop`
-- Approval: `PENDING_USER_APPROVAL`
-- Review state: `READY_FOR_USER_REVIEW`
-- Rework state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`
+- Approval: `APPROVED_AFTER_REWORK`
+- Review state: `APPROVED_AFTER_REWORK`
+- Rework state: `APPROVED_AFTER_REWORK`
 - Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE`
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source intake evidence: `.orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237.yaml`
@@ -79,6 +79,4 @@ The endpoint is the office-entry gate for Add Stop processing. It prevents chall
 
 The exact request parameters, status lookup, accepted status predicate, rejection redirect/message, customer-vs-supplier selection rule, model attributes, service-error fallbacks, terminal views and read-only persistence role are source-bound from the recovered governed ZIP.
 
-STORY-0051 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
-
-No approval is inferred. No application code was changed and no BL-010 work was created or executed.
+STORY-0051 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with downstream fan-out requested. No application code was changed by this approval.
