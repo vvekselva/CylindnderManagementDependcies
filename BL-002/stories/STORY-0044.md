@@ -3,8 +3,8 @@
 - Release: R1
 - Endpoint: `POST /wizard/vehicle-trip-load/save`
 - Functional area: Vehicle Trip Load Wizard
-- Approval: PENDING_USER_APPROVAL
-- Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
 - Traceability state: COMPLETE
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Business-behavior rework: COMPLETE
@@ -33,13 +33,13 @@ The executable handoff is `vehicleLoadAndTripIngestionService.processRequest(req
 
 `VehicleTripIngestionRequestValidator` requires a non-null trip; valid/existing Vehicle and Driver; non-null starting time; valid/existing Customer Address; valid/existing Customer; and verifies from database entities that the selected Address belongs to the selected Customer.
 
-Current-source validation defects are preserved rather than silently corrected: the Driver condition repeats the Driver-object check and then dereferences `getDriverId()` without an explicit ID-null guard, and the Customer-ID validity condition uses `customerAddressId <= 0` where a Customer-ID check would normally be expected.
+Current validation status: the earlier Driver `getDriverId()` null-guard issue is reported fixed by the user and is no longer treated as an open defect. The Customer-ID validity condition using `customerAddressId <= 0` where a Customer-ID check would normally be expected remains documented as current-source behavior pending separate verification/remediation.
 
 ### Load validation
 
 `VehicleLoadIngestionValidator` requires a non-null load and non-blank `loadedBy`. When cylinder lines are present, every selected Cylinder must exist, be available only in Yard, have one active Yard Inventory line, and be in Yard state `FULL` or `EMPTY`.
 
-Its quantity-null condition checks `quantityFullForDelivery` twice and does not explicitly include `quantityEmptyForSupplier`; this is recorded as current-source behavior, not fixed by Story rework.
+Its quantity-null condition checks `quantityFullForDelivery` twice and does not explicitly include `quantityEmptyForSupplier`. The user has explicitly requested that this remaining defect be added to the governed development backlog as BL-010 DEV-0005; Story approval does not authorize implementation.
 
 ### Physical challan-book validation
 
@@ -91,6 +91,4 @@ When the transactional service returns normally, the controller redirects to `/v
 
 ## Review and approval gate
 
-The previously unresolved concrete service/database gap is now closed from frozen source. STORY-0044 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW` and strict source binding is complete.
-
-No approval occurred. No application code was mutated and no BL-010 task was created/executed. Any future Story/code drift correction requires the exact user-approved Drift / Code Change Manifest before code mutation.
+The previously unresolved concrete service/database gap is source-bound. STORY-0044 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with downstream fan-out requested. The Driver-ID null-guard issue is recorded as fixed-by-user report and requires source read-back before being treated as verified current-source evidence. The quantity-null defect is registered as BL-010 DEV-0005 and remains implementation-gated. No application code was mutated by this approval.
