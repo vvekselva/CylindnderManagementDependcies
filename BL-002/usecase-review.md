@@ -272,14 +272,14 @@
 ## SUC-020 — Add Stop / Challan Photo
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Partially approved  
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0048](stories/STORY-0048.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0049](stories/STORY-0049.md) | Primary | PENDING_USER_APPROVAL |
 | [STORY-0050](stories/STORY-0050.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0051](stories/STORY-0051.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0051](stories/STORY-0051.md) | Primary — Add Stop page/status gate | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 
 [Back to register](screen-usecase-register.md)
 
