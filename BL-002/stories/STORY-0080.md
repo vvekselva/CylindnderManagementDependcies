@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `GET /ingestSupplier`
 - Controller: `SupplierIngestionController.doGet`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -22,6 +22,4 @@ This GET performs no database write. Its business purpose is correct form initia
 
 ## Completion and approval gate
 
-The recovered ZIP confirms initialization, all visible/bound fields, autocomplete identity propagation, dependent clearing, form action and read-only effect. STORY-0080 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
-
-Approval remains pending; no application-code or BL-010 mutation occurred.
+The recovered ZIP confirms initialization, all visible/bound fields, autocomplete identity propagation, dependent clearing, form action and read-only effect. STORY-0080 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with downstream fan-out requested. This approval accepts the source-bound GET/form contract as written and does not authorize application-code or BL-010 mutation.
