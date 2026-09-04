@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /ingestSupplier`
 - Controller: `SupplierIngestionController.doPost`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -28,6 +28,4 @@ Success redirects using the configured home/list link. `InvalidInputParameterExc
 
 ## Completion and approval gate
 
-The recovered ZIP confirms the full field→validation→geography resolution→entity mapping→repository save path, exact supplier table identity and visible success/error outcomes. STORY-0081 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
-
-Approval remains pending; no application-code or BL-010 mutation occurred.
+The recovered ZIP confirms the full field→validation→geography resolution→entity mapping→repository save path, exact supplier table identity and visible success/error outcomes. STORY-0081 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with downstream fan-out requested. This approval accepts the source-bound supplier submission/persistence contract as written and does not authorize application-code or BL-010 mutation.
