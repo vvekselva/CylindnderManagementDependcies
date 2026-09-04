@@ -1,18 +1,39 @@
 backlog_id: BL-011
-directive: USER_REWORK_ALL_WITH_INLINE_CODE_2026-09-04
+directive: USER_REDO_ALL_FILES_EVERY_TEST_CASE_WITH_ADJACENT_CODE_2026-09-04
 eligible_story_denominator: 18
-completion_basis: FRESH_CODE_REQUIRED_REWORK
-packet_terminal_status: HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE
-code_required_packets_complete: 18
+completion_basis: FRESH_PER_TEST_CASE_ADJACENT_CODE_REWORK
+packet_terminal_status: HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE
+packets_complete: 18
 corrected_percentage: 100.0
+completed:
+  - STORY-0001
+  - STORY-0012
+  - STORY-0013
+  - STORY-0087
+  - STORY-0089
+  - STORY-0090
+  - STORY-0092
+  - STORY-0098
+  - STORY-0099
+  - STORY-0100
+  - STORY-0108
+  - STORY-0109
+  - STORY-0127
+  - STORY-0128
+  - STORY-0129
+  - STORY-0130
+  - STORY-0131
+  - STORY-0132
 remaining_count: 0
 remaining: []
-required_inline_evidence:
-  production_code: COMPLETE_18_OF_18
-  bl004_unit_test_code: COMPLETE_18_OF_18
-  bl005_integration_test_code: COMPLETE_18_OF_18
-  bl009_test_data_or_mapping_code: COMPLETE_18_OF_18
-  code_path_trace: COMPLETE_18_OF_18
+strict_requirements:
+  every_individual_test_case_has_adjacent_code: PASS_18_OF_18_PACKETS
+  unit_test_cases_with_adjacent_code: REQUIRED_AND_VALIDATED
+  integration_test_cases_with_adjacent_code: REQUIRED_AND_VALIDATED
+  bl009_test_data_use_case_cases_with_adjacent_code: REQUIRED_AND_VALIDATED
+  production_code_evidence: PRESENT_PER_PACKET
+  shared_code_only_is_not_completion_proof: true
+  method_path_without_method_body_is_not_completion_proof: true
 execution:
   unit: NOT_EXECUTED_RUNTIME_UNAVAILABLE
   integration: NOT_EXECUTED_RUNTIME_UNAVAILABLE
@@ -24,14 +45,7 @@ approved_but_not_eligible_due_to_code_drift:
   count: 2
   stories: [STORY-0101, STORY-0103]
   gate: EXPLICIT_EXACT_DRIFT_CODE_CHANGE_MANIFEST_APPROVAL_REQUIRED
-source_recovery:
-  verified_recovered_equivalent: Harinandhan-Cylinder-Backup(20260902-163304).zip
-  recovery_file_id: file_00000000fe9c8211869e2c82da911925
-  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
 rules:
-  explanation_only_packet_is_complete: false
-  path_only_code_reference_is_complete: false
-  inline_actual_code_required: true
   auto_approval: false
   application_code_mutation: NONE
   infer_execution_success: false
