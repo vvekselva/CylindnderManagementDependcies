@@ -107,3 +107,12 @@ All primary and mapped dependency Stories are explicitly approved. Requested dow
 ### Lookup / insertion rule retained
 
 When the user types a lookup/master-data candidate such as Address Type, database-backed matches must be shown before insertion where applicable. Submit-time service validation remains authoritative and must reject normalized business-equivalent duplicates while excluding the current row on update. The cross-story rule remains `lookup-insertion-precheck-policy.yaml`.
+
+<a id="suc-021"></a>
+## SUC-021 — Trip Return
+
+**Release:** R1  
+**Use-case approval:** Partially approved
+
+STORY-0052 is now `APPROVED_AFTER_REWORK` with fan-out requested. Its approved business contract now includes the delayed physical-return reconciliation lifecycle: cylinders physically returned to Yard are not immediately treated as reconciled system Yard stock; the next Yard Audit establishes physical evidence; later challan entry must reconcile against that evidence; mismatch must be notified; pending challan entry may be AMBER and unresolved mismatch escalates to RED. Existing source provides only part of this behavior, so DEV-0006 tracks the missing end-to-end identity linkage. STORY-0053 remains pending user approval.
+
