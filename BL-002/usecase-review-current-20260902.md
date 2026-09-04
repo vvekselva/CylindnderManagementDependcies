@@ -49,30 +49,30 @@ Primary Stories STORY-0080 and STORY-0081 are now `APPROVED_AFTER_REWORK` with f
 **Release:** R1  
 **Use-case approval:** Partially approved
 
-The following shared search Stories are now approved and fanned out: STORY-0087, STORY-0089, STORY-0090 and STORY-0101. The remaining shared search Stories remain pending user approval.
+The approved shared search Stories now include STORY-0087, STORY-0089, STORY-0090, STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0101 and STORY-0103. STORY-0103 remains post-approval code-drift gated; the other unlisted shared search Stories remain pending user approval.
 
 <a id="suc-036"></a>
 ## SUC-036 — Domain Lookup Management
 
 **Release:** R1  
-**Use-case approval:** Partially approved
+**Use-case approval:** Approved
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0108](stories/STORY-0108.md) | Primary — domain lookup screen | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0109](stories/STORY-0109.md) | Primary — Product Category save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0110](stories/STORY-0110.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0111](stories/STORY-0111.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0112](stories/STORY-0112.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0113](stories/STORY-0113.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0114](stories/STORY-0114.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0092](stories/STORY-0092.md) | Dependency — driver search | PENDING_USER_APPROVAL |
-| [STORY-0098](stories/STORY-0098.md) | Dependency — product-category search | PENDING_USER_APPROVAL |
-| [STORY-0099](stories/STORY-0099.md) | Dependency — product search | PENDING_USER_APPROVAL |
-| [STORY-0100](stories/STORY-0100.md) | Dependency — product UOM search | PENDING_USER_APPROVAL |
-| [STORY-0103](stories/STORY-0103.md) | Dependency — vehicle search | PENDING_USER_APPROVAL |
+| [STORY-0110](stories/STORY-0110.md) | Primary — Product UOM save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
+| [STORY-0111](stories/STORY-0111.md) | Primary — Product save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
+| [STORY-0112](stories/STORY-0112.md) | Primary — Cylinder save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
+| [STORY-0113](stories/STORY-0113.md) | Primary — Vehicle save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
+| [STORY-0114](stories/STORY-0114.md) | Primary — Driver save | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
+| [STORY-0092](stories/STORY-0092.md) | Dependency — driver search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0098](stories/STORY-0098.md) | Dependency — product-category search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0099](stories/STORY-0099.md) | Dependency — product search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0100](stories/STORY-0100.md) | Dependency — product UOM search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0103](stories/STORY-0103.md) | Dependency — vehicle search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
 
-STORY-0108 and STORY-0109 are approved and their requested BL-004, BL-005 and BL-009 fan-out is recorded. Remaining mapped Stories are still pending approval.
+All mapped Stories are Story-approved. STORY-0110 through STORY-0114 and STORY-0103 retain separate exact-manifest code-drift approval gates; no application-code mutation is authorized by Story approval alone.
 
 <a id="suc-039"></a>
 ## SUC-039 — Lookup / Lookup Management
