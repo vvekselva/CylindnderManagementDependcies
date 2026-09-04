@@ -1,12 +1,11 @@
 backlog_id: BL-011
 directive: USER_MANDATORY_REDO_EXCEPT_STORY_0012
 eligible_story_denominator: 18
-baseline_rule: STORY-0012 is the only packet accepted as already reworked by user directive; other completion is earned only by fresh post-directive per-Story evidence.
 accepted_as_already_reworked: [STORY-0012]
 freshly_reworked_and_validated_before_this_fire: [STORY-0001, STORY-0013, STORY-0087, STORY-0089, STORY-0092, STORY-0098, STORY-0099, STORY-0100]
-reworked_this_run: [STORY-0090, STORY-0108]
-reworked_and_validated_total: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0108]
-remaining: [STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+reworked_this_run: [STORY-0090, STORY-0108, STORY-0109]
+reworked_and_validated_total: [STORY-0001, STORY-0012, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0092, STORY-0098, STORY-0099, STORY-0100, STORY-0108, STORY-0109]
+remaining: [STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
 per_story_validation:
   STORY-0012: ACCEPTED_AS_ALREADY_REWORKED_BY_USER_DIRECTIVE
   STORY-0001: PASS_FRESH_POST_DIRECTIVE
@@ -19,8 +18,9 @@ per_story_validation:
   STORY-0099: PASS_FRESH_POST_DIRECTIVE
   STORY-0100: PASS_FRESH_POST_DIRECTIVE
   STORY-0108: PASS_FRESH_THIS_RUN_README_AND_POLICY
-next_story: STORY-0109
-corrected_progress: {complete: 11, denominator: 18, percentage: 61.1}
+  STORY-0109: PASS_FRESH_THIS_RUN_README_AND_POLICY_WITH_EXISTING_DRIFT_GATE_PRESERVED
+next_story: STORY-0127
+corrected_progress: {complete: 12, denominator: 18, percentage: 66.7}
 execution_separation: {bl004: NOT_EXECUTED, bl005: NOT_EXECUTED, bl009_application_behavior: NOT_EXECUTED, coverage: NO_DURABLE_COVERAGE_EVIDENCE}
 source_recovery_this_fire:
   requested_library_file_id: file_00000000659c8211857bba6b09282de3
@@ -31,4 +31,5 @@ source_recovery_this_fire:
   recovery_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
   approved_source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
   equivalence: BYTE_IDENTICAL_BY_SHA256
-rules: {file_presence_is_not_rework_proof: true, prior_aggregate_18_of_18_marker_is_not_accepted_as_proof: true, code_presence_does_not_imply_execution: true, auto_approval: false, infer_execution: false, infer_coverage: false}
+story_0109_drift_gate: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+rules: {file_presence_is_not_rework_proof: true, auto_approval: false, application_code_mutation: false, infer_execution: false, infer_coverage: false}
