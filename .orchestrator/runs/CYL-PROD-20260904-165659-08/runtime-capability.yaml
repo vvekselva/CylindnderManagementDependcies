@@ -1,0 +1,14 @@
+run_id: CYL-PROD-20260904-165659-08
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_files: 1650
+java_files: 1054
+local_git_present: false
+runtime_probe:
+  maven: UNAVAILABLE
+  observed_error: 'mvn: command not found'
+  attempted_tests: [StateJpaDaoIntegrationTest, CityJpaDaoIntegrationTest]
+  execution_result: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+coverage_result: NO_DURABLE_COVERAGE_EVIDENCE
+bl011_rework: COMPLETE_18_OF_18
+next_safe_work: reconcile_and_expand_drift_review_packets_only
+application_code_mutation: NONE
