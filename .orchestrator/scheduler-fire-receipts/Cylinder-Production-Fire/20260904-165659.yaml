@@ -1,7 +1,12 @@
 scheduler_task: Cylinder Production Fire
 fire_id: 20260904-165659
 receipt_time: 2026-09-04T16:57:00+05:30
-state: RUN_LINKED
+state: TERMINAL_RESUMABLE
 intended_scope: CONTINUOUS
 run_id: CYL-PROD-20260904-165659-08
-orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_state: CHECKPOINTED
+terminal_classification: ELIGIBLE_CHATGPT_WORK_EXHAUSTED_RUNTIME_EXECUTION_BLOCKED
+termination_time: 2026-09-04T17:06:30+05:30
+productive_elapsed: '00:09:30'
+resume_state: BL011_REDO_COMPLETE_AWAIT_EXECUTION_RUNTIME_OR_EXPLICIT_DRIFT_APPROVAL
+application_code_mutation: NONE
