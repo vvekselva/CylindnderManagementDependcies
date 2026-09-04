@@ -489,18 +489,18 @@
 | [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0091](stories/STORY-0091.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0092](stories/STORY-0092.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0092](stories/STORY-0092.md) | Dependency — driver search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0093](stories/STORY-0093.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0094](stories/STORY-0094.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0095](stories/STORY-0095.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0096](stories/STORY-0096.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0097](stories/STORY-0097.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0098](stories/STORY-0098.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0099](stories/STORY-0099.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0100](stories/STORY-0100.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0098](stories/STORY-0098.md) | Dependency — product-category search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0099](stories/STORY-0099.md) | Dependency — product search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0100](stories/STORY-0100.md) | Dependency — product UOM search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0102](stories/STORY-0102.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0103](stories/STORY-0103.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0103](stories/STORY-0103.md) | Dependency — vehicle search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
 | [STORY-0104](stories/STORY-0104.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0105](stories/STORY-0105.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0106](stories/STORY-0106.md) | Dependency | PENDING_USER_APPROVAL |
@@ -512,22 +512,22 @@
 ## SUC-036 — Domain Lookup Management
 
 **Release:** R1  
-**Use-case approval:** Partially approved  
+**Use-case approval:** Approved  
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0108](stories/STORY-0108.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0109](stories/STORY-0109.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0110](stories/STORY-0110.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0111](stories/STORY-0111.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0112](stories/STORY-0112.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0113](stories/STORY-0113.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0114](stories/STORY-0114.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0092](stories/STORY-0092.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0098](stories/STORY-0098.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0099](stories/STORY-0099.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0100](stories/STORY-0100.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0103](stories/STORY-0103.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0110](stories/STORY-0110.md) | Primary — save Product UOM | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0111](stories/STORY-0111.md) | Primary — save Product | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0112](stories/STORY-0112.md) | Primary — save Cylinder | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0113](stories/STORY-0113.md) | Primary — save Vehicle | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0114](stories/STORY-0114.md) | Primary — save Driver | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0092](stories/STORY-0092.md) | Dependency — driver search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0098](stories/STORY-0098.md) | Dependency — product-category search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0099](stories/STORY-0099.md) | Dependency — product search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0100](stories/STORY-0100.md) | Dependency — product UOM search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0103](stories/STORY-0103.md) | Dependency — vehicle search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
 
 [Back to register](screen-usecase-register.md)
 
