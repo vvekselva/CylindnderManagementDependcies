@@ -1,5 +1,7 @@
 scheduler_task: Cylinder Production Fire
 observed_scheduled_fire_time: '2026-09-04T14:57:49+05:30'
 receipt_time: '2026-09-04T14:57:49+05:30'
-state: TRIGGER_RECEIVED
+state: RUN_LINKED
 intended_scope: CONTINUOUS
+run_id: CYL-PROD-20260904-145749-06
+orchestrator_state: ORCHESTRATOR_STARTED
