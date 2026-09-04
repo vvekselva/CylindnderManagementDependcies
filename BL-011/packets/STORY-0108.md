@@ -1,9 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0108 Domain Lookup Page
 
 ## Rework state
-Reworked under the BL-011 code-required policy.
+Reworked under the mandatory per-test-case adjacent-code rule.
 
-## Reviewer-readable business/test narrative
+## Business behavior and scope
 - Source `BL-002/stories/STORY-0108.md`; approval `APPROVED_AFTER_REWORK`; conformance PASS.
 - Behavior: source-bound Domain Lookup page GET/cache-backed reference presentation must populate the governed lookup model without unintended mutation.
 - Unit: verify model/cache interaction, normal and empty lookup states, governed error behavior; `BL-004/generated-tests/STORY-0108/Story0108DomainLookupPageUnitTest.java`.
@@ -13,8 +13,6 @@ Reworked under the BL-011 code-required policy.
 - Execution `NOT EXECUTED`; coverage `NO DURABLE COVERAGE EVIDENCE`; packet `HUMAN_READABLE_TEST_PACKET_COMPLETE`.
 
 ## Production Code Evidence
-File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/DomainLookupController.java`
-
 ```java
 @GetMapping("/domainLookup")
 public ModelAndView showDomainLookupPage(
@@ -31,12 +29,19 @@ public ModelAndView showDomainLookupPage(
 }
 ```
 
-## Unit Test Story + Code — BL-004
-Executable: `BL-004/generated-tests/STORY-0108/Story0108DomainLookupPageUnitTest.java`
+## BL-004 Unit Test Cases
+### requestedTabIsPreserved
+
+**Layer:** BL-004  
+**Executable:** `BL-004/generated-tests/STORY-0108/Story0108DomainLookupPageUnitTest.java#requestedTabIsPreserved`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `requestedTabIsPreserved()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    }
-
     @Test void defaultTabContractRendersExpectedViewAndCachedCollections() {
         List<ProductCategoryDto> categories = List.of(new ProductCategoryDto());
         List<ProductUomDto> uoms = List.of(new ProductUomDto());
@@ -63,14 +68,31 @@ Executable: `BL-004/generated-tests/STORY-0108/Story0108DomainLookupPageUnitTest
         assertSame(cylinders, mav.getModel().get("cylinders"));
     }
 
+    @Test void requestedTabIsPreserved() {
+        when(cache.getProductCategories()).thenReturn(List.of());
+        when(cache.getProductUom()).thenReturn(List.of());
+        when(cache.getVehicles()).thenReturn(List.of());
+        when(cache.getDrivers()).thenReturn(List.of());
+        when(cache.getProduct()).thenReturn(List.of());
+        when(cache.getCylinder()).thenReturn(List.of());
+        assertEquals("driver", controller.showDomainLookupPage("driver").getModel().get("activeTab"));
+    }
 ```
 
-## Integration Test Story + Code — BL-005
-Executable: `BL-005/generated-tests/STORY-0108/Story0108DomainLookupPageMvcIntegrationTest.java`
+
+## BL-005 Integration Test Cases
+### getWithTabPreservesRequestedTab
+
+**Layer:** BL-005  
+**Executable:** `BL-005/generated-tests/STORY-0108/Story0108DomainLookupPageMvcIntegrationTest.java#getWithTabPreservesRequestedTab`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `getWithTabPreservesRequestedTab()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    }
-
     @Test void getWithoutTabUsesProductCategoryDefault() throws Exception {
         mvc.perform(get("/domainLookup"))
             .andExpect(status().isOk())
@@ -84,16 +106,22 @@ Executable: `BL-005/generated-tests/STORY-0108/Story0108DomainLookupPageMvcInteg
             .andExpect(view().name("final-version-1/DomainLookup"))
             .andExpect(model().attribute("activeTab", "driver"));
     }
-}
-
 ```
 
-## Test Data / Executable Mapping Code — BL-009
-Executable: `BL-009/generated-tests/STORY-0108/Story0108TestDataDrivenTest.java`
+
+## BL-009 Test Data / Use-case Cases
+### pageRendersApprovedViewAndPreservesTab
+
+**Layer:** BL-009  
+**Executable:** `BL-009/generated-tests/STORY-0108/Story0108TestDataDrivenTest.java#pageRendersApprovedViewAndPreservesTab`  
+**Business objective:** Verify the governed behavior represented by this exact executable case.  
+**Preconditions / input:** Use the setup, mocks, fixtures and values shown in the adjacent method.  
+**Action:** Execute `pageRendersApprovedViewAndPreservesTab()`.  
+**Expected result:** The assertions in this method define the expected API/service/UI/database outcome.  
+**Persistence / side effects:** Only effects explicitly asserted here are claimed.  
+**Execution status:** `NOT EXECUTED`
 
 ```java
-    }
-
     @ParameterizedTest @MethodSource("tabs")
     void pageRendersApprovedViewAndPreservesTab(String tab) {
         ModelAndView mav = controller.showDomainLookupPage(tab);
@@ -101,17 +129,16 @@ Executable: `BL-009/generated-tests/STORY-0108/Story0108TestDataDrivenTest.java`
         assertEquals(tab, mav.getModel().get("activeTab"));
         assertSame(cache.getProductCategories(), mav.getModel().get("productCategories"));
     }
-}
-
 ```
 
-## Code-path trace
-BL-002 -> frozen production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
+
+## Traceability
+BL-002 -> production source -> BL-004 -> BL-005 -> BL-009 -> BL-011.
 
 ## Execution and coverage
-Packet/code rework: `COMPLETE`; unit/integration/application execution: `NOT EXECUTED`; durable coverage evidence: `NONE`; coverage percentage: `NOT INFERRED`.
+Packet rework `COMPLETE_PER_CASE_CODE`; all test execution `NOT EXECUTED`; durable coverage `NONE`; coverage `NOT INFERRED`.
 
-## BL-011 validation
-Validated against the code-required README and policy. Inline production, unit, integration and BL-009 code is present and remains separate from execution evidence.
+## Validation
+Every executable test method has adjacent code in its own case section.
 
-Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
+Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
