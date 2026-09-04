@@ -1,7 +1,7 @@
 backlog_id: BL-011
-directive: USER_REWORK_ALL_WITH_INLINE_CODE_2026-09-04
+directive: USER_REDO_ALL_FILES_EVERY_TEST_CASE_WITH_ADJACENT_CODE_2026-09-04
 eligible_story_denominator: 18
-reworked_and_validated_with_code:
+reworked_and_validated:
   - STORY-0001
   - STORY-0012
   - STORY-0013
@@ -21,30 +21,44 @@ reworked_and_validated_with_code:
   - STORY-0131
   - STORY-0132
 remaining: []
+per_story_validation:
+  STORY-0001: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0012: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0013: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0087: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0089: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0090: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0092: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0098: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0099: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0100: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0108: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0109: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0127: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0128: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0129: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0130: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0131: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
+  STORY-0132: PASS_PER_TEST_CASE_ADJACENT_CODE_POLICY
 corrected_progress:
   complete: 18
   denominator: 18
   percentage: 100.0
-completion_status: HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE
-code_requirements:
-  inline_production_code: PASS_18_OF_18
-  inline_bl004_unit_code: PASS_18_OF_18
-  inline_bl005_integration_code: PASS_18_OF_18
-  inline_bl009_mapping_code: PASS_18_OF_18
-  code_path_trace: PASS_18_OF_18
+completion_status: HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE
+validation_rules:
+  each_documented_executable_case_has_own_subsection: true
+  each_case_has_immediately_adjacent_fenced_code: true
+  unit_integration_bl009_layers_checked: true
+  production_code_present_per_packet: true
+  shared_code_section_not_used_as_substitute: true
 execution_separation:
   bl004: NOT_EXECUTED
   bl005: NOT_EXECUTED
   bl009_application_behavior: NOT_EXECUTED
   coverage: NO_DURABLE_COVERAGE_EVIDENCE
-source:
-  verified_recovery_candidate: Harinandhan-Cylinder-Backup(20260902-163304).zip
-  recovery_file_id: file_00000000fe9c8211869e2c82da911925
-  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
 rules:
-  previous_explanation_only_completion_markers_superseded: true
+  previous_packet_completion_markers_superseded: true
   code_presence_does_not_imply_execution: true
   auto_approval: false
-  application_code_mutation: NONE
   infer_execution: false
   infer_coverage: false
