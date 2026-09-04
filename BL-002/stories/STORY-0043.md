@@ -3,8 +3,8 @@
 - Release: R1
 - Endpoint: `GET /wizard/vehicle-trip-load`
 - Functional area: Vehicle Trip Load Wizard
-- Approval: PENDING_USER_APPROVAL
-- Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
 - Traceability state: COMPLETE
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Business-behavior rework: COMPLETE
@@ -64,6 +64,4 @@ No application code is changed by Story rework. Any future Story/code drift corr
 
 ## Review and approval gate
 
-The previously unresolved active-challan-book DAO/view identity and cache-backed Product/Vehicle Load Purpose read identities are now source-bound. Together with the source-bound embedded Save behavior, STORY-0043 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW` and strict source enrichment is complete.
-
-No approval occurred. Explicit user approval/rework remains required and testing fan-out is not authorized.
+The previously unresolved active-challan-book DAO/view identity and cache-backed Product/Vehicle Load Purpose read identities are now source-bound. Together with the source-bound embedded Save behavior, STORY-0043 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with testing fan-out requested. Strict source enrichment remains complete. This approval covers the GET wizard-entry contract; related STORY-0044 mutation drift remains independently governed and is not authorized by this approval.
