@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /domainLookup/productUom/save`
 - Controller: `DomainLookupController.saveProductUom`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -22,6 +22,6 @@ The current duplicate validation does not exclude the same `productUomId` during
 
 ## Completion and approval gate
 
-The submitted fields, normalization, controller/cache/PRG behavior, service save/validation path and exact current defect are source-bound. STORY-0110 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The submitted fields, normalization, controller/cache/PRG behavior, service save/validation path and exact current defect are source-bound. STORY-0110 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with downstream fan-out requested.
 
-Approval remains pending; no application-code or BL-010 mutation occurred.
+Approval is explicitly recorded. Existing drift/code-remediation packets remain independently approval-gated; no application-code or BL-010 mutation is authorized by this Story approval.
