@@ -4,9 +4,9 @@
 
 - Release: R1
 - Endpoint: `GET /trip-return`
-- Approval: `PENDING_USER_APPROVAL`
-- Review state: `READY_FOR_USER_REVIEW`
-- Rework state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`
+- Approval: `APPROVED_AFTER_REWORK`
+- Review state: `APPROVED_AFTER_REWORK`
+- Rework state: `APPROVED_AFTER_REWORK`
 - Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE`
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -106,10 +106,46 @@ No database write is asserted for `GET /trip-return`.
 
 This endpoint is the physical-return review screen. It binds the selected load to its trip context, shows every assigned challan book from the current assignment view, derives visible leaf state and counts from the challan page ledger, surfaces active photo evidence, and prepares the exact inputs needed by the subsequent return confirmation operation.
 
+## Required business lifecycle after the trip physically returns
+
+The Trip Return screen is only one step in a larger physical-to-system reconciliation process.
+
+The approved business rule is:
+
+1. During the trip, the vehicle can return with cylinders collected from both Customers and Suppliers. The returned cylinders can be EMPTY or FULL depending on the business event.
+2. When the trip physically reaches the Yard, those cylinders are unloaded and physically placed in the Yard.
+3. **At that moment the physical unloading does not automatically make those cylinders part of the system Yard inventory.** The application must not pretend that the physical Yard and the system Yard are already reconciled merely because the vehicle has returned.
+4. The next Yard Audit / Yard Stock Check is the operation that records what cylinders are actually found in the Yard.
+5. Challans for the completed trip may be entered into the application only after the Yard Audit has established the physical evidence.
+6. The cylinders observed by the Yard Audit must then be reconciled against the cylinders implied by the subsequently entered Delivery / Empty Pickup / Supplier-related challans and trip transactions.
+7. If the Yard Audit and the entered challans agree, the reconciliation can become GREEN / reconciled.
+8. If they do not agree, the system must visibly notify operations that there is a mismatch. The mismatch must remain unresolved until it is investigated/corrected; it must not be silently accepted.
+9. A temporary difference caused only by challans not yet being entered may be represented as a time-bound pending/AMBER condition. Once the allowed challan-entry window expires without reconciliation, the mismatch must escalate for human attention.
+
+### Simple example
+
+A vehicle returns at night with 8 EMPTY cylinders collected from Customers and 3 FULL cylinders collected from a Supplier/return movement. Staff unload all 11 cylinders into the Yard physically. The application still should not simply mark all 11 as Yard inventory because the office challans have not yet been entered.
+
+The next morning the Yard Audit scans the physical cylinders. Later the challans are entered. The system must compare the cylinder identities/counts represented by the Yard Audit against the cylinder movements represented by those challans. If the audit saw 11 returned cylinders but the entered challans explain only 10, the system must notify the user that one cylinder is unexplained.
+
+## Current implementation assessment
+
+This required business lifecycle is **only partially implemented in the current source**.
+
+What already exists:
+- Trip Return returns the physical challan books to office and changes the trip to Returned.
+- Yard Audit / Yard Stock Check records physical cylinders found in the Yard and can produce variance/quality-gate information.
+- The database contains reconciliation-gate logic for the specific next-day-before-challan-entry case: a Yard Audit mismatch can be held as AMBER while challan entry is pending, can turn GREEN when challan entry resolves the variance, and can escalate to RED when the permitted challan-entry window expires.
+
+What is not fully proven/implemented end to end:
+- STORY-0052/0053 does not create a durable returned-cylinder manifest that explicitly says which FULL/EMPTY cylinders physically came back on the trip but are intentionally not yet in system Yard inventory.
+- There is no source-proved end-to-end controller/service flow in this Story that ties those physically returned cylinder identities to the next Yard Audit and then to the exact later challan transactions.
+- Therefore the system does not yet have a fully source-proved guarantee that every returned cylinder found by the next-day Yard Audit is matched one-for-one against the later challan entries and that every mismatch is surfaced to the user through the governed application workflow.
+
+This is a real system gap. It is tracked in BL-010 as DEV-0006. Story approval authorizes the business requirement and testing fan-out, but it does **not** authorize implementation of DEV-0006 until its exact change manifest is separately approved.
+
 ## Completion and approval gate
 
 The exact request parameter, controller/view/model contract, missing-load/missing-trip behavior, header fields, assigned-book source, leaf/count/photo derivation, visible controls and GET read-only persistence effect are source-bound from the recovered governed ZIP.
 
-STORY-0052 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
-
-No approval is inferred. No application code was changed and no BL-010 work was created or executed.
+STORY-0052 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with fan-out requested. The physical-return -> next-day Yard Audit -> later challan reconciliation requirement is approved as part of the business contract. Current code is only partially conformant; DEV-0006 captures the missing end-to-end returned-cylinder reconciliation behavior. No application code was changed by this approval.
