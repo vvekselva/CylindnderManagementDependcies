@@ -8,16 +8,16 @@ accepted_already_reworked:
 freshly_reworked_this_run:
   - STORY-0001
   - STORY-0013
+  - STORY-0087
   - STORY-0092
   - STORY-0098
   - STORY-0099
   - STORY-0100
-human_readable_packets_complete: 7
-corrected_percentage: 38.9
-remaining_count: 11
-next_story: STORY-0087
+human_readable_packets_complete: 8
+corrected_percentage: 44.4
+remaining_count: 10
+next_story: STORY-0089
 remaining:
-  - STORY-0087
   - STORY-0089
   - STORY-0090
   - STORY-0108
@@ -55,4 +55,4 @@ rules:
   application_code_mutation: NONE
   infer_execution_success: false
   infer_coverage: false
-next_action: REWORK_STORY_0087_FROM_SOURCE_AND_BL004_BL005_BL009_EVIDENCE
+next_action: REWORK_STORY_0089_FROM_SOURCE_AND_BL004_BL005_BL009_EVIDENCE
