@@ -226,12 +226,12 @@
 ## SUC-017 — Customer Registration
 
 **Release:** R1  
-**Use-case approval:** Partially approved  
+**Use-case approval:** Approved  
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0041](stories/STORY-0041.md) | Primary — registration page | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0042](stories/STORY-0042.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0042](stories/STORY-0042.md) | Primary — registration submit/persistence | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
