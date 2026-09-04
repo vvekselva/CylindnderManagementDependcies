@@ -74,3 +74,13 @@ Execution statuses require durable execution evidence. Coverage statuses require
 
 ## Definition of Done
 For every eligible Story, a reviewer can read the business behavior, inspect the relevant production/test/data code directly inside the packet, understand positive/negative/boundary/duplicate behavior, see expected API/UI/database outcomes, follow BL-002/004/005/009 traceability, and see the actual execution/coverage state without inference.
+
+
+## Per-test-case code adjacency rule
+For every individual test case documented in a BL-011 packet, the human-readable explanation and the exact relevant executable code must be colocated in the same test-case subsection.
+
+A packet is incomplete if it explains a test case but shows its code only in a later shared code section, lists only a method/path without the method body, or groups several cases under one generic excerpt that does not reveal which assertions belong to which case.
+
+Each UT/IT/TC/E2E case must contain its case ID/title, business objective, preconditions/input, action, expected API/UI/database result, persistence/side-effect expectation, executable reference, an immediately adjacent fenced code block for that exact case, and execution status.
+
+The terminal status for this stricter standard is `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
