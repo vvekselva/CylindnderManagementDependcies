@@ -1,70 +1,87 @@
 # BL-011 Human-Readable Test Packet — STORY-0092 Driver Search
 
-## Governance and traceability
-
+## 1. Story, governance and source
 - Source Story: `BL-002/stories/STORY-0092.md`
+- Endpoint: `GET /search/driver/{searchText}`
+- Controller: `RestfulDriverServices.getDrivers`
 - Approval: `APPROVED_AFTER_REWORK`
 - Approval evidence: `BL-002/approval-evidence/USER-APPROVAL-STORY-0092-0098-0099-0100-0103-20260902-2159-IST.md`
-- Conformance: `CODE_CONFORMANCE_VERIFIED_PASS`
+- Post-approval conformance: `CODE_CONFORMANCE_VERIFIED_PASS`
 - Conformance evidence: `BL-002/post-approval-code-conformance/RUN-008-STORY-0092-0098-0099-0100-0103-20260903.yaml`
-- Frozen source SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Governed source SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 
-## Business behavior protected
+## 2. Business behavior protected
+This is a read-only reference search. The path variable `searchText` is copied into `CylinderManagementApplicationRequestDto.searchTerm`, validated with `DRIVER_SEARCH_SERVICE`, and used by the search service/DAO path `DriverJpaDao.findByDriverNameContainingIgnoreCase(...)`. Matching persistent entities are mapped to DTOs and returned; no-match/error behavior is governed and no master row is created, updated or deleted.
 
-A caller searches drivers using `GET /search/driver/{searchText}`. The request text is copied to `CylinderManagementApplicationRequestDto.searchTerm`, paging is created, `DriverSearchService.searchWithText` validates the request, and `DriverJpaDao.findByDriverNameContainingIgnoreCase` performs the read. Matching driver records are mapped to response DTOs; an empty result produces the governed failure/empty-result behavior. This search is read-only and must not mutate driver data.
+Returned Driver IDs are selectable persistent reference identities for consuming screens.
 
-## Unit Test Story
+## 3. Preconditions, inputs and validation
+- Search data exists in the relevant master table for the positive case.
+- A valid text fragment that matches at least one row is used for the happy path.
+- A text fragment that matches no row is used for the negative/no-result path.
+- A validator/application-exception condition is represented as the governed error path.
+- Minimal API search content is treated only according to source-proved validation; no unproved debounce/minimum-length rule is invented.
+- Database state is isolated between integration cases and must remain unchanged by the search itself.
 
-**Actor/component:** Driver search service/controller path.
+## 4. Unit Test Story — BL-004
+Executable: `BL-004/generated-tests/STORY-0092/Story0092DriverSearchUnitTest.java`.
 
-**Preconditions:** Search dependencies are available as mocks/stubs; no real database is required for the unit scope.
+### Positive case
+Given a valid search term and mocked matching DAO/service data, when the search method runs, then the response contains the expected mapped identity/name values and success/result metadata defined by the source contract.
 
-**Happy path:** Give a valid driver-name fragment and a DAO result containing matching drivers. Verify the service returns mapped driver DTOs and the expected paging/result status.
+### No-match case
+Given a valid term with no matching row, when the search executes, then the governed empty/failure response is returned; no persistence method is invoked.
 
-**Negative/error cases:** Empty DAO result; governed validation/application exception path; malformed/invalid request where the validator rejects it.
+### Validation/error case
+Given a request rejected by the governed validator or an application exception in the search path, when the controller/service handles it, then the source-defined error/empty response behavior is produced without mutation.
 
-**Boundary cases:** Minimal non-empty search term and paging boundaries supported by the production contract. No extra minimum-length rule is invented at this API layer.
+### Boundary case
+Use the smallest source-valid search content and paging boundary represented by the executable test. Do not add UI-only constraints unless a consuming screen is explicitly bound.
 
-**Persistence expectation:** No insert/update/delete occurs.
+Dependencies are mocked/stubbed at unit scope. Expected write count: zero.
 
-**Executable reference:** `BL-004/generated-tests/STORY-0092/Story0092DriverSearchUnitTest.java`.
+## 5. Integration Test Story — BL-005
+Executable: `BL-005/generated-tests/STORY-0092/Story0092DriverSearchIntegrationTest.java`.
 
-**Execution state:** `NOT EXECUTED` — faithful Maven/JUnit/Mockito runtime is unavailable.
+Environment requires PostgreSQL Testcontainers, application JPA mappings and source-bound schema initialization.
 
-## Integration Test Story
+### Positive database-read case
+Seed one matching master row, execute the search path, and verify the persisted identity/name is returned through the real repository/service mapping.
 
-**Participating layers:** REST/search service -> validator -> JPA DAO -> PostgreSQL read path.
+### No-match database-read case
+Execute with a fragment that matches no row and verify the governed empty/failure outcome.
 
-**Test setup:** PostgreSQL Testcontainers with source-bound schema/data setup when runtime is available.
+### Persistence expectation
+The before/after master-data state is unchanged. Search is read-only; insert/update/delete is not an expected side effect.
 
-**Happy path:** Seed a driver whose name contains the search text, call the search path, and verify the matching persistent identity/name is returned.
+## 6. Test Data Story — BL-009
+Readable catalogue: `BL-009/test-data/STORY-0092.md`; structured data: `BL-009/test-data/STORY-0092.csv`; executable mapping: `BL-009/generated-tests/STORY-0092/Story0092TestDataDrivenTest.java`.
 
-**Negative path:** Search text with no matching row must produce the governed empty/failure response without modifying data.
+Three governed rows cover positive matching, no-match behavior, validation/error behavior, and any source-proved consuming-selector case where applicable. Test rows must use synthetic/stable identities and remain isolated. Data-contract execution does not prove application execution.
 
-**Database expectation:** Driver rows remain unchanged; only read operations are expected.
+## 7. Use-case / End-to-End Test Story
+**Given** relevant reference data exists, **when** a caller submits `GET /search/driver/{searchText}` with matching text, **then** matching reference identities are returned for selection/use and the underlying master data remains unchanged.
 
-**Executable reference:** `BL-005/generated-tests/STORY-0092/Story0092DriverSearchIntegrationTest.java`.
+**Given** no data matches, **when** the same search is performed, **then** the governed empty/failure outcome is returned without side effects.
 
-**Execution state:** `NOT EXECUTED` — PostgreSQL Testcontainers runtime is unavailable.
+**Given** the validator/application path rejects the request, **when** the request is handled, **then** the source-governed error/empty response is produced rather than an invented success.
 
-## Test Data Story
+## 8. Traceability
+- BL-002: `BL-002/stories/STORY-0092.md`
+- BL-004: `BL-004/generated-tests/STORY-0092/Story0092DriverSearchUnitTest.java`
+- BL-005: `BL-005/generated-tests/STORY-0092/Story0092DriverSearchIntegrationTest.java`
+- BL-009: Story catalogue, readable/CSV test data and `Story0092TestDataDrivenTest.java`
+- BL-011: this reviewer-readable packet
 
-Readable catalogue: `BL-009/test-data/STORY-0092.md`; structured rows: `BL-009/test-data/STORY-0092.csv`.
+## 9. Execution and coverage status
+- Unit execution: `NOT EXECUTED`
+- Integration execution: `NOT EXECUTED`
+- Application/E2E execution: `NOT EXECUTED`
+- Durable JaCoCo evidence: `NONE`
+- Coverage percentage: `NOT INFERRED`
+Generated tests and packet rework are not execution evidence.
 
-The mapped catalogue contains three source-bound rows covering successful matching, no-match behavior, and the governed validation/error branch. Data must use stable driver identifiers/names and remain isolated so one test does not alter another test's expected read result.
+## 10. BL-011 validation outcome
+Freshly validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`. Required business behavior, preconditions, inputs, validation, positive/negative/boundary paths, expected service/API/database outcomes, executable references, BL-002/004/005/009 traceability and execution/coverage separation are present.
 
-## Use-case / End-to-End Test Story
-
-**Given** driver reference data exists, **when** a consuming component searches with a driver-name fragment, **then** matching drivers are returned as selectable reference identities; a no-match search returns the governed empty/failure outcome; no driver record is changed.
-
-Catalogue: `BL-009/stories/STORY-0092.md`.
-Executable data-driven mapping: `BL-009/generated-tests/STORY-0092/Story0092TestDataDrivenTest.java`.
-
-## Evidence state
-
-- Unit generation: complete/source-bound.
-- Integration generation: complete/source-bound.
-- Test-data mapping: complete, 3 rows mapped.
-- Application-behavior execution: `NOT EXECUTED`.
-- Coverage: `NO DURABLE COVERAGE EVIDENCE`.
-- Packet status: `HUMAN_READABLE_TEST_PACKET_COMPLETE` for narrative/traceability; execution and coverage remain separately blocked.
+Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
