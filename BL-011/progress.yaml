@@ -1,13 +1,33 @@
 backlog_id: BL-011
-checkpoint_run: CYLINDER-PRODUCTION-FIRE-20260903-175851-UTC-RUN-016
+checkpoint_run: CYLINDER-PRODUCTION-FIRE-20260904-092909-IST-RUN-019
+redo_directive: USER_MANDATED_2026-09-04
 eligible_story_denominator: 18
-eligible_rule: EXPLICIT_APPROVAL_AND_POST_APPROVAL_CONFORMANCE_PASS
-human_readable_packets_complete: 18
-unit_test_stories_complete: 18
-integration_test_stories_complete: 18
-test_data_stories_complete: 18
-use_case_end_to_end_stories_complete: 18
-traceability_packets_complete: 18
+completion_basis: FRESH_PER_STORY_REWORK_AND_POLICY_VALIDATION_ONLY
+accepted_already_reworked:
+  - STORY-0012
+freshly_reworked_this_run:
+  - STORY-0001
+  - STORY-0013
+  - STORY-0092
+  - STORY-0098
+  - STORY-0099
+  - STORY-0100
+human_readable_packets_complete: 7
+corrected_percentage: 38.9
+remaining_count: 11
+next_story: STORY-0087
+remaining:
+  - STORY-0087
+  - STORY-0089
+  - STORY-0090
+  - STORY-0108
+  - STORY-0109
+  - STORY-0127
+  - STORY-0128
+  - STORY-0129
+  - STORY-0130
+  - STORY-0131
+  - STORY-0132
 execution:
   unit: NOT_EXECUTED_RUNTIME_UNAVAILABLE
   integration: NOT_EXECUTED_RUNTIME_UNAVAILABLE
@@ -22,40 +42,17 @@ approved_but_not_eligible_due_to_code_drift:
 source_recovery:
   requested_zip: Harinandhan-Cylinder-Backup(20260902-080237).zip
   requested_file_id: file_00000000659c8211857bba6b09282de3
-  exact_library_recovery_this_run: NOT_RETURNED_BY_CURRENT_FILE_LIBRARY_SEARCH
-  exact_materialization_capability_current_session: UNAVAILABLE_FOR_HIDDEN_FILE_ID
-  recovered_local_equivalent: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  exact_library_recovery_this_run: NOT_RETURNED_BY_FILE_LIBRARY_SEARCH
+  recovered_equivalent: Harinandhan-Cylinder-Backup(20260902-163304).zip
+  recovery_file_id: file_00000000fe9c8211869e2c82da911925
   sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
   extracted_files: 1650
   java_files: 1054
-  git_directories: 0
-runtime_probe:
-  java: OPENJDK_21_0_11_AVAILABLE
-  maven: MISSING
-  gradle: MISSING
-  docker: MISSING
-  podman: MISSING
-  maven_wrapper_count: 0
-  gradle_wrapper_count: 0
-  local_maven_repository_files: 0
-  pom_files_present: 10
-  source_test_java_files_present: 30
-static_test_readiness:
-  surefire_name_matched_files: 28
-  dao_testcontainers_test_classes: 24
-  custommapper_non_container_unit_test_classes: 3
-  abstract_testcontainers_base_classes: 1
-  failsafe_it_classes: 1
-  testcontainers_referencing_test_files: 25
-  jacoco_pom_references: 0
-file_library_execution_evidence:
-  new_surefire_results: false
-  new_failsafe_results: false
-  new_jacoco_results: false
-  new_maven_execution_logs: false
 rules:
+  existing_files_are_not_completion_proof: true
+  story_0012_do_not_regenerate_without_material_change: true
   auto_approval: false
   application_code_mutation: NONE
   infer_execution_success: false
   infer_coverage: false
-next_action: EXECUTE_SOURCE_BOUND_BL004_BL005_BL009_SCOPES_WHEN_FAITHFUL_RUNTIME_AVAILABLE_OR_PROCESS_EXPLICIT_DRIFT_MANIFEST_APPROVAL
+next_action: REWORK_STORY_0087_FROM_SOURCE_AND_BL004_BL005_BL009_EVIDENCE
