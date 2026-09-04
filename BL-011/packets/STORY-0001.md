@@ -1,35 +1,109 @@
-# BL-011 Human-Readable Test Packet — STORY-0001 Login
+# BL-011 Human-Readable Test Packet — STORY-0001 Login Screen and Authentication Entry
 
-## Governance
+## 1. Story, approval, conformance and source
 - Source Story: `BL-002/stories/STORY-0001.md`
-- Approval: `APPROVED_AFTER_REWORK`
-- Conformance: `CODE_CONFORMANCE_VERIFIED_PASS`
+- Approval: `APPROVED_AFTER_REWORK` (explicit reapproval 2026-08-31)
+- Approval evidence: `BL-002/approval-evidence/STORY-0001-reapproval-20260831.md`
+- Post-approval conformance: `CODE_CONFORMANCE_VERIFIED_PASS`
+- Governed source SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Source anchors verified in recovered local source:
+  - `LoginController.showLoginPage(error, logout)`
+  - `DailyLoginSuccessHandler.onAuthenticationSuccess(...)`
+  - `DailyLoginReportJpaDao.existsByLoginDate(...)`
+  - `DailyLoginReportDo`
 
-## Business behavior protected
-The `/login` flow must render/handle the governed authentication entry behavior without silently changing the reapproved contract. The test packet protects the controller/service behavior, expected success/failure presentation, and any source-bound authentication validation while keeping historical and revised-contract evidence separate.
+## 2. Business behavior protected
+The Login page is the controlled entry point to protected Cylinder Management functions. `GET /login` renders `final-version-1/login`. If the request contains `error`, the page shows `Invalid username or password.`; if it contains `logout`, it shows `You have been successfully logged out.`.
 
-## Unit Test Story
-Validate the login component with mocked dependencies: successful valid input, invalid credentials/input, null/empty/boundary values defined by the source contract, and governed error handling. No external database state should be mutated by a failed login attempt unless the approved Story explicitly requires an audit side effect.
+Credential submission is handled by Spring Security at `POST /perform_login`. On successful authentication, `DailyLoginSuccessHandler` checks whether today's daily-login report already exists. If not, it persists one row with a non-null login timestamp. It then targets `/ownership-dashboard`. Repeated successful logins on the same date must not create additional daily-login rows.
 
+## 3. Preconditions and test inputs
+- A user may open the Login page with no query parameters, `?error`, `?logout`, or both indicators.
+- Username and password fields are browser-required inputs; empty values are client-blocked in the intended UI flow.
+- Authentication credentials used in runtime tests must be synthetic/authorized; no real password is stored in BL-009 data.
+- Integration tests require PostgreSQL 16, Flyway migrations, JPA and Testcontainers.
+- Database isolation requires the daily-login table to be cleared before each persistence scenario.
+
+## 4. Unit Test Story — BL-004
 Executable: `BL-004/generated-tests/STORY-0001/Story0001LoginUnitTest.java`.
 
-## Integration Test Story
-Exercise the source-bound login path across the MVC/service boundary with the real configured persistence/authentication dependencies available in the faithful runtime. Verify observable response/navigation and failure behavior.
+### UT-01 — Default page render
+**Given** no error/logout query parameter, **when** `showLoginPage(null, null)` runs, **then** the exact login view is returned and neither message attribute exists.
 
+### UT-02 — Invalid authentication feedback
+**Given** the error indicator is present, **when** the login page is rendered, **then** `errorMessage` equals `Invalid username or password.` and the logout message is absent.
+
+### UT-03 — Logout feedback
+**Given** the logout indicator is present, **when** the page is rendered, **then** `logoutMessage` equals `You have been successfully logged out.` and the error message is absent.
+
+### UT-04 — Both source-proved branches
+If both indicators are supplied, both controller branches execute and both model messages are present. This protects exact current-source behavior without inventing mutual exclusion.
+
+### UT-05 — First successful login today
+**Given** `existsByLoginDate(today)` returns false, **when** authentication succeeds, **then** one `DailyLoginReportDo` is saved, its `loginTime` is non-null, and the success target is `/ownership-dashboard`.
+
+### UT-06 — Repeat successful login same day
+**Given** today's login report already exists, **when** authentication succeeds again, **then** the DAO existence check occurs but `save` is not called; navigation still targets `/ownership-dashboard`.
+
+**Mocked dependencies:** DAO, servlet request/response and Spring Security `Authentication`.  
+**Expected persistence:** only UT-05 models a write; UT-01..04 are read/render-only; UT-06 explicitly proves no duplicate save.
+
+## 5. Integration Test Story — BL-005
 Executable: `BL-005/generated-tests/STORY-0001/Story0001LoginIntegrationTest.java`.
 
-## Test Data Story
-Readable data: `BL-009/test-data/STORY-0001.md`; structured rows: `BL-009/test-data/STORY-0001.csv`.
-Seven mapped rows exist. Historical data-contract execution has durable PASS evidence for 7 rows, but revised application-behavior execution remains `NOT EXECUTED`; that historical result is not promoted to revised-contract PASS.
+Environment: PostgreSQL 16 Testcontainers, Asia/Kolkata time zone, Flyway migrations, real JPA DAO.
 
-## Use-case / E2E Story
-**Given** a user reaches the login entry point, **when** valid or invalid authentication input is submitted/processed according to the approved Story, **then** the expected success or governed failure outcome is visible and no unapproved side effect occurs.
+### IT-01 — Generated identity and login timestamp
+Insert a new `DailyLoginReportDo` through the real DAO and flush. Expected: generated primary key, non-null `loginTime`, and row retrievable by ID.
 
-Catalogue: `BL-009/stories/STORY-0001.md`; executable mapping: `BL-009/generated-tests/STORY-0001/Story0001TestDataDrivenTest.java`.
+### IT-02 — Today's date guard changes after persistence
+Start with no rows. Expected `existsByLoginDate(today)=false`. Persist today's row. Expected the same query to return true.
 
-## Evidence state
-- Unit: generated/source-bound, `NOT EXECUTED`.
-- Integration: generated/source-bound, `NOT EXECUTED` for the revised contract.
-- Revised application behavior: `NOT EXECUTED`.
-- Coverage: no revised-contract durable coverage evidence.
-- Packet narrative/traceability: `HUMAN_READABLE_TEST_PACKET_COMPLETE`.
+### IT-03 — Boundary across calendar date
+Persist a row timestamped yesterday. Expected `existsByLoginDate(LocalDate.now())=false`. This protects the date-scoped duplicate guard instead of merely checking that any historical row exists.
+
+**Database outcome:** exactly the seeded/persisted rows for each isolated case; no manual SQL or H2 substitution is part of the governed integration path.
+
+## 6. Test Data Story — BL-009
+Human-readable data: `BL-009/test-data/STORY-0001.md`; structured data: `BL-009/test-data/STORY-0001.csv`; executable data-contract mapping: `BL-009/generated-tests/STORY-0001/Story0001TestDataDrivenTest.java`.
+
+Seven governed rows cover:
+1. blank username → browser/client blocked, zero daily-login writes;
+2. blank password → browser/client blocked, zero writes;
+3. invalid credentials → authentication failure, zero writes, invalid-credential outcome;
+4. logout feedback → success message, no credential required;
+5. first valid login today → success target `/ownership-dashboard`, one daily-login row;
+6. repeated valid login same day → success target with row count remaining one;
+7. persistence identity → generated ID plus non-null login timestamp.
+
+**Boundary/duplicate rule:** repeated successful login on the same date is the business duplicate/idempotency scenario.  
+**Security rule:** successful rows use `<RUNTIME_AUTHORIZED_TEST_SECRET>`; no production secret is stored.
+
+## 7. Use-case / End-to-End Test Story
+**Given** an unauthenticated user reaches the Login page, **when** the user supplies valid credentials and authentication succeeds, **then** protected access is granted, the user is routed to `/ownership-dashboard`, and at most one daily-login report exists for that calendar date.
+
+**Given** invalid credentials, **when** Spring Security returns the user to `/login?error`, **then** the page shows the exact invalid-credential message and no successful authenticated-session outcome is claimed.
+
+**Given** the user has logged out, **when** `/login?logout` is rendered, **then** the logout-success message is visible.
+
+Browser-required-field behavior and the password-visibility toggle require UI/runtime evidence; their existence in the Story/test-data catalogue does not mean they have been executed.
+
+## 8. Traceability
+- BL-002: `STORY-0001.md`
+- BL-004: `Story0001LoginUnitTest.java`
+- BL-005: `Story0001LoginIntegrationTest.java`
+- BL-009 catalogue/data: `BL-009/stories/STORY-0001.md`, `BL-009/test-data/STORY-0001.md`, `STORY-0001.csv`
+- BL-009 executable data mapping: `Story0001TestDataDrivenTest.java`
+
+## 9. Execution and coverage status
+- Unit test execution: `NOT EXECUTED`
+- Integration execution: `NOT EXECUTED`
+- UI/application-behavior execution: `NOT EXECUTED`
+- Durable JaCoCo evidence: `NONE`
+- Coverage percentage: `NOT INFERRED`
+Generated source and data-contract mapping are preparation evidence only.
+
+## 10. BL-011 validation outcome
+Validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`: business behavior, preconditions, inputs, validation, happy/negative/boundary/duplicate scenarios, API/UI/database outcomes, executable references, four-backlog traceability, and execution/coverage separation are present.
+
+Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
