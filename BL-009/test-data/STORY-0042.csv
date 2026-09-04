@@ -1,0 +1,13 @@
+case_id,scenario,customer_name,gst_number,phone,address_line1,address_type,country,state,city,expected
+TC-0042-01,VALID,Acme Industrial Gases,33ABCDE1234F1Z5,9876543210,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,SAVE_GRAPH
+TC-0042-02,MISSING_NAME,,33ABCDE1234F1Z5,9876543210,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,VALIDATION_ERROR
+TC-0042-03,INVALID_GST,Acme Industrial Gases,BADGST,9876543210,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,VALIDATION_ERROR
+TC-0042-04,DUPLICATE_GST,Acme Industrial Gases,33ABCDE1234F1Z5,9876543210,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,DUPLICATE_REJECTED
+TC-0042-05,INVALID_PHONE,Acme Industrial Gases,33ABCDE1234F1Z5,123,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,VALIDATION_ERROR
+TC-0042-06,MISSING_ADDRESS,Acme Industrial Gases,33ABCDE1234F1Z5,9876543210,,Delivery,India,Tamil Nadu,Coimbatore,VALIDATION_ERROR
+TC-0042-07,MISSING_ADDRESS_TYPE,Acme Industrial Gases,33ABCDE1234F1Z5,9876543210,12 Main Road,,India,Tamil Nadu,Coimbatore,VALIDATION_ERROR
+TC-0042-08,INVALID_LOCATION,Acme Industrial Gases,33ABCDE1234F1Z5,9876543210,12 Main Road,Delivery,Unknown,Unknown,Unknown,VALIDATION_ERROR
+TC-0042-09,SUCCESS_REDIRECT,Acme Industrial Gases,33ABCDE1234F1Z5,9876543210,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,REDIRECT_OWNERSHIP_DASHBOARD
+TC-0042-10,ADDRESS_TYPE_GAP,Acme Industrial Gases,33ABCDE1234F1Z5,9876543210,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,CURRENT_SOURCE_GAP_EXPOSED
+TC-0042-11,REPOSITORY_TRANSACTION,Acme Industrial Gases,33ABCDE1234F1Z5,9876543210,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,REPOSITORY_SAVE_BOUNDARY
+TC-0042-12,REDISPLAY_INVALID,Acme Industrial Gases,BADGST,9876543210,12 Main Road,Delivery,India,Tamil Nadu,Coimbatore,INPUTS_AND_ERRORS_RESTORED
