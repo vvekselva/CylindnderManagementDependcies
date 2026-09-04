@@ -108,6 +108,15 @@ All primary and mapped dependency Stories are explicitly approved. Requested dow
 
 When the user types a lookup/master-data candidate such as Address Type, database-backed matches must be shown before insertion where applicable. Submit-time service validation remains authoritative and must reject normalized business-equivalent duplicates while excluding the current row on update. The cross-story rule remains `lookup-insertion-precheck-policy.yaml`.
 
+
+<a id="suc-020"></a>
+## SUC-020 — Add Stop / Challan Photo
+
+**Release:** R1  
+**Use-case approval:** Partially approved
+
+STORY-0051 is now `APPROVED_AFTER_REWORK` with fan-out requested. It covers the read-only Add Stop entry/status gate and loading of customer/supplier assigned challan-book heat-map data. STORY-0048, STORY-0049 and STORY-0050 plus dependencies STORY-0086, STORY-0091, STORY-0096, STORY-0097, STORY-0102 and STORY-0107 remain pending.
+
 <a id="suc-021"></a>
 ## SUC-021 — Trip Return
 
