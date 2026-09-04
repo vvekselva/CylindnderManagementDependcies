@@ -62,8 +62,12 @@ rules:
   downstream_fanout_requires_conformance_pass: true
   missing_code_evidence_is_blocker: true
   missing_execution_evidence_is_blocker_for_execution_status: true
+  every_individual_test_case_requires_adjacent_code: true
+  shared_code_section_cannot_satisfy_multiple_case_sections_by_itself: true
+  method_name_without_body_is_incomplete: true
+  per_case_code_must_be_immediately_adjacent: true
 completion:
-  story_packet_terminal_status: HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE
+  story_packet_terminal_status: HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE
   validation_requires:
     - README
     - human-readable-testing-policy.yaml
@@ -72,6 +76,7 @@ completion:
     - inline_integration_test_code_when_applicable
     - inline_test_data_or_mapping_code
     - code_path_trace
+    - per_test_case_adjacent_code
 status_vocabulary:
   - NOT_STARTED
   - IN_PROGRESS
@@ -82,3 +87,4 @@ status_vocabulary:
   - APPROVAL_OR_CONFORMANCE_GATED
   - NEEDS_CLARIFICATION
   - HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE
+  - HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE
