@@ -188,6 +188,31 @@ Test-data catalogue: `BL-009/test-data/STORY-0012.md` and `BL-009/test-data/STOR
 
 **Executable test method:** `tc001202MetricFailureFallback()`
 
+**Executable code for this exact test case:**
+
+```java
+@Test
+void tc001202MetricFailureFallback() {
+    when(summaryMetricLookupFetchService.fetchChallanBookTotalMetrics())
+        .thenThrow(new RuntimeException("unavailable"));
+
+    ModelAndView result = controller.showAddBookForm();
+
+    assertEquals("final-version-1/add-challan-book.html", result.getViewName());
+    assertTrue(((List<?>) result.getModel()
+        .get("challanBookTotalMetrics")).isEmpty());
+    assertTrue(((List<?>) result.getModel()
+        .get("challanBookActiveMetrics")).isEmpty());
+    assertTrue(((List<?>) result.getModel()
+        .get("challanBookUnusedMetrics")).isEmpty());
+    assertEquals(
+        "Summary metrics are temporarily unavailable.",
+        result.getModel().get("summaryMetricErrorMessage"));
+}
+```
+
+**Code-level proof:** The mock forces the exact metric-fetch failure described by TC-02. The assertions then prove that the controller still returns the add-form view, replaces all three metric groups with empty collections, and exposes the governed fallback message.
+
 **Traceability purpose:** Maps the BL-009 metric-failure test-data condition to an executable assertion set.
 
 ---
