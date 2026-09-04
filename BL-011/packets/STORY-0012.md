@@ -1,5 +1,9 @@
 # BL-011 Human-Readable Test Packet — STORY-0012 Challan Book Add Form
 
+## Rework state
+Reworked under the BL-011 code-required policy. Explanation-only or path-only evidence is not sufficient.
+
+## Reviewer-readable business/test narrative
 ## 1. Story and Test Scope
 
 - Source Story: `BL-002/stories/STORY-0012.md`
@@ -235,3 +239,144 @@ No test execution or coverage result is inferred from generated source files.
 `HUMAN_READABLE_TEST_PACKET_REWORKED_DETAILED_TEST_CASES`
 
 This packet now documents the purpose, setup, action, expected behavior, assertions, persistence expectations, and executable trace for each currently generated STORY-0012 test implementation.
+
+## Production Code Evidence
+Source package: verified frozen/recovered Cylinder application source.
+File: `cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/controller/test/ChallanBookWebController.java`
+
+```java
+@GetMapping("/add-form")
+public ModelAndView showAddBookForm() {
+    ModelAndView modelAndView =
+        new ModelAndView("final-version-1/add-challan-book.html");
+    ChallanBookIngestionRequestDto formBackingObject =
+        new ChallanBookIngestionRequestDto();
+    modelAndView.addObject("ingestionRequest", formBackingObject);
+    populateSummaryMetrics(modelAndView);
+    return modelAndView;
+}
+```
+
+## Unit Test Story + Code — BL-004
+Executable: `BL-004/generated-tests/STORY-0012/Story0012ChallanBookFormUnitTest.java`
+
+```java
+    private ChallanBookWebController controller;
+
+    @Test
+    @DisplayName("STORY-0012 UT-01 GET renders Challan Book form with blank request and all metric groups")
+    void getRendersFormAndMetricGroups() {
+        SummaryMetricLookupDto total = new SummaryMetricLookupDto();
+        SummaryMetricLookupDto active = new SummaryMetricLookupDto();
+        SummaryMetricLookupDto unused = new SummaryMetricLookupDto();
+        when(summaryMetricLookupFetchService.fetchChallanBookTotalMetrics()).thenReturn(List.of(total));
+        when(summaryMetricLookupFetchService.fetchChallanBookActiveMetrics()).thenReturn(List.of(active));
+        when(summaryMetricLookupFetchService.fetchChallanBookUnusedPageMetrics()).thenReturn(List.of(unused));
+
+        ModelAndView result = controller.showAddBookForm();
+
+        assertEquals("final-version-1/add-challan-book.html", result.getViewName());
+        assertNotNull(result.getModel().get("ingestionRequest"));
+        assertEquals(List.of(total), result.getModel().get("challanBookTotalMetrics"));
+        assertEquals(List.of(active), result.getModel().get("challanBookActiveMetrics"));
+        assertEquals(List.of(unused), result.getModel().get("challanBookUnusedMetrics"));
+    }
+
+    @Test
+    @DisplayName("STORY-0012 UT-02 metric failure does not turn the read-only GET into a write or failed page")
+    void metricFailureRendersEmptyMetricGroupsAndVisibleErrorModel() {
+        when(summaryMetricLookupFetchService.fetchChallanBookTotalMetrics())
+                .thenThrow(new RuntimeException("metric store unavailable"));
+
+        ModelAndView result = controller.showAddBookForm();
+```
+
+The unit-test excerpt above is the executable evidence for mocked/component-level behavior. It must be read with the narrative's positive, negative, boundary and duplicate/idempotency rules where applicable.
+
+## Integration Test Story + Code — BL-005
+Executable: `BL-005/generated-tests/STORY-0012/Story0012ChallanBookFormIntegrationTest.java`
+
+```java
+@DataJpaTest
+@ContextConfiguration(classes = TestApplication.class)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class Story0012ChallanBookFormIntegrationTest {
+
+    @Container
+    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16")
+            .withEnv("TZ", "Asia/Kolkata")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        POSTGRES.start();
+        registry.add("spring.datasource.url", () -> POSTGRES.getJdbcUrl() + "?options=-c%20TimeZone%3DAsia%2FKolkata");
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+    }
+
+    @Configuration
+    static class FlywayConfig {
+        @Bean(initMethod = "migrate")
+        Flyway flyway() {
+            return Flyway.configure()
+                    .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
+                    .locations("classpath:db/migration")
+                    .load();
+```
+
+The integration excerpt shows the real-layer/database/container test implementation where applicable. Generated code does not imply it executed.
+
+## Test Data / Executable Mapping Code — BL-009
+Executable: `BL-009/generated-tests/STORY-0012/Story0012TestDataDrivenTest.java`
+
+```java
+    @InjectMocks ChallanBookWebController controller;
+
+    @Test
+    void tc001201FormAndMetrics() {
+        SummaryMetricLookupDto metric = new SummaryMetricLookupDto();
+        when(summaryMetricLookupFetchService.fetchChallanBookTotalMetrics()).thenReturn(List.of(metric));
+        when(summaryMetricLookupFetchService.fetchChallanBookActiveMetrics()).thenReturn(List.of(metric));
+        when(summaryMetricLookupFetchService.fetchChallanBookUnusedPageMetrics()).thenReturn(List.of(metric));
+        ModelAndView result = controller.showAddBookForm();
+        assertEquals("final-version-1/add-challan-book.html", result.getViewName());
+        assertNotNull(result.getModel().get("ingestionRequest"));
+        assertEquals(1, ((List<?>) result.getModel().get("challanBookTotalMetrics")).size());
+        assertEquals(1, ((List<?>) result.getModel().get("challanBookActiveMetrics")).size());
+        assertEquals(1, ((List<?>) result.getModel().get("challanBookUnusedMetrics")).size());
+    }
+
+    @Test
+    void tc001202MetricFailureFallback() {
+        when(summaryMetricLookupFetchService.fetchChallanBookTotalMetrics()).thenThrow(new RuntimeException("unavailable"));
+        ModelAndView result = controller.showAddBookForm();
+        assertEquals("final-version-1/add-challan-book.html", result.getViewName());
+        assertTrue(((List<?>) result.getModel().get("challanBookTotalMetrics")).isEmpty());
+        assertTrue(((List<?>) result.getModel().get("challanBookActiveMetrics")).isEmpty());
+        assertTrue(((List<?>) result.getModel().get("challanBookUnusedMetrics")).isEmpty());
+        assertEquals("Summary metrics are temporarily unavailable.", result.getModel().get("summaryMetricErrorMessage"));
+    }
+}
+
+```
+
+Readable/CSV test data remains governed under `BL-009/test-data/STORY-0012.md` and `BL-009/test-data/STORY-0012.csv` when present.
+
+## Code-path trace
+BL-002 approved Story -> frozen production code above -> BL-004 unit code -> BL-005 integration code -> BL-009 data/use-case mapping -> BL-011 reviewer packet.
+
+## Execution and coverage
+- Packet/code rework: `COMPLETE`
+- Unit execution: `NOT EXECUTED`
+- Integration execution: `NOT EXECUTED`
+- Application/E2E execution: `NOT EXECUTED`
+- Durable coverage evidence: `NONE`
+- Coverage percentage: `NOT INFERRED`
+
+## BL-011 validation
+Validated against the code-required `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`. The packet contains actual inline production code and governed BL-004/005/009 code evidence; code presence is not treated as execution evidence.
+
+Status: `HUMAN_READABLE_TEST_PACKET_WITH_CODE_COMPLETE`.
