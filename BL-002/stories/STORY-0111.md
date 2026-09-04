@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /domainLookup/product/save`
 - Controller: `DomainLookupController.saveProduct`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -22,6 +22,6 @@ The recovered source therefore exposes two current conformance gaps: update dupl
 
 ## Completion and approval gate
 
-The submitted identity/reference contract, controller/cache outcomes, service mapping/save behavior and exact current defects are source-bound. STORY-0111 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The submitted identity/reference contract, controller/cache outcomes, service mapping/save behavior and exact current defects are source-bound. STORY-0111 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with downstream fan-out requested.
 
-Approval remains pending; no application-code or BL-010 mutation occurred.
+Approval is explicitly recorded. Existing drift/code-remediation packets remain independently approval-gated; no application-code or BL-010 mutation is authorized by this Story approval.
