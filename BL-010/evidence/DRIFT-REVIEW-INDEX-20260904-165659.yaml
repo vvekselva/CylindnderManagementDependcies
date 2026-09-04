@@ -1,0 +1,26 @@
+run_id: CYL-PROD-20260904-165659-08
+purpose: durable_user_review_index_only
+application_code_changed: false
+bl010_implementation_executed: false
+approval_required_before_code_change: true
+source_repository: vvekselva/CylinderManagement
+source_ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+source_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+review_packets:
+  - story: STORY-0013
+    manifests: [DEV-0002-STORY-0013-null-request-drift-review-20260902-2301.yaml, DEV-0003-STORY-0013-sheet-range-drift-review-20260902-2301.yaml, DEV-0004-STORY-0013-duplicate-book-code-drift-review-20260902-2302.yaml]
+    state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+  - story: STORY-0129
+    manifest: BL-002/evidence/STORY-0129-address-type-update-drift-review-20260902.yaml
+    state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+  - story: STORY-0131
+    manifest: BL-002/evidence/STORY-0131-state-save-drift-review-20260902.yaml
+    state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+  - story: STORY-0132
+    manifest: BL-002/evidence/STORY-0132-city-save-drift-review-20260902.yaml
+    state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+execution_runtime:
+  maven: UNAVAILABLE
+  tests: NOT_EXECUTED_RUNTIME_UNAVAILABLE
+  coverage: NO_DURABLE_COVERAGE_EVIDENCE
+scope_expansion_rule: Any implementation outside an explicitly approved exact manifest requires new user approval.
