@@ -1,7 +1,14 @@
 scheduler_task: Cylinder Production Fire
 observed_scheduled_fire_time: '2026-09-04T14:57:49+05:30'
 receipt_time: '2026-09-04T14:57:49+05:30'
-state: RUN_LINKED
+state: TERMINALIZED_RESUMABLE
 intended_scope: CONTINUOUS
 run_id: CYL-PROD-20260904-145749-06
-orchestrator_state: ORCHESTRATOR_STARTED
+orchestrator_state: CHECKPOINT_PERSISTED
+terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+termination_time: '2026-09-04T15:28:30+05:30'
+productive_elapsed_seconds: 1841
+reworked_this_run: [STORY-0090, STORY-0108, STORY-0109, STORY-0127, STORY-0128]
+next_story: STORY-0129
+bl011_corrected_progress: '14/18 = 77.8%'
+resume_required: true
