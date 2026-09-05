@@ -22,7 +22,7 @@ SUC-020,Add Stop / Challan Photo,R1,STORY-0048;STORY-0049;STORY-0050;STORY-0051,
 SUC-021,Trip Return,R1,STORY-0052;STORY-0053,,APPROVED,STORY-0052;STORY-0053,,Both Trip Return Stories explicitly approved and fan-out requested; both include the Yard Audit/Yard Stock Check and later challan reconciliation lifecycle; post-approval conformance pending
 SUC-022,Customer Demands,R1,STORY-0054;STORY-0055;STORY-0056,,APPROVED,STORY-0054;STORY-0055;STORY-0056,,All Customer Demands Stories explicitly approved and fan-out requested; post-approval conformance pending
 SUC-023,Trip Review,R1,STORY-0057;STORY-0058;STORY-0084,,APPROVED,STORY-0057;STORY-0058;STORY-0084,,All Trip Review Stories explicitly approved and fan-out requested; post-approval conformance pending
-SUC-024,Supplier Lookup / List Support,R1,STORY-0059,,PENDING_USER_APPROVAL,,STORY-0059,Shared supplier listing support
+SUC-024,Supplier Lookup / List Support,R1,STORY-0059,,APPROVED,STORY-0059,,STORY-0059 explicitly approved and fan-out requested; post-approval conformance pending
 SUC-025,Vehicle Loads Listing,R1,STORY-0060;STORY-0061,STORY-0107;STORY-0126,PARTIALLY_APPROVED,STORY-0107,STORY-0060;STORY-0061;STORY-0126,List views plus live on-vehicle cylinder dependency and selected vehicle-load detail/fetch capability
 SUC-026,Vehicle Trips Listing,R1,STORY-0062,,PENDING_USER_APPROVAL,,STORY-0062,Vehicle trip list
 SUC-027,Party Custody Traceability,R1,STORY-0063,,PENDING_USER_APPROVAL,,STORY-0063,Traceability screen
