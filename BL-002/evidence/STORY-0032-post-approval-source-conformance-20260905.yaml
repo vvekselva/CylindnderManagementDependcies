@@ -1,0 +1,19 @@
+story_id: STORY-0032
+run_id: CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002
+classification: CODE_CONFORMANCE_VERIFIED_PASS
+source: Harinandhan-Cylinder-Backup(20260905-060414).zip@60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_engine: EXTRACTED_LOCAL_SOURCE
+approved_behavior_matches_current_source: true
+anchors:
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/misc/web/controller/WalkinSaleIngestionController.java#doGet
+  - cylindermanagement.web/src/main/resources/templates/final-version-1/WalkinSaleIngestion.html
+checks:
+  get_endpoint: PASS
+  empty_request_initialization: PASS
+  delivery_challan_default: PASS
+  page_render_and_backlink: PASS
+  get_is_read_only: PASS
+application_code_changed: false
+execution_inferred: false
+coverage_inferred: false
+next_action: FANOUT_BL004_BL005_BL009_BL011
