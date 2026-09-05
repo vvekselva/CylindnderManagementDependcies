@@ -9,6 +9,8 @@
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Business-behavior rework: COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Canonical Use Case review: `BL-002/usecases/SUC-015.md`
+- Legacy navigation note: `BL-002/usecase-review.md#suc-015` is superseded by the dedicated SUC-015 artifact; this Story itself is **not superseded**.
 
 ## Human-readable story
 
