@@ -2,9 +2,12 @@ scheduler_task: "Cylinder Production Fire"
 fire_id: "20260905T122700+0530"
 observed_scheduled_fire_time: "2026-09-05T12:27:00+05:30"
 receipt_time: "2026-09-05T12:27:00+05:30"
-state: "RUN_LINKED"
+state: "TERMINATED"
 orchestrator_state: "ORCHESTRATOR_STARTED"
 intended_scope: "CONTINUOUS"
 run_id: "run-20260905T122700+0530-cpf"
-terminal_classification: null
-termination_time: null
+terminal_classification: "HARD_GLOBAL_BLOCKER_REQUIRED_PRIMARY_SOURCE_NOT_VISIBLE_AFTER_RECOVERY_ATTEMPTS"
+termination_time: "2026-09-05T12:29:32+05:30"
+elapsed_seconds: 152
+productive_elapsed_seconds: 152
+resumable: true
