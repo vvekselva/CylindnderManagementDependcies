@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /stop`
 - Controller: `CustomerStopSelectionController.processStopIngestion`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_FANOUT_REQUESTED
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -22,4 +22,13 @@ The exact selected identities, browser invalidation/reset behavior, service/DAO 
 
 ## Completion and approval gate
 
-STORY-0085 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no application-code or BL-010 mutation occurred.
+STORY-0085 is `APPROVED_AFTER_REWORK`. The user explicitly approved SUC-034 and authorized fan-out on 2026-09-05; no application-code mutation is implied by this approval.
+
+## Approval and fan-out disposition
+
+- User decision: **SUC-034 APPROVED AND FAN OUT**
+- Story consequence: **STORY-0085 APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval gate: source/code conformance required before executable downstream claims
+- Fan-out targets: BL-004, BL-005, BL-009, BL-011
+- Runtime/coverage rule: do not infer execution or coverage without durable evidence
