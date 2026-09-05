@@ -1,0 +1,5 @@
+test_case_id,input_or_precondition,outcome_class,expected_current_source_result
+"TC-0033-01","valid request","SUCCESS","exact request delegated and redirect returned"
+"TC-0033-02","validator raises InvalidInputParameterException","VALIDATION_ERROR","same form rendered with controlled validation message"
+"TC-0033-03","service raises CylinderManagementApplicationException","APPLICATION_ERROR","same form rendered with controlled processing message"
+"TC-0033-04","delivery + empty return","SERVICE_PATH","transactional service owns order/walk-in pickup/yard entry sequencing"
