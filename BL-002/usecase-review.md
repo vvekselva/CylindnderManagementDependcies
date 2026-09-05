@@ -271,14 +271,22 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 ## SUC-020 — Add Stop / Challan Photo
 
 **Release:** R1  
-**Use-case approval:** Partially approved  
+**Use-case approval:** Partially approved — STORY-0051 materially reworked and awaiting reapproval
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0048](stories/STORY-0048.md) | Primary | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
-| [STORY-0049](stories/STORY-0049.md) | Primary | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
-| [STORY-0050](stories/STORY-0050.md) | Primary | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
-| [STORY-0051](stories/STORY-0051.md) | Primary — Add Stop page/status gate | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0048](stories/STORY-0048.md) | Primary — challan photo delete | **APPROVED_AFTER_REWORK** |
+| [STORY-0049](stories/STORY-0049.md) | Primary — challan photo upload | **APPROVED_AFTER_REWORK** |
+| [STORY-0050](stories/STORY-0050.md) | Primary — AJAX photo upload | **APPROVED_AFTER_REWORK** |
+| [STORY-0051](stories/STORY-0051.md) | Primary — interactive Add Stop customer/supplier selection | **REAPPROVAL_REQUIRED_AFTER_MATERIAL_REWORK** |
+| [STORY-0086](stories/STORY-0086.md) | Dependency — customer address search | **APPROVED_AFTER_REWORK** |
+| [STORY-0091](stories/STORY-0091.md) | Dependency — customer search | **APPROVED_AFTER_REWORK** |
+| [STORY-0096](stories/STORY-0096.md) | Dependency — cylinders by customer | **APPROVED_AFTER_REWORK** |
+| [STORY-0097](stories/STORY-0097.md) | Dependency — cylinders by supplier | **APPROVED_AFTER_REWORK** |
+| [STORY-0102](stories/STORY-0102.md) | Dependency — supplier search | **APPROVED_AFTER_REWORK** |
+| [STORY-0107](stories/STORY-0107.md) | Dependency — cylinders on vehicle | **APPROVED_AFTER_REWORK** |
+
+Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The supplier submit handler still requires exact source-to-Story/use-case traceability and must not be invented.
 
 [Back to register](screen-usecase-register.md)
 
