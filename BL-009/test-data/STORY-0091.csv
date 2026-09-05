@@ -1,0 +1,3 @@
+test_case_id,input_or_precondition,service_outcome,expected_current_source_result
+"TC-0091-01","Acme","SUCCESS","searchTerm preserved and same service response"
+"TC-0091-02","Acme","GOVERNED_EXCEPTION","non-null empty response DTO"
