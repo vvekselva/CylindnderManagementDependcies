@@ -5,8 +5,8 @@
 - Functional area: Challan Monitoring
 - Controller: `ChallanHeatmapController.showHeatmap(...)`
 - View: `final-version-1/ChallanHeatmapDashboard`
-- Approval: NOT_APPROVED
-- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
+- Business-behavior rework: APPROVED_AFTER_REWORK
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Business purpose
@@ -56,6 +56,13 @@ This page is a monitoring/read capability. It does not itself mark pages used/mi
 
 No controller-specific friendly error state is defined here; `CylinderManagementApplicationException` is declared by the controller and is allowed to propagate rather than being converted into a page-local error message.
 
-## Rework gate
+## Approval and fan-out disposition
 
-**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. Exact controller, template, service, database view queries, filters, calculations and visible empty state are frozen-source bound. No automatic approval or revised BL-004/BL-005/BL-009 fan-out is authorized before explicit user approval/reapproval.
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval gate: mandatory source/code conformance must pass before downstream executable generation/execution is treated as eligible
+- Fan-out targets after conformance: BL-004, BL-005, BL-009, BL-011
+- Runtime/coverage rule: do not infer execution or coverage without durable evidence
+
+This approval does not authorize application-code mutation. If post-approval conformance detects drift, prepare the governed exact drift/code-change manifest for explicit user approval before any BL-010 or application-source change.
