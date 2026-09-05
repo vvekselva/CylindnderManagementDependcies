@@ -1,0 +1,19 @@
+run_id: cylinder-prod-fire-20260905T084700+0530
+directive: USER_MANDATED_BL011_REDO
+accepted_as_already_reworked: STORY-0012
+reworked_this_run: []
+remaining_ids: [STORY-0001, STORY-0013, STORY-0087, STORY-0089, STORY-0090, STORY-0092, STORY-0096, STORY-0098, STORY-0099, STORY-0100, STORY-0102, STORY-0107, STORY-0108, STORY-0109, STORY-0127, STORY-0128, STORY-0129, STORY-0130, STORY-0131, STORY-0132]
+next_story: STORY-0001
+corrected_percentage: 4.8
+validation:
+  STORY-0012: ACCEPTED_AS_ALREADY_REWORKED_BY_EXPLICIT_USER_DIRECTIVE
+  remaining: BLOCKED_AWAITING_GOVERNED_SOURCE_MATERIALIZATION
+source_blocker:
+  file: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  file_id: file_00000000659c8211857bba6b09282de3
+  search_attempted: true
+  materialization_attempted: true
+  result: FILE_NOT_VISIBLE
+execution_evidence_separate: true
+runtime_execution_claim: NOT_EXECUTED
+coverage_claim: NO_DURABLE_COVERAGE_EVIDENCE
