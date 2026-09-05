@@ -8,14 +8,10 @@
 - Human-readable test data: `BL-009/test-data/STORY-0086.md`
 - Executable mapping: `BL-004/generated-tests/STORY-0086/Story0086UnitTest.java`
 
-## Scenarios
-
 | ID | Input / precondition | Service outcome | Expected current-source result |
 |---|---|---|---|
 | TC-0086-01 | customerId 77 | SUCCESS | searchTerm=77 and same service response |
 | TC-0086-02 | blank customerId | NO_CALL | service not invoked and no usable response |
 | TC-0086-03 | customerId 77 | GOVERNED_EXCEPTION | non-null empty response DTO |
 
-## Execution status
-
-Generated and mapped only. **NOT_EXECUTED** in this fire; no PASS or coverage is inferred.
+Execution: **NOT_EXECUTED**; no PASS or coverage inferred.
