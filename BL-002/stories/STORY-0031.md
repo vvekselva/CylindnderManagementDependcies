@@ -5,8 +5,8 @@
 - Functional area: Ownership Obligation
 - Controller: `OwnershipObligationDashboardController.showOwnershipObligationDashboard(...)`
 - View: `final-version-1/OwnershipObligationDashboard`
-- Approval: NOT_APPROVED
-- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Business-behavior rework: APPROVED_AFTER_REWORK
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Business purpose
@@ -81,4 +81,4 @@ Important testing boundaries are that headline metrics and top-party summaries a
 
 ## Rework gate
 
-**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. Controller, template, service calculations, DAO filters and underlying custody/customer/supplier/cylinder reads are frozen-source bound. No automatic approval and no revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
+**APPROVED_AFTER_REWORK**. Explicit user approval was recorded on 2026-09-05. Post-approval code conformance remains mandatory before BL-004/BL-005/BL-009 revised fan-out. The governed application-source package must be recovered and source-bound before conformance can be marked PASS; generated or queued test work must not be treated as executed evidence.
