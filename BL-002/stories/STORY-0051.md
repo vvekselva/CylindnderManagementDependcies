@@ -1,82 +1,127 @@
-# STORY-0051 — Open Add Stop Page
+# STORY-0051 — Add Stop Interactive Selection Workflow
 
 ## Status
 
 - Release: R1
 - Endpoint: `GET /add-stop`
-- Approval: `APPROVED_AFTER_REWORK`
-- Review state: `APPROVED_AFTER_REWORK`
-- Rework state: `APPROVED_AFTER_REWORK`
-- Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE`
+- Approval: `REAPPROVAL_REQUIRED_AFTER_MATERIAL_REWORK`
+- Review state: `BUSINESS_BEHAVIOR_REWORKED_AWAITING_USER_REAPPROVAL`
+- Rework state: `MATERIAL_SCOPE_EXPANSION_2026-09-05`
+- Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE_REWORKED`
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
-- Source intake evidence: `.orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237.yaml`
+- Prior approval: retained for audit only; it covered the earlier page-load contract and does not automatically approve this expanded workflow.
+- Prior post-approval conformance: invalidated for the expanded contract; rerun required after reapproval.
 - Story auto-approval: forbidden
 
 ## Human-readable story
 
-As an authorized Cylinder Management user handling an active vehicle load, I want to open the Add Stop page for a customer or supplier stop so that office challan entry is allowed only after the trip has reached the accepted return/proceeding state and the correct stop-specific challan data is loaded.
+As an authorized Cylinder Management user working with an active vehicle load, I want the Add Stop workflow to open the correct Customer or Supplier stop page, let me choose the party, show the cylinders relevant to that party together with the cylinders currently on the vehicle, let me select the cylinders participating in the exchange, and then continue into the appropriate submit use case so that the physical cylinder exchange at the stop is captured consistently.
 
-## Exact request contract
+The Story is not limited to rendering the initial page. It covers the complete interactive selection journey from `GET /add-stop` until the user has a valid set of selected identities ready for the downstream stop-submit transaction.
 
-`AddStopController.showStopPage(...)` is `@GetMapping("/add-stop")` and requires two request parameters:
+## Entry contract and trip gate
 
-- `vehicleLoadId` — required `Long`;
-- `actionType` — required `String`.
+`AddStopController.showStopPage(...)` is `@GetMapping("/add-stop")` and requires:
 
-The controller first calls `TripReturnWorkflowService.getTripStatusByVehicleLoadId(vehicleLoadId)`.
+- `vehicleLoadId: Long`;
+- `actionType: String`.
 
-## Trip-status resolution and guard
+The controller resolves the trip status from the vehicle load. Challan/stop entry is allowed only for the accepted `Returned` or `Proceeding` states. A disallowed or missing state redirects back to the vehicle-load detail flow with the governed error message.
 
-`TripReturnWorkflowService.getTripStatusByVehicleLoadId(...)` loads the vehicle load through `VehicleLoadJpaDao.findById(vehicleLoadId)`. Missing load raises `IllegalArgumentException`. The service follows `VehicleLoadDo -> VehicleTripDo -> VehicleTripStatusDo` and returns the trip status name, or null when the trip/status link is absent.
+## Customer Stop interactive flow
 
-`AddStopController.isChallanEntryAllowed(...)` accepts only status `Returned` or `Proceeding`, case-insensitively.
+When `actionType = CustomerStop`, the Customer Stop page is loaded.
 
-Any other/null status is rejected before stop-page rendering. The controller returns `redirect:/vehicle-load/fetch?vehicleLoadId={id}` and adds `errorMessage = Trip must be marked Returned before office challan entry is allowed.`
+After the page is visible, the user can:
 
-## Customer-stop branch
+1. Search and select a customer using **STORY-0091 — Customer Search**.
+2. Preserve the selected persistent customer ID as the identity for all dependent reads.
+3. Load the selected customer's current cylinder holdings using **STORY-0096 — Cylinders by Customer**.
+4. Load cylinders currently available on the active vehicle/load using **STORY-0107 — Cylinders on Vehicle** where the customer-stop exchange requires vehicle stock.
+5. Display the two logical cylinder groups separately so the user can understand:
+   - cylinders presently held by the customer that may be picked up/returned;
+   - cylinders presently on the vehicle that may be delivered to the customer.
+6. Allow the user to select the exact persistent cylinder IDs from either/both groups according to the stop movement being performed.
+7. Clear dependent cylinder selections whenever the customer identity changes, so a cylinder selected for one customer cannot leak into another customer's stop.
+8. Continue to the customer stop submit use case only after required party/cylinder/challan inputs are present.
 
-When `actionType` equals `CustomerStop`, the controller renders:
+### Customer submit handoff
 
-`with-menu/Customerstopselectionpage-withoutAutoChallanUpdate`
+The source-mapped submit operation is:
 
-and loads two assigned challan-book families through `ChallanHeatmapFetchService`:
+- **SUC-034 — Delivery Stop Submission**
+- **STORY-0085 — POST /stop**
 
-- `DELIVERY_CHALLAN` -> model keys `customerDeliveryAssignedBooks` and `customerDeliveryPageWindowByBook`;
-- `EMPTY_PICKUP_CHALLAN` -> model keys `customerEmptyPickupAssignedBooks` and `customerEmptyPickupPageWindowByBook`.
+STORY-0085 owns the transaction/persistence effects after the customer, address, movement cylinders, challan leaf/photo and other required stop inputs have been selected.
 
-Each request carries `VEHICLE_LOAD_ID` and `ASSIGNED_BOOKS_ONLY=true`. A governed service failure supplies an empty list/map and the applicable customer challan error message rather than aborting the entire page.
+## Supplier Stop interactive flow
 
-The visible customer template consumes these model values to render assigned books/page windows and the related challan-photo upload/delete state.
+When the Supplier Stop branch is selected, the Supplier Stop page is loaded.
 
-## Supplier-stop branch
+After the page is visible, the user can:
 
-Any `actionType` other than exact `CustomerStop` is treated as the supplier branch and renders:
+1. Search and select a supplier using **STORY-0102 — Supplier Search**.
+2. Preserve the selected persistent supplier ID as the identity for all dependent reads.
+3. Load cylinders currently associated with/held by the selected supplier using **STORY-0097 — Cylinders by Supplier** where applicable to the supplier exchange.
+4. Load cylinders currently on the active vehicle/load using **STORY-0107 — Cylinders on Vehicle**.
+5. Present the supplier-held and vehicle-held cylinders as distinct selectable groups.
+6. Allow the user to choose the exact persistent cylinder IDs that are being dropped off to the supplier and/or picked up from the supplier, according to the supported movement.
+7. Clear all dependent cylinder selections whenever the supplier identity changes.
+8. Continue to the supplier stop submit transaction after the required supplier, movement, cylinder and challan inputs are complete.
 
-`with-menu/Supplierstopselectionpage`
+### Supplier submit traceability gap
 
-The controller requests book type `FILLING_NOTE` from `ChallanHeatmapFetchService` using `VEHICLE_LOAD_ID` and `SUPPLIER_STOP_ASSIGNED_BOOKS_ONLY=true`, exposing:
+The current BL-002 dependency repository does not yet identify a distinct supplier-stop submit Story/endpoint with durable source evidence. This expanded Story therefore records a **mandatory traceability follow-up**: source-trace the supplier submit handler and attach the exact Story/use-case mapping. Do not invent an endpoint or treat the customer `POST /stop` handler as the supplier submit unless source evidence proves that relationship.
 
-- `supplierDropOffAssignedBooks`;
-- `supplierDropOffPageWindowByBook`.
+## Challan and photo context
 
-A governed service failure returns empty structures and `supplierDropOffChallanError = Unable to load assigned supplier drop-off challan book.`
+The initial Add Stop page continues to load the stop-specific assigned challan-book/page windows:
 
-The supplier template uses the assigned book/page window to let the user select the physical challan leaf and manage its photo evidence.
+- Customer Stop: delivery challan and empty-pickup challan assignments;
+- Supplier Stop: filling-note / supplier drop-off challan assignment.
 
-## Shared model and persistence reads
+The selected challan leaf and required photo evidence remain inputs to the downstream submit transaction. Photo upload/delete APIs remain separate Stories and do not replace the party/cylinder selection behavior described here.
 
-Both successful branches add `vehicleLoadId` to the model.
+## Validation and interaction rules
 
-The Add Stop GET operation is a read/render flow. Its source-proved dependencies include vehicle-load/trip/status reads and, through the heatmap service, trip challan-book assignment, challan-page audit-ledger and active-photo data. No database write is asserted for `GET /add-stop`.
+The interactive workflow must maintain these reviewer-visible rules:
 
-The page/heatmap path depends on the accepted persistence identities already bound by the governed trace, including `public.tbl_vehicle_load`, `public.tbl_vehicle_trip`, `public.tbl_trip_status`, `public.vw_trip_challan_book_assignments`, `public.tbl_challan_page_audit_ledger`, and `public.tbl_challan_page_photo`.
+- no stop processing without an eligible trip/load state;
+- no dependent cylinder search before a valid persistent customer/supplier identity exists;
+- party change resets stale address/cylinder/exchange state;
+- customer holdings and vehicle stock are not merged into an ambiguous list;
+- supplier holdings and vehicle stock are not merged into an ambiguous list;
+- exact persistent cylinder IDs are carried into submission;
+- duplicate cylinder selection within the same movement is rejected/prevented;
+- a cylinder cannot be simultaneously selected for conflicting movements in the same stop;
+- empty/no-result API responses produce a visible empty-state message rather than stale previous results;
+- API failure must not preserve a prior party's cylinder selections;
+- submit is enabled only when all inputs required by the chosen customer/supplier movement are valid.
 
 ## Business effect
 
-The endpoint is the office-entry gate for Add Stop processing. It prevents challan entry before Returned/Proceeding, chooses the stop screen from `actionType`, and populates the currently assigned physical challan books/leaves and photo state required by subsequent stop operations.
+`GET /add-stop` is the entry point to an interactive exchange workflow. It gates the operation by trip state, selects the correct stop type, loads challan context, lets the user select the customer/supplier, dynamically resolves party-held and vehicle-held cylinders, captures the exact cylinders participating in the stop, and hands the completed selection into the governed submit transaction.
 
-## Completion and approval gate
+The GET/search portions are read-only. Actual custody/logistics/order/challan mutation occurs only in the downstream stop-submit transaction.
 
-The exact request parameters, status lookup, accepted status predicate, rejection redirect/message, customer-vs-supplier selection rule, model attributes, service-error fallbacks, terminal views and read-only persistence role are source-bound from the recovered governed ZIP.
+## Traceability
 
-STORY-0051 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with downstream fan-out requested. No application code was changed by this approval.
+- Customer search: STORY-0091
+- Customer-held cylinders: STORY-0096
+- Supplier search: STORY-0102
+- Supplier-held cylinders: STORY-0097
+- Vehicle-held cylinders: STORY-0107
+- Customer submit: SUC-034 / STORY-0085 / `POST /stop`
+- Challan photo delete/upload: STORY-0048 / STORY-0049 / STORY-0050
+- Supplier submit: **SOURCE TRACE REQUIRED — exact Story/use-case mapping not yet durable**
+
+## Approval and conformance gate
+
+This is a material rework of the previously approved STORY-0051 contract. The earlier approval and `CODE_CONFORMANCE_VERIFIED_PASS` remain historical evidence for the old page-load-only scope but **do not approve this expanded interactive workflow**.
+
+Current state:
+
+- `BUSINESS_BEHAVIOR_REWORKED_AWAITING_USER_REAPPROVAL`
+- post-approval conformance must be rerun after explicit reapproval;
+- BL-004/BL-005/BL-009/BL-011 fan-out for the revised STORY-0051 contract is blocked until reapproval and conformance;
+- no application-code mutation is authorized by this Story rewrite.
