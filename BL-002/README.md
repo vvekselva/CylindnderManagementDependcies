@@ -39,8 +39,9 @@ Physical materialization is separate from strict field/UI enrichment, review sta
 Reconciled by Production Fire `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009` from durable approval evidence and the post-approval conformance queue:
 
 - Total Stories: **134**
-- Explicitly approved after rework: **20**
-- Awaiting user review: **114**
+- Explicitly approved after rework: **23**
+- Awaiting user review: **107**
+- Superseded / not needed: **4** (`STORY-0039`, `STORY-0040`, `STORY-0133`, `STORY-0134`) — replaced by the combined Vehicle Trip Load Wizard (`STORY-0043` / `STORY-0044`).
 - Post-approval code-conformance pass: **18**
 - Exact drift approval holds: **2** (`STORY-0101`, `STORY-0103`)
 - Auto-approval remains forbidden.
