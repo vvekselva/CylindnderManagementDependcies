@@ -12,6 +12,9 @@
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
 - Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 - Identity repair evidence: `BL-002/evidence/STORY-0092-0097-identity-drift-repair-20260902.yaml`
+- Fan-out confirmation: `BL-002/approval-evidence/STORY-0096-fanout-confirmation-20260905.md`
+- Post-approval conformance: CODE_CONFORMANCE_VERIFIED_PASS
+- Conformance evidence: `BL-002/evidence/STORY-0096-post-approval-source-conformance-20260905.yaml`
 
 ## Business behavior
 
@@ -23,7 +26,7 @@ This API is read-only; custody/logistics movement is performed only by the downs
 
 ## Completion and approval gate
 
-The canonical Story identity, customer request/paging contract, ownership-model custody search, selectable persistent cylinder IDs and read-only effect are source-bound. STORY-0096 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The canonical Story identity, customer request/paging contract, ownership-model custody search, selectable persistent cylinder IDs and read-only effect are source-bound. STORY-0096 is `APPROVED_AFTER_REWORK` with post-approval code conformance verified.
 
 User approval recorded on 2026-09-05. Fan-out is authorized subject to post-approval source/code conformance; runtime execution and coverage remain evidence-based.
 
@@ -31,6 +34,6 @@ User approval recorded on 2026-09-05. Fan-out is authorized subject to post-appr
 
 - User decision: **APPROVED AND FAN OUT**
 - Recorded: 2026-09-05
-- Post-approval gate: source/code conformance required before executable downstream claims
+- Post-approval gate: CODE_CONFORMANCE_VERIFIED_PASS
 - Fan-out targets: BL-004, BL-005, BL-009, BL-011
 - Runtime/coverage rule: do not infer execution or coverage without durable evidence
