@@ -150,11 +150,11 @@
 ## SUC-011 — Ownership Obligation Dashboard
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Approved — post-approval code conformance pending  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0031](stories/STORY-0031.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0031](stories/STORY-0031.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_PENDING_SOURCE_RECOVERY** |
 
 [Back to register](screen-usecase-register.md)
 
@@ -162,12 +162,12 @@
 ## SUC-012 — Walk-in Sale
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Approved — post-approval code conformance pending  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0032](stories/STORY-0032.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0033](stories/STORY-0033.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0032](stories/STORY-0032.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_PENDING_SOURCE_RECOVERY** |
+| [STORY-0033](stories/STORY-0033.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_PENDING_SOURCE_RECOVERY** |
 
 [Back to register](screen-usecase-register.md)
 
@@ -568,20 +568,22 @@
 ## SUC-039 — Lookup / Lookup Management
 
 **Release:** R1  
-**Use-case approval:** Approved  
+**Use-case approval:** Approved, with one dependency on drift hold  
 
-| Story | Role | Approval |
+| Story | Role | Approval / fan-out state |
 |---|---|---|
-| [STORY-0127](stories/STORY-0127.md) | Primary | **APPROVED_AFTER_REWORK** |
-| [STORY-0128](stories/STORY-0128.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0129](stories/STORY-0129.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0130](stories/STORY-0130.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0131](stories/STORY-0131.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0132](stories/STORY-0132.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
+| [STORY-0127](stories/STORY-0127.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0128](stories/STORY-0128.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0129](stories/STORY-0129.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0130](stories/STORY-0130.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0131](stories/STORY-0131.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0132](stories/STORY-0132.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
+| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — CODE_DRIFT_REVIEW_PACKET_PENDING_EXPLICIT_APPROVAL — FANOUT_BLOCKED** |
+
+**Governance note:** “Fan-out eligible” means the approval and code-conformance gates are satisfied; it does **not** mean BL-004/BL-005/BL-009 tests have been executed. STORY-0101 remains fail-closed until the exact drift/code-change manifest is explicitly approved and conformance is rerun successfully.
 
 [Back to register](screen-usecase-register.md)
 
