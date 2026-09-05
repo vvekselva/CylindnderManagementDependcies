@@ -4,8 +4,8 @@
 - Endpoint: `POST /complete-trip`
 - Functional area: Trip Completion
 - Controller: `CompleteTripController.completeTrip`
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
-- Approval state: NOT APPROVED
+- Rework state: APPROVED_AFTER_REWORK
+- Approval state: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
 - Legacy traceability state: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
@@ -118,6 +118,13 @@ If another operation on the surrounding page contains large static reference sel
 
 No user-requested UX/application change has been identified for the Complete Trip submission itself in this rework. The source-proved transaction already performs the governed trip-to-yard completion described above.
 
-## Approval gate
+## Approval and fan-out disposition
 
-This Story is now complete against the current business-behavior documentation standard and is ready for user review, but it is **NOT APPROVED**. No BL-004, BL-005 or BL-009 revised-contract fan-out is authorized until explicit user approval is recorded.
+- User decision: **STORY-0011 COMPLETED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval gate: mandatory source/code conformance must pass before downstream executable generation/execution is treated as eligible
+- Fan-out targets after conformance: BL-004, BL-005, BL-009, BL-011
+- Runtime/coverage rule: do not infer execution or coverage without durable evidence
+
+This approval does not authorize application-code mutation. If post-approval conformance detects drift, prepare the governed exact code-change manifest for explicit user approval before any BL-010 or application-source change.
