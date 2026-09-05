@@ -33,7 +33,7 @@
 | [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | Partially approved |
 | [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | Pending user approval |
 | [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | Partially approved |
-| [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | Pending user approval |
+| [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | Partially approved |
 | [SUC-021 — Trip Return](usecase-review.md#suc-021) | R1 | Pending user approval |
 | [SUC-022 — Customer Demands](usecase-review.md#suc-022) | R1 | Pending user approval |
 | [SUC-023 — Trip Review](usecase-review.md#suc-023) | R1 | Pending user approval |
