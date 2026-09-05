@@ -36,13 +36,14 @@ Physical materialization is separate from strict field/UI enrichment, review sta
 
 ## Current approval and conformance projection
 
-Reconciled by Production Fire `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009` from durable approval evidence and the post-approval conformance queue:
+Current projection reconciled from durable approval evidence and the post-approval conformance queue; latest explicit approval update: **2026-09-05 (STORY-0102)**:
 
 - Total Stories: **134**
-- Explicitly approved after rework: **43**
-- Awaiting user review: **87**
+- Explicitly approved after rework: **44**
+- Awaiting user review: **86**
 - Superseded / not needed: **4** (`STORY-0039`, `STORY-0040`, `STORY-0133`, `STORY-0134`) — replaced by the combined Vehicle Trip Load Wizard (`STORY-0043` / `STORY-0044`).
-- Post-approval code-conformance pass: **18**
+- Post-approval code-conformance pass / fan-out eligible: **19**
+- Generated current-contract test scopes: **18**; newly eligible/fan-out queued: **1** (`STORY-0102`)
 - Exact drift approval holds: **2** (`STORY-0101`, `STORY-0103`)
 - Auto-approval remains forbidden.
 
