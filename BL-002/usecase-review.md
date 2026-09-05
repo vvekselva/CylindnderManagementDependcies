@@ -209,15 +209,13 @@ STORY-0037 and STORY-0038 are **not superseded** by this navigation change; they
 [Back to register](screen-usecase-register.md)
 
 <a id="suc-016"></a>
-## SUC-016 — Vehicle Load
+## SUC-016 — Vehicle Load — SUPERSEDED
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Lifecycle:** `SUPERSEDED_NOT_NEEDED`  
+**Canonical replacement:** [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md)
 
-| Story | Role | Approval |
-|---|---|---|
-| [STORY-0039](stories/STORY-0039.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0040](stories/STORY-0040.md) | Primary | PENDING_USER_APPROVAL |
+STORY-0039 and STORY-0040 are retained for audit only and require no approval or testing fan-out.
 
 [Back to register](screen-usecase-register.md)
 
@@ -576,14 +574,12 @@ The current screen/use-case register already points SUC-039 to the dedicated art
 [Back to register](screen-usecase-register.md)
 
 <a id="suc-040"></a>
-## SUC-040 — Add Vehicle Trip
+## SUC-040 — Add Vehicle Trip — SUPERSEDED
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Lifecycle:** `SUPERSEDED_NOT_NEEDED`  
+**Canonical replacement:** [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md)
 
-| Story | Role | Approval |
-|---|---|---|
-| [STORY-0133](stories/STORY-0133.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0134](stories/STORY-0134.md) | Primary | PENDING_USER_APPROVAL |
+STORY-0133 and STORY-0134 are retained for audit only and require no approval or testing fan-out.
 
 [Back to register](screen-usecase-register.md)
