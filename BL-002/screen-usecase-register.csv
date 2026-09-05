@@ -11,7 +11,7 @@ SUC-009,Customer Address Upload / WhatsApp Import,R2,STORY-0023;STORY-0024;STORY
 SUC-010,Customer Consumption Dashboard,R2,STORY-0027;STORY-0028;STORY-0029;STORY-0030,,PENDING_USER_APPROVAL,,STORY-0027;STORY-0028;STORY-0029;STORY-0030,Screen dashboard and dashboard API
 SUC-011,Ownership Obligation Dashboard,R1,STORY-0031,,APPROVED,STORY-0031,,Dashboard entry
 SUC-012,Walk-in Sale,R1,STORY-0032;STORY-0033,STORY-0086;STORY-0091;STORY-0096;STORY-0106,APPROVED,STORY-0032;STORY-0033;STORY-0086;STORY-0091;STORY-0096;STORY-0106,,Walk-in Sale dependencies STORY-0086 STORY-0091 STORY-0096 approved; primary and remaining dependency states governed separately
-SUC-013,Customer Spot Cylinder Check,R2,STORY-0034;STORY-0035,,PENDING_USER_APPROVAL,,STORY-0034;STORY-0035,Fetch and submit workflow
+SUC-013,Customer Spot Cylinder Check,R2,STORY-0034;STORY-0035,,APPROVED,STORY-0034;STORY-0035,,Both Customer Spot Cylinder Check Stories explicitly approved and fan-out requested; post-approval conformance pending
 SUC-014,Yard Audit Dashboard,R1,STORY-0036,,APPROVED,STORY-0036,,STORY-0036 explicitly approved and fan-out requested; post-approval conformance pending
 SUC-015,Cylinder Delivery,R1,STORY-0037;STORY-0038,,SUPERSEDED_NOT_NEEDED,,,Legacy Cylinder Delivery controller replaced by Add Stop customer-delivery flow; STORY-0037/0038 retained for audit only; replacement STORY-0051 + STORY-0085
 SUC-016,Vehicle Load,R1,STORY-0039;STORY-0040,,SUPERSEDED_NOT_NEEDED,,,Superseded by SUC-018 Vehicle Trip Load Wizard; STORY-0039 and STORY-0040 retained for audit only
