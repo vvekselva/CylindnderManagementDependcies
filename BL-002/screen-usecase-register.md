@@ -2,7 +2,7 @@
 
 > Human-readable projection of `screen-usecase-register.csv`. Approval state is derived from durable Story approval evidence and must not override unit-local evidence.
 
-**Story disposition:** 55 approved, 73 awaiting user approval, 6 superseded/not needed.
+**Story disposition:** 56 approved, 72 awaiting user approval, 6 superseded/not needed.
 
 **Use Case disposition:** 10 approved, 7 partially approved, 21 pending user approval, 2 superseded/not needed.
 
