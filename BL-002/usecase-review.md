@@ -318,13 +318,13 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 ## SUC-023 — Trip Review
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Approved — all primary Stories approved and fan-out requested; post-approval conformance required  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0057](stories/STORY-0057.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0058](stories/STORY-0058.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0084](stories/STORY-0084.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0057](stories/STORY-0057.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0058](stories/STORY-0058.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0084](stories/STORY-0084.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
