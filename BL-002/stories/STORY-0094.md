@@ -23,7 +23,7 @@ This endpoint is read-only. It resolves matching logical/physical cylinder infor
 
 ## Completion and approval gate
 
-The canonical Story identity, global ownership-model routing, request/response/error behavior and read-only business effect are source-bound. STORY-0094 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The canonical Story identity, global ownership-model routing, request/response/error behavior and read-only business effect are source-bound. STORY-0094 is `APPROVED_AFTER_REWORK`; explicit user approval and fan-out authorization are durably recorded.
 
 User approval recorded on 2026-09-05. Fan-out is authorized subject to post-approval source/code conformance; runtime execution and coverage remain evidence-based.
 
