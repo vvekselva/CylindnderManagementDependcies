@@ -4,7 +4,7 @@
 
 **Story disposition:** 51 approved, 79 awaiting user approval, 4 superseded/not needed.
 
-**Use Case disposition:** 11 approved, 6 partially approved, 21 pending user approval, 2 superseded/not needed.
+**Use Case disposition:** 10 approved, 7 partially approved, 21 pending user approval, 2 superseded/not needed.
 
 **Supersession rule:** STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are `SUPERSEDED_NOT_NEEDED`; SUC-018 is the canonical combined Vehicle Trip + Load workflow.
 
