@@ -5,8 +5,8 @@
 - Functional area: Yard Audit
 - Controller: `YardAuditDashboardController.doGet(...)`
 - Service: `YardAuditDashboardFetchService.processRequest(...)`
-- Approval: NOT_APPROVED
-- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
+- Business-behavior rework: APPROVED_AFTER_REWORK
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Business purpose
@@ -81,3 +81,13 @@ The dashboard allows staff to answer operational questions such as: Was the yard
 ## Rework gate
 
 **BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. The page purpose, filters, service/DAO read chain, exact database objects, visible metrics/details, empty/error outcomes and read-only boundary are frozen-source bound. No automatic approval and no revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
