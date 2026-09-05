@@ -206,6 +206,8 @@ This legacy section is retained only as a navigation compatibility anchor. The c
 
 STORY-0037 and STORY-0038 are **not superseded** by this navigation change; they remain active Stories in the canonical Story register unless separate durable supersession evidence is recorded.
 
+STORY-0038 current state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`; explicit user approval has not yet been durably recorded, so no post-approval fan-out is authorized.
+
 [Back to register](screen-usecase-register.md)
 
 <a id="suc-016"></a>
