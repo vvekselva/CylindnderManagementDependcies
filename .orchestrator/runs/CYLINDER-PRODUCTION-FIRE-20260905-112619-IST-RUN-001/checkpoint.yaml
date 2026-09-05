@@ -1,0 +1,25 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260905-112619-IST-RUN-001
+mode: CONTINUOUS
+started_at: 2026-09-05T11:26:19+05:30
+checkpoint_at: 2026-09-05T11:27:47+05:30
+elapsed_seconds: 88
+state: BLOCKED
+terminal_classification: APPLICATION_SOURCE_RECOVERY_FAILED
+hard_global_blocker: true
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/fire-20260905T112619+0530.yaml
+primary_application_source:
+  required_file_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  required_file_id: file_00000000659c8211857bba6b09282de3
+  recovery_result: FAILED
+  evidence:
+    - exact_library_search_by_title_and_file_id_returned_no_matching_zip
+    - exact_file_id_materialization_failed_visibility_resolution
+    - exhaustive_recursive_library_metadata_traversal_completed_without_matching_name_or_file_id
+application_source_analysis_started: false
+backlog_execution_started: false
+test_generation_started: false
+bl011_rework_started: false
+application_code_mutated: false
+github_actions_used: false
+next_action: RETRY_EXACT_LIBRARY_SOURCE_RECOVERY_ON_NEXT_FIRE_BEFORE_CONFORMANCE_OR_TEST_GENERATION
+resumable: true
