@@ -197,16 +197,13 @@
 [Back to register](screen-usecase-register.md)
 
 <a id="suc-015"></a>
-## SUC-015 — Cylinder Delivery — SUPERSEDED LEGACY REVIEW ENTRY
+## SUC-015 — Cylinder Delivery — SUPERSEDED
 
-**Status:** `SUPERSEDED_BY_DEDICATED_USECASE_ARTIFACT`  
-**Canonical review:** [BL-002/usecases/SUC-015.md](usecases/SUC-015.md)
+**Release:** R1  
+**Lifecycle:** `SUPERSEDED_NOT_NEEDED`  
+**Canonical replacement:** [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) + [SUC-034 — Delivery Stop Submission](usecases/SUC-034.md)
 
-This legacy section is retained only as a navigation compatibility anchor. The canonical SUC-015 membership, Story roles, approval states, dependency mappings, and future updates must be maintained in the dedicated Use Case artifact above.
-
-STORY-0037 and STORY-0038 are **not superseded** by this navigation change; they remain active Stories in the canonical Story register unless separate durable supersession evidence is recorded.
-
-STORY-0038 current state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`; explicit user approval has not yet been durably recorded, so no post-approval fan-out is authorized.
+STORY-0037 (`GET /cylinderDelivery`) and STORY-0038 (`POST /cylinderDelivery`) are retained for audit only. The legacy Cylinder Delivery controller was replaced by the Add Stop customer-delivery flow. Active behavior is represented by STORY-0051 and STORY-0085 plus their governed dependencies. No approval, conformance, BL-004/005/009 fan-out or BL-011 packet is required for STORY-0037/0038.
 
 [Back to register](screen-usecase-register.md)
 
