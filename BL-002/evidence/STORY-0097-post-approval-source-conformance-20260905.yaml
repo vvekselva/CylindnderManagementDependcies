@@ -1,0 +1,18 @@
+story_id: STORY-0097
+run_id: CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002
+classification: CODE_CONFORMANCE_VERIFIED_PASS
+source: Harinandhan-Cylinder-Backup(20260905-060414).zip@60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+source_engine: EXTRACTED_LOCAL_SOURCE
+approved_behavior_matches_current_source: true
+anchors:
+  - cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulCylinderServices.java#getCylindersBySupplier
+checks:
+  endpoint_mapping: PASS
+  active_service_routing: PASS
+  request_identity_or_payload: PASS
+  governed_error_to_empty_response: PASS
+  read_only_effect: PASS
+application_code_changed: false
+execution_inferred: false
+coverage_inferred: false
+next_action: FANOUT_BL004_BL005_BL009_BL011
