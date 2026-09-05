@@ -238,7 +238,7 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 ## SUC-018 — Vehicle Trip Load Wizard
 
 **Release:** R1  
-**Use-case approval:** Partially approved  
+**Use-case approval:** Approved — fan-out requested; post-approval conformance required  
 
 | Story | Role | Approval |
 |---|---|---|
@@ -295,8 +295,8 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0052](stories/STORY-0052.md) | Primary — Trip Return page + approved delayed Yard Audit/Challan reconciliation business contract | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DEV-0006 DRIFT-GATED** |
-| [STORY-0053](stories/STORY-0053.md) | Primary — Trip Return POST + Yard Audit/challan reconciliation lifecycle | PENDING_USER_APPROVAL |
+| [STORY-0052](stories/STORY-0052.md) | Primary — Trip Return page + Yard Audit/challan reconciliation lifecycle | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0053](stories/STORY-0053.md) | Primary — Trip Return POST + Yard Audit/challan reconciliation lifecycle | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
