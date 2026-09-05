@@ -6,7 +6,7 @@
 
 **Story disposition:** 83 approved, 45 awaiting user approval, 6 superseded/not needed.
 
-**Use Case disposition:** 22 approved, 2 partially approved, 13 pending user approval, 3 superseded/not needed.
+**Use Case disposition:** 23 approved, 1 partially approved, 13 pending user approval, 3 superseded/not needed.
 
 **Supersession rule:** STORY-0037 and STORY-0038 are `SUPERSEDED_NOT_NEEDED` because the legacy Cylinder Delivery controller was replaced by the Add Stop customer-delivery flow (STORY-0051 + STORY-0085). STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are also `SUPERSEDED_NOT_NEEDED`; SUC-018 is the canonical combined Vehicle Trip + Load workflow.
 
@@ -46,7 +46,7 @@
 | [SUC-032 — Supplier Ingestion](usecases/SUC-032.md) | R1 | **Approved** |
 | [SUC-033 — Yard Stock Check](usecases/SUC-033.md) | R1 | Partially approved |
 | [SUC-034 — Delivery Stop Submission](usecase-review.md#suc-034) | R1 | **Approved** |
-| [SUC-035 — Shared Screen Search / Lookup APIs](usecase-review.md#suc-035) | R1 | Partially approved |
+| [SUC-035 — Shared Screen Search / Lookup APIs](usecase-review.md#suc-035) | R1 | **APPROVED — all 22 mapped dependency Stories approved; per-Story conformance/drift gates remain independently enforced** |
 | [SUC-036 — Domain Lookup Management](usecases/SUC-036.md) | R1 | **Approved** |
 | [SUC-037 — Delivery Planning Main Screens](usecase-review.md#suc-037) | R2 | Pending user approval |
 | [SUC-038 — Reconciliation Dashboard](usecase-review.md#suc-038) | R2 | Pending user approval |
