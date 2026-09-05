@@ -485,7 +485,7 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 | [STORY-0088](stories/STORY-0088.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0091](stories/STORY-0091.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0091](stories/STORY-0091.md) | Dependency | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
 | [STORY-0092](stories/STORY-0092.md) | Dependency — driver search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0093](stories/STORY-0093.md) | Dependency — driver by ID | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0094](stories/STORY-0094.md) | Dependency | PENDING_USER_APPROVAL |
