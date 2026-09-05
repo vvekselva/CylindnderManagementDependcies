@@ -1,0 +1,38 @@
+story_id: STORY-0096
+release: R1
+title: Cylinders by Customer
+approval_state: APPROVED_AFTER_REWORK
+approval_confirmation: BL-002/approval-evidence/STORY-0096-fanout-confirmation-20260905.md
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: POST /search/cylinder/by-customer
+  controller: RestfulCylinderServices.getCylindersByCustomer
+  service: cylindersByCustomerSearchServiceWithOwnershipModel
+  request:
+    dto: CylinderManagementApplicationRequestDto
+    required_fields:
+      - CUSTOMER_ID
+      - requested cylinder states
+      - paging
+  behavior:
+    - query active CUSTOMER custody under ownership/custody model
+    - return persistent cylinder IDs as pickup candidates
+    - governed search exception returns empty response DTO
+  mutation: NONE
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_MATCHES_FROZEN_SOURCE_BOUND_CUSTOMER_CUSTODY_SEARCH_CONTRACT_RECORDED_IN_STORY_0096
+  application_code_mutation_required: false
+fanout:
+  BL-004: ELIGIBLE_QUEUED
+  BL-005: ELIGIBLE_QUEUED
+  BL-009: ELIGIBLE_QUEUED
+  BL-011: ELIGIBLE_PACKET_PENDING
+execution:
+  unit: NOT_EXECUTED
+  integration: NOT_EXECUTED
+  application_behavior: NOT_EXECUTED
+coverage:
+  state: NO_DURABLE_COVERAGE_EVIDENCE
