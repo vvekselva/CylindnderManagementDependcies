@@ -5,8 +5,8 @@
 - Functional area: Challan Monitoring
 - Controller: `ChallanEntryAgingDashboardController.showChallanEntryAgingDashboard(...)`
 - View: `final-version-1/ChallanEntryAgingDashboard`
-- Approval: NOT_APPROVED
-- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
+- Business-behavior rework: APPROVED_AFTER_REWORK
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Business purpose
@@ -75,6 +75,13 @@ Source-proved limits that must remain visible in testing are:
 - Status values are fixed choices in the page, while Trip Id is a numeric scalar input rather than a searchable trip selector.
 - The GET path is read-only; no persistence mutation is performed by this dashboard service.
 
-## Rework gate
+## Approval and fan-out disposition
 
-**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. Controller, filters, service, DAO queries, database read identities and visible dashboard behavior are frozen-source bound. No automatic approval and no revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval gate: mandatory source/code conformance must pass before downstream executable generation/execution is treated as eligible
+- Fan-out targets after conformance: BL-004, BL-005, BL-009, BL-011
+- Runtime/coverage rule: do not infer execution or coverage without durable evidence
+
+This approval does not authorize application-code mutation. If post-approval conformance detects drift, prepare the governed exact drift/code-change manifest for explicit user approval before any BL-010 or application-source change.
