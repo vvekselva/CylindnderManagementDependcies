@@ -3,8 +3,8 @@
 - Round: R2
 - Controller: `CustomerSpotCylinderCheckController`
 - Endpoint: `POST /customer-spot-cylinder-check/submit`
-- Approval: PENDING_USER_APPROVAL
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Local-source evidence: `BL-002/evidence/STORY-0034-local-source-business-behavior-20260902-1646.yaml`
@@ -40,3 +40,13 @@ On success the same page renders `Customer spot cylinder check saved and validat
 The recovered governed ZIP independently confirms the full UI → controller → transactional validation → customer-custody read → header/line persistence → challan-page consumption → transaction-link path, while also confirming that cylinder custody/state is not changed by this flow. STORY-0034 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 No approval occurred. No application code or database schema was changed.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
