@@ -17,9 +17,9 @@ Use JUnit 5. Use Mockito only for genuine unit boundaries. Cover positive, negat
 ## Current projection
 Reconciled by `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009`:
 
-- Explicitly approved testing-queue Stories: **21**
-- Code-conformance pass / fan-out eligible: **19**
-- Generated source-bound: **18**; newly queued not yet generated: **1** (`STORY-0102`)
+- Explicitly approved testing-queue Stories: **23**
+- Code-conformance pass / fan-out eligible: **21**
+- Generated source-bound: **18**; newly queued not yet generated: **3** (`STORY-0096`, `STORY-0102`, `STORY-0107`)
 - Drift holds: **2** (`STORY-0101`, `STORY-0103`)
 - Application test execution: **blocked by missing faithful Maven/JUnit runtime**
 - Java available: **OpenJDK 21.0.11**
