@@ -1,4 +1,4 @@
-version: 6
+version: 7
 name: APPROVED_STORY_TESTING_FANOUT
 status: ACTIVE
 source_backlog: BL-002
@@ -33,13 +33,13 @@ post_approval_reverse_engineering_conformance_gate:
   drift_behavior:
     - block_BL004_BL005_BL009_fanout
     - record_exact_story_vs_code_mismatch
-    - automatically_create_or_reuse_BL010_development_task_when_drift_is_automatable_code_gap
-    - automatically_execute_minimal_safe_code_rework_through_chatgpt_when_claim_and_source_binding_are_valid
-    - automatically_rerun_story_code_conformance_after_implementation
+    - prepare_durable_user_review_packet_with_exact_code_change_manifest
+    - block_BL010_creation_and_application_code_mutation_until_explicit_user_approval_of_exact_manifest
+    - after_approval_create_or_reuse_BL010_task_and_rerun_story_code_conformance_after_implementation
     - return_story_for_explicit_reapproval_if_contract_changes_materially
   fanout_requires_pass: true
 automated_code_rework:
-  enabled: true
+  enabled: false
   policy: .orchestrator/post-approval-code-conformance-policy.yaml
   backlog: BL-010
   queue: BL-010/development-change-task-queue.csv
@@ -52,6 +52,8 @@ automated_code_rework:
   source_change_rule: MINIMAL_SAFE_CHANGE_ONLY
   required_flow:
     - classify_conformance_drift
+    - prepare_exact_drift_review_and_code_change_manifest
+    - obtain_explicit_user_approval
     - create_or_reuse_BL010_task
     - determine_read_write_sets_and_dependencies
     - acquire_resource_claim
@@ -113,8 +115,8 @@ orchestrator_rule:
     - reconcile_post_approval_code_conformance_queue
     - enqueue_missing_conformance_tasks_idempotently
     - suspend_revised_behavior_fanout_until_code_conformance_pass
-    - route_automatable_drift_to_BL010
-    - automatically_execute_eligible_BL010_code_rework
+    - prepare_drift_review_packet_and_wait_for_exact_manifest_approval
+    - execute_BL010_code_rework_only_after_explicit_manifest_approval
     - rerun_conformance_after_code_rework
     - suspend_fanout_when_reapproval_required
     - materialize_downstream_artifacts_only_after_both_gates
