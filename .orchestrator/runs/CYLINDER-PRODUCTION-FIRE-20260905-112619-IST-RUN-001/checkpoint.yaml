@@ -23,3 +23,13 @@ application_code_mutated: false
 github_actions_used: false
 next_action: RETRY_EXACT_LIBRARY_SOURCE_RECOVERY_ON_NEXT_FIRE_BEFORE_CONFORMANCE_OR_TEST_GENERATION
 resumable: true
+
+recovery_after_terminal_blocker:
+  recovered_at: 2026-09-05T11:29:10+05:30
+  source_binding: .orchestrator/application-source-binding.yaml
+  replacement_file_name: Harinandhan-Cylinder-Backup(20260905-060414).zip
+  replacement_conversation_file_id: file_000000006f70821188e8c3b3d845697b
+  replacement_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  fingerprint_matches_required_source: true
+  blocker_cleared: true
+  next_action: START_NEW_PRODUCTION_FIRE_AND_RESUME_FROM_THIS_CHECKPOINT
