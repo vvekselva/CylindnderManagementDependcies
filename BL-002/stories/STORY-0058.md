@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `GET /trip-review/{vehicleTripId}`
 - Controller: `TripReviewController.showTripReview`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
 - Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -52,3 +52,13 @@ This GET is read-only at the proved controller/service boundary. It assembles th
 The recovered ZIP confirms the controller, service and dashboard template contract above. The path-variable, model, sections/controls, challan-photo URL, close-button predicate, map event, empty states, read-only impact and user navigation are sufficiently source-bound for the business-behavior standard.
 
 STORY-0058 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no code mutation or auto-approval occurred.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
