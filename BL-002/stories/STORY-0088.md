@@ -19,7 +19,7 @@ Successful lookup returns the matching response DTO; application-service failure
 
 ## Completion and approval gate
 
-The exact input, validation/search/DAO/table path, result/error behavior and read-only effect are source-bound. STORY-0088 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The exact input, validation/search/DAO/table path, result/error behavior and read-only effect are source-bound. STORY-0088 is therefore `APPROVED_AFTER_REWORK`; explicit user approval and fan-out authorization are durably recorded.
 
 User approval recorded on 2026-09-05. Fan-out is authorized subject to post-approval source/code conformance; runtime execution and coverage must remain evidence-based.
 
