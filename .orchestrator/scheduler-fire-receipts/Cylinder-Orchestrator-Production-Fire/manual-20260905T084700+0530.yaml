@@ -6,6 +6,15 @@ state: TRIGGER_RECEIVED
 intended_scope: CONTINUOUS
 execution_proof_rule: scheduler_last_run_time_is_not_execution_proof
 run_id: cylinder-prod-fire-20260905T084700+0530
-state: RUN_LINKED
+state: TERMINAL
 orchestrator_state: ORCHESTRATOR_STARTED
 run_link_time: 2026-09-05T08:47:00+05:30
+terminal_classification: HARD_GLOBAL_BLOCKER_APPLICATION_SOURCE_UNAVAILABLE
+termination_time: 2026-09-05T08:50:21+05:30
+elapsed_seconds: 201
+elapsed_human: 00:03:21
+productive_runtime_target_seconds: 1800
+early_termination_authorized_reason: GENUINE_HARD_GLOBAL_BLOCKER
+resumable: true
+resume_checkpoint: BL-011/rework-checkpoints/cylinder-prod-fire-20260905T084700+0530.yaml
+next_required_action: RECOVER_REQUIRED_LIBRARY_ZIP_THEN_RESUME_STORY_0001_BL011_REWORK
