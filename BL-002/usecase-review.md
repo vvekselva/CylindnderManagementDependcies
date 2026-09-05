@@ -485,7 +485,7 @@ Approval of SUC-034 authorizes downstream testing fan-out for STORY-0085, subjec
 ## SUC-035 — Shared Screen Search / Lookup APIs
 
 **Release:** R1  
-**Use-case approval:** Partially approved  
+**Use-case approval:** Approved — all mapped dependency Stories explicitly approved; per-Story conformance/drift gates remain independently enforced  
 
 | Story | Role | Approval |
 |---|---|---|
