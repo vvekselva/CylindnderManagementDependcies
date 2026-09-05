@@ -374,7 +374,7 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0063](stories/STORY-0063.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0063](stories/STORY-0063.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
@@ -399,11 +399,11 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0066](stories/STORY-0066.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0067](stories/STORY-0067.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0068](stories/STORY-0068.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0069](stories/STORY-0069.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0070](stories/STORY-0070.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0066](stories/STORY-0066.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0067](stories/STORY-0067.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0068](stories/STORY-0068.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0069](stories/STORY-0069.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0070](stories/STORY-0070.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
