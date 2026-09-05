@@ -256,8 +256,8 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0045](stories/STORY-0045.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
-| [STORY-0046](stories/STORY-0046.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0047](stories/STORY-0047.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0046](stories/STORY-0046.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0047](stories/STORY-0047.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 | [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
