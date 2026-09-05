@@ -1,0 +1,43 @@
+version: 1
+backlog_id: BL-002
+updated_at: 2026-09-05T01:50:00Z
+policy: SUPERSEDED_STORIES_RETAINED_FOR_AUDIT_EXCLUDED_FROM_ACTIVE_WORK
+canonical_replacement:
+  use_case: SUC-018
+  name: Vehicle Trip Load Wizard
+  stories:
+    - STORY-0043
+    - STORY-0044
+superseded:
+  - story_id: STORY-0039
+    endpoint: GET /vehicleLoad
+    legacy_use_case: SUC-016
+    disposition: SUPERSEDED_NOT_NEEDED
+    replacement: [STORY-0043, STORY-0044]
+  - story_id: STORY-0040
+    endpoint: POST /vehicleLoad
+    legacy_use_case: SUC-016
+    disposition: SUPERSEDED_NOT_NEEDED
+    replacement: [STORY-0043, STORY-0044]
+  - story_id: STORY-0133
+    endpoint: GET /addVechileTrip
+    legacy_use_case: SUC-040
+    disposition: SUPERSEDED_NOT_NEEDED
+    replacement: [STORY-0043, STORY-0044]
+  - story_id: STORY-0134
+    endpoint: POST /addVechileTrip
+    legacy_use_case: SUC-040
+    disposition: SUPERSEDED_NOT_NEEDED
+    replacement: [STORY-0043, STORY-0044]
+rules:
+  user_approval_required: false
+  post_approval_code_conformance_required: false
+  BL004_fanout: false
+  BL005_fanout: false
+  BL009_fanout: false
+  BL011_packet_required: false
+  historical_source_evidence_retained: true
+not_superseded:
+  - STORY-0037
+  - STORY-0038
+note: Cylinder Delivery remains a distinct customer-delivery transaction and is not replaced by trip/load creation.
