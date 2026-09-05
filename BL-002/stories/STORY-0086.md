@@ -22,7 +22,7 @@ Blank customer identity returns no usable address response; invalid/service-fail
 
 ## Completion and approval gate
 
-The trigger, path identity, service/DAO read path, selectable address identity, dependent reset behavior, empty/error outcomes and read-only business effect are source-bound. STORY-0086 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The trigger, path identity, service/DAO read path, selectable address identity, dependent reset behavior, empty/error outcomes and read-only business effect are source-bound. STORY-0086 is therefore `APPROVED_AFTER_REWORK`; explicit user approval and fan-out authorization are durably recorded.
 
 User approval recorded on 2026-09-05. Fan-out is authorized subject to post-approval source/code conformance; runtime execution and coverage must remain evidence-based.
 
