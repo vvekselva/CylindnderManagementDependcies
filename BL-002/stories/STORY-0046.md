@@ -3,7 +3,7 @@
 - Release: R1
 - Endpoint: `GET /fetchCustomerByPage`
 - Functional area: Customer Display
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
 - Review state: READY_FOR_USER_REVIEW
 - Traceability state: COMPLETE
 - Enrichment state: SOURCE_DETAIL_REVIEW_REQUIRED
