@@ -358,11 +358,11 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 ## SUC-026 — Vehicle Trips Listing
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Approved — fan-out requested; post-approval conformance required  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0062](stories/STORY-0062.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0062](stories/STORY-0062.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
