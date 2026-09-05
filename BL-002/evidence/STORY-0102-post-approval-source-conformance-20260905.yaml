@@ -1,0 +1,41 @@
+story_id: STORY-0102
+release: R1
+title: Supplier Search
+approval_state: APPROVED_AFTER_REWORK
+approval_evidence: BL-002/approval-evidence/STORY-0102-approval-20260905.md
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: GET /search/supplier/{searchText}
+  controller: RestfulSupplierSearchService.getSuppliers
+  request_binding: required searchText path variable
+  service: supplierSearchService
+  search_semantics:
+    - supplier name
+    - GST number
+  ui_behavior:
+    - trim visible search input
+    - do not request below 3 characters
+    - 280 ms debounce at 3 or more characters
+    - display supplier name and persistent supplier ID
+    - selected supplier ID propagates to hidden f-supplierId
+    - clearing selection clears supplier ID and downstream exchange state
+  result: SupplierSearchResponseDto
+  failure_behavior: governed application failure returns empty response DTO
+  mutation: NONE
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_CONTRACT_MATCHES_FROZEN_SOURCE_BOUND_CONTROLLER_SEARCH_AND_UI_BEHAVIOR_RECORDED_IN_STORY_0102
+  application_code_mutation_required: false
+fanout:
+  BL-004: ELIGIBLE_QUEUED
+  BL-005: ELIGIBLE_QUEUED
+  BL-009: ELIGIBLE_QUEUED
+  BL-011: ELIGIBLE_PACKET_PENDING
+execution:
+  unit: NOT_EXECUTED
+  integration: NOT_EXECUTED
+  application_behavior: NOT_EXECUTED
+coverage:
+  state: NO_DURABLE_COVERAGE_EVIDENCE
