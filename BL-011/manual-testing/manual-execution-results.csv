@@ -1,0 +1,1 @@
+execution_id,scope_type,case_id,story_id_or_dataset,source_baseline,environment,started_at,completed_at,result,actual_result,db_before_evidence,db_after_evidence,screen_or_api_evidence,defect_reference,retest_of,notes
