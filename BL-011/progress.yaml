@@ -84,3 +84,7 @@ rules:
   existing_packet_file_is_not_rework_proof: true
   STORY_0012_is_only_preaccepted_packet: true
 next_action: RECOVER_GOVERNED_LIBRARY_SOURCE_THEN_REWORK_STORY_0001_AND_CONTINUE_REMAINING_IDS_IN_ORDER
+
+approved_pending_post_approval_conformance:
+  - STORY-0011
+  gate: POST_APPROVAL_SOURCE_CODE_CONFORMANCE_REQUIRED_BEFORE_BL011_ELIGIBILITY
