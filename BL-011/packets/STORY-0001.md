@@ -1,7 +1,13 @@
 # BL-011 Human-Readable Test Packet — STORY-0001 Login Screen and Authentication Entry
 
 ## Rework state
-Reworked under the mandatory per-test-case adjacent-code rule.
+Freshly reworked and revalidated under the mandatory 2026-09-05 redo directive in `CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002`.
+
+- Fresh source binding: `Harinandhan-Cylinder-Backup(20260905-060414).zip`
+- SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Validation against `BL-011/README.md`: PASS
+- Validation against `BL-011/human-readable-testing-policy.yaml`: PASS
+- Existing packet/file presence was not used as completion proof; production and BL-004/005/009 code references were freshly read back.
 
 ## Business behavior and scope
 ## 1. Story, approval, conformance and source
@@ -110,7 +116,7 @@ Generated source and data-contract mapping are preparation evidence only.
 ## 10. BL-011 validation outcome
 Validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`: business behavior, preconditions, inputs, validation, happy/negative/boundary/duplicate scenarios, API/UI/database outcomes, executable references, four-backlog traceability, and execution/coverage separation are present.
 
-Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
+Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
 
 ## Production Code Evidence
 ```java
