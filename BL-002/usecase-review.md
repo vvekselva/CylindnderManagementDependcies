@@ -482,7 +482,7 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 |---|---|---|
 | [STORY-0086](stories/STORY-0086.md) | Dependency | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
 | [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0088](stories/STORY-0088.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0088](stories/STORY-0088.md) | Dependency | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
 | [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0091](stories/STORY-0091.md) | Dependency | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
