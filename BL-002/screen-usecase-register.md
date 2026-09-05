@@ -4,7 +4,7 @@
 >
 > **Reconciled:** 2026-09-05 after the latest STORY-0060, STORY-0061, STORY-0107 and STORY-0126 approvals.
 
-**Story disposition:** 79 approved, 49 awaiting user approval, 6 superseded/not needed.
+**Story disposition:** 83 approved, 45 awaiting user approval, 6 superseded/not needed.
 
 **Use Case disposition:** 22 approved, 2 partially approved, 13 pending user approval, 3 superseded/not needed.
 
@@ -42,7 +42,7 @@
 | [SUC-028 — Reconciliation Command Center](usecase-review.md#suc-028) | R2 | Pending user approval |
 | [SUC-029 — Ownership Dashboard](usecase-review.md#suc-029) | MIXED_R1_R2 | Pending user approval |
 | [SUC-030 — Delivery Planning Maps / Stops](usecase-review.md#suc-030) | R2 | Pending user approval |
-| [SUC-031 — Customer Activation / Deactivation](usecase-review.md#suc-031) | R1 | Pending user approval |
+| [SUC-031 — Customer Activation / Deactivation](usecase-review.md#suc-031) | R1 | **APPROVED — STORY-0078 + STORY-0079 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-032 — Supplier Ingestion](usecases/SUC-032.md) | R1 | **Approved** |
 | [SUC-033 — Yard Stock Check](usecases/SUC-033.md) | R1 | Partially approved |
 | [SUC-034 — Delivery Stop Submission](usecase-review.md#suc-034) | R1 | **Approved** |
