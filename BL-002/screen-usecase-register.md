@@ -4,7 +4,7 @@
 
 **Story disposition:** 59 approved, 69 awaiting user approval, 6 superseded/not needed.
 
-**Use Case disposition:** 14 approved, 5 partially approved, 19 pending user approval, 2 superseded/not needed.
+**Use Case disposition:** 15 approved, 4 partially approved, 19 pending user approval, 2 superseded/not needed.
 
 **Supersession rule:** STORY-0037 and STORY-0038 are `SUPERSEDED_NOT_NEEDED` because the legacy Cylinder Delivery controller was replaced by the Add Stop customer-delivery flow (STORY-0051 + STORY-0085). STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are also `SUPERSEDED_NOT_NEEDED`; SUC-018 is the canonical combined Vehicle Trip + Load workflow.
 
@@ -29,7 +29,7 @@
 | [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | **Approved** |
 | [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | **Approved** |
 | [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | **APPROVED — STORY-0045 + STORY-0046 + STORY-0047 approved and fan-out requested; post-approval conformance pending** |
-| [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | Partially approved |
+| [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | **APPROVED — explicit use-case approval confirmed; Story-level conformance/drift gates remain** |
 | [SUC-021 — Trip Return](usecase-review.md#suc-021) | R1 | **APPROVED — STORY-0052 + STORY-0053 approved and fan-out requested; Yard Audit / Yard Stock Check → later challan-entry reconciliation included; post-approval conformance pending** |
 | [SUC-022 — Customer Demands](usecase-review.md#suc-022) | R1 | Pending user approval |
 | [SUC-023 — Trip Review](usecase-review.md#suc-023) | R1 | Pending user approval |
