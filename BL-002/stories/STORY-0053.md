@@ -114,9 +114,41 @@ On any caught exception after the load ID is parsed, the controller:
 
 The template visibly renders `errorMessage` as an error alert.
 
+## Required Yard Check and post-return reconciliation lifecycle
+
+Completing `POST /trip-return` records the physical return of the trip and challan books, but **does not by itself mean that every cylinder physically unloaded from the vehicle has been accepted into system Yard inventory**.
+
+The governed business lifecycle after this POST is:
+
+1. The returning vehicle may carry cylinders collected from both Customers and Suppliers, and those cylinders may be EMPTY or FULL depending on the movement.
+2. After the trip reaches the Yard, the cylinders are physically unloaded.
+3. The Trip Return transaction records the trip/challan-book return and moves the trip to `Returned`, but the system must not silently treat all physically unloaded cylinders as reconciled Yard inventory merely because this POST succeeded.
+4. The next **Yard Audit / Yard Stock Check** must establish which cylinder identities are actually present in the Yard.
+5. Challan entry for the completed trip may subsequently explain the customer/supplier movements represented by those physical cylinders.
+6. The application must reconcile the cylinders observed during the Yard Audit against the cylinders implied by the later Delivery / Empty Pickup / Supplier-related challan transactions.
+7. If the Yard Audit and challan evidence agree, the reconciliation can become GREEN / reconciled.
+8. If they differ, the discrepancy must be visibly reported and remain unresolved until investigated or corrected.
+9. A temporary mismatch caused only by pending challan entry may remain AMBER during the governed entry window; if the window expires without reconciliation it must escalate to RED / human attention.
+
+### Example
+
+A trip returns with 8 EMPTY customer cylinders and 3 FULL supplier-related cylinders. The POST return operation can successfully return the challan books and move the trip to `Returned`, but it must not automatically assert that all 11 cylinders are valid system Yard inventory. The next Yard Audit establishes the physical set. Later challan entry must explain those 11 cylinder movements. If only 10 are explained, the remaining cylinder must be surfaced as a reconciliation mismatch.
+
+## Current implementation assessment for the Yard Check lifecycle
+
+The frozen source proves the Trip Return POST mechanics described above, including challan-leaf updates, assignment return, book-location reset and trip transition to `Returned`.
+
+It does **not** prove a complete end-to-end returned-cylinder manifest and one-for-one reconciliation from this POST through the next Yard Audit and subsequent challan entry. That wider approved requirement is shared with STORY-0052 and is tracked as the existing governed implementation gap **DEV-0006**.
+
+This Story therefore documents both:
+- the source-proved current POST behavior; and
+- the required post-return Yard Audit / challan reconciliation business lifecycle.
+
+Documenting the requirement does not authorize application-code mutation. Any DEV-0006 implementation remains subject to the exact drift/code-change manifest approval gate.
+
 ## Completion and approval gate
 
-The complete submitted-field contract, parsing/normalization, top-level guards, idempotent already-returned behavior, leaf state transitions, spoiled/missing validation, assignment return mutation, book-location reset, trip Returned transition, persistence identities, transaction boundary and success/error terminals are source-bound from the recovered governed ZIP.
+The complete submitted-field contract, parsing/normalization, top-level guards, idempotent already-returned behavior, leaf state transitions, spoiled/missing validation, assignment return mutation, book-location reset, trip Returned transition, persistence identities, transaction boundary and success/error terminals are source-bound from the recovered governed ZIP. The required physical-return → Yard Audit / Yard Stock Check → later challan-entry reconciliation lifecycle is also part of this Story's business contract, while its missing end-to-end implementation remains a governed gap rather than inferred current behavior.
 
 STORY-0053 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
