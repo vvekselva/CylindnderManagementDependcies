@@ -2,7 +2,7 @@
 
 > Human-readable projection of `screen-usecase-register.csv`. Approval state is derived from durable Story approval evidence and must not override unit-local evidence.
 
-**Story disposition:** 59 approved, 69 awaiting user approval, 6 superseded/not needed.
+**Story disposition:** 60 approved, 68 awaiting user approval, 6 superseded/not needed.
 
 **Use Case disposition:** 15 approved, 4 partially approved, 19 pending user approval, 2 superseded/not needed.
 
@@ -31,7 +31,7 @@
 | [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | **APPROVED — STORY-0045 + STORY-0046 + STORY-0047 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | **APPROVED — explicit use-case approval confirmed; Story-level conformance/drift gates remain** |
 | [SUC-021 — Trip Return](usecase-review.md#suc-021) | R1 | **APPROVED — STORY-0052 + STORY-0053 approved and fan-out requested; Yard Audit / Yard Stock Check → later challan-entry reconciliation included; post-approval conformance pending** |
-| [SUC-022 — Customer Demands](usecase-review.md#suc-022) | R1 | Pending user approval |
+| [SUC-022 — Customer Demands](usecase-review.md#suc-022) | R1 | Partially approved — STORY-0054 approved / fan-out requested; STORY-0055 and STORY-0056 pending |
 | [SUC-023 — Trip Review](usecase-review.md#suc-023) | R1 | Pending user approval |
 | [SUC-024 — Supplier Lookup / List Support](usecase-review.md#suc-024) | R1 | Pending user approval |
 | [SUC-025 — Vehicle Loads Listing](usecases/SUC-025.md) | R1 | Partially approved |
