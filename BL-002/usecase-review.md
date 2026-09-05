@@ -197,15 +197,14 @@
 [Back to register](screen-usecase-register.md)
 
 <a id="suc-015"></a>
-## SUC-015 — Cylinder Delivery
+## SUC-015 — Cylinder Delivery — SUPERSEDED LEGACY REVIEW ENTRY
 
-**Release:** R1  
-**Use-case approval:** Pending user approval  
+**Status:** `SUPERSEDED_BY_DEDICATED_USECASE_ARTIFACT`  
+**Canonical review:** [BL-002/usecases/SUC-015.md](usecases/SUC-015.md)
 
-| Story | Role | Approval |
-|---|---|---|
-| [STORY-0037](stories/STORY-0037.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0038](stories/STORY-0038.md) | Primary | PENDING_USER_APPROVAL |
+This legacy section is retained only as a navigation compatibility anchor. The canonical SUC-015 membership, Story roles, approval states, dependency mappings, and future updates must be maintained in the dedicated Use Case artifact above.
+
+STORY-0037 and STORY-0038 are **not superseded** by this navigation change; they remain active Stories in the canonical Story register unless separate durable supersession evidence is recorded.
 
 [Back to register](screen-usecase-register.md)
 
@@ -565,25 +564,14 @@
 [Back to register](screen-usecase-register.md)
 
 <a id="suc-039"></a>
-## SUC-039 — Lookup / Lookup Management
+## SUC-039 — Lookup / Lookup Management — SUPERSEDED LEGACY REVIEW ENTRY
 
-**Release:** R1  
-**Use-case approval:** Approved, with one dependency on drift hold  
+**Status:** `SUPERSEDED_BY_DEDICATED_USECASE_ARTIFACT`  
+**Canonical review:** [BL-002/usecases/SUC-039.md](usecases/SUC-039.md)
 
-| Story | Role | Approval / fan-out state |
-|---|---|---|
-| [STORY-0127](stories/STORY-0127.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0128](stories/STORY-0128.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0129](stories/STORY-0129.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0130](stories/STORY-0130.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0131](stories/STORY-0131.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0132](stories/STORY-0132.md) | Primary | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0087](stories/STORY-0087.md) | Dependency — address-type search | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0089](stories/STORY-0089.md) | Dependency — city search | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0090](stories/STORY-0090.md) | Dependency — country search | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS — FANOUT_ELIGIBLE** |
-| [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — CODE_DRIFT_REVIEW_PACKET_PENDING_EXPLICIT_APPROVAL — FANOUT_BLOCKED** |
+This legacy section is retained only as a navigation compatibility anchor. The canonical SUC-039 Story membership, approval/conformance state, fan-out eligibility, dependency mappings, and drift holds must be maintained in the dedicated Use Case artifact above.
 
-**Governance note:** “Fan-out eligible” means the approval and code-conformance gates are satisfied; it does **not** mean BL-004/BL-005/BL-009 tests have been executed. STORY-0101 remains fail-closed until the exact drift/code-change manifest is explicitly approved and conformance is rerun successfully.
+The current screen/use-case register already points SUC-039 to the dedicated artifact. Do not treat approval/fan-out text remaining in this legacy page as authoritative.
 
 [Back to register](screen-usecase-register.md)
 
