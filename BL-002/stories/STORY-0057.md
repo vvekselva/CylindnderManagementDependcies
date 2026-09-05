@@ -3,7 +3,7 @@
 - Release: R1
 - Endpoint: `GET /trip-review`
 - Controller: `TripReviewController.showReviewQueue`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
 - Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Business-behavior rework: COMPLETE
@@ -63,3 +63,13 @@ The queue has no large reference selector. The only row action uses an already-r
 The source proves the queue purpose, fixed eligibility predicate, sort order, exact database view/read identity, visible row fields, empty state and persistent-ID navigation. `STORY-0057` is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 Approval remains `PENDING_USER_APPROVAL`. No code mutation or auto-approval occurred. Downstream testing fan-out remains blocked until explicit approval/reapproval plus a current post-approval Story/code conformance PASS.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
