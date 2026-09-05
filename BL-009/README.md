@@ -18,8 +18,9 @@ Generated source alone never counts as coverage. Application-behavior PASS requi
 ## Current projection
 Reconciled by `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009`:
 
-- Explicitly approved Stories: **20**
-- Code-conformance pass / generated mapped test scopes: **18**
+- Explicitly approved testing-queue Stories: **21**
+- Code-conformance pass / fan-out eligible: **19**
+- Generated mapped test scopes: **18**; newly queued not yet generated: **1** (`STORY-0102`)
 - Drift holds: **2** (`STORY-0101`, `STORY-0103`)
 - Revised application-behavior execution: **not executed in this runtime**
 - Java available: **OpenJDK 21.0.11**
