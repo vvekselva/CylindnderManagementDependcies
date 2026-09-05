@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `GET /displayCustomer`
 - Controller: `CustomerFetchController.doGet`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
 - Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Rework state: APPROVED_AFTER_REWORK
 - Traceability state: COMPLETE
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
