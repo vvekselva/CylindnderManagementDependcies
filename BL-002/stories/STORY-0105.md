@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /search/cylinder/ownership/by-state`
 - Controller: `RestfulCylinderServices.getCylindersByStateUsingOwnershipModel`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_FANOUT_REQUESTED
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -19,6 +19,14 @@ The endpoint is the global ownership-aware by-state search path, separate from t
 
 ## Completion and approval gate
 
-The request/paging/service routing, ownership-aware scope, response/error behavior and read-only effect are source-bound. STORY-0105 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The request/paging/service routing, ownership-aware scope, response/error behavior and read-only effect are source-bound. STORY-0105 is therefore `APPROVED_AFTER_REWORK`; explicit user approval and fan-out authorization are durably recorded.
 
-Approval remains pending; no application-code or BL-010 mutation occurred.
+User approval and fan-out authorization are durably recorded. Application-code mutation remains separately governed by drift/change-manifest approval.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Recorded: 2026-09-05
+- Post-approval gate: source/code conformance required before executable downstream claims
+- Fan-out targets: BL-004, BL-005, BL-009, BL-011
+- Runtime/coverage rule: do not infer execution or coverage without durable evidence
