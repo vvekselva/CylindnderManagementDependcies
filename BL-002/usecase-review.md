@@ -304,13 +304,13 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 ## SUC-022 — Customer Demands
 
 **Release:** R1  
-**Use-case approval:** Partially approved — STORY-0054 and STORY-0055 approved; STORY-0056 pending  
+**Use-case approval:** Approved — all three Stories approved and fan-out requested; post-approval conformance required  
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0054](stories/STORY-0054.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 | [STORY-0055](stories/STORY-0055.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
-| [STORY-0056](stories/STORY-0056.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0056](stories/STORY-0056.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
