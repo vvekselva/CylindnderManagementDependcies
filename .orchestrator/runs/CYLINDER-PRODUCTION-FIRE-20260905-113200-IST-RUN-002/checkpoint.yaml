@@ -1,0 +1,37 @@
+run_id: CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002
+mode: CONTINUOUS
+started_at: 2026-09-05T11:32:00+05:30
+checkpoint_at: 2026-09-05T11:38:00+05:30
+state: IN_PROGRESS
+scheduler_receipt: .orchestrator/scheduler-fire-receipts/cylinder-production-fire/fire-20260905T113200+0530.yaml
+source_binding: .orchestrator/application-source-binding.yaml
+source:
+  file_name: Harinandhan-Cylinder-Backup(20260905-060414).zip
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  extracted_local_path: /mnt/data/cylinder-orchestrator/source-20260905-060414
+  fingerprint_matches_previous_governed_source: true
+work_completed:
+  conformance_pass:
+    - STORY-0031
+    - STORY-0032
+    - STORY-0033
+  conformance_evidence:
+    - BL-002/evidence/STORY-0031-post-approval-source-conformance-20260905.yaml
+    - BL-002/evidence/STORY-0032-post-approval-source-conformance-20260905.yaml
+    - BL-002/evidence/STORY-0033-post-approval-source-conformance-20260905.yaml
+work_in_progress:
+  - reconcile_downstream_test_generation_for_new_conformance_passes
+  - process_remaining_post_approval_conformance_queue
+  - BL011_redo_all_eligible_except_STORY-0012
+execution_evidence:
+  unit_tests: NOT_EXECUTED_NO_NEW_RUNTIME_EVIDENCE
+  integration_tests: NOT_EXECUTED_NO_NEW_RUNTIME_EVIDENCE
+  application_behavior: NOT_EXECUTED_NO_NEW_RUNTIME_EVIDENCE
+coverage:
+  state: NO_NEW_DURABLE_COVERAGE_EVIDENCE
+governance:
+  auto_approval: false
+  application_code_mutation: false
+  github_actions_used: false
+  drift_requires_exact_manifest_user_approval: true
+next_action: GENERATE_TEST_ARTIFACTS_FOR_PASS_STORIES_THEN_REPLAN_NEXT_CONFORMANCE_UNITS
