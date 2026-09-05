@@ -7,3 +7,12 @@ intended_scope: CONTINUOUS
 run_id: CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002
 orchestrator_state: RUN_LINKED
 linkage_state: ORCHESTRATOR_STARTED
+
+terminal_state: PLATFORM_RUNTIME_FORCED_STOP
+termination_time: 2026-09-05T12:02:13+05:30
+elapsed_seconds: 1813
+productive_runtime_target_seconds: 1800
+productive_runtime_target_met: true
+resumable: true
+resumable_checkpoint: .orchestrator/runs/CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002/checkpoint.yaml
+next_story: STORY-0090
