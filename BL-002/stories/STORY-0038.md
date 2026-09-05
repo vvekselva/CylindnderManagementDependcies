@@ -3,12 +3,15 @@
 - Release: R1
 - Endpoint: `POST /cylinderDelivery`
 - Functional area: Cylinder Delivery
-- Approval: PENDING_USER_APPROVAL
+- Approval: PENDING_USER_APPROVAL — EXPLICIT_USER_APPROVAL_REQUIRED
 - Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Traceability state: COMPLETE
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Business-behavior rework: COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+- Canonical Use Case review: `BL-002/usecases/SUC-015.md`
+- Review-state reconciliation: `BL-002/evidence/STORY-0038-review-state-reconciliation-20260905.yaml`
+- Legacy navigation note: `BL-002/usecase-review.md#suc-015` is a compatibility anchor only; this Story is **not superseded**.
 
 ## Human-readable story
 
@@ -68,6 +71,6 @@ On the normal successful controller path the browser redirects to `/orderList?pa
 
 ## Review and approval gate
 
-The POST business behavior is now source-bound from visible submission through controller, concrete mediator, validator, transactional service, JPA repository/entities and exact `public.tbl_order` / `public.tbl_order_line` identities. The Story is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The POST business behavior is source-bound from visible submission through controller, concrete mediator, validator, transactional service, JPA repository/entities and the exact `public.tbl_order` / `public.tbl_order_line` identities. STORY-0038 is an active canonical Story under `SUC-015` and is **not superseded**.
 
-No approval occurred. Explicit user approval/rework remains required. Any later code correction arising from Story/code conformance must first present the exact Drift / Code Change Manifest and receive explicit user approval before BL-010 or application-source mutation.
+Current state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. No explicit user approval for STORY-0038 is durably recorded yet, so BL-004 / BL-005 / BL-009 / BL-011 fan-out is not authorized. After explicit approval, post-approval source/code conformance must pass before downstream executable fan-out. Any required application-code correction must still present the exact Drift / Code Change Manifest and receive explicit user approval before BL-010 or application-source mutation.
