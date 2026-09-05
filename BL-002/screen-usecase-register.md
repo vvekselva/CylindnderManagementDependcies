@@ -2,7 +2,7 @@
 
 > Human-readable projection of `screen-usecase-register.csv`. Approval state is derived from durable Story approval evidence and must not override unit-local evidence.
 
-**Story disposition:** 52 approved, 78 awaiting user approval, 4 superseded/not needed.
+**Story disposition:** 51 approved, 79 awaiting user approval, 4 superseded/not needed.
 
 **Use Case disposition:** 11 approved, 6 partially approved, 21 pending user approval, 2 superseded/not needed.
 
@@ -29,7 +29,7 @@
 | [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | **Approved** |
 | [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | **Approved** |
 | [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | Partially approved |
-| [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | **Approved** |
+| [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | Partially approved |
 | [SUC-021 — Trip Return](usecase-review.md#suc-021) | R1 | Partially approved |
 | [SUC-022 — Customer Demands](usecase-review.md#suc-022) | R1 | Pending user approval |
 | [SUC-023 — Trip Review](usecase-review.md#suc-023) | R1 | Pending user approval |
