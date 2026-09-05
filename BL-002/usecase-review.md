@@ -491,7 +491,7 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 | [STORY-0094](stories/STORY-0094.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0095](stories/STORY-0095.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0096](stories/STORY-0096.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0097](stories/STORY-0097.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0097](stories/STORY-0097.md) | Dependency | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
 | [STORY-0098](stories/STORY-0098.md) | Dependency — product-category search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0099](stories/STORY-0099.md) | Dependency — product search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0100](stories/STORY-0100.md) | Dependency — product UOM search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
