@@ -8,13 +8,9 @@
 - Human-readable test data: `BL-009/test-data/STORY-0088.md`
 - Executable mapping: `BL-004/generated-tests/STORY-0088/Story0088UnitTest.java`
 
-## Scenarios
-
 | ID | Input / precondition | Service outcome | Expected current-source result |
 |---|---|---|---|
 | TC-0088-01 | DELIVERY | SUCCESS | searchTerm preserved and same service response |
 | TC-0088-02 | DELIVERY | GOVERNED_EXCEPTION | non-null empty response DTO |
 
-## Execution status
-
-Generated and mapped only. **NOT_EXECUTED** in this fire; no PASS or coverage is inferred.
+Execution: **NOT_EXECUTED**; no PASS or coverage inferred.
