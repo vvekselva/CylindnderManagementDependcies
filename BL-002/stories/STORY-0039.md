@@ -3,12 +3,18 @@
 - Release: R1
 - Endpoint: `GET /vehicleLoad`
 - Functional area: Vehicle Load
-- Approval: PENDING_USER_APPROVAL
-- Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: NOT_NEEDED_SUPERSEDED
+- Review state: SUPERSEDED_NOT_NEEDED
 - Traceability state: COMPLETE
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
-- Business-behavior rework: COMPLETE
+- Business-behavior rework: SUPERSEDED_NOT_NEEDED
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
+
+- Lifecycle disposition: SUPERSEDED_NOT_NEEDED
+- Superseded by: STORY-0043 / STORY-0044
+- Supersession reason: The combined Vehicle Trip Load Wizard prepares and saves the vehicle load in the same governed transaction, replacing the separate Vehicle Load screen/submit flow.
+- Approval requirement: NONE_FOR_SUPERSEDED_STORY
+- Downstream fan-out: BLOCKED_NOT_APPLICABLE
 
 ## Human-readable story
 
@@ -111,3 +117,7 @@ On the controller's normal success path, the browser is redirected to `/vehicle-
 The page's embedded Save Vehicle Load capability is now bound through controller, concrete mediator, transactional service, validation, exact persistence identities and yard-to-logistics business effects. The Story is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 No approval occurred. Explicit user approval or rework remains required, and testing fan-out remains unauthorized until all downstream approval/conformance gates pass.
+
+## Supersession disposition
+
+This legacy Story is retained only for traceability and audit. It is **not an active review or implementation requirement**. Its business capability is provided by the combined Vehicle Trip Load Wizard through STORY-0043 / STORY-0044. Do not request user approval, post-approval conformance, BL-004 unit-test fan-out, BL-005 integration-test fan-out, BL-009 test-catalogue fan-out, or BL-011 readable-packet completion for this superseded Story. Historical source analysis remains evidence only and must not be counted as active backlog work.
