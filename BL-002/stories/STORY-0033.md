@@ -5,8 +5,8 @@
 - Functional area: Walk-in Sale
 - Controller: `WalkinSaleIngestionController.doPost(...)`
 - Service: `WalkinSaleServiceImpl.processRequest(...)`
-- Approval: NOT_APPROVED
-- Business-behavior rework: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Business-behavior rework: APPROVED_AFTER_REWORK
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 
 ## Business purpose
@@ -88,4 +88,4 @@ This operation can simultaneously complete a counter delivery and an empty-cylin
 
 ## Rework gate
 
-**BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW**. The concrete Walk-in Sale service, transaction boundary, business branching, persistence sequence and challan-journal behavior are frozen-source bound. No automatic approval and no revised BL-004/BL-005/BL-009 fan-out is authorized until explicit user approval/reapproval.
+**APPROVED_AFTER_REWORK**. Explicit user approval was recorded on 2026-09-05. Post-approval code conformance remains mandatory before BL-004/BL-005/BL-009 revised fan-out. Generated or queued test work must not be treated as executed evidence.
