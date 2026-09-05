@@ -1,14 +1,20 @@
-version: 1
+version: 2
 backlog_id: BL-002
-updated_at: 2026-09-05T01:50:00Z
+updated_at: 2026-09-05T09:50:00+05:30
 policy: SUPERSEDED_STORIES_RETAINED_FOR_AUDIT_EXCLUDED_FROM_ACTIVE_WORK
-canonical_replacement:
-  use_case: SUC-018
-  name: Vehicle Trip Load Wizard
-  stories:
-    - STORY-0043
-    - STORY-0044
 superseded:
+  - story_id: STORY-0037
+    endpoint: GET /cylinderDelivery
+    legacy_use_case: SUC-015
+    disposition: SUPERSEDED_NOT_NEEDED
+    reason: LEGACY_CYLINDER_DELIVERY_CONTROLLER_REPLACED_BY_ADD_STOP_CUSTOMER_DELIVERY_FLOW
+    replacement: [STORY-0051, STORY-0085]
+  - story_id: STORY-0038
+    endpoint: POST /cylinderDelivery
+    legacy_use_case: SUC-015
+    disposition: SUPERSEDED_NOT_NEEDED
+    reason: LEGACY_CYLINDER_DELIVERY_CONTROLLER_REPLACED_BY_ADD_STOP_CUSTOMER_DELIVERY_FLOW
+    replacement: [STORY-0051, STORY-0085]
   - story_id: STORY-0039
     endpoint: GET /vehicleLoad
     legacy_use_case: SUC-016
@@ -37,7 +43,4 @@ rules:
   BL009_fanout: false
   BL011_packet_required: false
   historical_source_evidence_retained: true
-not_superseded:
-  - STORY-0037
-  - STORY-0038
-note: Cylinder Delivery remains a distinct customer-delivery transaction and is not replaced by trip/load creation.
+note: STORY-0037 and STORY-0038 are historical legacy Cylinder Delivery endpoints. The active customer delivery transaction is performed through Add Stop / customer stop selection and POST /stop, represented by STORY-0051 and STORY-0085 with their governed dependencies.
