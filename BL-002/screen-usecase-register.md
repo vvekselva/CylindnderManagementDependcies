@@ -1,10 +1,12 @@
 # BL-002 Screen / Use Case Review Register
 
 > Human-readable projection of `screen-usecase-register.csv`. Approval state is derived from durable Story approval evidence and must not override unit-local evidence.
+>
+> **Reconciled:** 2026-09-05 after the latest STORY-0034, STORY-0035, STORY-0036, STORY-0054, STORY-0055 and STORY-0056 approvals.
 
 **Story disposition:** 65 approved, 63 awaiting user approval, 6 superseded/not needed.
 
-**Use Case disposition:** 15 approved, 4 partially approved, 19 pending user approval, 2 superseded/not needed.
+**Use Case disposition:** 18 approved, 3 partially approved, 16 pending user approval, 3 superseded/not needed.
 
 **Supersession rule:** STORY-0037 and STORY-0038 are `SUPERSEDED_NOT_NEEDED` because the legacy Cylinder Delivery controller was replaced by the Add Stop customer-delivery flow (STORY-0051 + STORY-0085). STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are also `SUPERSEDED_NOT_NEEDED`; SUC-018 is the canonical combined Vehicle Trip + Load workflow.
 
