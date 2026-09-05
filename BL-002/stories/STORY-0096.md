@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /search/cylinder/by-customer`
 - Controller: `RestfulCylinderServices.getCylindersByCustomer`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_FANOUT_REQUESTED
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Canonical identity: `release-classification.csv` No. 96
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -25,4 +25,12 @@ This API is read-only; custody/logistics movement is performed only by the downs
 
 The canonical Story identity, customer request/paging contract, ownership-model custody search, selectable persistent cylinder IDs and read-only effect are source-bound. STORY-0096 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
-Approval remains pending; no application-code or BL-010 mutation occurred.
+User approval recorded on 2026-09-05. Fan-out is authorized subject to post-approval source/code conformance; runtime execution and coverage remain evidence-based.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Recorded: 2026-09-05
+- Post-approval gate: source/code conformance required before executable downstream claims
+- Fan-out targets: BL-004, BL-005, BL-009, BL-011
+- Runtime/coverage rule: do not infer execution or coverage without durable evidence
