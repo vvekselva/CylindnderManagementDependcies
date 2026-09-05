@@ -4,7 +4,7 @@
 >
 > **Reconciled:** 2026-09-05 after the latest STORY-0060, STORY-0061, STORY-0107 and STORY-0126 approvals.
 
-**Story disposition:** 83 approved, 45 awaiting user approval, 6 superseded/not needed.
+**Story disposition:** 84 approved, 44 awaiting user approval, 6 superseded/not needed.
 
 **Use Case disposition:** 23 approved, 1 partially approved, 13 pending user approval, 3 superseded/not needed.
 
