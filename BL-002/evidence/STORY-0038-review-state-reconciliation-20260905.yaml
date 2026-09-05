@@ -1,0 +1,22 @@
+story_id: STORY-0038
+title: Cylinder Delivery
+release: R1
+endpoint: POST /cylinderDelivery
+reconciliation_date: 2026-09-05
+canonical_use_case: BL-002/usecases/SUC-015.md
+business_behavior_rework: COMPLETE
+traceability_state: COMPLETE
+enrichment_state: STRICT_FIELD_UI_COMPLETE
+approval_state: PENDING_USER_APPROVAL
+review_state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+superseded: false
+fanout:
+  BL-004: NOT_AUTHORIZED_PENDING_EXPLICIT_USER_APPROVAL
+  BL-005: NOT_AUTHORIZED_PENDING_EXPLICIT_USER_APPROVAL
+  BL-009: NOT_AUTHORIZED_PENDING_EXPLICIT_USER_APPROVAL
+  BL-011: NOT_ELIGIBLE_PENDING_APPROVAL_AND_CONFORMANCE
+notes:
+  - STORY-0038 remains an active canonical Story.
+  - The legacy usecase-review SUC-015 navigation section does not supersede STORY-0038.
+  - No explicit user approval for STORY-0038 is durably recorded as of this reconciliation.
+  - No downstream fan-out or test execution is inferred.
