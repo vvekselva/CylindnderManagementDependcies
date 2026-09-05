@@ -1,7 +1,15 @@
 # BL-011 Human-Readable Test Packet — STORY-0013 Challan Book Registration Submit
 
 ## Rework state
-Reworked under the mandatory per-test-case adjacent-code rule.
+Freshly reworked and revalidated under the mandatory 2026-09-05 redo directive in `CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002`.
+
+- Fresh source binding: `Harinandhan-Cylinder-Backup(20260905-060414).zip`
+- SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Production controller/service current-state gaps freshly read from extracted local source.
+- BL-004, BL-005 and BL-009 executable/data artifacts freshly read back.
+- Validation against `BL-011/README.md`: PASS
+- Validation against `BL-011/human-readable-testing-policy.yaml`: PASS
+- Existing packet/file presence was not accepted as rework proof.
 
 ## Business behavior and scope
 ## 1. Story, approval, conformance and source
@@ -128,7 +136,7 @@ Packet rework does not imply BL-004/005/009 execution.
 ## 11. BL-011 validation outcome
 Validated against `BL-011/README.md` and `BL-011/human-readable-testing-policy.yaml`. The packet explicitly covers business behavior, preconditions, inputs, validation rules, happy path, negative/current-gap paths, boundary/range case, duplicate conflict, controller/API/UI/database outcomes, executable references, backlog traceability and separated execution/coverage state.
 
-Status: `HUMAN_READABLE_TEST_PACKET_REWORKED_AND_VALIDATED`.
+Status: `HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE`.
 
 ## Production Code Evidence
 ```java
