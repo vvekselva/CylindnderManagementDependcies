@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `GET /ownership-dashboard/supplier`
 - Controller: `OwnershipDashboardController.showSupplierOwnership`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK â€” FANOUT_REQUESTED
 - Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -27,3 +27,13 @@ The read chain is `OwnershipDashboardFetchService.fetchByLocation("SUPPLIER")` â
 The recovered ZIP confirms the controller literal, title/model contract, terminal template and read-only data identity. STORY-0069 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 Approval remains pending; no application code or BL-010 mutation occurred.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
