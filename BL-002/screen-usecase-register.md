@@ -29,6 +29,8 @@
 | [SUC-013 — Customer Spot Cylinder Check](usecase-review.md#suc-013) | R2 | Pending user approval |
 | [SUC-014 — Yard Audit Dashboard](usecase-review.md#suc-014) | R1 | Pending user approval |
 | [SUC-015 — Cylinder Delivery](usecases/SUC-015.md) | R1 | Pending user approval |
+
+SUC-015 primary Stories `STORY-0037` and `STORY-0038` remain active and are not superseded. `STORY-0038` is business-behavior complete and awaits explicit user approval.
 | [SUC-016 — Vehicle Load](usecases/SUC-016.md) | R1 | **Superseded by SUC-018** |
 | [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | Partially approved |
 | [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | Pending user approval |
