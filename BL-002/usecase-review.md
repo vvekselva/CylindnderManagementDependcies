@@ -175,12 +175,12 @@
 ## SUC-013 — Customer Spot Cylinder Check
 
 **Release:** R2  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Approved — fan-out requested; post-approval conformance required  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0034](stories/STORY-0034.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0035](stories/STORY-0035.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0034](stories/STORY-0034.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0035](stories/STORY-0035.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
