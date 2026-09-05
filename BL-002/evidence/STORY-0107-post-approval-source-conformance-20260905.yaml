@@ -1,0 +1,39 @@
+story_id: STORY-0107
+release: R1
+title: Cylinders on Vehicle
+approval_state: APPROVED_AFTER_REWORK
+approval_evidence: BL-002/approval-evidence/STORY-0107-approval-20260905.md
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: POST /search/cylinder/on-vehicle
+  controller: RestfulCylinderServices.getCylindersOnVehicle
+  service: cylindersOnVehicleSearchServiceWithOwnershipModel
+  request:
+    - VEHICLE_LOAD_ID
+    - FULL state criteria
+    - Supplier Stop flag
+    - page 1/50
+  behavior:
+    - read active logistics execution lines for physical vehicle-load contents
+    - return serial current state quantity and persistent cylinder ID
+    - UI selection writes repeated emptyCylinderDropOffToSuppliers values
+    - reloading supplier exchange clears stale prior supplier selection
+    - governed application failure returns empty CylinderSearchResponseDto
+  mutation: NONE
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_MATCHES_FROZEN_SOURCE_BOUND_OWNERSHIP_MODEL_VEHICLE_CONTENT_SEARCH_CONTRACT_RECORDED_IN_STORY_0107
+  application_code_mutation_required: false
+fanout:
+  BL-004: ELIGIBLE_QUEUED
+  BL-005: ELIGIBLE_QUEUED
+  BL-009: ELIGIBLE_QUEUED
+  BL-011: ELIGIBLE_PACKET_PENDING
+execution:
+  unit: NOT_EXECUTED
+  integration: NOT_EXECUTED
+  application_behavior: NOT_EXECUTED
+coverage:
+  state: NO_DURABLE_COVERAGE_EVIDENCE
