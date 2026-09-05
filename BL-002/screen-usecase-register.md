@@ -2,7 +2,7 @@
 
 > Human-readable projection of `screen-usecase-register.csv`. Approval state is derived from durable Story approval evidence and must not override unit-local evidence.
 >
-> **Reconciled:** 2026-09-05 after the latest STORY-0034, STORY-0035, STORY-0036, STORY-0054, STORY-0055 and STORY-0056 approvals.
+> **Reconciled:** 2026-09-05 after the latest STORY-0034, STORY-0035, STORY-0036, STORY-0054, STORY-0055, STORY-0056, STORY-0057, STORY-0058 and STORY-0084 approvals.
 
 **Story disposition:** 68 approved, 60 awaiting user approval, 6 superseded/not needed.
 
