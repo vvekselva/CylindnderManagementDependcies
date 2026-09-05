@@ -33,3 +33,24 @@ control_plane_checkpoint:
     corrected_percentage: 4.8
     remaining: 20
   aggregate_projection_drift: RECONCILED
+
+terminal:
+  classification: HARD_GLOBAL_BLOCKER_APPLICATION_SOURCE_UNAVAILABLE
+  termination_time: 2026-09-05T08:50:21+05:30
+  elapsed_seconds: 201
+  productive_runtime_target_seconds: 1800
+  early_termination_reason: GENUINE_HARD_GLOBAL_BLOCKER
+  resumable: true
+  resume_checkpoint: BL-011/rework-checkpoints/cylinder-prod-fire-20260905T084700+0530.yaml
+  completed_control_plane_work:
+    - scheduler_receipt_persisted
+    - run_linked
+    - library_search_attempted
+    - exact_file_id_materialization_attempted
+    - source_unavailability_durably_recorded
+    - BL011_progress_reset_to_user_directive
+    - BL011_rework_checkpoint_persisted
+    - BL011_redo_directive_persisted
+    - BL002_aggregate_projection_reconciled
+  source_backed_packet_rework_completed: []
+  next_action: RECOVER_REQUIRED_LIBRARY_ZIP_THEN_REWORK_STORY_0001_AND_CONTINUE_REMAINING_20
