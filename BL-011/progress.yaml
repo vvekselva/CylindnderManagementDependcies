@@ -1,10 +1,10 @@
 backlog_id: BL-011
 directive: USER_REDO_ALL_FILES_EVERY_TEST_CASE_WITH_ADJACENT_CODE_2026-09-04
-eligible_story_denominator: 19
+eligible_story_denominator: 21
 completion_basis: FRESH_PER_TEST_CASE_ADJACENT_CODE_REWORK
 packet_terminal_status: HUMAN_READABLE_TEST_PACKET_PER_CASE_CODE_COMPLETE
 packets_complete: 18
-corrected_percentage: 94.7
+corrected_percentage: 85.7
 completed:
   - STORY-0001
   - STORY-0012
@@ -24,11 +24,13 @@ completed:
   - STORY-0130
   - STORY-0131
   - STORY-0132
-remaining_count: 1
+remaining_count: 3
 remaining:
+  - STORY-0096
   - STORY-0102
+  - STORY-0107
 strict_requirements:
-  every_individual_test_case_has_adjacent_code: PASS_18_OF_19_ELIGIBLE_PACKETS
+  every_individual_test_case_has_adjacent_code: PASS_18_OF_21_ELIGIBLE_PACKETS
   unit_test_cases_with_adjacent_code: REQUIRED_AND_VALIDATED
   integration_test_cases_with_adjacent_code: REQUIRED_AND_VALIDATED
   bl009_test_data_use_case_cases_with_adjacent_code: REQUIRED_AND_VALIDATED
@@ -51,4 +53,4 @@ rules:
   application_code_mutation: NONE
   infer_execution_success: false
   infer_coverage: false
-next_action: GENERATE_BL004_BL005_BL009_ARTIFACTS_FOR_STORY_0102_THEN_BUILD_BL011_PACKET; EXECUTION_REMAINS_RUNTIME_GATED
+next_action: GENERATE_BL004_BL005_BL009_ARTIFACTS_FOR_STORY_0096_STORY_0102_STORY_0107_THEN_BUILD_BL011_PACKETS; EXECUTION_REMAINS_RUNTIME_GATED
