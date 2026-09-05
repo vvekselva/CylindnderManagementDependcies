@@ -1,0 +1,9 @@
+story_id: STORY-0050
+decision: APPROVED_AND_FAN_OUT
+recorded_at: 2026-09-05
+approval_state: APPROVED_AFTER_REWORK
+fanout_authorized: true
+fanout_targets: [BL-004, BL-005, BL-009, BL-011]
+post_approval_gate: SOURCE_CODE_CONFORMANCE_REQUIRED
+runtime_execution_claim: NOT_INFERRED
+coverage_claim: NOT_INFERRED
