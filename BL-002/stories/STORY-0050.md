@@ -4,9 +4,9 @@
 
 - Release: R1
 - Endpoint: `POST /add-stop/challan-page-photo/upload-ajax`
-- Approval: `PENDING_USER_APPROVAL`
-- Review state: `READY_FOR_USER_REVIEW`
-- Rework state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`
+- Approval: APPROVED_AFTER_REWORK
+- Review state: APPROVED_FANOUT_REQUESTED
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE`
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source intake evidence: `.orchestrator/source-intake/2026-09-02/Harinandhan-Cylinder-Backup-20260902-080237.yaml`
@@ -103,6 +103,14 @@ The operation replaces the active evidence for the selected challan page rather 
 
 The visible supplier/customer controls, browser enablement/submission behavior, exact multipart fields and requiredness, validation rules, page-resolution query, prior-photo deactivation, binary persistence columns, response payload, and visible success/error handling are source-bound from the recovered governed ZIP.
 
-STORY-0050 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+STORY-0050 is therefore `APPROVED_AFTER_REWORK`; explicit user approval and fan-out authorization are durably recorded.
 
 No approval is inferred. No application code was changed and no BL-010 work was created or executed.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Recorded: 2026-09-05
+- Post-approval gate: source/code conformance required before executable downstream claims
+- Fan-out targets: BL-004, BL-005, BL-009, BL-011
+- Runtime/coverage rule: do not infer execution or coverage without durable evidence
