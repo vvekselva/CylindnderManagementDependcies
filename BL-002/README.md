@@ -39,8 +39,8 @@ Physical materialization is separate from strict field/UI enrichment, review sta
 Current projection reconciled from durable approval evidence and the post-approval conformance queue; latest explicit approval update: **2026-09-05 (STORY-0102)**:
 
 - Total Stories: **134**
-- Explicitly approved after rework: **52**
-- Awaiting user review: **78**
+- Explicitly approved after rework: **51**
+- Awaiting user review: **79**
 - Superseded / not needed: **4** (`STORY-0039`, `STORY-0040`, `STORY-0133`, `STORY-0134`) — replaced by the combined Vehicle Trip Load Wizard (`STORY-0043` / `STORY-0044`).
 - Post-approval code-conformance pass / fan-out eligible: **21**
 - Generated current-contract test scopes: **18**; newly eligible/fan-out queued: **3** (`STORY-0096`, `STORY-0102`, `STORY-0107`)
