@@ -8,13 +8,9 @@
 - Human-readable test data: `BL-009/test-data/STORY-0097.md`
 - Executable mapping: `BL-004/generated-tests/STORY-0097/Story0097UnitTest.java`
 
-## Scenarios
-
 | ID | Input / precondition | Service outcome | Expected current-source result |
 |---|---|---|---|
 | TC-0097-01 | page=1,size=50 | SUCCESS | ownership supplier service receives request and pageable page=0 size=50 |
 | TC-0097-02 | default request | GOVERNED_EXCEPTION | non-null empty response DTO |
 
-## Execution status
-
-Generated and mapped only. **NOT_EXECUTED** in this fire; no PASS or coverage is inferred.
+Execution: **NOT_EXECUTED**; no PASS or coverage inferred.
