@@ -15,11 +15,11 @@ A Story enters BL-005 only after explicit user approval is durably recorded in B
 Use JUnit 5 and Testcontainers where PostgreSQL is applicable. Preserve normal Spring/Flyway startup, isolated disposable test data, and assertions across application behavior and persisted state. Do not substitute raw/manual SQL or an external hosted database for the governed integration path.
 
 ## Current projection
-Reconciled by `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009`:
+Reconciled through explicit user approvals recorded 2026-09-05:
 
-- Explicitly approved testing-queue Stories: **23**
-- Code-conformance pass / fan-out eligible: **21**
-- Generated source-bound: **18**; newly queued not yet generated: **3** (`STORY-0096`, `STORY-0102`, `STORY-0107`)
+- Explicitly approved BL-002 Stories: **58**
+- Previously code-conformance-pass / fan-out eligible projection: **21**; newly approved Stories remain conformance-pending and must not be counted as executable-eligible until PASS
+- Previously generated source-bound: **18**; additional approved Stories are queued behind post-approval conformance
 - Drift holds: **2** (`STORY-0101`, `STORY-0103`)
 - Integration execution: **blocked by missing faithful Maven/Testcontainers/container runtime**
 - Java available: **OpenJDK 21.0.11**
