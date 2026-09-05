@@ -496,7 +496,7 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 | [STORY-0099](stories/STORY-0099.md) | Dependency — product search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0100](stories/STORY-0100.md) | Dependency — product UOM search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0101](stories/STORY-0101.md) | Dependency — state search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
-| [STORY-0102](stories/STORY-0102.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0102](stories/STORY-0102.md) | Dependency — supplier search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0103](stories/STORY-0103.md) | Dependency — vehicle search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT-GATED** |
 | [STORY-0104](stories/STORY-0104.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0105](stories/STORY-0105.md) | Dependency | PENDING_USER_APPROVAL |
