@@ -296,7 +296,7 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0052](stories/STORY-0052.md) | Primary — Trip Return page + approved delayed Yard Audit/Challan reconciliation business contract | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DEV-0006 DRIFT-GATED** |
-| [STORY-0053](stories/STORY-0053.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0053](stories/STORY-0053.md) | Primary — Trip Return POST + Yard Audit/challan reconciliation lifecycle | PENDING_USER_APPROVAL |
 
 [Back to register](screen-usecase-register.md)
 
