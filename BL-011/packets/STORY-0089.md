@@ -1,5 +1,17 @@
 # BL-011 Human-Readable Testing Packet — STORY-0089 City Search
 
+## Fresh redo state
+Freshly reworked and revalidated under the mandatory 2026-09-05 redo directive in `CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002`.
+
+- Current bound source: `Harinandhan-Cylinder-Backup(20260905-060414).zip`
+- SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- REST controller, City search service and DAO contains-ignore-case anchors freshly verified in extracted local source.
+- BL-004, BL-005 and BL-009 executable/data artifacts freshly read back.
+- README validation: PASS
+- human-readable-testing-policy validation: PASS
+- Existing packet marker was not used as completion proof.
+- Execution remains `NOT_EXECUTED`; coverage remains evidence-gated.
+
 ## Identity, approval, conformance and frozen source
 - Source Story: `BL-002/stories/STORY-0089.md`.
 - Approved contract: `APPROVED_AFTER_REWORK`; approval evidence is referenced by BL-002 as `BL-002/approval-evidence/STORY-0089-approval-20260902.md`.
