@@ -78,13 +78,13 @@
 ## SUC-006 — Challan Monitoring / Heatmap / Photo
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Approved — fan-out requested; post-approval conformance required  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0014](stories/STORY-0014.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0015](stories/STORY-0015.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0016](stories/STORY-0016.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0014](stories/STORY-0014.md) | Primary — Aging dashboard | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0015](stories/STORY-0015.md) | Primary — Challan heatmap | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0016](stories/STORY-0016.md) | Primary — Challan page photo retrieval | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
