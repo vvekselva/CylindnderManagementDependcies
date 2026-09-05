@@ -4,7 +4,7 @@
 
 **Story disposition:** 59 approved, 69 awaiting user approval, 6 superseded/not needed.
 
-**Use Case disposition:** 10 approved, 7 partially approved, 21 pending user approval, 2 superseded/not needed.
+**Use Case disposition:** 14 approved, 5 partially approved, 19 pending user approval, 2 superseded/not needed.
 
 **Supersession rule:** STORY-0037 and STORY-0038 are `SUPERSEDED_NOT_NEEDED` because the legacy Cylinder Delivery controller was replaced by the Add Stop customer-delivery flow (STORY-0051 + STORY-0085). STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are also `SUPERSEDED_NOT_NEEDED`; SUC-018 is the canonical combined Vehicle Trip + Load workflow.
 
@@ -13,9 +13,9 @@
 | [SUC-001 — Login](usecase-review.md#suc-001) | R1 | **Approved** |
 | [SUC-002 — Offline Map](usecase-review.md#suc-002) | R2 | Pending user approval |
 | [SUC-003 — Predefined Delivery Trips](usecase-review.md#suc-003) | R2 | Pending user approval |
-| [SUC-004 — Complete Trip](usecase-review.md#suc-004) | R1 | **Approved — fan-out requested / conformance pending** |
+| [SUC-004 — Complete Trip](usecase-review.md#suc-004) | R1 | **APPROVED — STORY-0011 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-005 — Challan Book Maintenance](usecase-review-current-20260902.md#suc-005) | R1 | **Approved** |
-| [SUC-006 — Challan Monitoring / Heatmap / Photo](usecase-review.md#suc-006) | R1 | **Approved — fan-out requested / conformance pending** |
+| [SUC-006 — Challan Monitoring / Heatmap / Photo](usecase-review.md#suc-006) | R1 | **APPROVED — STORY-0014 + STORY-0015 + STORY-0016 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-007 — Customer Address / Planning Map](usecase-review.md#suc-007) | R2 | Pending user approval |
 | [SUC-008 — Yard Location Upload / Map](usecase-review.md#suc-008) | R2 | Pending user approval |
 | [SUC-009 — Customer Address Upload / WhatsApp Import](usecase-review.md#suc-009) | R2 | Pending user approval |
@@ -28,9 +28,9 @@
 | [SUC-016 — Vehicle Load](usecases/SUC-016.md) | R1 | **Superseded by SUC-018** |
 | [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | **Approved** |
 | [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | **Approved** |
-| [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | **Approved — fan-out requested / conformance pending** |
+| [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | **APPROVED — STORY-0045 + STORY-0046 + STORY-0047 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | Partially approved |
-| [SUC-021 — Trip Return](usecase-review.md#suc-021) | R1 | **Approved — fan-out requested / conformance pending** |
+| [SUC-021 — Trip Return](usecase-review.md#suc-021) | R1 | **APPROVED — STORY-0052 + STORY-0053 approved and fan-out requested; Yard Audit / Yard Stock Check → later challan-entry reconciliation included; post-approval conformance pending** |
 | [SUC-022 — Customer Demands](usecase-review.md#suc-022) | R1 | Pending user approval |
 | [SUC-023 — Trip Review](usecase-review.md#suc-023) | R1 | Pending user approval |
 | [SUC-024 — Supplier Lookup / List Support](usecase-review.md#suc-024) | R1 | Pending user approval |
