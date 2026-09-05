@@ -429,12 +429,12 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 ## SUC-031 — Customer Activation / Deactivation
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Approved — both Stories approved and fan-out requested; post-approval conformance required  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0078](stories/STORY-0078.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0079](stories/STORY-0079.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0078](stories/STORY-0078.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0079](stories/STORY-0079.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
@@ -462,8 +462,8 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0082](stories/STORY-0082.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0083](stories/STORY-0083.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0082](stories/STORY-0082.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0083](stories/STORY-0083.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
