@@ -3,7 +3,7 @@
 - Release: R1
 - Endpoint: `POST /customer-demands`
 - Controller: `CustomerDemandController.create`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
 - Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Business-behavior rework: COMPLETE
@@ -91,3 +91,13 @@ The POST business transaction is source-bound from user-entered/selected values 
 `STORY-0055` is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 No Story approval/reapproval occurred. BL-004/BL-005/BL-009 fan-out remains blocked until explicit approval/reapproval of the current contract and a current post-approval Story/code conformance PASS.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
