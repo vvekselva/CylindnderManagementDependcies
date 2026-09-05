@@ -40,8 +40,8 @@ Current projection reconciled from durable approval evidence and the post-approv
 
 - Total Stories: **134**
 - Explicitly approved after rework: **51**
-- Awaiting user review: **79**
-- Superseded / not needed: **4** (`STORY-0039`, `STORY-0040`, `STORY-0133`, `STORY-0134`) — replaced by the combined Vehicle Trip Load Wizard (`STORY-0043` / `STORY-0044`).
+- Awaiting user review: **77**
+- Superseded / not needed: **6** (`STORY-0037`, `STORY-0038`, `STORY-0039`, `STORY-0040`, `STORY-0133`, `STORY-0134`). STORY-0037/0038 are replaced by the Add Stop customer-delivery flow (`STORY-0051` + `STORY-0085` and governed dependencies); STORY-0039/0040/0133/0134 are replaced by the Vehicle Trip Load Wizard (`STORY-0043` / `STORY-0044`).
 - Post-approval code-conformance pass / fan-out eligible: **21**
 - Generated current-contract test scopes: **18**; newly eligible/fan-out queued: **3** (`STORY-0096`, `STORY-0102`, `STORY-0107`)
 - Exact drift approval holds: **2** (`STORY-0101`, `STORY-0103`)
