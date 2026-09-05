@@ -100,4 +100,6 @@ On a normal successful submit, the page/controller flow returns to the order lis
 
 The business-behavior rework is complete because the embedded Save capability is now bound from controller through the concrete mediator, transactional service, DAOs/entities and exact database identities, including source-proved validation and current-state gaps.
 
-This Story is **not approved**. User review and explicit approval/rework are required. Any later Story/code conformance drift remains subject to the separate user-approved drift/code-change manifest gate before application-code mutation.
+This Story remains **BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW** and is **not approved**. Explicit user approval/reapproval is required before post-approval code conformance and downstream BL-004/BL-005/BL-009 fan-out.
+
+If post-approval conformance later detects Story/code drift, the orchestrator may automatically analyze the mismatch and prepare a reviewer-readable drift packet, but it must not mutate application code or execute BL-010 code rework until the user explicitly approves the exact drift/code-change manifest. The packet must identify current versus approved behavior, business impact, exact repository/ref and source locations, proposed change, reason, tests, and database impact. Any implementation scope beyond the approved manifest requires fresh user approval.
