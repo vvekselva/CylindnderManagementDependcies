@@ -8,7 +8,7 @@ source_validation_engine: EXTRACTED_LOCAL_SOURCE
 application_github_code_search_used: false
 repository: vvekselva/CylinderManagement
 ref: 3ae6e61442132d94a307275b08dd65fcef228d89
-story_approval_state: PENDING_USER_APPROVAL
+story_approval_state: APPROVED_AFTER_REWORK
 current_behavior:
   - final-version-1/YardStockCheckIngestion.html posts yardStockCheckDto.checkLines[i].cylinder.cylinderId, yardStockCheckDto.checkLines[i].cylinderState.cylinderStateId and auditorNotes.
   - YardStockCheckLineDto has no cylinderState property; the matching DTO property is observedCylinderState. The template therefore does not source-prove binding of the selected observed state into the DTO expected by validation/service code.
@@ -63,3 +63,16 @@ approval_gate: STORY_APPROVAL_AND_EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_A
 scope_expansion_rule: any schema migration, new business status, endpoint or materially different audit semantics requires new approval.
 application_code_changed: false
 bl010_created_or_executed: false
+
+development_task:
+  id: DEV-PROPOSED-STORY-0083-YARD-STOCK-CHECK
+  state: AWAITING_EXACT_CODE_CHANGE_MANIFEST_APPROVAL
+  backlog_target: BL-010
+  story_id: STORY-0083
+  requested_by_user: true
+  requested_on: 2026-09-05
+  objective: Repair the source-proved Yard Stock Check browser binding, controlled validation, and line-persistence mapping drift described in proposed_manifest.
+  exact_manifest_source: BL-002/evidence/STORY-0083-yard-stock-check-drift-review-20260902.yaml#proposed_manifest
+  implementation_authorized: false
+  creation_execution_gate: User must explicitly approve the exact proposed_manifest before BL-010 code rework is created or executed.
+  scope_rule: Any implementation beyond the listed template, validator, service and tests requires new user approval.
