@@ -3,14 +3,20 @@
 - Release: R1
 - Endpoint: `POST /addVechileTrip`
 - Controller: `VehicleTripIngestionController.doPost`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: NOT_NEEDED_SUPERSEDED
+- Review state: SUPERSEDED_NOT_NEEDED
+- Rework state: SUPERSEDED_NOT_NEEDED
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
 - Source package SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
 - Drift review packet: `BL-002/evidence/STORY-0134-vehicle-trip-create-drift-review-20260902.yaml`
+
+- Lifecycle disposition: SUPERSEDED_NOT_NEEDED
+- Superseded by: STORY-0043 / STORY-0044
+- Supersession reason: The combined Vehicle Trip Load Wizard creates the trip and carries the trip identity into the same governed workflow, replacing the separate Add Vehicle Trip screen/submit flow.
+- Approval requirement: NONE_FOR_SUPERSEDED_STORY
+- Downstream fan-out: BLOCKED_NOT_APPLICABLE
 
 ## Business behavior
 
@@ -48,3 +54,7 @@ A successful transaction creates the persisted trip and advances the user to Veh
 The recovered ZIP binds the browser-submitted identity contract, controller branches, validator predicates, transaction/reference resolution, repository/entity/table persistence and all identified current defects. STORY-0134 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 Approval remains `PENDING_USER_APPROVAL`. No application code was changed and no BL-010 work was created or executed.
+
+## Supersession disposition
+
+This legacy Story is retained only for traceability and audit. It is **not an active review or implementation requirement**. Its business capability is provided by the combined Vehicle Trip Load Wizard through STORY-0043 / STORY-0044. Do not request user approval, post-approval conformance, BL-004 unit-test fan-out, BL-005 integration-test fan-out, BL-009 test-catalogue fan-out, or BL-011 readable-packet completion for this superseded Story. Historical source analysis remains evidence only and must not be counted as active backlog work.
