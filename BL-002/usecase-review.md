@@ -562,14 +562,15 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 [Back to register](screen-usecase-register.md)
 
 <a id="suc-039"></a>
-## SUC-039 — Lookup / Lookup Management — SUPERSEDED LEGACY REVIEW ENTRY
+## SUC-039 — Lookup / Lookup Management
 
-**Status:** `SUPERSEDED_BY_DEDICATED_USECASE_ARTIFACT`  
-**Canonical review:** [BL-002/usecases/SUC-039.md](usecases/SUC-039.md)
+**Release:** R1  
+**Use-case status:** **ACTIVE — APPROVED**  
+**Canonical detailed review:** [BL-002/usecases/SUC-039.md](usecases/SUC-039.md)
 
-This legacy section is retained only as a navigation compatibility anchor. The canonical SUC-039 Story membership, approval/conformance state, fan-out eligibility, dependency mappings, and drift holds must be maintained in the dedicated Use Case artifact above.
+SUC-039 is **not superseded**. This consolidated page is a summary/navigation projection; the dedicated SUC-039 artifact is the authoritative detailed review for Story membership, approval/conformance state, fan-out eligibility, dependency mappings, and drift holds.
 
-The current screen/use-case register already points SUC-039 to the dedicated artifact. Do not treat approval/fan-out text remaining in this legacy page as authoritative.
+All primary and mapped shared dependency Stories are explicitly approved. Testing/test-data fan-out remains governed by each Story's post-approval conformance and drift gates; approval does not imply test execution or coverage.
 
 [Back to register](screen-usecase-register.md)
 
