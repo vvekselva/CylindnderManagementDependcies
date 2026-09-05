@@ -3,7 +3,7 @@
 - Release: R1
 - Endpoint: `POST /customer-demands/{requestId}/mark-delivered`
 - Controller: `CustomerDemandController.markDelivered`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
 - Review state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
 - Enrichment state: STRICT_FIELD_UI_COMPLETE
 - Business-behavior rework: COMPLETE
@@ -61,3 +61,13 @@ This action operates on the demand row's persistent `requestId` and does not int
 The source proves the user action, request identity, missing-record guard, exact state/timestamp/duration mutation, database identity, repeated-call boundary and visible result. `STORY-0056` is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 Approval remains `PENDING_USER_APPROVAL`. No approval/reapproval or code mutation occurred, and BL-004/BL-005/BL-009 fan-out remains blocked until explicit approval/reapproval plus current post-approval Story/code conformance PASS.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
