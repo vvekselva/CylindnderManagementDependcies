@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `GET /vehicle-loads/all-list`
 - Controller: `VehicleLoadByPageController.listAllVehicleLoads`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -44,4 +44,4 @@ The recovered ZIP confirms the all-list/template mismatch and ineffective `searc
 ## Governed conclusion
 The current-source business behavior, including its user-visible scope-switch/search/pagination gaps, is completely source-bound. Those gaps are not silently corrected or omitted from the Story.
 
-STORY-0061 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no application code was changed and no BL-010 work was created or executed.
+STORY-0061 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-05 with fan-out requested. Its existing drift review remains subject to exact-manifest user approval before any code change. Post-approval conformance governs downstream executable eligibility. No application-code mutation, test execution, or coverage is inferred.
