@@ -1,7 +1,15 @@
 # BL-011 Human-Readable Test Packet — STORY-0087 Address Type Search
 
 ## Rework state
-Reworked under the mandatory per-test-case adjacent-code rule.
+Freshly reworked and revalidated under the mandatory 2026-09-05 redo directive in `CYLINDER-PRODUCTION-FIRE-20260905-113200-IST-RUN-002`.
+
+- Current bound source: `Harinandhan-Cylinder-Backup(20260905-060414).zip`
+- SHA-256: `60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2`
+- Production REST and DAO anchors freshly verified in extracted local source.
+- BL-004, BL-005 and BL-009 executable/data artifacts freshly read back.
+- README validation: PASS
+- human-readable-testing-policy validation: PASS
+- Execution remains `NOT EXECUTED`; coverage is not inferred.
 
 ## Business behavior and scope
 ## Story and governed behavior
