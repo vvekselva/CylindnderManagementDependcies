@@ -8,13 +8,9 @@
 - Human-readable test data: `BL-009/test-data/STORY-0093.md`
 - Executable mapping: `BL-004/generated-tests/STORY-0093/Story0093UnitTest.java`
 
-## Scenarios
-
 | ID | Input / precondition | Service outcome | Expected current-source result |
 |---|---|---|---|
 | TC-0093-01 | driverId=91 | SUCCESS | persistent ID delegated and same response returned |
 | TC-0093-02 | driverId=91 | GOVERNED_EXCEPTION | non-null empty response DTO |
 
-## Execution status
-
-Generated and mapped only. **NOT_EXECUTED** in this fire; no PASS or coverage is inferred.
+Execution: **NOT_EXECUTED**; no PASS or coverage inferred.
