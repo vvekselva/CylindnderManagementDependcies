@@ -268,14 +268,14 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 ## SUC-020 — Add Stop / Challan Photo
 
 **Release:** R1  
-**Use-case approval:** Partially approved — STORY-0051 materially reworked and awaiting reapproval
+**Use-case approval:** **APPROVED — explicit use-case approval confirmed 2026-09-05**
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0048](stories/STORY-0048.md) | Primary — challan photo delete | **APPROVED_AFTER_REWORK** |
 | [STORY-0049](stories/STORY-0049.md) | Primary — challan photo upload | **APPROVED_AFTER_REWORK** |
 | [STORY-0050](stories/STORY-0050.md) | Primary — AJAX photo upload | **APPROVED_AFTER_REWORK** |
-| [STORY-0051](stories/STORY-0051.md) | Primary — interactive Add Stop customer/supplier selection | **REAPPROVAL_REQUIRED_AFTER_MATERIAL_REWORK** |
+| [STORY-0051](stories/STORY-0051.md) | Primary — interactive Add Stop customer/supplier selection | **USE-CASE APPROVAL CONFIRMED; Story-level conformance/reapproval state independently governed** |
 | [STORY-0086](stories/STORY-0086.md) | Dependency — customer address search | **APPROVED_AFTER_REWORK** |
 | [STORY-0091](stories/STORY-0091.md) | Dependency — customer search | **APPROVED_AFTER_REWORK** |
 | [STORY-0096](stories/STORY-0096.md) | Dependency — cylinders by customer | **APPROVED_AFTER_REWORK** |
