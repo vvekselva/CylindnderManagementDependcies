@@ -490,7 +490,7 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 | [STORY-0093](stories/STORY-0093.md) | Dependency — driver by ID | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0094](stories/STORY-0094.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0095](stories/STORY-0095.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0096](stories/STORY-0096.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0096](stories/STORY-0096.md) | Dependency — cylinders by customer | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0097](stories/STORY-0097.md) | Dependency | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
 | [STORY-0098](stories/STORY-0098.md) | Dependency — product-category search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 | [STORY-0099](stories/STORY-0099.md) | Dependency — product search | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
@@ -501,7 +501,7 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 | [STORY-0104](stories/STORY-0104.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0105](stories/STORY-0105.md) | Dependency | PENDING_USER_APPROVAL |
 | [STORY-0106](stories/STORY-0106.md) | Dependency | PENDING_USER_APPROVAL |
-| [STORY-0107](stories/STORY-0107.md) | Dependency | PENDING_USER_APPROVAL |
+| [STORY-0107](stories/STORY-0107.md) | Dependency — cylinders on vehicle | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED** |
 
 [Back to register](screen-usecase-register.md)
 
