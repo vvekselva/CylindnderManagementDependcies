@@ -35,3 +35,60 @@ governance:
   github_actions_used: false
   drift_requires_exact_manifest_user_approval: true
 next_action: GENERATE_TEST_ARTIFACTS_FOR_PASS_STORIES_THEN_REPLAN_NEXT_CONFORMANCE_UNITS
+
+terminal_checkpoint:
+  checkpoint_at: 2026-09-05T12:02:13+05:30
+  elapsed_seconds: 1813
+  productive_runtime_target_seconds: 1800
+  productive_runtime_target_met: true
+  state: RESUMABLE_PLATFORM_STOP
+  terminal_classification: PLATFORM_RUNTIME_FORCED_STOP
+  conformance_pass_this_run:
+    - STORY-0031
+    - STORY-0032
+    - STORY-0033
+    - STORY-0086
+    - STORY-0088
+    - STORY-0091
+    - STORY-0094
+    - STORY-0095
+    - STORY-0097
+  canonical_projection_reconciled:
+    - STORY-0093
+  bl004_generated_this_run:
+    - STORY-0031
+    - STORY-0032
+    - STORY-0033
+    - STORY-0086
+    - STORY-0088
+    - STORY-0091
+    - STORY-0093
+    - STORY-0094
+    - STORY-0095
+    - STORY-0097
+  bl009_generated_or_reconciled_this_run:
+    - STORY-0031
+    - STORY-0032
+    - STORY-0033
+    - STORY-0086
+    - STORY-0088
+    - STORY-0091
+    - STORY-0093
+    - STORY-0094
+    - STORY-0095
+    - STORY-0097
+  bl011_fresh_reworked_this_run:
+    - STORY-0001
+    - STORY-0013
+    - STORY-0087
+    - STORY-0089
+  bl011_packets_complete: 5
+  bl011_eligible_denominator: 21
+  bl011_corrected_percentage: 23.8
+  bl011_next_story: STORY-0090
+  test_execution: NOT_EXECUTED_NO_NEW_RUNTIME_EVIDENCE
+  coverage: NO_NEW_DURABLE_COVERAGE_EVIDENCE
+  application_code_mutated: false
+  github_actions_used: false
+  resumable: true
+  next_action: RESUME_STORY_0090_BL011_REDO_AND_CONTINUE_PENDING_CONFORMANCE_TEST_FANOUT
