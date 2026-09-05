@@ -4,7 +4,7 @@
 
 - Release: R1
 - Endpoint: `GET /trip-return`
-- Approval: `APPROVED_AFTER_REWORK`
+- Approval: `APPROVED_AFTER_REWORK — FANOUT_REQUESTED`
 - Review state: `APPROVED_AFTER_REWORK`
 - Rework state: `APPROVED_AFTER_REWORK`
 - Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE`
@@ -149,3 +149,13 @@ This is a real system gap. It is tracked in BL-010 as DEV-0006. Story approval a
 The exact request parameter, controller/view/model contract, missing-load/missing-trip behavior, header fields, assigned-book source, leaf/count/photo derivation, visible controls and GET read-only persistence effect are source-bound from the recovered governed ZIP.
 
 STORY-0052 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-04, with fan-out requested. The physical-return -> next-day Yard Audit -> later challan reconciliation requirement is approved as part of the business contract. Current code is only partially conformant; DEV-0006 captures the missing end-to-end returned-cylinder reconciliation behavior. No application code was changed by this approval.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
