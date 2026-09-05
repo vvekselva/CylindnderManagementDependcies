@@ -1,0 +1,7 @@
+run_id: cylinder-prod-fire-20260905T084700+0530
+scheduler_task: Cylinder Orchestrator Production Fire
+fire_id: manual-20260905T084700+0530
+mode: CONTINUOUS
+state: ORCHESTRATOR_STARTED
+started_at: 2026-09-05T08:47:00+05:30
+receipt_path: .orchestrator/scheduler-fire-receipts/Cylinder-Orchestrator-Production-Fire/manual-20260905T084700+0530.yaml
