@@ -1,0 +1,17 @@
+binding_version: 1
+updated_at: 2026-09-05T11:29:10+05:30
+binding_reason: USER_SUPPLIED_REPLACEMENT_SOURCE_AFTER_LIBRARY_RECOVERY_FAILURE
+primary_application_source:
+  file_name: Harinandhan-Cylinder-Backup(20260905-060414).zip
+  conversation_file_id: file_000000006f70821188e8c3b3d845697b
+  source_surface: CURRENT_CONVERSATION_UPLOAD
+  local_materialized_path: /mnt/data/Harinandhan-Cylinder-Backup(20260905-060414).zip
+  extracted_local_path: /mnt/data/cylinder-orchestrator/source-20260905-060414
+  sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  compatibility:
+    matches_previous_governed_source_fingerprint: true
+    previous_governed_file_name: Harinandhan-Cylinder-Backup(20260902-080237).zip
+    previous_governed_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+  source_analysis_engine: EXTRACTED_LOCAL_SOURCE
+  github_code_search_for_application_source: FORBIDDEN
+status: SOURCE_RECOVERED_AND_BOUND
