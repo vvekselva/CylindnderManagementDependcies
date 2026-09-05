@@ -53,11 +53,11 @@
 ## SUC-004 — Complete Trip
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** Approved — fan-out requested; post-approval conformance required  
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0011](stories/STORY-0011.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0011](stories/STORY-0011.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
 
 [Back to register](screen-usecase-register.md)
 
