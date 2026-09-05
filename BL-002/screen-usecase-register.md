@@ -1,14 +1,12 @@
 # BL-002 Screen / Use Case Review Register
 
-> Human-readable projection of `screen-usecase-register.csv`. Approval state is recalculated from durable Story approval evidence / post-approval conformance queue. This file must not override Story-level evidence.
+> Human-readable projection of `screen-usecase-register.csv`. Approval state is derived from durable Story approval evidence and must not override unit-local evidence.
 
-**Story disposition:** 49 approved, 81 awaiting user approval, 4 superseded/not needed.
+**Story disposition:** 52 approved, 78 awaiting user approval, 4 superseded/not needed.
 
-**Use Case disposition:** 9 approved, 8 partially approved, 21 pending user approval, 2 superseded/not needed.
+**Use Case disposition:** 11 approved, 6 partially approved, 21 pending user approval, 2 superseded/not needed.
 
-**Supersession rule:** STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are `SUPERSEDED_NOT_NEEDED`; SUC-018 / STORY-0043 + STORY-0044 is the canonical combined Vehicle Trip + Load workflow.
-
-**Important:** Use Case approval is a projection of all mapped primary/dependency Story approvals. Post-approval conformance, drift gates, test execution and coverage remain separate evidence states.
+**Supersession rule:** STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are `SUPERSEDED_NOT_NEEDED`; SUC-018 is the canonical combined Vehicle Trip + Load workflow.
 
 | Use Case | Release | Approval |
 |---|---|---|
@@ -23,13 +21,13 @@
 | [SUC-009 — Customer Address Upload / WhatsApp Import](usecase-review.md#suc-009) | R2 | Pending user approval |
 | [SUC-010 — Customer Consumption Dashboard](usecase-review.md#suc-010) | R2 | Pending user approval |
 | [SUC-011 — Ownership Obligation Dashboard](usecase-review.md#suc-011) | R1 | **Approved** |
-| [SUC-012 — Walk-in Sale](usecases/SUC-012.md) | R1 | Partially approved |
+| [SUC-012 — Walk-in Sale](usecases/SUC-012.md) | R1 | **Approved** |
 | [SUC-013 — Customer Spot Cylinder Check](usecase-review.md#suc-013) | R2 | Pending user approval |
 | [SUC-014 — Yard Audit Dashboard](usecase-review.md#suc-014) | R1 | Pending user approval |
 | [SUC-015 — Cylinder Delivery](usecases/SUC-015.md) | R1 | Partially approved |
 | [SUC-016 — Vehicle Load](usecases/SUC-016.md) | R1 | **Superseded by SUC-018** |
 | [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | **Approved** |
-| [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | Partially approved |
+| [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | **Approved** |
 | [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | Partially approved |
 | [SUC-020 — Add Stop / Challan Photo](usecases/SUC-020.md) | R1 | **Approved** |
 | [SUC-021 — Trip Return](usecase-review.md#suc-021) | R1 | Partially approved |
