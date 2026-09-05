@@ -16,3 +16,20 @@ source_recovery:
     - no fresh source-backed code conformance claims
     - no fresh source-backed BL-011 packet completion claims
     - control-plane reconciliation may continue
+
+control_plane_checkpoint:
+  bl002_story_counts:
+    approved: 51
+    awaiting_review_or_reapproval: 79
+    superseded_not_needed: 4
+  bl002_use_case_counts:
+    approved: 10
+    partially_approved: 7
+    pending_user_approval: 21
+    superseded_not_needed: 2
+  bl011:
+    accepted_complete: 1
+    eligible_denominator: 21
+    corrected_percentage: 4.8
+    remaining: 20
+  aggregate_projection_drift: RECONCILED
