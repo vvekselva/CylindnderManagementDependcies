@@ -5,3 +5,14 @@ mode: CONTINUOUS
 state: ORCHESTRATOR_STARTED
 started_at: 2026-09-05T08:47:00+05:30
 receipt_path: .orchestrator/scheduler-fire-receipts/Cylinder-Orchestrator-Production-Fire/manual-20260905T084700+0530.yaml
+
+source_recovery:
+  required_library_file: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  required_file_id: file_00000000659c8211857bba6b09282de3
+  library_search_attempted: true
+  direct_materialization_attempted: true
+  result: APPLICATION_SOURCE_UNAVAILABLE_THIS_INVOCATION
+  impact:
+    - no fresh source-backed code conformance claims
+    - no fresh source-backed BL-011 packet completion claims
+    - control-plane reconciliation may continue
