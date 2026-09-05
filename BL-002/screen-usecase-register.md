@@ -8,6 +8,8 @@
 
 **Source-proved shared-screen dependencies:** [dependency evidence](evidence/usecase-shared-search-dependency-source-map-20260902.yaml). Where a shared Story is consumed by more than one screen, its Story-level approval is repeated in each linked Use Case review page.
 
+**Supersession rule:** STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are `SUPERSEDED_NOT_NEEDED`; SUC-018 / STORY-0043+0044 is the canonical combined Vehicle Trip + Load workflow. These four are excluded from pending approval and downstream fan-out counts.
+
 **Latest approval/rework delta:** [Current Use Case Review — 2026-09-02](usecase-review-current-20260902.md)
 
 | Use Case | Release | Approval |
@@ -27,7 +29,7 @@
 | [SUC-013 — Customer Spot Cylinder Check](usecase-review.md#suc-013) | R2 | Pending user approval |
 | [SUC-014 — Yard Audit Dashboard](usecase-review.md#suc-014) | R1 | Pending user approval |
 | [SUC-015 — Cylinder Delivery](usecases/SUC-015.md) | R1 | Pending user approval |
-| [SUC-016 — Vehicle Load](usecases/SUC-016.md) | R1 | Pending user approval |
+| [SUC-016 — Vehicle Load](usecases/SUC-016.md) | R1 | **Superseded by SUC-018** |
 | [SUC-017 — Customer Registration](usecases/SUC-017.md) | R1 | Partially approved |
 | [SUC-018 — Vehicle Trip Load Wizard](usecases/SUC-018.md) | R1 | Pending user approval |
 | [SUC-019 — Customer Display / Maintenance](usecases/SUC-019.md) | R1 | Partially approved |
@@ -51,4 +53,4 @@
 | [SUC-037 — Delivery Planning Main Screens](usecase-review.md#suc-037) | R2 | Pending user approval |
 | [SUC-038 — Reconciliation Dashboard](usecase-review.md#suc-038) | R2 | Pending user approval |
 | [SUC-039 — Lookup / Lookup Management](usecases/SUC-039.md) | R1 | Approved |
-| [SUC-040 — Add Vehicle Trip](usecase-review.md#suc-040) | R1 | Pending user approval |
+| [SUC-040 — Add Vehicle Trip](usecases/SUC-040.md) | R1 | **Superseded by SUC-018** |
