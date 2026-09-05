@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `POST /setCustomerActive`
 - Controller: `ToggleCustomerActiveStatusController.setCustomerActive`
-- Approval: PENDING_USER_APPROVAL
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
 - Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Source baseline: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -27,3 +27,11 @@ When a row is updated, flash `message` is `Customer activated successfully`; whe
 The recovered ZIP confirms the modal/browser event, selected identity propagation, exact service/repository update, database effect and visible outcomes. STORY-0079 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 Approval remains pending; no application-code or BL-010 mutation occurred.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Fan-out: BL-004, BL-005, BL-009 and BL-011, subject to post-approval conformance.
+- No test execution or coverage is inferred.
