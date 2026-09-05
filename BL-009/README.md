@@ -16,11 +16,11 @@ Only Stories with durable explicit user approval and passed post-approval code c
 Generated source alone never counts as coverage. Application-behavior PASS requires execution against the exact frozen-source-bound unit, integration or authorized runtime/UI path. JaCoCo evidence must be linked where Java application code is executed.
 
 ## Current projection
-Reconciled by `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009`:
+Reconciled through explicit user approvals recorded 2026-09-05:
 
-- Explicitly approved testing-queue Stories: **23**
-- Code-conformance pass / fan-out eligible: **21**
-- Generated mapped test scopes: **18**; newly queued not yet generated: **3** (`STORY-0096`, `STORY-0102`, `STORY-0107`)
+- Explicitly approved BL-002 Stories: **58**
+- Previously code-conformance-pass / fan-out eligible projection: **21**; newly approved Stories remain conformance-pending and must not be counted as executable-eligible until PASS
+- Previously generated mapped test scopes: **18**; additional approved Stories are queued behind post-approval conformance
 - Drift holds: **2** (`STORY-0101`, `STORY-0103`)
 - Revised application-behavior execution: **not executed in this runtime**
 - Java available: **OpenJDK 21.0.11**
