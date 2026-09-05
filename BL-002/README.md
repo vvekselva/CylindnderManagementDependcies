@@ -39,8 +39,8 @@ Physical materialization is separate from strict field/UI enrichment, review sta
 Reconciled by Production Fire `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-009` from durable approval evidence and the post-approval conformance queue:
 
 - Total Stories: **134**
-- Explicitly approved after rework: **23**
-- Awaiting user review: **107**
+- Explicitly approved after rework: **36**
+- Awaiting user review: **94**
 - Superseded / not needed: **4** (`STORY-0039`, `STORY-0040`, `STORY-0133`, `STORY-0134`) — replaced by the combined Vehicle Trip Load Wizard (`STORY-0043` / `STORY-0044`).
 - Post-approval code-conformance pass: **18**
 - Exact drift approval holds: **2** (`STORY-0101`, `STORY-0103`)
@@ -54,6 +54,7 @@ Reconciled by Production Fire `CYLINDER-PRODUCTION-FIRE-20260903-095645-UTC-RUN-
 - `usecase-review.md` — detailed Use Case review page.
 - `screen-usecase-register.csv` — machine-readable Use Case grouping register.
 - `story-register.csv` — canonical Story catalogue.
+- `supersession-register.yaml` — durable Story/use-case supersession map; superseded Stories are excluded from approval, conformance, testing fan-out and BL-011 eligibility.
 - `STORY-DEFINITION.md` — deterministic Story rendering contract.
 - `stories/` — physical Story review artifacts.
 - `materialization-task-queue.csv` — physical materialization queue.
