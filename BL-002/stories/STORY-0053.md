@@ -5,9 +5,9 @@
 - Release: R1
 - Unique key: `POST /trip-return`
 - Register state: `READY_FOR_USER_REVIEW`
-- Approval: `PENDING_USER_APPROVAL`
-- Review state: `READY_FOR_USER_REVIEW`
-- Rework state: `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`
+- Approval: `APPROVED_AFTER_REWORK — FANOUT_REQUESTED` — FANOUT_REQUESTED`
+- Review state: `APPROVED_AFTER_REWORK`
+- Rework state: `APPROVED_AFTER_REWORK`
 - Enrichment state: `BUSINESS_BEHAVIOR_COMPLETE`
 - Source baseline: `vvekselva/CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
 - Source package: `Harinandhan-Cylinder-Backup(20260902-080237).zip`
@@ -153,3 +153,13 @@ The complete submitted-field contract, parsing/normalization, top-level guards, 
 STORY-0053 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
 
 No approval is inferred. No application code was changed and no BL-010 work was created or executed.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
