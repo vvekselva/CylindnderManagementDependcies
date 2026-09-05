@@ -3,9 +3,9 @@
 - Release: R1
 - Endpoint: `GET /vehicle-loads/list`
 - Controller: `VehicleLoadByPageController.listVehicleLoads`
-- Approval: PENDING_USER_APPROVAL
-- Review state: READY_FOR_USER_REVIEW
-- Rework state: BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW
+- Approval: APPROVED_AFTER_REWORK — FANOUT_REQUESTED
+- Review state: APPROVED_AFTER_REWORK
+- Rework state: APPROVED_AFTER_REWORK
 - Enrichment state: BUSINESS_BEHAVIOR_COMPLETE
 - Source field contract: STRICT_FIELD_UI_COMPLETE
 - Frozen source: `CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89`
@@ -53,4 +53,4 @@ When `loads` is empty the table shows `No load records found` and `Start a new t
 ## Governed conclusion
 The recovered ZIP confirms the active-list controller, service, active-trip view/entity, trip-status helper and final Thymeleaf contract. User intent, filters, identity propagation, row events, Returned Trip predicate, paging, empty state and read-only impact satisfy the business-behavior standard while retaining the source-proved filter/paging quirks for review.
 
-STORY-0060 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`. Approval remains `PENDING_USER_APPROVAL`; no code mutation or auto-approval occurred.
+STORY-0060 is `APPROVED_AFTER_REWORK` by explicit user approval on 2026-09-05 with fan-out requested. Post-approval source/code conformance remains mandatory before downstream executable work is treated as eligible. No application-code mutation, test execution, or coverage is inferred.
