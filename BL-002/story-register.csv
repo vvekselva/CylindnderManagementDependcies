@@ -9,7 +9,7 @@ STORY-0007,7,POST,/delivery-planning/predefined-trips/create,Predefined Delivery
 STORY-0008,8,POST,/delivery-planning/predefined-trips/add-stop,Predefined Delivery Trips,R2,2,READY_FOR_USER_REVIEW,PENDING_USER_APPROVAL,COMPLETE
 STORY-0009,9,POST,/delivery-planning/predefined-trips/remove-stop,Predefined Delivery Trips,R2,2,READY_FOR_USER_REVIEW,PENDING_USER_APPROVAL,COMPLETE
 STORY-0010,10,POST,/delivery-planning/predefined-trips/remove,Predefined Delivery Trips,R2,2,READY_FOR_USER_REVIEW,PENDING_USER_APPROVAL,COMPLETE
-STORY-0011,11,POST,/complete-trip,Trip Completion,R1,1,NEEDS_CLARIFICATION,PENDING_USER_APPROVAL,PARTIAL_INTERMEDIATE_HOPS
+STORY-0011,11,POST,/complete-trip,Trip Completion,R1,1,APPROVED_AFTER_REWORK,APPROVED_AFTER_REWORK,COMPLETE
 STORY-0012,12,GET,/logistics/challan-books/add-form,Challan Management,R1,1,APPROVED_FANOUT_REQUESTED,APPROVED_AFTER_REWORK,COMPLETE
 STORY-0013,13,POST,/logistics/challan-books/save,Challan Management,R1,1,APPROVED_FANOUT_REQUESTED,APPROVED_AFTER_REWORK,COMPLETE
 STORY-0014,14,GET,/challan-entry-aging-dashboard,Challan Monitoring,R1,1,READY_FOR_USER_REVIEW,PENDING_USER_APPROVAL,COMPLETE
