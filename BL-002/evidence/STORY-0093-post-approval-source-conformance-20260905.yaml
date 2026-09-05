@@ -1,0 +1,28 @@
+story_id: STORY-0093
+release: R1
+approval_state: APPROVED_AFTER_REWORK
+approval_evidence: BL-002/approval-evidence/STORY-0093-approval-20260905.md
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: GET /find/Driver-by-Id/{driverId}
+  controller: RestfulDriverServices.getDriverById
+  service: DriverFetchByIdService.processRequest
+  repository_lookup: DriverJpaDao.findById(driverId)
+  validations:
+    - NULL_DRIVER_ID_REJECTED_WITH_INVALID_INPUT_PARAMETER_EXCEPTION
+    - MISSING_DRIVER_REJECTED_WITH_DOMAIN_OBJECT_NOT_FOUND_EXCEPTION
+  read_effect: EXACT_PERSISTED_DRIVER_BY_ID_MAPPED_TO_DRIVER_DTO
+  mutation: NONE
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_CONTRACT_MATCHES_EXISTING_SOURCE_BOUND_BEHAVIOR_RECORDED_IN_STORY_0093
+  application_code_mutation_required: false
+fanout:
+  BL-004: ELIGIBLE
+  BL-005: ELIGIBLE
+  BL-009: ELIGIBLE
+execution:
+  status: NOT_EXECUTED
+  coverage: NO_DURABLE_COVERAGE_EVIDENCE
