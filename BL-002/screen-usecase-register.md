@@ -4,9 +4,9 @@
 >
 > **Reconciled:** 2026-09-05 after the latest STORY-0060, STORY-0061, STORY-0107 and STORY-0126 approvals.
 
-**Story disposition:** 72 approved, 56 awaiting user approval, 6 superseded/not needed.
+**Story disposition:** 73 approved, 55 awaiting user approval, 6 superseded/not needed.
 
-**Use Case disposition:** 21 approved, 2 partially approved, 14 pending user approval, 3 superseded/not needed.
+**Use Case disposition:** 22 approved, 2 partially approved, 13 pending user approval, 3 superseded/not needed.
 
 **Supersession rule:** STORY-0037 and STORY-0038 are `SUPERSEDED_NOT_NEEDED` because the legacy Cylinder Delivery controller was replaced by the Add Stop customer-delivery flow (STORY-0051 + STORY-0085). STORY-0039, STORY-0040, STORY-0133 and STORY-0134 are also `SUPERSEDED_NOT_NEEDED`; SUC-018 is the canonical combined Vehicle Trip + Load workflow.
 
@@ -37,7 +37,7 @@
 | [SUC-023 — Trip Review](usecase-review.md#suc-023) | R1 | **APPROVED — STORY-0057 + STORY-0058 + STORY-0084 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-024 — Supplier Lookup / List Support](usecase-review.md#suc-024) | R1 | **APPROVED — STORY-0059 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-025 — Vehicle Loads Listing](usecases/SUC-025.md) | R1 | **APPROVED — STORY-0060 + STORY-0061 + STORY-0107 + STORY-0126 approved and fan-out requested; STORY-0107 conformance PASS; STORY-0061 drift review remains separately gated** |
-| [SUC-026 — Vehicle Trips Listing](usecase-review.md#suc-026) | R1 | Pending user approval |
+| [SUC-026 — Vehicle Trips Listing](usecase-review.md#suc-026) | R1 | **APPROVED — STORY-0062 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-027 — Party Custody Traceability](usecase-review.md#suc-027) | R1 | Pending user approval |
 | [SUC-028 — Reconciliation Command Center](usecase-review.md#suc-028) | R2 | Pending user approval |
 | [SUC-029 — Ownership Dashboard](usecase-review.md#suc-029) | MIXED_R1_R2 | Pending user approval |
