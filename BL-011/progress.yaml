@@ -86,6 +86,7 @@ rules:
 next_action: RECOVER_GOVERNED_LIBRARY_SOURCE_THEN_REWORK_STORY_0001_AND_CONTINUE_REMAINING_IDS_IN_ORDER
 
 approved_pending_post_approval_conformance:
+  - STORY-0036
   - STORY-0056
   - STORY-0055
   - STORY-0054
