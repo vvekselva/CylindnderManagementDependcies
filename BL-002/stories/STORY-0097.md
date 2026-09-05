@@ -23,9 +23,9 @@ The current Supplier Stop page may use other dedicated holdings APIs for its bro
 
 ## Completion and approval gate
 
-The canonical Story identity, JSON/paging contract, supplier custody semantics, response/error behavior and read-only effect are source-bound. STORY-0097 is `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The canonical Story identity, JSON/paging contract, supplier custody semantics, response/error behavior and read-only effect are source-bound. STORY-0097 is `APPROVED_AFTER_REWORK` with post-approval code conformance verified.
 
-Approval remains pending; no application-code or BL-010 mutation occurred.
+Explicit user approval was recorded on 2026-09-05. No application-code or BL-010 mutation occurred; runtime execution and coverage remain evidence-based.
 
 ## Approval and fan-out disposition
 
