@@ -8,13 +8,9 @@
 - Human-readable test data: `BL-009/test-data/STORY-0094.md`
 - Executable mapping: `BL-004/generated-tests/STORY-0094/Story0094UnitTest.java`
 
-## Scenarios
-
 | ID | Input / precondition | Service outcome | Expected current-source result |
 |---|---|---|---|
 | TC-0094-01 | CYL-100 | SUCCESS | ownership-model service receives exact searchTerm |
 | TC-0094-02 | CYL-100 | GOVERNED_EXCEPTION | non-null empty response DTO |
 
-## Execution status
-
-Generated and mapped only. **NOT_EXECUTED** in this fire; no PASS or coverage is inferred.
+Execution: **NOT_EXECUTED**; no PASS or coverage inferred.
