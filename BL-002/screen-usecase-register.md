@@ -2,7 +2,7 @@
 
 > Human-readable projection of `screen-usecase-register.csv`. Approval state is derived from durable Story approval evidence and must not override unit-local evidence.
 
-**Story disposition:** 63 approved, 65 awaiting user approval, 6 superseded/not needed.
+**Story disposition:** 65 approved, 63 awaiting user approval, 6 superseded/not needed.
 
 **Use Case disposition:** 15 approved, 4 partially approved, 19 pending user approval, 2 superseded/not needed.
 
@@ -22,7 +22,7 @@
 | [SUC-010 — Customer Consumption Dashboard](usecase-review.md#suc-010) | R2 | Pending user approval |
 | [SUC-011 — Ownership Obligation Dashboard](usecase-review.md#suc-011) | R1 | **Approved** |
 | [SUC-012 — Walk-in Sale](usecases/SUC-012.md) | R1 | **Approved** |
-| [SUC-013 — Customer Spot Cylinder Check](usecase-review.md#suc-013) | R2 | Pending user approval |
+| [SUC-013 — Customer Spot Cylinder Check](usecase-review.md#suc-013) | R2 | **APPROVED — STORY-0034 + STORY-0035 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-014 — Yard Audit Dashboard](usecase-review.md#suc-014) | R1 | **APPROVED — STORY-0036 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-015 — Cylinder Delivery — SUPERSEDED](usecases/SUC-015.md) | R1 | **SUPERSEDED_NOT_NEEDED — replaced by Add Stop / Delivery Stop (SUC-020 + SUC-034)** |
 | [SUC-016 — Vehicle Load](usecases/SUC-016.md) | R1 | **Superseded by SUC-018** |
