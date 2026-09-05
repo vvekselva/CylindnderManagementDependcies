@@ -21,7 +21,7 @@ No-result and request-failure browser messages are source-bound by the Customer 
 
 ## Completion and approval gate
 
-The typeahead event/timing, selected identity propagation/reset behavior, search/DAO/table path and read-only business impact are source-bound. STORY-0091 is therefore `BUSINESS_BEHAVIOR_COMPLETE_AWAITING_USER_REVIEW`.
+The typeahead event/timing, selected identity propagation/reset behavior, search/DAO/table path and read-only business impact are source-bound. STORY-0091 is therefore `APPROVED_AFTER_REWORK`; the user has explicitly approved the Story and authorized fan-out, subject to the post-approval source/code conformance gate.
 
 User approval recorded on 2026-09-05. Fan-out is authorized subject to post-approval source/code conformance; runtime execution and coverage must remain evidence-based.
 
