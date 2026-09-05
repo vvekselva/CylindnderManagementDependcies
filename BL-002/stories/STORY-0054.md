@@ -102,3 +102,13 @@ This Story is **NOT APPROVED**. Implementation completion and source reconciliat
 
 ## Review conclusion
 The requested selector UX rework has now been implemented and source-reconciled into this Story. The previous `REWORK_REQUIRED_USER_UX_CHANGE` implementation gap is closed at source level. The Story is now **READY_FOR_USER_REVIEW_AFTER_IMPLEMENTATION_SOURCE_RECONCILIATION**, while approval remains explicitly pending.
+
+## Approval and fan-out disposition
+
+- User decision: **APPROVED AND FAN OUT**
+- Approval state: **APPROVED_AFTER_REWORK**
+- Recorded: 2026-09-05
+- Post-approval source/code conformance is mandatory before downstream executable work becomes eligible.
+- Fan-out after conformance: BL-004, BL-005, BL-009 and BL-011.
+- No test execution or coverage is inferred.
+- Any detected drift remains subject to exact-manifest user approval before application-code mutation.
