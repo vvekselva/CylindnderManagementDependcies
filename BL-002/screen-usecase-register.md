@@ -51,7 +51,7 @@ SUC-015 primary Stories `STORY-0037` and `STORY-0038` remain active and are not 
 | [SUC-033 — Yard Stock Check](usecases/SUC-033.md) | R1 | Pending user approval |
 | [SUC-034 — Delivery Stop Submission](usecase-review.md#suc-034) | R1 | Pending user approval |
 | [SUC-035 — Shared Screen Search / Lookup APIs](usecase-review.md#suc-035) | R1 | Partially approved |
-| [SUC-036 — Domain Lookup Management](usecases/SUC-036.md) | R1 | Partially approved |
+| [SUC-036 — Domain Lookup Management](usecases/SUC-036.md) | R1 | **Approved** |
 | [SUC-037 — Delivery Planning Main Screens](usecase-review.md#suc-037) | R2 | Pending user approval |
 | [SUC-038 — Reconciliation Dashboard](usecase-review.md#suc-038) | R2 | Pending user approval |
 | [SUC-039 — Lookup / Lookup Management](usecases/SUC-039.md) | R1 | Approved |
