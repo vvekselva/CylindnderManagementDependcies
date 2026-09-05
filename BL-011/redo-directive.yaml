@@ -1,0 +1,39 @@
+directive_id: BL011_REDO_20260905
+effective_until: DURABLY_COMPLETE_OR_EXPLICITLY_SUPERSEDED_BY_USER
+user_directive:
+  only_preaccepted_packet: STORY-0012
+  existing_progress_not_proof: true
+  existing_queue_not_proof: true
+  existing_packet_file_not_proof: true
+  prior_packet_complete_marker_not_proof: true
+required_rework:
+  source_bound: true
+  testing_evidence_bound: true
+  validate_against:
+    - BL-011/README.md
+    - BL-011/human-readable-testing-policy.yaml
+  mandatory_sections:
+    - UNIT_TEST_STORY
+    - INTEGRATION_TEST_STORY
+    - TEST_DATA_STORY
+    - USE_CASE_END_TO_END_TEST_STORY
+    - BL002_BL004_BL005_BL009_TRACEABILITY
+    - BUSINESS_BEHAVIOR
+    - PRECONDITIONS
+    - INPUTS
+    - VALIDATION_RULES
+    - POSITIVE_NEGATIVE_BOUNDARY_DUPLICATE_CONFLICT_SCENARIOS_WHEN_APPLICABLE
+    - EXPECTED_SERVICE_API_UI_DATABASE_OUTCOMES
+    - EXECUTABLE_TEST_REFERENCES
+    - EXPLICIT_EXECUTION_STATUS
+    - EXPLICIT_COVERAGE_STATUS
+execution_separation:
+  packet_generation_does_not_imply_execution: true
+  packet_generation_does_not_imply_coverage: true
+current_checkpoint:
+  accepted_as_already_reworked: STORY-0012
+  corrected_percentage: 4.8
+  remaining_count: 20
+source_requirement:
+  file: Harinandhan-Cylinder-Backup(20260902-080237).zip
+  file_id: file_00000000659c8211857bba6b09282de3
