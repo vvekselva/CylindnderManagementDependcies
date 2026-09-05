@@ -1,0 +1,3 @@
+test_case_id,input_or_precondition,service_outcome,expected_current_source_result
+"TC-0097-01","page=1,size=50","SUCCESS","ownership supplier service receives request and pageable page=0 size=50"
+"TC-0097-02","default request","GOVERNED_EXCEPTION","non-null empty response DTO"
