@@ -464,11 +464,13 @@ STORY-0039 and STORY-0040 are retained for audit only and require no approval or
 ## SUC-034 — Delivery Stop Submission
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** **APPROVED — FANOUT_REQUESTED**
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0085](stories/STORY-0085.md) | Primary | PENDING_USER_APPROVAL |
+| [STORY-0085](stories/STORY-0085.md) | Primary | **APPROVED_AFTER_REWORK — CONFORMANCE_PENDING** |
+
+Approval of SUC-034 authorizes downstream testing fan-out for STORY-0085, subject to the mandatory post-approval source/code conformance gate. Approval does not imply runtime test execution or coverage.
 
 [Back to register](screen-usecase-register.md)
 
