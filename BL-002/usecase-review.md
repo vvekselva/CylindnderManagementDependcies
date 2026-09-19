@@ -344,13 +344,17 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 ## SUC-025 — Vehicle Loads Listing
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** **APPROVED — all mapped Stories explicitly approved; fan-out requested; independent conformance/drift gates remain**  
+**Canonical detailed review:** [BL-002/usecases/SUC-025.md](usecases/SUC-025.md)
 
 | Story | Role | Approval |
 |---|---|---|
-| [STORY-0060](stories/STORY-0060.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0061](stories/STORY-0061.md) | Primary | PENDING_USER_APPROVAL |
-| [STORY-0126](stories/STORY-0126.md) | Dependency — selected vehicle-load detail/fetch | PENDING_USER_APPROVAL |
+| [STORY-0060](stories/STORY-0060.md) | Primary — vehicle-load list | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+| [STORY-0061](stories/STORY-0061.md) | Primary — all vehicle-load list | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / DRIFT_REVIEW_PRESENT / CONFORMANCE_PENDING** |
+| [STORY-0107](stories/STORY-0107.md) | Dependency — live cylinders on vehicle | **APPROVED_AFTER_REWORK — CODE_CONFORMANCE_VERIFIED_PASS / FANOUT_AUTHORIZED** |
+| [STORY-0126](stories/STORY-0126.md) | Dependency — selected vehicle-load detail/fetch | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+
+Approval does not authorize any application-code change for STORY-0061; its exact drift/change manifest remains separately user-gated. Test execution and coverage remain evidence-driven.
 
 [Back to register](screen-usecase-register.md)
 
@@ -370,11 +374,14 @@ Customer submit continues through **SUC-034 / STORY-0085 (`POST /stop`)**. The s
 ## SUC-027 — Party Custody Traceability
 
 **Release:** R1  
-**Use-case approval:** Pending user approval  
+**Use-case approval:** **PENDING USER APPROVAL**  
+**Canonical detailed review:** [BL-002/usecases/SUC-027.md](usecases/SUC-027.md)
 
 | Story | Role | Approval |
 |---|---|---|
 | [STORY-0063](stories/STORY-0063.md) | Primary | **APPROVED_AFTER_REWORK — FANOUT_REQUESTED / CONFORMANCE_PENDING** |
+
+The Story is approved, but Use Case approval is an independent explicit-user gate. No Use Case testing authorization is inferred until SUC-027 itself is approved.
 
 [Back to register](screen-usecase-register.md)
 
