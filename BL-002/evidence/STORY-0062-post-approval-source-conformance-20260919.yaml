@@ -1,0 +1,28 @@
+story_id: STORY-0062
+release: R1
+title: Vehicle Trip List
+approval_state: APPROVED_AFTER_REWORK
+approval_evidence: BL-002/approval-evidence/STORY-0062-approval-20260905.md
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: GET /vehicle-trips/list
+  controller: VehicleTripController.listVehicleTrips
+  service: VehicleTripFetchByPageService
+  behavior:
+    - page/size/searchTerm are copied to the request DTO
+    - page and size are normalized and trips sort by vehicleTripId descending
+    - current source accepts/preserves searchTerm but both branches execute findAll so filtering is ineffective
+    - pagination preserves searchTerm but not nondefault size
+    - GET is read-only
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_ACCURATELY_DESCRIBES_CURRENT_SOURCE_INCLUDING_THE_INEFFECTIVE_SEARCH_AND_SIZE_PROPAGATION_GAPS
+  application_code_mutation_required: false
+  existing_code_change_review: BL-002/evidence/STORY-0062-vehicle-trip-list-drift-review-20260902.yaml
+  code_change_gate: EXPLICIT_EXACT_MANIFEST_USER_APPROVAL_REQUIRED
+note: CONFORMANCE_PASS_DOES_NOT_AUTHORIZE_REMEDIATION
+fanout: {BL-004: ELIGIBLE_QUEUED, BL-005: ELIGIBLE_QUEUED, BL-009: ELIGIBLE_QUEUED, BL-011: ELIGIBLE_PACKET_PENDING}
+execution: {unit: NOT_EXECUTED, integration: NOT_EXECUTED, application_behavior: NOT_EXECUTED}
+coverage: {state: NO_DURABLE_COVERAGE_EVIDENCE}
