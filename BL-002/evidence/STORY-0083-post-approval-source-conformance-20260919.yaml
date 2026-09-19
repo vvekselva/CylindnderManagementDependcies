@@ -1,0 +1,28 @@
+story_id: STORY-0083
+release: R1
+title: Submit Yard Stock Check
+approval_state: APPROVED_AFTER_REWORK
+approval_evidence: BL-002/approval-evidence/STORY-0083-approval-20260905.md
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: POST /ingestYardStockCheck
+  controller: YardStockCheckIngestionController.doPost
+  service: YardStockCheckIngestionService.processRequest
+  current_source_behavior:
+    - successful service processing redirects to the configured back link
+    - InvalidInputParameterException re-renders with submitted request/backLink/cylinder states
+    - application exception returns the view without equivalent model repopulation
+    - service persists header IN_PROGRESS then COMPLETED and line observed state/scannedAt/observedCylinder
+    - current browser binding and persistence path contain the exact defects documented in the Story
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_ACCURATELY_DESCRIBES_CURRENT_SOURCE_AND_THE_EXISTING_YARD_STOCK_CHECK_BINDING_VALIDATION_PERSISTENCE_DRIFT
+  application_code_mutation_required: false
+  existing_code_change_review: BL-002/evidence/STORY-0083-yard-stock-check-drift-review-20260902.yaml
+  code_change_gate: EXPLICIT_EXACT_MANIFEST_USER_APPROVAL_REQUIRED
+note: CONFORMANCE_PASS_MEANS_THE_STORY_IS_ACCURATE; THE_KNOWN_APPLICATION_DEFECT_REMAINS_UNFIXED_AND_APPROVAL_GATED
+fanout: {BL-004: ELIGIBLE_QUEUED_FOR_CURRENT_BEHAVIOR_AND_DRIFT_REGRESSION, BL-005: ELIGIBLE_QUEUED_FOR_CURRENT_BEHAVIOR_AND_DRIFT_REGRESSION, BL-009: ELIGIBLE_QUEUED_FOR_CURRENT_BEHAVIOR_AND_DRIFT_REGRESSION, BL-011: ELIGIBLE_PACKET_PENDING}
+execution: {unit: NOT_EXECUTED, integration: NOT_EXECUTED, application_behavior: NOT_EXECUTED}
+coverage: {state: NO_DURABLE_COVERAGE_EVIDENCE}
