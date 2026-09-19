@@ -1,0 +1,40 @@
+checkpoint_id: BL002-FANOUT-20260919-01
+date: 2026-09-19
+scope: NON_APPROVAL_DEPENDENT_WORK
+completed:
+  conformance_reconciliation:
+    verified_pass:
+      - STORY-0060
+      - STORY-0061
+      - STORY-0062
+      - STORY-0063
+      - STORY-0082
+      - STORY-0083
+      - STORY-0126
+    note: PASS means approved Story accurately describes current source; existing defect-remediation manifests remain separately approval-gated.
+  fanout_generation:
+    STORY-0096:
+      BL-004: GENERATED_SOURCE_BOUND
+      BL-009: GENERATED_MAPPED_NOT_EXECUTED
+      BL-005: QUEUED_NOT_GENERATED
+    STORY-0107:
+      BL-004: GENERATED_SOURCE_BOUND
+      BL-009: GENERATED_MAPPED_NOT_EXECUTED
+      BL-005: QUEUED_NOT_GENERATED
+  newly_detected_drift:
+    STORY-0102:
+      classification: STORY_CODE_DRIFT_DETECTED
+      reason: approved name-or-GST supplier search vs active name-only service
+      packet: BL-002/review-packets/STORY-0102-SUPPLIER-SEARCH-NAME-GST-DRIFT-20260919.yaml
+      downstream_fanout: HOLD
+approval_gates_unchanged:
+  SUC-027: PENDING_USER_APPROVAL
+  STORY-0102_CODE_CHANGE: PENDING_EXPLICIT_EXACT_MANIFEST_APPROVAL
+  other_existing_drift_packets: PRESERVED
+runtime:
+  tests_executed: false
+  coverage_claimed: false
+next_safe_actions:
+  - generate BL-005 PostgreSQL/Testcontainers artifacts for STORY-0096 and STORY-0107 after fixture/source-path design validation
+  - continue approved Story conformance/fanout work that does not require new user approval
+  - do not activate SUC-027 authoritative use-case scenarios before explicit approval
