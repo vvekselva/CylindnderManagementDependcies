@@ -1,0 +1,26 @@
+story_id: STORY-0060
+release: R1
+title: Active Vehicle Loads
+approval_state: APPROVED_AFTER_REWORK
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: GET /vehicle-loads/list
+  controller: VehicleLoadByPageController.listVehicleLoads
+  service: VehicleActiveTripFetchByPageService
+  behavior:
+    - page/size/searchTerm are mapped into VehicleActiveTripFetchByPageRequestDto
+    - nonblank searchTerm uses active-trip search; blank search uses findAll
+    - active-trip results are ordered by tripStartedAt descending
+    - vehicle-load rows are enriched with linked driver and vehicle
+    - trip status is read separately to govern Returned Trip visibility
+    - selected vehicle-load identity is propagated to /vehicle-load/fetch
+    - GET is read-only
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_ACCURATELY_MATCHES_FROZEN_SOURCE_CONTROLLER_SERVICE_VIEW_PAGING_STATUS_AND_READ_ONLY_BEHAVIOR
+  application_code_mutation_required: false
+fanout: {BL-004: ELIGIBLE_QUEUED, BL-005: ELIGIBLE_QUEUED, BL-009: ELIGIBLE_QUEUED, BL-011: ELIGIBLE_PACKET_PENDING}
+execution: {unit: NOT_EXECUTED, integration: NOT_EXECUTED, application_behavior: NOT_EXECUTED}
+coverage: {state: NO_DURABLE_COVERAGE_EVIDENCE}
