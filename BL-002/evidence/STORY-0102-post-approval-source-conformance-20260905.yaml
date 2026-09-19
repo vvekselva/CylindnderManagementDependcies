@@ -9,30 +9,26 @@ source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f
 approved_contract:
   endpoint: GET /search/supplier/{searchText}
   controller: RestfulSupplierSearchService.getSuppliers
-  request_binding: required searchText path variable
-  service: supplierSearchService
   search_semantics:
     - supplier name
     - GST number
-  ui_behavior:
-    - trim visible search input
-    - do not request below 3 characters
-    - 280 ms debounce at 3 or more characters
-    - display supplier name and persistent supplier ID
-    - selected supplier ID propagates to hidden f-supplierId
-    - clearing selection clears supplier ID and downstream exchange state
-  result: SupplierSearchResponseDto
-  failure_behavior: governed application failure returns empty response DTO
   mutation: NONE
+source_readback:
+  controller_delegation: PASS
+  supplier_name_search: PASS
+  gst_number_search: DRIFT
+  service_observation: SupplierSearchService currently calls findBySupplierNameContainingIgnoreCase only.
 conformance:
-  classification: CODE_CONFORMANCE_VERIFIED_PASS
-  reason: APPROVED_STORY_CONTRACT_MATCHES_FROZEN_SOURCE_BOUND_CONTROLLER_SEARCH_AND_UI_BEHAVIOR_RECORDED_IN_STORY_0102
-  application_code_mutation_required: false
+  classification: STORY_CODE_DRIFT_DETECTED
+  reason: APPROVED_STORY_REQUIRES_NAME_OR_GST_SEARCH_BUT_ACTIVE_SERVICE_ONLY_SEARCHES_SUPPLIER_NAME
+  review_packet: BL-002/review-packets/STORY-0102-SUPPLIER-SEARCH-NAME-GST-DRIFT-20260919.yaml
+  application_code_mutation_required: true
+  code_change_authorized: false
 fanout:
-  BL-004: ELIGIBLE_QUEUED
-  BL-005: ELIGIBLE_QUEUED
-  BL-009: ELIGIBLE_QUEUED
-  BL-011: ELIGIBLE_PACKET_PENDING
+  BL-004: HOLD_PENDING_EXPLICIT_DRIFT_APPROVAL
+  BL-005: HOLD_PENDING_EXPLICIT_DRIFT_APPROVAL
+  BL-009: HOLD_PENDING_EXPLICIT_DRIFT_APPROVAL
+  BL-011: HOLD_PENDING_EXPLICIT_DRIFT_APPROVAL
 execution:
   unit: NOT_EXECUTED
   integration: NOT_EXECUTED
