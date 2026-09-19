@@ -38,7 +38,7 @@
 | [SUC-024 — Supplier Lookup / List Support](usecase-review.md#suc-024) | R1 | **APPROVED — STORY-0059 approved and fan-out requested; post-approval conformance pending** |
 | [SUC-025 — Vehicle Loads Listing](usecases/SUC-025.md) | R1 | **APPROVED — STORY-0060 + STORY-0061 + STORY-0107 + STORY-0126 approved and fan-out requested; STORY-0107 conformance PASS; STORY-0061 drift review remains separately gated** |
 | [SUC-026 — Vehicle Trips Listing](usecase-review.md#suc-026) | R1 | **APPROVED — STORY-0062 approved and fan-out requested; post-approval conformance pending** |
-| [SUC-027 — Party Custody Traceability](usecase-review.md#suc-027) | R1 | Pending user approval |
+| [SUC-027 — Party Custody Traceability](usecases/SUC-027.md) | R1 | **PENDING USE-CASE APPROVAL — STORY-0063 already approved and fan-out requested; post-approval conformance remains pending** |
 | [SUC-028 — Reconciliation Command Center](usecase-review.md#suc-028) | R2 | Pending user approval |
 | [SUC-029 — Ownership Dashboard](usecase-review.md#suc-029) | MIXED_R1_R2 | Pending user approval |
 | [SUC-030 — Delivery Planning Maps / Stops](usecase-review.md#suc-030) | R2 | Pending user approval |
