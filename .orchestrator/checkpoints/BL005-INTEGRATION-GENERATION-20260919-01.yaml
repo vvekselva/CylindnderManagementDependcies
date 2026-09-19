@@ -1,0 +1,40 @@
+checkpoint_id: BL005-INTEGRATION-GENERATION-20260919-01
+date: 2026-09-19
+scope: NON_APPROVAL_DEPENDENT_INTEGRATION_GENERATION
+completed:
+  STORY-0096:
+    artifact: BL-005/generated-tests/STORY-0096/Story0096CylindersByCustomerPostgreSQLIntegrationTest.java
+    fixture: BL-005/fixture-design/STORY-0096.md
+    status: GENERATED_SOURCE_BOUND_RUNTIME_EXECUTION_BLOCKED
+    verifies:
+      - exact customer/party/status filtering
+      - logical/actual/display identifier search
+      - count query paging contract
+  STORY-0107:
+    artifact: BL-005/generated-tests/STORY-0107/Story0107CylindersOnVehiclePostgreSQLIntegrationTest.java
+    fixture: BL-005/fixture-design/STORY-0107.md
+    status: GENERATED_SOURCE_BOUND_RUNTIME_EXECUTION_BLOCKED
+    verifies:
+      - requested vehicle load
+      - active noncompleted nonexception logistics lines
+      - allowed state filtering
+      - logical serial and active-primary physical identifier search
+queue_reconciliation:
+  newly_queued_after_conformance:
+    - STORY-0060
+    - STORY-0061
+    - STORY-0062
+    - STORY-0063
+    - STORY-0082
+    - STORY-0083
+    - STORY-0126
+  preserved_gates:
+    STORY-0061: EXACT_DRIFT_REMEDIATION_APPROVAL_STILL_REQUIRED
+    STORY-0062: EXACT_DRIFT_REMEDIATION_APPROVAL_STILL_REQUIRED
+    STORY-0063: SUC-027_USE_CASE_APPROVAL_STILL_PENDING
+    STORY-0083: EXACT_DRIFT_REMEDIATION_APPROVAL_STILL_REQUIRED
+execution:
+  tests_executed: false
+  reason: NO_FAITHFUL_TESTCONTAINERS_RUNTIME_EVIDENCE_IN_CURRENT_ORCHESTRATOR
+  coverage_claimed: false
+next_safe_action: GENERATE_STORY_LEVEL_INTEGRATION_TESTS_FOR_CONFORMANCE_CLEARED_QUEUE_WITHOUT_CROSSING_USECASE_OR_CODE_CHANGE_APPROVAL_GATES
