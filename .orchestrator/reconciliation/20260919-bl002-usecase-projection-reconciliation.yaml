@@ -1,0 +1,32 @@
+reconciliation_id: BL002-USECASE-PROJECTION-20260919
+date: 2026-09-19
+backlog_id: BL-002
+type: AGGREGATE_PROJECTION_RECONCILIATION
+authority_order:
+  - BL-002/usecases/SUC-025.md
+  - BL-002/approval-evidence/
+  - BL-002/stories/
+  - BL-002/screen-usecase-register.md
+  - BL-002/screen-usecase-register.csv
+  - BL-002/usecase-review.md
+changes:
+  SUC-025:
+    prior_projection: PARTIALLY_APPROVED_OR_PENDING_IN_STALE_AGGREGATES
+    reconciled_state: APPROVED
+    approved_story_ids: [STORY-0060, STORY-0061, STORY-0107, STORY-0126]
+    safeguards:
+      - STORY-0061_DRIFT_REVIEW_REMAINS_SEPARATELY_USER_GATED
+      - APPROVAL_DOES_NOT_IMPLY_TEST_EXECUTION_OR_COVERAGE
+  SUC-027:
+    action: DETAILED_REVIEW_ARTIFACT_PREPARED
+    story_id: STORY-0063
+    story_approval: APPROVED_AFTER_REWORK
+    usecase_approval: PENDING_USER_APPROVAL
+    auto_approval: false
+    authoritative_test_scenario_activation: BLOCKED_UNTIL_EXPLICIT_USECASE_APPROVAL_AND_POST_APPROVAL_CONFORMANCE
+mutation_scope:
+  application_source_changed: false
+  database_changed: false
+  story_approval_changed: false
+  usecase_auto_approval_performed: false
+result: RECONCILED_AND_NEXT_USECASE_READY_FOR_USER_REVIEW
