@@ -1,0 +1,24 @@
+story_id: STORY-0126
+release: R1
+title: Vehicle Load Fetch
+approval_state: APPROVED_AFTER_REWORK
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: GET /vehicle-load/fetch
+  controller: VehicleLoadFetchByIdController.doGet
+  behavior:
+    - required vehicleLoadId is copied into VehicleLoadFetchByIdRequestDto
+    - vehicleLoadFetchService supplies load/trip/stops data
+    - TripReturnWorkflowService supplies trip status
+    - view flags are derived for returned/proceeding/halt/can-return/challan-entry/can-complete
+    - application exception keeps the same view with vehicleLoad null
+    - GET itself is read-only
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_MATCHES_FROZEN_SOURCE_REQUEST_IDENTITY_SERVICE_HANDOFF_TRIP_STATUS_VIEW_GUARDS_AND_ERROR_BEHAVIOR
+  application_code_mutation_required: false
+fanout: {BL-004: ELIGIBLE_QUEUED, BL-005: ELIGIBLE_QUEUED, BL-009: ELIGIBLE_QUEUED, BL-011: ELIGIBLE_PACKET_PENDING}
+execution: {unit: NOT_EXECUTED, integration: NOT_EXECUTED, application_behavior: NOT_EXECUTED}
+coverage: {state: NO_DURABLE_COVERAGE_EVIDENCE}
