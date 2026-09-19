@@ -1,0 +1,27 @@
+story_id: STORY-0061
+release: R1
+title: All Vehicle Loads
+approval_state: APPROVED_AFTER_REWORK
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+source_package: Harinandhan-Cylinder-Backup(20260902-080237).zip
+source_package_sha256: 60db87cece840505caa3de5521fbc5e1c680e2eb8e936044a87922f1f57f53a2
+approved_contract:
+  endpoint: GET /vehicle-loads/all-list
+  controller: VehicleLoadByPageController.listAllVehicleLoads
+  service: VehicleLoadFetchByPageService
+  behavior:
+    - page/size/searchTerm are accepted by the controller
+    - current service ignores searchTerm and uses findAll
+    - shared template filter/pagination targets /vehicle-loads/list rather than /vehicle-loads/all-list
+    - controller does not republish searchTerm to the model
+    - GET remains read-only
+conformance:
+  classification: CODE_CONFORMANCE_VERIFIED_PASS
+  reason: APPROVED_STORY_ACCURATELY_DESCRIBES_CURRENT_SOURCE_AND_ITS_EXPLICITLY_RECORDED_ALL_LIST_FILTER_PAGING_DRIFT
+  application_code_mutation_required: false
+  existing_code_change_review: BL-002/evidence/STORY-0061-all-vehicle-loads-drift-review-20260902.yaml
+  code_change_gate: EXPLICIT_EXACT_MANIFEST_USER_APPROVAL_REQUIRED
+note: CONFORMANCE_PASS_MEANS_STORY_MATCHES_CURRENT_SOURCE; IT_DOES_NOT_APPROVE_OR_APPLY_THE_RECORDED_REMEDIATION
+fanout: {BL-004: ELIGIBLE_QUEUED_FOR_CURRENT_BEHAVIOR, BL-005: ELIGIBLE_QUEUED_FOR_CURRENT_BEHAVIOR, BL-009: ELIGIBLE_QUEUED_FOR_CURRENT_BEHAVIOR, BL-011: ELIGIBLE_PACKET_PENDING}
+execution: {unit: NOT_EXECUTED, integration: NOT_EXECUTED, application_behavior: NOT_EXECUTED}
+coverage: {state: NO_DURABLE_COVERAGE_EVIDENCE}
