@@ -1,0 +1,51 @@
+review_packet_id: STORY-0102-SUPPLIER-SEARCH-NAME-GST-DRIFT-20260919
+story_id: STORY-0102
+state: AWAITING_EXPLICIT_USER_CODE_CHANGE_APPROVAL
+source_baseline: CylinderManagement@3ae6e61442132d94a307275b08dd65fcef228d89
+approved_story: BL-002/stories/STORY-0102.md
+approved_behavior:
+  - Supplier search supports supplier name or GST number.
+current_source_behavior:
+  controller:
+    path: cylindermanagement.web/src/main/java/com/sreyas/datamatics/cylindermanagement/web/rest/RestfulSupplierSearchService.java
+    method: getSuppliers
+    observation: Controller comment states Supplier Name or GST Number and delegates the searchText to supplierSearchService.
+  service:
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/SupplierSearchService.java
+    method: searchWithText
+    observation: Current implementation calls SupplierJpaDao.findBySupplierNameContainingIgnoreCase(requestDto.getSearchTerm()) only.
+  dao:
+    path: cylinder.management.dao/src/main/java/com/sreyas/datamatics/application/jpa/dao/SupplierJpaDao.java
+    existing_capability:
+      - findBySupplierNameContainingIgnoreCase
+      - findByGstNumberContainingIgnoreCase
+      - findBySupplierNameContainingIgnoreCaseOrGstNumberContainingIgnoreCase
+classification: STORY_CODE_DRIFT_DETECTED
+business_impact:
+  - Searching by supplier name works.
+  - Searching only by GST number is not source-proved to return the supplier through the active SupplierSearchService path.
+  - The approved Story and controller documentation overstate the implemented search semantics.
+proposed_manifest:
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: cylindermanagement.custommapper.service/src/main/java/com/sreyas/datamatics/cylinder/management/search/services/SupplierSearchService.java
+    component: SupplierSearchService
+    method: searchWithText
+    proposed_change: Use the existing SupplierJpaDao name-or-GST search capability with the same search term for both fields, preserving case-insensitive matching and the current read-only response mapping.
+    reason: Align the active service implementation with the explicitly approved STORY-0102 name-or-GST contract.
+  - repository: vvekselva/CylinderManagement
+    ref: 3ae6e61442132d94a307275b08dd65fcef228d89
+    path: relevant Supplier Search unit/integration tests
+    component: tests
+    proposed_change: Add separate assertions for name match, GST-only match, no-match and governed controller failure behavior.
+    reason: Lock the approved name-or-GST behavior.
+database_impact: NONE
+schema_change_required: false
+application_code_changed: false
+downstream_fanout:
+  BL-004: HOLD
+  BL-005: HOLD
+  BL-009: HOLD
+  BL-011: HOLD
+approval_gate: EXPLICIT_EXACT_MANIFEST_USER_APPROVAL_REQUIRED_BEFORE_APPLICATION_CODE_MUTATION_OR_TESTS_THAT_ASSUME_GST_SEARCH_SUCCESS
+scope_expansion_rule: Any additional endpoint, UI behavior, schema object, search field or response-contract change requires new explicit approval.
